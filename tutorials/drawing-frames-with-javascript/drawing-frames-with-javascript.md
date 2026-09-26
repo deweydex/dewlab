@@ -114,8 +114,8 @@ Now we can explain what we saw.
 A *canvas* is a blank rectangle of pixels that JavaScript can draw on.
 The `<canvas>` element makes one, and its `width` and `height` set how
 many pixels it has. Nothing else on this course has needed one, because
-HTML and CSS describe a page and the browser draws it. A canvas is for
-when we want to do the drawing ourselves.
+HTML and CSS describe a page and the browser draws it. We use a canvas
+when we want to draw ourselves.
 
 `getContext("2d")` gives us the pen that draws on it. The code calls it
 `pen`:
@@ -151,18 +151,18 @@ at depth 4, so its radius of `0.5` becomes `0.5 × 200 / 4 = 25` pixels.
 
 ### The loop
 
-`requestAnimationFrame(frame)` is the line that makes it move. It asks
+The line `requestAnimationFrame(frame)` makes it move. It asks
 the browser to call `frame` once, just before it next draws the screen.
 Many screens do that sixty times a second, and some do it more often.
 Each time `frame` runs, it does the same four things:
 
 1. Clear the canvas, by painting a dark rectangle over everything.
-2. Work out where the ball is now, from `angle`.
+2. Find where the ball is now, from `angle`.
 3. Draw the sun and the ball.
 4. Add a little to `angle`, and ask to be called again.
 
 That loop, draw and ask again, is an *animation loop*. In step 3 we
-took away its first step. Nothing cleared the old pictures, so every
+deleted its first step. Nothing cleared the old pictures, so every
 ball ever drawn stayed on the canvas, and the ball left a white smear
 behind it.
 
@@ -176,8 +176,8 @@ shows how to keep the speed the same on every screen.
 
 ### Front and back
 
-On the CSS pages, the browser worked out what was in front of what. A
-canvas has no idea. It draws whatever it is told, in the order it is
+On the CSS pages, the browser found what was in front of what. A
+canvas does not know. It draws whatever it is told, in the order it is
 told, and each new shape covers what is already there. But the ball has
 to go behind the sun for half of every turn.
 
@@ -212,3 +212,10 @@ loop.
 | `requestAnimationFrame()` | Asks the browser to call a function once, just before it next draws the screen | `requestAnimationFrame(frame);` |
 | *animation loop* | A function that draws one frame, moves things on a little, and asks to be called again | `frame` |
 | *painter's algorithm* | Sort what is to be drawn by depth, and draw from the back forwards, so nearer things cover farther ones | the sort line in `frame` |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Frame Rate.*
+<https://www.youtube.com/watch?v=DyqjTZHRdRs>. Captain Disillusion
+explains frame rate: how many still pictures each second it takes for
+movement to look smooth. Four minutes.

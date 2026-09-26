@@ -26,28 +26,29 @@ covers:
 
 Type the letters “x” and “o” next to each other, make them very
 large, and look at the bottom of each. The x stands on the line. The o
-does not: its bottom dips a little way below it. Pause here and guess
+does not. Its bottom dips a little way below it. Pause here and guess
 why a type designer would do that on purpose. I'll wait.
 
 Here is the reason. A round shape touches the line at one point only,
 so an o that sits exactly on the line looks as if it floats. Our eyes
-are fooled, so the designer fools them back. To do that, you need to
-know where the bottom of a curve is. This page is called "the top of
-the curve", and it starts at the bottom of one. The maths is the same:
-a curve that turns, and the one point where it turns.
+are fooled, so the designer lets the o dip below the line. To do that,
+you need to know where the bottom of a curve is. This page is called
+"the top of the curve", but it starts at the bottom of one. The maths is
+the same for both. A curve turns, and we look for the point where it
+turns.
 
 On this page we:
 
 - hunt for the lowest point of a letter's curve in a table
 - draw the curve, and name the point where it turns
 - see that the turning point sits halfway between the roots
-- rewrite a quadratic so that its top or bottom can be read straight off
-- add `vertex` to the toolkit, and check it with a fine comb
+- rewrite a quadratic so that we can read its top or bottom from it
+- add `vertex` to the toolkit, and check it with a search in tiny steps
 
 > **The space we're in.** Quadratics, $ax^2 + bx + c$, with $a$ not 0,
 > over the real numbers. A letter's curve is only drawn for some inputs,
-> and we will say which. One thing usually goes unsaid: every answer on
-> this page is checked by putting it back into the rule, in code. Your
+> and we will say which. We check every answer on this page by
+> putting it back into the rule, in code. Your
 > toolkit is loaded, with `evaluate`, `plot_rule` and `solve_quadratic`
 > from earlier in this unit.
 
@@ -87,7 +88,7 @@ $x^2 - 5x + 6 = 0$.
 ## A letter that sits below the line
 
 A font stores each letter as points on a grid, measured in *font
-units*. Our font is made up, but its numbers are the size a real
+units*. Our font is invented, but its numbers are the size a real
 font's are: the top of a small x is at 500. The *baseline*, the line
 the letters stand on, is at 0, and $y$ counts upwards, as on a graph.
 
@@ -109,7 +110,7 @@ gives a quadratic in $t$:
 
 $$y = 400t^2 - 440t + 112$$
 
-The cell works out the height both ways, at every tenth from 0 to 1.
+The cell calculates the height both ways, at every tenth from 0 to 1.
 Before you run it, where do you think the curve is lowest?
 
 ```python exec
@@ -128,8 +129,8 @@ for tenths in range(0, 11):
 
 The two columns agree, so the expanded rule is the same rule. The
 heights fall below the baseline and come back up. (One row says
-`-0.0`: that float is a hair below 0, and rounding keeps the minus
-sign.) There is no single lowest row: at 0.5 and at 0.6 the height is
+`-0.0`. That float is a tiny amount below 0, and rounding keeps the
+minus sign.) There is no single lowest row: at 0.5 and at 0.6 the height is
 $-8$, a tie.
 
 A tie like that is a clue. The heights fall and rise in a pattern that
@@ -209,8 +210,8 @@ or the other, never both.
 
 Notice something else: the left and right halves of the parabola are
 mirror images. A vertical line through the vertex, here $t = 0.55$, is
-the parabola's *axis of symmetry*. That mirror is why 0.5 and 0.6 tied:
-each is 0.05 from the axis.
+the parabola's *axis of symmetry*. 0.5 and 0.6 tied because of this
+mirror. Each is 0.05 from the axis.
 
 <aside class="dl-note" id="the-top-note-bezier">
 
@@ -218,7 +219,7 @@ each is 0.05 from the axis.
 engineer at Renault, who used them in the 1960s to describe car bodies
 to a machine. Paul de Casteljau found the same curves a few years
 earlier at Citroën, but his work stayed a company secret. TrueType
-fonts draw with the quadratic curves on this page; PostScript fonts use
+fonts draw with the quadratic curves on this page. PostScript fonts use
 cubic ones, with two control points.
 
 </aside>
@@ -327,10 +328,9 @@ to 0:
 $$(t - 0.55)^2 = \frac{9}{400} = 0.0225$$
 
 So $t - 0.55$ is $0.15$ or $-0.15$, and $t$ is 0.7 or 0.4, the roots we
-found. The same steps, done with letters on $ax^2 + bx + c$, are where
-the quadratic formula on
+found. The quadratic formula on
 [Solving for x](tutorial:solving-for-x#the-quadratic-formula) comes
-from. And if the number on the right is negative, as for
+from the same steps, done with letters on $ax^2 + bx + c$. And if the number on the right is negative, as for
 $(x - 3)^2 = -4$, there is no real root, because a real square is never
 negative. In the bigger space of
 [When there is no real answer](tutorial:when-there-is-no-real-answer),
@@ -350,8 +350,8 @@ id: the-top-square-your-turn
 
 ## A tool for the top
 
-Now the formula becomes a tool. Here is its promise; the body is yours
-to write.
+Now the formula becomes a tool. Here is its promise. You write the
+body.
 
 ```python exec
 id: the-top-toolkit
@@ -427,8 +427,8 @@ between the roots −0.07 and 2.93, as the mirror promises.
 ## Checking with a fine comb
 
 The formula says 0.55. Is there really no lower point? Let's search.
-The cell tries every $t$ from 0 to 1 in steps of a thousandth, works
-out the height at each, and finds the lowest with your toolkit's
+The cell tries every $t$ from 0 to 1 in steps of a thousandth,
+calculates the height at each, and finds the lowest with your toolkit's
 `smallest`. Before you run it, what do you expect it to print?
 
 ```python exec
@@ -445,18 +445,19 @@ print(ts[heights.index(lowest)], round(lowest, 6))
 print(vertex(400, -440, 112))
 ```
 
-A thousand and one tries, and the search agrees with the formula: two
-algorithms for one question, as the loop and Gauss's trick were on
+The search makes a thousand and one tries, and it agrees with the
+formula. We have two algorithms for one question, as the loop and
+Gauss's trick were on
 [Machines that take a number](tutorial:machines-that-take-a-number#an-algorithm-is-a-function-too).
 The search is slow and only sees the values it tries. We keep it
 because it checks the formula with nothing but arithmetic.
 
 What does the rule assume? The parabola goes on for ever, but the
-letter only uses the piece from $t = 0$ to $t = 1$: that is the rule's
-domain here. The vertex is inside it, so the answer stands. If a vertex
-lands outside the domain, the lowest point of the piece is at one of
-its ends. The picture and the table would show that; the formula alone
-would not.
+letter only uses the piece from $t = 0$ to $t = 1$. That piece is the
+rule's domain here. The vertex is inside it, so the vertex is the
+lowest point of the piece. If a vertex is outside the domain, the
+lowest point of the piece is at one of its ends. The picture and the
+table would show that. The formula alone would not.
 
 Could we find the curve from a photo of a letter, with no font file?
 Three pixels on the curve would give three equations in three
@@ -470,7 +471,7 @@ metres after $t$ seconds. (A model: it leaves out the air.)
 
 1. Is there a maximum or a minimum? Say why before you run anything.
 2. Use `vertex` to find when the ball is highest, and how high it gets.
-3. Check with a fine comb: every hundredth of a second from 0 to 3.
+3. Check with a search in tiny steps, every hundredth of a second from 0 to 3.
 4. When does it land? Which root from `solve_quadratic` is a real time?
 
 ```python exec
@@ -482,7 +483,7 @@ id: the-top-comb-your-turn
 
 This page found the bottom of a curve with algebra: completing the
 square, and the formula $x = -\frac{b}{2a}$ that comes from it. Many
-courses find it with calculus instead: the slope of a curve is 0 at
+courses find it with calculus instead. The slope of a curve is 0 at
 its top or bottom, so they find where the slope is 0.
 
 Calculus is the stronger tool. It finds the tops and bottoms of curves
@@ -522,3 +523,11 @@ its own. Unit 9 comes back to this bowl with that idea.
 
 For another route to the same curve, the integrated course has
 [Parabolas: completing the square](tutorial:parabolas).
+
+## Where to read more
+
+Stand-up Maths (2016). *There is only One True Parabola.*
+<https://www.youtube.com/watch?v=hoh4TmPzu1w>. Every parabola is the same
+curve, made bigger or smaller and moved. To find its top, find where it
+was moved to. Matt Parker shows why every parabola has the same shape.
+About nine minutes.

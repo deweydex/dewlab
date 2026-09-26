@@ -184,7 +184,7 @@ substitutes each root back for you?
 
 1. Evaluate the polynomial at each root.
 2. Print each root beside the value it gives. How close to zero is close
-   enough? A value like `2.2e-16` is zero, give or take rounding, so
+   enough? A value like `2.2e-16` is zero, apart from rounding, so
    compare with a small tolerance, like 0.0001, rather than with an exact
    zero.
 3. Test it on several quadratics in the second cell.
@@ -222,8 +222,8 @@ Can you write a function `factor_quadratic(a, b, c)` that returns a
 string showing the factorised form?
 
 1. Use `solve_quadratic` to find the roots.
-2. Build the string from the roots. Be careful with the leading
-   coefficient $a$: it goes in front.
+2. Build the string from the roots. The leading coefficient $a$ goes in
+   front, so be careful with it.
 3. If the quadratic has no real roots, the function should say so
    in plain words, and not guess at an answer.
 4. Test it in the second cell with the three cases in the comments.
@@ -244,16 +244,15 @@ id: your-turn-8
 ### Verification by expansion
 
 We can check a factorisation by multiplying the factors back together.
-If we get the original polynomial, the factorisation is right. This is
-where `multiply_poly` from
+If we get the original polynomial, the factorisation is right.
+`multiply_poly` from
 [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
-is useful again. The cell below brings it back.
+is useful again here. The cell below brings it back.
 
 `multiply_poly` works on lists, as it did on that page, with the
 constant first, so that each number sits at the index of its power.
-So $x - 1$ is `[-1, 1]` here. A list is a different thing from the
-arguments of `solve_quadratic`: it holds a whole polynomial of any
-length. What list do you expect the cell to print?
+So $x - 1$ is `[-1, 1]` here. A list is different from the arguments of
+`solve_quadratic`. It holds a whole polynomial of any length. What list do you expect the cell to print?
 
 ```python exec
 id: verification-by-expansion-1
@@ -285,7 +284,7 @@ $$2x + 3 > 7 \implies 2x > 4 \implies x > 2$$
 
 For example, $x = 3$ works: $2 \times 3 + 3 = 9$, and $9 > 7$.
 
-There is one extra rule, and it trips up most people at first. **If we
+There is one extra rule, and most people forget it at first. **If we
 multiply or divide both sides by a negative number, the inequality
 flips.** For example, $-x > 3$ becomes $x < -3$ when we divide by $-1$.
 Check with $x = -4$: $-(-4) = 4$, and $4 > 3$ is true.
@@ -297,8 +296,8 @@ How might you write a function `solve_linear_inequality(a, b, c, operator)`?
 1. It should solve $ax + b$ [operator] $c$, where the operator is one of
    `">"`, `">="`, `"<"` or `"<="`.
 2. It should return a string that describes the set of solutions.
-3. Think about what happens when $a$ is negative: the direction of the
-   inequality reverses.
+3. What happens when $a$ is negative? The direction of the inequality
+   reverses.
 4. Test it in the second cell with the three cases in the comments.
 
 ```python exec
@@ -398,9 +397,9 @@ roots in a new family of numbers.
 
 Which type of equation did you find most satisfying to solve with code?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Quadratic Formula (Proof).*
-<https://www.youtube.com/watch?v=mDmRYfma9C0>. Where the formula this page
-turns into `solve_quadratic` comes from — completing the square,
-step by step.
+<https://www.youtube.com/watch?v=mDmRYfma9C0>. This video shows where the
+formula in `solve_quadratic` comes from. It completes the square, step
+by step.

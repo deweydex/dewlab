@@ -11,17 +11,17 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Python and SQL cells run on this page. JavaScript, BASIC and one other
-language are shown to read: each answer says what they print, and each
+language are shown to read. Each answer says what they print, and each
 was checked by running it outside this page. Your toolkit is loaded,
 including `mean` from [What is typical?](tutorial:what-is-typical) and
 `count_if` from [A row of numbers](tutorial:a-row-of-numbers).
 
 This page's database starts empty. The first cell makes a small table
-of songs for the SQL problems, a made-up playlist. Run it first.
+of songs for the SQL problems, an invented playlist. Run it first.
 
 ```sql exec
 id: many-lang-practice-songs
@@ -80,8 +80,8 @@ SELECT COUNT(*) FROM song_tbl WHERE plays > 100;
 
 <details class="dl-answer"><summary>answer</summary>
 
-3: 'Rain on the Roof' (120), 'Two Short Days' (300) and 'Kettle Song'
-(210). `WHERE` keeps only the rows where the condition is true, and
+It counts 3 rows: 'Rain on the Roof' (120), 'Two Short Days' (300) and
+'Kettle Song' (210). `WHERE` keeps only the rows where the condition is true, and
 `COUNT(*)` counts what is left.
 
 </details>
@@ -110,8 +110,8 @@ loop? What does Python use for the same job?
 
 <details class="dl-answer"><summary>answer</summary>
 
-They mark where the loop's body starts and stops: every line between
-`{` and `}` is repeated. Python marks the body by indentation: every
+They mark where the loop's body starts and stops. Every line between
+`{` and `}` is repeated. Python marks the body by indentation. Every
 line indented under the `for` line is repeated. Both answer the same
 question, "what happens when, and how many times?", in different
 syntax.
@@ -150,8 +150,7 @@ and 'The Long Road West' (5.0).
 
 **6. Fix.** Schlomi, who is learning SQL too, wants the songs played
 more often than the average song. She writes it the way she would say
-it, which is a fair first try: "plays bigger than the average of
-plays". It stops with an error. Read the error, then change the query.
+it: "plays bigger than the average of plays". It stops with an error. Read the error, then change the query.
 
 ```sql exec
 id: many-lang-practice-fix-sql
@@ -174,7 +173,7 @@ say so.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`WHERE` checks one row at a time, so it cannot work out the average of
+`WHERE` checks one row at a time, so it cannot find the average of
 the whole column by itself. A query in brackets can, and it runs first:
 
 ```sql
@@ -183,8 +182,8 @@ WHERE plays > (SELECT AVG(plays) FROM song_tbl);
 ```
 
 The average is 151 plays, and two songs beat it: 'Two Short Days' and
-'Kettle Song'. Schlomi's words were fine. The trouble is sequence: the
-average must be known before any row is compared with it.
+'Kettle Song'. Schlomi's words say what she means. The trouble is the
+order. The average must be known before any row is compared with it.
 
 </details>
 
@@ -285,7 +284,7 @@ SELECT SUM(minutes) / COUNT(*) FROM song_tbl;
 ```
 
 It gives 3.6, the same as `AVG(minutes)`. `SUM` adds the column, and
-`COUNT(*)` counts the rows: the mean is the sum shared out equally.
+`COUNT(*)` counts the rows. The mean is the sum shared out equally.
 This is the promise from
 [What is typical?](tutorial:what-is-typical#share-it-out-equally-the-mean),
 kept by different tools.
@@ -329,7 +328,7 @@ for i in range(0, 7):
 ```
 
 or `for reading in readings:`, which cannot miss one. This is a
-question of naming: `R(1)` in BASIC and `readings[1]` in Python are not
+question of naming. `R(1)` in BASIC and `readings[1]` in Python are not
 the same reading.
 
 </details>
@@ -340,7 +339,7 @@ has no loops." What would you say back?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One answer might say: SQL is a different style, not a lesser one. It
+One answer might say that SQL is a different style, not a lesser one. It
 is declarative, so a query says what result it wants, and the database
 decides the steps. The loops are still there, inside the database, where
 you do not have to write them. For questions about tables, that is
@@ -434,7 +433,7 @@ questions. That is the idea of the tutorial.
 </details>
 
 **15. Make.** Write a Python function `days_above_average(values)` that
-gives back how many values are bigger than their own mean. Test it with
+returns how many values are bigger than their own mean. Test it with
 `assert` on the tutorial's rainfall (3) and on the song plays from
 problem 6 (2).
 
@@ -458,7 +457,7 @@ print("days_above_average keeps its promise.")
 
 The function does in Python what the tutorial's SQL did with a query
 inside a query: first find the average, then compare every value with
-it. The last test checks an edge: when every value is the same, none is
+it. The last test checks an edge case. When every value is the same, none is
 above the average.
 
 </details>

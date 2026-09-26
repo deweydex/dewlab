@@ -1,30 +1,38 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
+  - term: "inverse (A^-1)"
+    kind: concept
+    definition: >
+      The inverse of a matrix is the matrix that undoes it. Multiply a
+      matrix by its inverse, and you get the identity matrix, which leaves
+      every point where it is. The inverse of A is written A^-1.
+    example: "multiply(inverse(A), A) == [[1, 0], [0, 1]]"
   - term: shoelace formula
     kind: formula
     definition: >
       The shoelace formula finds the area inside a shape from its corner
-      points. For each pair of neighbouring corners, cross-multiply their
-      coordinates. Add up the results, and halve the total. The answer is
-      negative when the corners go round clockwise.
+      points. For each pair of neighbouring corners, find x1 × y2 - x2 × y1.
+      Add up the results, and halve the total. The answer is negative when
+      the corners go round clockwise.
   - term: determinant
     kind: concept
     definition: >
       The determinant of a 2×2 matrix [[a, b], [c, d]] is ad - bc. It is
-      the factor by which the matrix scales area. A negative determinant
-      also flips the shape over. A determinant of zero means the matrix
-      flattens every shape onto a line or a point, with no way back.
-    example: "ad - bc"
+      the number the matrix multiplies every area by. A negative
+      determinant also flips the shape over. A determinant of 0 means the
+      matrix flattens every shape onto a line or a point, and it cannot be
+      undone.
+    example: "det([[2, 1], [1, 3]]) is 5"
   - term: singular
     kind: concept
     definition: >
-      A singular matrix is a matrix whose determinant is zero. It has no
-      inverse.
-  - term: "A^-1 (inverse matrix)"
-    kind: formula
+      A singular matrix is a matrix whose determinant is 0. It squashes the
+      plane onto a line or a point, so it has no inverse.
+  - term: "inverse(m)"
+    kind: function
     definition: >
-      The inverse of A is the matrix that undoes A. For a 2×2 matrix it is
-      (1/det(A)) times [[d, -b], [-c, a]]. There is no inverse when det(A)
-      is zero, which is the algebra behind why a flattened shape cannot be
-      recovered.
-    example: "multiply(A, inverse(A)) == identity"
+      The function you write on this page. For a 2×2 matrix [[a, b], [c, d]]
+      it swaps a and d, changes the signs of b and c, and divides every
+      entry by the determinant. It raises a ValueError when the determinant
+      is 0.
+    example: "inverse([[0, -1], [1, 0]]) gives [[0.0, 1.0], [-1.0, 0.0]]"

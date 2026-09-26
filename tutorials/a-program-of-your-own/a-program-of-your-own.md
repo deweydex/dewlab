@@ -36,7 +36,7 @@ print(encode(secret, -3))
 It codes a message, and then decodes it again, by shifting back the other
 way. It is fourteen lines long, and it uses nothing from after
 [Writing your own functions](tutorial:writing-your-own-functions). That is
-enough to count as a program: something goes in, something is done to it,
+enough to count as a program. Something goes in, something is done to it,
 and something useful comes out.
 
 This page is not like the others. It has no tasks to check and no
@@ -46,12 +46,12 @@ pages before this one is yours to use, and so is anything you look up.
 
 ## Choosing what to build
 
-Choose something with a *low floor*: a first version you could finish in
-an evening. And choose something with *room to grow*: a next step, and a
-step after that, each one small. Here are three starting points.
+Choose something with a first version you could finish in an evening. And
+choose something with *room to grow*: a next step, and a step after that,
+each one small. Here are three starting points.
 
 **A cipher tool.** The first version codes and decodes one message with a
-Caesar shift, like the program above. Room to grow:
+Caesar shift, like the program above. It has room to grow:
 
 - a key of your own, kept in a dictionary, in place of a shift;
 - small letters, spaces and punctuation handled on purpose;
@@ -60,7 +60,7 @@ Caesar shift, like the program above. Room to grow:
   word the two spies share.
 
 **A pixel-art maker.** The first version draws one picture from a list of
-strings, with `#` and `.`. Room to grow:
+strings, with `#` and `.`. It has room to grow:
 
 - a palette dictionary, with more characters and more colours;
 - functions that change a picture: mirror it, turn it upside down, make
@@ -69,8 +69,8 @@ strings, with `#` and `.`. Room to grow:
   2 × 2 square;
 - a picture made by a rule, such as a checkerboard, a border or a circle.
 
-**Something of your own.** A tool for a thing you do by hand, a small quiz
-or game, a program that answers a question you have. Two questions decide
+**Something of your own.** It could be a tool for a thing you do by hand,
+a small quiz or game, or a program that answers a question you have. Two questions decide
 whether it is the right size:
 
 - Can you say, in one sentence, what its first version will do?
@@ -88,9 +88,9 @@ Before you write any Python, write the plan, the way
 [Algorithms, pseudocode and your first Python](tutorial:first-steps) did:
 one line of plain English for each step. Then name the functions the
 program needs, and for each one, write what goes in and what comes out.
-`encode` above takes a message and a shift, and gives back the coded
-message. Deciding that first is what lets you write it, and try it, on
-its own.
+`encode` above takes a message and a shift, and returns the coded
+message. If you decide that first, you can write it and try it on its
+own.
 
 ```python exec
 id: planning-before-you-code-1
@@ -103,7 +103,7 @@ id: planning-before-you-code-1
 #
 ```
 
-For a program longer than a few cells, the Notebook is a better home. This
+For a program longer than a few cells, the Notebook is a better place. This
 starter opens there, ready for your plan and your first function:
 
 ```python challenge
@@ -138,7 +138,7 @@ anything at all. It should feel almost too small to show anyone.
   this page, **Export a copy**, in the Notes panel, does that.
 
 The last one matters more than it looks. Release 2 will break something
-that Release 1 did, and a copy is how you find out what changed.
+that Release 1 did, and with a copy, you can see what changed.
 
 ## Looking back
 
@@ -148,7 +148,7 @@ the page.
 
 - What did you plan that you did not build? What did you build that you
   had not planned?
-- Where did you get stuck, and what got you moving again: a hint, an
+- Where did you get stuck, and what helped you continue: a hint, an
   earlier page, a person, or a break?
 - Which part of your program would you most like somebody to read? Which
   part would you least like them to?
@@ -156,7 +156,7 @@ the page.
 - What would Release 2 add, and what is the smallest version of that?
 
 The next page, [Searching a list: linear and binary search](tutorial:finding-things),
-looks at a question every program meets sooner or later: how to find one
+looks at a question every program meets at some point: how to find one
 thing among many, and how long it takes.
 
 ## Where to read more
@@ -169,3 +169,9 @@ a plan, a first version, and a better one.
 Singh, S. (1999). *The Code Book: The Secret History of Codes and
 Codebreaking*. Fourth Estate. Chapters 1 and 2 are full of ciphers a
 cipher tool could grow into, including the keyword cipher above.
+
+DevDuck (2020). *When is it Time to Move On from a Personal Project?*
+<https://www.youtube.com/watch?v=4f3Ss5n7SRQ>. A developer talks about
+losing the will to work on a project he started. He covers creative
+blocks, burnout, and what to do about them. The video is about seven
+minutes long.

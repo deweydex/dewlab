@@ -38,7 +38,7 @@ the order they will appear, then run the cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`{'G': 3, 'C': 2, 'D': 1}`. The keys come in the order each chord first
+It prints `{'G': 3, 'C': 2, 'D': 1}`. The keys come in the order each chord first
 appears: G first, then C, then D. The three frequencies add up to 6,
 the number of chords in the song.
 
@@ -71,7 +71,7 @@ discrete or continuous?
 </details>
 
 **3. Make.** In a survey of 40 people, 10 walk to work. How big an
-angle does "walk" get in a pie chart? Work it out in Python, with names
+angle does "walk" get in a pie chart? Calculate it in Python, with names
 for the numbers.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -146,10 +146,10 @@ plt.ylabel("how many times")
 ```
 
 Each face is expected about $\frac{60}{6} = 10$ times, and your bars
-will wobble around 10: perhaps 7 for one face and 13 for another. That
-is the wobble from
-[How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ).
-If one face never came up, `faces[face]` stops with a `KeyError`, since
+will be near 10, but not exactly: perhaps 7 for one face and 13 for
+another.
+[How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ)
+explains why. If one face never appeared, `faces[face]` stops with a `KeyError`, since
 that key was never made. With 60 rolls that almost never happens.
 
 </details>
@@ -187,8 +187,8 @@ tutorial page.
 
 The line `counts[song] = 1` runs every time, since it is not inside an
 `else`. So when a song is seen again, the count goes up by 1, then goes
-straight back to 1. Schlomi remembered both lines; only the `else`
-that keeps them apart went missing. Put it back:
+straight back to 1. Schlomi remembered both lines. Only the `else`
+that keeps them apart is missing. Put it back:
 
 ```python
 counts = {}
@@ -231,7 +231,7 @@ the histogram agrees.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 bins = []
@@ -285,7 +285,7 @@ plt.title("Wi-Fi signal on ten phones")
 ```
 
 Now the chart reads from weak to excellent, and the shape means
-something: most phones had a fair or good signal.
+something. Most phones had a fair or good signal.
 
 </details>
 
@@ -297,11 +297,11 @@ tutorial, and says the chart is dishonest: its axis does not start at
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not in the same way. Schlomo is using the rule for bar charts, and it
-works there. A line chart shows change, and a reader reads its
-height against the numbers on the axis, not as a length from 0. Zooming
-in shows a change that matters: a rise from 4.2% to 5.1% is a real
-story for thousands of people. So it can be honest, if the axis has
+It is not dishonest in the same way. Schlomo is using the rule for bar
+charts, and it works there. A line chart shows change, and a reader reads its
+height against the numbers on the axis, not as a length from 0. When the
+chart zooms in, it shows a change that matters. A rise from 4.2% to
+5.1% matters to thousands of people. So it can be honest, if the axis has
 labels a reader can find and read.
 
 It can still mislead a hasty reader, who sees "steep" and thinks
@@ -324,7 +324,7 @@ journeys = ["bus", "car", "walk", "bus", "bike", "car", "bus", "train",
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def by_bus(way):
@@ -344,7 +344,7 @@ only one count, `count_if` is enough. A third route is the list's own
 </details>
 
 **11. Make.** Draw a line chart of life expectancy in Ireland from 1950
-to 2016, and on the same chart, a line for another country of your
+to 2023, and on the same chart, a line for another country of your
 choice. Label both lines, and say where the data comes from.
 
 ```python exec
@@ -357,13 +357,13 @@ ireland = ireland_df["life_expectancy"].tolist()
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Take out the other country's list the same way as `ireland`.
+1. Make the other country's list the same way as `ireland`.
 2. Call `plt.plot` twice, once for each list, with `label="Ireland"`
    and a label for the other.
 3. `plt.legend()` shows the labels on the chart.
 
 **Think about:** both countries need a row for every year from 1950 to
-2016, or the two lists will be different lengths. Check with `len`.
+2023, or the two lists will be different lengths. Check with `len`.
 
 </details>
 
@@ -380,12 +380,14 @@ plt.plot(years, spain, label="Spain")
 plt.legend()
 plt.xlabel("year")
 plt.ylabel("life expectancy at birth, in years")
-plt.title("Life expectancy, 1950 to 2016 (Our World in Data)")
+plt.title("Life expectancy since 1950 (Our World in Data)")
 ```
 
-Both lists have 67 values. Spain starts lower than Ireland, at about
-61.9 years in 1950, passes Ireland in 1964, and stays ahead from then
-on. In 2016 Spain is at about 83.0 years, and Ireland at 81.1.
+Both lists have 74 values. Spain starts lower than Ireland, at about
+61.8 years in 1950, and passes Ireland in 1964. It stays ahead in
+every year after that except 2020, the first year of COVID-19. In 2023
+Spain is at about 83.7 years, and Ireland at 82.4. (These are the
+numbers in the copy saved on {{snapshot: life-expectancy}}.)
 
 </details>
 
@@ -427,7 +429,7 @@ a good check.
 **13. Make.** The stem-and-leaf loop on the tutorial page went from
 stem 1 to stem 4, because we looked at the data first. Write a function
 `stem_and_leaf(values)` that prints the plot for any list of whole
-numbers from 0 to 99, working out the first and last stems for itself.
+numbers from 0 to 99, finding the first and last stems for itself.
 Test it on the journey times and on the June temperatures.
 
 ```python exec
@@ -456,7 +458,7 @@ as stem 3 in `[12, 15, 41]`. Is an empty row useful?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def stem_and_leaf(values):
@@ -477,7 +479,7 @@ stem_and_leaf([12, 15, 41])
 
 The journey plot is the same as on the tutorial page, and the June plot
 has the two rows from problem 12. For `[12, 15, 41]` it prints the
-rows `2 |` and `3 |` with nothing after them. Keep them: an empty row
+rows `2 |` and `3 |` with nothing after them. Keep them. An empty row
 is a gap in the data, and a gap is part of its shape, as a gap would be
 in a histogram.
 
@@ -502,7 +504,7 @@ different about it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 travel = frequency_table(journeys)
@@ -516,9 +518,9 @@ print(best, best_count)
 print(mode(journeys))
 ```
 
-Both give `bus`, with 7. The loop is `largest` again, with one change:
-it compares the frequencies, but it keeps the key. A `for` loop over a
-dictionary goes through its keys, the same as `.keys()`.
+Both give `bus`, with 7. The loop is `largest` again, with one change.
+It compares the frequencies, but it keeps the key. A `for` loop over a
+dictionary uses its keys, the same as `.keys()`.
 
 </details>
 
@@ -530,8 +532,7 @@ you have chosen, for a class like yours, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things.
+There is more than one good answer. Here are some things to weigh.
 
 Names first gives a reader words to think with before the pictures
 arrive, and a clear table of which moves each kind allows. That suits a
@@ -540,7 +541,7 @@ feel empty until they are needed, and four new words at once is a lot.
 
 Charts first gives a surprise, such as a line joining "walk" to "car",
 and then the name arrives as the answer to a question the reader
-already has. That usually makes a name stick better. But it takes
+already has. That usually helps a reader remember the name. But it takes
 longer, and a reader who is unsure may read a broken chart as their own
 mistake.
 

@@ -52,7 +52,7 @@ and choosing what to do with the answer.
 
 Before a program can make a decision, it needs a question with a `True` or
 `False` answer. Python has six *comparison operators* for this. A
-comparison operator compares two values and gives back `True` or `False`.
+comparison operator compares two values and returns `True` or `False`.
 
 ```python exec
 id: comparisons-true-or-false-1
@@ -74,9 +74,8 @@ print(5 != 3)       # not equal to
 | `!=` | not equal to |
 
 Look closely at `==`. One equals sign, `=`, gives a name a value. Two,
-`==`, asks whether two values are equal. Mixing them up is one of the most
-common slips in programming, for beginners and for people who have
-programmed for years.
+`==`, asks whether two values are equal. People confuse them very often,
+both beginners and people who have programmed for years.
 
 Before you run the next cell, write what you think each line prints in the
 comment beside it.
@@ -121,7 +120,7 @@ Here the character is `?`, so only the last line runs. Change `"?"` to
 
 Python uses indentation to know which lines belong inside the if
 statement, so in Python indentation is required. We use four spaces for
-each level; the editor puts them in for you when you press Tab.
+each level. The editor adds them for you when you press Tab.
 
 ## If-else: two paths
 
@@ -261,7 +260,7 @@ would 200 become then?
 <details class="dl-answer"><summary>What happens</summary>
 
 It would become `-`. 200 is more than 64, and that condition now comes
-first, so Python never reaches the check for `#`. The order matters: with
+first, so Python never reaches the check for `#`. So the order matters. With
 `>=`, the biggest threshold goes first.
 
 </details>
@@ -354,7 +353,7 @@ whether `x` is 0 or more: that is already known.
 ## Boolean operators: combining conditions
 
 Sometimes one comparison is not enough. A *Boolean operator* combines
-`True` and `False` values, or turns one round. Python has three: `and`,
+`True` and `False` values, or reverses one. Python has three: `and`,
 `or` and `not`.
 
 `and` is `True` only when *both* sides are `True`. A capital letter is one
@@ -393,7 +392,7 @@ if not see_through:
 What changes if `character` is `"q"` in the first cell, or `"!"` in the
 second? Can you say before you run it?
 
-When one line uses more than one of these, Python works them out in a fixed
+When one line uses more than one of these, Python does them in a fixed
 order: `not` first, then `and`, then `or`. When you are not sure how Python
 will read a line, add brackets to make your meaning clear.
 
@@ -489,8 +488,8 @@ means both at once.
 
 ## Classifying numbers: a mathematical application
 
-Now we can use our new tools on a problem from mathematics: sorting
-numbers into families. Mathematicians sort numbers into four families,
+Now we can use our new tools on a problem from mathematics.
+Mathematicians sort numbers into four families,
 and each one sits inside the next.
 
 | Family | Symbol | What it holds | Examples |
@@ -579,10 +578,16 @@ do when Python stops with an error.
 
 Khan Academy. *If Statements.*
 <https://www.khanacademy.org/computing/intro-to-python-fundamentals/x5279a44ae0ab15d6:designing-algorithms-with-conditionals/x5279a44ae0ab15d6:boolean-conditions/v/if-statements>.
-A second walk through the same idea, a program choosing between paths,
+This video explains the same idea, a program choosing between paths,
 with its own examples.
 
 Khan Academy. *Evaluating Compound Boolean Expressions.*
 <https://www.khanacademy.org/computing/intro-to-python-fundamentals/x5279a44ae0ab15d6:designing-algorithms-with-conditionals/x5279a44ae0ab15d6:compound-boolean-conditions/v/evaluating-compound-boolean-expressions>.
-Traces through `and`, `or` and `not` step by step, which is worth watching
-once before trusting your own head to do it.
+This video follows `and`, `or` and `not` step by step. Watch it once
+before you do it in your head.
+
+Stand-up Maths (2016). *Leap Years: we can do better.*
+<https://www.youtube.com/watch?v=qkt_wmRKYNQ>. A year is a leap year if it
+divides by 4, unless it divides by 100, unless it divides by 400. That rule is
+an `if`, `elif` and `else`. Matt Parker explains where it comes from.
+Twelve minutes.

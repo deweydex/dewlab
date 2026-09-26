@@ -52,7 +52,7 @@ no 1s in it, so nothing flips.
 seven bits, a to g from the left. The digit 1 lights
 b and c, so it is `0b0110000`. The digit 2 lights a, b, d, e and g, so it
 is `0b1101101`. When the display counts from 1 to 2, which segments
-switch? Guess first, then find out with one XOR.
+switch? Guess first, then check with one XOR.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -65,8 +65,8 @@ print(format(change, "07b"))    # 1011101
 ```
 
 The 1s are in the places of a, c, d, e and g. Five segments switch, and
-only b stays as it was. So `change` is also a mask: XOR the pattern for 1
-with it, and you get the pattern for 2.
+only b stays as it was. So `change` is also a mask. If you XOR the pattern
+for 1 with it, you get the pattern for 2.
 
 </details>
 
@@ -91,7 +91,7 @@ print(format(settings, "04b"))
 
 **5. Make.** A music app keeps four settings as four bits of one number.
 From the left they are shuffle (worth 8), repeat (4), lyrics (2) and dark
-mode (1). Right now `settings = 0b1010`: shuffle and lyrics are on. Find
+mode (1). Right now `settings = 0b1010`, so shuffle and lyrics are on. Find
 one mask that turns shuffle off and dark mode on, with one XOR, and leaves
 the other two alone.
 
@@ -144,7 +144,7 @@ print(parity_draft("1110"))    # should be 1
 2. What is `parity` after the last character?
 3. Does the old value of `parity` ever get used?
 
-**Think about:** which bit does `parity_draft` really give back?
+**Think about:** which bit does `parity_draft` really return?
 
 **Try this next:** find a string where `parity_draft` gives the right
 answer by luck, and one where it does not.
@@ -153,8 +153,8 @@ answer by luck, and one where it does not.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line `parity = int(bit)` throws the old value away each time, so the
-function gives back the last bit and nothing else.
+The line `parity = int(bit)` replaces the old value each time, so the
+function returns the last bit and nothing else.
 
 - `"1011"` has three 1s, so the answer is 1. Its last bit is 1, so the
   first test passes by luck.
@@ -203,7 +203,7 @@ print(format(flip_colour(0xFF8800), "06X"))    # 0077FF
 ```
 
 `format(n, "06X")` writes the number in hex with at least six digits,
-which keeps the zeros at the front that `to_hex` would leave out.
+which keeps the zeros at the front that `to_hex` would not print.
 
 </details>
 
@@ -222,7 +222,7 @@ print(parity_bit(to_binary(14)))    # 1, the same
 ```
 
 An odd count leaves a remainder of 1, and an even count leaves 0. That is
-the parity bit. Two routes, one answer.
+the parity bit.
 
 </details>
 
@@ -233,12 +233,12 @@ instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. The parity bit only says that the count of 1s is now odd. Any one of
-the nine bits flipping would make the same change, so the check cannot
+No. The parity bit only says that the count of 1s is now odd. If any one
+of the nine bits flipped, it would make the same change, so the check cannot
 say which one it was.
 
 The phone can ask the watch to send that byte again. Cleverer codes, with
-several check bits, can say which bit flipped and put it right. One bit
+several check bits, can say which bit flipped and correct it. One bit
 is enough to notice a mistake, but not enough to find it.
 
 </details>
@@ -263,7 +263,7 @@ for a in [0, 1]:
 The last two columns match on all four rows. So XOR is addition, in a space
 where we keep only the remainder after dividing by 2. In that space there
 are only two numbers, 0 and 1, and $1 + 1 = 0$ is true. It is like a
-clock with only two hours: go forward two, and you are back where you
+clock with only two hours. If you go forward two, you are back where you
 started. The sum $1 + 1 = 0$ is false in ℕ, and true in the space of
 bits.
 
@@ -297,7 +297,7 @@ only the parity bit flipped?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def looks_right(received):
@@ -309,8 +309,8 @@ print(looks_right("000010101"))    # False
 ```
 
 A row that arrived safely has an even count of 1s, so its own parity bit
-is 0. We do not need to split off the parity bit at all. This is a
-function that uses another function's promise to keep its own.
+is 0. We do not need to separate the parity bit at all. This function
+uses the promise of `parity_bit` to keep its own.
 
 </details>
 
@@ -333,20 +333,20 @@ It prints `10 12`. The scores have swapped.
 
 - Line 3: `score_a` becomes `1100 ^ 1010`, which is `0110`.
 - Line 4: `score_b` becomes `0110 ^ 1010`, which is `1100`, the old
-  `score_a`. XOR with 10 twice gave back 12.
+  `score_a`. XOR with 10 twice gave 12 again.
 - Line 5: `score_a` becomes `0110 ^ 1100`, which is `1010`, the old
-  `score_b`. XOR with 12 twice gave back 10.
+  `score_b`. XOR with 12 twice gave 10 again.
 
-It works because XOR undoes itself. The order of the three lines is the
-whole trick: swap any two, and it breaks. In Python you would normally
+It works because XOR undoes itself. The order of the three lines
+matters. If you swap any two, it breaks. In Python you would normally
 write `score_a, score_b = score_b, score_a`, which says what it does.
 
 </details>
 
 **14. Make.** A phone has a four-digit PIN, 2468. You want to write
-down a hint that is not the PIN. Write `lock(code, key)`, which gives
+down a hint that is not the PIN. Write `lock(code, key)`, which returns
 `code ^ key`, and use it with the key 1357. Then show that locking the
-result again with the same key gives back 2468.
+result again with the same key gives 2468 again.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -362,20 +362,20 @@ print(lock(hint, 1357))    # 2468
 
 The same function locks and unlocks, because $c \oplus k \oplus k = c$.
 Someone who finds 3305 does not know the code, unless they also know the
-key. This is a toy: it is not safe for anything that matters. The idea
+key. This is a toy. It is not safe for anything that matters. The idea
 behind it is used in real encryption, with much longer keys.
 
 </details>
 
 **15. Explain.** Schlomo, who is learning Python too, wants the hint to
-be safer. His idea: lock the PIN twice, first with the key 1357 and then
+be safer. His idea is to lock the PIN twice, first with the key 1357 and then
 with a second key, 4000. Does two keys make it safer? Try it, and
 explain what you see.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out `lock(lock(2468, 1357), 4000)`.
-2. Now work out `1357 ^ 4000`, and lock 2468 once with that.
+1. Calculate `lock(lock(2468, 1357), 4000)`.
+2. Now calculate `1357 ^ 4000`, and lock 2468 once with that.
 3. Compare the two answers.
 
 </details>
@@ -394,9 +394,9 @@ $(c \oplus k_1) \oplus k_2 = c \oplus (k_1 \oplus k_2)$. So Schlomo's
 two keys behave exactly like one key, and a thief who finds that one key
 has undone both.
 
-It was a reasonable idea: doing something twice often does make a lock
-stronger. With XOR, the second lock joins the first. This is one way
-through; yours might also say what *would* help, such as a longer key.
+It was a reasonable idea. Locking twice often does make a lock
+stronger. With XOR, the second lock joins the first. This is one answer.
+Yours might also say what *would* help, such as a longer key.
 
 </details>
 
@@ -407,7 +407,7 @@ as `a ^ b`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through; yours may differ and work as well. XOR means
+Here is one answer. Yours may be different and work too. XOR means
 "at least one, but not both":
 
 ```python
@@ -421,7 +421,7 @@ print(same_rule(xor_from_and_or, xor, 2))    # True
 ```
 
 With De Morgan's first law, `not (a and b)` is `not a or not b`, so you
-could also write `(a or b) and (not a or not b)`. That is the same rule a
+could also write `(a or b) and (not a or not b)`. That is the same rule, written a
 third way.
 
 </details>
@@ -445,3 +445,11 @@ is enough. When the radio is noisy, and two flips in 128 bits are likely,
 a bit per byte is worth the extra cost.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2020). *The almost impossible chessboard puzzle.*
+<https://www.youtube.com/watch?v=as7Gkm7Y7h4>. A coin on every square of a
+chessboard, a key hidden under one square, and one coin flip to pass a
+message. The answer is built from parity. Think about it for a while
+before you watch. About thirty-two minutes.

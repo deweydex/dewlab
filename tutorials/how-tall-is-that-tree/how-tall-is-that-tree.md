@@ -47,8 +47,8 @@ On this page we:
 > [Going round in circles](tutorial:going-round-in-circles). On a flat
 > plane, a triangle's three angles add up to 180°. On
 > [a ball](tutorial:going-round-in-circles#triangles-on-a-ball) they
-> do not. One thing usually goes unsaid: a person measured every angle
-> and distance here, so every answer is only as good as the measuring.
+> do not. A person measured every angle and distance here, so every
+> answer depends on how well they measured.
 
 ## Warm-up
 
@@ -91,7 +91,7 @@ right angle.
 
 On [Going round in circles](tutorial:going-round-in-circles), a point
 turned round a circle, and its x and y came from the cosine and the
-sine. A right-angled triangle is a piece of that picture: your line of
+sine. A right-angled triangle is a piece of that picture. Your line of
 sight is a radius, and the tree is the point's height. The cell draws
 it with `point_on_circle` from your toolkit.
 
@@ -137,7 +137,7 @@ From the treetop, the names would swap.
 The adjacent side is the point's x, the hypotenuse times the cosine. The
 opposite side is its y, the hypotenuse times the sine. And the
 [tangent](tutorial:going-round-in-circles#a-third-name-tangent) was
-rise over run: in the triangle, opposite over adjacent.
+rise over run. In the triangle, that is opposite over adjacent.
 
 Will the three ratios match `math.sin`, `math.cos` and `math.tan`?
 
@@ -154,8 +154,8 @@ print(opposite / adjacent, math.tan(angle))
 ```
 
 They match, perhaps apart from the last digit. Change `sight_line` to 3
-or 500, and the ratios stay the same: the shape decides them, not the
-size. People remember them with one made-up word, SOH-CAH-TOA:
+or 500, and the ratios stay the same. The shape decides them, not the
+size. People remember them with one invented word, SOH-CAH-TOA:
 
 | Letters | In words | In symbols |
 |---|---|---|
@@ -189,7 +189,7 @@ The tree is about 15.6 m tall. The angle you look up at is called the
 *angle of elevation*: the angle between level ground and your line of
 sight to something above you.
 
-How close is that? A phone held by hand can be off by 2° or so. Here
+How close is that? A phone held by hand can be wrong by 2° or so. Here
 is the same sum for 33° and for 37°:
 
 ```python exec
@@ -199,14 +199,15 @@ for measured in [33, 35, 37]:
     print(measured, "degrees gives", round(height, 1), "m")
 ```
 
-The answer moves from 14.6 m to 16.7 m. The maths is exact, and the
-measuring is not, so "about 15 or 16 metres" is the honest answer.
+The answer moves from 14.6 m to 16.7 m. The maths is exact, but the
+measurement is not. So "about 15 or 16 metres" is the best answer we
+can give.
 
 ### Your turn
 
 1. A friend stands further back, 32 m from the trunk, and measures 25°.
    Why is their angle smaller than yours?
-2. Work out the height from their measurement. Is it the same tree,
+2. Find the height from their measurement. Is it the same tree,
    roughly?
 
 ```python exec
@@ -220,7 +221,7 @@ The Spire on O'Connell Street in Dublin is 120 m tall. Standing 100 m
 from its base, how far up do you tilt your head?
 
 Now we know the tangent, $\frac{120}{100} = 1.2$, and want the angle.
-That is the tangent run backwards: its inverse, as on
+We need the tangent run backwards, its inverse, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#running-it-backwards-the-inverse).
 Python calls it `math.atan`. The inverses of sine and cosine are
 `math.asin` and `math.acos`. All three answer in radians, and
@@ -232,7 +233,7 @@ print(math.degrees(math.atan(120 / 100)))
 print(math.degrees(math.atan(1 / 10)))
 ```
 
-About 50°: more than 45°, because the Spire is taller than you are far
+It is about 50°. That is more than 45°, because the Spire is taller than you are far
 from it. The second line is the hall's ramp from
 [Straight lines](tutorial:straight-lines#how-steep-is-a-ramp), a slope
 of 1:10. Its angle is under 6°, and still too steep for a ramp that
@@ -250,12 +251,12 @@ west is 270°.
 
 The tangent of the angle from north is east over north, $\frac{3}{4}$.
 But a summit to the south-west, at $(-3, -4)$, gives $\frac{-3}{-4}$,
-the same fraction: the division threw away the signs.
+the same fraction. The division loses the signs.
 `math.atan2(y, x)` takes the two sides separately and keeps their
 signs, so it works in any direction. Maths measures angles from east,
-anticlockwise: `atan2(north, east)`. A bearing is measured from north,
-clockwise. Swapping the two inputs, `atan2(east, north)`, makes both
-changes at once. Predict each bearing, then run it.
+anticlockwise, with `atan2(north, east)`. A bearing is measured from
+north, clockwise. If we swap the two inputs, `atan2(east, north)` makes
+both changes at once. Predict each bearing, then run it.
 
 ```python exec
 id: how-tall-back-2
@@ -275,19 +276,19 @@ for summit in [(3, 4), (-3, -4), (4, 0), (-2, 2)]:
 ```
 
 The first summit is on a bearing of 36.9°, and the second on 216.9°,
-exactly 180° more: the opposite direction. `atan2` gives angles from
+exactly 180° more, in the opposite direction. `atan2` gives angles from
 −180° to 180°, and `% 360` moves the negative ones round to the 0° to
 360° of a compass. With `distance` from your toolkit, a map gives a
 walker both things: how far, and which way.
 
 ### Light that bends: Snell's law
 
-Put a straw in a glass of water, and it looks broken at the surface:
-light changes direction as it passes from water into air. This bending
+Put a straw in a glass of water, and it looks broken at the surface.
+Light changes direction as it passes from water into air. This bending
 is called *refraction*.
 
-Each clear material has a *refractive index*, $n$: how many times more
-slowly light travels in it than in empty space. Air is about 1.00,
+Each clear material has a *refractive index*, $n$. It says how many
+times more slowly light travels in it than in empty space. Air is about 1.00,
 water about 1.33, and glass about 1.5. The angles are measured from the
 *normal*, a line at right angles to the surface. *Snell's law* says
 
@@ -295,8 +296,8 @@ $$n_1 \sin\theta_1 = n_2 \sin\theta_2$$
 
 In words: the index times the sine of the angle is the same on both
 sides of the surface. Sunlight meets a pond at 40° from the normal. At
-what angle does it go on in the water? Make $\sin\theta_2$ the subject,
-then `math.asin` goes back to the angle, as `math.atan` did for the
+what angle does it travel in the water? Make $\sin\theta_2$ the
+subject, then `math.asin` finds the angle, as `math.atan` did for the
 Spire. More than 40°, or less?
 
 ```python exec
@@ -318,7 +319,7 @@ print(refracted_angle(60, 1.33, 1.00))
 
 Going into the water, the ray bends towards the normal, to 28.9°. From
 water up into air, it bends away from it, to 58.7°. And at 60° there is
-no answer: the sine would have to be 1.15, and no angle has a sine
+no answer. The sine would have to be 1.15, and no angle has a sine
 above 1. The light cannot get out, and all of it reflects back into the
 water. This is *total internal reflection*, and the angle where it
 starts is the *critical angle*. For water into air it is
@@ -334,6 +335,7 @@ angle_in = 40        # degrees from the normal: change it, then run again
 
 angle_out = refracted_angle(angle_in, 1.33, 1.00)
 plt.figure(figsize=(4, 3))
+plt.axis("off")
 plt.axhspan(-1.2, 0, color="lightblue")                   # the water
 plt.plot([0, 0], [-1.2, 1.2], "--", color="grey")         # the normal
 plt.text(0.5, -1.0, "water")
@@ -349,7 +351,6 @@ else:
     plt.plot([0, into_air[0]], [0, into_air[1]], color="orange", linewidth=2)
     plt.title("out at " + str(round(angle_out, 1)) + " degrees")
 plt.gca().set_aspect("equal")
-plt.axis("off")
 ```
 
 At 48° the ray leaves almost flat along the surface, at 81.3°. Two
@@ -406,7 +407,7 @@ print(0.5 * side_a * side_b * math.sin(math.radians(angle_c)))
 ```
 
 Both give about 3.52 square kilometres. It is the old formula, with the
-height worked out from what we measured.
+height calculated from what we measured.
 
 ## The cosine rule
 
@@ -455,7 +456,7 @@ that, with the cosine rule run backwards inside it. The body is yours:
 
 1. Use `distance` to find the two sides that meet at `q`, and the side
    across from `q`.
-2. Work out $\cos C$ from the backwards rule.
+2. Find $\cos C$ from the backwards rule.
 3. Keep that cosine between −1 and 1 with `max(-1, min(1, cos_q))`. The
    reason is below.
 4. Return the angle, in degrees, with `math.acos` and `math.degrees`.
@@ -496,7 +497,7 @@ def angle_between(p, q, r):
 ```
 
 Run the toolkit cell, then the tests. Until `angle_between` is written,
-the first test stops with a `TypeError`, because `...` gives back `None`.
+the first test stops with a `TypeError`, because `...` returns `None`.
 
 ```python exec
 id: how-tall-toolkit-tests
@@ -532,13 +533,13 @@ title: some steps
 **Think about:** why is `across` the side that is taken away?
 ```
 
-The fifth test is why step 3 is there. Three points on a straight line
+Step 3 is there because of the fifth test. Three points on a straight line
 make an angle of 180°, whose cosine is −1. But 0.1 and 0.2 are not exact
 in binary, so the sum comes out a tiny bit below −1, such as
 −1.0000000000000002. That is outside the domain of `math.acos`, which
 stops with `ValueError: math domain error`. The `max` and `min` line
-moves it back to −1. The last test is about the space we are in: the
-angles of a flat triangle add up to 180°.
+moves it back to −1. The last test is about the space we are in. It
+checks that the angles of a flat triangle add up to 180°.
 
 ## The sine rule: when you cannot reach the tree
 
@@ -550,7 +551,7 @@ From a spot A, the top of the tree is 28° up. You walk 15 m straight
 towards the tree, to a spot B, and the top is now 40° up. A, B and the
 treetop T make a triangle with no right angle. At A, its angle is 28°.
 At B, the 40° is outside the triangle, so the angle inside is
-$180 - 40 = 140°$. At T is what is left: $180 - 28 - 140 = 12°$.
+$180 - 40 = 140°$. The angle at T is what is left, $180 - 28 - 140 = 12°$.
 
 We know one side, AB = 15 m, and the angle across from it, 12° at T.
 When a side and its opposite angle are both known, the *sine rule* helps.
@@ -598,10 +599,10 @@ print(distance(spot_a, spot_b) / math.sin(math.radians(at_t)))
 ```
 
 The angles are 28°, 140° and 12°, and each side divided by the sine
-across from it gives the same number. So which rule, when? With a right
-angle, SOH-CAH-TOA. With two sides and the angle between them, or all
-three sides, the cosine rule. With a side and the angle across from it,
-the sine rule. For further reading, there is
+across from it gives the same number. So which rule do we use, and
+when? With a right angle, use SOH-CAH-TOA. With two sides and the angle
+between them, or all three sides, use the cosine rule. With a side and
+the angle across from it, use the sine rule. For further reading, there is
 [Solving triangles: the sine rule and the cosine rule](tutorial:solving-triangles)
 in the integrated course.
 
@@ -651,3 +652,11 @@ that never says which side an angle is on.
 
 The practice page is next, and after it the mixed problems for this
 unit, where a small game checks whether a ball hits a wall.
+
+## Where to read more
+
+Howtown (2024). *How do we know Earth's circumference?*
+<https://www.youtube.com/watch?v=CzncKN2AO30>. More than 2,000 years ago,
+Eratosthenes measured the Earth with a shadow, an angle and a distance,
+the tools this page uses on a tree. Howtown looks at how he did it, and
+how we know. About fifteen minutes.

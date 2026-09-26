@@ -14,7 +14,7 @@ way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
 Guess before you open anything. A guess that misses is the most
-useful kind: it shows you exactly which row you had not pictured.
+useful kind. It shows you exactly which row you had not pictured.
 
 ## Warm-up
 
@@ -63,9 +63,9 @@ table, how many rows does its truth table have, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-16 rows. Each input can be False or True, and each new input doubles the
-rows: every old row appears once with the new input False and once with
-it True. So 2, 4, 8, 16, which is $2^4$.
+It has 16 rows. Each input can be False or True, and each new input
+doubles the rows. Every old row appears once with the new input False
+and once with it True. So the counts are 2, 4, 8, 16, which is $2^4$.
 
 </details>
 
@@ -147,8 +147,8 @@ print(sensor_1 != sensor_2)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`False`. For Boolean values, `!=` is XOR: True when exactly one input is
-True. Both sensors agree, so there is no fault to log. Somebody really
+`False`. For Boolean values, `!=` is XOR, which is True when exactly one
+input is True. Both sensors agree, so there is no fault to log. Somebody really
 did walk through the door.
 
 </details>
@@ -217,7 +217,7 @@ for heating_on in [False, True]:
 <details class="dl-answer"><summary>answer</summary>
 
 The `print` line is pushed in only as far as the outer loop, so it runs
-once for each value of `heating_on`: two times. By then the inner loop
+once for each value of `heating_on`, which is two times. By then the inner loop
 has finished, and `window_open` is always True. Push the `print` in one
 more step, so it sits inside the inner loop:
 
@@ -229,7 +229,7 @@ for heating_on in [False, True]:
 ```
 
 Now it prints four rows, and only the last one says True. Nothing
-crashed: the spaces at the start of a line changed what the program
+crashed. The spaces at the start of a line changed what the program
 means.
 
 </details>
@@ -240,7 +240,7 @@ with `assert`, checking its whole result column.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def point_counts(team_a, team_b):
@@ -311,7 +311,7 @@ second = truth_table(xor_by_difference, ["a", "b"])
 print(first == second)
 ```
 
-The last line prints `True`: both columns are `[False, True, True,
+The last line prints `True`, because both columns are `[False, True, True,
 False]`. Schlomo's way follows the English, and a reader can check it
 against the sentence. The `!=` way is shorter, and it only works because
 True and False are the only values here. Both ways work.
@@ -321,7 +321,7 @@ True and False are the only values here. Both ways work.
 ## Stretch
 
 **12. Make.** Some aircraft and spacecraft carry three computers that
-work out the same answer, and go with the majority. Then one broken
+calculate the same answer, and follow the majority. Then one broken
 computer cannot steer the craft wrong. Each computer "votes" True or
 False. Write `majority(computer_1, computer_2, computer_3)`, True when at
 least two vote True, with `and` and `or`. Test its whole column with
@@ -342,7 +342,7 @@ this need? Is there a shorter way to count the True votes?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def majority(computer_1, computer_2, computer_3):
@@ -354,17 +354,17 @@ assert column == [False, False, False, True, False, True, True, True]
 print("majority keeps its promise.")
 ```
 
-Four of the eight rows pass: the three rows with exactly two True votes,
-and the row with three. Engineers call this *triple modular redundancy*.
-The Space Shuttle went further: four of its five flight computers ran
-the same program and checked each other, and could vote a faulty one
-out.
+Four of the eight rows pass. They are the three rows with exactly two
+True votes, and the row with three. Engineers call this *triple modular redundancy*.
+The Space Shuttle went further. Four of its five flight computers ran
+the same program and checked each other, and they could vote to ignore
+a faulty one.
 
 </details>
 
 **13. Fix.** Schlomi, who is learning Python too, wrote this cell to
 print the truth table of an umbrella rule. It stops with an error
-instead. Her idea was sensible: `umbrella` is a function, and functions
+instead. She had a reason. `umbrella` is a function, and functions
 are called with brackets. Run it, read the last line of the error, and
 fix it.
 
@@ -385,22 +385,22 @@ The last line of the error is:
 TypeError: umbrella() missing 2 required positional arguments: 'raining' and 'windy'
 ```
 
-The brackets after `umbrella` call the function straight away, with no
+The brackets after `umbrella` call the function at once, with no
 inputs, before `truth_table` even starts. `truth_table` wants the rule
-itself, so it can call it once for each row. Take the brackets away:
+itself, so it can call it once for each row. Remove the brackets:
 
 ```python
 truth_table(umbrella, ["raining", "windy"])
 ```
 
-The column is `[False, False, True, False]`: an umbrella only when it is
-raining and calm.
+The column is `[False, False, True, False]`. It says to take an
+umbrella only when it is raining and calm.
 
 </details>
 
 **14. Predict.** Say a computer can check one million rows of a truth
 table every second. About how long does it take to check every row of a
-rule with 20 inputs? With 40 inputs? Guess first, then work it out with
+rule with 20 inputs? With 40 inputs? Guess first, then calculate it with
 `**`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -412,11 +412,11 @@ print(rows_20, "rows:", rows_20 / 1000000, "seconds")
 print(rows_40, "rows:", rows_40 / 1000000 / 60 / 60 / 24, "days")
 ```
 
-20 inputs give 1,048,576 rows: about one second. 40 inputs give
-1,099,511,627,776 rows: about 12.7 days. Twenty more inputs make the
+20 inputs give 1,048,576 rows, which take about one second. 40 inputs
+give 1,099,511,627,776 rows, which take about 12.7 days. Twenty more inputs make the
 work about a million times bigger, because $2^{20}$ is about a million.
-Checking every case works well, until the number of cases grows
-this fast.
+We can check every case for a small rule, but not when the cases
+grow this fast.
 
 </details>
 
@@ -429,8 +429,8 @@ column matches `password_ok and (at_office or code_ok)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. Your path may ask its questions in another
-order and work as well.
+Here is one answer. Your path may ask its questions in another
+order and work too.
 
 ```python
 def log_in_by_path(password_ok, at_office, code_ok):
@@ -455,3 +455,10 @@ and `or` can say the same rule. This path asks about the password first,
 because without it nothing else matters.
 
 </details>
+
+## Where to read more
+
+Steve Mould (2013). *Can you solve this 4 card puzzle?*
+<https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. A famous puzzle about an
+"if" rule, which surprises most people. Write your answer down before the
+end. Three minutes.

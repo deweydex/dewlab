@@ -1,314 +1,309 @@
 ---
 title: "Documenting a class with docstrings"
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 covers:
   a-class-docstring:
     covers: [FOOP-LO9]
-  documenting-each-method:
+  what-a-method-promises:
     covers: [FOOP-LO9]
-  keeping-documentation-honest:
+  examples-python-can-check:
     covers: [FOOP-LO9]
+    touches: [FOOP-LO10]
 ---
 
 # Documenting a class with docstrings
 
-A docstring is a description written in triple quotes at the top of a
-function. We met docstrings in [Designing and testing good
-functions](tutorial:building-reusable-tools). A function's docstring says
-what the function does, what it expects, and what it returns.
+Somebody on your team wants to use your class. They have not read its
+code, and they should not have to. What do they need to know? What would
+you want to know about somebody else's class before you used it?
 
-A class needs docstrings in two places: on the class itself, and on every
-method. On this page we:
-
-- add a docstring to the `BankAccount` class
-- add a docstring to each of its methods
-- see what happens when a docstring stops telling the truth
+A *docstring* is a description in triple quotes, on the first line inside
+a class or a function. Python keeps it with the class, and `help()` shows
+it. You may have met docstrings on functions, in
+[Designing and testing good functions](tutorial:building-reusable-tools).
+A class needs them in two places: on the class, and on each method.
 
 ## A class docstring
 
-A function's docstring answers the question "what does this compute?" A
-class's docstring answers a different question: "what does one object of
-this class represent?" It goes in the same place as a function's
-docstring, on the line straight after the line that opens the class.
-
-The last line of the cell calls `help()`. The `help()` function shows the
-docstrings of whatever you give it. What do you think it will show first?
-Run the cell to find out.
+Here is the probe from the solar-system world, with a docstring on the
+class. `help()` shows the docstrings of whatever it is given. What will
+it show first?
 
 ```python exec
 id: a-class-docstring-1
-class BankAccount:
-    """Represents one customer's account: an owner and a balance, kept
-    correct through deposit() and withdraw()."""
+class Probe:
+    """One space probe: a name, and fuel in kilograms, from 0 up to
+    tank_size."""
 
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+    tank_size = 100
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
+    def __init__(self, name, fuel):
+        self.name = name
+        self._fuel = fuel
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+    def get_fuel(self):
+        return self._fuel
 
-
-help(BankAccount)
+help(Probe)
 ```
 
-`help()` reads the docstring from the class and shows it first, before
-the constructor and before either method. So someone who meets
-`BankAccount` for the first time reads that one sentence before any of
-its code.
+It shows the class docstring first, before any method. A class docstring
+answers one question: what does one object of this class stand for? It
+says what the object knows, and any rule that holds for every one of them
+(here, the fuel is never below 0 or above `tank_size`). What the methods
+do belongs in their own docstrings.
 
-Creating an object, as in `account = BankAccount(...)`, never runs the
-docstring, and never changes it. Python stores the docstring on the class
-and keeps it there, for `help()`, an editor or a reader to find.
+## What a method promises
 
-### Your turn
+A method's docstring is a promise to whoever calls it. A good one says
+four things:
 
-1. The cell below holds a `Polynomial` class, which stores a polynomial as a list of its coefficients. Write a class docstring that
-   says what one `Polynomial` object represents.
-2. Call `help()` on `Polynomial` to check it.
+- what the method does, in one line;
+- what each parameter should be;
+- what it returns, if anything;
+- what happens when the method refuses.
+
+Here are two docstrings for the same `burn`:
+
+```python
+    def burn(self, kg):
+        """Burns fuel."""
+```
+
+```python
+    def burn(self, kg):
+        """Burn kg kilograms of fuel.
+
+        kg: a number of kilograms, 0 or more.
+        Refuses, prints why, and changes nothing if can_burn(kg) is False.
+        Returns nothing.
+        """
+```
+
+```question
+id: what-a-method-promises-q1
+type: multiple-choice
+answer: 2
+
+A caller wants to know what `voyager.burn(200)` does to a probe with 70
+kg. Which docstring tells them?
+
+- The first: "Burns fuel."
+  - It says what the method is for.
+- The second
+  - It says what happens when the probe cannot burn that much.
+- Neither
+  - Only the code can say what happens.
+```
+
+The first docstring is true, but it does not help a caller. It says what
+the name `burn` already said. The second answers the questions a caller
+has before they call it. The refusal matters most, because at a refusal,
+a caller's program and the method disagree.
+
+## Examples Python can check
+
+A docstring can also hold examples: a line that starts `>>>`, as if typed
+into Python, and the answer under it. A reader sees at once how the method
+is used. And Python's *doctest* module can run each example, and check
+that the answer is still the one written down. What will this print?
 
 ```python exec
-id: a-class-docstring-2
-class Polynomial:
-    # Write a class docstring here
+id: examples-python-can-check-1
+import doctest
 
-    def __init__(self, coeffs):
-        self.coeffs = coeffs
+class Probe:
+    """One space probe: a name, and fuel in kilograms."""
 
-    def evaluate(self, x):
-        result = 0
-        for i in range(len(self.coeffs)):
-            result = result + self.coeffs[i] * x ** i
-        return result
+    def __init__(self, name, fuel):
+        self.name = name
+        self._fuel = fuel
 
-# Call help() on Polynomial here
+    def can_burn(self, kg):
+        """Return True if the probe can burn kg kilograms now.
+
+        >>> Probe("Voyager", 70).can_burn(30)
+        True
+        >>> Probe("Voyager", 70).can_burn(80)
+        False
+        """
+        if kg < 0:
+            return False
+        return kg <= self._fuel
+
+doctest.run_docstring_examples(Probe.can_burn, globals(), verbose=True, name="can_burn")
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+It prints each example, what it expected, and `ok` for each. `globals()`
+gives doctest the page's names, so the examples can find `Probe`.
 
-1. The docstring goes on its own line, straight after
-   `class Polynomial:` and before `def __init__`.
-2. A `Polynomial` object is a list of coefficients that represents a
-   mathematical expression. Describe that. What `evaluate()` computes
-   belongs in its own docstring, which we add in the next section.
+Now suppose a teammate changes one character, `<=` to `<`, so that a
+probe can no longer burn its very last kilogram. Nobody touches the
+docstring, which is exactly what happens in real projects. Add this
+example to the docstring, change `<=` to `<` in the code, and run the cell
+again:
 
-</details>
+```python
+        >>> Probe("Voyager", 70).can_burn(70)
+        True
+```
 
-## Documenting each method
+doctest prints `Failed example`, with what it expected and what it got. A
+docstring with examples cannot quietly stop telling the truth. The next
+time its examples run, they say so. That is why the example at the
+boundary, 70 out of 70, is the one worth writing.
 
-The class docstring in the last section says what a `BankAccount` is. It
-says nothing about what `deposit()` or `withdraw()` do. Each method gets
-its own docstring for that, written the same way as a function's.
+### Your turn: your class, seventh version
 
-This time, `help()` is called on one method, `BankAccount.withdraw`, and
-not on the whole class. How much do you think it will show? Run the cell
-to check.
+This is the seventh version of your class: a docstring on every class,
+and on every method a caller would use, with the four things a method
+promises. Give at least one method an example that doctest can check,
+at a boundary if you can.
+
+<div class="dl-world" data-world="game">
 
 ```python exec
-id: documenting-each-method-1
-class BankAccount:
-    """Represents one customer's account: an owner and a balance, kept
-    correct through deposit() and withdraw()."""
+id: your-class-7--game
+{{include: setup/oop/game-6.py}}
 
-    def __init__(self, owner, balance):
-        """Creates an account for owner, starting at balance."""
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        """Adds amount to the balance."""
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        """Subtracts amount from the balance, refusing to go below zero."""
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-help(BankAccount.withdraw)
+import doctest
+doctest.run_docstring_examples(Room.standing, globals(), verbose=True, name="standing")
 ```
 
-`help(BankAccount.withdraw)` shows only the docstring of `withdraw()`. Use
-it when you already know which method you want, and need a reminder of
-what it expects. Notice that it is called on the class, `BankAccount`,
-and not on an `account` object.
+```solution
+{{include: setup/oop/game-7.py}}
 
-`help(BankAccount)`, from the last section, would show all of them: the
-class docstring first, then the docstring of each method.
+import doctest
+doctest.run_docstring_examples(Room.standing, globals(), verbose=True, name="standing")
+---
+One set of docstrings. Each method says what it does, what its parameter
+should be, and what it refuses. `is_down` and `standing` carry examples.
+The example in `standing` takes three lines, because it has to build a
+room first: an example can be as many lines as it needs.
+```
 
-### Your turn
+</div>
 
-1. Add a docstring to `evaluate()` below. Say what it computes and what
-   `x` is for.
-2. Call `help()` on `Polynomial.evaluate` to check it.
+<div class="dl-world" data-world="ocean">
 
 ```python exec
-id: documenting-each-method-2
-class Polynomial:
-    """Represents a polynomial as a list of coefficients."""
+id: your-class-7--ocean
+{{include: setup/oop/ocean-6.py}}
 
-    def __init__(self, coeffs):
-        self.coeffs = coeffs
-
-    def evaluate(self, x):
-        # Write a docstring for evaluate() here
-        result = 0
-        for i in range(len(self.coeffs)):
-            result = result + self.coeffs[i] * x ** i
-        return result
-
-# Call help() on Polynomial.evaluate here
+import doctest
+doctest.run_docstring_examples(Submarine.room_below, globals(), verbose=True, name="room_below")
 ```
 
-## Keeping documentation honest
+```solution
+{{include: setup/oop/ocean-7.py}}
 
-Python checks your code for syntax errors. Does it check that a docstring
-matches the code? Nothing stops a docstring from describing a method that
-no longer exists, or a method that has changed since the docstring was
-written.
+import doctest
+doctest.run_docstring_examples(Submarine.room_below, globals(), verbose=True, name="room_below")
+---
+One set of docstrings. The bathyscaphe's example sits in its class
+docstring, since it has no methods of its own: `room_below()` gives
+11000, which is the whole reason the class exists. `deepest` says what a
+caller must do first: give the expedition a submarine.
+```
 
-Read the docstring of `withdraw()` in the cell below. Then read the code
-under it. Do they agree? Run the cell to find out.
+</div>
+
+<div class="dl-world" data-world="solar-system">
 
 ```python exec
-id: keeping-documentation-honest-1
-class BankAccount:
-    """Represents one customer's account: an owner and a balance, kept
-    correct through deposit() and withdraw()."""
+id: your-class-7--solar-system
+{{include: setup/oop/solar-system-6.py}}
 
-    def __init__(self, owner, balance):
-        """Creates an account for owner, starting at balance."""
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        """Adds amount to the balance."""
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        """Subtracts amount from the balance. Always succeeds."""
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-account = BankAccount("Alice", 50.0)
-account.withdraw(100.0)
-print(account.balance)   # still 50.0 -- the withdrawal above was refused
+import doctest
+doctest.run_docstring_examples(Probe.can_burn, globals(), verbose=True, name="can_burn")
 ```
 
-The docstring of `withdraw()` says "Always succeeds." The code directly under
-it refuses a withdrawal that is larger than the balance, and that is what
-happened here. Someone who trusted the docstring would expect
-`account.balance` to be negative after the withdrawal.
+```solution
+{{include: setup/oop/solar-system-7.py}}
 
-Python did not notice the mismatch. A docstring is a string like any
-other. Python does not run it, and does not compare it with what the
-method does.
+import doctest
+doctest.run_docstring_examples(Probe.can_burn, globals(), verbose=True, name="can_burn")
+---
+One set of docstrings. `Lander.can_burn` says only what is different
+about a lander, and leaves the rest to the promise `Probe.can_burn`
+already makes. `burn` says where its refusal comes from, `can_burn`,
+rather than saying it all again.
+```
 
-There is one exception worth knowing. A docstring can hold an example,
-written the way Python's own prompt shows it: a line starting with `>>>`,
-then the output you expect on the next line. Python's `doctest` module
-can run every example like that, and report any output that does not
-match. So an example in a docstring can be checked. A sentence like
-"Always succeeds" cannot.
+</div>
 
-### Your turn
+<div class="dl-world" data-world="your-own">
 
-1. Fix the docstring of `withdraw()` so that it says what the method
-   really does, including the refusal.
-2. Do not change the code itself. When you run the cell, the balance
-   should still be `50.0`.
+Copy your classes from [Testing a class](tutorial:testing-what-a-class-does)
+into the cell. Give every class a docstring, and every method a caller
+would use. Which method's refusal was hardest to put into words?
 
 ```python exec
-id: keeping-documentation-honest-2
-class BankAccount:
-    """Represents one customer's account: an owner and a balance, kept
-    correct through deposit() and withdraw()."""
-
-    def __init__(self, owner, balance):
-        """Creates an account for owner, starting at balance."""
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        """Adds amount to the balance."""
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        """Subtracts amount from the balance. Always succeeds."""
-        # Fix this docstring, not the code below it
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-account = BankAccount("Alice", 50.0)
-account.withdraw(100.0)
-print(account.balance)   # should still be 50.0
+id: your-class-7--your-own
+# My classes, with docstrings
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+</div>
 
-1. Only the text between the triple quotes changes. The line
-   `if amount > self.balance:` and everything below it stay exactly as
-   they are.
-2. Say what happens to an ordinary withdrawal. Then say what happens to a
-   withdrawal larger than the balance: it is refused, and nothing is
-   subtracted.
+## Looking back
 
-**Think about:** nothing in Python checks docstrings for you. So whose
-job is it to notice that a docstring like this one is out of date?
+Your tests from the last page and your doctest examples both check what
+the class does. What is each one better at?
 
-</details>
+A challenge: `Mission.total_fuel` has no example. Can you write one that
+doctest can run, which builds a mission, launches two probes, and checks
+the total? Then change `total_fuel` so it leaves out the last probe, and
+see whether your example notices.
 
-## Wrapping up
+```python challenge
+import doctest
 
-On this page:
+class Probe:
+    def __init__(self, name, fuel):
+        self.name = name
+        self._fuel = fuel
 
-- A class docstring says what one object of the class represents. It goes
-  on the line straight after `class Name:`, the same place as a
-  function's docstring.
-- Each method has its own docstring too, saying what that one method
-  does. `help()` on a class shows all of them together. `help()` on one
-  method shows only that method's docstring.
-- Python never checks a docstring against the code it describes. When the
-  code changes, someone has to update the docstring on purpose.
+    def get_fuel(self):
+        return self._fuel
 
-### Reflection
 
-Write a few sentences about this page, whenever you are ready. In the
-last section, we found a docstring that no longer matched its code. Have
-you ever read code with a comment or docstring like that? If so, what did
-you do about it?
+class Mission:
+    def __init__(self, name):
+        self.name = name
+        self._probes = []
 
-You could write your thoughts in **Your notes**, in the **Notes** panel at
-the top right of the page.
+    def launch(self, probe):
+        self._probes.append(probe)
 
-## Where to Read More
+    def total_fuel(self):
+        """Return the fuel of every probe in the mission, added up."""
+        total = 0
+        for probe in self._probes:
+            total = total + probe.get_fuel()
+        return total
 
-Python Software Foundation. *The Python Tutorial*, section 4.7.6:
-Documentation Strings. <https://docs.python.org/3/tutorial/controlflow.html#documentation-strings>.
-The official convention this tutorial follows, including the exact
-placement and quoting rules.
+doctest.run_docstring_examples(Mission.total_fuel, globals(), verbose=True, name="total_fuel")
+```
 
-Python Software Foundation. *PEP 257 — Docstring Conventions*.
-<https://peps.python.org/pep-0257/>. The fuller style guide behind that
-convention, including the difference between a one-line docstring and a
-longer one that needs more than a single sentence.
+Next, [A front end for a class](tutorial:a-front-end-for-a-class) lets
+someone use your classes without writing any Python at all.
 
-Real Python. *Documenting Python Code: A Complete Guide*.
-<https://realpython.com/documenting-python-code/>. Covers docstrings
-alongside the other kinds of documentation a larger project keeps, past
-what one class on its own needs.
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Python Software Foundation. *PEP 257: Docstring Conventions*.
+<https://peps.python.org/pep-0257/>. This is the agreement most Python
+programmers follow about what goes in a docstring, and where.
+
+Python Software Foundation. *doctest: Test interactive Python examples*.
+<https://docs.python.org/3/library/doctest.html>. This is the module this
+page used. It also shows how to run every example in a whole file at
+once.

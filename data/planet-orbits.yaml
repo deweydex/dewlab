@@ -5,13 +5,22 @@
 source: >
   NASA Space Science Data Coordinated Archive, "Planetary Fact Sheet -
   Metric", compiled by David R. Williams, NASA Goddard Space Flight Center,
-  last updated 18 March 2025. https://nssdc.gsfc.nasa.gov/planetary/factsheet/
+  last updated 18 March 2025.
+
+url: https://nssdc.gsfc.nasa.gov/planetary/factsheet/
 
 license: >
   Public domain. It is a work of NASA, a United States government agency,
   and NASA does not claim copyright on it.
 
 snapshot: 2026-09-25
+
+trimmed: >
+  Two of the fact sheet's rows, distance from the Sun and orbital period,
+  for the eight planets; its other rows and its Moon and Pluto columns are
+  left out, and the thousands commas are removed. It has no live source:
+  the fact sheet is a web page, not a data file, and its numbers change
+  once in years.
 
 description: >
   The eight planets of the solar system, one row each, in order from the

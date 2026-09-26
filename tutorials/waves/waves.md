@@ -44,11 +44,11 @@ On this page we:
 - start a wave late, and use that to cancel a noise
 - draw the tangent, which repeats but is not a wave
 
-> **The space we're in.** Time, in seconds, starting from 0. Python's
+> **The space we're in.** We measure time in seconds, starting from 0. Python's
 > `math.sin` and `math.cos` take radians, as on
 > [Going round in circles](tutorial:going-round-in-circles#python-measures-angles-another-way),
-> and your `point_on_circle` takes degrees. One thing usually goes
-> unsaid: a real sound is never a perfect sine wave. A sine wave is the
+> and your `point_on_circle` takes degrees. One thing is rarely said.
+> A real sound is never a perfect sine wave. A sine wave is the
 > simplest sound there is, and it is the model we build the others from.
 
 ## Warm-up
@@ -88,8 +88,8 @@ A sound is air being pushed and pulled. A guitar string swings back and
 forth, and each swing squeezes the air next to it, then lets it go. Your
 ear feels the air pressure go up and down, again and again.
 
-Something that goes up and down, again and again, is what a point going
-round a circle does, if we watch only its height. Picture the point on
+A point going round a circle also goes up and down, again and again, if
+we watch only its height. Picture the point on
 the unit circle from
 [Going round in circles](tutorial:going-round-in-circles#a-circle-of-radius-1).
 It starts at $(1, 0)$ and goes round twice. Each step, we write down
@@ -121,7 +121,7 @@ $180^\circ$, reaches −1 at $270^\circ$, and is back at 0 after a whole
 turn. Then it does the same again. This curve is the graph of
 $y = \sin\theta$, and its shape is called a *sine wave*.
 
-Here is the same idea, moving. On the left the point goes round; on the
+Here is the same idea, moving. On the left the point goes round. On the
 right its height is drawn against time, one second at a time. After you
 have watched it once, change `turns_per_second` to 2. Before you run
 it again, guess: what happens to the wave on the right?
@@ -171,8 +171,8 @@ FuncAnimation(figure, draw_frame, frames=41, interval=100)
 
 At one turn a second, the right side draws two humps in two seconds.
 At two turns a second, it draws four, squeezed into the same space.
-The circle looks the same, only faster; the wave changes shape. The
-animation loops; run the cell again to watch it from the start.
+The circle looks the same, only faster. The wave changes shape. The
+animation loops. Run the cell again to watch it from the start.
 
 A function whose graph repeats the same piece for ever is *periodic*.
 The sine wave repeats every $360^\circ$, because after a whole turn the
@@ -213,7 +213,7 @@ louder sound.
 
 ## How often: frequency and period
 
-Now time. A point that goes round the circle 2 times every second makes
+Now let's add time. A point that goes round the circle 2 times every second makes
 a wave that repeats 2 times every second. The number of times a wave
 repeats in one second is its *frequency*, measured in *hertz*, Hz. One
 hertz is once a second.
@@ -250,11 +250,11 @@ plt.axhline(0, color="grey")
 plt.xlabel("time in seconds")
 ```
 
-Two humps, and two dips: 2 repeats in one second, each 0.5 seconds
+There are two humps and two dips: 2 repeats in one second, each 0.5 seconds
 long.
 
 The electricity in an Irish wall socket is a wave too. The electric
-current there is *alternating current*, AC: it pushes one way along the
+current there is *alternating current*, AC. It pushes one way along the
 wire, then the other, again and again. It swings 50 times a second, at
 50 Hz, so each repeat takes $\frac{1}{50}$ of a second, 20
 milliseconds.
@@ -309,9 +309,9 @@ def wave(amplitude, frequency, time):
 ```
 
 Run the toolkit cell, then the tests. Until `wave` has its `return`
-line, it gives back `None`, and the first test stops with a
-`TypeError`. The last test checks the promise that makes a wave a
-wave: one period later, it is back at the same height.
+line, it returns `None`, and the first test stops with a
+`TypeError`. The last test checks the main promise of a wave. One
+period later, it is back at the same height.
 
 ```python exec
 id: waves-toolkit-tests
@@ -377,8 +377,8 @@ thousands of millions of hertz.
 ## Higher notes: an octave is a doubling
 
 Back to the guitar. The thinnest string swings faster, so its wave has
-a higher frequency. A higher frequency is a higher note. The word
-musicians use for how high or low a note sounds is *pitch*.
+a higher frequency. A higher frequency is a higher note. Musicians
+call how high or low a note sounds its *pitch*.
 
 Bands tune to one agreed note: the A above middle C, at 440 Hz. Here is
 that A beside the A below it, at 220 Hz, over 10 milliseconds. How
@@ -430,7 +430,7 @@ for step in range(13):
 ```
 
 The first line shows that $2^{1/12}$, multiplied by itself 12 times,
-makes `2.000000000000001`: 2, give or take a float's rounding. Twelve
+makes `2.000000000000001`: 2, apart from a float's rounding. Twelve
 steps up from 440 end at 880.0, one octave up. Middle C is 9
 semitones below the A, at $440 \times 2^{-9/12} \approx 261.63$ Hz. A
 negative power counts halvings, as $2^{-3}$ did on
@@ -450,7 +450,7 @@ ten octaves. A piano's keys cover a little over seven of them.
 ## Starting late: phase
 
 Look again at the cosine wave from the first section. It is the sine
-wave, a quarter turn ahead: the cosine is at its top at $0^\circ$, and
+wave, a quarter turn ahead. The cosine is at its top at $0^\circ$, and
 the sine reaches its top at $90^\circ$. In symbols,
 $\cos\theta = \sin(\theta + 90^\circ)$.
 
@@ -461,7 +461,7 @@ top, the other is at its bottom.
 
 Noise-cancelling headphones use this. A small microphone hears the
 engine noise of a plane. The headphones play the same wave, half a turn
-late, and the two add up to almost nothing. What do you expect the sum
+late, and the two add together to make almost nothing. What do you expect the sum
 to look like?
 
 ```python exec
@@ -495,7 +495,7 @@ such as an engine's hum, because each repeat is like the one before.
 
 On the last page, the tangent was $\frac{\sin\theta}{\cos\theta}$, the
 slope of the line out to the point. Is its graph a wave too? The cell
-leaves out the angles within $5^\circ$ of $90^\circ$ and $270^\circ$,
+skips the angles within $5^\circ$ of $90^\circ$ and $270^\circ$,
 where the cosine is 0 or close to it.
 
 ```python exec
@@ -508,13 +508,13 @@ for start, end in [(-85, 86), (95, 266), (275, 361)]:
         slopes_out.append(math.tan(math.radians(angle)))
     plt.plot(angles, slopes_out, color="tab:blue")
 
-plt.axhline(0, color="grey")
 plt.ylim(-6, 6)
+plt.axhline(0, color="grey")
 ```
 
 The tangent is periodic too, but it repeats every $180^\circ$, not
-every $360^\circ$. It has no amplitude, because it has no top: near
-$90^\circ$ the line out to the point is almost straight up, and its
+every $360^\circ$. It has no amplitude, because it has no top. Near
+$90^\circ$, the line out to the point is almost straight up, and its
 slope grows without end. At $90^\circ$ itself, it has no value, as a
 wall had no slope on [Straight lines](tutorial:straight-lines).
 
@@ -529,8 +529,8 @@ up or down, which ours never was, and it is the form exam questions
 and later maths courses use.
 
 We used seconds because a frequency in hertz is a number you can hear,
-and because the doubling of an octave links back to Unit 6. The cost is
-that the lift, $D$, never came up, and $B$ appeared as $2\pi f$, which
+and because the doubling of an octave links back to Unit 6. But this means
+that the lift, $D$, never appeared, and $B$ appeared as $2\pi f$, which
 hides it a little.
 
 </details>
@@ -567,3 +567,13 @@ hides it a little.
 The dewlab page
 [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves)
 uses the four-letter form, and fits a wave to a year of daylight.
+
+MinutePhysics (2015). *Why It's Impossible to Tune a Piano.*
+<https://www.youtube.com/watch?v=1Hqm0dYKUx4>. An octave is a doubling,
+but twelve equal steps and the "nice" ratios between notes cannot all
+agree. Four minutes.
+
+Branch Education (2018). *What is Sound? The Fundamental Science Behind
+Sound.* <https://www.youtube.com/watch?v=24yESm63tSY>. It shows what a
+sound wave is, and how its shape becomes what we hear, from a popping balloon to an
+orchestra. About ten minutes.

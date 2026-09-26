@@ -42,7 +42,7 @@ On this page we:
 > **The space we're in.** Every chance is a number from 0 to 1, as on
 > [How likely is it?](tutorial:how-likely-is-it), and dice and coins are
 > fair. For birthdays we assume 365 days, each one equally likely, and
-> leave out 29 February. Real birthdays are not quite that even. We use
+> ignore 29 February. Real birthdays are not quite that even. We use
 > Python's `random` module, and `simulate`, `product`, `all_pairs` and
 > `combinations` from your toolkit.
 
@@ -142,15 +142,15 @@ print("100,000 games:  ", simulate(two_sixes, 100000))
 
 The exact answer is about 0.0278. The simulated answers are close, and
 change each time you run the cell. That is the law of large numbers from
-[How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ):
-the more games, the smaller the wobble.
+[How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ).
+The more games we play, the closer the answers stay to the exact one.
 
 ### Your turn
 
 A game starts with a coin toss and a roll of a die. You win a prize for
 heads and a six.
 
-1. Use the multiplication rule to work out the chance, before you run
+1. Use the multiplication rule to find the chance, before you run
    anything.
 2. The cell below lists every outcome. Add a loop that counts the ones
    that are heads and a six.
@@ -224,7 +224,7 @@ first song, because these events are not independent.
 
 **A shuffle that is less random on purpose.** In 2014, the music app
 Spotify wrote that it had stopped using a purely random shuffle. Its
-listeners complained that songs by one artist came up close together
+listeners complained that songs by one artist played close together
 too often, which real chance does. The new shuffle spreads each
 artist's songs out, because that feels more random to people.
 
@@ -250,7 +250,7 @@ $$P(A \text{ or } B) = P(A) + P(B)$$
 So the chance a packet does not arrive whole is $0.2 + 0.1 = 0.3$. This
 is "and multiplies, or adds" from
 [Counting every outfit](tutorial:counting-every-outfit#and-multiplies-or-adds),
-and it needs the same care: the two groups must not overlap.
+and it needs the same care. The two groups must not overlap.
 
 ```question
 id: chances-or-1
@@ -292,8 +292,8 @@ print("counting the faces:    ", bonus_faces / 6)
 ```
 
 Four faces give a bonus: 2, 4, 5 and 6. Adding gave five, because the 6
-was counted twice: it is even, and it is more than 4. These events are
-not mutually exclusive. To count the 6 only once, we take away the
+was counted twice. It is even, and it is more than 4. These events are
+not mutually exclusive. To count the 6 only once, we subtract the
 chance that both happen:
 
 $$P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$$
@@ -302,10 +302,10 @@ Here that is $\frac{3}{6} + \frac{2}{6} - \frac{1}{6} = \frac{4}{6}$,
 which matches the count.
 
 This is the `or` from
-[True, false and every case](tutorial:true-false-and-every-case): True
-when at least one input is True, including when both are. For mutually
+[True, false and every case](tutorial:true-false-and-every-case), which
+is True when at least one input is True, including when both are. For mutually
 exclusive events the overlap is empty, so the addition rule is this
-rule with nothing taken away.
+rule with nothing subtracted.
 
 ## Not, and at least once
 
@@ -321,8 +321,8 @@ story is told about the Chevalier de Méré, a French gambler of the
 of a die, and reasoned like this: one roll gives a six with chance
 $\frac{1}{6}$, so four rolls give $4 \times \frac{1}{6} = \frac{2}{3}$.
 
-Does his reasoning hold? Here is a warning sign: with seven rolls, his reasoning
-gives $\frac{7}{6}$, and no chance can be more than 1. Two rolls can
+Does his reasoning hold? Here is a warning sign. With seven rolls, his
+reasoning gives $\frac{7}{6}$, and no chance can be more than 1. Two rolls can
 both be sixes, so adding is the wrong move.
 
 So let's turn the question round. The only way to lose the bet is to
@@ -394,7 +394,7 @@ def at_least_one(chance, tries):
     return 1 - never
 ```
 
-Until your stub is filled in, the tests stop with an error. The last
+Until you fill in your stub, the tests stop with an error. The last
 test uses `round`, because a float is very close to the true value, and
 seldom equal to it.
 
@@ -476,7 +476,7 @@ about half the time. That is a strange result, isn't it?
 
 ### Way two: count it exactly
 
-Let's use the complement again: the opposite of "two share" is "all 23
+Let's use the complement again. The opposite of "two share" is "all 23
 are different". The first person can have any day: $\frac{365}{365}$.
 The second must miss that day: $\frac{364}{365}$. The third must miss
 two days: $\frac{363}{365}$. Each person changes the chance for the
@@ -489,7 +489,7 @@ $\prod$:
 
 $$P(\text{all different}) = \prod_{k=0}^{22} \frac{365 - k}{365}$$
 
-Here $k$ is the number of people already in the room. The cell hands
+Here $k$ is the number of people already in the room. The cell gives
 the list to your toolkit's `product`. What do you expect?
 
 ```python exec
@@ -522,8 +522,8 @@ print(at_least_one(1 / 365, pairs))
 ```
 
 There are 253 pairs, and each shares a birthday with chance
-$\frac{1}{365}$. So `at_least_one` says about 0.5005: close to the exact
-0.5073, but not the same. Why? Its promise needs independent tries, and
+$\frac{1}{365}$. So `at_least_one` says about 0.5005. That is close to the
+exact 0.5073, but not the same. Why? Its promise needs independent tries, and
 these pairs are not quite independent. If Ann shares a birthday with
 Ben, and Ben shares with Cara, then Ann must share with Cara too. The
 pairs are nearly independent, so the tool is a good guide, but the exact
@@ -575,7 +575,7 @@ print(chance_of_shared(23))
 
 ### Birthdays inside a computer
 
-Programs often give each file a short code worked out from its
+Programs often give each file a short code calculated from its
 contents, called a hash, so that two files can be compared by their
 codes. Two different files with the same code are a collision. A
 file's code is like a birthday, and a 32-bit hash has $2^{32}$ possible
@@ -593,9 +593,9 @@ print(at_least_one(1 / codes, pairs))
 
 About 77,000 files are enough for an even chance, out of more than four
 billion codes, because 77,000 files make almost three billion pairs.
-Security people call using this a *birthday attack*, and it is why the
-hashes used to check downloads today, such as SHA-256, are 256 bits
-long. [Maths that runs the world](tutorial:maths-that-runs-the-world)
+Security people call an attack that uses this a *birthday attack*. For
+this reason, the hashes used to check downloads today, such as SHA-256,
+are 256 bits long. [Maths that runs the world](tutorial:maths-that-runs-the-world)
 tells more of this story.
 
 <details class="dl-why"><summary>Why this way?</summary>
@@ -616,7 +616,7 @@ leans. Your guess was never marked.
 | What is named here? | Events got names, $A$ and $B$, and $P(A)$ named each one's chance. Each game became a trial, like `two_sixes`. |
 | What is promised? | Each rule promises a chance. `at_least_one` keeps its promise only when the tries are independent. |
 | What happens when? | Whether an earlier event changes a later one decides the rule. In the birthday count, each person changes the chance for the next. |
-| What does this space let us do? | Multiplying belongs to independent events, and adding to mutually exclusive ones. Asking which space we are in comes first. |
+| What does this space let us do? | Multiplying belongs to independent events, and adding to mutually exclusive ones. First, ask which space we are in. |
 
 ## What we have now
 
@@ -639,3 +639,11 @@ uses the whole unit to build a password-strength checker.
 
 For another route through the same ideas, the integrated course has
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+
+## Where to read more
+
+CrashCourse (2018). *Geometric Distributions and The Birthday Paradox:
+Crash Course Statistics #16.*
+<https://www.youtube.com/watch?v=5VMTeBoEcQg>. Adriene Hill solves the
+birthday problem too, and asks how long we should expect to wait for
+something to happen. Ten minutes.

@@ -72,7 +72,7 @@ print(storm_km(3))
 ```
 
 This prints `1.029`. That is where the old rule "three seconds for
-every kilometre" comes from. This is one way through. Your function may
+every kilometre" comes from. This is one answer. Your function may
 have other names and do the same job.
 
 </details>
@@ -117,7 +117,7 @@ None
 ```
 
 `greet` is a procedure. It does a job, printing, and it has no `return`
-line. So when it finishes, it gives back `None`, and that is what the
+line. So when it finishes, it returns `None`, and that is what the
 name `answer` points at.
 
 </details>
@@ -154,7 +154,7 @@ with a clear error. Try it with 230 days, then with 400.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def rain_percent(rainy_days):
@@ -196,7 +196,7 @@ print(compose(add_bonus, double)(5))
 `30`, then `20`.
 
 `compose(double, add_bonus)` runs `add_bonus` first, because it is the
-inner function: 5 becomes 15, then doubles to 30. The other order
+inner function. So 5 becomes 15, then doubles to 30. The other order
 doubles first, to 10, and then adds the bonus, to 20. A player would
 want the bonus before the power-up.
 
@@ -232,7 +232,7 @@ print("minutes_for undoes charge_after.")
 3. What does `minutes_for(80)` give now? Forty minutes of charging
    reach 80%.
 
-**Think about:** putting on socks and then shoes. Which one comes off
+**Think about:** putting on socks and then shoes. Which one do you remove
 first?
 
 **Try this next:** what does `minutes_for(110)` give? Why does that
@@ -245,7 +245,7 @@ answer mean nothing?
 Schlomo had the two steps that undo `charge_after`, but in the same
 order as `charge_after` does them.
 `charge_after` multiplies by 1.5 and then adds 20, so the inverse must
-take away 20 first, and then divide by 1.5:
+subtract 20 first, and then divide by 1.5:
 
 ```python
 def minutes_for(percent):
@@ -255,7 +255,7 @@ def minutes_for(percent):
 
 Now `minutes_for(80)` is `40.0`, and the test passes. The old version
 gave $80 \div 1.5 - 20$, about 33.3. And `minutes_for(110)` gives 60
-minutes for a charge no phone can reach: 110% is outside the range of
+minutes for a charge no phone can reach. 110% is outside the range of
 `charge_after`, so it is outside the domain of its inverse.
 
 </details>
@@ -290,7 +290,7 @@ the two algorithms are the same function for every $n$ from 0 to 200.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def evens_by_loop(n):
@@ -314,7 +314,7 @@ even number in it.
 </details>
 
 **10. Fix.** A photo app puts two pictures side by side, each scaled
-to 125% of its width, and works out how wide the row is. It stops with
+to 125% of its width, and calculates how wide the row is. It stops with
 an error. Run it, read the last line of the error, and fix
 `scaled_width`.
 
@@ -333,11 +333,11 @@ print("The row is", row, "pixels wide")
 
 1. The last line of the error names two kinds of value. Which one is
    `NoneType`?
-2. What does a function give back when it has no `return` line?
+2. What does a function return when it has no `return` line?
 3. The docstring says "Return". Does the function do that?
 
-**Think about:** the difference between showing a number and handing it
-back.
+**Think about:** the difference between showing a number and returning
+it.
 
 </details>
 
@@ -345,7 +345,7 @@ back.
 
 The error is
 `TypeError: unsupported operand type(s) for +: 'NoneType' and 'NoneType'`.
-`scaled_width` prints its answer, but gives back `None`, and Python
+`scaled_width` prints its answer, but returns `None`, and Python
 cannot add `None` to `None`. The docstring promised to return the
 width, so keep that promise:
 
@@ -357,7 +357,7 @@ def scaled_width(width):
 
 Now the cell prints `The row is 2080.0 pixels wide`. The two numbers the
 old version printed, 800.0 and 1280.0, were already the widths we
-wanted. Only the handing back
+wanted. Only the `return`
 was missing.
 
 </details>
@@ -377,12 +377,12 @@ print(digit_at(number=2026, 1))
 <details class="dl-answer"><summary>answer</summary>
 
 Python reads the whole cell before it runs any of it, and the last line
-is not allowed. So nothing prints at all: the cell stops with
+is not allowed. So nothing prints at all. The cell stops with
 `SyntaxError: positional argument follows keyword argument`.
 
-Take the last line out, and the others print `2`, `1` and `0`. With
+Remove the last line, and the others print `2`, `1` and `0`. With
 keyword arguments, the order in the call does not matter, because each
-value names its slot. Without them, the order is everything:
+value names its slot. Without them, the order decides the slots.
 `digit_at(1, 2026)` asks for the digit in place 2026 of the number 1,
 which is 0. Once one argument is named, every argument after it must be
 named too.
@@ -394,7 +394,7 @@ named too.
 **12. Make.** A lighting app keeps each colour level as a number from 0
 to 1. A web page wants it as a byte, from 0 to 255, written in hex, as
 on [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
-Write `to_byte(level)`, which gives `round(level * 255)`. Then use
+Write `to_byte(level)`, which returns `round(level * 255)`. Then use
 `compose` and your toolkit's `to_hex` to make `hex_for`, which goes
 straight from a level to hex. Try it on 1, 0.5 and 0. Is every answer
 ready to go into a colour like `#RRGGBB`?
@@ -406,7 +406,7 @@ id: machines-practice-colour
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def to_byte(level):
@@ -421,7 +421,7 @@ print(hex_for(0.5))
 print(hex_for(0))
 ```
 
-This prints `FF`, `80` and `0`. The last one is not ready: a colour
+This prints `FF`, `80` and `0`. The last one is not ready. A colour
 needs two hex digits for each byte, so 0 must be written `00`. `to_hex`
 keeps its own promise, which says nothing about two digits. The fix
 belongs in a third machine that adds a 0 in front of a one-digit
@@ -456,7 +456,7 @@ to 10 computers. Those are the range, and the domain of
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def computers_for(cables):
@@ -487,16 +487,16 @@ an inverse at all. It is also why real networks rarely wire every pair:
 </details>
 
 **14. Another way.** A clock shows the hours 0 to 11. The function
-`later(hour)` gives the time 4 hours on: `(hour + 4) % 12`. Schlomi,
-who is learning Python too, says its inverse is "take away 4", and
+`later(hour)` gives the time 4 hours later, `(hour + 4) % 12`. Schlomi,
+who is learning Python too, says its inverse is "subtract 4", and
 tries it on 2 o'clock: $2 - 4$ is $-2$. Where does her idea work, and where does it stop
-working? Find the space where "take away 4" undoes `later`, and check the inverse with `compose` for every hour.
+working? Find the space where "subtract 4" undoes `later`, and check the inverse with `compose` for every hour.
 
 <details class="dl-answer"><summary>answer</summary>
 
 Schlomi's move is the one that undoes `later`. She tried it on the
 number line, not on the clock. On a clock, the
-numbers go round, so "take away 4" also has to go round. Python's `%`
+numbers go round, so "subtract 4" also has to go round. Python's `%`
 does that for us, even with a negative number:
 
 ```python
@@ -517,9 +517,8 @@ print(earlier(2))
 ```
 
 It prints `10`, and every test passes. In the integers, $2 - 4 = -2$.
-On the clock, $2 - 4$ is 10 o'clock, and "take away 4" is the inverse
-of "add 4" there, as it was in the integers. The move was never
-foolish.
+On the clock, $2 - 4$ is 10 o'clock, and "subtract 4" is the inverse
+of "add 4" there, as it was in the integers.
 
 </details>
 
@@ -556,14 +555,13 @@ print(first_way(photo), second_way(photo))
 <details class="dl-answer"><summary>answer</summary>
 
 Both print `3.5`. In both groupings, the machines run in the same order:
-`to_kilobytes`, then `to_megabytes`, then `to_one_place`. Grouping only
+`to_kilobytes`, then `to_megabytes`, then `to_one_place`. The grouping only
 decides which two are joined first, and that does not change what
 happens to the number. Maths says composition is associative:
 $f \circ (g \circ h) = (f \circ g) \circ h$.
 
-Swapping the order is different. Round first, in bytes, and then
-divide, and the answer is no longer rounded to one place:
+Changing the order is different. If you round first, in bytes, and then
+divide, the answer is no longer rounded to one place.
 `to_megabytes(to_kilobytes(to_one_place(photo)))` gives `3.456789`.
-Grouping does not matter; order does.
 
 </details>

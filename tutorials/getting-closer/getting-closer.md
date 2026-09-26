@@ -29,10 +29,10 @@ You stand 8 metres from a door. You walk half the way there, and stop.
 Then you walk half of what is left, and stop again, and again. Do you
 ever reach the door? Your legs say yes. The arithmetic says every walk
 leaves half of the gap still to go. If that argument makes your head
-hurt a little, read on: people have argued about it for about 2,500
+hurt a little, read on. People have argued about it for about 2,500
 years, and this page gives it an answer.
-This page is about the number your steps are heading for, and it is
-the idea that the rest of this unit is built on.
+This page is about the number your steps are heading for. The rest of
+this unit is built on this idea.
 
 On this page we:
 
@@ -49,8 +49,8 @@ On this page we:
 > **The space we're in.** The real numbers, with Python's floats
 > standing in for them. We are allowed to take as many steps as we
 > like, each smaller than the last, and to watch where the values go.
-> One thing usually goes unsaid: in the maths, the steps can shrink for
-> ever, but a float has a smallest step. The last section is about
+> In the maths, the steps can shrink for ever, but a float has a
+> smallest step. The last section is about
 > where that matters.
 
 ## Warm-up
@@ -100,7 +100,7 @@ for walk in range(1, 11):
     this_walk = this_walk / 2
 ```
 
-After ten walks you have come 7.9921875 metres. You never reach 8: each
+After ten walks you have come 7.9921875 metres. You never reach 8. Each
 walk covers half of what is left, so half is always still to go. After
 $k$ walks, what is left is $8 \times 2^{-k}$, a
 [negative exponent](tutorial:doubling-and-halving#halving-down-to-1)
@@ -117,8 +117,8 @@ this page builds, is one of the answers mathematicians later gave him.
 </aside>
 
 The distances walked, 4, 6, 7, 7.5, and so on, are a sequence, as on
-[A row of numbers](tutorial:a-row-of-numbers#counting-from-0): values
-in order, $w_1, w_2, w_3, \dots$. A *limit* of a sequence is a number
+[A row of numbers](tutorial:a-row-of-numbers#counting-from-0). They are
+values in order, $w_1, w_2, w_3, \dots$. A *limit* of a sequence is a number
 the values get as close to as we like, and stay that close, if we go
 far enough along. This walk's limit is 8. Mathematicians write
 
@@ -134,7 +134,7 @@ Here is a rule that behaves well everywhere except at one point:
 
 $$f(x) = \frac{x^2 - 4}{x - 2}$$
 
-The cell works it out for five values of $x$. Look for a pattern in
+The cell calculates it for five values of $x$. Look for a pattern in
 the answers before you run it.
 
 ```python exec
@@ -175,10 +175,10 @@ plot_rule(hole_rule, -1, 4.5)
 plt.plot(2, 4, "o", markerfacecolor="white", color="C0")
 ```
 
-A straight line, $y = x + 2$, with one point missing. `plot_rule`
-worked out 401 points, and none of them was exactly 2, so nothing
-stopped it. The picture could never show the hole by itself: one
-missing point has no width. We drew the circle by hand.
+It is a straight line, $y = x + 2$, with one point missing. `plot_rule`
+calculated 401 points, and none of them was exactly 2, so nothing
+stopped it. The picture could never show the hole by itself, because
+one missing point has no width. We drew the circle by hand.
 
 The line has a hole at $(2, 4)$. The rule has no value at 2, but
 everything around the hole points at 4. The next section makes that
@@ -243,8 +243,8 @@ approach(sine_over_x, 0)
 
 Both columns are the same, since the rule gives the same value at $-x$
 as at $x$, and both head for 1. So
-$\lim_{x \to 0} \frac{\sin x}{x} = 1$. No algebra found that answer.
-The table did.
+$\lim_{x \to 0} \frac{\sin x}{x} = 1$. The table found that answer,
+with no algebra.
 
 ### Your turn
 
@@ -289,8 +289,8 @@ $$\lim_{x \to 1^-} \text{brightness}(x) = 0 \qquad \lim_{x \to 1^+} \text{bright
 The small minus sign means "from below", and the plus means "from
 above". A limit from both sides exists only when the two one-sided
 limits exist and agree. Here they do not, so the brightness has no
-limit at the edge. That jump is what makes an edge an edge, and a
-program that finds edges in a photo looks for exactly this.
+limit at the edge. A program that finds edges in a photo looks for
+exactly this jump.
 
 Compare this with the hole. There, the rule had no value at 2, but it
 had a limit. Here, the brightness has a value at the edge,
@@ -311,15 +311,15 @@ def one_over(x):
 approach(one_over, 0)
 ```
 
-Each halving of the step doubles the size of the answer: $-512$ and
-512 on the last row, and it keeps going past any number. Neither side
+Each time the step halves, the answer doubles in size. The last row
+shows $-512$ and 512, and it keeps going past any number. Neither side
 settles, so neither side has a limit. You will sometimes see
 $\lim_{x \to 0^+} \frac{1}{x} = \infty$. It is a short way to say
 "grows past any number", not a limit that is a number.
 
 ## A limit at infinity
 
-Far away from 0, $\frac{1}{x}$ does the opposite: it creeps towards 0.
+Far away from 0, $\frac{1}{x}$ does the opposite. It creeps towards 0.
 $\frac{1}{10}$ is 0.1, $\frac{1}{1000}$ is 0.001, and it is never 0.
 So
 
@@ -353,14 +353,14 @@ for times in [1, 2, 12, 365, 8760, 525600, 1000000]:
 print(math.e)
 ```
 
-Paying more often helps less and less. Daily gives €2.7146, and every
+When the bank pays more often, it helps less and less. Daily gives €2.7146, and every
 minute gives €2.7183. The values settle on a number that starts
 2.71828. This limit is the number *e*:
 
 $$e = \lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n \approx 2.71828$$
 
 Python keeps it as `math.e`. Like $\pi$, $e$ has decimals that never
-end or repeat. It turns up wherever something grows or shrinks
+end or repeat. It appears wherever something grows or shrinks
 smoothly, all the time, and not in yearly jumps. The next page meets
 it again, in a falling hailstone.
 
@@ -386,16 +386,17 @@ for times in [10 ** 12, 10 ** 15, 10 ** 16]:
 ```
 
 The values get worse, not better: 2.71852, then 3.035, then 1.0. I
-think this is the strangest result on the page: more payments, and
-the euro shrinks back to 1. The maths still holds. The floats do not. On
+think this is the strangest result on the page. With more payments,
+the euro shrinks back to 1. The maths still holds, but the floats do
+not. On
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16),
 the gap between two neighbouring floats near 1 was about
-$2.2 \times 10^{-16}$. So $1 + 10^{-16}$ has no float of its own:
+$2.2 \times 10^{-16}$. So $1 + 10^{-16}$ has no float of its own.
 Python keeps it as 1, and 1 to any power is 1. At $10^{15}$, the kept
-value of $1 + 10^{-15}$ is a tiny way off, and raising it to the power
+value of $1 + 10^{-15}$ is not quite exact, and raising it to the power
 $10^{15}$ makes that tiny error large.
 
-The hole at 2 runs into the same wall. This cell is meant to stop with
+The hole at 2 has the same problem. This cell is meant to stop with
 an error. Which line will print before it does?
 
 ```python exec
@@ -408,7 +409,7 @@ print(hole_rule(2 + tiny))
 `True`, and then the `ZeroDivisionError` from before. $2 + 10^{-16}$
 is stored as 2, so we are back at the hole.
 
-In the maths, a step can shrink for ever. With floats, it cannot: past
+In the maths, a step can shrink for ever. With floats, it cannot. Below
 a certain size, the step is lost. So a table of values closing in is
 strong evidence of a limit. It is not a proof, and it only works while
 the step is well above the size of the float gaps. The next page needs
@@ -432,7 +433,7 @@ This page found every limit from a table: values closing in from both
 sides, until the columns settled.
 
 The other way is to define a limit with algebra. Mathematicians use a
-definition with two small numbers, $\varepsilon$ and $\delta$: for any
+definition with two small numbers, $\varepsilon$ and $\delta$. For any
 distance $\varepsilon$ from the limit, however small, there is a
 distance $\delta$ from the point that keeps the values that close. That
 definition proves a limit, where a table only suggests one, and all of
@@ -478,3 +479,8 @@ The dewlab page
 [Limits: getting closer without arriving](tutorial:approaching-a-limit),
 from another course, meets the same holes and uses a limit to find the
 speed of a falling ball.
+
+Up and Atom (2020). *3 Paradoxes That Gave Us Calculus.*
+<https://www.youtube.com/watch?v=EbHqtENNnSY>. Jade Tan-Holmes starts
+where this page starts, going halfway and then halfway again, and follows
+two more old puzzles to the limit. About fourteen minutes.

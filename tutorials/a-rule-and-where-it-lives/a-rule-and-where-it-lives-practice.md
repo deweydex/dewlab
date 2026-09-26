@@ -15,13 +15,13 @@ stylesheet. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 ## Fix the broken page
 
 When a browser meets CSS it cannot understand, it does not show an
-error. It skips that part and carries on. So each broken page below
+error. It skips that part and continues. So each broken page below
 looks calm. Only the result is wrong.
 
 **1.** The heading on this page should be dark blue. It stays black.
@@ -106,8 +106,8 @@ p {
 }
 ```
 
-The first declaration had no semicolon at the end. The semicolon is what
-tells the browser that a declaration has ended. Without it, the browser
+The first declaration had no semicolon at the end. The semicolon tells
+the browser that a declaration has ended. Without it, the browser
 reads everything up to the next semicolon as one value:
 `firebrick font-style: italic`. That is not a colour, so the browser
 skips it, and both changes are lost.
@@ -171,7 +171,7 @@ part of the `h2` rule, inside its braces. Read that way, the `p` rule
 no longer matches the paragraph. The `h2` rule still worked, because
 its declaration came before the mistake.
 
-A good habit: type the `{` and the `}` together, and then write the
+Here is a good habit. Type the `{` and the `}` together, and then write the
 declarations between them. Many editors do this for us.
 
 </details>
@@ -184,7 +184,7 @@ declarations between them. Many editors do this for us.
 - both paragraphs are `dimgray`
 - the emphasised word is `firebrick`
 
-We have only met the selector `p` so far. Can you work out the selectors
+We have only met the selector `p` so far. Can you find the selectors
 for the heading and the emphasised word from their tags?
 
 ```html site

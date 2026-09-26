@@ -17,9 +17,9 @@ covers:
 # The perceptron: a model that learns from its mistakes
 
 So far in this module, every model has been a fixed formula. A matrix
-transformation, a system of equations, even the π estimate once its seed
-is set: give each one the same numbers, and it gives back the same answer
-every time.
+transformation, a system of equations and even the π estimate, once its
+seed is set, all return the same answer every time you give them the
+same numbers.
 
 On this page we build a different kind of model. It starts out wrong on
 purpose. Then it changes its own numbers, based on the mistakes it makes.
@@ -27,7 +27,7 @@ This model is called a *perceptron*. A perceptron is the smallest model
 that learns from its mistakes, and every neural network is built on the
 same idea.
 
-## A Model That Starts Out Wrong
+## A model that starts out wrong
 
 Here is the task. We want the model to tell a plus sign from a cross.
 Each one is drawn on a tiny grid of 3 by 3 pixels, and each pixel is
@@ -55,8 +55,8 @@ for axis in axes:
     axis.set_yticks([])
 ```
 
-Each picture is a list of nine numbers, one for each pixel: `PLUS` and
-`CROSS` above. A 1 is a black pixel, and a 0 is a white one.
+Each picture is a list of nine numbers, one for each pixel. `PLUS` and
+`CROSS` above are two of them. A 1 is a black pixel, and a 0 is a white one.
 
 A *model* is a rule for turning some numbers into a decision. Our model
 turns those nine numbers into one decision, in three steps:
@@ -88,15 +88,13 @@ print(predict(weights, bias, PLUS))
 print(predict(weights, bias, CROSS))
 ```
 
-Both come back `0`. With every weight at zero, the total is always zero
+Both return `0`. With every weight at zero, the total is always zero
 too, whatever picture goes in. The model has not looked at a single pixel
 yet. It calls `CROSS` correctly, by accident, and it calls `PLUS` wrongly.
-A model that always gives the same answer is right only when that answer
-happens to be true.
 
 That is the whole model: nine weights, one bias, and the rule above. A
 weight and a bias are ordinary numbers, like any other variable in this
-module. What makes this model different is what happens next.
+module. This model is different because of what happens next.
 
 ### Your turn
 
@@ -110,9 +108,9 @@ id: a-model-that-starts-out-wrong-3
 hint: PLUS has a 1 in the top-middle position; CROSS has a 0 there. A weight of 1.0 on that one pixel is enough to push the total for PLUS above zero without moving CROSS's total at all.
 ```
 
-## Running It Again and Again
+## Running it again and again
 
-We cannot work out the right weights on paper, the way
+We cannot find the right weights on paper, the way
 [Systems of equations: solving them with matrices](tutorial:solving-systems) found exact unknowns.
 Instead, we correct the model one mistake at a time:
 
@@ -153,7 +151,7 @@ print(train[0])
 print(train[1])
 ```
 
-Now the correcting. Look at the inner `if` in the code below. `error` is
+Now the model corrects itself. Look at the inner `if` in the code below. `error` is
 `label - guess`. It is 1 when the model said "cross" for a plus, and -1
 when it said "plus" for a cross. So each lit pixel's weight moves up for
 a missed plus, and down for a missed cross.
@@ -190,18 +188,18 @@ plt.title("Learning, one pass at a time")
 One pass through all twenty examples is called an *epoch*. In the first
 epoch, the model gets 12 of the 20 right. Each mistake nudges the
 weights, and by the fifth epoch it gets 19 right. Then, in the sixth, it
-gets one *more* wrong: a correction that fixed one picture broke
-another. From the seventh epoch on, it gets all twenty right. Along the
-way it made 21 corrections.
+gets one *more* wrong. A correction that fixed one picture broke
+another. From the seventh epoch on, it gets all twenty right. In total
+it made 21 corrections.
 
 After that, every epoch changes nothing. Every example in `train` is
 already correct, so `error` is zero every time, and no weight moves.
 
 This loop is the *simulation*. A simulation runs a model again and
 again, and lets each run change what the next run sees. The model itself
-is nine numbers and a rule. Running that rule over and over, and letting
-each pass change the next one, turns a fixed formula into something that
-behaves like learning.
+is nine numbers and a rule. When we run that rule over and over, and let
+each pass change the next one, a fixed formula starts to behave like
+learning.
 
 ### Your turn
 
@@ -220,19 +218,19 @@ hint: Copy the training loop into this cell and change the learning_rate line. A
 
 Many people expect a smaller learning rate to need more epochs. Here it
 does not. It takes the same seven epochs, with the same dip in the
-sixth, and every weight ends up exactly ten times smaller. Why?
+sixth, and every weight is exactly ten times smaller at the end. Why?
 
 Every weight starts at zero, and every change is multiplied by the
 learning rate. So a smaller learning rate shrinks every weight by the
-same amount, and the bias too. Shrinking every number in the total by
-the same amount never changes whether the total is above zero. So every
+same amount, and the bias too. When every number in the total shrinks
+by the same amount, the total stays on the same side of zero. So every
 decision stays the same.
 
 In bigger models, the weights do not all start at zero, and then the
 learning rate matters much more. In this model, it only changes the size
 of the numbers.
 
-## Checking It Against Patterns It Has Never Seen
+## Checking it against patterns it has never seen
 
 The model scores 100% on `train`. That shows it fits the twenty examples
 we corrected it with. But has it found anything general about plus signs
@@ -241,7 +239,7 @@ and crosses? Or has it only memorised those twenty pictures, one by one?
 To tell the difference, we need a second set of examples. The training
 loop must never have seen them. We call these the *test* examples.
 
-There are only so many ways to flip three of nine pixels: 84 for each
+There are 84 ways to flip three of nine pixels, for each
 shape. `combinations(range(9), 3)` gives every one of them, as three
 positions at a time. The cell keeps every messy picture that is not in
 `train`, and asks the model about each one.
@@ -271,7 +269,7 @@ pictures it never saw, it gets about one in twenty wrong.
 
 That gap is normal, and it is the number that matters. Does the model
 still behave like the real pattern, on cases it never saw while it was
-learning? Fitting the training examples alone is not enough. A model
+learning? A good fit to the training examples is not enough. A model
 that passed only that first check could still be useless outside the
 examples we built it with.
 
@@ -287,7 +285,7 @@ id: checking-it-against-patterns-it-has-never-seen-2
 hint: Each picture is nine numbers, read in rows of three. After three flips, some pictures are hard for a person to call too.
 ```
 
-## What the Model Learned
+## What the model learned
 
 We can read the weights directly. What do you expect the plus-sign
 pixels to look like?
@@ -306,24 +304,23 @@ print(f"{'bias':>13}: {bias:+.2f}")
 
 Each shape has four pixels that the other shape does not have.
 
-- All four of the plus sign's arms ended up with a positive weight:
+- All four of the plus sign's arms have a positive weight at the end:
   top-middle, mid-left, mid-right and bottom-middle. When one of these
   is lit, it pulls the total up, towards "plus".
-- All four of the cross's corners ended up with a negative weight. When
+- All four of the cross's corners have a negative weight at the end. When
   one of these is lit, it pulls the total down, towards "cross".
 
 That is the pattern a person would name. But look at the sizes. Mid-right
 is $+2.5$, and top-middle only $+0.5$. Nothing about a plus sign makes
-its right arm five times as important as its top. So why the difference?
+its right arm five times as important as its top. So why are they
+different?
 
 Training only changes a weight when there is a mistake to correct, and
 only for the pixels that were lit in that picture. So the sizes record
 which pixels happened to be lit in the pictures the model got wrong.
 Top-middle moved 13 times, but 6 of those were pushes down, from messy
 crosses that had that pixel switched on. Mid-right was pushed down only
-4 times. Shuffle `train` differently, and the sizes come out
-differently. A model learns only what the examples in front of it force
-it to learn.
+4 times. Shuffle `train` differently, and the sizes change.
 
 The centre is shared by both shapes, so it cannot tell them apart. Yet
 its weight moved more often than any other: 19 of the 21 corrections
@@ -332,27 +329,33 @@ moved it, because it is lit in most pictures of both shapes. It went up
 The ups and downs nearly cancelled, and it ended at $+0.5$.
 
 The rule in `predict()` never says "a positive number means plus". It
-never says "a negative number means cross". That link came entirely from
-being corrected against examples, one mistake at a time.
+never says "a negative number means cross". The model made that link
+itself, from its corrections, one mistake at a time.
 
 A real handwriting-recognition network shares that core idea: numbers
 that multiply the inputs, adjusted a little after each mistake. But it
 is not simply a bigger version of this model. It has many layers of
 these units, one feeding the next, and a smoother rule than "above zero
-or not". It also needs a way to share out the blame for a mistake among
-all those layers. And a single perceptron like ours has a hard limit:
-some patterns it cannot learn at all, however many examples it sees.
+or not". It also needs a way to divide the blame for a mistake among
+all those layers. And a single perceptron like ours has a hard limit.
+It cannot learn some patterns at all, however many examples it sees.
 
-## Where to Read More
+## Where to read more
 
 Rosenblatt, F. (1958). *The Perceptron: A Probabilistic Model for
 Information Storage and Organization in the Brain.* Psychological Review,
-65(6), 386–408. The original paper. The `predict()` rule and the training
+65(6), 386–408. This is the original paper. The `predict()` rule and the training
 loop on this page are a simplified form of the perceptron it describes,
 nearly seventy years before this course.
 
 Nielsen, M. (2015). *Neural Networks and Deep Learning*.
-<http://neuralnetworksanddeeplearning.com/>. Free online book. Chapter 1
-builds up from exactly this kind of small, hand-checkable example toward a
-real handwritten-digit classifier, without skipping the arithmetic in
-between.
+<http://neuralnetworksanddeeplearning.com/>. It is a free online book.
+Chapter 1 starts from exactly this kind of small example, which you can
+check by hand. It moves towards a real handwritten-digit classifier, and
+it shows all the arithmetic in between.
+
+Spanning Tree (2025). *Perceptrons: The First Trainable Neural Networks.*
+<https://www.youtube.com/watch?v=Ip6RIHwi21c>. Brian Yu tells the story of
+Frank Rosenblatt's perceptron, from 1957, and shows how it learns: each
+time it gets an example wrong, it moves its weights a little. The video
+is about twelve minutes long.

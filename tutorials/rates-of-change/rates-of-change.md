@@ -24,11 +24,12 @@ is the same everywhere on the line.
 
 For anything that bends, the answer changes as we move along it. On
 this page we find that answer at a single point. Then we find rules, so
-that we do not have to work it out from the start every time.
+that we do not have to calculate it from the start every time.
 
 The tool we need is the limit, from
 [Limits: getting closer without arriving](tutorial:approaching-a-limit).
-That is the only new idea. Everything else is careful record-keeping.
+That is the only new idea. For everything else, we just need to be
+careful.
 
 On this page we:
 
@@ -69,7 +70,7 @@ gently downhill, gently uphill, and steeply uphill. The curve has no
 single slope.
 
 But at each point there is a *local* slope: how steep the curve is
-right there. That is what we want to find.
+right there. We want to find that local slope.
 
 We use the same method as for the falling ball in
 [Limits: getting closer without arriving](tutorial:approaching-a-limit).
@@ -98,7 +99,7 @@ for gap in [1, 0.5, 0.1, 0.01, 0.001, 0.0001]:
     print(f"   gap {gap:<8} : {slope_between(curve, 3, gap)}")
 ```
 
-The slopes head for 6, and never arrive, because the gap can never be
+The slopes move towards 6, and never arrive, because the gap can never be
 zero.
 
 **The limit of the chord's slope, as the gap shrinks to nothing, is the
@@ -106,8 +107,8 @@ slope of the curve at that point.** The *derivative* of a function at a
 point is this limit: the slope of the curve at that one point. Here, the
 derivative of $x^2$ at $x = 3$ is 6.
 
-The picture below shows three of those chords, and the line they are
-closing in on.
+The picture below shows three of those chords, and the line they get
+closer to.
 
 ```python exec
 id: the-slope-of-something-that-is-not-straight-3
@@ -152,7 +153,7 @@ topics. They all describe the same number.
 
 | Description | What it means |
 |---|---|
-| **A limit** | The value that $\dfrac{f(x + \text{gap}) - f(x)}{\text{gap}}$ heads towards as the gap shrinks. This is the definition of the derivative. |
+| **A limit** | The value that $\dfrac{f(x + \text{gap}) - f(x)}{\text{gap}}$ moves towards as the gap shrinks. This is the definition of the derivative. |
 | **The slope of a tangent line** | The steepness of the straight line that touches the curve at that point. |
 | **A rate of change** | How fast the output is changing for each unit of input, right at that point. |
 
@@ -185,7 +186,7 @@ We write $f'$, said "f prime", for the derivative of $f$. So if
 $f(x) = x^2$, then $f'(x) = 2x$. To *differentiate* a function means to
 find its derivative.
 
-The "rate of change" description is the one that does not need a graph.
+The "rate of change" description does not need a graph.
 The falling ball in the last tutorial fell $4.9t^2$ metres after $t$
 seconds. Its speed is the rate of change of that distance, so its speed
 is the derivative:
@@ -203,8 +204,7 @@ for t in [0, 1, 2, 3]:
 
 The first column is distance, and the second is speed. The relationship
 is the same as between a curve and its slope, and no axes are needed.
-That is what "rate of change" means. It is also why the straight-lines
-page used that phrase for slope.
+This is why the straight-lines page used "rate of change" for slope.
 
 ## The derivative as a function
 
@@ -242,8 +242,8 @@ connects back to
 [Parabolas: completing the square](tutorial:parabolas): the vertex of a
 parabola is the point where the slope is zero.
 
-(The opposite is not always true. A zero slope is where to *look* for a
-turning point. The curve $x^3$ is flat for a moment at $x = 0$, but it
+(The opposite is not always true. A zero slope tells you where to *look*
+for a turning point. The curve $x^3$ is flat for a moment at $x = 0$, but it
 keeps climbing on both sides, so that point is not a turning point.)
 
 Completing the square put the vertex of $x^2 + 6x + 5$ at $x = -3$. What
@@ -263,7 +263,7 @@ for x in [-5, -4, -3, -2, -1]:
 The slope is zero at −3, exactly where completing the square put the
 vertex. (The `-0.0000` is a tiny rounding error, and it means zero.)
 **Two completely different methods give the same answer.** When that
-happens, it is good evidence that both are right.
+happens, you can trust both methods.
 
 ### Your turn
 
@@ -382,7 +382,7 @@ for x in [-5, -3, 0, 2]:
           f"   numerically {derivative_at(lambda v: evaluate(poly, v), x):>8.4f}")
 ```
 
-The derivative comes out as `[6, 2]`, which means $6 + 2x$. That is the
+The derivative is `[6, 2]`, which means $6 + 2x$. That is the
 $2x + 6$ we found by hand.
 
 ### Multiplying things together
@@ -446,7 +446,7 @@ How would you differentiate these by hand?
 2. $(x + 1)(x^2 - 3)$
 3. $x^2 (x + 5)$
 
-For each one, work out the derivative first. Then check it at a few
+For each one, find the derivative first. Then check it at a few
 points with `derivative_at`.
 
 ```python exec
@@ -486,17 +486,17 @@ Those last two agree: both are 96.
 In words: first, differentiate the outside function, and leave the
 inside alone. Then multiply by the derivative of the inside.
 
-Here is the idea behind it: rates multiply. Suppose $u$ changes three
+The idea behind it is that rates multiply. Suppose $u$ changes three
 times as fast as $x$, and $y$ changes twice as fast as $u$. Then $y$
 changes $3 \times 2 = 6$ times as fast as $x$. Rates multiply along a
-chain, and that is where the rule gets its name.
+chain, and that gives the rule its name.
 
 ### Your turn
 
 How might you differentiate $(3x + 2)^5$ with the chain rule?
 
 1. Name the inside function and the outside function.
-2. Work out the derivative by hand.
+2. Find the derivative by hand.
 3. Check it at a point with `derivative_at`.
 
 ```python exec
@@ -510,7 +510,7 @@ We have left out two topics on purpose. Here they are, so that you do
 not have to wonder.
 
 **The quotient rule** is a rule for one function divided by another. It
-is mechanical. You can manage without it: write the division as a
+is mechanical. You can manage without it. Write the division as a
 product with a negative power, and use the product rule and the chain
 rule.
 
@@ -518,17 +518,17 @@ rule.
 differentiation: it goes from a rate of change back to the total. A
 course that uses a lot of integration needs it. This course does not.
 
-Calculus is not the focus of this course. What matters is that you know
-what a derivative *is*: a rate of change, the slope of a tangent line,
-and a limit. And you can compute simple ones. Practising the remaining
-techniques would take weeks and give you very little.
+Calculus is not the focus of this course. You need to know what a
+derivative *is*: a rate of change, the slope of a tangent line, and a
+limit. You also need to compute simple ones. More practice with the
+other techniques would take weeks and give you very little.
 
 ## Reflection
 
 A derivative is the slope of a curve at a single point. It is a limit,
-and the limit is what makes the question possible to answer.
+and the limit makes the question possible to answer.
 
-**Three descriptions, one number.** A limit of chords, the slope of the
+**One number has three descriptions.** A limit of chords, the slope of the
 tangent line, and a rate of change. Which one you use depends on what
 you are doing.
 
@@ -540,16 +540,23 @@ and it agrees with what completing the square told you in
 [Parabolas: completing the square](tutorial:parabolas).
 
 **The rules save you the limit.** Bring the power down and reduce it by
-one. Sums split into their parts. Products do not; they need
+one. Sums split into their parts. Products do not. They need
 $f'g + fg'$. For one function inside another, the rates multiply.
 
 Pick something that changes over time: a bank balance, a temperature, a
 download. In a few sentences, what would its derivative be, in words,
 and what units would it have?
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2017). *Essence of Calculus, Chapter 2: The
 Paradox of the Derivative.* <https://www.youtube.com/watch?v=9vKqVkMQHKk>.
-The same chords-closing-in-on-a-tangent picture this page draws, and why
-"instantaneous rate of change" is a stranger idea than it sounds.
+This video draws the same picture as this page, with chords moving
+towards a tangent. It also explains why "instantaneous rate of change"
+is a stranger idea than it sounds.
+
+3Blue1Brown (2018). *The other way to visualize derivatives: Chapter 12,
+Essence of calculus.* <https://www.youtube.com/watch?v=CfW845LNObM>. This
+video draws a derivative as how much a function stretches or squashes the
+numbers near a point, rather than as a slope. It is about fourteen
+minutes long.

@@ -11,14 +11,14 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page, including `point_on_circle` from
 the tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `close_enough` from
-[Does it work?](tutorial:does-it-work). `math` is not: each cell that
-needs it starts with `import math`.
+[Does it work?](tutorial:does-it-work). `math` is not loaded. Each cell
+that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -41,7 +41,7 @@ print(math.degrees(math.pi), math.radians(360))
 `180.0 6.283185307179586`.
 
 $\pi$ radians is half a turn, which is $180^\circ$. A whole turn,
-$360^\circ$, is $2\pi$ radians, about 6.28: the circumference of a
+$360^\circ$, is $2\pi$ radians, about 6.28. That is the circumference of a
 circle of radius 1.
 
 </details>
@@ -61,7 +61,7 @@ print(round(x, 2), round(y, 2))
 
 Half a turn takes the seat straight across the centre, to the left-hand
 side, still level with the centre. Without `round`, `y` would be
-`1.2246467991473532e-15`: a float's tiny rounding error, which is 0 for
+`1.2246467991473532e-15`. That is a float's tiny rounding error, which is 0 for
 any Ferris wheel.
 
 </details>
@@ -79,9 +79,9 @@ for groups in [8, 6]:
 
 8 slices are $45^\circ$ each, which is $\frac{\pi}{4} \approx 0.785$
 radians. 6 slices are $60^\circ$ each, $\frac{\pi}{3} \approx 1.047$
-radians. A whole turn shared out equally: $360^\circ$ or $2\pi$
-radians, divided by the number of slices. A charting library such as
-matplotlib works out each slice's angle this way, from its share of
+radians. Each slice is a whole turn, $360^\circ$ or $2\pi$ radians,
+divided by the number of slices. A charting library such as
+matplotlib calculates each slice's angle this way, from its share of
 the total.
 
 </details>
@@ -93,8 +93,9 @@ instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`math.sin` takes an angle in radians, so it read 30 as 30 radians:
-almost 5 whole turns, and then a bit, which ends up low on the circle.
+`math.sin` takes an angle in radians, so it read 30 as 30 radians.
+That is almost 5 whole turns, and then a bit, which ends low on the
+circle.
 Schlomi's idea holds in the space of degrees. She needs to move the
 angle into radians first:
 
@@ -102,8 +103,8 @@ angle into radians first:
 print(math.sin(math.radians(30)))
 ```
 
-This gives `0.49999999999999994`, which is $\frac{1}{2}$ give or take
-a float's rounding error.
+This gives `0.49999999999999994`, which is $\frac{1}{2}$ with a
+float's tiny rounding error.
 
 </details>
 
@@ -191,10 +192,9 @@ cosine, how far across, and the $y$ is the sine, how far up:
     return (radius * math.cos(angle), radius * math.sin(angle))
 ```
 
-Schlomo's version is not nonsense. It starts at the top and goes
-clockwise, which is how a clock measures. It keeps a different promise
-from the one in its docstring, and for a clock it would be the one to
-use.
+Schlomo's version starts at the top and goes clockwise, as a clock
+measures. It keeps a different promise from the one in its docstring.
+For a clock, it would be the one to use.
 
 </details>
 
@@ -272,7 +272,7 @@ There is no single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An answer might weigh a few things, and can land on either side.
+An answer might weigh a few things, and can choose either way.
 
 - **What it is for.** Heights and distances, such as a tree or a roof,
   come with a right-angled triangle already in them. Clocks, wheels and
@@ -281,11 +281,11 @@ An answer might weigh a few things, and can land on either side.
   $90^\circ$. The circle gives a sine for every angle, even a negative
   one.
 - **The picture.** Some people picture a triangle better than a point
-  moving. Others hold the moving point in mind better.
+  moving. Others picture the moving point better.
 - **What comes next.** The next page, on waves, needs the circle. The
   page after, on solving triangles, starts from the triangle.
 
-It is also fair to want both, one after the other, as this unit does.
+You might also want both, one after the other, as this unit does.
 
 </details>
 
@@ -301,12 +301,13 @@ print(math.tan(math.radians(45)))
 
 At $45^\circ$ the line out to the point rises as far as it runs, so the
 tangent is exactly 1. The angle in radians, $\frac{\pi}{4}$, has
-endless digits, and the float is a tiny bit off, so its tangent is too.
+endless digits, and the float is not quite exact, so its tangent is not
+exact either.
 `close_enough(math.tan(math.radians(45)), 1)` is `True`.
 
 </details>
 
-**12. Make.** Write `gap_between_hands(hours, minutes)`, which gives
+**12. Make.** Write `gap_between_hands(hours, minutes)`, which returns
 the angle between a clock's two hands, the smaller way round, so never
 more than $180^\circ$. Test it at 3:00, 6:00, 12:30 and 10:10.
 
@@ -315,8 +316,8 @@ more than $180^\circ$. Test it at 3:00, 6:00, 12:30 and 10:10.
 1. The hour hand has turned `(hours % 12) * 30 + minutes * 0.5`
    degrees, and the minute hand `minutes * 6`.
 2. Take the difference, and keep its size with `abs`.
-3. If the difference is more than 180, the other way round is shorter:
-   it is `360 - difference`.
+3. If the difference is more than 180, the other way round is shorter.
+   It is `360 - difference`.
 
 **Think about:** at 12:30 the difference is 165. At 1:55 it is 292.5.
 Which way round is shorter at 1:55?
@@ -339,8 +340,8 @@ for hours, minutes in [(3, 0), (6, 0), (12, 30), (10, 10)]:
     print(hours, minutes, gap_between_hands(hours, minutes))
 ```
 
-It gives `90.0`, `180.0`, `165.0` and `115.0`. At 12:30 the gap is not $180^\circ$:
-the hour hand has moved $15^\circ$ past the 12 towards the 1.
+It gives `90.0`, `180.0`, `165.0` and `115.0`. At 12:30 the gap is not $180^\circ$.
+The hour hand has moved $15^\circ$ past the 12 towards the 1.
 
 </details>
 
@@ -386,8 +387,8 @@ for day in range(361):
     moon_xs.append(planet_x + around_x)
     moon_ys.append(planet_y + around_y)
 
-plt.plot(moon_xs, moon_ys)
 plt.axis("equal")
+plt.plot(moon_xs, moon_ys)
 ```
 
 The path is a large circle with 11 small loops in it, like a flower.
@@ -480,8 +481,5 @@ ball runs along a great circle. A flat map has to stretch the ball to
 lay it flat, and the usual world maps stretch the far north most. So the great circle
 looks curved on the map, and the ruler's straight line, which looks
 shorter, is longer on the real Earth.
-
-It is the flat plane's move, "a straight line is the shortest way",
-used in a space where the straightest paths are great circles.
 
 </details>

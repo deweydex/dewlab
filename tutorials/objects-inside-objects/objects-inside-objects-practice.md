@@ -2,313 +2,297 @@
 title: "Composition: objects inside other objects — Practice"
 practice_for: objects-inside-objects
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Composition: objects inside other objects — Practice
 
-The answers are hidden until you open them. Many of these problems ask
-you to predict an output before you run anything. Try not to check first.
-When a prediction is wrong, finding out why teaches you more than a lucky
-guess does.
+This page has problems on classes that hold other objects, and on
+choosing between "is a" and "has a", and three from earlier pages. Several have more than one
+good answer, and the answers say which way they went, and why.
 
-## A bank holds its accounts
-
-```python exec
-id: a-bank-holds-its-accounts-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-bank = Bank("First Local")
-bank.open_account(BankAccount("Alice", 300.0))
-bank.open_account(BankAccount("Ben", 150.0))
-print(bank.total_balance())
-```
-
-**1.** Predict the total before you run the cell. Then add a third
-account of your own, and predict the new total.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`450.0`, because `300.0 + 150.0 = 450.0`.
-
-Adding a third account, say `BankAccount("Cara", 100.0)`, makes the
-total `550.0`. `total_balance()` needs no change for a third account. It
-loops over however many accounts `self.accounts` holds.
-
-</details>
-
-**2.** Add an `average_balance()` method to `Bank`. It should return
-`total_balance()` divided by the number of accounts.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def average_balance(self):
-    return self.total_balance() / len(self.accounts)
-```
-
-With Alice's and Ben's accounts, this returns `225.0`.
-
-`average_balance()` calls `self.total_balance()`, and does not repeat its
-loop. A method can build on another method of the same object.
-[A class with many methods: giving one class more to do](tutorial:one-class-many-methods)
-looked at the same idea, with `describe()` and `self.light_minutes()`.
-
-</details>
-
-**3.** Here is the `find_account()` method from the tutorial:
-
-```python
-def find_account(self, owner):
-    for account in self.accounts:
-        if account.owner == owner:
-            return account
-    return None
-```
-
-Add it to `Bank`. What does `bank.find_account("Zed")` return? What
-happens if you then write `print(bank.find_account("Zed").balance)`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`bank.find_account("Zed")` returns `None`, because no account has the
-owner `"Zed"`.
-
-`print(bank.find_account("Zed").balance)` stops with
-`AttributeError: 'NoneType' object has no attribute 'balance'`. `None` is
-not an account, so it has no `balance` field. Code that calls
-`find_account()` should check for `None` before it uses the result:
-
-```python
-account = bank.find_account("Zed")
-if account is None:
-    print("No account for Zed.")
-else:
-    print(account.balance)
-```
-
-</details>
-
-## Is a, or has a?
-
-**4.** `Bank` does not inherit from `BankAccount`. Why would
-`class Bank(BankAccount):` be the wrong choice?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Inheritance means "is a kind of", and a bank is not a kind of account. A
-bank does not have its own `owner` and `balance` the way an account does.
-It has accounts, held in a field. That is composition.
-
-If `Bank` inherited from `BankAccount`, it would get a `deposit()` and a
-`withdraw()` that make no sense for a bank. A bank holds accounts. It is
-not one.
-
-</details>
-
-**5.** For each pair, is it "is a" or "has a"? Which would you use:
-inheritance or composition?
-
-- (a) `Square` and `Shape`
-- (b) `Order` and `Item`
-- (c) `Teacher` and `Person`
-- (d) `House` and `Room`
-- (e) `ElectricCar` and `Car`
-- (f) `Car` and `Wheel`
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) A square is a shape: inheritance, `class Square(Shape):`.
-
-(b) An order has items: composition, with a list of `Item` objects.
-
-(c) A teacher is a person: inheritance, `class Teacher(Person):`.
-
-(d) A house has rooms: composition, with a list of `Room` objects.
-
-(e) An electric car is a car: inheritance, `class ElectricCar(Car):`.
-
-(f) A car has wheels: composition. A wheel is not a kind of car, and a
-car is not a kind of wheel.
-
-</details>
-
-**6.** Someone wrote a playlist this way:
-
-```python
-class Song:
-    def __init__(self, title):
-        self.title = title
-
-
-class Playlist(Song):
-    def __init__(self, name):
-        super().__init__(name)
-        self.songs = []
-```
-
-The code runs without an error. What is wrong with the design? How would
-you fix it?
-
-<details class="dl-answer"><summary>answer</summary>
-
-"A playlist is a song" is false. "A playlist has songs" is true. So
-`Playlist` should use composition, not inheritance.
-
-With inheritance, every playlist gets a `title` field meant for one song,
-and every method `Song` gains later. To fix it, remove `(Song)` and the
-`super()` line:
-
-```python
-class Playlist:
-    def __init__(self, name):
-        self.name = name
-        self.songs = []
-```
-
-</details>
-
-## Accounts of every kind
+## 1. One crew member, two submarines
 
 ```python exec
-id: accounts-of-every-kind-practice-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
-
-
-class Bank:
+id: one-crew-member-two-submarines-1
+class CrewMember:
     def __init__(self, name):
         self.name = name
-        self.accounts = []
+        self.oxygen = 100
 
-    def open_account(self, account):
-        self.accounts.append(account)
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-bank = Bank("First Local")
-bank.open_account(SavingsAccount("Alice", 400.0, 0.1))
-bank.open_account(CurrentAccount("Ben", -30.0, 100.0))
-bank.open_account(BankAccount("Cara", 80.0))
-print(bank.total_balance())
-```
-
-**7.** Predict the total before you run the cell.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`450.0`, because `400.0 - 30.0 + 80.0 = 450.0`.
-
-`total_balance()` reads `balance` from every account. Every kind of
-account has that field, because each one gets it from `BankAccount`.
-
-</details>
-
-**8.** Suppose we add this method to `Bank`, to pay interest on every
-account:
-
-```python
-def pay_interest(self):
-    for account in self.accounts:
-        account.add_interest()
-```
-
-What happens when you call `bank.pay_interest()`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Alice's balance becomes `440.0`. Then the loop reaches Ben's account and
-stops with `AttributeError: 'CurrentAccount' object has no attribute
-'add_interest'`.
-
-Only `SavingsAccount` has `add_interest()`. `total_balance()` works for
-every kind of account because it only uses what they all share. A method
-that only one kind of account has cannot be called on all of them.
-
-</details>
-
-**9.** Write a `Customer` class that has a `name` and a list of
-`accounts`, with an `add_account()` method and a `net_worth()` method.
-Give Dan a `SavingsAccount` of `300.0` and a `CurrentAccount` of
-`-40.0`, and print his net worth.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. A customer has accounts, so `Customer` does not inherit from anything.
-2. `Customer` has the same shape as `Bank`: a name, and a list that starts
-   empty.
-3. `net_worth()` is the same loop as `total_balance()`.
-
-**Think about:** `Customer` and `Bank` are almost the same class. What is
-different about them, if anything?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Customer:
+class Submarine:
     def __init__(self, name):
         self.name = name
-        self.accounts = []
+        self._crew = []
 
-    def add_account(self, account):
-        self.accounts.append(account)
+    def board(self, member):
+        self._crew.append(member)
 
-    def net_worth(self):
+    def oxygen_left(self):
         total = 0
-        for account in self.accounts:
-            total = total + account.balance
+        for member in self._crew:
+            total = total + member.oxygen
         return total
 
-
-dan = Customer("Dan")
-dan.add_account(SavingsAccount("Dan", 300.0, 0.05))
-dan.add_account(CurrentAccount("Dan", -40.0, 100.0))
-print(dan.net_worth())   # 260.0
+ada = CrewMember("Ada")
+nautilus = Submarine("Nautilus")
+alvin = Submarine("Alvin")
+nautilus.board(ada)
+alvin.board(ada)
+ada.oxygen = 40
+print(nautilus.oxygen_left(), alvin.oxygen_left())
 ```
 
-The net worth is `260.0`, because `300.0 - 40.0 = 260.0`.
+```predict
+What will it print?
+
+- 40 40
+  - Both submarines hold the same crew member.
+- 100 40
+  - The Nautilus took Ada on board before her oxygen changed.
+- 40 100
+  - Only the last submarine sees the change.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`40 40`. Neither submarine holds a copy of Ada: both lists hold the one
+`CrewMember` object, so a change to her is seen by both. In the real
+world, one person cannot be in two submarines, so a `board` method might
+refuse someone already on board somewhere.
+
+</details>
+
+## 2. Gold in the vault
+
+Can you give `Room` a `gold()` method that adds up the gold of every
+treasure hidden in it?
+
+```python exec
+id: gold-in-the-vault-1
+class Treasure:
+    def __init__(self, name, gold):
+        self.name = name
+        self.gold = gold
+
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._treasure = []
+
+    def hide(self, treasure):
+        self._treasure.append(treasure)
+
+vault = Room("Vault")
+vault.hide(Treasure("crown", 50))
+vault.hide(Treasure("ring", 12))
+print(vault.gold())
+```
+
+```inputs
+vault.gold()
+Room("Hall").gold()
+```
+
+```solution
+class Treasure:
+    def __init__(self, name, gold):
+        self.name = name
+        self.gold = gold
+
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._treasure = []
+
+    def hide(self, treasure):
+        self._treasure.append(treasure)
+
+    def gold(self):
+        total = 0
+        for treasure in self._treasure:
+            total = total + treasure.gold
+        return total
+
+vault = Room("Vault")
+vault.hide(Treasure("crown", 50))
+vault.hide(Treasure("ring", 12))
+print(vault.gold())
+---
+62, and an empty room has 0. The room asks each treasure for its gold,
+and knows nothing else about treasure.
+```
+
+## 3. Is, or has?
+
+```question
+id: is-or-has-1
+type: fill-in-the-blank
+
+- A fleet {has|is} submarines.
+- A rocket {has|is} engines.
+- A dwarf planet {is|has} a body in space.
+- A library {has|is} books.
+- A scientist {is|has} an astronaut, on one mission at least.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+Has, has, is, has, and the last is the hard one: a scientist is an
+astronaut only while they fly. The page's answer was that an astronaut
+*has* roles, so the sentence to trust is "an astronaut has the role of
+scientist".
+
+</details>
+
+## 4. A fleet that is a submarine
+
+Someone writes `class Fleet(Submarine):`, so that a fleet can "dive
+together". What goes wrong?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+A fleet would get a depth of its own, a hull limit of its own, and a
+`dive` that changes only that one depth, not the submarines in it. "A
+fleet is a submarine" is false, and every inherited method shows it. A
+fleet *has* submarines, and its own `dive(metres)` can ask each one to
+dive.
+
+</details>
+
+## 5. A specimen: dictionary or class?
+
+An expedition records specimens: a name, a depth, and whether it is
+alive. Would you use a dictionary for each, or a class? What would change
+your mind?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+A dictionary is enough while specimens only hold facts. A class is useful
+when a rule arrives (a depth is never negative) or a question does (was
+it found below 1,000 m?). Both answers work today. Avoid a dictionary
+with the same rule copied into every place that makes one.
+
+</details>
+
+## 6. Hero or monster: child class or flag?
+
+A game has heroes and monsters. One design has `Hero(Character)` and
+`Monster(Character)`. Another has one `Character` class with a field
+`side`, either `"hero"` or `"monster"`. A spell can turn a monster into a
+hero. Which design copes better?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+The flag works better here. The spell changes one field. With child classes, the program
+would have to build a new `Hero` and put it everywhere the monster was.
+If heroes and monsters behave very differently (heroes carry things,
+monsters guard rooms), child classes keep each set of methods in one
+place, and the spell costs more work. It depends on which change the game
+needs more.
+
+</details>
+
+## 7. A bird that cannot fly
+
+```python
+class Bird:
+    def fly(self):
+        return "up and away"
+
+class Penguin(Bird):
+    def fly(self):
+        return "no"
+```
+
+```question
+id: a-bird-that-cannot-fly-1
+type: multiple-choice
+answer: 2
+
+A penguin is a bird. What is wrong with this design?
+
+- Nothing: overriding `fly` is what overriding is for.
+  - A child may change any method it inherits.
+- `Bird` promises that every bird can fly, and a penguin breaks the promise.
+  - Code written for birds expects `fly()` to fly.
+- `Penguin` should not have a parent at all.
+  - A penguin is not a kind of anything.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A program that sends every `Bird` flying gets a "no" it was never written
+for, the way `double_width` got a square's area. It is the square and
+the rectangle again. One fix is a parent that promises less: `Bird` with
+no `fly`, and `FlyingBird(Bird)` for the birds that do.
+
+</details>
+
+## 8. From earlier: a child with no parent's fields
+
+From *Inheritance*.
+
+```python exec
+id: from-earlier-a-child-with-no-parents-fields-1
+class Planet:
+    def __init__(self, name):
+        self.name = name
+
+class GasGiant(Planet):
+    def __init__(self, name, rings):
+        self.rings = rings
+
+saturn = GasGiant("Saturn", True)
+print(saturn.rings)
+print(saturn.name)
+```
+
+```question
+id: from-earlier-a-child-with-no-parents-fields-q1
+type: multiple-choice
+answer: 2
+
+What happens?
+
+- It prints `True`, then `Saturn`.
+  - `GasGiant` inherits the name from `Planet`.
+- It prints `True`, then stops with an `AttributeError`.
+  - `GasGiant.__init__` replaces `Planet.__init__`, which never runs.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`True`, then an `AttributeError`: Saturn has no `name`, because the
+child's `__init__` never called `super().__init__(name)`.
+
+</details>
+
+## 9. From earlier: whose rule?
+
+From *Designing classes*. "A room may hold at most six characters." Would
+that rule live in `Room` or in `Character`?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+In `Room`. The room knows how many are inside, and `enter` is the one
+method every character passes through to get in. A character would have
+to ask the room anyway.
+
+</details>
+
+## 10. From earlier: asking, not reaching
+
+From *Encapsulation*. `Expedition.deepest()` on the tutorial page calls
+`submarine.get_depth()`, where it could have read `submarine._depth`.
+Both give the same number today. Why ask?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`_depth` is private. The submarine may change how it stores its depth
+(in centimetres, say), and every caller that used `_depth` directly would
+break.
+`get_depth()` is the promise the submarine keeps, however it stores the
+number.
 
 </details>

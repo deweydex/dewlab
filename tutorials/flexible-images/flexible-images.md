@@ -69,7 +69,7 @@ The second image has two more declarations:
 - `max-width: 100%` sets the widest the image may be: the full width of
   its container, and no more. On a wide screen the image keeps its own
   size. On a narrow screen it shrinks.
-- `height: auto` lets the browser work out the height from the width.
+- `height: auto` lets the browser calculate the height from the width.
   So as the image gets narrower, it also gets shorter, and it keeps its
   shape. A square image stays square, and is never squashed.
 
@@ -81,9 +81,9 @@ The rule `img { display: block; margin-bottom: 8px; }` is there for the
 demo. It puts each image on its own line, with a small gap below it, so
 the two are easy to compare.
 
-Why do the two declarations usually travel together? An image's height
+Why do we usually write the two declarations together? An image's height
 is already `auto`, unless something else sets it. In the box above,
-nothing does, so deleting `height: auto` there would change nothing.
+nothing does, so if you delete `height: auto` there, nothing changes.
 Often, though, the HTML gives
 an image a `height` attribute, such as `<img src="..." height="300">`.
 Then `max-width: 100%` on its own makes the image narrower, but it stays
@@ -122,5 +122,12 @@ We can now make an image fit its container at any width, on any screen.
 | Word | Meaning | Example |
 |---|---|---|
 | `max-width: 100%` | Sets the widest an image may be: the width of its container | `img { max-width: 100%; }` |
-| `height: auto` | Works out the height from the width, so the image keeps its shape as it shrinks | `img { height: auto; }` |
+| `height: auto` | Calculates the height from the width, so the image keeps its shape as it shrinks | `img { height: auto; }` |
 | *aspect ratio* | The link between an element's width and its height | 500 by 300 |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Resolution.*
+<https://www.youtube.com/watch?v=1unkluyh2Ks>. Captain Disillusion
+explains resolution, the number of pixels in a picture, and asks how many
+pixels a screen really needs. Six minutes.

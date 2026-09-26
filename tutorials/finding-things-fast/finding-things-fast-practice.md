@@ -13,7 +13,7 @@ run. **Make** means write something new. **Fix** means find the one
 line in some code that does not do what its writer meant, and change
 it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
-open them, and each one is one way through: yours may go another way.
+open them. Each one is one answer. Yours may be different and work too.
 
 Your toolkit is loaded on this page: `linear_search` and
 `binary_search` from the tutorial, and `largest`, `mean`, `total` and
@@ -37,15 +37,15 @@ in the cell above.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`linear_search(towns, "Galway")` gives 2: Galway is the third town, and
+`linear_search(towns, "Galway")` gives 2. Galway is the third town, and
 indexes start at 0. `linear_search(towns, "Sligo")` gives −1, because
 Sligo is not in the list. The search looked at all four towns first.
 
 </details>
 
 **2. Predict.** A sorted list holds the 16 teams in a cup draw. At
-most, how many looks does a binary search need to find one team? Work
-it out by halving on paper, then check it with a loop.
+most, how many looks does a binary search need to find one team? Find
+it by halving on paper, then check it with a loop.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -96,13 +96,13 @@ the search has looked at all six files.
 </details>
 
 **4. Explain.** Schlomo, who is learning Python too, writes his own
-search. It gives back 0 when the target is not there. His reason is a
-fair one: 0 is the usual number for "nothing". What happens when he
+search. It returns 0 when the target is not there. His reason is that 0
+is the usual number for "nothing". What happens when he
 uses his search?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 is a real index: it means "found, at the front". So Schlomo's search
+0 is a real index. It means "found, at the front". So Schlomo's search
 says the same thing about two different results. A program cannot tell "the first contact is Aoife" from "there
 is no Aoife", and it would dial the first contact's number either way.
 A "not found" answer has to be a value that can never be a real
@@ -144,8 +144,8 @@ print(playlist[position + 1])
 This prints `Galway Girl`. With "Dreams", `position` is 4, and
 `playlist[5]` stops with an `IndexError`, because there is no song
 after the last one. With "Imagine", `position` is −1, and
-`playlist[0]` is "Zombie". There was no error at all: the code played
-the first song for a song that is not there. That is the quiet trap
+`playlist[0]` is "Zombie". There was no error at all. The code played
+the first song for a song that is not there. That is the trap
 from the tutorial, and the fix is to check first:
 
 ```python
@@ -195,7 +195,7 @@ looked at.
 <details class="dl-answer"><summary>answer</summary>
 
 The `else: return -1` sits inside the loop. So when the first name is
-not a match, the function gives back −1 at once, without looking at
+not a match, the function returns −1 at once, without looking at
 the others. We only know that a name is missing after the loop has
 looked at every name, so `return -1` belongs after the loop:
 
@@ -232,13 +232,13 @@ print(binary_search(steps, 6100))
 
 It prints 3, then −1, then −1. The first look is always the middle,
 index 3, and that is 12000, so the first search is lucky. For 9000, the
-search sees 12000, which is bigger, and throws away the right half,
+search sees 12000, which is bigger, and skips the right half,
 where 9000 really is. For 6100, the second look is 10400, which is
-bigger, so it throws away 6100 at index 2 along with it.
+bigger, so it skips 6100 at index 2 along with it.
 
 The list is in the order of the days, not in order of size, so binary
 search's promise does not hold. `linear_search(steps, 9000)` gives 4,
-and so would a binary search on `sorted(steps)`, once you work out the
+and so would a binary search on `sorted(steps)`, once you find the
 new index.
 
 </details>
@@ -271,7 +271,7 @@ The binary search gives 5185, an index in the sorted list. The other
 two give 4914, an index in the list as the file gave it. Those are two
 different lists, so two different indexes both point at Proxima Cen b.
 For Vulcan, both of your tools give −1. `planets.index("Vulcan")` does
-not: it stops with `ValueError: 'Vulcan' is not in list`. That is the
+not. It stops with `ValueError: 'Vulcan' is not in list`. That is the
 same search, with a different promise about a missing target. An error
 is harder to miss than a −1, which is one reason Python chose it.
 
@@ -279,7 +279,7 @@ is harder to miss than a −1, which is one reason Python chose it.
 
 **9. Make.** In the guessing game, a friend thinks of a number from 1
 to 100. Write a function `guesses_needed(secret)` that plays the game
-the halving way, and gives back how many guesses it took. Then try it
+the halving way, and returns how many guesses it took. Then try it
 on every secret from 1 to 100, and find the most guesses any secret
 needed.
 
@@ -288,7 +288,7 @@ needed.
 1. Keep `low = 1` and `high = 100`, and a count of guesses.
 2. Each round, guess the middle, `(low + high) // 2`, and add 1 to the
    count.
-3. If the guess is the secret, give back the count. If the guess is too
+3. If the guess is the secret, return the count. If the guess is too
    low, `low` becomes the guess plus 1. If it is too high, `high`
    becomes the guess minus 1.
 4. Build a list of `guesses_needed(secret)` for every secret, and use
@@ -337,19 +337,19 @@ secret needs is 7, as the tutorial's halving chain said.
 **10. Explain.** On
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
 we made the list `ireland`, of life expectancy in each year from 1950
-to 2016. It rises from 65.6 to 81.1. Schlomi, who is learning Python
-too, has a quick idea: the numbers go up, so a binary search can find
+to 2023. It rises from 65.6 to 82.4. Schlomi, who is learning Python
+too, has a quick idea. The numbers go up, so a binary search could find
 the first year it reached 70. Can we trust a binary search on this
 list, when the numbers only mostly go up?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not on this list. Schlomi's idea works on a list that is in order all the way
-along, and this list is not: that page found ten years where life
+No, not on this list. Schlomi's idea works on a list that is in order
+all the way along, and this list is not. That page found fifteen years where life
 expectancy fell. It
-passed 70 in 1960, at 70.23, and fell back to 69.69 in 1961. A binary
-search that looks at one year and sees 69.69 decides that every
-earlier year is lower, which is false. Mostly sorted is not sorted. For
+passed 70 in 1960, at 70.17, and fell back to 69.64 in 1961. A binary
+search that looks at one year and sees 69.64 decides that every
+earlier year is lower, which is false. For
 a list like this, a linear search from the front is the move that
 keeps its promise.
 
@@ -358,8 +358,8 @@ keeps its promise.
 **11. Fix.** A server keeps a sorted list of the network *ports* it
 listens on: numbered doors for different kinds of traffic, such as 443
 for secure web pages. Schlomo, who is learning Python too, wrote this
-binary search. His idea: when `low` and `high` meet, only one port is
-left, so the search can stop there. It finds some ports, but not 9000,
+binary search. His idea is that when `low` and `high` meet, only one port
+is left, so the search can stop there. It finds some ports, but not 9000,
 which is on the list. Run it. Which other ports does it miss? Change
 the one line that makes it miss them.
 
@@ -392,7 +392,7 @@ for port in ports:
 2. What are `low` and `high` when the loop stops?
 3. Was the port at that index ever looked at?
 
-**Think about:** Schlomo has a point: one port is left when `low` and
+**Think about:** Schlomo is right that one port is left when `low` and
 `high` meet. Which step did his loop leave out for that last port?
 
 </details>
@@ -401,8 +401,8 @@ for port in ports:
 
 The loop runs `while low < high`. When `low` and `high` are equal, one
 port is still left, as Schlomo said, but the loop stops without looking
-at it. For 9000, `low` and `high` both reach 4, and the search gives
-up. It misses 80 the same way, when `low` and `high` both reach 1. The
+at it. For 9000, `low` and `high` both reach 4, and the search
+stops. It misses 80 the same way, when `low` and `high` both reach 1. The
 change is one character: `while low <= high`.
 
 ```python
@@ -465,16 +465,16 @@ print(len(countries), "names, in alphabetical order")
 
 **13. Make.** A game keeps its high scores sorted, lowest first. A new
 score comes in. Write `where_it_goes(sorted_values, new_value)`, which
-gives back the index where the new value should go so that the list
+returns the index where the new value should go so that the list
 stays sorted. Use the binary search idea: at the end of the loop,
 `low` is that index. Test it with 400, 50 and 900 on `scores`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Start from `binary_search`'s loop, with `low` and `high`.
-2. You do not need the `==` check: keep going until `low` passes
+2. You do not need the `==` check. Keep going until `low` passes
    `high`.
-3. Give back `low` after the loop.
+3. Return `low` after the loop.
 4. To check, put the value in with `scores[:i] + [value] + scores[i:]`
    and compare with `sorted()`.
 
@@ -527,7 +527,7 @@ print(binary_search(league, 310))
 
 `binary_search` promises to work on a list sorted smallest first. Its
 first look is 480. 310 is smaller, so it keeps the left half, which in
-this list holds the bigger scores, and 310 is thrown away.
+this list holds the bigger scores, and 310 is skipped.
 
 One way is to change the list: `league[::-1]` is the list backwards,
 smallest first, and there `binary_search` works. The index it gives is
@@ -557,19 +557,19 @@ print(i, len(league) - 1 - i)
 print(binary_search_largest_first(league, 310))
 ```
 
-Both routes find 310 at index 3 of `league`: the backwards list has it
-at index 2, and $6 - 1 - 2 = 3$. The move "throw away half" still
-works. It needed a space where "after the middle" and "bigger" mean the same
+Both routes find 310 at index 3 of `league`. The backwards list has it
+at index 2, and $6 - 1 - 2 = 3$. The move "remove half" still
+works. It needs a space where "after the middle" and "bigger" mean the same
 thing, or a search that knows they mean the opposite.
 
 </details>
 
 **15. Make.** The cell at the top of this section also loads
-`countries`: the 226 names from the life expectancy file of
+`countries`: the 261 names from the life expectancy file of
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950),
-in alphabetical order, with a few regions such as "World" among the
-countries. Over all 226 names, how many looks does each search need on
-average? Write two small counting functions, or copy `linear_looks`
+in alphabetical order, with some regions and groups such as "World"
+among the countries. Over all 261 names, how many looks does each
+search need on average? Write two small counting functions, or copy `linear_looks`
 and `binary_looks` from the tutorial. Search for every name in turn,
 keep the counts in two lists, and use `mean` from your toolkit.
 
@@ -625,10 +625,10 @@ print(mean(linear_counts), largest(linear_counts))
 print(round(mean(binary_counts), 2), largest(binary_counts))
 ```
 
-The linear search needs 113.5 looks on average, and 226 at most. Each
+The linear search needs 131 looks on average, and 261 at most. Each
 name is searched for once, so on average the search goes about
-halfway along. The binary search needs about 6.9 looks on
-average, and 8 at most: most names are found on the last two or
+halfway along. The binary search needs about 7.1 looks on
+average, and 9 at most. Most names are found on the last two or
 three looks, because each halving has twice as many places to end as
 the one before.
 

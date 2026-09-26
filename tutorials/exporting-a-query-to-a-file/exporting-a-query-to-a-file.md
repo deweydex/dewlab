@@ -5,6 +5,7 @@ version: 2026.09.23.1
 covers:
   saving-it-as-a-file:
     covers: [DBM-LO7]
+datasets: [income-share-top-1]
 ---
 
 # Exporting a query's result to a CSV file
@@ -79,9 +80,9 @@ table.
 ## Why this needs its own step
 
 A query and the rows it returns are two different things. The SQL above is
-a few lines of code; `ireland` is the table those lines produced. Saving
-the code is not the same as saving the numbers. This page's whole point is
-turning the numbers themselves into something you can keep, outside the
+a few lines of code. `ireland` is the table those lines produced. Saving
+the code is not the same as saving the numbers. This page turns the
+numbers themselves into something you can keep, outside the
 browser tab that ran the query.
 
 ## Your turn
@@ -97,4 +98,12 @@ would become.
   file holds.
 - **A query and its result are two different things.** The SQL that built a
   table and the rows it returned are two different things worth keeping
-  separately; this page exports the second.
+  separately. This page exports the rows.
+
+## Where to read more
+
+Stand-up Maths (2020). *When Spreadsheets Attack!*
+<https://www.youtube.com/watch?v=yb2zkxHDfUE>. Matt Parker tells stories
+of what can go wrong when data lives in a spreadsheet, including gene
+names that a spreadsheet quietly changed into dates. About fourteen
+minutes.

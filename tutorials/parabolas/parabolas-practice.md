@@ -166,7 +166,7 @@ and the other at $(0, -3)$. How many roots does each one have?
 The first has no real roots, because its lowest point is 3 above the
 axis. The second has two roots, at $\pm\sqrt{3}$.
 
-This is the discriminant's story told as a picture. It depends on
+The picture shows what the discriminant tells us. It depends on
 whether the vertex is above the axis, on it, or below it.
 
 </details>
@@ -204,7 +204,7 @@ completing the square, done once with letters.**
 It comes from taking the square root of both sides. Both $2$ and $-2$
 square to 4, so $(x + 3)^2 = 4$ has two solutions, not one.
 
-That is why a quadratic can have two roots. They are the two square
+So a quadratic can have two roots. They are the two square
 roots, $+$ and $-$, carried through.
 
 </details>
@@ -264,9 +264,9 @@ A parabola has exactly one turning point, and we can find it exactly.
 We can complete the square, or we can take the point halfway between
 the roots.
 
-Most curves are harder than this. That is what
-[Derivatives: the rate of change of a curve](tutorial:rates-of-change)
-is for, later in the course. The quadratic is a case where we do not
+Most curves are harder than this.
+[Derivatives: the rate of change of a curve](tutorial:rates-of-change),
+later in the course, gives a method for those. The quadratic is a case where we do not
 need a general method.
 
 </details>

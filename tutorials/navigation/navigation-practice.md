@@ -16,8 +16,8 @@ kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more if you make a
+mistake and then find the reason than if you read the answer.
 
 In each preview, the sections have a large space above them, so the
 page is too long for the preview. Then we can see whether a link jumps.
@@ -220,8 +220,8 @@ Click each link in turn. Does each one jump to its own section?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your names and paragraphs may be different. What matters is that each
-`href` matches one `id`:
+Your names and paragraphs may be different. Each `href` must match one
+`id`:
 
 ```html
 <nav aria-label="Page">
@@ -278,9 +278,9 @@ address in the address bar ends with `about.html#goals`.
 
 `#goals` alone jumps to `id="goals"` on the same page, and there is no
 such element on your home page. `about.html#goals` has two halves: the
-file to open, and then the element to jump to inside it. That is why
-the About page's menu uses `index.html#skills`: the skills section is
-on the home page, and not on the About page.
+file to open, and then the element to jump to inside it. The About
+page's menu uses `index.html#skills`, because the skills section is on
+the home page, and not on the About page.
 
 On a small screen, the heading may land just under your header, which
 stays at the top of the window as you scroll. [A header that stays in

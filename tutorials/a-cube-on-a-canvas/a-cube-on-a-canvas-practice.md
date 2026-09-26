@@ -331,7 +331,7 @@ frame();
 before?
 
 **Try this next:** make the dots on near corners bigger than the dots
-on far corners. `project` would need to give back the depth as well.
+on far corners. `project` would need to return the depth as well.
 
 </details>
 
@@ -584,7 +584,7 @@ Then, in `frame`, make the tilt and use both turns:
   const onScreen = corners.map((corner) => project(turn(tilt, turn(turning, corner))));
 ```
 
-`turn(turning, corner)` is nearest the corner, so it happens first: the
+`turn(turning, corner)` is nearest the corner, so it happens first. The
 cube spins about its own vertical axis. Then `turn(tilt, ...)` tips the
 spinning cube towards us, so we look down on its top. With the two the
 other way round, the cube is tipped first, and then spun about the

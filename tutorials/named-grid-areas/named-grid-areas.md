@@ -100,8 +100,8 @@ rows and columns. `gap: 8px` sets the space between them, the same way
 - Every quoted line must have the same number of words, and each named
   area must make a rectangle. A dot (`.`) names an empty cell.
 
-Then each element needs to know which area it fills. That is the job of
-`grid-area`. The rule `header { grid-area: header; }` places the
+Then each element needs to know which area it fills. `grid-area` tells
+it. The rule `header { grid-area: header; }` places the
 `header` element in the area named `header`.
 
 Now look at the two maps:
@@ -119,8 +119,8 @@ changes.
 The wide map also sets `grid-template-columns: 150px 1fr`. This gives
 the first column a width of 150 pixels. The unit `fr` means a share of
 the space that is left over, so `1fr` gives the second column all the
-rest. That is also why, in step 5, the main area was squeezed into 150
-pixels: `"main nav"` puts `main` in the first column.
+rest. In step 5, `"main nav"` put `main` in the first column, so the
+main area was squeezed into 150 pixels.
 
 The drawing below shows the same two maps on one grid.
 
@@ -154,8 +154,8 @@ The drawing below shows the same two maps on one grid.
 </div>
 </div>
 <p class="dl-gm-drag">One grid, under the tutorial's own two maps. Drag the width across
-350px: the quoted lines change from four to three, and the shape changes
-with them, because the lines are what makes the shape. <code>nav</code>
+350px. The quoted lines change from four to three, and the shape changes
+with them, because the lines make the shape. <code>nav</code>
 is marked in both, so you can see where it went.</p>
 </div>
 
@@ -197,5 +197,5 @@ itself at a width we choose.
 
 Codepip. *Grid Garden*. <https://cssgridgarden.com/>. Twenty-eight levels
 of watering carrots with `grid-column`, `grid-row` and `grid-template`.
-It works in the column and row numbers this page avoided; having named
-the areas first, the numbers underneath them are easier to meet.
+It uses the column and row numbers this page avoided. Now that you know
+the named areas, the numbers are easier to learn.

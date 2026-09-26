@@ -100,8 +100,8 @@ A *frame* is one still picture on the screen. The browser draws a new
 frame many times a second, often about sixty, and our eye blends them
 into movement. On [Animation with
 keyframes](tutorial:keyframes-and-the-checkbox-hack) we wrote a
-`@keyframes` rule. Its name fits: we write down a few *key* frames, the important
-ones, and the browser works out every frame in between. `turn` names
+`@keyframes` rule. The name makes sense. We write down a few *key* frames, the important
+ones, and the browser calculates every frame in between. `turn` names
 only two:
 
 - at the start, `.orbit` is turned by `0deg`
@@ -171,7 +171,7 @@ children at their real depth.
 
 The page uses it twice. On `.orbit`, it keeps the ball out at its
 100 pixels as `.orbit` turns. On `.stage`, it puts the sun and the
-orbit in one shared space. Then the browser can work out that the ball
+orbit in one shared space. Then the browser can find that the ball
 is behind the sun when it passes the back of its circle, and draw it
 there.
 
@@ -229,3 +229,11 @@ it, with CSS alone.
 | `rotateY()` | Turns an element about its vertical axis, like a turntable | `transform: rotateY(90deg);` |
 | `translateZ()` | Pushes an element towards us, or away with a minus value. It shows only when an element around it has a `perspective`. | `transform: translateZ(100px);` |
 | `transform-style: preserve-3d` | Keeps an element's children at their real depth when the element itself is transformed | `transform-style: preserve-3d;` |
+
+## Where to read more
+
+Welch Labs (2024). *How the Bizarre Path of Mars Reshaped Astronomy
+[Kepler's Laws Part 1].* <https://www.youtube.com/watch?v=Phscjl0u6TI>.
+Our orbit is a perfect circle. Real orbits are not, and finding the
+true shape of Mars's path changed astronomy. About seventeen minutes, with
+a second part after it.

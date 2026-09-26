@@ -7,12 +7,13 @@ covers:
     touches: [DBM-LO5]
   one-line-per-country:
     touches: [DBM-LO7]
+datasets: [income-share-top-1]
 ---
 
 # Charting a query's result: one line per country
 
 A table of numbers and a chart of the same numbers answer different
-questions. The table says exactly what one row holds; the chart shows what
+questions. The table says exactly what one row holds. The chart shows what
 changed, and when, at a glance. This page turns a query's result into a
 line chart, one line per country.
 
@@ -48,8 +49,8 @@ SELECT DISTINCT country FROM income_share_tbl ORDER BY country;
 ## From SELECT to DataFrame
 
 `pandas.read_sql` runs a query against the database and returns a
-DataFrame. It does the opposite of `to_sql`: going from a table back into
-Python, rather than from Python into a table.
+DataFrame. It does the opposite of `to_sql`. It goes from a table back
+into Python, not from Python into a table.
 
 ```python exec
 id: query-income-share-for-chart
@@ -81,8 +82,9 @@ plt.legend()
 ```
 
 `result.groupby("country")` splits the DataFrame into one smaller table per
-country. Each pass through the loop plots one line and labels it;
-`plt.legend()` at the end collects every label a `plt.plot` call gave it.
+country. Each pass through the loop plots one line and labels it.
+`plt.legend()` at the end collects every label a `plt.plot` call gave
+it.
 A cell's last line renders automatically here, the same as a DataFrame
 does, so this cell needs no separate `plt.show()` call.
 
@@ -102,9 +104,17 @@ barely moves at all.
 
 ## What you have now
 
-- **A DataFrame becomes a chart directly.** No separate conversion step:
-  matplotlib reads columns straight out of a DataFrame.
+- **A DataFrame becomes a chart directly.** You need no separate
+  conversion step. matplotlib reads columns straight out of a DataFrame.
 - **`groupby`.** Splits one table into a smaller table per group, ready for
   a loop that treats each group on its own.
-- **A chart raises questions.** A bend in a line says something changed; a
-  chart does not say what.
+- **A chart raises questions.** A bend in a line says something changed.
+  The chart does not say what.
+
+## Where to read more
+
+Gapminder Foundation (2009). *200 years that changed the world.*
+<https://www.youtube.com/watch?v=BPt8ElTQMIg>. Hans Rosling draws 200
+years of health and wealth for every country in the world, one moving
+bubble for each. Our chart has one line per country. His shows two numbers
+at once, and lets time move. Five minutes.

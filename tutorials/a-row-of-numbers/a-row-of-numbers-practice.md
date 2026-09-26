@@ -10,8 +10,8 @@ datasets: [life-expectancy]
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything. A guess that turns out different from Python is the most
-useful kind: it shows you exactly where to look.
+anything. A guess that is different from what Python shows is the most
+useful kind. It shows you exactly where to look.
 
 Your toolkit is loaded on this page, so `largest`, `smallest` and
 `count_if` are ready to use, and so are `total`, `between` and the rest.
@@ -37,7 +37,7 @@ print(len(playlist))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`Linger`, then `Salty Dog`, then `4`.
+The cell prints `Linger`, then `Salty Dog`, then `4`.
 
 Index 1 is the second song, because the first is at index 0. Index −1
 is the last song, whatever the length of the list. And `len` counts
@@ -51,7 +51,7 @@ values does it hold?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`[3, 1, 1]`, three values.
+It is `[3, 1, 1]`, three values.
 
 ```python
 goals = [2, 0, 3, 1, 1, 4]
@@ -121,14 +121,14 @@ those step counts.
 
 **Think about:** how can you check the two answers against each other?
 
-**Try this next:** which days of the week were they? You will need to go
-through by index.
+**Try this next:** which days of the week were they? You will need to loop
+by index.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def over_ten_thousand(count):
@@ -145,7 +145,7 @@ print(big_days)          # [11400, 12900, 10300]
 print(len(big_days))     # 3
 ```
 
-Three days: Tuesday, Thursday and Saturday. The length of the new list
+There are three days: Tuesday, Thursday and Saturday. The length of the new list
 agrees with `count_if`, which is a good check.
 
 </details>
@@ -216,8 +216,8 @@ print("brighter:", brighter)    # hoping for [200, 120, 40]
 
 `brighter = original` does not make a second list. It ties a second
 name to the same list. So doubling through `brighter` doubles the only
-list there is, and `original` sees it too. Schlomo's idea of a second
-name was half of a plan that works; the other half is a second list, from
+list there is, and `original` sees it too. A second name was only
+half of a plan that works. The other half is a second list, from
 `.copy()`:
 
 ```python
@@ -229,7 +229,7 @@ print("original:", original)    # [100, 60, 20]
 print("brighter:", brighter)    # [200, 120, 40]
 ```
 
-That is one way through. Building a new list with `append` works too,
+That is one answer. Building a new list with `append` works too,
 and then there is no question of which list is which. (A real editor would also stop each
 part at 255, the largest value a part can hold.)
 
@@ -267,7 +267,7 @@ trusted. (The readings are made up.)
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 sensor_a = [98, 95, 91, 88, 86]
@@ -281,9 +281,9 @@ print(smallest(trusted))    # 84
 ```
 
 The drone trusted 97, 95, 90, 88 and 84, and the lowest was 84. Each
-step needs the same position in two lists, so the loop goes through by
-index. `smallest` works on any list, even one of two values made on the
-spot.
+step needs the same position in two lists, so the loop is by index.
+`smallest` works on any list, even one of two values made inside the
+loop.
 
 </details>
 
@@ -305,8 +305,8 @@ print(np.array([1, 2]) + np.array([3, 4]))    # [4 6]
 
 Schlomi is using the maths meaning of `+`, the one that mixes two
 sounds. Python's lists use another meaning, joining, because a list can
-hold words as well as numbers. Her move works in the array space, and
-stops working in the list space.
+hold words as well as numbers. Her `+` works in the array space, but not
+in the list space.
 
 </details>
 
@@ -319,8 +319,7 @@ fail? Give a list for each.
 
 His idea works whenever at least one value is 0 or more, such as
 `[11, 13, 9]`. But if every value is below 0, none of them is bigger
-than 0, so a start of 0 would never change, and the function would give
-back 0. For `[-3, -1, -4]`, three January nights, it would say 0 when
+than 0, so a start of 0 would never change, and the function would return 0. For `[-3, -1, -4]`, three January nights, it would say 0 when
 the biggest is −1. Starting from a real value in the list means the
 answer is always one of the values. That is what
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand) found with
@@ -365,7 +364,7 @@ call it once for each value. Leave the brackets off:
 print(count_if(week, is_cold))    # 2
 ```
 
-Two cold days: Wednesday (9) and Sunday (8).
+There are two cold days: Wednesday (9) and Sunday (8).
 
 </details>
 
@@ -382,7 +381,7 @@ print(len(ireland), len(spain))
 ```
 
 **13. Make.** The cell above makes two lists of life expectancy, for
-Ireland and for Spain, each from 1950 to 2016. In how many of those
+Ireland and for Spain, each from 1950 to 2023. In how many of those
 years was Spain's higher than Ireland's? And in which year did Spain
 first pass Ireland?
 
@@ -390,7 +389,7 @@ first pass Ireland?
 
 1. Both lists are in year order, so the same index is the same year in
    both.
-2. Go through by index, and count the years where `spain[i]` is bigger
+2. Loop by index, and count the years where `spain[i]` is bigger
    than `ireland[i]`.
 3. The year for index `i` is `1950 + i`. A list of those years answers
    both questions.
@@ -401,22 +400,24 @@ first pass Ireland?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 years_ahead = []
 for i in range(len(ireland)):
     if spain[i] > ireland[i]:
         years_ahead.append(1950 + i)
-print(len(years_ahead))    # 53
+print(len(years_ahead))    # 59
 print(years_ahead[0])      # 1964
 ```
 
-Spain was ahead in 53 of the 67 years, every year from 1964 to 2016.
-Keeping the years in a list answers both questions: its length is the
+Spain was ahead in 59 of the 74 years: every year from 1964 to 2023
+except 2020, when the first year of COVID-19 hit Spain harder. (These
+are the numbers in the copy saved on {{snapshot: life-expectancy}}.)
+A list of the years answers both questions. Its length is the
 count, and its first value is the first year. `count_if` looks at one
 value at a time, and this question needs a value from each of two
-lists, so the loop goes through by index.
+lists, so the loop is by index.
 
 </details>
 
@@ -427,7 +428,7 @@ rain so far this year. Check that its last value equals `total(rain)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 rain = [110, 80, 95, 60, 70, 75]
@@ -486,7 +487,7 @@ with `//`. What colour list do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 orange = [255, 136, 0]
@@ -498,8 +499,8 @@ for i in range(3):
 print(mixed)    # [195, 171, 117]
 ```
 
-The mix is `[195, 171, 117]`, a light brown, a little like sand. This
-is adding element by element, then halving each value: the same move as
-the two notes on the tutorial page, used on colours.
+The mix is `[195, 171, 117]`, a light brown, a little like sand. We add
+element by element, then halve each value. The tutorial page did the
+same with the two notes.
 
 </details>

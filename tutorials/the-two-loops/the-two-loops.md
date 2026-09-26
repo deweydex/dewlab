@@ -24,12 +24,12 @@ On this page we:
 
 - walk through the loop on your computer
 - walk through the loop on GitHub
-- use the two loops to work out why a change is not showing yet
+- use the two loops to find why a change is not showing yet
 
 ## On your computer: save and refresh
 
-Working on a file follows the same short cycle every time, whichever
-editor you use:
+When you work on a file, you follow the same short cycle every time,
+whichever editor you use:
 
 1. Open the file, and change something in it.
 2. Save the file. In most editors, the keys are `Ctrl+S` on Windows and
@@ -39,7 +39,7 @@ editor you use:
    change. A refresh makes the browser read the saved file again.
 
 Nothing in this loop leaves your own computer. Your published site stays
-the same until the change goes through the second loop, on GitHub.
+the same until the change completes the second loop, on GitHub.
 
 What if you work in GitHub's editor, on the GitHub website? Then there
 is no separate save on your computer. Saving a file there makes a
@@ -101,7 +101,7 @@ it has not been pushed yet.
 
 ## What we have now
 
-We can now make a change, and work out why it has or has not appeared
+We can now make a change, and find why it has or has not appeared
 yet.
 
 | Loop | Where it happens | Steps |

@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Seventh tutorial of the series (Programming with objects), after
+# a-polynomial-class. Checked against every earlier glossary in the
+# series: none of these terms overlap. pass was in
+# keeping-details-inside-an-object's glossary until 2026.09.26, when that
+# page stopped using it; the skeletons here are where the series needs it
+# again.
+entries:
+  - term: responsibility
+    kind: concept
+    definition: >
+      A class's responsibilities are what it knows and what it does. A
+      responsibility belongs to the class that has what it needs.
+
+  - term: collaborator
+    kind: concept
+    definition: >
+      A class's collaborators are the other classes it works with to do
+      its job.
+
+  - term: CRC card
+    kind: concept
+    definition: >
+      A CRC card is a small card for one class, with its name, its
+      responsibilities and its collaborators. Designers write the cards
+      before any code, because cards are easy to change.
+
+  - term: skeleton
+    kind: concept
+    definition: >
+      A skeleton is a set of classes with every method named but not yet
+      written. It runs, and shows that the classes fit together.
+
+  - term: pass
+    python: pass
+    kind: keyword
+    definition: >
+      Does nothing. It holds the place of code that has not been written
+      yet, so an empty method can still run.
+    example: "pass"

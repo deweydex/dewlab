@@ -10,7 +10,7 @@ version: 2026.09.21.1
 Read the matrix before you run it. The columns say where the three
 axes land, and that is usually enough to predict the picture.
 
-## Reading a Rotation
+## Reading a rotation
 
 ```python exec
 id: reading-1
@@ -53,7 +53,7 @@ print(rounded(rotate_y(math.radians(90))))
 ```
 
 **1.** Where does `rotate_y` at a quarter turn send the point
-$(1, 0, 0)$? Read it off the matrix's first column before you look at
+$(1, 0, 0)$? Read it from the matrix's first column before you look at
 the printout.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -73,8 +73,8 @@ do to a point?
 
 $$\begin{bmatrix} -1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & -1 \end{bmatrix}$$
 
-It flips the sign of $x$ and of $z$ and leaves $y$ alone. Turning half
-way round puts everything on the opposite side, left for right and
+It flips the sign of $x$ and of $z$ and leaves $y$ alone. A half turn
+puts everything on the opposite side, left for right and
 front for back, at the same height. The printout has a `-0.0` in one
 place, which is a very small negative number rounded to zero, and it
 counts as the $0$ in the matrix.
@@ -90,11 +90,11 @@ should be before you run it, and say why.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The identity matrix, to within rounding. Turning by $0.7$ radians and
-then by $-0.7$ radians is turning by nothing at all. Every rotation can
-be undone by the same rotation the other way, which makes the inverse
-of a rotation matrix easy to write down: it is the rotation matrix for
-the opposite angle.
+The identity matrix, to within rounding. A turn by $0.7$ radians and
+then by $-0.7$ radians is no turn at all. Every rotation can be undone
+by the same rotation the other way. So the inverse of a rotation matrix
+is easy to write down. It is the rotation matrix for the opposite
+angle.
 
 ```python
 print(rounded(multiply(rotate_y(0.7), rotate_y(-0.7))))
@@ -102,7 +102,7 @@ print(rounded(multiply(rotate_y(0.7), rotate_y(-0.7))))
 
 </details>
 
-## A Third Axis
+## A third axis
 
 **4.** `rotate_y` leaves $y$ alone and `rotate_x` leaves $x$ alone. How
 might you write `rotate_z(angle)`, which leaves $z$ alone and turns $x$
@@ -135,11 +135,11 @@ def rotate_z(angle):
 print(rounded(multiply(rotate_z(math.radians(90)), [[1], [0], [0]])))
 ```
 
-That prints $[[0.0], [1.0], [0.0]]$: the point on the $x$ axis has
-turned up onto the $y$ axis. `rotate_z` is the 2D rotation matrix with
-a $z$ row and column added, since turning about $z$ is turning in the
+That prints $[[0.0], [1.0], [0.0]]$. The point on the $x$ axis has
+turned onto the $y$ axis. `rotate_z` is the 2D rotation matrix with
+a $z$ row and column added, since a turn about $z$ is a turn in the
 $x$–$y$ plane, which is the plane the 2D matrix always worked in. Both
-half turns send $x$ to $-x$; they differ in which of the other two
+half turns send $x$ to $-x$. They differ in which of the other two
 axes they flip.
 
 </details>

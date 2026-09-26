@@ -32,7 +32,7 @@ ways. On this page we:
 - walk a point around the circle and write down where it is
 - give the two coordinates of that point their names, sine and cosine
 - measure angles in a new way, called radians
-- work out some points on the circle exactly, with Pythagoras
+- find some points on the circle exactly, with Pythagoras
 - meet a third name, tangent, and see that it is a slope
 
 ## Going round in circles
@@ -104,13 +104,12 @@ for step in range(8):
 ```
 
 The distance is exactly 1, every time. That is the key fact. Everything
-on the rest of this page follows from it: the two columns come from a
+on the rest of this page follows from it. The two columns come from a
 point that always stays at distance 1 from the middle.
 
 ## The names for those two columns
 
-The across column has a name: it is called *cosine*. The up column is
-called *sine*.
+The across column is called *cosine*. The up column is called *sine*.
 
 So, for a point on the unit circle:
 
@@ -136,7 +135,7 @@ for step in range(5):
 ```
 
 The columns match, because we built `unit_point` out of `cos` and `sin`
-in the first place. What matters is the order of the ideas. The
+in the first place. The order of the ideas matters. The
 coordinates came first, and cosine and sine are the names we gave them.
 
 ### The identity, discovered
@@ -203,8 +202,7 @@ id: measuring-the-walk-1
 print("math.sin(90) =", math.sin(90))
 ```
 
-Python says about 0.894, not 1. Python is not wrong. It is answering a
-different question, because `math.sin` does not take degrees. It takes
+Python says about 0.894, not 1. It is answering a different question, because `math.sin` does not take degrees. It takes
 radians.
 
 ### What a radian is
@@ -239,8 +237,8 @@ The orange arc and the blue radius have the same length. The angle
 between the two blue lines is one radian.
 
 How many radians are there in a full turn? The distance all the way round
-a circle is $2\pi r$, so for a circle of radius 1 it is $2\pi$. That is
-what $\pi$ is for. So a full turn is $2\pi$ radians, which is about
+a circle is $2\pi r$, so for a circle of radius 1 it is $2\pi$. So a
+full turn is $2\pi$ radians, which is about
 $6.28$.
 
 ```python exec
@@ -254,8 +252,8 @@ print("sin of a quarter turn:", math.sin(math.pi / 2))
 
 There is the 1 that was missing.
 
-The $2\pi$ here is not a magic number that turns up in trigonometry for a
-mysterious reason. It is the distance round the circle. Because the
+The $2\pi$ here is the distance round the circle. It is not a mysterious
+number from trigonometry. Because the
 circle has radius 1, that distance is also the number of radians in a
 turn.
 
@@ -295,8 +293,8 @@ that scale, you have probably multiplied where you should have divided.
 
 ### Your turn
 
-How would you convert these without using `math.radians`? Work each one
-out first, then check it in the cell.
+How would you convert these without using `math.radians`? Find each one
+first, then check it in the cell.
 
 1. Convert 270 degrees to radians.
 2. Convert 135 degrees to radians.
@@ -310,8 +308,8 @@ id: your-turn-2
 
 ## The landmark points
 
-At some angles, we can work out the coordinates exactly, with no
-calculator and no decimals. The working is Pythagoras again.
+At some angles, we can find the coordinates exactly, with no
+calculator and no decimals. We use Pythagoras again.
 
 Why do we want exact values? A decimal is an approximation, and
 sometimes the difference matters. We will see an example below.
@@ -418,8 +416,8 @@ different number. Even Python's own `math.sqrt(2) / 2` is a decimal with
 about 16 digits, so its square misses a half by a very tiny amount.
 
 Only the exact form $\frac{\sqrt{2}}{2}$ squares to exactly $\frac{1}{2}$.
-That is why we use *surd form*: a surd is a root such as $\sqrt{2}$ that
-we leave as a root, without turning it into a decimal. It is more than a
+That is why we use *surd form*. A *surd* is a root such as $\sqrt{2}$
+that we leave as a root, without turning it into a decimal. It is more than a
 tidier way to write the decimal. The decimal is wrong by a small amount,
 and in some calculations small amounts add up.
 
@@ -428,7 +426,7 @@ and in some calculations small amounts add up.
 What are the exact values for 120°, 135° and 150°?
 
 1. Use the first-quarter table above.
-2. Use the signs you worked out for each quarter earlier.
+2. Use the signs you found for each quarter earlier.
 3. Fill in the comments, then run the check.
 
 ```python exec
@@ -492,7 +490,6 @@ across value is zero, and $\frac{1}{0}$ is not a number. The line from
 the origin is vertical, and a vertical line has no slope. It is the same
 line that would not fit $y = mx + c$ in
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
-Here it arrives from a different direction.
 
 If you try `math.tan(math.pi / 2)` yourself, Python gives a huge number
 instead of an error. That is because `math.pi / 2` is a decimal, a tiny
@@ -523,8 +520,8 @@ circle comes first.
 circle is at distance 1 from the centre. The distance formula tells us
 what that means for the coordinates.
 
-**A radian is a distance walked.** That is why a full turn is $2\pi$
-radians: $2\pi$ is the distance round a circle of radius 1.
+**A radian is a distance walked.** A full turn is $2\pi$ radians,
+because $2\pi$ is the distance round a circle of radius 1.
 
 **The exact values are places on the circle.** You do not need to
 memorise them. $\frac{\sqrt{2}}{2}$ is where the 45° line crosses the
@@ -540,12 +537,18 @@ Before this page, what did you think sine and cosine were? Write a few
 sentences. Has your idea changed? If it has, where on the page did it
 change?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Introduction to the Unit Circle.*
-<https://www.youtube.com/watch?v=1m9p9iubMLU>. The same across-and-up
-coordinates this page builds, introduced from SOH CAH TOA instead.
+<https://www.youtube.com/watch?v=1m9p9iubMLU>. This video explains the
+same across-and-up coordinates as this page, but starts from SOH CAH TOA.
 
 Khan Academy. *Introduction to Radians.*
-<https://www.youtube.com/watch?v=EnwWxMZVBeg>. Why a full turn is `2π`
-radians, covered a second way.
+<https://www.youtube.com/watch?v=EnwWxMZVBeg>. This video shows a second
+way to see why a full turn is `2π` radians.
+
+SimonDev (2023). *So how does your computer ACTUALLY compute sine?*
+<https://www.youtube.com/watch?v=kkMt4lrJzs8>. This video starts with
+sine and cosine on the unit circle. Then it asks a question this page
+does not answer. How does a computer find the sine of an angle at all?
+It is about eight minutes long.

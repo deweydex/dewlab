@@ -1,0 +1,31 @@
+# Attribution for data/book-characters.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Counted from six novels already in this site's data folder, each a
+  Project Gutenberg edition: Pride and Prejudice, Frankenstein, The Time
+  Machine, The War of the Worlds, A Princess of Mars and The Lost World.
+
+url: https://www.gutenberg.org
+
+license: >
+  Public domain in the United States, as the novels are. The counts are
+  this site's own, and it places them in the public domain too.
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Made by dev/book_counts.py, which lists every name it looks for and how.
+  Six to twelve characters a book, chosen by hand; chapters as in
+  book-chapters.csv. It has no live source: the counts come from the
+  files in data/, which do not change.
+
+description: >
+  How often each of a novel's main characters is named in each chapter,
+  one row for every character and chapter, zeros included: book, chapter,
+  character and mentions. A name counts where it is written, so "he",
+  "she" and "I" do not, and a narrator is nearly invisible. Where two
+  people share a name, the book decides ("Miss Bingley" is her own row).
+  Frankenstein's creature has no name, and so no row. Some rows are
+  groups, such as the Martians.

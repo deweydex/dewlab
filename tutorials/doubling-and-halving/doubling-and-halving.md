@@ -31,7 +31,7 @@ the same again. How long before the whole of Ireland knows?
 
 And here is a second question that looks quite different. A phone keeps
 five million names in order. Why does it find one of them in a moment?
-By the end of this page, the two questions will turn out to have the
+By the end of this page, you will see that the two questions have the
 same answer.
 
 On this page we:
@@ -45,14 +45,14 @@ On this page we:
 - see why binary search is so quick: $2^k = n$ and $k = \log_2 n$, from
   both ends
 
-> **The space we're in.** Whole numbers that double, and whole numbers
-> that are halved with `//`, which drops any remainder. Python's whole
-> numbers never run out of room, however big they get. We met powers and
+> **The space we're in.** We work with whole numbers that double, and
+> whole numbers that are halved with `//`, which drops any remainder.
+> Python's whole numbers have no size limit, however big they get. We met powers and
 > logarithms on
 > [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 > and binary search on
-> [Finding things fast](tutorial:finding-things-fast). One thing usually
-> goes unsaid: a rule like "everyone tells one more person" is a model.
+> [Finding things fast](tutorial:finding-things-fast). We usually do not
+> say it, but a rule like "everyone tells one more person" is a model.
 > It is true of the maths. It is only roughly true of people, and only
 > for a while.
 
@@ -114,13 +114,13 @@ while people_who_know < population:
 print(hours, "hours, and", people_who_know, "people could know")
 ```
 
-It takes 23 hours: less than one day for the whole country. I find
+It takes 23 hours, less than one day for the whole country. I find
 that hard to believe, even after running it. After 22 hours, 4,194,304
 people know, which is about four people in every five. One more doubling passes the whole population. (The
 rumour runs out of new people before the last hour ends, so 8,388,608
 is what the rule would give, not what could happen.)
 
-The counter, `hours`, is the answer: it counts doublings. Here is a
+The counter, `hours`, is the answer. It counts doublings. Here is a
 picture of the same 23 hours. Before you run it, what shape do you
 expect?
 
@@ -208,7 +208,7 @@ at such a small reward.
 You met this kind of doubling on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 where each new segment of a display doubled the number of patterns. Now
-let's fill the whole board. Square $k$ has $2^{k-1}$ grains: the power
+let's fill the whole board. Square $k$ has $2^{k-1}$ grains. The power
 is one less than the square's number, because the first square has had
 no doublings yet. Multiplying no 2s at all leaves 1, as a running
 product started at 1 on
@@ -267,7 +267,7 @@ fits in 64 bits exactly, with no room to spare.
 ## Doublings add up
 
 Double 10 times, then double 5 more times. How many doublings is that?
-Fifteen. In powers, that says:
+It is fifteen. In powers, that says:
 
 $$2^{10} \times 2^{5} = 2^{15}$$
 
@@ -358,7 +358,7 @@ a century.
 **Moore's law.** In 1965 Gordon Moore, who later helped found Intel,
 wrote that the number of parts on a chip was doubling every year. In
 1975 he changed his estimate to every two years. It is not a law of
-nature: it held because engineers worked to make it hold, and it has
+nature. It held because engineers worked to make it hold, and it has
 slowed in recent years. The counts above are the ones usually quoted
 for each chip.
 
@@ -367,7 +367,7 @@ for each chip.
 Growth like this, where each step multiplies by the same number, so
 that each step's increase is bigger than the last, is called *compound
 growth*. It is exponential growth with a base other than 2. Say a count
-grows by 40% a year: each year it is multiplied by 1.4. How many years
+grows by 40% a year. Each year it is multiplied by 1.4. How many years
 until it doubles? The time it takes a growing amount to double is its
 *doubling time*. Guess first. The cell counts the years, the way the
 rumour counted hours.
@@ -384,9 +384,9 @@ print(years_passed, "years, and the count is", round(growth, 2), "times as big")
 print(math.log(2, 1.4))
 ```
 
-The loop says 3 years. After 2 years the count is 1.96 times as big:
-only a little short of doubling, so the loop needs a third year. The
-exact question is: which $k$ makes $1.4^k = 2$? That is a logarithm
+The loop says 3 years. After 2 years the count is 1.96 times as big.
+That is only a little short of doubling, so the loop needs a third year.
+The exact question is which $k$ makes $1.4^k = 2$. That is a logarithm
 with base 1.4, written $\log_{1.4} 2$. A logarithm can have any base,
 not only 2 or 10, and Python's `math.log(x, base)` takes the base as
 its second input. It gives about 2.06 years, close to Moore's two.
@@ -396,8 +396,8 @@ its second input. It gives about 2.06 years, close to Moore's two.
 Rules like "40% every year" are steady. Real numbers are not. Here are
 Ireland's carbon dioxide emissions from burning fuel and making cement,
 in millions of tonnes a year, from 1950 to 2023. The cell loads a file
-of every country's emissions, keeps Ireland's rows, and takes two
-columns out as lists. Then our own loop finds the first year that
+of every country's emissions, keeps Ireland's rows, and makes two
+columns into lists. Then our own loop finds the first year that
 emissions reached 2 times, then 4 times, the 1950 level.
 
 ```python exec
@@ -423,10 +423,10 @@ plt.ylabel("CO2, millions of tonnes")
 
 Emissions doubled by 1971, 21 years after 1950, and doubled again by
 1998, 27 years later. The third doubling, to about 78 million tonnes,
-never came: emissions stopped growing in the 2000s and have fallen
+never came. Emissions stopped growing in the 2000s and have fallen
 since. A doubling time describes growth while it lasts. It does not
 promise that the growth will go on. The rumour's space assumed an
-endless supply of people who have not heard yet; the real world has no
+endless supply of people who had not heard yet. The real world makes no
 such promise.
 
 ### Your turn
@@ -439,7 +439,7 @@ such promise.
 ## Halving down to 1
 
 Now the other end. A tennis tournament like Wimbledon starts with 128
-players in each singles draw. Every match knocks one player out, so each
+players in each singles draw. Every match removes one player, so each
 round halves the field. How many rounds until one champion is left?
 
 ```python exec
@@ -452,7 +452,7 @@ while players > 1:
 print(rounds, "rounds")
 ```
 
-Seven rounds, because $2^7 = 128$. Halving 128 down to 1 takes the same
+It takes seven rounds, because $2^7 = 128$. Halving 128 down to 1 takes the same
 number of steps as doubling 1 up to 128.
 
 What if the number is not a power of 2? On
@@ -496,7 +496,7 @@ def halvings(n):
 ```
 
 Run the toolkit cell, then the tests. Until `halvings` is written, the
-first test stops with an `AssertionError`, because `...` gives back
+first test stops with an `AssertionError`, because `...` returns
 `None`. The last test checks the promise against `math.log2` for every
 whole number up to 10,000.
 
@@ -531,8 +531,8 @@ What would `halvings(8)` give with `n > 0`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way to write it. Yours may differ and still keep the
-promise: the tests are the judge.
+Here is one answer. Yours may be different and work too. Run the
+tests to see what yours does.
 
 ```python
 def halvings(n):
@@ -554,8 +554,8 @@ def halvings(n):
 If you have not written `halvings` yet, open the answer above and copy
 it into the stub. The rest of the page uses it.
 
-`math.floor` rounds down, the partner of `math.ceil`. The fifth test says
-something worth a second look. 5,149,139 halves 22 times to reach 1,
+`math.floor` rounds down, the partner of `math.ceil`. Look again at the
+fifth test. 5,149,139 halves 22 times to reach 1,
 while the rumour needed 23 doublings to pass it. Halvings round
 down and doublings round up, because 5,149,139 sits between $2^{22}$ and
 $2^{23}$.
@@ -572,7 +572,7 @@ id: doubling-halve-2
 print(to_binary(1000), len(to_binary(1000)), halvings(1000))
 ```
 
-Ten binary digits, and 9 halvings.
+It has ten binary digits, and 9 halvings.
 
 Halving with `//` stays in the whole numbers, so it stops at 1. In the
 space of fractions it need not stop: $1 \div 2 = \frac{1}{2}$, then
@@ -591,7 +591,7 @@ take $n$ values down to 1, plus one last look at the value that is left:
 `halvings(n) + 1`.
 
 Is that promise true for every target, not only the one past the end?
-Here is `binary_looks` from that page again. It gives back how many
+Here is `binary_looks` from that page again. It returns how many
 items a binary search looked at. The cell tries every target in lists
 of 10 up to 10,000 numbers, and keeps the largest count. It uses your
 `halvings`, so write that first. Before you run it, use `halvings` to
@@ -698,7 +698,7 @@ that this page showed only one law of logarithms, and a logarithm like
 
 | The question | On this page |
 |---|---|
-| What is named here? | a counter like `hours` or `rounds`, which turns out to be a logarithm; a base, 2 or 1.4; $k$ in $2^k = n$ |
+| What is named here? | a counter like `hours` or `rounds`, which is really a logarithm; a base, 2 or 1.4; $k$ in $2^k = n$ |
 | What is promised? | `halvings(n)` promises $\log_2 n$ rounded down; $2^a \times 2^b = 2^{a+b}$; $\log_2(ab) = \log_2 a + \log_2 b$ |
 | What happens when? | each doubling or halving happens after the one before; the last doubling adds more than all the ones before it |
 | What does this space let us do? | Python's whole numbers hold $2^{64} - 1$ exactly; `//` stops halving at 1, while fractions halve for ever; a model of a rumour doubles for ever, and people do not |
@@ -712,7 +712,7 @@ that this page showed only one law of logarithms, and a logarithm like
 | $2^a \times 2^b = 2^{a+b}$ | a law of powers: doublings add |
 | $2^{10} \approx 1000$ | a way to estimate: 20 doublings is about a million |
 | $\log_2(ab) = \log_2 a + \log_2 b$ | a law of logarithms: the counts add |
-| compound growth | growth where each step's increase earns its own increase next time |
+| compound growth | growth where each step's increase also grows in the next step |
 | transistor, Moore's law | a tiny on-off switch on a chip; the count on a chip doubled about every two years for half a century |
 | doubling time | how long a growing amount takes to double |
 | `math.log(x, base)` | a logarithm with any base: how many times do I multiply by `base`? |
@@ -723,3 +723,10 @@ that this page showed only one law of logarithms, and a logarithm like
 
 The practice page is next, and then the mixed problems for this unit,
 where a phone book of 100,000 names is searched three ways.
+
+## Where to read more
+
+3Blue1Brown (2017). *How secure is 256 bit security?*
+<https://www.youtube.com/watch?v=S9JGmA5_unY>. How big is 2 to the power
+256? Grant Sanderson builds a feel for it, one set of doublings at a time.
+Five minutes.

@@ -7,8 +7,8 @@ version: 2026.09.25.1
 
 # Racing the sorts: counting steps — Practice
 
-Each answer is hidden until you open it, and each one is one way
-through: yours may go another way. Where a problem asks you to predict,
+Each answer is hidden until you open it. Each one is one answer.
+Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
 Your toolkit is loaded on this page, so `shell_sort`, `selection_sort`,
@@ -85,12 +85,12 @@ print("The racers are ready.")
 ```
 
 **1. Predict.** A teacher sorts 20 exam marks with selection sort. How
-many comparisons does it make? Work it out before you check with
+many comparisons does it make? Calculate it before you check with
 `selection_count(random_list(20))`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-190. Selection sort always makes $\frac{n(n-1)}{2}$ comparisons, so for
+It makes 190. Selection sort always makes $\frac{n(n-1)}{2}$ comparisons, so for
 20 marks it is $\frac{20 \times 19}{2} = 190$, whatever the marks are.
 
 </details>
@@ -101,7 +101,7 @@ in order: `[7, 8, 9, 10, 11, 12]`. How many comparisons does
 
 <details class="dl-answer"><summary>answer</summary>
 
-5. Each time from the second on looks once to its left, finds a smaller
+It makes 5. Each time from the second on looks once to its left, finds a smaller
 time, and stays where it is. That is one comparison for each of the 5
 times after the first. For a list already in order, insertion sort
 makes $n - 1$ comparisons.
@@ -141,7 +141,7 @@ comparisons, round 2 makes 998, and so on.
 
 Insertion sort stops sliding a value as soon as it meets a smaller one.
 How soon that happens depends on the order the list starts in. A list
-in order stops every value at once; a list in reverse order slides
+in order stops every value at once. A list in reverse order slides
 every value all the way.
 
 </details>
@@ -155,12 +155,12 @@ id: racing-practice-scratch-2
 
 **5. Predict.** Your music app sorted 1,000 songs with selection sort in
 499,500 comparisons. You add another 1,000 songs. About how many
-comparisons for 2,000? Guess first, then work it out exactly with the
+comparisons for 2,000? Guess first, then calculate it exactly with the
 formula.
 
 <details class="dl-answer"><summary>answer</summary>
 
-About four times as many, since doubling $n$ multiplies $n^2$ by
+It makes about four times as many, since doubling $n$ multiplies $n^2$ by
 $2^2 = 4$. Exactly:
 
 $$\frac{2000 \times 1999}{2} = 1\,999\,000$$
@@ -169,12 +169,12 @@ $$\frac{2000 \times 1999}{2} = 1\,999\,000$$
 print(selection_count(random_list(2000)))    # 1999000
 ```
 
-That is 4.002 times 499,500: quadratic growth.
+That is 4.002 times 499,500, which is quadratic growth.
 
 </details>
 
 **6. Make.** A game shows a leaderboard, and you want to test that a
-list really is in order. Write `is_in_order(values)`, which gives back
+list really is in order. Write `is_in_order(values)`, which returns
 `True` when every value is no bigger than the one after it. Use it to
 check `shell_sort` on 100 random lists of 50 values. How many
 comparisons does `is_in_order` make on a list of $n$ values?
@@ -183,9 +183,9 @@ comparisons does `is_in_order` make on a list of $n$ values?
 
 1. Loop over the indexes from 0 to `len(values) - 2`, so that `i + 1`
    is always a real index.
-2. If `values[i] > values[i + 1]`, the list is out of order: give back
+2. If `values[i] > values[i + 1]`, the list is not in order, so return
    `False` at once.
-3. If the loop finishes, give back `True`.
+3. If the loop finishes, return `True`.
 
 **Think about:** what should an empty list give?
 
@@ -211,14 +211,14 @@ print(is_in_order([3, 1, 2]), is_in_order([]))    # False True
 
 At most $n - 1$ comparisons, one for each pair of neighbours. Checking
 that a list is sorted is far cheaper than sorting it. An empty list
-gives `True`, because it has no pair out of order.
+gives `True`, because it has no pair in the wrong order.
 
 </details>
 
 **7. Fix.** Schlomi, who is learning Python too, wrote her own Shell
 sort to put the sizes of eight photos in order, in kilobytes. Halving
-the gap is dividing by 2, so she wrote `gap / 2`. That is a fair
-reading of "halve". The cell is meant to fail. Read the last line of
+the gap is dividing by 2, so she wrote `gap / 2`. That is one way
+to read "halve". The cell is meant to fail. Read the last line of
 the error, find the line that stops it, and change it.
 
 ```python exec
@@ -300,8 +300,6 @@ earlier one:
 seconds = time.perf_counter() - start
 ```
 
-Order matters in a subtraction, as it does in the steps of a program.
-
 </details>
 
 **9. Predict.** A playlist of 100 songs is sorted Z to A, and you want
@@ -358,7 +356,7 @@ print(selection_count(board), insertion_count(board), shell_count(board))
 One run gave 504,510 for selection sort, 3,680 for insertion sort and
 9,335 for Shell sort. Your numbers will differ a little, but insertion
 sort wins. The first 1,000 values are already in order, so each costs
-one comparison; only the five new ones slide, each part of the way.
+one comparison. Only the five new ones slide, each part of the way.
 Shell sort's long jumps are work this list did not need.
 
 </details>
@@ -406,7 +404,7 @@ on the same 1,000 random values.
 
 1. Build the list of gaps first: start with `[1]`, and append
    `3 * gaps[-1] + 1` while that is smaller than the length of the list.
-2. Go through the gaps from largest to smallest. `reversed(gaps)` does
+2. Use the gaps from largest to smallest. `reversed(gaps)` does
    that.
 3. The inside of each pass is the same as in `shell_count`.
 
@@ -445,7 +443,7 @@ print(knuth_count(numbers), shell_count(numbers))
 
 For 1,000 values the gaps are 364, 121, 40, 13, 4 and 1. Three runs
 gave about 13,600 to 14,200 for Knuth's gaps against about 14,800 to
-15,400 for halving: a little better. The last gap must be 1, so that
+15,400 for halving, a little fewer. The last gap must be 1, so that
 the last pass is an ordinary insertion sort and the list ends fully in
 order.
 
@@ -522,7 +520,15 @@ print(shell_count(counties))               # 37
 The sorted list starts Carlow, Clare, Cork, Donegal, Dublin, Galway,
 and Kerry is at index 6. The sort made 37 comparisons. Words compare
 letter by letter, so every sort here works on them without a change.
-Sorting once and then searching many times is how a phone keeps its
-contacts quick to find.
+A phone sorts its contacts once and then searches them many times, so
+they are quick to find.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2022). *Someone improved my code by 40,832,277,770%.*
+<https://www.youtube.com/watch?v=c33AZBnRHks>. Matt Parker wrote a program
+that took about a month to run. Viewers made the same job run in a tiny
+fraction of a second, by choosing better ways to do it. About twenty-nine
+minutes.

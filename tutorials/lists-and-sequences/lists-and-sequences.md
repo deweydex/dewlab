@@ -40,7 +40,7 @@ What will it print?
 It prints `ME`. The list keeps four words under one name, in order, and
 Python counts their positions from 0. Most programs work with many values,
 not one: every letter of a message, every pixel in a row. Here we keep them
-in a list, pick out the ones we want, and do something with each of them in
+in a list, choose the ones we want, and do something with each of them in
 turn.
 
 ## Lists: ordered collections
@@ -92,8 +92,8 @@ What will it print?
   - Counting from 1, the second letter is L.
 ```
 
-From 2 to 5 looks like four elements, and there are three. The reason is
-where the two numbers point. They do not point at elements. They point at
+From 2 to 5 looks like four elements, and there are three. The two numbers
+do not point at elements. They point at
 the gaps between them.
 
 ```python exec
@@ -112,7 +112,7 @@ index is not left out by a special rule. A cut is a gap, and there is
 nothing in a gap to take.
 
 The picture also shows why `letters[:3]` and `letters[3:]` fit back
-together, with nothing missing and nothing repeated: both meet at the same
+together, with nothing missing and nothing repeated. Both meet at the same
 cut. Try changing the numbers in the slices, and see which letters each
 one takes.
 
@@ -132,7 +132,7 @@ print(len(letters))
 ```
 
 `append()` adds one element to the end of a list. It changes that list,
-and gives nothing back. A string can be indexed like a list. Can it be
+and returns nothing. A string can be indexed like a list. Can it be
 changed like one?
 
 ```python exec
@@ -154,7 +154,7 @@ What will it print?
 ```
 
 It stops with a `TypeError`: `'str' object does not support item
-assignment`. A string is *immutable*: once it is made, it cannot be
+assignment`. A string is *immutable*. Once it is made, it cannot be
 changed. To get MOON, build a new string from pieces of the old one:
 `"M" + word[1:]`.
 
@@ -335,8 +335,8 @@ eleven numbers.
 
 ## Looping over lists
 
-A `for` loop can go through a list directly, one element at a time, in
-order.
+A `for` loop can visit each element of a list directly, one at a time,
+in order.
 
 ```python exec
 id: looping-over-lists-1
@@ -366,7 +366,7 @@ changes.
 
 - `enumerate(words)` gives the pairs `0, "MEET"`, then `1, "ME"`, and so
   on, one pair each time round.
-- `for index, word in` takes each pair apart: the first value goes into
+- `for index, word in` splits each pair: the first value goes into
   `index`, and the second into `word`.
 - `print(index, word)` shows both. With `enumerate(words, 1)`, the
   counting starts at 1 instead of 0, and the words stay the same.
@@ -385,8 +385,8 @@ for index in range(len(words)):
 
 `range(len(words))` gives every index of the list, from 0 to one less than
 its length. Both loops print the same thing. `enumerate()` says what it
-means more plainly. Looping by index is the way to go when the loop needs
-another element too, such as the one next door, at `index + 1`.
+means more plainly. Loop by index when the loop needs another element too,
+such as the next one, at `index + 1`.
 
 ### Your turn
 
@@ -537,7 +537,7 @@ its second number instead?
 A challenge: a rail-fence cipher writes a message's letters in a zig-zag
 across two rails, then reads the top rail and then the bottom. The letters
 at even indexes go on the top rail, and the rest on the bottom. Can you
-code a message this way with a loop? Can you get it back again?
+code a message this way with a loop? Can you decode it again?
 
 ```python challenge
 # A rail-fence cipher: even indexes on the top rail, odd on the bottom.
@@ -564,6 +564,11 @@ Chapter 10, "Lists", covers indexing, slicing and looping at greater length,
 with exercises.
 
 Python Software Foundation. *The Python Tutorial*, section 3.1.3, "Lists".
-<https://docs.python.org/3/tutorial/introduction.html#lists>. The official
+<https://docs.python.org/3/tutorial/introduction.html#lists>. This is the official
 introduction to lists, including slicing with a step, which this page leaves
 for the practice.
+
+Reducible (2019). *What if you had to invent a dynamic array?*
+<https://www.youtube.com/watch?v=5AllG-i_yto>. This video shows what a Python
+list does underneath, so that adding to the end stays quick however long the list
+grows. About fourteen minutes.

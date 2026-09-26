@@ -12,17 +12,17 @@ you](tutorial:a-ball-that-faces-you), the browser drew depth for us,
 with no arithmetic written down. [Drawing frames with
 JavaScript](tutorial:drawing-frames-with-javascript) and [A turning cube
 drawn on a canvas](tutorial:a-cube-on-a-canvas) wrote the same
-arithmetic out by hand. What does the browser work out, and where does
+arithmetic out by hand. What does the browser calculate, and where does
 it do it? This page is background reading. You do not need it to finish
 those pages, but it can help you see why they work.
 
 On this page we:
 
-- work out how big `perspective` makes a thing look
+- calculate how big `perspective` makes a thing look
 - move the eye, and give each element an eye of its own
 - see the circle, and the list of transforms, as the browser sees them
 - find what flattens a 3D scene without warning
-- see where depth in CSS turns up on real websites
+- see where depth in CSS appears on real websites
 
 ## The sheet of glass, in numbers
 
@@ -88,7 +88,7 @@ site: eye
 
 1. Do the three cards look the same? Which one looks widest?
 2. Add `perspective-origin: left;` to the `.row` rule. What changes?
-3. Take out the `perspective` and `perspective-origin` lines from
+3. Delete the `perspective` and `perspective-origin` lines from
    `.row`. Then change the card's transform to
    `transform: perspective(400px) rotateY(40deg);`. Do the cards look
    the same now?
@@ -107,7 +107,7 @@ card that turns when we point at it.
 ## The circle, as the browser sees it
 
 On the orbit page, `rotateY()` and `translateZ()` together made a
-circle. What does the browser work out? Say the ball is pushed out by
+circle. What does the browser calculate? Say the ball is pushed out by
 `r`, and `.orbit` has turned by the angle `θ`. Then the ball is at:
 
 - across: `x = r × sin θ`
@@ -155,16 +155,16 @@ ball back in the middle of the sun.
 
 There is one more thing that surprises most people. With `preserve-3d`,
 the element's own background is part of the scene, as a flat sheet at
-depth `0`. Anything pushed behind it is hidden. That is why the orbit's
+depth `0`. Anything pushed behind it is hidden. So the orbit's
 dark background is on `body`, and not on the stage.
 
 ## Where depth turns up on real websites
 
-Oftentimes, depth in CSS is a small touch. A card flips over when we
+Often, depth in CSS is a small touch. A card flips over when we
 point at it, to show a second face on its back, with
 `backface-visibility: hidden` on both faces. A button can tip a little
-towards us as we press it. With more faces, the cube trick is how a
-product spins round on a shop's website.
+towards us as we press it. With more faces, the cube trick makes a
+product spin round on a shop's website.
 
 3D games use a trick from [A ball that keeps facing
 you](tutorial:a-ball-that-faces-you) all the time. A tree far away, or
@@ -177,11 +177,18 @@ shows how to turn it off for people who have asked for less motion.
 
 ## What we have now
 
-We can now work out what `perspective` does to a size, and say what the
-browser works out for a 3D transform.
+We can now calculate what `perspective` does to a size, and say what the
+browser calculates for a 3D transform.
 
 | Word | Meaning | Example |
 |---|---|---|
 | `perspective-origin` | Sets where our eye is, across the element that has the `perspective`. By default, it is in the middle. | `perspective-origin: left;` |
 | `perspective()` | Gives one element its own eye, inside its `transform` | `transform: perspective(400px) rotateY(40deg);` |
 | `matrix3d()` | The one grid of sixteen numbers that a browser makes from a list of transforms | shown in the **Computed** tab |
+
+## Where to read more
+
+This Place (2017). *The Dolly Zoom.*
+<https://www.youtube.com/watch?v=tod2qZnKZEQ>. It shows a camera trick from
+films. The trick changes how far away the eye is, and keeps the subject
+the same size. CSS's `perspective` does the same kind of thing. About nine minutes.

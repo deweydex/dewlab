@@ -159,7 +159,7 @@ button {
    this time?
 
 Many sites use `:focus-visible` for this reason. The outline appears for
-the people who need it, and stays out of the way for everyone else.
+the people who need it, and stays hidden for everyone else.
 
 An outline also has to stand out from whatever is behind it. Your own
 site shows this. The `a:focus` rule in `styles.css` gives links an
@@ -176,8 +176,8 @@ turns the `:hover` style on, and it stays on until we tap somewhere
 else. A keyboard has no pointer either.
 
 So a hover effect is a nice extra, and it should never be the only way
-to find something. A price that appears only under the pointer is a
-price that phone users and keyboard users never see. If an effect makes
+to find something. Phone users and keyboard users never see a price
+that appears only under the pointer. If an effect makes
 sense only with a pointer, a media query can keep it to devices that
 have one:
 
@@ -196,7 +196,7 @@ device has a pointer that can hover.
 
 ## When movement makes people unwell
 
-For some people, movement on a screen does more than catch the eye. It
+For some people, movement on a screen causes real problems. It
 can make them dizzy or sick, or give them a headache. This happens most
 often with large movements: things that slide across the screen, zoom
 in, or move at a different speed from the page as it scrolls. People
@@ -257,7 +257,7 @@ anything that moves on its own for more than five seconds should have a
 way to pause it, stop it or hide it.
 
 Your own site has movement you may not have noticed. In `styles.css`,
-the `html` rule sets `scroll-behavior: smooth`. That is why a menu link
+the `html` rule sets `scroll-behavior: smooth`. So a menu link
 glides down the page to its section, instead of jumping. A gliding
 page is movement too, so it is a good thing to turn off:
 
@@ -273,26 +273,26 @@ page is movement too, so it is a good thing to turn off:
 
 A browser shows a moving page as a quick run of still pictures, one
 after another, sixty every second on most screens. For each picture,
-the browser does two jobs. First, it works out where every box goes and
+the browser does two jobs. First, it calculates where every box goes and
 how big it is. This job is called layout. Then it draws the boxes. [How a
 browser lays out a page](tutorial:how-a-browser-lays-out-a-page) looks
 at the first job closely.
 
 A `transform` changes only the second job. The browser draws the box
 somewhere new, bigger or turned, but the layout stays exactly as it
-was. That is why a transformed box never pushes its neighbours away. It
-is also why a transform moves smoothly: the browser does not have to
-work out the whole layout again for every picture. `opacity` works the
+was. So a transformed box never pushes its neighbours away. A transform
+also moves smoothly, because the browser does not have to calculate
+the whole layout again for every picture. `opacity` works the
 same way.
 
 Other properties change the layout itself. `width`, `height`, `margin`
 and `top` all change where boxes go. When a transition or an animation
-changes one of these, the browser works out the layout again for every
+changes one of these, the browser calculates the layout again for every
 picture. On a slow phone, that can make the movement stutter. So when
 something only needs to look as if it moves, a `transform` is the better
 choice. The checkbox hack animates `max-height`, which does change the
-layout. For one short answer that is fine, because there is very little
-to work out.
+layout. For one short answer this causes no problem, because there is
+very little to calculate.
 
 ## A question that opens, built into HTML
 

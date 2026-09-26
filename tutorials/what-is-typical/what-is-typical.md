@@ -34,7 +34,7 @@ That is about two thirds of a second. But almost every page you load
 comes back in about a fifth of a second. Is the status page lying? Or
 is "average" hiding something?
 
-Here is the surprise ahead. One list of numbers can have three
+One list of numbers can have three
 different "typical" values, all honest, and they can disagree by more
 than three times. The people who run the world's biggest websites know
 this, and it changes which number they watch.
@@ -45,14 +45,14 @@ On this page we:
   median and the mode
 - add `mean`, `median` and `mode` to the toolkit
 - see when the three disagree, and why, with response times and with
-  real data from 226 places
+  real data from 261 places
 - ask how spread out a list is: first the range, then "how far from the
   mean, on average", then the standard deviation
 - add `std_dev` to the toolkit
 
-> **The space we're in.** A list of numbers, and now and then a list of
-> words. Every value in a list counts once. One thing usually goes
-> unsaid: "the average" on a status page or in a newspaper is almost
+> **The space we're in.** We work with a list of numbers, and now and
+> then a list of words. Every value in a list counts once. We usually do
+> not say it, but "the average" on a status page or in a newspaper is almost
 > always the mean, and the mean is only one of several ways to say what
 > is typical. Your
 > toolkit is loaded, with `total`, `largest`, `smallest` and `count_if`
@@ -142,8 +142,8 @@ def mean(values):
 ```
 
 The tests below check the "share it out" meaning. If every load took
-the mean, the pot would hold the same total as before: the mean times
-the count gives the total back. Until your `mean` is written, this cell
+the mean, the pot would hold the same total as before. The mean times
+the count gives the total. Until your `mean` is written, this cell
 stops with an error, and the cells below that use `mean` stop too, or
 show `None` where a number should be.
 
@@ -173,7 +173,7 @@ def above_the_mean(milliseconds):
 print(count_if(response_ms, above_the_mean), "of", len(response_ms))
 ```
 
-Two loads out of eleven. The status page told the truth about the
+Only two loads out of eleven took longer. The status page told the truth about the
 mean, and the mean is not what most loads take. So what else could
 "typical" mean?
 
@@ -184,7 +184,7 @@ to the slowest. The one in the middle has five loads on each side. Its
 time is the *median*: the middle value, when the values are put in
 order.
 
-Python's `sorted()` gives back a new list, in order from smallest to
+Python's `sorted()` returns a new list, in order from smallest to
 largest. The old list stays as it was, like a slice in
 [A row of numbers](tutorial:a-row-of-numbers#a-slice-of-the-week).
 With 11 values, the middle one is at index 5: 5 values before it, and 5
@@ -198,8 +198,8 @@ print(in_order)
 print(in_order[5])
 ```
 
-The median response time is 200 ms, a fifth of a second. That is what
-your pages feel like.
+The median response time is 200 ms, a fifth of a second. Your pages
+feel like that.
 
 With an even count, there is no single middle value. For six values,
 indexes 0 to 5, the middle falls between index 2 and index 3. Then the
@@ -226,7 +226,7 @@ def median(values):
     return (in_order[middle - 1] + in_order[middle]) / 2
 ```
 
-Before you run the tests, work out the second one by hand. Which two
+Before you run the tests, find the second one by hand. Which two
 values are in the middle?
 
 ```python exec
@@ -244,7 +244,7 @@ not have to be one of the values.
 
 ## The most common: the mode
 
-A third answer is the value that turns up most often. The *mode* is the
+A third answer is the value that appears most often. The *mode* is the
 most common value in a list. A list's `.count()` says how many times
 one value appears in it. What do you expect?
 
@@ -257,13 +257,13 @@ print(response_ms.count(200))
 Three loads took 190 ms, and only one took 200 ms. No time appears
 more than three times, so the mode is 190 ms.
 
-The mode has one power the other two lack: it works for words. There is
+The mode can do one thing the other two cannot. It works for words. There is
 no mean of file types such as "jpg" and "pdf", and no median of them.
 But there is a most common one.
 
-Now write `mode` for your toolkit. Go through every value, and keep the
+Now write `mode` for your toolkit. Look at every value, and keep the
 one whose count is highest so far. If two values are equally common,
-the promise says to give back the one that comes first in the list.
+the promise says to return the one that comes first in the list.
 
 ```python exec
 id: typical-toolkit-mode
@@ -348,7 +348,7 @@ Each average has its strengths and its limits:
 
 | | Good at | Weak at |
 |---|---|---|
-| mean | uses every value; times the count, it gives the total back | a few outliers pull it towards the tail |
+| mean | uses every value; times the count, it gives the total | a few outliers pull it towards the tail |
 | median | outliers barely move it; says what the middle person pays | ignores how far away the other values are |
 | mode | works for words too; says what is most common | may be a tie; measurements such as 193.7 ms rarely repeat |
 
@@ -375,10 +375,13 @@ reason.
 Skew can go the other way, and here it is in real data. The life
 expectancy file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
-has a row for each place and year. This line keeps the rows for 2016,
+has a row for each place and year. This line keeps the rows for 2023,
 and takes the life expectancy column as a list. The rows are mostly
-countries, with a few regions, such as Western Europe and the World as
-a whole. For this question, that mix changes little.
+countries, with some regions and groups, such as Europe and the World
+as a whole. For this question, that mix changes little. The numbers
+below come from the copy of the file saved on
+{{snapshot: life-expectancy}}, and the line under the cell says whether
+yours did too.
 
 Before you run it, guess: is the mean higher or lower than the median
 this time?
@@ -386,27 +389,27 @@ this time?
 ```python exec
 id: typical-world-1
 df = await load_csv("life-expectancy.csv")
-life_2016 = df[df.year == 2016]["life_expectancy"].tolist()
+life_2023 = df[df.year == 2023]["life_expectancy"].tolist()
 
-print(len(life_2016), "places")
-print("mean:  ", round(mean(life_2016), 2))
-print("median:", median(life_2016))
-print("lowest:", smallest(life_2016), " highest:", largest(life_2016))
+print(len(life_2023), "places")
+print("mean:  ", round(mean(life_2023), 2))
+print("median:", median(life_2023))
+print("lowest:", smallest(life_2023), " highest:", largest(life_2023))
 ```
 
-Did you guess lower? This time the mean, 72.4 years, is lower than the
-median, 73.6 years.
-Four places in five are bunched between 65 and 84 years, and a tail of
-places reaching down to about 50 years pulls the mean down. The list is skewed to the left. The median is not pulled, so it
+Did you guess lower? This time the mean, 74.1 years, is lower than the
+median, 75.1 years.
+More than four places in five are bunched between 65 and 84 years, and a
+tail of places reaching down to about 54 years pulls the mean down. The list is skewed to the left. The median is not pulled, so it
 stays with the bunch.
 
-A rule of thumb follows from both examples. The mean moves towards the
+Both examples give us a useful rule. The mean moves towards the
 tail. If the mean is well above the median, look for a few very high
 values. If it is well below, look for a few very low ones.
 
 ## How spread out? The range
 
-A typical value is half the story. Here are two internet connections.
+A typical value does not tell us everything. Here are two internet connections.
 Each list is seven *pings*: a ping sends a tiny message to a server and
 times how long the answer takes to come back, in ms. The numbers are
 made up. Before you run it, look at the two lists. Which connection
@@ -425,8 +428,8 @@ Both connections have a mean of 50 ms, and a median of 50. But
 connection A always answers in 40 to 60 ms, so sound and pictures
 arrive at a steady pace. Connection B might answer in 10 ms or in 100,
 and on a video call that shows as jumpy sound. The typical values are
-the same, and the connections are not. What differs is the *spread*:
-how far apart the values are. Network engineers call the spread of
+the same, but the connections are different. Their *spread* is
+different. The spread is how far apart the values are. Network engineers call the spread of
 ping times *jitter*.
 
 The simplest measure of spread is the *range*: the largest value minus
@@ -442,7 +445,7 @@ print("range B:", largest(connection_b) - smallest(connection_b))
 ```
 
 Connection A's range is 20 ms, and connection B's is 90. The range is
-quick, and it has a weakness: it uses only two values. One very slow
+quick, but it uses only two values. One very slow
 ping would make connection A's range huge, even if every other ping was
 the same. We would like a measure that uses every value.
 
@@ -466,8 +469,8 @@ print(total(deviations))
 
 They add up to 0. That is a strange result, isn't it? And they always
 do, for any list. The mean is the point
-where the values balance: the amounts above it and below it cancel
-out. So the mean of the deviations is always 0, and says nothing about
+where the values balance. The amounts above it and below it cancel
+each other. So the mean of the deviations is always 0, and says nothing about
 spread.
 
 The fix is to ask how far, and not in which direction. On
@@ -491,9 +494,8 @@ print(round(mean_distance(connection_b), 2))
 ```
 
 Connection A's pings are about 5.71 ms from the mean, on average, and
-connection B's are about 31.43 ms. Every ping counts this time, and the
-answer says what we wanted: connection B is about five and a half times
-as spread out.
+connection B's are about 31.43 ms. Every ping counts this time. Connection
+B is about five and a half times as spread out.
 This measure is called the *mean absolute deviation*.
 
 ## The standard deviation
@@ -589,13 +591,13 @@ print(round(std_dev(connection_a), 2), round(std_dev(connection_b), 2))
 
 Connection A's standard deviation is about 7.56 ms, and connection B's
 about 35.05. They are a little bigger than the mean distances, 5.71 and
-31.43, because squaring makes big deviations count for more. The story
-is the same: connection B is roughly five times as spread out.
+31.43, because squaring makes big deviations count for more. Connection
+B is still roughly five times as spread out.
 
 The first test is worth a look. When every value is the same, nothing
 is spread out, and the standard deviation is 0.
 
-One honest note. Some calculators and spreadsheets have a second
+One more note. Some calculators and spreadsheets have a second
 standard deviation, often written $s$, that divides by $n - 1$ instead
 of $n$. It is used when the list is a sample from a bigger group. For a
 long list the two are close. On this page, and in your toolkit, we
@@ -607,10 +609,10 @@ divide by $n$.
    standard deviation big or small compared with the mean? Which loads
    make it so big?
 2. Take the two slow loads out with a slice of `sorted(response_ms)`,
-   and work out both again. Guess first: which one changes more?
-3. Find the standard deviation of `life_2016`. Is life expectancy
+   and find both again. Guess first: which one changes more?
+3. Find the standard deviation of `life_2023`. Is life expectancy
    more spread out across the world, or across Ireland's years from
-   1950 to 2016? Make Ireland's list the way
+   1950 to 2023? Make Ireland's list the way
    [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
    did.
 
@@ -629,7 +631,7 @@ Giving the formula first is quicker, and it is what an exam or a
 calculator asks for. A reader who only needs the number can get it
 right away.
 
-We took the longer road because the formula makes sense only as an
+We took the longer way because the formula makes sense only as an
 answer to a question. "How far from the mean, on average?" is a
 question you can ask in words, and the mean distance answers it. The
 standard deviation is the same answer with squares in place of `abs()`.
@@ -642,7 +644,7 @@ If you remember the question, you can rebuild the formula.
 | The question | On this page |
 |---|---|
 | What is named here? | three typical values for one list, the mean $\bar{x}$, the median and the mode; spread, and the standard deviation $\sigma$ |
-| What is promised? | the mean times the count gives the total back; `median`, `mode` and `std_dev` keep the promises in their docstrings, ties included |
+| What is promised? | the mean times the count gives the total; `median`, `mode` and `std_dev` keep the promises in their docstrings, ties included |
 | What happens when? | the median sorts first, then takes the middle; the standard deviation runs four steps in order, read from the inside of its formula out |
 | What does this space let us do? | the mean and median need numbers, and the mode works for words too; in skewed data the averages disagree, and asking "which average?" is always allowed |
 
@@ -668,3 +670,16 @@ draws these lists as pictures, and asks when a picture tells the truth.
 
 For another route through the same ideas, the integrated course has
 [Statistics: averages, spread and frequency](tutorial:making-sense-of-data).
+
+## Where to read more
+
+Stand-up Maths (2020). *Does The Average Person Exist?*
+<https://www.youtube.com/watch?v=NbiveCNBOxk>. If you are average in one
+way, how likely are you to be average in many ways at once? Matt Parker
+asks what a mean can and cannot tell us. About thirteen minutes.
+
+CrashCourse (2018). *Mean, Median, and Mode: Measures of Central Tendency:
+Crash Course Statistics #3.*
+<https://www.youtube.com/watch?v=kn83BA7cRNM>. The three averages from
+this page, and when each one gives the fairest picture. About eleven
+minutes.

@@ -11,7 +11,7 @@ covers:
 
 Welcome. In this course we build a website and publish it online. Let's
 start by meeting the tools we will use, and seeing how they connect. You
-do not need to do anything on this page yet: you can read it first, then
+do not need to do anything on this page yet. You can read it first, then
 try the steps on the pages that follow.
 
 Would you rather begin with data? [A table is a list of
@@ -39,7 +39,7 @@ then use it in a website or a database of our own.
 
 ## From a change to a published page
 
-How does a change in a file end up on a website that anyone can visit?
+How does a change in a file appear on a website that anyone can visit?
 If we use an editor on our own computer, it happens in two stages.
 
 **Stage one: on your computer.**

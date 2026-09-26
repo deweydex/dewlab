@@ -28,8 +28,8 @@ covers:
 # Straight lines: slope and gradient
 
 A community hall has one step at its front door, 30 cm high. The
-committee buys a ramp that reaches 3 metres out from the door: ten times
-longer than the step is high. That sounds gentle. A wheelchair user
+committee buys a ramp that reaches 3 metres out from the door. It is ten
+times longer than the step is high. That sounds gentle. A wheelchair user
 tries it and says it is too steep. Is it? And how would you
 measure "too steep" at all?
 
@@ -48,8 +48,7 @@ On this page we:
 
 > **The space we're in.** A flat plane with two axes at right angles:
 > $x$ across and $y$ up. A point is an $(x, y)$ pair, which Python keeps
-> as a tuple, like `(3, 0.3)`. One thing usually goes unsaid: both axes
-> use the same unit, so a metre across is a metre up. A slope compares
+> as a tuple, like `(3, 0.3)`. Both axes use the same unit, so a metre across is a metre up. A slope compares
 > the two, so it only means something when they are measured the same
 > way.
 
@@ -98,8 +97,8 @@ along:
 
 $$\text{slope} = \frac{\text{rise}}{\text{run}}$$
 
-This number is the *slope*. The word *gradient* means the same thing:
-schools often say slope, and building guidance says gradient. What is
+This number is the *slope*. The word *gradient* means the same thing.
+Schools often say slope, and building guidance says gradient. What is
 the slope of the hall's ramp? Guess before you run it.
 
 ```python exec
@@ -114,7 +113,7 @@ print("1 in", round(1 / ramp_slope))
 Python shows `0.09999999999999999`, a tiny way under 0.1. That is the
 float rounding from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
-The slope is 0.1: for every
+The slope is 0.1. For every
 metre along, the ramp rises 0.1 of a metre.
 
 Building guidance writes a gradient as a ratio instead, like 1:10, said
@@ -123,7 +122,8 @@ number: $1:10$ is $\frac{1}{10} = 0.1$. So `1 / ramp_slope` turns a slope
 back into the "1 in" form.
 
 A bigger slope is a steeper ramp, and a slope of 0 is flat ground. The
-slope has no unit: metres divided by metres leave a plain number.
+slope has no unit, because metres divided by metres leave a plain
+number.
 
 ## The rule for a ramp
 
@@ -142,7 +142,7 @@ control on the way down:
 The guidance also allows gradients in between. We use the three rows as
 they are, which is the careful reading.
 
-Choosing a row is an `if` and `elif`, as on
+An `if` and `elif` choose the row, as on
 [Choosing a path](tutorial:choosing-a-path#more-than-two-paths-elif).
 A going of 1.5 m is also "up to 5 m", so the shortest row must be
 checked first. Does the hall's ramp pass? Decide before you run it.
@@ -169,8 +169,7 @@ print("steep enough to fail?", ramp_slope > limit)
 ```
 
 The ramp fails. A 3 m ramp may be at most 1:15, about 0.067, and this
-one is 1:10. The wheelchair user's arms had measured it before the
-maths did.
+one is 1:10.
 
 So how long must the ramp be? Run the slope formula backwards, as on
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-same-move-on-both-sides):
@@ -181,7 +180,7 @@ $\text{run} = \frac{\text{rise}}{\text{slope}}$. At 1:15, a rise of
 
 ### Your turn
 
-1. Work out the run needed for a 0.3 m step at 1:12. Is a ramp that
+1. Find the run needed for a 0.3 m step at 1:12. Is a ramp that
    long allowed to be 1:12? Check with `steepest_allowed`.
 2. A second hall has a step of 0.45 m. How long must its ramp be? Try
    1:15 first, then 1:20.
@@ -258,8 +257,8 @@ def slope(p, q):
 ```
 
 Run your cell, then the tests. Until `slope` has its `return` line, it
-gives back `None`, and the first test stops with a `TypeError`. The third test asks something
-worth a guess first: does it matter which point comes first?
+returns `None`, and the first test stops with a `TypeError`. Guess the
+answer to the third test first. Does it matter which point comes first?
 
 ```python exec
 id: straight-toolkit-slope-tests
@@ -276,10 +275,10 @@ Try `print(slope((1, 2), (5, 4)))` on its own. What came back? Which two
 differences does the formula divide?
 ```
 
-The order does not matter: swapping the points gives $\frac{-2}{-4}$,
-which is still $0.5$. The tests use `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough), since floats can
-land a tiny way off.
+The order does not matter. If we swap the points, we get
+$\frac{-2}{-4}$, which is still $0.5$. The tests use `close_enough` from
+[Does it work?](tutorial:does-it-work#close-enough), since a float can
+differ by a tiny amount.
 
 ## A wall has no slope
 
@@ -294,11 +293,11 @@ print(slope((2, 0), (2, 5)))
 
 The last line of the traceback reads
 `ZeroDivisionError: division by zero`. The run is $2 - 2 = 0$, and the
-formula divides by the run. Your `slope` is keeping its promise here:
-the docstring promised a slope only for points with different $x$
+formula divides by the run. Your `slope` is keeping its promise here.
+The docstring promised a slope only for points with different $x$
 values.
 
-Is "infinitely steep" an answer? Not in the real numbers. A *vertical
+Is "infinitely steep" an answer? It is not, in the real numbers. A *vertical
 line*, one that goes straight up, has no slope in this space. Two
 sections on, a way of writing lines makes room for it.
 
@@ -308,8 +307,8 @@ On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
 server A took 8 ms to answer, plus 2 ms for every thousand people using
 the app. Its graph was the line $y = 2x + 8$, and that page promised a
-proper look at steepness. Here it is. The slope is 2: one more thousand
-people along, 2 ms more up. The line crosses the $y$ axis at 8, the
+proper look at steepness. Here it is. The slope is 2. For each thousand
+more people, the time goes up 2 ms. The line crosses the $y$ axis at 8, the
 time with nobody else using the app.
 
 Every straight line that is not vertical can be written this way:
@@ -346,7 +345,7 @@ plt.legend()
 
 The two server A lines have the same steepness, one lifted 8 above the
 other. Changing $c$ slides a line up or down, and changing $m$ turns
-it. Server B has $m = 0$: flat, whatever the crowd.
+it. Server B has $m = 0$, so its line is flat, whatever the crowd.
 
 If we know two points on a line, we know the line. First find $m$ with
 `slope`. Then, since the first point $(x_1, y_1)$ is on the line,
@@ -354,7 +353,7 @@ $y_1 = m x_1 + c$, and moving $m x_1$ to the other side gives
 
 $$c = y_1 - m x_1$$
 
-That is your second tool. It gives back the pair `(m, c)`.
+That is your second tool. It returns the pair `(m, c)`.
 
 ```python exec
 id: straight-toolkit-line
@@ -418,9 +417,9 @@ readings were enough to find the chip's whole rule.
 
 **A line made of pixels.** A screen has no slopes, only squares. To
 draw a line from one pixel to another, a program steps along one pixel
-at a time and decides, at each step, whether to go up one as well. The
-best-known way to decide was worked out by Jack Bresenham at IBM in
-1962, to drive a pen plotter. Drawing programs still use ideas from it.
+at a time and decides, at each step, whether to go up one as well.
+Jack Bresenham found the best-known way to decide, at IBM in 1962, to
+drive a pen plotter. Drawing programs still use ideas from it.
 
 </aside>
 
@@ -436,7 +435,7 @@ line:
 $$ax + by + c = 0$$
 
 This is the *general form* of a line. A point is on the line when
-putting its $x$ and $y$ in makes the left side 0. The wall is
+its $x$ and $y$ make the left side 0. The wall is
 $1x + 0y - 2 = 0$. Server A's line $y = 2x + 8$ becomes
 $2x - y + 8 = 0$ when we move $y$ to the right-hand side and swap the
 sides round. Any line $y = mx + c$ is $mx - y + c = 0$, with
@@ -467,8 +466,8 @@ In exchange, it has room for every straight line.
 
 To get the slope back from the general form, move everything except
 $by$ to the right: $by = -ax - c$, so $y = -\frac{a}{b}x - \frac{c}{b}$.
-The slope is $-\frac{a}{b}$. That needs $b$ not to be 0, which is the
-wall again, from the other side.
+The slope is $-\frac{a}{b}$. That needs $b$ not to be 0. When $b$ is 0,
+the line is straight up, like the wall.
 
 ```question
 id: straight-general-2
@@ -498,10 +497,10 @@ same slope. The two server A lines in the picture were parallel.
 Two lines are *perpendicular* when they meet at a right angle, like the
 floor and the hall's wall. Take a line that goes 2 across and 1 up,
 slope $\frac{1}{2}$. Turn it a quarter turn to the left, and it goes 1
-back and 2 up: the run and rise swap, and one changes sign. The new
+back and 2 up. The run and rise swap, and one changes sign. The new
 slope is $-2$.
 
-That is the rule: the slope of a perpendicular line is $-\frac{1}{m}$.
+So the slope of a perpendicular line is $-\frac{1}{m}$.
 Said another way, two slopes $m_1$ and $m_2$ belong to perpendicular
 lines when
 
@@ -527,10 +526,9 @@ print(0.5 * -2)
 ```
 
 The product is $-1$, so the lines are perpendicular, but only the right
-picture shows a square corner. The same two lines, and one picture
-hides the right angle. That is the unsaid assumption from the box at
-the top: the left picture stretches $y$, and a stretched right angle
-stops looking like one.
+picture shows a square corner. The box at the top said that both axes
+use the same unit. The left picture does not. It stretches $y$, and a
+stretched right angle stops looking like one.
 
 ### Your turn
 
@@ -548,7 +546,7 @@ This page started with a real ramp and its rise and run, and wrote
 $y = mx + c$ only halfway through.
 
 Many courses start the other way, with $y = mx + c$ drawn on a grid,
-and then practise reading $m$ and $c$ off graphs. That route is shorter,
+and then practise reading $m$ and $c$ from graphs. That route is shorter,
 it gives the algebra first, and it leads straight into questions like
 "where do two lines meet?", which Unit 7 answered.
 
@@ -595,3 +593,8 @@ The dewlab page
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
 meets slope as a rate, and the one line $y = mx + c$ cannot write, from
 another direction.
+
+Stand-up Maths (2015). *NYC: The Linear Equation of Broadway.*
+<https://www.youtube.com/watch?v=Quwvw0vYkRA>. Matt Parker walks along
+Broadway in New York with graph paper, and finds the equation of the
+street as a straight line. Eleven minutes.

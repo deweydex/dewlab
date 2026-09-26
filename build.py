@@ -26,6 +26,8 @@ import argparse
 import ast
 import base64
 import datetime
+import functools
+import gzip
 import hashlib
 import html
 import io
@@ -231,6 +233,8 @@ INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
 # heading, cell or block is the page's own; a .py include stays for a cell.
 PROSE_INCLUDE_RE = re.compile(
     r"^\{\{\s*include\s*:\s*(?P<path>[^}]+?\.md)\s*\}\}[ \t]*$", re.MULTILINE)
+# {{snapshot: life-expectancy}}: the date that dataset's copy was saved (#324).
+SNAPSHOT_RE = re.compile(r"\{\{\s*snapshot\s*:\s*(?P<name>[^}]+?)\s*\}\}")
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
     r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
@@ -826,6 +830,28 @@ def expand_prose_includes(body: str, path: Path) -> str:
             fail(path, f"{match.group(0)} shares its line with other text; a markdown "
                        "include has to be a line of its own")
     return body
+
+
+def expand_snapshot_dates(body: str, meta: dict, path: Path) -> str:
+    """Replace {{snapshot: name}} with the date that dataset's copy was
+    saved, as "26 September 2026".
+
+    A page that quotes numbers from a dataset says which copy they came
+    from (#324), and the date is read from `data/<name>.yaml`, so a
+    refreshed snapshot cannot leave a page naming the old one. The dataset
+    has to be one the page declares.
+    """
+    declared = meta.get("datasets") or []
+    if isinstance(declared, str):
+        declared = [declared]
+
+    def one(match: re.Match) -> str:
+        name = match.group("name")
+        if name not in declared:
+            fail(path, f"{match.group(0)} names a dataset that datasets: does not list")
+        return long_date(datetime.date.fromisoformat(read_dataset(name)["snapshot"]))
+
+    return SNAPSHOT_RE.sub(one, body)
 
 
 def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
@@ -1560,7 +1586,11 @@ def render_question(question: Question) -> str:
         def gap_widget(raw: str) -> str:
             choices = [c.strip() for c in raw.split("|")] if "|" in raw else None
             if choices is not None:
-                option_tags = "".join(
+                # The gap starts on a blank "choose", which cannot be chosen
+                # back. Without it the browser shows the first option, the
+                # page's own word, and the runtime's shuffle leaves it
+                # selected wherever it lands (DECISIONS_LOG 7.255).
+                option_tags = '<option value="" selected disabled>choose</option>' + "".join(
                     (f'<option data-answer="true">{html.escape(choice)}</option>' if i == 0
                      else f"<option>{html.escape(choice)}</option>")
                     for i, choice in enumerate(choices)
@@ -4595,7 +4625,9 @@ tt._page_globals["__name__"] = "__dewlab__"
 
 def local(name):
     if name.startswith(("http://", "https://")):
-        raise ConnectionError(f"the build does not fetch {name}")
+        if name not in job["addresses"]:
+            raise ConnectionError(f"the build does not fetch {name}")
+        name = job["addresses"][name]
     return os.path.join(job["data"], name)
 
 
@@ -4735,6 +4767,10 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                           "inputs": cases})
     job = {
         "assets": str(RUNTIME_TOOLS), "data": str(DATA), "sqlite": tutorial.has_sql,
+        # A web address data/ keeps a copy of runs against that copy, as a
+        # page offline would (#324).
+        "addresses": {entry["live"]["url"]: file_name
+                      for file_name, entry in data_index().items() if entry.get("address")},
         "seconds": SOLUTION_CELL_SECONDS,
         "toolkit": [entry["reference"] for entry in toolkit],
         "cells": cells,
@@ -4776,42 +4812,194 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                                     "page spells it?")
 
 
-DATASET_ATTRIBUTION_FIELDS = ("source", "license", "description")
+DATASET_FIELDS = ("source", "url", "license", "snapshot", "trimmed", "description")
 DATASET_EXTENSIONS = (".csv", ".txt")
+# The steps a `recipe:` may give, which tutorial_tools.shape_live() runs in
+# its own fixed order: how the snapshot is made from its source
+# (dev/datasets.py), and, for a dataset with `live: true`, how a page
+# shapes the live copy the same way. `source` names the website in the note
+# under the cell; `url` is where its CSV is; `columns` is the snapshot's own.
+RECIPE_FIELDS = ("source", "url", "columns", "skip_through", "rename", "missing",
+                 "drop_empty", "at_least", "at_most", "round")
+RECIPE_REQUIRED = ("source", "url", "columns")
+# A literal file name in a load: `load_csv("life-expectancy.csv")`.
+LOAD_CALL = re.compile(r"""load_(?:csv|text)\(\s*(["'])(?P<name>[^"']+)\1""")
+
+
+def long_date(day: datetime.date) -> str:
+    """26 September 2026: the way a page says a date."""
+    return f"{day.day} {day.strftime('%B')} {day.year}"
+
+
+def dataset_file(name: str) -> Path | None:
+    """`data/<name>.csv` or `data/<name>.txt`, whichever exists."""
+    for ext in DATASET_EXTENSIONS:
+        if (DATA / f"{name}{ext}").is_file():
+            return DATA / f"{name}{ext}"
+    return None
+
+
+@functools.lru_cache(maxsize=None)
+def read_dataset(name: str) -> dict:
+    """`data/<name>.yaml`, checked: every field #324 asks of a dataset, a
+    real date for its snapshot, a `recipe:` shape_live() can run, and
+    `live: true` only where there is a recipe to shape the live copy with.
+
+    A dataset nobody can trace defeats the point of bundling one, so a
+    missing or incomplete file fails the build, the same way a
+    `practice_for` naming no real tutorial does. The `snapshot` date is
+    the one the page's numbers come from, and the note under a cell names
+    it, so it has to be a date and not a phrase.
+    """
+    path = DATA / f"{name}.yaml"
+    data = load_yaml_no_duplicate_keys(path.read_text()) or {}
+    missing = [f for f in DATASET_FIELDS if not data.get(f)]
+    if missing:
+        fail(path, f"is missing {', '.join(missing)}")
+    snapshot = data["snapshot"]
+    if isinstance(snapshot, str):
+        try:
+            snapshot = datetime.date.fromisoformat(snapshot)
+        except ValueError:
+            fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+    if not isinstance(snapshot, datetime.date):
+        fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+    data["snapshot"] = snapshot.isoformat()
+    recipe = data.get("recipe")
+    if recipe is not None:
+        if not isinstance(recipe, dict):
+            fail(path, "recipe: must be a mapping of the steps in RECIPE_FIELDS")
+        unknown = sorted(set(recipe) - set(RECIPE_FIELDS))
+        if unknown:
+            fail(path, f"recipe: has {', '.join(unknown)}, which shape_live() does "
+                       f"not know; it knows {', '.join(RECIPE_FIELDS)}")
+        absent = [f for f in RECIPE_REQUIRED if not recipe.get(f)]
+        if absent:
+            fail(path, f"recipe: is missing {', '.join(absent)}")
+        data_file = dataset_file(name)
+        if data_file is not None and data_file.suffix != ".csv":
+            fail(path, "has a recipe:, and only a CSV can be shaped by one")
+    live = data.get("live", False)
+    if not isinstance(live, bool):
+        fail(path, f"live: {live!r} is not true or false")
+    if live and recipe is None:
+        fail(path, "says live: true, and has no recipe: for a page to shape the "
+                   "live copy with")
+    # A page that loads the recipe's address itself expects the file as that
+    # address serves it, so the copy standing in for it is the same file.
+    address = data.get("address", False)
+    if not isinstance(address, bool):
+        fail(path, f"address: {address!r} is not true or false")
+    if address:
+        steps = sorted(set(recipe or {}) - set(RECIPE_REQUIRED))
+        if not live or steps:
+            fail(path, "says address: true, which needs live: true and a recipe: "
+                       "that keeps the file as it is (only source, url and columns)"
+                       + (f"; it also has {', '.join(steps)}" if steps else ""))
+    return data
+
+
+@functools.lru_cache(maxsize=None)
+def data_index() -> dict[str, dict]:
+    """Every dataset in `data/`, keyed by file name, as tutorial_tools reads
+    it from `data/index.json`: the snapshot date, and the recipe of a
+    dataset a page fetches live.
+
+    Checked in both directions, for every file and not only the declared
+    ones, since dewmini and the Notebook load them by name too: a data file
+    without its yaml, and a yaml without its data file, both fail.
+    """
+    index: dict[str, dict] = {}
+    if not DATA.is_dir():
+        return index
+    names = sorted({p.stem for p in DATA.iterdir()
+                    if p.suffix in DATASET_EXTENSIONS + (".yaml",)})
+    for name in names:
+        data_file = dataset_file(name)
+        if data_file is None:
+            fail(DATA / f"{name}.yaml", f"describes data/{name}.csv or "
+                                        f"data/{name}.txt, and neither exists")
+        if not (DATA / f"{name}.yaml").is_file():
+            fail(data_file, f"has no data/{name}.yaml giving its "
+                            f"{', '.join(DATASET_FIELDS)}")
+        data = read_dataset(name)
+        entry = {"snapshot": data["snapshot"]}
+        if data.get("live"):
+            entry["live"] = data["recipe"]
+        if data.get("address"):
+            entry["address"] = True
+        index[data_file.name] = entry
+    return index
+
+
+def write_data_index(folder: Path) -> Path:
+    """`index.json` beside the data files it describes."""
+    target = folder / "index.json"
+    target.write_text(json.dumps(data_index(), indent=1, sort_keys=True))
+    return target
 
 
 def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
-    """A declared dataset's own attribution file —
+    """A declared dataset's own attribution, for the page's Reference tab —
     `data/<name>.yaml` beside `data/<name>.csv` (loaded with `load_csv()`)
     or `data/<name>.txt` (loaded with `load_text()`), the same
     beside-the-file pattern `<slug>.glossary.yaml` already established.
-    Both files are required: an
-    undocumented dataset defeats the point of declaring one at all, so a
-    missing data file or a missing/incomplete attribution file fails the
-    build the same way a `practice_for` naming no real tutorial does,
-    rather than silently shipping a dataset nobody can trace.
     """
-    has_data_file = any((DATA / f"{name}{ext}").is_file() for ext in DATASET_EXTENSIONS)
-    if not has_data_file:
+    if dataset_file(name) is None:
         extensions = " or ".join(f"data/{name}{ext}" for ext in DATASET_EXTENSIONS)
         fail(tutorial.path, f"declares datasets: {name}, and neither "
                             f"{extensions} exists.")
-    yaml_path = DATA / f"{name}.yaml"
-    if not yaml_path.is_file():
+    if not (DATA / f"{name}.yaml").is_file():
         fail(tutorial.path, f"declares datasets: {name}, and data/{name}.yaml "
-                            "(its source, license, and description) does not exist.")
-    data = load_yaml_no_duplicate_keys(yaml_path.read_text()) or {}
-    missing = [f for f in DATASET_ATTRIBUTION_FIELDS if not data.get(f)]
-    if missing:
-        fail(yaml_path, f"is missing {', '.join(missing)}")
-    return {"name": name, **{f: str(data[f]) for f in DATASET_ATTRIBUTION_FIELDS}}
+                            f"(its {', '.join(DATASET_FIELDS)}) does not exist.")
+    data = read_dataset(name)
+    saved = long_date(datetime.date.fromisoformat(data["snapshot"]))
+    return {
+        "name": name,
+        **{f: str(data[f]).strip() for f in ("source", "url", "license", "description")},
+        "saved": saved,
+        "live": data["recipe"]["source"] if data.get("live") else None,
+    }
 
 
 def check_datasets(tutorial: Tutorial) -> list[dict]:
     """Every dataset this tutorial declares, with its attribution — checked
     and resolved together, since there is no use in resolving one without
-    the other. Returns [] for a tutorial that declares none."""
+    the other. Returns [] for a tutorial that declares none.
+
+    A cell that loads a file from `data/` by name has to declare it, since
+    the declaration is what puts the dataset inside the downloaded copy
+    (standalone_html()): an undeclared load works on the site, and fails
+    for a reader offline.
+    """
+    addresses = {entry["live"]["url"]: file_name
+                 for file_name, entry in data_index().items() if entry.get("address")}
+    for cell in tutorial.cells:
+        if cell.type != "python":
+            continue
+        for code in [cell.code, *(s.code for s in cell.solutions)]:
+            for match in LOAD_CALL.finditer(code):
+                file_name = addresses.get(match.group("name"), match.group("name"))
+                if file_name in data_index() and Path(file_name).stem not in tutorial.datasets:
+                    fail(tutorial.path, f"cell {cell.id} loads {match.group('name')}, and "
+                                        f"datasets: does not list {Path(file_name).stem}, "
+                                        "so a downloaded copy would not carry it.")
     return [dataset_attribution(tutorial, name) for name in tutorial.datasets]
+
+
+def standalone_data(tutorial: Tutorial) -> tuple[dict, dict]:
+    """A downloaded page's datasets, carried inside it: the index entries
+    of the ones it declares, and each snapshot gzipped and in base64. A
+    page opened from disk cannot fetch its neighbours, and a page opened
+    offline cannot fetch a live source, so this is the copy it falls back
+    to in both cases."""
+    index, files = {}, {}
+    for name in tutorial.datasets:
+        data_file = dataset_file(name)
+        index[data_file.name] = data_index()[data_file.name]
+        files[data_file.name] = base64.b64encode(
+            gzip.compress(data_file.read_bytes(), mtime=0)).decode("ascii")
+    return index, files
 
 
 def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
@@ -5104,6 +5292,7 @@ def load(path: Path) -> Tutorial:
     """
     meta, body = split_frontmatter(path.read_text(), path)
     body = expand_prose_includes(body, path)
+    body = expand_snapshot_dates(body, meta, path)
     worlds = page_worlds(meta, path)
     spans = world_spans(body, path, worlds)
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,
@@ -5819,6 +6008,8 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     manifest = json.loads(page[start:end])
     manifest["toolsSource"] = tools
     manifest["standalone"] = True
+    if tutorial.datasets:
+        manifest["dataIndex"], manifest["dataFiles"] = standalone_data(tutorial)
     manifest.pop("versions", None)
     page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
 
@@ -5859,17 +6050,21 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
     single-file version a student can save and reopen offline) into the
     `site/download/` folder. `page` is the already-built standalone HTML
     string from `standalone_html()` — this function's own job is just
-    figuring out where that string should be saved and doing a couple of
-    build-time sanity checks (like the load_csv warning right below) that
-    only make sense for this particular kind of output.
+    figuring out where that string should be saved and doing a
+    build-time check (the note about web addresses right below) that
+    only makes sense for this particular kind of output.
     """
-    if any("load_csv" in cell.code for cell in tutorial.cells):
-        print(
-            f"note: {tutorial.path.relative_to(ROOT)} loads a dataset, which its "
-            "downloadable copy cannot reach — that cell will fail when the file "
-            "is opened from disk",
-            file=sys.stderr,
-        )
+    # A load by web address that data/ keeps no copy of still needs the
+    # network, which a reader offline does not have (#324).
+    addresses = {entry["live"]["url"] for entry in data_index().values()
+                 if entry.get("address")}
+    for cell in tutorial.cells:
+        for match in LOAD_CALL.finditer(cell.code):
+            name = match.group("name")
+            if name.startswith(("http://", "https://")) and name not in addresses:
+                print(f"note: {tutorial.path.relative_to(ROOT)} loads {name}, which "
+                      "data/ keeps no copy of, so its downloaded copy needs the "
+                      "network for that cell", file=sys.stderr)
 
     target = OUT / "download" / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -6211,6 +6406,7 @@ def write_dewmini_bundle() -> Path | None:
 
     if DATA.is_dir():
         shutil.copytree(DATA, target / "data")
+        write_data_index(target / "data")
 
     fonts_dir = ASSETS / "vendor" / "fonts"
     if fonts_dir.is_dir():
@@ -7255,6 +7451,12 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     everything = load_all()
     tutorials = versions_of([t for t in everything if t.status != "draft"])
+    # Every file in data/ traced to its source, before any page uses one.
+    # Read afresh on every build, since a test builds many repositories in
+    # one process.
+    read_dataset.cache_clear()
+    data_index.cache_clear()
+    data_index()
 
     registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
 
@@ -7369,6 +7571,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if DATA.is_dir():
         shutil.rmtree(OUT / "data", ignore_errors=True)
         shutil.copytree(DATA, OUT / "data")
+        write_data_index(OUT / "data")
 
     if tutorials:
         written.append(write_reference_index(tutorials))

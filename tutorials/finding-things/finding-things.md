@@ -20,7 +20,7 @@ covers:
 
 The computer is thinking of a whole number from 1 to 100. Run the first
 cell once, to choose it. Then put a guess in the second cell and run it,
-and keep going until you find the number.
+and continue until you find the number.
 
 ```python exec
 id: guess-my-number-1
@@ -46,16 +46,16 @@ How many tries did it take? Run the first cell again for a new number,
 and play once more. What was your first guess, and why that one?
 
 Most people who play a few times start at 50, and then go to the middle of
-whatever is left. Each answer rules out half of the numbers still
+whatever is left. Each answer removes half of the numbers still
 possible. That is the idea behind one of the two ways to search that this
 page writes, and the reason it is so much quicker than the other.
 
 ## Linear search: the straightforward approach
 
-The *search problem* is finding one item in a collection. *Linear search*
-checks each element in turn, from the start of the list, and stops when it
-finds the target, or when it reaches the end. It is how you would look for
-a friend's name on a guest list in no order.
+In the *search problem*, we want to find one item in a collection.
+*Linear search* checks each element in turn, from the start of the list,
+and stops when it finds the target, or when it reaches the end. You would
+use it to look for a friend's name on a guest list in no order.
 
 ```
 FOR each index i in the list:
@@ -107,22 +107,22 @@ The `return -1` sits after the loop, not inside it. Inside the loop, as an
 ### How much work is linear search?
 
 With 10 items, linear search might need 10 comparisons. With a million, it
-might need a million. In the worst case, the work grows in step with the
-size of the list. This is written *O(n)*, said "order n": the time grows in
-proportion to n, the number of items. Twice as many items means up to
+might need a million. In the worst case, the work grows at the same rate
+as the size of the list. This is written *O(n)*, said "order n". It means
+the time grows in proportion to n, the number of items. Twice as many items means up to
 twice as many comparisons.
 
 ## Binary search: the power of sorted data
 
 Think about looking up a word in a paper dictionary. You would not start at
 page one. You would open it near the middle, see whether your word comes
-before or after that page, and so rule out half of the dictionary with one
+before or after that page, and so remove half of the dictionary with one
 look. Then you would do the same with the half that is left.
 
 This is *binary search*. It works only on data that is *sorted*: in order,
 from smallest to largest. Step by step:
 
-1. Keep track of the part of the list that is still possible. Two indexes
+1. Remember the part of the list that is still possible. Two indexes
    mark its ends: `low` and `high`.
 2. Look at the middle element, at index `mid`.
 3. If the middle element is the target, we are done.
@@ -130,14 +130,14 @@ from smallest to largest. Step by step:
 5. If the target is larger, search the right half: set `low = mid + 1`.
 6. Repeat from step 2, until the target is found, or nothing is left.
 
-![Four passes over a fifteen-item sorted list, searching for 3. The live
-range shrinks from fifteen cells to seven, then three, then one, with low,
+![Four passes over a fifteen-item sorted list, searching for 3. The
+range still to search shrinks from fifteen cells to seven, then three, then one, with low,
 mid and high marked under it each time.](range-collapsing.svg)
 
 Count the shaded cells in each row, from top to bottom: fifteen, then
-seven, then three, then one. The halving is why binary search is quick,
-and it is also where the mistakes happen. `mid - 1` and `mid + 1` are what
-make the range smaller each time. If either is wrong, the range can stop
+seven, then three, then one. Binary search is quick because it halves the
+range each time. Most mistakes happen in the halving too. `mid - 1` and
+`mid + 1` make the range smaller each time. If either is wrong, the range can stop
 shrinking, and the loop never ends.
 
 ### Your turn
@@ -348,17 +348,17 @@ where linear search might need a million. That is the difference between
 times n can be halved before it reaches 1, and that grows very slowly as n
 gets bigger.
 
-There is a cost: the data must be sorted first, and sorting takes time. So
-binary search pays off when the same data is searched many times, which
+There is a cost. The data must be sorted first, and sorting takes time. So
+binary search is worth it when the same data is searched many times, which
 happens very often.
 
 ## Divide and conquer
 
 Binary search is our first example of *divide and conquer*: split a
 problem into smaller pieces, solve the pieces, and combine the answers. It
-is one of the most useful ideas in the design of algorithms. Looking up a
-contact on a phone, finding a page in a book, and a doctor ruling out half
-the possible causes with each test all work this way.
+is one of the most useful ideas in the design of algorithms. A phone finds
+a contact this way. You find a page in a book this way. A doctor who
+halves the possible causes with each test works this way too.
 
 In the game at the top of this page, what is the largest number of guesses
 you could need, if you always guess the middle of what is left? How do you
@@ -366,8 +366,8 @@ know?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Seven. Each guess halves what is left: 100 numbers, then at most 50, 25,
-12, 6, 3, 1. Another way to see it: six halvings cover 2 × 2 × 2 × 2 × 2 × 2
+You could need seven. Each guess halves what is left: 100 numbers, then at
+most 50, 25, 12, 6, 3, 1. You can also see it this way. Six halvings cover 2 × 2 × 2 × 2 × 2 × 2
 = 64 numbers, which is not enough, and seven cover 128, which is.
 
 </details>
@@ -446,7 +446,7 @@ print(guesses_needed(50))
 
 The next page,
 [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order),
-looks at the other side: how data comes to be sorted in the first place.
+looks at the other side of the problem. It shows how data gets sorted.
 
 ## Where to read more
 
@@ -454,10 +454,10 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Pound, M. (Computerphile) (2023). *Binary Search Algorithm*.
-<https://www.youtube.com/watch?v=hDn8iOc30Tk>. The same halve-and-repeat
-idea this page builds, explained with a different worked example.
+<https://www.youtube.com/watch?v=hDn8iOc30Tk>. It explains the same
+halve-and-repeat idea as this page, with a different worked example.
 
 Computerphile (2013). *Getting Sorted & Big O Notation*.
-<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Where O(log n) and O(n)
-come from, and how the same notation applies to sorting as well as
+<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. It explains where O(log n)
+and O(n) come from, and how the same notation applies to sorting as well as
 searching.

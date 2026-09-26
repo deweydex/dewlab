@@ -48,8 +48,8 @@ written before there was a machine to run it, at the on-and-off patterns
 the first computers read, and at the languages that made those patterns
 bearable. Almost every part of programming that looks like a strange
 choice was a decision somebody made for a reason, and the reasons still
-hold. At each stop, something has been left in the notation of its time,
-and the only way to read it is to write the code that translates it.
+hold. At each step in the story, a message is left in the notation of its
+time. To read it, you write the code that translates it.
 
 ## Before there were computers
 
@@ -59,18 +59,18 @@ and it was never finished in his lifetime.
 
 **Ada Lovelace** was translating a paper about the machine into English.
 The paper was by an Italian engineer, Luigi Menabrea, and it was written
-in French. Lovelace added notes of her own, and one of them set out, step
-by step, how the Engine could work out a sequence of numbers, with loops
-and with conditional branching: choosing which step to do next, depending
-on a result, as `if` and `else` do. Her notes were longer than the paper
+in French. Lovelace added notes of her own, and one of them described,
+step by step, how the Engine could calculate a sequence of numbers, with
+loops and with conditional branching. That means the Engine chooses its
+next step from a result, as `if` and `else` do. Her notes were longer than the paper
 she was translating.
 
 Most historians call her the first computer programmer. She wrote her
 program more than a century before there was an electronic computer to run
 it. **A program does not need a working machine to exist.** It is a list of
-exact instructions. The rest of this page is about how those instructions
-get carried out, and it turns out to be a story about making them easier
-for people to write, again and again, for a hundred and eighty years.
+exact instructions. The rest of this page is about how machines follow
+those instructions. It is a story about how people made them easier to
+write, again and again, for a hundred and eighty years.
 
 ## The only language the machine understands
 
@@ -83,7 +83,7 @@ machine code, every instruction, number and letter is written in binary.
 
 We count in *base 10*, decimal, with ten digits, 0 to 9, probably because
 we have ten fingers. Each position in a number is worth a power of 10, so
-42 means 4 tens and 2 ones. *Binary* is base 2: it has two digits, 0 and
+42 means 4 tens and 2 ones. *Binary* is base 2. It has two digits, 0 and
 1, and each position is worth a power of 2: 1, 2, 4, 8, 16, 32, and so on.
 
     101010  =  1 × 32 + 0 × 16 + 1 × 8 + 0 × 4 + 1 × 2 + 0 × 1  =  42
@@ -123,7 +123,7 @@ print(from_binary("01001000"))
 ```
 
 `to_binary` finds the last digit first, `n % 2`, so it puts each new digit
-at the front. `from_binary` goes the other way: at each digit, it doubles
+at the front. `from_binary` goes the other way. At each digit, it doubles
 the total so far and adds the new digit. You do the same in base 10
 without thinking, with ten in place of two.
 
@@ -155,7 +155,7 @@ id: your-turn-1
 <div class="dl-world" data-world="secret-messages">
 
 An operator from the 1940s has left a message, written in *ASCII*: a code
-that gives each character a number. (The message is made up: ASCII came
+that gives each character a number. (The message is made up. ASCII came
 later, in 1963.) Each group of eight binary digits is one letter's code:
 `01001000` is 72, and 72 is `H`, which `chr(72)` gives. Can you write
 `decode_binary(groups)`?
@@ -204,7 +204,7 @@ same space, and the message can be cut into letters without a separator.
 <div class="dl-world" data-world="pixel-art">
 
 Early games kept their pictures as rows of binary digits, one bit for each
-pixel: 1 lit, 0 dark. Can you write `draw_binary(rows)`, which gives back
+pixel: 1 lit, 0 dark. Can you write `draw_binary(rows)`, which returns
 the picture as rows of `#` and `.`?
 
 ```python exec
@@ -257,7 +257,7 @@ them.
 
 ## Assembly, and why hexadecimal exists
 
-Writing binary by hand is tiring, and easy to get wrong: `01001000` and
+Binary is tiring to write by hand, and easy to get wrong. `01001000` and
 `01001100` differ in one digit, and you have to count to find it. People
 found two answers, and both were for people. The machines needed neither.
 
@@ -271,8 +271,8 @@ uses the digits 0 to 9 and then the letters A to F, for ten to fifteen.
 One hex digit is exactly four binary digits: `1111` is `F`, and `1010` is
 `A`. So an eight-digit byte is exactly two hex digits. (Some early machines
 used base 8 for the same job. Hexadecimal became the standard in the
-1960s, along with the eight-digit byte.) That is the whole reason it
-exists: binary, written shorter, for the person reading it.
+1960s, along with the eight-digit byte.) Hex exists only for this reason.
+It is binary, written shorter, for the person reading it.
 
 ```python exec
 id: assembly-and-why-hexadecimal-exists-1
@@ -284,7 +284,7 @@ print(to_binary(int("48", 16)))
 
 `hex()` writes a number in hex, with `0x` in front. `0x48` is a number
 written in hex, and `int("48", 16)` reads hex from a string. The last line
-prints `1001000`. The message above had `01001000`: the zero in front was
+prints `1001000`. The message above had `01001000`. The zero in front was
 never part of the number, the way nobody writes 72 as 072. `48` in hex,
 72, `1001000` and `01001000` are one number written four ways, and all of
 them are H.
@@ -323,8 +323,8 @@ CODE. Two hex digits a letter, where binary took eight: the same bytes,
 four times shorter to write.
 ```
 
-Then the vault: each entry is a pair, the base it is written in and the
-code. You have written both halves already. Can you put them into one
+Then there is the vault. Each entry is a pair, the base it is written in
+and the code. You have written both halves already. Can you put them into one
 function, with an `if` to choose between them?
 
 ```python exec
@@ -386,7 +386,7 @@ two binary entries are 32, the code for a space.
 <div class="dl-world" data-world="pixel-art">
 
 Games kept their sprites in hex, two hex digits for each row of eight
-pixels. Can you write `draw_hex(rows)`, which gives back the picture as
+pixels. Can you write `draw_hex(rows)`, which returns the picture as
 rows of `#` and `.`? Each row has to become eight binary digits, zeros in
 front included.
 
@@ -447,7 +447,7 @@ An invader, eight bytes. Without the zeros in front, `"18"` would be
 ```
 
 Web pages still write colours in hex: `#1E90FF` is two hex digits each
-for red, green and blue. Can you write `rgb(colour)`, which gives back the
+for red, green and blue. Can you write `rgb(colour)`, which returns the
 three as numbers?
 
 ```python exec
@@ -479,7 +479,7 @@ Three bytes fit in six hex digits, with no doubt about where one ends.
 
 ## Languages people can read
 
-Assembly was still tied to one kind of machine: its instruction names
+Assembly was still tied to one kind of machine. Its instruction names
 matched that machine's own, so a program for one computer would not run
 on another. Nobody enjoyed rewriting every program for every new machine.
 
@@ -498,10 +498,10 @@ person does not have to.
 There are two ways to turn a high-level language into something a machine
 can run. A *compiler* translates the whole program into machine code
 *before* it runs, into a file the machine can run on its own. C works this
-way. An *interpreter* reads the program and runs it *as it goes*. Python
+way. An *interpreter* reads the program and runs it *while it reads*. Python
 works this way. To be exact, Python first translates your code into an
-in-between form called bytecode, and interprets that, but from where you
-sit, it behaves like an interpreted language.
+in-between form called bytecode, and interprets that. But for you, it
+behaves like an interpreted language.
 
 A compiled program usually runs faster than an interpreted one, and an
 interpreted language is usually quicker to try things in while you are
@@ -509,10 +509,10 @@ writing. **Can you see how each follows from the difference above?**
 
 ## The same problem, four ways
 
-A *paradigm* is a way of organising a program: a set of habits about
-where the logic goes and what the pieces are. Most languages encourage
+A *paradigm* is a way of organising a program. It is a set of habits
+about where the logic goes and what the pieces are. Most languages encourage
 one, and Python allows several. All four of these double every number in
-a list. The last uses a `class`, which this series has not taught; you do
+a list. The last uses a `class`, which this series has not taught. You do
 not need to write one, only to see what it keeps together.
 
 ```python exec
@@ -552,7 +552,7 @@ The procedural version says *how*, step by step. The comprehension says
 *what*. The functional version treats `double` as a value, handed to
 another function, as `sorted()` was handed a `key=`. And the
 object-oriented version makes a new kind of thing, a `NumberList`, that
-carries its values and knows how to double them: `self` is the particular
+carries its values and knows how to double them. `self` is the particular
 list being asked. None of them is right and the others wrong. They are
 habits of thought, and which suits depends on the problem, and on who will
 read the code. The object-oriented course builds classes properly.
@@ -595,33 +595,33 @@ print(basket.total())
 1 is procedural: a running total, changed step by step. 2 is declarative:
 it says the answer is the sum of the prices, and leaves the loop to
 Python. 3 is object-oriented: the basket holds its prices, and adding to
-it and totalling it are things the basket does. What told you is the
-point: a changing variable, a description of the answer, a thing that
-carries its own data.
+it and totalling it are things the basket does. The clues matter most.
+They are a changing variable, a description of the answer, and a thing
+that carries its own data.
 
 </details>
 
 ## Looking back
 
-Two ideas run through this page. Every step, from assembly to Python, was
-about making things easier for people: the hardware never needed any of
-them, and needs binary, as it always has. And a notation is a tool with a
-purpose: hexadecimal is a choice made to help people read, not a fact
+Two ideas run through this page. Every step, from assembly to Python,
+made things easier for people. The hardware never needed any of them, and
+it still needs binary, as it always has. And a notation is a tool with a
+purpose. Hexadecimal is a choice made to help people read, not a fact
 about computers. Which step do you think made the biggest difference to
 what a person could build?
 
-This is the end of the series. Here is something to make with all of it,
-with a low floor and no ceiling. Take it as far as you like.
+This is the end of the series. Here is something to make with all of it.
+The first step is easy, and you can take it as far as you like.
 
 <div class="dl-world" data-world="secret-messages">
 
 **Break a classmate's cipher.** Each of you codes a paragraph of English,
 a few sentences long, with a cipher of your own, and swaps it. Then write a
-program that cracks the other's without the key. The floor: a Caesar shift,
-cracked by counting letters and guessing that the most common is E. Higher
-up: a key where every letter can stand for any other, cracked by matching
-the order of frequencies to English's, E, T, A, O, I, N, and fixing the
-rest by hand, one word at a time.
+program that cracks the other's without the key. The first step is a
+Caesar shift. You crack it by counting letters and guessing that the most
+common is E. A harder step is a key where every letter can stand for any
+other. You crack it by matching the order of frequencies to English's, E,
+T, A, O, I, N, and you fix the rest by hand, one word at a time.
 
 ```python challenge
 # Paste your classmate's coded paragraph here.
@@ -644,9 +644,9 @@ print(sorted(counts, key=how_often, reverse=True))
 <div class="dl-world" data-world="pixel-art">
 
 **Make a pixel-art animation.** An animation is a list of pictures, the
-frames, shown one after another. The floor: two frames of a sprite, one
-with its eyes open and one with them shut, printed one under the other.
-Higher up: frames made by a rule, such as a sprite moving one pixel to the
+frames, shown one after another. The first step is two frames of a
+sprite, one with its eyes open and one with them shut, printed one under
+the other. A harder step is frames made by a rule, such as a sprite moving one pixel to the
 right each frame, a picture growing from its middle, or a palette that
 cycles its colours.
 
@@ -668,7 +668,7 @@ for number, frame in enumerate(frames):
 </div>
 
 The mixed problems, [Mixed problems: programming](tutorial:mixed-programming),
-go back over the whole series, with no label on which page each problem
+review the whole series, with no label on which page each problem
 needs.
 
 ## Where to read more
@@ -677,14 +677,21 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Computerphile (2016). *Computer Science's Wonder Woman: Ada Lovelace*.
-<https://www.youtube.com/watch?v=wnHHzBY1SPQ>. The fuller story of the
-translator's note that got longer than the paper it was translating.
+<https://www.youtube.com/watch?v=wnHHzBY1SPQ>. It tells the fuller story
+of the translator's note that became longer than the paper it was
+translating.
 
 Khan Academy. *The Binary Number System*.
 <https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:digital-information/xcae6f4a7ff015e7d:binary-numbers/v/the-binary-number-system>.
-Slower, worked ground through binary, for anyone who wants a second example
-before trying the conversions.
+This video explains binary more slowly, with worked examples, for anyone
+who wants a second example before trying the conversions.
 
-Eater, B. *Build an 8-Bit Computer*. <https://eater.net/8bit>. Everything
-this page only describes, machine code, binary and an instruction set,
-built by hand, one logic gate at a time, on video.
+Eater, B. *Build an 8-Bit Computer*. <https://eater.net/8bit>. On video,
+Ben Eater builds everything this page only describes: machine code, binary
+and an instruction set. He builds it by hand, one logic gate at a time.
+
+CrashCourse (2017). *The First Programming Languages: Crash Course
+Computer Science #11.* <https://www.youtube.com/watch?v=RU1u-js7db8>. It
+goes from machine code to assembly to FORTRAN, and explains why each step
+made programs easier for people to write. The video is about eleven
+minutes long.

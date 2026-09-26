@@ -18,7 +18,7 @@ eyes, and once through somebody else's.
 
 To *reflect* is to look back at your own work and ask what it can teach
 you. Professional developers do it all the time, and courses rarely give
-it room. There are no cells to run here, and nothing is marked. Write your
+time to it. There are no cells to run here, and nothing is marked. Write your
 answers in **Your notes**, in the **Notes** panel at the top right of the
 page, where they are saved with the page, in this browser.
 
@@ -30,23 +30,23 @@ finish something big enough to be worth a second look.
 Open your program beside this page, and read it as if you were seeing it
 for the first time.
 
-**If you were starting over, what would you change?** Put it this way:
+**If you started again, what would you change?** Put it this way:
 "What would I do differently, now that I have been through it once?" That
-question looks forward. "What did I get wrong?" only looks back.
+question helps you plan your next program.
 
 **Where did you get stuck, and what got you moving again?** A hint, an
-earlier page, a person, a break? Getting stuck is where most of the
-learning happens. Knowing how you tend to get stuck is how you get unstuck
-faster next time.
+earlier page, a person, a break? You learn most when you are stuck. If
+you know how you tend to get stuck, you can find a way forward faster
+next time.
 
 **What do your names, docstrings and functions tell a reader?** Imagine a
 classmate reading your code with nothing else to help them. Would they
 know what each piece does, and why? Name one part that is clear, and one
-that is not yet.
+that could be clearer.
 
 ## Part 2: reading someone else's code
 
-Now find a partner. Your teacher may pair you up, or you can ask somebody
+Now find a partner. Your teacher may put you in pairs, or you can ask somebody
 yourself. Swap programs, and read theirs.
 
 This is a small *code review*: one person reads another's code and says
@@ -61,9 +61,9 @@ it work well: a name, a function doing one job, a docstring that answered
 your question before you asked it.
 
 **Where did you have to read twice?** Describe what you expected, and
-what the code did. The point is to help your partner see their code through
-fresh eyes. "I expected `score` to be a number, and it was a list" is
-useful. "This is confusing" is not yet.
+what the code did. The point is to help your partner see their code as a
+new reader does. "I expected `score` to be a number, and it was a list" is
+useful. "This is confusing" does not help them find the line.
 
 Then tell each other what you wrote, and listen to what you are told
 without answering it straight away. You can decide later what to change.
@@ -78,11 +78,18 @@ together will be new for most people, and the reading you practised in
 Part 2 is a large part of it.
 
 **What are you curious about, or worried about, as you move on?** A few
-sentences in Your notes is enough. Coming back to them at the end of the
-project is one of the more surprising things you can do.
+sentences in Your notes is enough. Read them again at the end of the
+project. What you find there may surprise you.
 
 ## Where to read more
 
 Google. *How to Do a Code Review*.
-<https://google.github.io/eng-practices/review/reviewer/>. The professional
-version of Part 2: what a reviewer looks for, and how to say it usefully.
+<https://google.github.io/eng-practices/review/reviewer/>. This is the
+professional version of Part 2. It explains what a reviewer looks for, and
+how to say it usefully.
+
+Tantacrul (2018). *Music Software & Bad Interface Design: Avid's
+Sibelius.* <https://www.youtube.com/watch?v=dKx1wnXClcI>. Martin Keary,
+who designs music software, reviews a well-known program in detail. It is
+a model for reading someone else's work closely and saying clearly what
+does not work, and why. It is about twenty-two minutes long.

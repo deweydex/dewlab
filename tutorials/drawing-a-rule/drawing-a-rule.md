@@ -24,7 +24,7 @@ covers:
 # Drawing a rule: graphs of functions
 
 Here is a rule: $y = x^2 - 4$. Put in 3, and 5 comes out. Put in $-3$,
-and 5 comes out again. Two different numbers, the same answer. Put in
+and 5 comes out again. Two different numbers give the same answer. Put in
 0, and you get $-4$. What does the rule look like when we put in every
 number at once? Pause here and picture it before you read on. And
 where does it cross zero?
@@ -32,7 +32,7 @@ where does it cross zero?
 A goalkeeper who kicks a ball high asks the same kind of question
 without knowing it. The ball goes up, slows, turns and comes down.
 When does it land? A table of heights can answer that. A picture
-answers it at a glance, and shows more besides.
+answers it at once, and shows more too.
 
 On this page we:
 
@@ -45,11 +45,11 @@ On this page we:
   $x^2$ and $2^x$
 - see what a graph shows that a table hides
 
-> **The space we're in.** Pairs of real numbers, drawn on a flat grid.
+> **The space we're in.** We work with pairs of real numbers, drawn on a flat grid.
 > One line runs across and one runs up, and they cross at 0. A computer
-> cannot draw every real number: it works out a few hundred points and
-> joins them with short straight lines. One thing usually goes unsaid:
-> a graph is only as honest as the points it was drawn from.
+> cannot draw every real number. It calculates a few hundred points and
+> joins them with short straight lines. We usually do not say it, but a
+> graph shows only the points it was drawn from, and lines between them.
 
 ## Warm-up
 
@@ -134,8 +134,8 @@ $y = f(x)$, so that $y$ names the output.
 
 ## A tool that draws any rule
 
-We cannot work out every real number, but we can work out a lot of
-them. `plot_rule` works out 401 evenly spaced points between `low` and
+We cannot calculate every real number, but we can calculate a lot of
+them. `plot_rule` calculates 401 evenly spaced points between `low` and
 `high`, and joins them with lines so short that they look like one
 smooth curve.
 
@@ -175,8 +175,8 @@ The loop is the table from the last section, with 401 rows in place of
 axis only where 0 is in view.
 
 `plot_rule` is a procedure, as on
-[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do):
-it draws, and gives back `None`. Now the whole of $y = x^2 - 4$:
+[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
+It draws, and returns `None`. Now the whole of $y = x^2 - 4$:
 
 ```python exec
 id: drawing-a-toolkit-2
@@ -188,7 +188,7 @@ x-axis at two places, which look like $-2$ and 2. An $x$ where a
 function's value is 0 is a *root* of the function. On a graph, a root
 is a place where the graph meets the x-axis.
 
-Reading a root off a graph is *solving from a graph*. A picture gives
+Reading a root from a graph is *solving from a graph*. A picture gives
 an answer to the width of a line, so we check it by substituting, as
 on the last page. Will both lines print 0?
 
@@ -236,12 +236,12 @@ plt.legend()
 Both graphs are straight lines. Server A starts at 8 and climbs 2 for
 every step to the right. Server B is flat. A *linear function* is a
 function whose graph is a straight line. Its rule has the shape
-$y = mx + c$: the number $m$ in front of $x$ says how steep the line is,
+$y = mx + c$. The number $m$ in front of $x$ says how steep the line is,
 and $c$ is where it crosses the y-axis. Server A is $y = 2x + 8$.
 [Straight lines](tutorial:straight-lines) looks at steepness properly.
 
 The lines cross at about 6 thousand people and 20 ms. Left of the
-crossing, server A is faster; right of it, server B is. Where two graphs
+crossing, server A is faster. Right of it, server B is faster. Where two graphs
 meet, the two rules give the same value, so the crossing answers the
 equation $2x + 8 = 20$. Let's check by substituting:
 
@@ -261,7 +261,7 @@ picture at all.
 
 1. Server C answers in 15 ms, plus 1.2 ms for every thousand people.
    Write `server_c` and draw all three servers from 0 to 15.
-2. Read off where server C crosses each of the others.
+2. Read from the graph where server C crosses each of the others.
 3. Check each crossing by substituting. How close do the two times come?
 
 ```python exec
@@ -290,9 +290,9 @@ plt.ylabel("height in metres")
 ```
 
 The graph is an upside-down U. It starts at 0, rises to a top of 20
-metres after 2 seconds, and comes back to 0 after 4 seconds. That is
-when the ball lands: `ball_height(4)` is 0. The top of the curve is the
-subject of [The top of the curve](tutorial:the-top-of-the-curve).
+metres after 2 seconds, and comes back to 0 after 4 seconds. The ball
+lands then, and `ball_height(4)` is 0. [The top of the curve](tutorial:the-top-of-the-curve)
+looks at the highest point.
 
 The graph is not the ball's path. The ball goes straight up and down,
 and the graph spreads its heights out along a line of time. This
@@ -339,7 +339,7 @@ At 20 metres a second the ball lands after 4 seconds. At 15, the grey
 curve is lower and narrower, and the ball lands after 3 seconds. Each
 landing time is a root of the rule, and
 [Solving for x](tutorial:solving-for-x) finds roots like these with no
-picture. The animation loops; run the cell again to watch it from the
+picture. The animation loops. Run the cell again to watch it from the
 start.
 
 The graph of a quadratic function is a curve called a *parabola*. When
@@ -383,7 +383,7 @@ id: drawing-a-curves-your-turn
 A game draws a new picture on the screen many times a second, and each
 picture is a frame. At 50 frames a second, each frame stays on the
 screen for $\frac{1000}{50} = 20$ ms. At 100 frames a second, each gets
-10 ms. The more frames, the less time each one gets. The time is
+10 ms. More frames means less time for each one. The time is
 $\frac{1000}{x}$ ms, and its shape comes from $\frac{1}{x}$.
 
 <aside class="dl-note" id="drawing-a-note-frames">
@@ -421,7 +421,7 @@ plot_rule(one_over, 0.1, 5)
 ```
 
 Near 0, the two pieces race away, one up and one down. Far from 0, they
-creep towards the x-axis and never reach it: $\frac{1}{x}$ gets small,
+creep towards the x-axis and never reach it. $\frac{1}{x}$ gets small,
 but it is never 0.
 
 Now two rules that race each other: $x^2$ and $2^x$. At $x = 3$, $x^2$
@@ -446,7 +446,7 @@ plt.legend()
 ```
 
 The graphs meet at $x = 2$ and $x = 4$. Between them $x^2$ is ahead,
-and after 4, $2^x$ pulls away: at 6 it is 64, to the square's 36. The
+and after 4, $2^x$ grows faster. At 6 it is 64, and the square is 36. The
 curve of $2^x$ is the rumour from
 [Doubling and halving](tutorial:doubling-and-halving#a-rumour-that-doubles),
 flat at first and then steep. That page also drew $\log_2 x$, which is
@@ -467,8 +467,8 @@ import math
 
 ## What a graph shows that a table hides
 
-Here is one more rule, $y = x^2 - 7x + 12.24$. The table works out
-every whole number from 0 to 7. Does the rule ever cross zero?
+Here is one more rule, $y = x^2 - 7x + 12.24$. The table calculates
+the value for every whole number from 0 to 7. Does the rule ever cross zero?
 
 ```python exec
 id: drawing-a-hides-1
@@ -493,10 +493,10 @@ plot_rule(close_call, 3, 4)
 ```
 
 In the first picture, the curve seems to touch the x-axis and go no
-further. The zoom tells a different story: the curve dips below the
+further. The zoom shows something different. The curve dips below the
 axis, between two rows of the table, with two roots at about 3.4 and
-3.6. I like this one: a table that is true in every row, and a picture
-that is true at its size, and both miss the dip. Let's check the roots
+3.6. I like this one. The table is true in every row, and the picture
+is true at its size, but both miss the dip. Let's check the roots
 by substituting, with `close_enough`, since the values are floats:
 
 ```python exec
@@ -506,10 +506,10 @@ print(close_enough(close_call(3.4), 0), close_enough(close_call(3.6), 0))
 ```
 
 Both are 0, to within a tiny float error. A table gives exact values,
-one row at a time. A graph gives the shape at a glance: where it rises
+one row at a time. A graph shows the shape at once: where it rises
 and falls, where it turns, and how many times it crosses. A graph drawn
-from the table's 8 rows would have missed the dip as well, which is
-why `plot_rule` works out 401 points.
+from the table's 8 rows would have missed the dip as well, so
+`plot_rule` calculates 401 points.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -517,14 +517,14 @@ This page let the computer draw every graph, from 401 points. The usual
 school way is to plot by hand: make a table of about seven values, mark
 each point on squared paper, and join them with a pencil.
 
-Plotting by hand is slow on purpose. Each point is one you worked out
+Plotting by hand is slow on purpose. Each point is one you calculated
 yourself, and after a few you know the shapes of lines and parabolas by
 heart. It is also what many exams ask for.
 
 We drew by computer because it makes a graph cheap, so we could draw
 many and compare them. The cost is that a picture on a screen can feel
-like the truth, and the last section shows that it is only as honest as
-the points behind it.
+like the truth, and the last section shows that it can only show what
+its points show.
 
 </details>
 
@@ -533,8 +533,8 @@ the points behind it.
 | The question | On this page |
 |---|---|
 | What is named here? | a point, by its coordinates $(x, y)$; the output, $y = f(x)$; a root; a rule, by `rule.__name__` |
-| What is promised? | `plot_rule` promises the graph of any rule over a range, with the axes through 0; a graph promises only as much as its points |
-| What happens when? | the table of points is worked out first, then drawn; left of a crossing one server is faster, right of it the other |
+| What is promised? | `plot_rule` promises the graph of any rule over a range, with the axes through 0; a graph promises no more than its points show |
+| What happens when? | the table of points is calculated first, then drawn; left of a crossing one server is faster, right of it the other |
 | What does this space let us do? | a flat grid of pairs; $\frac{1}{x}$ has a gap at 0 and $\log_2 x$ needs $x > 0$; the ball's model means nothing after it lands |
 
 ## What we have now
@@ -546,7 +546,7 @@ the points behind it.
 | graph of a function | the picture of every pair $(x, f(x))$ for $x$ in the domain |
 | `plot_rule(rule, low, high)` | your toolkit tool: draws the graph of `rule` from `low` to `high`, with the axes through 0 |
 | root | an $x$ where a function's value is 0; where its graph meets the x-axis |
-| solving from a graph | reading an answer off a graph, then checking it by substituting |
+| solving from a graph | reading an answer from a graph, then checking it by substituting |
 | linear function, $y = mx + c$ | a straight-line graph; $m$ says how steep, $c$ where it crosses the y-axis |
 | where two graphs meet | the $x$ where two rules give the same value |
 | parabola | the graph of a quadratic: a U when the $x^2$ coefficient is positive, upside down when negative |
@@ -556,8 +556,16 @@ the points behind it.
 
 For more, the page
 [Functions and their graphs](tutorial:drawing-functions), from another
-course, draws more curves and reads answers off them.
+course, draws more curves and reads answers from them.
 
 The practice page is next. On the next page,
 [Solving for x](tutorial:solving-for-x), we find where the servers'
 lines meet with no picture at all.
+
+## Where to read more
+
+SimonDev (2022). *An In-Depth look at Lerp, Smoothstep, and Shaping
+Functions.* <https://www.youtube.com/watch?v=YJB1QnEmlTs>. Game developers
+draw small rules as graphs to shape movement: a straight line from one
+value to another, or a curve that starts and ends slowly. About eight
+minutes.

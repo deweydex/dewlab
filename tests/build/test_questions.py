@@ -117,9 +117,12 @@ class TestFillInTheBlank:
         page = built(repo)
         assert 'class="dl-question" id="dl-question-angle-names"' in page
         assert 'data-question-type="fill-in-the-blank"' in page
-        # The select's first option is the correct one, marked the same
-        # way a multiple-choice option is.
+        # The select starts on a blank choice the reader cannot pick back,
+        # so the page's word is never showing before anyone chooses. The
+        # first real option is the page's word, marked the same way a
+        # multiple-choice option is.
         assert ('<select class="dl-question-gap-select">'
+                '<option value="" selected disabled>choose</option>'
                 '<option data-answer="true">right angle</option>'
                 '<option>straight angle</option>'
                 '<option>acute angle</option></select>') in page

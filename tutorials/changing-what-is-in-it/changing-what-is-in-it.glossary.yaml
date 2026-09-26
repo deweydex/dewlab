@@ -17,8 +17,7 @@ entries:
   - term: "DELETE"
     kind: keyword
     definition: >
-      DELETE removes the rows that its WHERE matches. Leaving WHERE out
-      removes every row in the table.
+      DELETE removes the rows that its WHERE matches. Leaving WHERE out removes every row, and leaves the table empty, with its columns still there.
     example: "DELETE FROM dinosaur_tbl WHERE name = 'Stegosaurus';"
 
   - term: "SET"

@@ -127,8 +127,8 @@ works at every width.
 `width: 400px` sets one size, and the box keeps it whatever is around
 it. In a preview narrower than the box, the box runs past the right-hand
 edge. `max-width: 400px` sets the widest the box may grow, so in a narrow
-preview it shrinks to fit. On a phone, this is the difference between a
-page we can read and a page we have to scroll sideways.
+preview it shrinks to fit. On a phone, this means we can read the page
+without scrolling sideways.
 
 </details>
 

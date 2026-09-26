@@ -1,7 +1,7 @@
 ---
 title: "Joining two tables: foreign keys and JOIN"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   join-querying-across-both-tables:
     covers: [DBM-LO5]
@@ -14,13 +14,17 @@ Real data rarely fits in one table. A dinosaur is one record. Where its
 fossils were found is a different kind of record, and one dinosaur can
 have several fossil sites. Splitting the two into separate tables avoids
 repeating a dinosaur's name, diet and length once per fossil site. A
-`JOIN` is how a query brings the two tables back together.
+query uses a `JOIN` to bring the two tables back together.
 
 Let's build `dinosaur_tbl` again, then a second table, `sighting_tbl`,
-for fossil sites.
+for fossil sites. Each box starts with `DROP TABLE IF EXISTS`, which
+deletes its table if one exists from an earlier run. So you can change
+either box and run it again as often as you like.
 
 ```sql exec
 id: create-dinosaurs-table
+DROP TABLE IF EXISTS dinosaur_tbl;
+
 CREATE TABLE dinosaur_tbl (
     dinosaur_id INTEGER PRIMARY KEY,
     name TEXT,
@@ -40,6 +44,8 @@ INSERT INTO dinosaur_tbl (name, diet, length_meters, period) VALUES
 
 ```sql exec
 id: create-sightings-table
+DROP TABLE IF EXISTS sighting_tbl;
+
 CREATE TABLE sighting_tbl (
     sighting_id INTEGER PRIMARY KEY,
     dinosaur_id INTEGER,
@@ -56,10 +62,10 @@ INSERT INTO sighting_tbl (dinosaur_id, location, year) VALUES
 ```
 
 `sighting_tbl.dinosaur_id` holds a value that also appears in
-`dinosaur_tbl.dinosaur_id`. That shared value is what connects one
-table's row to the other's.
+`dinosaur_tbl.dinosaur_id`. That shared value connects one table's row
+to the other's.
 
-A column like `sighting_tbl.dinosaur_id` is called a *foreign key*: it
+A column like `sighting_tbl.dinosaur_id` is called a *foreign key*. It
 holds the key of a row in another table. Notice two things about it.
 It has the same name as the key it points at, `dinosaur_id`, so you can
 see at once which table it points into. It also sits directly under
@@ -92,7 +98,7 @@ nothing would flag it. Storing the name once, in `dinosaur_tbl`, and
 referring to it by `dinosaur_id` everywhere else means it can only be
 spelled one way. It also means a query has to put the two tables back together
 itself, on the shared column, rather than finding them already
-combined. `JOIN` is what does that.
+combined. `JOIN` does that.
 
 ## Your turn
 
@@ -107,6 +113,8 @@ id: join-your-tables
 -- for your own table, then run them here to bring it back.
 -- First time in this series? Write a new CREATE TABLE and some INSERT
 -- statements of your own instead.
+-- Start with a DROP TABLE IF EXISTS line for each table, so this box
+-- can run more than once.
 ```
 
 In the same box, below what is already there, try adding a `CREATE
@@ -118,6 +126,13 @@ the same name as the first table's key, and put it directly under the
 second table's own key. Insert a few rows, then try
 writing a `JOIN` that brings a row from each table together. Run it
 here, in this one box.
+
+Every run of this box builds both tables again from the top. Without a
+`DROP TABLE IF EXISTS` for each one, the second run stops at your first
+`CREATE TABLE` with an error such as `table film_tbl already exists`. Put the
+second table's drop line first, `actor_tbl` before `film_tbl`. Its rows
+point at rows in the first table, and some databases will not delete a
+table while another table still points into it.
 
 This is the last page of the series. The code in this box is saved
 automatically, like every cell on this site, so you can always come back

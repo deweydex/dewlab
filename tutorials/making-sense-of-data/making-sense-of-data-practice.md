@@ -2,18 +2,28 @@
 title: "Statistics: averages, spread and frequency — Practice"
 practice_for: making-sense-of-data
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  exoplanets: Planets around other stars, and the ways they were found.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  book-characters: The people in six novels, chapter by chapter.
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+datasets: [exoplanets, dinosaur-finds, book-characters]
 ---
 
 # Statistics: averages, spread and frequency — Practice
 
-Each answer is hidden until you open it. On the small datasets, try working out the statistics by hand. Five numbers do not take long. Doing it by hand once helps a formula make sense, so that it feels like more than symbols.
-
-Adapted in part from the statistics and probability worksheet in the Mathematics repository.
+Here are problems on averages, spread and shape, and three from earlier
+pages. On the small datasets, calculate the statistics by hand before you
+check them. Five numbers do not take long, and a formula means more once
+you have done it by hand.
 
 ## Tools
 
-This cell uses Python's `statistics` module, which has the measures from the tutorial built in. Run it to check your own functions against it. `pstdev` is the standard deviation that divides by $n$, and `stdev` is the one that divides by $n - 1$.
+Python's `statistics` module has the tutorial's measures built in. Use it
+to check your answers. `pstdev` is the standard deviation that divides
+by $n$, as the tutorial's does, and `stdev` the one that divides by
+$n - 1$.
 
 ```python exec
 id: tools-1
@@ -25,19 +35,20 @@ print("mean    ", statistics.mean(data))
 print("median  ", statistics.median(data))
 print("mode    ", statistics.mode(data))
 print("range   ", max(data) - min(data))
-print("pop sd  ", round(statistics.pstdev(data), 4))
-print("samp sd ", round(statistics.stdev(data), 4))
+print("pstdev  ", round(statistics.pstdev(data), 4))
+print("stdev   ", round(statistics.stdev(data), 4))
 ```
 
-## Central tendency
+## The centre
 
 **1.** What are the mean, median and mode of `[4, 8, 6, 5, 3, 8, 2]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean is about 5.143, the median is 5, and the mode is 8.
-
-The values add up to 36, and there are 7 of them, so the mean is $\frac{36}{7} \approx 5.143$. Sorted, the values are 2, 3, 4, 5, 6, 8, 8. There are seven values, so the median is the fourth one.
+The mean is $\frac{36}{7} \approx 5.14$, the median 5, and the mode 8.
+Sorted, the values are 2, 3, 4, 5, 6, 8, 8, and the fourth of seven is
+the middle. The mode is the largest of the three here. The most common
+value need not be anywhere near the centre.
 
 </details>
 
@@ -45,218 +56,473 @@ The values add up to 36, and there are 7 of them, so the mean is $\frac{36}{7} \
 
 <details class="dl-answer"><summary>answer</summary>
 
-13, which is the mean of the two middle values, 12 and 14.
-
-A list with an even number of values has no single middle value, so we agree to take the average of the middle two. So the median does not have to be one of the values in the data.
-
-</details>
-
-**3.** Nine people in an office earn €30,000 each, and the director earns €500,000. What are the mean and median salaries? Which one describes the office better?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The mean is €77,000, and the median is €30,000.
-
-The median describes the office better. Nobody in the office earns anything near the mean. Quoting the mean would be true, but it would mislead people.
-
-An outlier pulls the mean a long way, because every value adds its full size to the total. The median depends only on position, so one very large value moves it by at most one place.
+It is 13, the mean of the two middle values. So the median need not be
+one of the values in the data.
 
 </details>
 
-**4.** When is the mean the better summary?
+**3.** Nine people in an office earn €30,000 each, and the director earns
+€500,000. What is the mean salary?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: data-office-salaries
+import statistics
 
-The mean is the better summary when the data is roughly symmetric with no outliers. It is also the right choice when the total matters.
+salaries = [30_000] * 9 + [500_000]
+print("median", statistics.median(salaries))
+print("mean  ", statistics.mean(salaries))
+```
 
-Say you want to know how much the office costs in salaries. Then the mean is exactly right, because it is the total divided by the count. But if you want to know what a typical person earns, the mean is the wrong choice.
+```predict
+type: number
 
-So first ask which question you are trying to answer. That tells you which measure is better.
+What will the mean salary be?
+```
+
+<details class="dl-answer"><summary>which describes the office</summary>
+
+The mean is €77,000, against a median of €30,000. Nobody in the office
+earns anything near the mean. Quoting it would be true, and would
+mislead. But if the question is what the office costs in salaries, the
+mean is exactly right, because it is the total shared equally. Which
+average is better depends on the question.
 
 </details>
 
-**5.** Can you think of a dataset where the mode is useless? And one where the mode is the only sensible measure?
+**4.** Can you think of a dataset where the mode is useless? And one where
+it is the only average that makes sense?
 
 <details class="dl-answer"><summary>answer</summary>
 
-**Useless:** any set of measured values where every value is different, such as heights measured to the millimetre. Every value appears once. So the "mode" is whichever value happens to repeat by chance, or there is none.
+The mode is useless for measured values where every value is
+different, such as heights to the millimetre. Then the mode is whichever
+value happens to repeat, or there is none. That is why the tutorial's
+mode of the planets' radii came from rounding.
 
-**The only sensible measure:** categorical data. The list `["red", "blue", "red"]` has no mean. But it has a mode, "red", which is the most common category. It is the only average we can use.
+The mode is the only sensible average for categorical data.
+`["red", "blue", "red"]` has no mean and no median, but its mode is
+"red".
 
 </details>
 
 ## Spread
 
-**6.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, can you work out the mean by hand, and then the standard deviation that divides by $n$? (This is also called the population standard deviation.)
+**5.** For `[2, 4, 4, 4, 5, 5, 7, 9]`, can you calculate the mean and the
+standard deviation by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean is 5, and the standard deviation is 2.
-
-The distances from the mean, called deviations, are −3, −1, −1, −1, 0, 0, 2 and 4. Their squares are 9, 1, 1, 1, 0, 0, 4 and 16, which add up to 32. Divide by 8 to get 4. This number, the average of the squared deviations, is called the variance. Its square root is 2.
-
-These numbers were chosen so that everything comes out whole. That almost never happens with real data.
+The mean is 5. The distances from it are −3, −1, −1, −1, 0, 0, 2 and 4.
+Their squares, 9, 1, 1, 1, 0, 0, 4 and 16, add up to 32, and $\frac{32}{8}
+= 4$. That number, the mean of the squared distances, is the *variance*,
+and its square root, 2, is the standard deviation. Real data is almost
+never this neat.
 
 </details>
 
-**7.** Why do we square the deviations? What goes wrong if we add them up as they are?
+**6.** Why square the distances? What happens if we add them up as
+they are?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The deviations always add up to zero. The mean is exactly the point where the positive and negative deviations cancel out.
-
-Squaring makes every deviation positive. It also gives large deviations much more weight. That is a choice, and other choices are possible. We could take the absolute value of each deviation instead, which means dropping its minus sign. That gives the mean absolute deviation. It is a perfectly good measure, but it is harder to work with in algebra.
+They always add up to zero, because the mean is exactly the point where
+the distances above and below cancel. Squaring makes every distance
+positive, and gives large distances more weight. Taking each distance
+without its minus sign would work too, and gives the
+*mean absolute deviation*. It is a perfectly good measure, but harder
+to use in algebra.
 
 </details>
 
-**8.** Two classes both average 65%. One has a standard deviation of 3, the other 20. What does that tell you?
+**7.** Add 10 to every value in a dataset. What happens to the mean, the
+median, the range and the standard deviation? Then multiply every value
+by 3 instead.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: data-shift-and-stretch
+import statistics
 
-In the first class, almost everyone scored close to 65%. The second class has both strong students and students who are struggling.
+data = [3, 7, 7, 10, 13]
+plus_ten = [value + 10 for value in data]
+times_three = [value * 3 for value in data]
 
-The mean is the same, but the two classes need very different teaching. This is why we should never report an average alone. A centre without a spread tells us very little.
+for name, values in [("data", data), ("plus 10", plus_ten), ("times 3", times_three)]:
+    print(name, " mean", statistics.mean(values), " median", statistics.median(values),
+          " range", max(values) - min(values), " sd", round(statistics.pstdev(values), 2))
+```
 
-</details>
+<details class="dl-answer"><summary>what moves</summary>
 
-**9.** What is the difference between dividing by $n$ and dividing by $n - 1$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Dividing by $n$ gives the population standard deviation. It measures the spread of the numbers you have.
-
-Dividing by $n - 1$ gives the sample standard deviation. Sometimes our numbers are a sample: a few values taken from a much larger group, called the population. The sample standard deviation is an estimate of the spread of that whole population.
-
-The $n - 1$ is a correction. A sample's own mean is never further from the sample's values than the true population mean is. So the deviations come out a little too small. Dividing by a slightly smaller number makes up for that.
-
-For $n = 100$, the two answers differ by about half a percent. For $n = 5$, they differ by more than 10%. Small samples are exactly when people are most tempted to ignore the difference.
-
-</details>
-
-**10.** Suppose we add 10 to every value in a dataset. What happens to the mean, the median, the range and the standard deviation?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The mean and median both go up by 10. The range and standard deviation do not change at all.
-
-Measures of centre move with the data. Measures of spread do not move, because every distance from the mean stays the same.
-
-What if we multiply every value by 3 instead? Then all four measures are multiplied by 3. The spread measures do not move when we add, but they do grow when we multiply.
+Adding 10 moves the mean and median up by 10, and does not change the range
+or standard deviation, because every distance from the mean stays the
+same. Multiplying by 3 multiplies all four by 3. Measures of centre move
+with the data. Measures of spread ignore a shift, and grow with a stretch.
 
 </details>
 
-## Data types
-
-**11.** This question uses two new words. They split numerical data into two kinds, by what zero means:
-
-- Interval data is numbers where zero is a chosen point, not "none". Temperature in Celsius is an example.
-- Ratio data is numbers where zero means "none of it". Height is an example.
-
-Is each of these nominal, ordinal, interval or ratio?
-
-- (a) Eye colour
-- (b) Exam grade (Pass, Merit, Distinction)
-- (c) Temperature in Celsius
-- (d) Height in centimetres
-- (e) Shirt number on a football kit
+**8.** What is the difference between dividing by $n$ and by $n - 1$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Nominal. (b) Ordinal. (c) Interval. (d) Ratio. (e) Nominal, even though it is a number.
-
-(c) and (d) differ in whether zero means "none". 20 °C is not twice as hot as 10 °C, because 0 °C is a chosen point. It does not mean there is no heat. But 20 cm is twice 10 cm, because 0 cm really means no height.
-
-(e) is the trap. We can work out the average of shirt numbers, but the answer means nothing. A program will do it without any warning.
+Dividing by $n$ measures the spread of the numbers you have. Dividing by
+$n - 1$ estimates the spread of the population they are a sample from. A
+sample's values sit a little closer to their own mean than to the
+population's, so the distances are slightly too small, and dividing by a
+smaller number corrects this. For $n = 100$ the two differ by about half
+a percent. For $n = 5$, they differ by more than ten.
 
 </details>
 
-**12.** Which averages make sense for each kind of data in question 11?
+## Kinds of data
+
+Two more kinds split numerical data by what zero means. *Interval* data
+has a zero that is a chosen point, not "none": temperature in Celsius.
+*Ratio* data has a zero that means none of it: height.
+
+```question
+id: data-interval-or-ratio
+type: fill-in-the-blank
+
+- Eye colour is {nominal|ordinal|interval|ratio} data.
+- An exam grade of Pass, Merit or Distinction is {ordinal|nominal|interval|ratio} data.
+- Temperature in Celsius is {interval|ratio|nominal|ordinal} data.
+- Height in centimetres is {ratio|interval|nominal|ordinal} data.
+- The number on a football shirt is {nominal|ordinal|interval|ratio} data.
+```
+
+**9.** Why is 20 °C not twice as hot as 10 °C, when 20 cm is twice as
+long as 10 cm?
 
 <details class="dl-answer"><summary>answer</summary>
 
-- Nominal: the mode only.
-- Ordinal: the mode and the median. We can put the values in order, so there is a middle.
-- Interval and ratio: all three.
-
-The measure has to fit what the numbers mean. Nothing in the data itself will stop you from choosing the wrong one.
+0 °C is where water freezes, a point somebody chose. It does not mean no
+heat. 0 cm means no length. Ratios only make sense when zero means none.
+The shirt number is the trap in the question above. A program will
+calculate the mean of shirt numbers without a warning, and the answer
+means nothing.
 
 </details>
 
-## Frequency and shape
+## Shape
 
-**13.** Can you build a frequency table for `[1, 2, 2, 3, 3, 3, 4, 4, 4, 4]`? How would you describe its shape?
+**10.** Can you build a frequency table for
+`[1, 2, 2, 3, 3, 3, 4, 4, 4, 4]`, and describe its shape?
 
-<details class="dl-answer"><summary>answer</summary>
-
-1 appears once, 2 appears twice, 3 appears three times, and 4 appears four times.
-
-Python's `collections` module has a `Counter` that makes the table for you:
-
-```python
+```python exec
+id: data-frequency-table
 from collections import Counter
+
 print(Counter([1, 2, 2, 3, 3, 3, 4, 4, 4, 4]))
 ```
 
-The shape rises steadily to the right. Its name is "skewed left", which confuses many people. The name describes the *tail*, the thin end of the shape, and here the tail is on the left. The name does not describe where most of the data is.
+<details class="dl-answer"><summary>answer</summary>
+
+1 appears once, 2 twice, 3 three times and 4 four times. `Counter`,
+from Python's `collections` module, counts for you. The shape rises to
+the right, and its name is *skewed left*, which confuses many people.
+The name describes the tail, the thin end, and here the tail is on the
+left.
 
 </details>
 
-**14.** A right-skewed distribution has a long tail of large values. How do its mean, median and mode compare?
+**11.** A right-skewed distribution has a long tail of large values. How
+do its mean, median and mode usually compare?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Mode < median < mean.
-
-The tail pulls the mean furthest, the median a little, and the mode not at all. Incomes are the usual example. That is why the mean income and the typical income are different numbers in every country.
+Mode < median < mean. The tail pulls the mean furthest, the median a
+little, and the mode not at all. The number of rolls it takes to get a
+six, from the tutorial's games world, has a mode of 1, a median of 4 and
+a mean of 6.
 
 </details>
 
-**15.** Can you make a dataset where the mean and the median are equal, but the data is not symmetric?
+**12.** Can you make a dataset whose mean and median are equal, but
+which is not symmetric?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Any dataset with tails of different shapes that balance each other will do. `[2, 3, 6, 8, 11]` has a mean of 6 and a median of 6. It is not symmetric: below 6 the values are 3 and 4 away, and above 6 they are 2 and 5 away.
-
-When the mean and the median are equal, the data might be symmetric, but it does not have to be. Every summary number loses some information. The only sure way to know the shape is to look at it.
+`[2, 3, 6, 8, 11]` has a mean of 6 and a median of 6. Below 6, the values
+are 3 and 4 away. Above it, they are 2 and 5 away. Equal mean and median
+allow a symmetric shape without proving one. To see the shape for sure,
+draw it.
 
 </details>
+
+## Your world
+
+**13.** Here is a question from the world you chose.
+
+<div class="dl-world" data-world="exoplanets">
+
+Do the two most common ways of finding planets find the same kind of
+planet? Compare the median radius of the planets found by transit with
+those found by radial velocity, the wobble of their star.
+
+```python exec
+id: data-world--exoplanets
+import statistics
+
+planets = await load_csv("exoplanets.csv")
+transit = planets[planets.method == "Transit"].radius_earths.dropna()
+wobble = planets[planets.method == "Radial Velocity"].radius_earths.dropna()
+print(len(transit), "transit radii;", len(wobble), "wobble radii")
+```
+
+```hint
+`statistics.median` works on each. So does pandas's own `.median()`.
+```
+
+```solution
+import statistics
+
+planets = await load_csv("exoplanets.csv")
+transit = planets[planets.method == "Transit"].radius_earths.dropna()
+wobble = planets[planets.method == "Radial Velocity"].radius_earths.dropna()
+print(len(transit), "transit radii;", len(wobble), "wobble radii")
+print("median radius, transit:", statistics.median(transit))
+print("median radius, wobble: ", statistics.median(wobble))
+---
+With the copy saved on {{snapshot: exoplanets}}, the median is 2.46
+Earth radii for transit planets, and 12.6 for wobble planets, which is
+larger than Jupiter. A heavy planet makes its star wobble more, so the
+wobble method finds giants most easily. Each method has its own sampling
+bias, and the two humps in the tutorial's histogram partly come from the
+two methods. (For most wobble planets, the archive estimates the radius
+from the mass, since the wobble measures only the mass.)
+```
+
+</div>
+
+<div class="dl-world" data-world="dinosaurs">
+
+How many dinosaur finds does a typical country have? Count the finds in
+each country, then calculate the mean, median and mode of those counts.
+
+```python exec
+id: data-world--dinosaurs
+import statistics
+
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+per_country = finds.country_code.value_counts()
+print(len(per_country), "countries")
+print(per_country.head())
+```
+
+```hint
+`per_country.tolist()` gives the counts as a plain list for the
+`statistics` functions.
+```
+
+```solution
+import statistics
+
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+per_country = finds.country_code.value_counts()
+print(len(per_country), "countries")
+counts = per_country.tolist()
+print("mean", round(statistics.mean(counts)), " median", statistics.median(counts),
+      " mode", statistics.mode(counts))
+---
+With the copy saved on {{snapshot: dinosaur-finds}}, there are 63
+countries, with a mean of about 105 finds, a median of 13 and a mode
+of 1. The United States alone has 2,393. The counts are skewed far to
+the right, and the mean describes no country. They also measure
+digging as much as dinosaurs: where there is exposed rock of the right
+age, and where people have looked and published.
+```
+
+</div>
+
+<div class="dl-world" data-world="book-characters">
+
+How often is Mr Darcy named in a typical chapter of *Pride and
+Prejudice*? Can you calculate the mean, median and mode of his
+mentions per chapter, and do the same for Elizabeth?
+
+```python exec
+id: data-world--book-characters
+import statistics
+
+characters = await load_csv("book-characters.csv")
+pride = characters[characters.book == "pride-and-prejudice"]
+darcy = pride[pride.character == "Darcy"].mentions.tolist()
+elizabeth = pride[pride.character == "Elizabeth"].mentions.tolist()
+print(len(darcy), "chapters")
+```
+
+```hint
+Use `statistics.mean`, `statistics.median` and `statistics.mode` on each
+list.
+```
+
+```solution
+import statistics
+
+characters = await load_csv("book-characters.csv")
+pride = characters[characters.book == "pride-and-prejudice"]
+darcy = pride[pride.character == "Darcy"].mentions.tolist()
+elizabeth = pride[pride.character == "Elizabeth"].mentions.tolist()
+print(len(darcy), "chapters")
+for name, mentions in [("Darcy", darcy), ("Elizabeth", elizabeth)]:
+    print(name, " mean", round(statistics.mean(mentions), 1),
+          " median", statistics.median(mentions), " mode", statistics.multimode(mentions))
+---
+Darcy has a mean of 6.8, a median of 5 and a mode of 0, since he is not
+named at all in 11 of the 61 chapters. Elizabeth is named in every
+chapter, with a mean of 12.3, a median of 11, and two modes, 10 and 14.
+`statistics.mode` would give only the first of a tie, so `multimode`
+shows both. Darcy's most common count is none at all, and yet, of the
+twelve people in the data, only Elizabeth is named more often. So a mode
+can be true and unhelpful at once.
+```
+
+</div>
+
+<div class="dl-world" data-world="games-of-chance">
+
+Roll a die ten times and count the sixes. Do that 10,000 times. Which
+number of sixes is the most common? Draw the counts, then compare them with
+the binomial formula from the tutorial, with $p = \frac{1}{6}$.
+
+```python exec
+id: data-world--games-of-chance
+import math
+import random
+import matplotlib.pyplot as plt
+
+counts = [0] * 11
+for trial in range(10_000):
+    sixes = 0
+    for roll in range(10):
+        if random.randint(1, 6) == 6:
+            sixes = sixes + 1
+    counts[sixes] = counts[sixes] + 1
+
+plt.bar(range(11), counts)
+plt.xlabel("sixes in ten rolls")
+plt.ylabel("times in 10,000 trials")
+```
+
+```hint
+The chance of exactly `k` sixes is `math.comb(10, k) * (1/6) ** k * (5/6) ** (10 - k)`.
+Multiply it by 10,000 to compare with a bar.
+```
+
+```solution
+import math
+import random
+import matplotlib.pyplot as plt
+
+counts = [0] * 11
+for trial in range(10_000):
+    sixes = 0
+    for roll in range(10):
+        if random.randint(1, 6) == 6:
+            sixes = sixes + 1
+    counts[sixes] = counts[sixes] + 1
+
+plt.bar(range(11), counts)
+plt.xlabel("sixes in ten rolls")
+plt.ylabel("times in 10,000 trials")
+
+for k in range(5):
+    expected = 10_000 * math.comb(10, k) * (1 / 6) ** k * (5 / 6) ** (10 - k)
+    print(k, "sixes:", counts[k], "rolled,", round(expected), "expected")
+---
+One six is the most common, about 3,230 times in 10,000, then two, then none.
+The shape is lopsided, unlike the coins' symmetric hump, because $p$ is
+not a half. With ten rolls and a chance of $\frac{1}{6}$, the counts
+gather near $10 \times \frac{1}{6} \approx 1.7$ and fall slowly to the
+right. Seven or more sixes in ten rolls happens only two or three times
+in 10,000.
+```
+
+</div>
 
 ## Putting it together
 
-**16.** Here are ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`. Can you work out a full summary, and describe the class?
+**14.** Here are ten exam marks: `[45, 52, 68, 71, 71, 74, 78, 82, 89, 95]`.
+Can you calculate the mean, median, mode, range and standard deviation, and
+say what they tell you about the class?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mean is 72.5, the median is 72.5, the mode is 71, the range is 50, and the population standard deviation is 14.5.
-
-The mean and median are equal, which suggests the marks are spread fairly evenly on both sides. The mean is about 72 and the standard deviation about 14, so most marks should be between about 58 and 87. The data agrees: 6 of the 10 marks are in that range.
-
-The range of 50 tells us the least. It depends on only two students, the highest and the lowest.
+The mean and the median are both 72.5, the mode 71, the range 50, and
+the standard deviation 14.5. The mean and median agree, which suggests
+the marks are spread fairly evenly either side. The range tells us
+least, because it depends on two students.
 
 </details>
 
-**17.** Now add a mark of 12 to that list. What changes most?
+**15.** Now add a mark of 12. What changes most?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: data-one-low-mark
+import statistics
 
-The mean drops to 67, the median drops only to 71, and the standard deviation jumps to about 22.2.
+marks = [45, 52, 68, 71, 71, 74, 78, 82, 89, 95, 12]
+print("mean  ", round(statistics.mean(marks), 1))
+print("median", statistics.median(marks))
+print("sd    ", round(statistics.pstdev(marks), 1))
+```
 
-One value out of eleven moved the mean by 5.5 marks and the median by 1.5. The standard deviation grew by half. Why so much? The new mark is 55 below the new mean, and that deviation is squared: $55^2 = 3025$.
+```predict
+Which of the three moves most, for its size?
 
-So the standard deviation is even more sensitive to outliers than the mean. Remember this before you use it to decide anything.
+- The mean
+  - Every mark adds its full size to the total.
+- The median
+  - A new mark changes which one is in the middle.
+- The standard deviation
+  - The new mark is very far from the rest, and distances are squared.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+The mean falls from 72.5 to 67, and the median only to 71. The standard
+deviation jumps from 14.5 to about 22.2, by half. The new mark is 55
+below the new mean, and that distance is squared: $55^2 = 3{,}025$. The
+standard deviation is even more sensitive to an outlier than the mean.
 
 </details>
 
-**18.** Two datasets have the same mean, median, standard deviation and correlation. Can they look different?
+## From earlier
 
-(Correlation is a number that measures how closely pairs of values lie along a straight line. We meet it properly in the next tutorial, [Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers).)
+**16.** From *Probability*. What is the mean of the six faces of a die?
+Can a die ever show it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. They can look completely different.
+$\frac{1 + 2 + 3 + 4 + 5 + 6}{6} = 3.5$, which no roll can show. The mean
+of many rolls comes close to 3.5, by the law of large numbers, but a
+mean need not be a possible value, like the planets' mean radius, which
+hardly any planet has.
 
-Anscombe's quartet is a famous example that comes very close. It is four datasets of points with the same means, standard deviations and correlation, to about two decimal places. (Their medians differ a little, but the lesson is the same.) When we plot them, one is a clean line, one is a curve, one is a line with a single outlier, and one is a vertical stack with one point far away. The Datasaurus dozen takes the same idea further: one of its datasets draws a dinosaur.
+</details>
 
-This is the best reason for the next tutorial. **Plot the data.** Summary numbers answer the questions you thought to ask. A picture answers the question you did not think of.
+**17.** From *Venn diagrams*. The tutorial found 507 Earth-sized
+planets, and none of them has a year of 200 to 500 days. The file has
+235 planets with a year of 200 to 500 days. How many planets are
+Earth-sized, or have an Earth-like year?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$507 + 235 - 0 = 742$. The overlap is empty, so the two sets are
+mutually exclusive, and inclusion-exclusion subtracts nothing. In the
+population of all planets, the overlap is surely not empty. In this
+sample, it is.
+
+</details>
+
+**18.** From *Counting*. How many different samples of 5 planets could
+be chosen from the file's 6,372?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It is $C(6{,}372, 5)$, about $8.7 \times 10^{16}$, from
+`math.comb(6372, 5)`. Each sample would give its own mean radius, some
+far from the whole file's. The next page's "go further" sections ask how
+far a sample's mean can wander from the population's.
 
 </details>

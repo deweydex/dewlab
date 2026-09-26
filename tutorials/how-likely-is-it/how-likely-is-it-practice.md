@@ -11,8 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one way through: yours
-may be different, and work as well. Several problems ask you to guess
+folded away until you open them, and each shows one answer. Yours
+may be different and work too. Several problems ask you to guess
 first. Guesses about chance often miss, for everybody, and a guess that
 misses is the most useful kind here.
 
@@ -45,7 +45,7 @@ equally likely, and 13 of the 52 outcomes are in the event "a heart".
 </details>
 
 **2. Make.** A tiny image has 10 pixels: 3 red, 5 green and 2 blue. A
-program picks one pixel at random. Work out the probability that it is
+program picks one pixel at random. Find the probability that it is
 green, in Python, using names for the three counts.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -82,8 +82,8 @@ shouting.
 
 It can give 1 and 6, and never 0 or 7. `random.randint(1, 6)` includes
 both of its ends, the way a die does. That is different from
-`range(1, 6)`, which stops before 6. Two tools, two rules, so it is
-worth checking which one you are using.
+`range(1, 6)`, which stops before 6. The two tools have different rules,
+so check which one you are using.
 
 </details>
 
@@ -107,7 +107,7 @@ print(simulate(heads, 1000))
 
 **5. Make.** In a board game, you need a 5 or a 6 on one die to escape
 from jail. Write a trial, `escape`, and use `simulate` with 10,000 runs.
-Then work out the exact probability by counting, and compare.
+Then find the exact probability by counting, and compare.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -128,7 +128,7 @@ faces let you out.
 
 **6. Fix.** A bad Wi-Fi link loses 30% of the packets sent over it. (A
 packet is one small piece of a message.) So each packet arrives with
-chance 0.7, and `random.random() < 0.7` acts that out: it is True about
+chance 0.7, and `random.random() < 0.7` acts that out. It is True about
 70% of the time. This cell should count the packets that arrive, out of
 1,000. It gives an answer near 0 instead. Run it, then find why.
 
@@ -156,7 +156,7 @@ happen every time round.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`arrived = 0` is inside the loop, so the count goes back to 0 before
+`arrived = 0` is inside the loop, so the count returns to 0 before
 every packet. At the end, `arrived` is 1 or 0, depending only on the
 last packet, and the cell prints 0.001 or 0.0. Move that line above the
 loop, so it runs once:
@@ -212,9 +212,9 @@ says, "a coin is 0.5." What would you tell him?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing is broken. Ten runs are very few, so the result wobbles a lot.
+Nothing is broken. Ten runs are very few, so the result can be far from 0.5.
 A fair coin gives 8 or more heads in 10 tosses about 5% of the time,
-so 0.8 will turn up now and then. The law of large numbers promises that
+so 0.8 will appear now and then. The law of large numbers promises that
 the fraction gets closer to 0.5 as the runs grow. Try
 `simulate(heads, 100000)`, and it will be very close to 0.5. It still
 will not be exactly 0.5, and that is fine too.
@@ -237,14 +237,14 @@ print(6 / 36)
 ```
 
 The simulation gives something near 0.1667, such as 0.16561. The two
-routes agree closely. Counting is exact and fast here, because there
-are only 36 outcomes. Simulating is the route that still works when
-there are far too many outcomes to count.
+ways agree closely. Counting is exact and fast here, because there
+are only 36 outcomes. A simulation still works when there are far too
+many outcomes to count.
 
 </details>
 
 **10. Fix.** This trial should roll a fair die and give True for a 6.
-The simulation says a 6 never comes up. Run it, then find why.
+The simulation says a 6 never appears. Run it, then find why.
 
 ```python exec
 id: likely-practice-fix-die
@@ -258,8 +258,8 @@ print(simulate(rolled_six, 10000))
 <details class="dl-answer"><summary>answer</summary>
 
 `random.randint(1, 5)` gives 1 to 5, so `+ 1` gives 2 to 6, which can
-never be 7. Whoever wrote it was thinking of `range()`, which leaves
-out its last number, and tried to make up for it. `randint` includes
+never be 7. Whoever wrote it was thinking of `range()`, which does not
+include its last number, and tried to correct for it. `randint` includes
 both ends, so the plain version works:
 
 ```python
@@ -289,9 +289,10 @@ print(1 / tickets)
 ```
 
 There are 10,737,573 equally likely tickets, and one of them wins, so
-the probability is $\frac{1}{10{,}737{,}573}$: 1 in about ten million.
+the probability is $\frac{1}{10{,}737{,}573}$, which is 1 in about ten
+million.
 Python writes it as `9.313091515186905e-08`, which is 0.000000093.
-Simulating this would need hundreds of millions of runs to see even a
+A simulation of this would need hundreds of millions of runs to see even a
 few wins. Here counting is the only practical way.
 
 </details>
@@ -397,13 +398,13 @@ hold.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: a spinner with 11 equal sections, marked 2 to 12. A
+Here is one answer. Use a spinner with 11 equal sections, marked 2 to 12. A
 program that picks a total with `random.randint(2, 12)` works too. There, each total is
 one equally likely outcome, and $P(7) = \frac{1}{11}$ holds.
 
 With two dice, the equally likely outcomes are the 36 pairs, not the 11
 totals. A total of 7 has six pairs behind it, and 12 has only one. The
-move "count the outcomes and divide" was fine. It needs a space where
+move "count the outcomes and divide" works. It needs a space where
 the outcomes being counted really are equally likely.
 
 </details>
@@ -442,7 +443,7 @@ def four_in_a_row():
 print(simulate(four_in_a_row, 10000))
 ```
 
-It gives something near 0.48: almost half the time. The exact answer
+It gives something near 0.48, which is almost half the time. The exact answer
 is about 0.478. Most people guess much lower. Streaks in real chance
 are longer and more common than they feel, which is one reason a
 "hot streak" in sport or at a casino often means less than it seems.
@@ -456,11 +457,11 @@ trust it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.9 is a relative frequency: how often it caught spam, divided by how
-many times it tried. It is not a probability found by counting equally
+0.9 is a relative frequency. It is how often it caught spam, divided by
+how many times it tried. It is not a probability found by counting equally
 likely outcomes, because a spam email has no such outcomes to count.
 
-With only 10 tries, the relative frequency wobbles a lot, just as
+With only 10 tries, the relative frequency can be far from the real chance, just as
 `simulate(heads, 10)` does. A filter whose real chance is 0.75 could
 catch 9 of 10 on a lucky day. After thousands of emails, the relative
 frequency would be a much better guide. Real spam filters are tested on
@@ -476,7 +477,7 @@ bring them in?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It weighs a few things.
+Here is one answer. It looks at a few things.
 
 - **Why give the names.** They are the words used in news reports, in
   research, and in later courses. A reader who has them can search for
@@ -486,7 +487,7 @@ Here is one way through. It weighs a few things.
 - **After the answer.** The name is a label for something the reader has
   already done. Many pages in this course name a thing after you have
   used it.
-- **Not yet.** The idea is fresh and has room to settle. The cost: a
+- **Not yet.** The idea is fresh and has room to settle. The cost is that a
   reader may not recognise the same idea when they meet it under its
   name.
 
@@ -494,3 +495,12 @@ One answer might put the names after the answer, in one or two
 sentences, so they label the idea without taking its place.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2022). *The Coupon Collector's Problem (with Geoff
+Marshall).* <https://www.youtube.com/watch?v=BstloCx8KDk>. How many times
+must you do something random before you have seen every possible result?
+Matt Parker and Geoff Marshall try it on a weekly run. Can you simulate it
+with the tools from this page before they show the formula? About sixteen
+minutes.

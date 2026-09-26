@@ -28,7 +28,7 @@ covers:
 A bike-share app unlocks a bike only when your account is paid up and
 the dock is working. Before the app goes live, somebody has to be sure
 it does the right thing in every situation. "Every situation" sounds
-endless: how could anyone test them all?
+endless. How could anyone test them all?
 
 Here is the surprise of this page. For a rule like this one, "every
 situation" is a short list, and Python can write all of it.
@@ -84,7 +84,7 @@ values can 3 bits hold?
 
 On the last page, every condition had an answer, `True` or `False`. A
 *Boolean value* is a value that is either True or False, and nothing
-else. The name comes from George Boole, who worked out the rules of
+else. The name comes from George Boole, who found the rules of
 these values in the 1840s and 1850s, in Cork.
 
 Boole's idea was that True and False can be combined, the way numbers
@@ -125,7 +125,7 @@ are four situations, and we want to see all of them.
 A *loop* repeats some lines, once for each value in a list. The line
 `for paid_up in [False, True]:` means "do the pushed-in lines once with
 `paid_up` as False, then once with it as True". That is all we need from
-loops for now. Unit 3 is where we learn them properly.
+loops for now. We learn them properly in Unit 3.
 
 How many lines will this cell print? Guess before you run it.
 
@@ -136,9 +136,9 @@ for paid_up in [False, True]:
         print(paid_up, dock_working, paid_up and dock_working)
 ```
 
-Four lines, one for each situation. Look at the order. The outer loop
-picks a value for `paid_up`. While it holds that value, the inner loop
-runs through both values of `dock_working`. Then the outer loop moves
+There are four lines, one for each situation. Look at the order. The
+outer loop picks a value for `paid_up`. While it holds that value, the
+inner loop uses both values of `dock_working`. Then the outer loop moves
 on. The order of the two `for` lines decides the order of the rows.
 
 A *truth table* is a table that lists every combination of inputs, with
@@ -192,7 +192,7 @@ id: true-false-your-turn-1
 
 ## Not: the opposite
 
-`not` takes one Boolean value and gives back the other one. `not True`
+`not` takes one Boolean value and gives the other one. `not True`
 is False, and `not False` is True. With one input there are only two
 rows. Guess them, then run it to check.
 
@@ -213,7 +213,7 @@ A payment form says "pay by card or by cash". Here "or" means one of the
 two, but not both. This is *exclusive or*, often written XOR. It is True
 when exactly one of its inputs is True.
 
-A real place where XOR lives is the light on a staircase. There is a
+You can find XOR in the light on a staircase. There is a
 switch at the bottom and a switch at the top. Flipping either switch
 changes the light. One common way to wire it makes the light come on
 when exactly one of the two switches is up.
@@ -230,7 +230,7 @@ for bottom_up in [False, True]:
         print(bottom_up, top_up, bottom_up != top_up)
 ```
 
-Put the four tables side by side and the difference shows in the last
+If we put the four tables side by side, the difference is in the last
 row:
 
 | A | B | A and B | A or B | A XOR B |
@@ -276,9 +276,9 @@ for password_ok in [False, True]:
             print(password_ok, at_office, code_ok, log_in)
 ```
 
-Eight rows. The brackets say which part to work out first, the same way
-they do in arithmetic: first `at_office or code_ok`, then `and` with the
-password.
+There are eight rows. The brackets say which part to calculate first,
+the same way they do in arithmetic. First comes `at_office or code_ok`,
+then `and` with the password.
 
 Now look at the count. One input gave 2 rows. Two inputs gave 4. Three
 gave 8. Each new input doubles the rows, because every old row appears
@@ -290,7 +290,7 @@ $$2^n \text{ rows}$$
 That is the same doubling as bits and bytes: 8 bits hold $2^8 = 256$
 values.
 
-In fact, the rows are more than the same count. `int()` turns `False`
+In fact, the link goes further than the count. `int()` turns `False`
 into 0 and `True` into 1. What do you think the rows will look like now?
 Run it to check.
 
@@ -320,7 +320,7 @@ So far we wrote new loops for every rule. Let's make one tool that
 prints the truth table of any rule we give it.
 
 First, a rule becomes a function. Here are the three rules we have met
-so far. Each takes Boolean values in and gives one Boolean value back.
+so far. Each takes Boolean values in and returns one Boolean value.
 
 ```python exec
 id: true-false-tool-1
@@ -342,16 +342,16 @@ def log_in(password_ok, at_office, code_ok):
 print(unlock(True, False))
 ```
 
-Here is something new. A function is a value too, so we can hand the
+Here is something new. A function is a value too, so we can pass the
 rule itself to another function, without brackets after its name.
-`truth_table(unlock, ["paid_up", "dock_working"])` hands over the rule
+`truth_table(unlock, ["paid_up", "dock_working"])` passes the rule
 `unlock`, and the names of its two inputs. Then `truth_table` can call
 `unlock` once for every row.
 
 Here is the promise of `truth_table`:
 
 - It prints a heading of the input names, then every row of the rule.
-- It gives back the result column as a list, so we can test it.
+- It returns the result column as a list, so we can test it.
 - It works for rules with one, two or three inputs.
 
 Three small pieces help it. `len(names)` is how many names the list
@@ -437,8 +437,8 @@ truth_table(unlock, ["paid_up", "dock_working"])
 ```
 
 The table comes from the `print` lines. Under it is what `truth_table`
-gave back: the column `[False, False, False, True]`. Printing is for us
-to read. Giving back is for other code, including tests.
+returned, the column `[False, False, False, True]`. We read what is
+printed. Other code, including tests, uses what is returned.
 
 The tests below check the promise. Each one prints its table as it
 runs, and the `assert` checks the column. Until your three-input branch
@@ -453,7 +453,7 @@ print("truth_table keeps its promise.")
 ```
 
 The last test only checks that there are $2^3 = 8$ rows. Can you add an
-`assert` for the whole login column? "How many rows?" has the answer.
+`assert` for the whole login column? The section "How many rows?" has the answer.
 
 ### Your turn: a digit display
 
@@ -482,8 +482,8 @@ id: true-false-your-segment
 
 1. 0, 2 and 6 are all even. What is `bit_1` for an even number?
 2. Among the even digits 0, 2, 4 and 6, only 4 stays dark. 4 is `100`.
-3. So e lights when `bit_1` is off, and the digit is not `100`: `bit_2`
-   is on, or `bit_4` is off.
+3. So e lights when `bit_1` is off, and the digit is not `100`. That means
+   `bit_2` is on, or `bit_4` is off.
 
 **Think about:** how many different rules could give this same column?
 
@@ -491,8 +491,7 @@ id: true-false-your-segment
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. There are many others, and yours may read
-better.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def bottom_left(bit_4, bit_2, bit_1):
@@ -503,7 +502,7 @@ column = truth_table(bottom_left, ["bit_4", "bit_2", "bit_1"])
 print(column == [True, False, True, False, False, False, True, False])
 ```
 
-The last line prints `True`. A chip inside a real display works out a
+The last line prints `True`. A chip inside a real display uses a
 rule like this for each of the seven segments.
 
 </details>
@@ -546,8 +545,8 @@ They are different. Look at the rows where `password_ok` is False and
 the phone code gets in with no password at all. That is a real security
 hole, made by moving two brackets.
 
-The brackets decide what happens first, and what happens first changes
-the answer. That is the same lesson as the order of the `elif` checks on
+The brackets decide what happens first, and that can change the
+answer. That is the same lesson as the order of the `elif` checks on
 the last page. The next page,
 [Untangling a condition](tutorial:untangling-a-condition), looks at what
 Python does when there are no brackets at all.
@@ -574,12 +573,12 @@ id: true-false-your-turn-2
 On this page, Python wrote every truth table for us, with a short loop.
 The more usual way is to fill the table in on paper, one row at a time.
 
-Filling a table by hand is slower, and that is its strength: you look
-at every row yourself.
+It is slower to fill a table by hand, but you look at every row
+yourself.
 
 We let the computer write the rows because the page asked "can we list
 every case, and be sure we missed none?". A loop never forgets a row,
-and it writes 1,024 rows as readily as 4. The cost was meeting a loop a
+and it writes 1,024 rows as readily as 4. The cost is that we met a loop a
 unit before loops are taught.
 
 </details>
@@ -589,9 +588,9 @@ unit before loops are taught.
 | Question | On this page |
 |---|---|
 | What is named here? | Each input got a name (`paid_up`, `code_ok`), and so did each rule (`unlock`, `log_in`). A rule's name can be handed to another function. |
-| What is promised? | `and`, `or`, `not` and XOR each promise one result for every row. `truth_table` promises every row, and gives back the result column. |
-| What happens when? | Nested loops run the inner loop fully for each value of the outer one, which counts in binary. Brackets decide which part is worked out first. |
-| What does this space let us do? | Only True and False live here. That is what makes "every case" a list we can finish: $2^n$ rows for $n$ inputs. |
+| What is promised? | `and`, `or`, `not` and XOR each promise one result for every row. `truth_table` promises every row, and returns the result column. |
+| What happens when? | Nested loops run the inner loop fully for each value of the outer one, which counts in binary. Brackets decide which part is calculated first. |
+| What does this space let us do? | Only True and False live here. So "every case" is a list we can finish: $2^n$ rows for $n$ inputs. |
 
 ## What we have now
 
@@ -609,3 +608,10 @@ unit before loops are taught.
 
 For another route through the same ideas, the integrated course has
 [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
+
+## Where to read more
+
+Spanning Tree (2020). *Understanding Logic Gates.*
+<https://www.youtube.com/watch?v=INEtYZqtjTo>. NOT, AND, OR and XOR as
+small circuits, each with the truth table from this page. Brian Yu shows
+how computers are built from them. Seven minutes.

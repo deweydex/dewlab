@@ -1,0 +1,29 @@
+# Attribution for data/grace-hopper.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the picture they are working with back to its source.
+
+source: >
+  Official portrait of Commodore Grace M. Hopper, US Naval Reserve, taken
+  on 20 January 1984 by James S. Davis for the US Navy (Naval History and
+  Heritage Command, NH 96919-KN). The copy used is Wikimedia Commons'
+  File:Grace_Hopper.jpg, as matplotlib ships it in its sample data.
+
+url: https://commons.wikimedia.org/wiki/File:Grace_Hopper.jpg
+
+license: >
+  Public domain in the United States, as the work of a US Navy employee
+  made as part of official duties. The grid of numbers made from it is
+  this site's own, and it places it in the public domain too.
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Turned to greyscale and shrunk from 512 by 600 pixels to 60 by 70 with
+  Pillow's Lanczos filter; nothing else. It has no live source: the
+  photograph does not change.
+
+description: >
+  The portrait as a grid of numbers: 70 lines, one for each row of pixels
+  from the top, each holding 60 whole numbers separated by commas, one for
+  each pixel from the left. 0 is black and 255 is white. There is no
+  header line.

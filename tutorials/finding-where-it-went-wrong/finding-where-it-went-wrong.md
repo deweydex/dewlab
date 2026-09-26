@@ -27,8 +27,8 @@ printed values in the middle of a program, tested small pieces on their
 own, and checked answers we already knew. If your program stops with an
 error message, those two pages are the place to start.
 
-This page is about the other case: no error message, only a wrong
-answer. We take those habits a few steps further:
+This page is about the other case. There is no error message, only a
+wrong answer. We take those habits a few steps further:
 
 1. We decide how to check the answer *before* we write any code.
 2. We follow a wrong answer back, step by step, to the one line that
@@ -36,7 +36,7 @@ answer. We take those habits a few steps further:
 3. We compare two ways of responding to a bug, and see why only one of
    them fixes it.
 
-## Deciding What Done Means
+## Deciding what done means
 
 Here is the problem. We have a list of temperature readings in
 Fahrenheit, stored as text. We want their average in Celsius.
@@ -47,15 +47,15 @@ number that looks reasonable. But a number that looks reasonable is not
 the same as a correct number. One reasonable-looking number does not
 prove that the arithmetic behind it was right.
 
-Two temperatures have answers everyone knows, with no working out:
+Two temperatures have answers everyone knows, with no calculation:
 
 - Water freezes at `32°F`, which is exactly `0°C`.
 - Water boils at `212°F`, which is exactly `100°C`.
 
 So if we give the program the readings `32.0` and `212.0`, the average
 should be exactly `50.0`. We decide on this check now, before any code
-exists to pass or fail it. Passing it is what "done" will mean for this
-problem.
+exists to pass or fail it. For this problem, "done" will mean that the
+program passes it.
 
 ### Your turn
 
@@ -63,7 +63,7 @@ Before you read the next section: if freezing and boiling point were not
 already suggested here, what would *you* have chosen to test this
 program with?
 
-## Building the Pipeline
+## Building the pipeline
 
 A *pipeline* is a program made of stages, where each stage passes its
 result on to the next. Ours has three small stages, and each does one job:
@@ -114,7 +114,7 @@ using this program would have trusted a wrong answer.
 ### Your turn
 
 1. Try `summarize(["32.0"])`, with the freezing point on its own.
-2. Does it come back wrong too?
+2. Is it wrong too?
 3. What does that tell you about which of the two readings caught the
    bug?
 
@@ -130,15 +130,14 @@ numbers. Does it matter which numbers? Now try `summarize(["212.0"])` on
 its own, and compare what comes back with $100$.
 ```
 
-## The Symptom Is Not the Cause
+## The symptom is not the cause
 
 The *symptom* is what we can see going wrong:
 `summarize(["32.0", "212.0"])` should be `50.0`, and it is not.
 
 The symptom is not the *cause*. The cause is the mistake in the code
 that produced the wrong number. Something inside the pipeline made a
-wrong number. The final average is only where that wrong number came to
-the surface.
+wrong number. We only see that wrong number in the final average.
 
 One way to respond is to fix the symptom directly. We could change
 `average` so that this one test passes.
@@ -157,13 +156,13 @@ print(summarize_patched(["32.0", "212.0"]))
 print(summarize_patched(daily))
 ```
 
-The known-answer test now passes. But look at the everyday readings: their
+The known-answer test now passes. But look at the everyday readings. Their
 answer has changed too, for no reason that has anything to do with those
 three temperatures. `average_patched` takes `6.25` off every average it is
 ever asked for, whether that case needed it or not.
 
 This is called *pragmatic problem-solving*. Pragmatic problem-solving
-treats the symptom in front of it. It makes that one symptom go away, and
+treats the symptom in front of it. It removes that one symptom, and
 it breaks the next case that does not share the same symptom.
 
 The other way to respond asks a different question. Where, exactly, does
@@ -212,7 +211,7 @@ print(summarize_fixed(daily))
 ```
 
 The known-answer test now passes for a real reason. The answer for the
-everyday readings changes too. It was wrong all along, and now it is
+everyday readings changes too. It was wrong from the start, and now it is
 right. Nothing was adjusted only to make one test pass.
 
 ### Your turn
@@ -234,7 +233,7 @@ print(summarize_v2(["32.0", "212.0"]))
 ```
 
 Use the same known-answer readings to check each stage of `summarize_v2`
-in turn. Keep going until you find the stage that disagrees with what it
+in turn. Continue until you find the stage that disagrees with what it
 alone should give.
 
 ```python exec
@@ -265,39 +264,39 @@ value, and why the stages after it could not have been the cause.
 happens, and what does that tell you about the line inside it?
 ```
 
-## What Finding It Took
+## What finding it took
 
-None of the steps above was hard on its own. Reading a value from a
-function, and comparing it with an answer worked out by hand, needs no
-special skill. What made the difference was a handful of habits, used in
-order. Each one has a name.
+None of the steps above was hard on its own. You read a value from a
+function, and compared it with an answer found by hand. That needs no
+special skill. A handful of habits, used in order, made the difference.
+Each one has a name.
 
 **Lateral thinking.** We tested with freezing and boiling point, not
-with three ordinary daily readings. *Lateral thinking* is choosing a test
-or an approach that nothing in the problem suggested. The daily readings
+with three ordinary daily readings. With *lateral thinking*, you choose a
+test or an approach that nothing in the problem suggested. The daily readings
 gave a wrong answer too, but nothing told us it was wrong, because nobody
 knows the right answer for them by heart. And freezing point on its own,
-the most obvious reading with a known answer, hides this bug completely:
-it comes out right.
+the most obvious reading with a known answer, hides this bug completely,
+because it gives the right answer.
 
 **A methodical approach.** We checked each stage of the pipeline in turn.
 We did not stare at the final wrong number and guess. A *methodical
 approach* asks the same question at each stage, in order, until one stage
 disagrees.
 
-**Logical reasoning.** Each answer along the way narrowed down where the
-fault could be. *Logical reasoning* is using what one check has ruled out
-to decide what to check next. On this page it did real work. It was not
+**Logical reasoning.** Each answer along the way narrowed the places
+where the fault could be. With *logical reasoning*, you use what one
+check has excluded to decide what to check next. On this page it did real work. It was not
 only a definition.
 
-**Initiative.** *Initiative* is starting a check that nobody asked for.
-It is the reason there was a known-answer test to fail in the first
-place. Nobody required one. It would have been easy to run the program
+**Initiative.** With *initiative*, you start a check that nobody asked
+for. Because of it, there was a known-answer test that could fail.
+Nobody required one. It would have been easy to run the program
 once, see a reasonable-looking number, and stop there.
 
 **Persistence.** The pragmatic patch made the one visible test pass.
-*Persistence* is not stopping there, and going on until the real cause
-is found.
+With *persistence*, you do not stop there. You continue until you find
+the real cause.
 
 These five habits are not separate techniques to learn by heart. You
 have already seen every one of them at work on this page.
@@ -308,13 +307,13 @@ Think of a time you fixed something, in code or anywhere else, when at
 first you were not sure what was wrong. Which of these habits helped you
 get there?
 
-## Where to Read More
+## Where to read more
 
 McConnell, S. (2004). *Code Complete* (2nd ed.). Microsoft Press. Chapter
 23 covers debugging as a discipline in its own right, including exactly
 the stage-by-stage isolation this page demonstrates.
 
 Zeller, A. (2009). *Why Programs Fail: A Guide to Systematic Debugging*
-(2nd ed.). Morgan Kaufmann. A full treatment of narrowing a fault by
-halving the search space, the same idea this page calls binary search
+(2nd ed.). Morgan Kaufmann. It covers in full how to find a fault by
+halving the search space. This page calls the same idea binary search
 debugging.

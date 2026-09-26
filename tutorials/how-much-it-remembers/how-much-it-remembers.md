@@ -17,7 +17,7 @@ dictionaries](tutorial:a-chain-reads-a-book), we built a chain that
 chooses the next word by looking at one word only: the word just before
 it. What happens if the chain can remember more than that?
 
-## Keying On More Than One Word
+## Keying on more than one word
 
 Here is the same book, loaded and cleaned in the same way as before.
 
@@ -69,11 +69,11 @@ print(len(order2[("the", "Morlocks")]), "different words have ever followed 'the
 ```
 
 This loop is the one from `order1` with one more list in the `zip`. It
-walks through the book three words at a time. The first two words make
+moves through the book three words at a time. The first two words make
 the key. The third word is the one that followed them.
 
 What do the two cells print? `order1["Morlocks"]` has 24 different words
-that have followed `"Morlocks"`. Sometimes the sentence goes on to what
+that have followed `"Morlocks"`. Sometimes the sentence continues with what
 the Morlocks did, like `"had"` or `"came"`. Sometimes it is just `"and"`
 or `"were"`. When we ask about `"the Morlocks"` instead, the number
 drops to 17. The extra word of context does more than add memory. It
@@ -97,11 +97,11 @@ id: keying-on-more-than-one-word-4
 hint: len(order2) counts how many distinct two-word keys exist, the same way len(order1) counted single-word keys.
 ```
 
-## Comparing What Each One Writes
+## Comparing what each one writes
 
 `generate()` from the last tutorial walks an `order1` chain one word at a
 time. An `order2` chain needs a small change. Its key is a pair. After
-it chooses a new word, the key moves forward by one word: it drops the
+it chooses a new word, the key moves forward by one word. It drops the
 older word and adds the new one. So the key always holds the *last* two
 words, and it never grows longer.
 
@@ -194,8 +194,8 @@ id: comparing-what-each-one-writes-2
 ## Reflection
 
 More context makes a chain sound more like the book it learned from, but
-less new. Less context makes it sound less like the book, and more like
-itself. Neither is simply *better*. Suppose you want a chain that writes
+it writes less that is new. Less context makes it sound less like the
+book, and it writes more new combinations. Neither is simply *better*. Suppose you want a chain that writes
 in an author's own voice. Then you want more context. For a chain that
 surprises you, you want less.
 
@@ -203,3 +203,10 @@ The next tutorial, [Writing style: comparing two writers with Markov
 chains](tutorial:whose-voice-is-this), asks how far that can go. Does a
 chain trained on one writer sound different from a chain trained on
 another?
+
+## Where to read more
+
+3Blue1Brown (2024). *Large Language Models explained briefly.*
+<https://www.youtube.com/watch?v=LPZh9BOjkQs>. A chatbot also chooses each
+next word from the words before it, but it looks back much further than
+two or three words. Grant Sanderson shows how, in eight minutes.

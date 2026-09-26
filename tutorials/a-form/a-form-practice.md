@@ -160,7 +160,7 @@ fix it?
 
 A label's `for` names a field's `id`, and never its `name`. Here the
 `id` was `msg`, so `for="message"` found nothing. We could also change
-the `id` to `message`. The `name` can stay as it is: it names the answer
+the `id` to `message`. The `name` can stay as it is. It names the answer
 when the form is sent, and the label never reads it.
 
 </details>

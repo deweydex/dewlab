@@ -70,8 +70,7 @@ A few pieces of this CSS are new. Here they are, one at a time.
   need it. Its name always starts with two dashes.
 - `:root` is a selector. It matches the `<html>` element, the one that
   holds the whole page. A variable defined there can be read by every
-  element on the page, so `:root` is where a page's variables usually
-  live.
+  element on the page, so a page's variables usually live in `:root`.
 - `var()` reads a variable's value back into a declaration.
   `var(--brand-color)` means "use whatever `--brand-color` holds".
 
@@ -92,8 +91,8 @@ at selectors like these more closely. The `padding` and `margin-bottom`
 lines add space around each box, which we explore in [The box model:
 padding, border and margin](tutorial:the-box).
 
-What about `#2c3e50`? That is a *hex colour*: a `#` followed by three
-pairs of characters, for the amount of red, green and blue. Each
+What about `#2c3e50`? That is a *hex colour*. It is a `#` followed by
+three pairs of characters, for the amount of red, green and blue. Each
 character is a digit from `0` to `9` or a letter from `a` to `f`, and
 each pair goes from `00` (none) to `ff` (full). So `#000000` is black, and
 `#ffffff` is white. Colour names like `firebrick` work too, but hex
@@ -137,3 +136,10 @@ We can now define a value once and read it from several rules.
 | `:root` | The selector that matches `<html>`. A page's variables usually live there. | `:root { ... }` |
 | `var()` | Reads a variable's value back into a declaration | `background: var(--brand-color);` |
 | *hex colour* | A colour written as `#` and three pairs of characters, for red, green and blue | `#2c3e50` |
+
+## Where to read more
+
+Captain Disillusion (2020). *CD / Color.*
+<https://www.youtube.com/watch?v=FTKP0Y9MVus>. Captain Disillusion
+explains how a screen makes every colour from red, green and blue light.
+Seven minutes.

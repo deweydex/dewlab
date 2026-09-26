@@ -135,7 +135,7 @@ edge: a line from one corner to another.
 - The last four join each corner of the first square to the matching
   corner of the second.
 
-In step 4, we took away `[0, 1]`, so the line from corner `0` to corner
+In step 4, we deleted `[0, 1]`, so the line from corner `0` to corner
 `1` was never drawn. A drawing of a shape that shows only its edges is
 called a *wireframe*.
 
@@ -157,9 +157,9 @@ results. That gives one new coordinate. With the numbers of
 | `[-sin, 0, cos]` | new `z` = `-sin × x + cos × z` |
 
 `y` never changes, so every corner goes round the vertical axis at its
-own height. Multiplying a row by a point in this way, and adding up, is
-called a *dot product*. It is what `multiply` did with a row and a
-column on [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube).
+own height. Multiplying a row by a point in this way, and adding the
+results, is called a *dot product*. `multiply` did the same with a row
+and a column on [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube).
 
 ### Drawing the edges
 
@@ -217,3 +217,12 @@ and draw it as lines on a canvas.
 | *dot product* | Multiply two lists of numbers item by item, and add up the results | `a * x + b * y + c * z` in `turn` |
 | `moveTo()` and `lineTo()` | Put the pen down at a point, then describe a line from there to another point | `pen.moveTo(10, 10); pen.lineTo(50, 50);` |
 | `stroke()` | Draws the line just described | `pen.stroke();` |
+
+## Where to read more
+
+Branch Education (2023). *How do Video Game Graphics Work?*
+<https://www.youtube.com/watch?v=C8YtdC8mxTU>. A game draws its world the
+way this page draws a cube: first the corners, then the shapes between
+them, turned and then flattened onto the screen. This animated video
+follows millions of those shapes through a graphics card. About twenty
+minutes.

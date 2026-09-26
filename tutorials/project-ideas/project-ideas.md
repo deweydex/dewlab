@@ -43,8 +43,8 @@ you want a file already in place rather than a blank one.
 
 ## After Flexbox and Grid
 
-These need a row or a grid of things, so they wait until you have laid one
-out.
+These need a row or a grid of things, so try them after you have made
+one.
 
 Build a *landing page*: pick a product, real or invented, then give it a
 large heading, a short pitch, a row of features side by side, and a
@@ -84,8 +84,7 @@ reader notices all of it before they notice anything else about the page.
 
 ## If you get stuck
 
-The [troubleshooting](tutorial:troubleshooting) page covers the problems
-that come up most. The [quick reference](tutorial:quick-reference) holds
-syntax you have seen before and cannot quite remember. Trying something
-and watching it fail is usually the fastest way through the project, not
-a detour from it.
+The [troubleshooting](tutorial:troubleshooting) page covers the most
+common problems. The [quick reference](tutorial:quick-reference) holds
+syntax you have seen before and cannot quite remember. You usually
+finish a project faster when you try something and watch it fail.

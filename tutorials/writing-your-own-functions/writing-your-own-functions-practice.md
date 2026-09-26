@@ -10,7 +10,7 @@ worlds:
 
 # Writing your own functions — Practice
 
-Problems on functions, and three from earlier pages. Where a problem gives
+These problems are on functions, with three from earlier pages. Where a problem gives
 you cases to try, write what you think each one gives in the guess column
 first, then try them on your code.
 
@@ -46,12 +46,12 @@ wave
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Nothing: a `def` only tells Python what `wave` means. (b) `Hi!` twice,
+(a) Nothing. A `def` only tells Python what `wave` means. (b) `Hi!` twice,
 once for each call. (c) The function does not run. Without brackets,
 `wave` is the name of the function, not a call to it. On this site a cell
 whose last line is a value on its own shows that value, so you may see
-something like `<function wave at 0x...>`: Python describing the function
-itself. The brackets are what make it run.
+something like `<function wave at 0x...>`. That is Python's description
+of the function itself. The brackets make it run.
 
 </details>
 
@@ -278,8 +278,8 @@ What will the last line print?
 <details class="dl-answer"><summary>why</summary>
 
 `5.0`, then `None`. The first line comes from the `print` inside the
-function. The function has no `return`, so it gives back `None`, and that
-is what `result` holds.
+function. The function has no `return`, so it returns `None`, and `result`
+holds that.
 
 </details>
 
@@ -298,10 +298,10 @@ What will the last line print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`hi`, then `None`. Python works out the inner call first: `print("hi")`
-shows `hi`, and, like every function without a `return` value, gives back
+`hi`, then `None`. Python runs the inner call first. `print("hi")`
+shows `hi`, and, like every function without a `return` value, returns
 `None`. The outer `print` then shows that `None`. `print` is a function
-whose job is to show things. It does not give anything back.
+whose job is to show things. It returns nothing useful.
 
 </details>
 
@@ -350,15 +350,15 @@ these are pure?
 it changes the answer for the same price. (c) gives a different answer
 each time. A change a function makes outside itself, such as printing or
 changing a variable elsewhere, is called a *side effect*. Pure functions
-are the easiest to test, but the others are needed too: a dice game needs
+are the easiest to test, but the others are needed too. A dice game needs
 `roll`.
 
 </details>
 
 ## 13. Its own inverse
 
-Some functions undo themselves: doing them twice gets you back where you
-started.
+Some functions undo themselves. If you do them twice, you get back what
+you started with.
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -432,11 +432,11 @@ with that input?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0: `reciprocal(0)` stops with `ZeroDivisionError: division by zero`. When a
-function has an input it cannot handle, it is worth deciding on purpose
-what should happen.
+0. `reciprocal(0)` stops with `ZeroDivisionError: division by zero`. When a
+function has an input it cannot handle, decide on purpose what should
+happen.
 [Designing and testing good functions](tutorial:building-reusable-tools)
-comes back to such inputs, called edge cases.
+returns to such inputs, called edge cases.
 
 </details>
 
@@ -486,8 +486,8 @@ and `has_factor(1)` finds nothing. But 1 is not a prime.
 
 ## 16. Distance on a screen
 
-Two pixels are at `(x1, y1)` and `(x2, y2)`. The distance between them is
-Pythagoras again: the square root of the difference across, squared, plus
+Two pixels are at `(x1, y1)` and `(x2, y2)`. You can find the distance between them
+with Pythagoras again. It is the square root of the difference across, squared, plus
 the difference down, squared. Can you write `distance(x1, y1, x2, y2)`?
 
 ```python exec
@@ -516,7 +516,7 @@ the formula.
 ## 17. Two answers at once
 
 Can you write `divide_with_remainder(a, b)`, which returns two values: how
-many whole times `b` goes into `a`, and what is left over?
+many whole times `b` goes into `a`, and what remains?
 
 ```python exec
 id: two-answers-at-once-1
@@ -601,7 +601,7 @@ assigns to a name anywhere in its body, Python treats that name as local
 in the whole function. So on the right of `total = total + n`, Python looks
 for a local `total`, and there is none yet. The clear fix is to pass the
 value in and return the new one:
-`def add(total, n): return total + n`. This one catches out experienced
+`def add(total, n): return total + n`. This error surprises experienced
 programmers too.
 
 </details>
@@ -628,7 +628,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-4: 100 becomes 33, then 11, then 3, then 1, and the loop stops because 1
+4. 100 becomes 33, then 11, then 3, then 1, and the loop stops because 1
 is not more than 1.
 
 </details>
@@ -659,7 +659,7 @@ From *Variables, data types and text*. What does `f"{2 / 3:.2f}"` give?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0.67`: the value of `2 / 3`, shown with two decimal places. The value
-itself keeps every place; `:.2f` only changes how it is shown.
+`0.67`. That is the value of `2 / 3`, shown with two decimal places. The
+value itself keeps every place. `:.2f` only changes how it is shown.
 
 </details>

@@ -12,7 +12,7 @@ worlds:
 
 Problems on docstrings, edge cases and tests, and three from earlier
 pages. Where a problem has a cell of tests under it, those tests are
-yours: add to them, and they run against your function and against a
+yours. Add to them, and they run against your function and against a
 solution. Try each problem before you open anything under it.
 
 ## 1. A docstring for f
@@ -45,8 +45,8 @@ should it tell them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-What the function does; what it expects as input; and what it gives back,
-including what it does when the input is not what it expects. The last is
+It should say what the function does, what it expects as input, and what
+it returns, including what it does when the input is not what it expects. The last is
 the part most often left out, and the part a reader most often needs.
 "Raises ValueError for an empty list" can save somebody an hour.
 
@@ -64,7 +64,7 @@ def average(numbers):
 
 <details class="dl-answer"><summary>answer</summary>
 
-On an empty list it stops with a `ZeroDivisionError`: the docstring
+On an empty list it stops with a `ZeroDivisionError`. The docstring
 promises something the code does not do. A wrong docstring is worse than
 none, because people trust it. Either add the check or change the
 sentence. If you cannot decide which, you have found a question about what
@@ -138,15 +138,15 @@ by returning a default value. When is each one right?
 
 <details class="dl-answer"><summary>answer</summary>
 
-**Raise** when the call itself was a mistake, and carrying on would hide
+**Raise** when the call itself was a mistake, and continuing would hide
 it: `mean([])` almost always means a bug earlier in the program.
 
-**Return `None`** when "no answer" is a fair result the caller should deal
+**Return `None`** when "no answer" is a normal result the caller should deal
 with, such as a search for something that may not be there.
 
 **Return a default** only when the default is right, and not because it
-is easy. `sum([])` giving 0 is right. `mean([])` giving 0 is wrong, and
-that wrong 0 ends up in somebody's report.
+is easy. When `sum([])` gives 0, that is right. When `mean([])` gives 0,
+that is wrong, and that wrong 0 appears in somebody's report.
 
 </details>
 
@@ -167,8 +167,9 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-About 0.667. In Python, `True` counts as 1 and `False` as 0, so the sum is
-2. Is that a bug? It depends on what you meant: the mean of a list of
+The answer is about 0.667. In Python, `True` counts as 1 and `False` as 0,
+so the sum is 2. Is that a bug? It depends on what you meant. The mean of a
+list of
 yes-or-no answers is the fraction that said yes, which is often the
 number you wanted.
 
@@ -210,7 +211,8 @@ You write a test, and it passes the first time. What should you check?
 
 <details class="dl-answer"><summary>answer</summary>
 
-That it would fail if the code were wrong. Break the function on purpose:
+Check that it would fail if the code were wrong. Break the function on
+purpose:
 return the wrong thing, or turn a `<` into a `>`. Then make sure the test
 complains. A test that passes on broken code tests nothing, and the
 bug hunt on the tutorial page had three versions ready to show it.
@@ -224,7 +226,7 @@ stops the program?
 
 <details class="dl-answer"><summary>answer</summary>
 
-With `try`, which is new here. The `try` part runs the call. The `except`
+It can use `try`, which is new here. The `try` part runs the call. The `except`
 part runs only if that kind of error is raised. The `else` part runs only
 if nothing was raised.
 
@@ -237,8 +239,8 @@ else:
     print("did not raise: the check is missing")
 ```
 
-Testing that something fails is as important as testing that it works,
-and it is the half most people skip.
+A test that checks for a failure is as important as a test that checks
+that it works. Most people skip the first kind.
 
 </details>
 
@@ -446,8 +448,8 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`['A', 'B', 'C']`. `sorted()` takes anything a loop can go through, and
-always gives back a list. `"".join(sorted("CAB"))` makes it a string
+The answer is `['A', 'B', 'C']`. `sorted()` takes anything a loop can use,
+and always returns a list. `"".join(sorted("CAB"))` makes it a string
 again.
 
 </details>
@@ -481,10 +483,10 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`HERON`, with no error. The search said "not there" with −1, and the
-caller used it as an index, which picks the last element. A caller must
-check for −1 before using the answer. Raising an error in place of
-returning −1 would make forgetting impossible.
+The answer is `HERON`, with no error. The search said "not there" with
+−1, and the caller used it as an index, which picks the last element. A
+caller must check for −1 before using the answer. If the search raised
+an error in place of returning −1, nobody could forget the check.
 
 </details>
 
@@ -511,7 +513,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`None`. `.get()` never raises a `KeyError`: with no default, it gives
-back `None`. `counts.get("Z", 0)` gives 0.
+The answer is `None`. `.get()` never raises a `KeyError`. With no
+default, it returns `None`. `counts.get("Z", 0)` gives 0.
 
 </details>

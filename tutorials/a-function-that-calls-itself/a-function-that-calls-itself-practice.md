@@ -7,8 +7,8 @@ version: 2026.09.25.1
 
 # A function that calls itself: recursion — Practice
 
-Each answer is hidden until you open it, and each one is one way
-through: yours may go another way. Where a problem asks you to predict,
+Each answer is hidden until you open it. Each one is one answer.
+Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
 Your toolkit is loaded on this page, so `count_items` is ready to use,
@@ -47,8 +47,8 @@ Lift off!
 
 The call for 3 prints 3, then calls `countdown(2)`, which prints 2 and
 calls `countdown(1)`. That prints 1 and calls `countdown(0)`, which is
-the base case: it prints "Lift off!" and makes no more calls. The
-`return` with nothing after it ends the call and gives back `None`.
+the base case. It prints "Lift off!" and makes no more calls. The
+`return` with nothing after it ends the call and returns `None`.
 
 </details>
 
@@ -64,7 +64,7 @@ print(count_items(bag))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`3`, then `4`.
+It prints `3`, then `4`.
 
 `len` counts what is directly inside the bag: two pouches and a book.
 `count_items` looks inside every pouch, and counts the things
@@ -78,7 +78,7 @@ reach its base case, for any whole number from 0 up?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The base case is the `if seconds == 0:` branch: it prints "Lift off!"
+The base case is the `if seconds == 0:` branch. It prints "Lift off!"
 and makes no more calls. The recursive case is the last two lines: print
 the number, then hand `seconds - 1` to the same function.
 
@@ -107,8 +107,8 @@ playlists = [
 print(count_items(playlists))    # 8
 ```
 
-Three in "Chill", four in "Workout" with its remixes, and one on its
-own: 8 songs. The playlists' names are in comments, not in the lists,
+There are three in "Chill", four in "Workout" with its remixes, and
+one on its own, so 8 songs. The playlists' names are in comments, not in the lists,
 so they are not counted as songs.
 
 </details>
@@ -135,13 +135,13 @@ IPv4, is 32 bits long. Use `power` to find how many different addresses
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The base case: when `exponent == 0`, give back 1.
-2. The recursive case: give back `base` times `power(base, exponent - 1)`.
+1. The base case: when `exponent == 0`, return 1.
+2. The recursive case: return `base` times `power(base, exponent - 1)`.
 3. Each bit doubles the number of patterns, as on
    [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
    so 32 bits make `power(2, 32)`.
 
-**Think about:** why does the base case give back 1, and not 0 or `base`?
+**Think about:** why does the base case return 1, and not 0 or `base`?
 
 **Try this next:** how many calls does `power(2, 32)` make?
 
@@ -163,7 +163,7 @@ print(2 ** 32)         # 4294967296
 
 32 bits make 4,294,967,296 addresses, about 4.3 billion. That is fewer
 than the number of people on Earth, which is one reason a newer kind of
-address, IPv6, uses 128 bits. The base case gives back 1 because
+address, IPv6, uses 128 bits. The base case returns 1 because
 multiplying by 1 changes nothing, the same reason a running product
 starts at 1 on [Doing it again](tutorial:doing-it-again).
 
@@ -172,7 +172,7 @@ starts at 1 on [Doing it again](tutorial:doing-it-again).
 **6. Fix.** A website has a menu, and some menu items open smaller
 menus of their own. Schlomo, who is learning Python too, writes a
 function to count the pages the menu leads to. He copied the shape of
-`count_items`, which is a sound plan. There are 6 pages, and his
+`count_items`. There are 6 pages, and his
 function says 1. Find the line that loses the rest.
 
 ```python exec
@@ -200,8 +200,8 @@ print(count_pages(menu))    # there are 6 pages
 
 1. Which items does the top call count itself? Only "Contact".
 2. For each smaller menu, it calls `count_pages(item)`. What does it do
-   with the number that call gives back?
-3. A call gives its answer back to the line that made it. If that line
+   with the number that call returns?
+3. A call returns its answer to the line that made it. If that line
    does nothing with it, the answer is lost.
 
 **Think about:** each call has its own `found`. Does adding to the
@@ -213,7 +213,7 @@ inner call's `found` change the outer one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line `count_pages(item)` makes the call, but throws away its
+The line `count_pages(item)` makes the call, but loses its
 answer. Each call has its own `found`, in its own space, so the inner
 calls' counts never reach the top. The line needs to add the answer:
 
@@ -222,7 +222,7 @@ calls' counts never reach the top. The line needs to add the answer:
             found = found + count_pages(item)
 ```
 
-Now it prints 6. Schlomo is not alone here: a call that is made, and
+Now it prints 6. Schlomo is not alone here. A call that is made, and
 whose answer is never used, is one of the most common slips in
 recursion.
 
@@ -231,9 +231,9 @@ recursion.
 **7. Fix.** Before a game of tag, a child counts down in twos: 5, 3,
 1, Go! This version never says "Go!". The cell is meant to fail. Left
 alone, it would print about a thousand numbers before Python stopped
-it, so we added a safety net: it stops with a `RecursionError` once the
+it, so we added a check. It stops with a `RecursionError` once the
 count goes below −10. The numbers it prints are the clue. Find the
-line that lets the count run on, and change it.
+line that lets the count continue, and change it.
 
 ```python exec
 id: calls-itself-practice-fix-twos
@@ -337,7 +337,7 @@ def sum_nested(nested):
 print(sum_nested(archive))    # 2465
 ```
 
-2,465 KB. Only one thing changed from `count_items`: a file adds its
+There are 2,465 KB inside. Only one thing changed from `count_items`: a file adds its
 own size, where a photo added 1. The running name is `running`, not
 `total`, so the toolkit's `total` stays available.
 
@@ -366,9 +366,8 @@ def sum_nested_by_loop(nested):
 print(sum_nested_by_loop(archive))    # 2465
 ```
 
-The same 2,465 KB. The loop opens the zip files in a different order
-from the recursion, but adding does not care about order, so the sum
-is the same.
+Yes, it gives the same 2,465 KB. The loop opens the zip files in a
+different order from the recursion, but the order does not change a sum.
 
 </details>
 
@@ -381,10 +380,10 @@ they give an answer. What would her change do?
 
 From −1, `n` goes −2, −3, −4, away from 0. From 2.5, it goes 1.5, 0.5,
 −0.5, and steps over 0. Neither ever reaches the base case, so the calls
-pile up until Python's limit stops them.
+grow until Python's limit stops them.
 
-Schlomi's change does stop the error. But then it gives answers that
-mean nothing, quietly: `factorial_again(2.5)` would give $2.5 \times 1.5 \times 0.5 =
+Schlomi's change does stop the error. But then it quietly gives answers
+that mean nothing. `factorial_again(2.5)` would give $2.5 \times 1.5 \times 0.5 =
 1.875$, which is not a factorial of anything. The inputs are outside the
 promise's domain, whole numbers from 0 up. A clearer fix checks the
 domain at the top, as on
@@ -394,8 +393,7 @@ domain at the top, as on
 assert n >= 0 and n == int(n), "n must be a whole number, 0 or more"
 ```
 
-An error with a message says what happened. An answer that means
-nothing says nothing.
+An error with a message says what happened.
 
 </details>
 
@@ -414,7 +412,7 @@ holidays = [
 
 <details class="dl-answer"><summary>answer</summary>
 
-4 calls: one for "Holidays" itself, and one for each folder inside it,
+It is called 4 times: once for "Holidays" itself, and once for each folder inside it,
 "kerry", "paris" and "louvre". A photo never makes a call. So the number
 of calls is 1 more than the number of folders, however many photos
 there are.
@@ -432,7 +430,7 @@ id: calls-itself-practice-scratch-3
 
 **13. Make.** A set of Russian dolls has a doll inside a doll inside a
 doll. As a nested list, the smallest doll is inside five lists. Write
-`deepest(nested)`, which gives back how many levels deep the deepest
+`deepest(nested)`, which returns how many levels deep the deepest
 list goes, counting `nested` itself as 1.
 
 ```python
@@ -447,7 +445,7 @@ dolls = [[[[["tiny doll"]]]]]
 1. Keep a name for the deepest list found inside so far, starting at 0.
 2. For each item that is a list, find `deepest(item)`, and keep it if
    it is bigger. Python's `max(a, b)` gives the bigger of two numbers.
-3. At the end, give back 1 more than the deepest found inside, for the
+3. At the end, return 1 more than the deepest found inside, for the
    level of `nested` itself.
 
 **Think about:** what is the base case? Which list makes no more calls?
@@ -470,16 +468,16 @@ def deepest(nested):
 print(deepest(dolls), deepest([]), deepest(holidays))    # 5 1 3
 ```
 
-A list with no lists inside is the base case: the loop makes no calls,
-and it gives back 1.
+A list with no lists inside is the base case. The loop makes no calls,
+and the function returns 1.
 
 </details>
 
 **14. Another way.** On
 [Finding things fast](tutorial:finding-things-fast), binary search
 looked at the middle of a sorted list, then kept only the half that
-could hold the target. That page called this divide and conquer:
-keeping half is the same search on a smaller problem, so binary search
+could hold the target. That page called this divide and conquer.
+Keeping half is the same search on a smaller problem, so binary search
 can be written as a recursion. Finish this
 version, which searches between the places `low` and `high`, and prints
 each part it looks at. How many parts does it look at to find the last
@@ -507,7 +505,7 @@ print(binary_search_again(tickets, 3997, 0, len(tickets) - 1))
    be in the upper half, from `middle + 1` to `high`.
 2. Otherwise it can only be in the lower half, from `low` to
    `middle - 1`.
-3. In each case, give back what the same function gives back for that
+3. In each case, return what the same function returns for that
    half.
 
 **Think about:** what is the base case when the target is not there?
@@ -524,10 +522,10 @@ print(binary_search_again(tickets, 3997, 0, len(tickets) - 1))
     return binary_search_again(sorted_values, target, low, middle - 1)
 ```
 
-It looks at 10 parts, from "0 to 999" down to "999 to 999", and gives
-back 999, the last place. $\log_2 1000$ is about 9.97, so about 10
+It looks at 10 parts, from "0 to 999" down to "999 to 999", and returns
+999, the last place. $\log_2 1000$ is about 9.97, so about 10
 halvings bring 1,000 places down to 1. Searching for 2000 also takes 10
-looks, and gives back −1: the part shrinks to nothing, and `low > high`
+looks, and returns −1. The part shrinks to nothing, and `low > high`
 is the base case that says "not here".
 
 </details>
@@ -571,16 +569,16 @@ for month in [5, 10, 20, 25]:
 ```
 
 `rabbits(10)` makes 109 calls, and `rabbits(25)` makes 150,049. Each
-call makes two more, and the two ask the same questions again:
-`rabbits(8)` is worked out once for month 10, and again inside the call
+call makes two more, and the two ask the same questions again.
+`rabbits(8)` is calculated once for month 10, and again inside the call
 for month 9. The page
 [Making change: brute force, memoization and greedy algorithms](tutorial:three-ways-to-make-change)
-shows how to remember an answer once it is worked out, so that it is
-never worked out twice.
+shows how to remember an answer once it is calculated, so that it is
+never calculated twice.
 
 </details>
 
-**16. Make.** Write `all_items(nested)`, which gives back a new list of
+**16. Make.** Write `all_items(nested)`, which returns a new list of
 every item in `nested`, at any depth, in order. For the music `library`
 on the page, it should give the seven songs as one list.
 
@@ -595,7 +593,7 @@ library = [
 
 1. Start with an empty list, `found = []`.
 2. For an item that is not a list, `append` it to `found`.
-3. For an item that is a list, `all_items(item)` gives back a list.
+3. For an item that is a list, `all_items(item)` returns a list.
    `found + that_list` joins two lists into one.
 
 **Think about:** how could you check your answer with `count_items`?
@@ -625,7 +623,7 @@ print(len(songs) == count_items(library))    # True
 
 The list is `['Take Me to Church', 'Cherry Wine', 'Too Sweet',
 'Eat Your Young', 'Linger', 'Dreams', 'Zombie']`. Its length is 7, the
-same as `count_items(library)`, which makes a useful test: two routes, one
+same as `count_items(library)`, which makes a useful test. Two routes give one
 answer.
 
 </details>
@@ -633,8 +631,8 @@ answer.
 **17. Predict.** A recursion can draw as well as count. This cell
 draws a tree. Each branch draws itself, then hands two shorter
 branches, turned a little left and a little right, to the same
-function. The two lines with `cos` and `sin` work out where a branch
-ends; a later unit explains them, and here you can read them as "go
+function. The two lines with `cos` and `sin` calculate where a branch
+ends. A later unit explains them, and here you can read them as "go
 this far in this direction". `depth` says how many more levels of
 branches to draw, so `depth == 0` is the base case.
 
@@ -662,8 +660,8 @@ def branch(x, y, angle, length, depth):
     return 1 + left + right
 
 
-print(branch(0, 0, 90, 1, 6), "lines")
 plt.axis("equal")
+print(branch(0, 0, 90, 1, 6), "lines")
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>

@@ -19,7 +19,7 @@ finish those pages, but it can help you see why they work.
 On this page we:
 
 - see where the styles on a page come from
-- find out which rule wins when two rules disagree
+- learn which rule wins when two rules disagree
 - see how some properties pass down to the elements inside
 - find the rules that lost, crossed out, in the browser inspector
 
@@ -77,9 +77,9 @@ property on one element. This set of steps is called the *cascade*.
 Two of its steps explain almost everything we meet in our own
 stylesheets:
 
-1. **The more precise selector wins.** How precise a selector is, is
-   called its *specificity*. `.highlight p` names a class and a tag, so
-   it is more precise than `p`, which names only a tag. That is why the
+1. **The more precise selector wins.** We call how precise a selector
+   is its *specificity*. `.highlight p` names a class and a tag, so
+   it is more precise than `p`, which names only a tag. So the
    paragraph in the box stayed firebrick in step 1, even though the `p`
    rule came later.
 2. **If the selectors are equally precise, the later rule wins.** In
@@ -88,7 +88,7 @@ stylesheets:
 
 ### Counting specificity
 
-The browser works out specificity by counting the parts of a selector,
+The browser calculates specificity by counting the parts of a selector,
 in three columns:
 
 | Selector | ids | classes | tags |
@@ -119,7 +119,7 @@ stylesheet later, because no selector can beat it.
 
 ### The same steps in your own stylesheet
 
-Your starter's `styles.css` leans on both steps.
+Your starter's `styles.css` uses both steps.
 
 - **Specificity.** Section 8 has a `.btn` rule, which gives every
   button a transparent background. Section 7, earlier in the file, has
@@ -139,11 +139,11 @@ Your starter's `styles.css` leans on both steps.
   on a narrow screen the later rule wins, and the hero gets less
   padding.
 
-That second point is why the order of a stylesheet matters. Say we add
+So the order of a stylesheet matters. Say we add
 a new `.hero` rule at the very end of the file, after the `@media`
 block. It now comes later than the `@media` rule, so it wins on every
 screen size, phones included, and the phone layout stops working for
-the hero. That is why new rules usually go above the `@media` rules.
+the hero. So new rules usually go above the `@media` rules.
 Your starter's sections already follow that order: every `@media` rule
 is in the last section, section 13.
 
@@ -184,7 +184,7 @@ pass down from an element to the elements inside it, unless a rule
 sets them there. `color` and `text-align` are inherited, so the heading
 and the paragraph took both from the card. The emphasised word took the
 colour from its paragraph. `border` and `padding` are not inherited, so
-only the card itself got them. That is useful: if `border` passed down,
+only the card itself got them. This is useful. If `border` passed down,
 the heading and the paragraph would each draw a border of their own,
 inside the card's.
 
@@ -264,19 +264,19 @@ beats `a`. In the built-in rule, the blue colour and the underline are
 crossed out too. Your own rules always beat the browser's built-in
 ones, whatever their selectors.
 
-When a style does not show up on a page, this is often the fastest way
-to find out why. If the declaration is not in the pane at all, the
+When a style does not appear on a page, this is often the fastest way
+to find why. If the declaration is not in the pane at all, the
 selector does not match the element. If it is there but crossed out,
 another rule won, and the pane shows which one.
 
 ## What we have now
 
 We can now say which of two rules wins, and we know where to look when
-a style does not show up.
+a style does not appear.
 
 | Word | Meaning | Example |
 |---|---|---|
-| *cascade* | The steps a browser follows to decide which declaration wins, when several set the same property on one element | the more precise selector wins; if they are equal, the later rule wins |
+| *cascade* | The steps a browser follows to decide which declaration wins, when several set the same property on one element | the more precise selector wins. If they are equal, the later rule wins. |
 | *specificity* | How precise a selector is. The browser counts ids, then classes, then tags. | `.highlight p` beats `p` |
 | *id selector* | A `#` and an id. It matches the element with that `id`, and beats any number of classes. | `#skills` |
 | *inheritance* | How some properties, such as `color` and `font-size`, pass down to the elements inside | `.card { color: darkslateblue; }` colours the card's paragraph too |

@@ -2,7 +2,7 @@
 title: "Markov chains: where repeated steps settle — Practice"
 practice_for: where-chains-lead
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
 ---
 
 # Markov chains: where repeated steps settle — Practice
@@ -10,31 +10,16 @@ version: 2026.08.24.1
 You can check every stationary distribution on this page in two ways:
 
 1. Multiply the state by the matrix many times, and watch it settle.
-2. Solve $\boldsymbol{\pi}P = \boldsymbol{\pi}$ directly, by hand.
-   Problem 3 shows how.
+2. Solve $\boldsymbol{\pi}P = \boldsymbol{\pi}$ directly, by hand as in
+   problem 3, or with your `solve` as in problem 9.
 
-Try both at least once. They should always agree.
+Try both at least once. They should always agree. Your own `multiply`,
+`solve` and the functions from the earlier pages are already loaded.
 
 ## Transition matrices
 
-```python exec
-id: transitions-1
-def dot(a, b):
-    return sum(x * y for x, y in zip(a, b))
-
-
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
-
-
-def multiply(a, b):
-    bt = transpose(b)
-    return [[dot(row, col) for col in bt] for row in a]
-```
-
-**1.** Each hour, a student either studies or *procrastinates* (puts the
-work off). If they are studying, there is an 80% chance that they are
+**1.** Each hour, a student either studies or *procrastinates* (delays the
+work). If they are studying, there is an 80% chance that they are
 still studying the next hour. If they are procrastinating, there is a
 60% chance that they start studying the next hour. Write the 2×2
 transition matrix, with studying as state 1.
@@ -73,7 +58,7 @@ What does it settle on?
 
 1. Start from any state vector you like. `[[1, 0]]` and `[[0.5, 0.5]]`
    both work, because the starting point stops mattering.
-2. In a loop, work out `multiply(state, P)` and store the result in
+2. In a loop, calculate `multiply(state, P)` and store the result in
    `state` again, many times.
 3. Print only the last few steps. Check that they have stopped changing,
    to about four decimal places.
@@ -125,7 +110,7 @@ it is almost certain.
 
 Sometimes an absorbing state is the whole reason for building a Markov
 chain. It models a process that matters only until it stops. One example
-is a customer who, sooner or later, cancels their subscription. Another
+is a customer who, in the end, cancels their subscription. Another
 is a gambler who keeps playing until all their money is gone.
 
 </details>
@@ -193,7 +178,7 @@ it, and on how many other links those pages have.
 Page A ranked highest because both other pages link to it. One of them,
 B, links to nothing else, so every visitor to B goes straight on to A.
 
-A page's outgoing links only share out the visitors that the page
+A page's outgoing links only share the visitors that the page
 already has. They do not change how many visitors the page has to share
 in the first place.
 
@@ -254,3 +239,62 @@ invent a new move, even one that would make the sentence sound more
 natural.
 
 </details>
+
+## From earlier
+
+**9.** From *Solving systems*. For the study chain, write
+$\boldsymbol{\pi} = [p, q]$. The first column of
+$\boldsymbol{\pi}P = \boldsymbol{\pi}$ says $0.8p + 0.6q = p$, which is
+$-0.2p + 0.6q = 0$. The second column says $0.2p + 0.4q = q$. Together
+with $p + q = 1$, can you use `solve` to find $p$ and $q$? Why is the
+second column's equation no help?
+
+```python exec
+id: chains-solve
+```
+
+```hint
+Move everything to the left. The second column's equation becomes
+$0.2p - 0.6q = 0$. Compare it with the first.
+```
+
+```solution
+{{include: setup/matrices/solve.py}}
+
+print(solve([[-0.2, 0.6, 0], [1, 1, 1]]))
+---
+It prints `[0.7499999999999999, 0.25]`, which is 0.75 and 0.25 with
+rounding in the last decimal place. The loop in problem 3 settles on the
+same numbers. The second column's equation is the
+first one times $-1$, so the two together have determinant 0 and
+infinitely many solutions, every $[p, q]$ with $p = 3q$. The line
+$p + q = 1$ picks one of them.
+```
+
+**10.** From *NumPy*. What does
+`np.linalg.matrix_power(np.array(P), 30)` look like for the study
+chain, and why are its two rows the same?
+
+```python exec
+id: chains-matrix-power
+import numpy as np
+
+P = [[0.8, 0.2], [0.6, 0.4]]
+print(np.round(np.linalg.matrix_power(np.array(P), 30), 4))
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Both rows are `[0.75 0.25]`. Row 1 is the state 30 hours after certainly
+studying, and row 2 is the state 30 hours after certainly
+procrastinating. After 30 steps the start no longer shows, so both rows
+are the stationary distribution.
+
+</details>
+
+## Where to read more
+
+Spanning Tree (2020). *How Google's PageRank Algorithm Works.*
+<https://www.youtube.com/watch?v=meonLcN7LD4>. This video explains the random
+surfer from the ranking problems, and the damping factor that stops it being trapped on
+one page. About five minutes.

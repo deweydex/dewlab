@@ -81,7 +81,7 @@ with the sections.
 | `static` | It scrolls with the page. This is the default, when no `position` is set. |
 | `relative` | It scrolls with the page, and on its own it looks the same as `static`. With `top` or `left`, it moves a little from where it would normally sit. |
 | `sticky` | It scrolls with the page until it reaches the point set by `top`, then stays there. |
-| `fixed` | It stays in the same place in the window all the time. It no longer takes up any space on the page, so the content after it moves up and can end up hidden behind it. |
+| `fixed` | It stays in the same place in the window all the time. It no longer takes up any space on the page, so the content after it moves up and can be hidden behind it. |
 
 Sometimes we might set `position: sticky` and find that nothing sticks.
 Two things are worth checking. First, is there a `top` value? Second,
@@ -120,6 +120,6 @@ other values of `position` behave.
 
 Codepip. *Anchoreum*. <https://anchoreum.com/>. A puzzle game for CSS
 anchor positioning, which pins one element to another rather than to the
-page or to a scroll position. It is not on this course and it is newer
-than most of what is — take it as a look at where `position` has gone
-since.
+page or to a scroll position. It is not part of this course, and it is
+newer than most of what the course covers. It shows where `position` has
+gone since.

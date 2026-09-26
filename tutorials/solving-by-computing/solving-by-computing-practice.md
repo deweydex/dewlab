@@ -34,7 +34,7 @@ $2^{10} \approx 1000$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Ten steps. After $k$ steps the gap is $\frac{1}{2^k}$, and
+It takes ten steps. After $k$ steps the gap is $\frac{1}{2^k}$, and
 $2^{10} = 1024$, so after 10 steps the gap is $\frac{1}{1024}$, a
 little under 0.001. After 9 steps it is $\frac{1}{512}$, which is
 still bigger.
@@ -49,7 +49,7 @@ It prints `10`.
 </details>
 
 **2. Predict.** Newton's method is looking for $\sqrt{9}$, a root of
-$x^2 - 9$, and starts at 4. What is its next guess? Work it out by hand
+$x^2 - 9$, and starts at 4. What is its next guess? Find it by hand
 with $g - \frac{f(g)}{f'(g)}$, using the slope $2x$.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -64,7 +64,7 @@ def nine_gap(x):
 print(newton(nine_gap, 4, steps=1))
 ```
 
-It prints a number a tiny way from `3.125`, because `newton` uses
+It prints a number very close to `3.125`, because `newton` uses
 `derivative_at`, an estimate of the slope.
 
 </details>
@@ -103,8 +103,8 @@ change says "at least one root here". No sign change does not mean "no
 root". Try `bisect_root(nine_gap, 0, 5)`: now there is a sign change,
 and it finds 3.
 
-That is one way through. Yours may use other words, or a picture, and
-say the same thing.
+This is one answer. Yours may use other words, or a picture, and say
+the same thing.
 
 </details>
 
@@ -229,7 +229,7 @@ print(steps_taken, (low + high) / 2)
 ```
 
 It prints `24` and about 7.0710678. A wider start costs only a few more
-steps: 10 times the width is about 3.3 more halvings.
+steps. Ten times the width needs about 3.3 more halvings.
 
 </details>
 
@@ -306,9 +306,9 @@ leads to $0 - \frac{2}{-2} = 1$. At 1 the rule gives 1 and the slope is
 1, so the tangent leads to $1 - 1 = 0$. Each tangent points back at
 the other guess.
 
-No error appears, and `newton` would give back a number: about 0, after
-20 steps. That is why an answer should be put back into the rule:
-`stuck_rule(0)` is 2, not 0. The real root is near $-1.77$. Starting
+No error appears, and `newton` would return a number, about 0, after
+20 steps. So put an answer back into the rule to check it.
+`stuck_rule(0)` is 2, not 0. The real root is near $-1.77$. A start
 at $-2$ finds it.
 
 </details>
@@ -329,7 +329,7 @@ print(rate, round(rate * 100, 2))
 print(4761865 * (1 + rate) ** 6)
 ```
 
-The rate is about 0.0131, or 1.31% a year. Putting it back in gives
+The rate is about 0.0131, or 1.31% a year. Put it back in, and you get
 5,149,139 again, to within a small fraction of a person.
 
 </details>
@@ -379,7 +379,7 @@ for $E$. Find $E$ when $M = 1$ with `bisect_root`, then check it with
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write a rule of $E$ that gives back $E - 0.0934 \sin E - 1$. It is
+1. Write a rule of $E$ that returns $E - 0.0934 \sin E - 1$. It is
    0 at the answer.
 2. Try it at 0 and at 2. Is there a sign change?
 3. Give those two as `low` and `high`.
@@ -404,9 +404,9 @@ print(newton(kepler_gap, 1))
 The rule is $-1$ at 0 and about 0.92 at 2, so there is a sign change.
 Both methods give $E \approx 1.0825$ radians. Mars is a little ahead of
 where a steady speed would put it. $E$ is close to $M$ because the
-$e \sin E$ part is never bigger than 0.0934: Mars's orbit is nearly a
+$e \sin E$ part is never bigger than 0.0934. Mars's orbit is nearly a
 circle. Programs that track planets and satellites solve this
-equation over and over, often with Newton's method.
+equation again and again, often with Newton's method.
 
 </details>
 
@@ -428,7 +428,7 @@ print(bisect_root(box_slope, 0, 10))
 print(newton(box_slope, 12))
 ```
 
-From 3, Newton's method finds 5, and bisection agrees: 5 cm from each
+From 3, Newton's method finds 5, and bisection agrees, at 5 cm from each
 corner. From 12, Newton's method finds 15, the other place where the
 slope is 0. That one is the box with no base, a bottom of the volume
 curve, not its top. A root of the slope is a place where the curve is
@@ -438,7 +438,7 @@ flat. It is still your job to ask whether it is a top or a bottom.
 
 **15. Explain.** Some computer chips divide by using Newton's method.
 To find $\frac{1}{3}$, they look for the root of $\frac{1}{x} - 3$, and
-the Newton step for that rule works out to $2g - 3g^2$, which needs no
+the Newton step for that rule simplifies to $2g - 3g^2$, which needs no
 division at all. Try it from 0.3, and then from 1. What happens, and
 why?
 
@@ -452,13 +452,20 @@ for step in range(5):
 <details class="dl-answer"><summary>answer</summary>
 
 From 0.3 the guesses go about 0.33, 0.3333, 0.33333333, and then
-0.3333333333333333: the correct digits double every step.
+0.3333333333333333. The correct digits double every step.
 
 From 1 they go $-1$, $-5$, $-85$, $-21845$, running away. The graph of
 $\frac{1}{x} - 3$ has a gap at 0. From 1, the tangent is gentle, and
-following it down to zero crosses to the far side of the gap, where
+when we follow it down to zero, we cross to the far side of the gap, where
 the curve never comes back to zero. A start between 0 and
 $\frac{2}{3}$ stays on the right side. So a chip that divides this way
 needs a first guess close enough, which it gets from a small table.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2018). *How to find a square root.*
+<https://www.youtube.com/watch?v=Bwt5EZEb1Ns>. Matt Parker finds a square
+root by hand, the way people did before calculators. Which of this page's
+two methods is his closest to? About six minutes.

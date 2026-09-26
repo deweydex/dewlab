@@ -84,22 +84,22 @@ print(mars.describe())
 It prints `True`, then `Mars: sunlight takes 12.7 minutes`.
 
 Look at what the new methods did not need. Neither one was given the
-distance: both found it on `self`. `is_farther_than` also reads another
+distance. Both found it on `self`. `is_farther_than` also reads another
 planet's distance, as `other.distance`, because `other` is a planet too.
 And `describe` does not find the minutes again. It calls
-`self.light_minutes()`: one method can use another, through `self`.
+`self.light_minutes()`. One method can use another, through `self`.
 
-This is what *reusable* code means for a class. Each new job is a method
+This is *reusable* code in a class. Each new job is a method
 that can use everything the object already carries. It is written once,
 and it works for every planet you make.
 
 A stand-alone function can be reused just as well:
 `light_minutes(distance)` would work on any distance. The difference is
-where the data lives. The function needs the distance handed to it on
+where the data lives. The function needs the distance given to it on
 every call. The method finds it on the object, so a call only has to say
 what is new.
 
-Can you add a `light_hours()` method, which gives the time in hours,
+Can you add a `light_hours()` method, which returns the time in hours,
 rounded to one decimal place? Can it use `light_minutes()`?
 
 ```python exec
@@ -267,8 +267,8 @@ It prints `3`. The constructor writes `Planet.planets_made`, not
 `self.planets_made`. The count belongs to the class, so we change it
 through the class.
 
-Most people make this mistake at least once. Storing a value under that name
-through an object never changes the class attribute. It makes a new
+Most people make this mistake at least once. If you store a value under
+that name through an object, it never changes the class attribute. It makes a new
 instance attribute, on that one object:
 
 ```python
@@ -298,7 +298,7 @@ attribute that every object shares.
 <div class="dl-world" data-world="game">
 
 Ada heals to 13, above the 10 a character can have, and Grace heals after
-she is down. Can you give `Character` a class attribute
+she is down (her health is 0). Can you give `Character` a class attribute
 `max_health = 10`, and a method `is_down()`? Then can you make `heal`
 refuse to heal a character who is down, using `is_down()`, and never go
 above `max_health`?
@@ -352,7 +352,7 @@ changing that one line changes it for every character. What does
 
 The hull limit, 400, is written inside `dive`. Can you make it a class
 attribute, `hull_limit = 400`? Then can you add a method `room_below()`,
-which gives the metres left before the limit, and use it in `dive`'s
+which returns the metres left before the limit, and use it in `dive`'s
 check?
 
 ```python exec
@@ -446,7 +446,7 @@ Can you give your class a method that answers a question about one
 object, and use it inside another method? And is there a value that every
 object of your class shares, which could be a class attribute? Your class
 from [Encapsulation](tutorial:keeping-details-inside-an-object) is saved
-in that page's last cell: copy it here to start.
+in that page's last cell. Copy it here to start.
 
 ```python exec
 id: your-class-3--your-own
@@ -458,7 +458,7 @@ id: your-class-3--your-own
 ## Looking back
 
 Every method on this page found what it needed on `self`, with nothing
-handed to it. So when does a method still need a parameter? Look at
+given to it. So when does a method still need a parameter? Look at
 `is_farther_than(other)` and `add_moon(moon)`: what do their parameters
 bring that the object does not already have?
 
@@ -483,9 +483,9 @@ print(Planet("Neptune", 4515.0).year_length())
 
 Next, [A polynomial class: a project in many methods](tutorial:a-polynomial-class)
 builds one class, a method at a time, from a ball thrown in the air. Or
-go straight on to
-[Inheritance: one class built on another](tutorial:one-parent-many-children),
-which builds new classes out of the ones you have.
+continue straight to
+[Designing classes: from a description to classes](tutorial:from-a-description-to-classes),
+which decides what the classes should be before any code is written.
 
 ## Where to read more
 
@@ -500,9 +500,10 @@ methods", grows one class a method at a time, as this page did.
 Python Software Foundation. *The Python Tutorial*, section 9.3.5, "Class
 and Instance Variables".
 <https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables>.
-The official reference on what belongs on the class, what belongs on
+This is the official reference on what belongs on the class, what belongs on
 `self`, and the trap when a shared value is a list.
 
 NASA. *Planetary Fact Sheet*.
-<https://nssdc.gsfc.nasa.gov/planetary/factsheet/>. The distances on this
-page, and much more about every planet, for your own `Planet` class.
+<https://nssdc.gsfc.nasa.gov/planetary/factsheet/>. It has the distances
+on this page, and much more about every planet, for your own `Planet`
+class.

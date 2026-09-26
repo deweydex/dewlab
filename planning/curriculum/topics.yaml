@@ -1389,6 +1389,8 @@ topics:
         into a counting exercise a computer can just run.
       - Testing a design against thousands of random scenarios before it is
         built.
+      - Moving a game's objects, or a planet, forward in time in small
+        steps, as every physics engine does.
     needs: [MIT-5.6]
 
   CMPS-LO4a:

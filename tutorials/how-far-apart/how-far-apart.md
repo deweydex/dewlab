@@ -42,9 +42,8 @@ On this page we:
 
 > **The space we're in.** The same flat plane as on
 > [Straight lines](tutorial:straight-lines), with the same unit across
-> and up. Here the unit is the pixel, one dot of the screen. One thing
-> usually goes unsaid: "how far" means in a straight line, as a bird
-> flies. A person walking along streets, or a ball bouncing off walls,
+> and up. Here the unit is the pixel, one dot of the screen. "How far"
+> means in a straight line, as a bird flies. A person walking along streets, or a ball bouncing off walls,
 > goes further.
 
 ## Warm-up
@@ -90,7 +89,7 @@ points in one column.
 
 Now the game. The player's centre is at $(100, 50)$ and the ball's
 centre is at $(130, 90)$. From the player to the ball is 30 pixels
-across and 40 pixels up. Going across and then up is 70 pixels. The
+across and 40 pixels up. If we go across and then up, that is 70 pixels. The
 straight line from one centre to the other is shorter than that. How
 long is it? Make a guess before
 you run the cell, which draws the three lines.
@@ -164,7 +163,7 @@ $$c^2 = a^2 + b^2$$
 
 In words: in a right-angled triangle, the square on the hypotenuse is
 equal to the two other squares added together. This is *Pythagoras'
-theorem*. Nothing in the argument needed $a = 3$ and $b = 4$: it works
+theorem*. Nothing in the argument needed $a = 3$ and $b = 4$. It works
 for any right-angled triangle. A reason that holds for every case,
 like this one, is a *proof*.
 
@@ -185,7 +184,7 @@ $\sqrt{2}$, a number that is not a fraction.
 Does the rule hold for every triangle, or only right-angled ones? A
 triangle with sides 4, 5 and 6 has no right angle. $4^2 + 5^2 = 41$,
 while $6^2 = 36$. The theorem is a promise about right-angled triangles
-only, and the square corner is what made the pieces fit in the picture.
+only. The square corner made the pieces fit in the picture.
 
 ## The distance between two points
 
@@ -197,7 +196,7 @@ $x_2 - x_1$ and the up is $y_2 - y_1$. So the distance between them is:
 
 $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
-This is the *distance formula*: Pythagoras' theorem, written with
+This is the *distance formula*. It is Pythagoras' theorem, written with
 points. A difference may be negative, but its square never is, so the
 order of the points does not matter. That is your first tool for this
 page.
@@ -230,9 +229,9 @@ def distance(p, q):
 ```
 
 Python has its own version, `math.dist`, which does the same job. The
-tests use it as a second opinion. Until your `distance` has its
+tests use it as a second check. Until your `distance` has its
 `return` line, the first test stops with an `AssertionError`. Before
-you run them: what is the distance from the player to the ball?
+you run them, what is the distance from the player to the ball?
 
 ```python exec
 id: how-far-toolkit-distance-tests
@@ -285,7 +284,7 @@ shares a total out equally. The *midpoint* of two points is:
 
 $$\left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$$
 
-Before you write it, work this one out in your head: where does the
+Before you write it, find this one in your head: where does the
 camera point?
 
 ```python exec
@@ -331,8 +330,9 @@ print("midpoint keeps its promise. The camera points at", camera, distance(first
 ```
 
 The camera points at $(6, 4)$, 5 m from each player. The two players
-are a 6, 8, 10 triangle apart: the 3, 4, 5 triangle made twice as big.
-As they move, the game works the midpoint out again every frame.
+are a 6, 8, 10 triangle apart. That is the 3, 4, 5 triangle made twice
+as big. As they move, the game calculates the midpoint again every
+frame.
 
 ### Your turn
 
@@ -357,7 +357,7 @@ $$\text{touching when} \quad d \le r_1 + r_2$$
 
 Here $d$ is the distance between the centres. The ball has a radius
 of 10 pixels and the player 25. They are 50 apart now, and
-$10 + 25 = 35$. So not yet.
+$10 + 25 = 35$. So they do not touch yet.
 
 Each frame, the ball moves 3 pixels left and 4 down, straight at the
 player. In which frame do they first touch? Guess, then run it. The
@@ -380,8 +380,8 @@ for frame in range(6):
 The ball moves 5 pixels closer each frame, since each step is a 3, 4,
 5 triangle of its own. In frame 3 the centres are exactly 35 apart,
 and the edges just touch. We wrote `<=`, so touching counts as a hit.
-A game that wrote `<` would let the ball graze the player. Which is
-fairer is a choice about the game, not about the maths.
+A game that wrote `<` would let the ball graze the player. The game
+maker chooses which one is fairer. The maths does not decide it.
 
 Here is frame 3 as a picture. `plt.Circle` makes a circle from a centre
 and a radius, and `add_patch` puts it on the drawing.
@@ -405,7 +405,7 @@ same stretching that hid the right angle on the last page.
 ### Watching it frame by frame
 
 The game only looks at the ball once a frame. This animation shows
-what it sees: the ball turns red in every frame where `circles_touch`
+what it sees. The ball turns red in every frame where `circles_touch`
 says it touches the player. After you have watched it, change `step` on
 the first line to 90, as if the ball were kicked much harder. Before
 you run it again, guess: in which frame does it turn red?
@@ -445,7 +445,7 @@ is already 40 pixels past it, on the other side. Both are more than 35,
 so the game sees no hit, although the ball went straight through. I
 think this is the strangest result on the page. Game makers call it
 *tunnelling*, and the practice page asks how a game can stop it. The
-animation loops; run the cell again to watch it from the start.
+animation loops. Run the cell again to watch it from the start.
 
 ### Your turn
 
@@ -507,3 +507,8 @@ The practice page is next.
 The dewlab page
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances#how-far-apart-and-the-theorem-that-answers-it)
 reaches the same theorem from a different direction.
+
+Sebastian Lague (2017). *Gamedev Maths: distance from point to line.*
+<https://www.youtube.com/watch?v=KHuI9bXZS74>. It takes the next step after
+this page, and finds how far a point is from a line, rather than from another point.
+Sebastian Lague builds the formula for a game. About five minutes.

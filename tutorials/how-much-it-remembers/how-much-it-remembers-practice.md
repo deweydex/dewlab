@@ -3,6 +3,7 @@ title: "N-grams: a Markov chain that remembers more words — Practice"
 practice_for: how-much-it-remembers
 year: "2026-2027"
 version: 2026.09.25.1
+datasets: [the-time-machine]
 ---
 
 # N-grams: a Markov chain that remembers more words — Practice
@@ -32,7 +33,7 @@ for w1, w2, w3 in zip(words, words[1:], words[2:]):
     order2[key][w3] = order2[key].get(w3, 0) + 1
 ```
 
-## Counting the Choices
+## Counting the choices
 
 **1.** What fraction of `order1`'s keys have exactly one recorded
 follower? What fraction of `order2`'s keys do? Which fraction do you
@@ -58,7 +59,7 @@ print(len(single2) / len(order2))
 ```
 
 About 67% of `order1`'s keys have only one recorded follower. For
-`order2`, that rises to about 87%. Remembering one more word does more
+`order2`, that rises to about 87%. One more word of memory does more
 than add detail. For most of the pairs the chain has seen, there is only
 one word it can choose next.
 
@@ -91,7 +92,7 @@ There are 18. Here are three of them:
 
 </details>
 
-## Generating and Comparing
+## Generating and comparing
 
 ```python exec
 id: generate-setup-1
@@ -140,7 +141,7 @@ also appears, in the same order, somewhere in `book`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no single correct output, because the chain chooses at random.
+There is no single expected output, because the chain chooses at random.
 Over several tries, though, the `order2` line should have the longer
 copied run more often than not. That is the trade-off from the
 tutorial: with more context, the chain leans more on stretches of the
@@ -150,7 +151,7 @@ book it has seen before.
 
 **4. Try this next:** build an `order3` chain, keyed on the last *three*
 words, and generate from it. Does it read even more like real sentences
-from the book? Or does it start to break down for a different reason?
+from the book? Or does it start to fail for a different reason?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 

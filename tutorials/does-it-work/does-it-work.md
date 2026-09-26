@@ -20,8 +20,8 @@ covers:
 
 # Does it work? Testing, walkthroughs and naming
 
-In September 1999, NASA lost a spacecraft at Mars. One program worked
-out the push of its small engines in an American unit, pound-force
+In September 1999, NASA lost a spacecraft at Mars. One program calculated
+the push of its small engines in an American unit, pound-force
 seconds. The program that used those numbers expected the metric unit,
 newton-seconds. Every program ran, and not one of them showed an error.
 The Mars Climate Orbiter came far too close to the planet, and was
@@ -42,8 +42,8 @@ On this page we:
 > **The space we're in.** Python checks that code is written in valid
 > Python, and then it runs it. It never checks that a function keeps its
 > promise. A docstring says the promise, and nothing but a test checks
-> it. That goes unsaid a lot: code that runs is not always code that
-> works. Your toolkit is loaded, including the temperature and travel
+> it. People often forget that code that runs does not always
+> work. Your toolkit is loaded, including the temperature and travel
 > tools from
 > [Running a formula backwards](tutorial:running-a-formula-backwards).
 
@@ -93,9 +93,8 @@ print(to_celsius(212))
 ```
 
 It prints about 194.2, with no error. By this converter, water boils at
-194 °C. Python did exactly what the line says: it multiplied first,
-then subtracted. The code runs. It does not
-work, because it breaks its promise.
+194 °C. Python did exactly what the line says. It multiplied first,
+then subtracted. The code runs, but it breaks its promise.
 
 A part of the code that makes it break its promise is called a *bug*.
 Python cannot find this kind of problem for us, because Python does not
@@ -105,7 +104,7 @@ comparing. One input with its expected output is a *test case*.
 
 <aside class="dl-note" id="does-it-note-bug">
 
-**Why "bug"?** The word is older than computers: Thomas Edison used it
+**Why "bug"?** The word is older than computers. Thomas Edison used it
 in the 1870s for faults in his inventions. In 1947, the team running
 the Harvard Mark II computer found a real moth stuck in one of its
 switches. They taped it into their logbook as the "first actual case of
@@ -155,7 +154,7 @@ gives back `0.9999999999999984` for 1 °C. Nothing is broken in the
 functions. The
 float is very close to 1, but not equal to it, so `==` says `False`. The
 last page rounded to 9 places before comparing. That works, but it hides
-the question we are really asking: how far apart are these two numbers?
+our real question. How far apart are these two numbers?
 
 On [How likely is it?](tutorial:how-likely-is-it) we met `abs()`, which
 gives the size of a number without its sign. So `abs(a - b)` is the
@@ -213,8 +212,8 @@ want to compare with the tolerance?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: the `...` becomes `return abs(a - b) <= tolerance`. If
-you have not written it yet, put it in now: the rest of this page uses
+Here is one answer. The `...` becomes `return abs(a - b) <= tolerance`. If
+you have not written it yet, put it in now. The rest of this page uses
 it.
 
 </details>
@@ -226,7 +225,7 @@ test in the other order catches it.
 
 Now the tool can do real work. The next cell tests the temperature
 tools on every whole number of degrees from −50 to 100. That is 151 test
-cases, and nobody had to work out a single expected answer by hand. It
+cases, and nobody had to calculate a single expected answer by hand. It
 needs your `close_enough`. What do you expect it to print?
 
 ```python exec
@@ -288,11 +287,11 @@ at that moment. Here is the trace for `warmest([-3, -1, -4])`.
 
 At step 3, is −3 bigger than 0? No. At step 5, is −1 bigger than 0? No.
 The `if` is never true, so `warmest_so_far` stays at 0 all the way down
-its column. The column shows the bug: the starting value, 0, is bigger
+its column. The column shows the bug. The starting value, 0, is bigger
 than every reading.
 
-Ask the fourth question. Starting at 0 is a guess from a different
-space. For heights or file sizes, which are never below 0, it works. For
+Think about the space we are in. A start of 0 suits only some
+spaces. For heights or file sizes, which are never below 0, it works. For
 temperatures in Ireland in January, it does not. A better start is a
 real reading: the first one, `readings[0]`. The docstring already
 promises at least one reading, so there always is a first one.
@@ -300,8 +299,8 @@ promises at least one reading, so there always is a first one.
 A walkthrough also has a second meaning, in a team. A *structured
 walkthrough* is a meeting where the person who wrote some code talks a
 small group through it, line by line. The others follow along, ask
-questions, and look for bugs. Explaining code out loud to another
-person finds bugs surprisingly often, sometimes before anyone has
+questions, and look for bugs. When you explain code out loud to
+another person, you often find bugs, sometimes before anyone has
 asked a single question.
 
 ### Your turn
@@ -326,8 +325,7 @@ way is called *step-through*.
 
 The Python on this page has no debugger buttons. So here is a small one,
 `step_through`, built from the same part of Python that real debuggers
-use. You do not need to read how it works. What it does is enough:
-before each line runs, it shows the line and every name the function can
+use. You do not need to read how it works. Before each line runs, it shows the line and every name the function can
 see.
 
 ```python exec
@@ -379,11 +377,11 @@ def warmest_first_try(readings):
 step_through(warmest_first_try, [-3, -1, -4])
 ```
 
-Nine lines, then `gives back 0`. They are the nine rows of the trace
+It shows nine lines, then `gives back 0`. They are the nine rows of the trace
 table, in the same order, with the same values. The debugger also shows
 `readings` on every line, because the function can see that name too.
 
-Here is the same function with the fix from the last section: it starts
+Here is the same function with the fix from the last section. It starts
 from the first reading, `readings[0]`. Before you run it, in which steps
 will `warmest_so_far` change?
 
@@ -401,10 +399,10 @@ step_through(warmest_second_try, [-3, -1, -4])
 ```
 
 It starts at −3, the first reading, and changes once, when −1 arrives.
-It gives back −1.
+It returns −1.
 
 A trace by hand and a debugger show the same thing. The hand trace makes
-you predict each value before you see it, which is where you learn. The
+you predict each value before you see it, and that helps you learn. The
 debugger is faster, and it copies every value exactly. Most
 programmers use both.
 
@@ -463,12 +461,12 @@ Python's own standard is called PEP 8. Here are the parts that matter
 most so far.
 
 - **Names are words that say what a value is.** `total_minutes`, not
-  `tm` or `x`. A function is named for what it gives back or what it
+  `tm` or `x`. A function is named for what it returns or what it
   does: `image_megabytes`, `travel_time`. Python names are written in small
   letters, with underscores between words, like `warmest_so_far`.
 - **A comment says why, not what.** The code already says what it does.
-  A comment earns its place when it says something the code cannot: a
-  reason, or a warning. In `warmest`, a useful comment would be
+  A comment is useful when it says something the code cannot, such
+  as a reason or a warning. In `warmest`, a useful comment would be
   `# start from a real reading, since a temperature can be below 0`.
 - **Indentation is four spaces for each level.** Python needs the
   indentation to be the same through a block, or it stops with an
@@ -537,7 +535,7 @@ test can name its own number.
 
 A test suite is worth the most when it is run again after every change.
 A change to one function can quietly break a promise somewhere else,
-and a suite that ran green yesterday will say so today.
+and a suite that passed yesterday will show it today.
 
 ### Your turn
 
@@ -574,7 +572,7 @@ the values, while a hand trace asks you to predict them.
 
 | The question | On this page |
 |---|---|
-| What is named here? | names that say what they hold, like `warmest_so_far`; renaming changes nothing for Python and everything for a reader |
+| What is named here? | names that say what they hold, like `warmest_so_far`; renaming changes nothing for Python, but helps a reader a lot |
 | What is promised? | a docstring states the promise, and a test case checks it; `close_enough` promises "equal, within a tolerance" |
 | What happens when? | a trace table and a debugger show each line in the order it runs, with each name's value at that moment |
 | What does this space let us do? | Python runs any valid code, whether it keeps its promise or not; floats need "close enough", not `==`; a start of 0 belongs to a space with no negative numbers |
@@ -607,3 +605,8 @@ sections on naming and comments are the ones to read first.
 Thonny, at [thonny.org](https://thonny.org), is a free Python editor
 made for learners. Its debugger steps through code and shows every name,
 the way `step_through` does here.
+
+PurpleMind (2025). *This Coding Mistake Cost $370 Million.*
+<https://www.youtube.com/watch?v=Qehl4h5MDsg>. Code that had worked for
+years on one rocket was used on a new one, and a number too big for it
+ended the flight. The code ran, but it did not work. The video is twenty minutes long.

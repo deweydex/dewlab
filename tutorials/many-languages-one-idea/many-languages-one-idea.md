@@ -39,15 +39,14 @@ On this page we:
   above it
 - give the same job to SQL, and run it on this page
 - read the same job in JavaScript and in BASIC
-- sort out what changes from one language to the next: syntax, types,
+- find what changes from one language to the next: syntax, types,
   how a program is run, and where it runs
 - see what stays the same: the four questions
 
 > **The space we're in.** Python and SQL cells run here, in your
 > browser. The SQL cells use a small database that lives inside this
 > page and starts empty each time the page loads. JavaScript and BASIC
-> are shown to read, not to run. One thing usually goes unsaid: a
-> programming language is a set of agreements between people and a
+> are shown to read, not to run. A programming language is a set of agreements between people and a
 > machine, and different people made different agreements.
 
 ## Warm-up
@@ -85,7 +84,7 @@ What is the mean of 2, 4 and 9?
 ## One job in Python
 
 Here is a week of rainfall, in millimetres, for a town in the west of
-Ireland. The numbers are made up, to keep the sums tidy. The job has
+Ireland. The numbers are invented, to keep the sums tidy. The job has
 two parts: find the average, then count the days that were wetter than
 the average.
 
@@ -94,7 +93,7 @@ named? Seven readings, and an average. What is promised? The average is
 the sum shared out equally over the days. What happens when? We must
 add up before we divide, and we must know the average before we can
 compare a day with it. What does the space let us do? Numbers with
-decimals, and a way to go through them one at a time.
+decimals, and a way to look at them one at a time.
 
 Guess the average before you run the cell. Will it be closer to 0 or to
 12.6?
@@ -126,7 +125,7 @@ steps, or asks for these same answers.
 
 ## The same job in SQL
 
-*SQL* is a language for asking a database questions. It grew out of
+*SQL* is a language for asking a database questions. It came from
 SEQUEL, a language that Donald Chamberlin and Raymond Boyce described
 at IBM in 1974. A database keeps its data in tables, so first we make a
 table, with one row for each day. Run this cell. It reports how many
@@ -168,7 +167,7 @@ id: many-lang-sql-average
 SELECT AVG(rainfall_mm) FROM rain_tbl;
 ```
 
-One line, and no loop. Five lines of Python became one line of SQL,
+It takes one line, and no loop. Five lines of Python became one line of SQL,
 and I think that is the biggest surprise on this page. `AVG` is a
 function that SQL gives us, the way Python gives us `len`. Now the
 second part: the days above the average.
@@ -182,8 +181,8 @@ WHERE rainfall_mm > (SELECT AVG(rainfall_mm) FROM rain_tbl);
 The answer is 3 again. The query in brackets runs first and gives 5.0.
 Then the outer query counts the rows whose rainfall is bigger than that.
 
-SQL is *declarative*: a program says what result it wants, and the
-database decides the steps. Python is step by step: the program says
+SQL is *declarative*. A program says what result it wants, and the
+database decides the steps. Python is step by step. The program says
 each step, in order. In SQL we never wrote "start at 0, add each
 reading". Somewhere inside the database a loop still runs, but it is
 the database's loop, not ours.
@@ -199,7 +198,7 @@ the database's loop, not ours.
 
 JavaScript is the language that web browsers run, as we saw on
 [the last page](tutorial:where-programming-came-from#the-web-javascript-and-python). Here is the same job. It is to read, not to run, so read it
-slowly beside the Python cell. Which parts can you match up?
+slowly beside the Python cell. Which parts can you match?
 
 ```js
 const rainfallMm = [4.2, 0.0, 12.6, 7.1, 0.8, 3.3, 7.0];
@@ -242,7 +241,7 @@ reason to show the `.0`.
 ### Two ways to answer "5" + 1
 
 The bigger differences hide in what a language allows. In JavaScript,
-`"5" + 1` gives `"51"`: a piece of text, 5 and 1 joined. What do you
+`"5" + 1` gives `"51"`. That is a piece of text, 5 and 1 joined. What do you
 expect Python to do with the same line? This cell raises an error on
 purpose.
 
@@ -255,8 +254,8 @@ Python stops with a `TypeError`, as on
 [When Python says no](tutorial:when-python-says-no#a-move-from-another-space),
 where `+` met a string and an int. Python will not guess whether you
 meant a number or a piece of text.
-JavaScript guesses, and it chooses text. Neither is foolish. They are
-two spaces with different rules. JavaScript's rule lets a page join
+JavaScript guesses, and it chooses text. The two languages are two
+spaces with different rules. JavaScript's rule lets a page join
 text and numbers with no extra step, but if you wanted 6, nothing
 tells you. Python's rule costs an extra step, `int("5") + 1`, and
 it stops on the line where text meets a number.
@@ -303,7 +302,7 @@ text. There, the name itself says the type.
 ## What changes from one language to the next
 
 A computer's hardware runs only its own machine instructions, so every
-language needs a program that translates or carries out its code. You
+language needs a program that translates or runs its code. You
 met the compiler, which translates a whole program first, on
 [When Python says no](tutorial:when-python-says-no#compilers-linkers-and-python).
 An *interpreter* is a program that reads another program and carries out
@@ -386,7 +385,7 @@ A tour goes deeper into each language. It shows what each one is best
 at, such as SQL joining tables, and a reader who wants to work in
 JavaScript would learn more of it.
 
-We chose one job because a comparison needs something to hold still.
+We chose one job because a comparison needs one thing that does not change.
 With the job fixed, every difference you saw belonged to the languages,
 not to the task. The cost is that the job was small. It did not show
 what makes each language worth learning for its own sake.
@@ -400,7 +399,7 @@ what makes each language worth learning for its own sake.
 | What is named here? | the same week of rain, named four ways; a table's columns; two-letter names on the Commodore 64 |
 | What is promised? | the average as the sum shared out, kept by `mean`, `AVG` and a loop; a query that says what, not how |
 | What happens when? | add before dividing; the query in brackets before the outer query; line numbers in BASIC |
-| What does this space let us do? | JavaScript joins `"5"` and `1`; Python refuses; SQL gives `AVG` for free; each language gives its own tools |
+| What does this space let us do? | JavaScript joins `"5"` and `1`; Python refuses; SQL has `AVG` built in; each language gives its own tools |
 
 ## What we have now
 
@@ -422,3 +421,8 @@ The Database Methods course teaches SQL properly. Its first SQL page is
 [How programming languages came to be](tutorial:how-we-got-here#the-same-problem-four-ways)
 has another comparison, of a different kind: one job done four ways in
 Python, each in a different style of programming.
+
+Ben Eater (2015). *Comparing C to machine language.*
+<https://www.youtube.com/watch?v=yOyaJXpAYZQ>. Ben Eater writes a small
+program in C, and then reads the machine code the computer runs for it,
+line by line. Ten minutes.

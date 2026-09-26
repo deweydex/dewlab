@@ -16,7 +16,7 @@ side. What happens once the screen is too narrow for all three cards to
 fit in one row? On this page we:
 
 - narrow a row of cards and watch what the row does
-- work out the exact width where the row changes
+- find the exact width where the row changes
 - find the same kind of row in your own site
 
 ## Let's try it
@@ -80,9 +80,9 @@ container*. A flex container is an element with `display: flex` on it.
 Its three `div`s become *flex items*. A flex item is one direct child of
 a flex container. By default, flex items line up side by side in a row.
 
-**`flex-wrap: wrap` on `.row`.** This is what lets the row break.
+**`flex-wrap: wrap` on `.row`.** This lets the row break.
 Without it, items that no longer fit shrink to squeeze in, and after
-that they spill past the edge of the page. That is what step 5 showed.
+that they spill past the edge of the page. Step 5 showed this.
 With `flex-wrap: wrap`, an item that has run out of room starts a new
 row.
 
@@ -161,6 +161,5 @@ breaking.
 
 Codepip. *Flexbox Froggy*. <https://flexboxfroggy.com/>. Twenty-four
 levels of moving frogs onto lily pads with `justify-content`,
-`align-items` and the rest. It reaches well past this page, and playing
-it is the cheapest way to find out which flexbox property does what
-without reading a reference.
+`align-items` and the rest. It goes well past this page. Play it to
+learn which flexbox property does what, without reading a reference.

@@ -1,19 +1,21 @@
 ---
 title: "Joining real tables: the rows a JOIN drops"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   a-second-table-written-by-hand:
     touches: [DBM-LO9]
   the-join-that-loses-a-row:
     covers: [DBM-LO5]
+datasets: [income-share-top-1]
 ---
 
 # Joining real tables: the rows a JOIN drops
 
 [A second table and a join](tutorial:a-second-table-and-a-join) showed what
-a `JOIN` does, on two tables built by hand, with no messy edges. Real tables
-rarely match up that cleanly. This page joins the income dataset from the
+a `JOIN` does, on two tables built by hand, with no messy edges. Real
+tables rarely match that cleanly. This page joins the income dataset
+from the
 last page to a second table, and one row in three goes missing. That happens
 on purpose, so the reason is visible before it becomes a surprise somewhere
 else.
@@ -48,8 +50,15 @@ the country's name, and the income table already calls that column
 it points at share one name, so the key here takes the name the data
 already uses.
 
+The box starts with `DROP TABLE IF EXISTS`, which deletes the table if
+one exists from an earlier run. That lets you change a row and run the
+box
+again, which you will do further down this page.
+
 ```sql exec
 id: create-country-regions
+DROP TABLE IF EXISTS country_region_tbl;
+
 CREATE TABLE country_region_tbl (
     country TEXT PRIMARY KEY,
     region TEXT
@@ -79,7 +88,7 @@ ORDER BY income_share_tbl.country;
 
 Seven countries went into `country_region_tbl`. Run the query above and
 count the countries that came back. One is missing. `income_share_tbl` spells that
-country "United States"; `country_region_tbl` spells it "USA". A `JOIN`
+country "United States". `country_region_tbl` spells it "USA". A `JOIN`
 matches on exact text, not on what a person would recognise as the same
 country, so two rows that mean the same thing with different spelling never
 meet.
@@ -87,8 +96,8 @@ meet.
 ## Seeing what a JOIN drops
 
 `LEFT JOIN` keeps every row from `income_share_tbl`, whether or not
-`country_region_tbl` has a matching one. Where it does not, `region` comes back
-empty rather than the row disappearing.
+`country_region_tbl` has a matching one. Where it does not, the row
+stays, and `region` is empty.
 
 ```sql exec
 id: left-join-income-share-and-regions
@@ -100,11 +109,11 @@ WHERE income_share_tbl.year = 2019
 ORDER BY income_share_tbl.country;
 ```
 
-United States now appears, with `region` blank. That blank is the mismatch,
-made visible instead of silently dropped. Agreeing on one spelling is the
-fix here, not a cleverer `JOIN`. Change `'USA'` to `'United States'` in the
-`INSERT` above, then re-run both cells; the first query now returns all
-seven countries.
+United States now appears, with `region` blank. That blank shows the
+mismatch. The row is not silently dropped. The fix here is one agreed
+spelling, not a cleverer `JOIN`. Change `'USA'` to `'United States'` in
+the `INSERT` above, then run both cells again. The first query now
+returns all seven countries.
 
 ## Your turn
 
@@ -118,8 +127,8 @@ years.
 
 - **A join can drop a row.** This happens whenever the two tables spell
   the same thing differently, not because the data itself is wrong.
-- **`LEFT JOIN` keeps every row from the first table.** It fills in
-  empty where the second table has no match, so a mismatch shows up
-  instead of vanishing.
-- **Fixing the spelling is usually the real fix, not a cleverer query.**
-  That works once a `LEFT JOIN` shows where the gap is.
+- **`LEFT JOIN` keeps every row from the first table.** It leaves a
+  column empty where the second table has no match, so you can see the
+  mismatch.
+- **The real fix is usually the spelling, not a cleverer query.** A
+  `LEFT JOIN` shows you where the gap is.

@@ -38,16 +38,16 @@ ways, and we will see why the two ways agree only nearly.
 On this page we:
 
 - put chances on a scale from 0 to 1
-- work out a chance by counting outcomes that are equally likely
+- find a chance by counting outcomes that are equally likely
 - let Python toss coins and roll dice, with the `random` module
-- add `simulate` to the toolkit: it runs a chance experiment many times,
-  and counts
+- add `simulate` to the toolkit, a tool that runs a chance experiment
+  many times, and counts
 - use it on rain falling on a grid, and watch the grid fill
 - see why a simulation and the exact answer differ a little, and how
   more runs bring them closer
 - answer the question about the coin, two ways
 
-> **The space we're in.** A fair coin and a fair die, where every
+> **The space we're in.** We use a fair coin and a fair die, where every
 > outcome is equally likely. That is an assumption about the world, and
 > maths cannot prove it for a real coin. Real coins come very close, and
 > we agree to treat them as fair. Python gives us random numbers once we
@@ -93,8 +93,8 @@ People talk about chance all the time. "It will probably rain." "No
 chance." "It's fifty-fifty." Maths puts these on one scale.
 
 The *probability* of something is a number from 0 to 1 that says how
-likely it is. A probability of 0 means *impossible*: it will never
-happen. A probability of 1 means *certain*: it will always happen. In
+likely it is. A probability of 0 means *impossible*. It will never
+happen. A probability of 1 means *certain*. It will always happen. In
 between, a bigger number means more likely. An even chance, like heads
 on a fair coin, is $\frac{1}{2}$, or 0.5.
 
@@ -134,14 +134,14 @@ You roll an ordinary die once. Which of these has probability 0?
 On [Counting every outfit](tutorial:counting-every-outfit#outcomes-of-an-experiment)
 we met an experiment, like rolling a die, and its outcomes, like
 rolling a 4. The sample space was the list of every outcome. We need one
-more word. An *event* is a group of outcomes we care about: "rolling an
-even number" is the event made of the outcomes 2, 4 and 6.
+more word. An *event* is a group of outcomes we care about. For example,
+"rolling an even number" is the event made of the outcomes 2, 4 and 6.
 
 When every outcome is equally likely, a probability is a count:
 
 $$P(\text{event}) = \frac{\text{number of outcomes in the event}}{\text{number of outcomes in all}}$$
 
-In words: count the outcomes you want, and divide by all the outcomes.
+In words, count the outcomes you want, and divide by all the outcomes.
 For an even number on one die, that is $\frac{3}{6} = 0.5$.
 
 Now two dice, as in many board games. What is the chance that the two
@@ -162,8 +162,8 @@ print(sevens, "of", len(outcomes))
 print(sevens / len(outcomes))
 ```
 
-The line `for red, blue in outcomes:` takes each pair apart as the
-loop goes round: `red` points at the pair's first value, and `blue` at
+The line `for red, blue in outcomes:` splits each pair as the
+loop goes round. `red` points at the pair's first value, and `blue` at
 its second.
 
 Six of the 36 outcomes add up to 7: 1 and 6, 2 and 5, and so on, up to
@@ -184,14 +184,14 @@ are equally likely, so we count pairs.
 ## Letting Python toss the coin
 
 Counting works when we can list every outcome. Often we cannot, or the
-list is too long. Then there is another way: do the experiment many
+list is too long. Then there is another way. We do the experiment many
 times, and see how often the event happens. A computer can toss a coin
 a million times without getting bored.
 
 Python keeps its random tools in a module called `random`. A module, as
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times)
-said, is a collection of extra tools that Python keeps on the shelf
-until we `import` it. Three of its tools are enough for this page:
+said, is a collection of extra tools that Python loads only
+when we `import` it. Three of its tools are enough for this page:
 
 - `random.choice(values)` picks one value from a list, each equally
   likely.
@@ -212,8 +212,8 @@ print(random.random())
 ```
 
 Each run gives different results. The numbers come from a formula
-inside Python, so they are not truly random. They are *pseudo-random*:
-made by a formula, but mixed so well that they behave like a fair coin
+inside Python, so they are not truly random. They are *pseudo-random*.
+They are made by a formula, but mixed so well that they behave like a fair coin
 for everything on this page. The page
 [Random numbers: pseudo-random numbers and seeds](tutorial:leaving-it-to-chance)
 says more about how they are made.
@@ -233,8 +233,8 @@ print(heads / 1000)
 ```
 
 The count is close to 500, and it is rarely exactly 500. The fraction
-of tosses that came up heads is the *relative frequency*: how often the
-event happened, divided by how many times we tried. Probability from
+of tosses that were heads is the *relative frequency*. It is how often
+the event happened, divided by how many times we tried. Probability from
 counting is exact. Relative frequency comes from trying, and it changes
 a little every time.
 
@@ -263,14 +263,14 @@ print(heads(), roll_six())
 ```
 
 On [True, false and every case](tutorial:true-false-and-every-case) we
-handed a rule to `truth_table` without brackets after its name. We do
-the same here: `simulate(heads, 1000)` hands over the trial `heads`
+passed a rule to `truth_table` without brackets after its name. We do
+the same here. `simulate(heads, 1000)` passes the trial `heads`
 itself, so that `simulate` can call it 1,000 times.
 
 A *simulation* is a program that acts out an experiment many times, to
 see what usually happens. Here is the promise of `simulate`, as a
-docstring. Write its body: a loop that calls `trial()` `times` times,
-counts the True results, and returns the fraction.
+docstring. Write its body. It needs a loop that calls `trial()` `times`
+times, counts the True results, and returns the fraction.
 
 ```python exec
 id: likely-toolkit
@@ -301,13 +301,13 @@ def simulate(trial, times):
     return successes / times
 ```
 
-Testing something random needs care, because we cannot know its exact
-answer. So the first two tests use trials whose answers are fixed. The
+We must be careful when we test something random, because we cannot
+know its exact answer. So the first two tests use trials whose answers are fixed. The
 last test checks that 10,000 fair tosses give heads between 45% and
 55% of the time, with `between` from
 [Choosing a path](tutorial:choosing-a-path). A fair coin lands outside
 that range far less often than once in a billion billion tries. Until
-your `simulate` is written, this cell stops with an error.
+you write `simulate`, this cell stops with an error.
 
 ```python exec
 id: likely-toolkit-tests
@@ -332,7 +332,7 @@ function has no `return` yet. If it shows 50, check what you divide by.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through. Yours may differ and still keep the promise.
+Here is one answer. Yours may be different and still do the same job.
 
 ```python
 def simulate(trial, times):
@@ -345,7 +345,7 @@ def simulate(trial, times):
 
 </details>
 
-The cells from here on use `simulate`. Until it is written, they show
+The cells from here on use `simulate`. Until you write it, they show
 `None` or stop with a `TypeError`, so if you have not written it yet,
 copy the answer above into the stub and run it.
 
@@ -354,9 +354,9 @@ copy the answer above into the stub and run it.
 A trial does not have to be a coin. Here is one from the weather. A
 shower starts over a patio of 100 square paving stones, 10 by 10. In
 the first second, each square gets a raindrop with chance 0.3, whatever
-happens to the others. That is a model: real drops are smaller than a
-paving stone, and many land at once. But it keeps the part we care
-about.
+happens to the others. That is a model. Real drops are smaller than a
+paving stone, and many land at once. But the model keeps the part we
+care about.
 
 On average, 30 of the 100 squares get wet. Watch a few showers first.
 Each frame of this film is a new first second of a new shower, with
@@ -398,7 +398,7 @@ def draw_step(frame):
 FuncAnimation(figure, draw_step, frames=30, interval=600)
 ```
 
-The count jumps about from frame to frame, mostly in the 20s and 30s.
+The count changes a lot from frame to frame, mostly in the 20s and 30s.
 Now the question for `simulate`: how often are more than 40 squares
 wet? One trial is one shower.
 
@@ -417,7 +417,7 @@ def more_than_40_wet():
 print(simulate(more_than_40_wet, 10000))
 ```
 
-About 0.012: roughly one shower in 80. `random.random() < chance` is
+It is about 0.012, roughly one shower in 80. `random.random() < chance` is
 True with chance 0.3, because `random.random()` is spread evenly from 0
 up to 1, and 0.3 of that stretch lies below 0.3. Change `chance` to 0.4
 and run it again. Does the answer surprise you?
@@ -425,7 +425,7 @@ and run it again. Does the answer surprise you?
 <aside class="dl-note" id="likely-note-rng-tests">
 
 **Testing the dice inside a computer.** How do people check that a
-random-number generator is fair? With the coin question. One of the
+random-number generator is fair? They use the coin question. One of the
 tests published by NIST, the United States standards agency, counts
 the 1s in a long run of random bits, and asks whether a fair coin would
 often give a count that far from half.
@@ -435,9 +435,9 @@ often give a count that far from half.
 ## Why the two answers differ
 
 Counting says $P(\text{heads}) = 0.5$ exactly. A simulation says
-something near 0.5. Which one is right?
+something near 0.5. Which one should we believe?
 
-Both are, and they answer different questions. Counting tells us what
+We can believe both, because they answer different questions. Counting tells us what
 the coin would do on average, over ever more tosses. A simulation tells
 us what happened in these tosses. Every toss is left to chance, so a
 simulation can land a little above or below the exact answer, and it
@@ -455,15 +455,15 @@ for times in [10, 100, 1000, 10000, 100000]:
 
 `abs()` gives the size of a number without its sign, so it tells us how
 far off each fraction is, above or below. Run the cell a few times. The
-10-run row jumps about: 0.3 one time, 0.7 the next. The 100,000-run row
+10-run row changes a lot: 0.3 one time, 0.7 the next. The 100,000-run row
 hardly moves from 0.5.
 
 This pattern has a name. The *law of large numbers* says that as an
 experiment is repeated more times, its relative frequency tends to get
 closer to the probability. It does not promise to hit it exactly, and a
-few more runs can make it worse for a while. What it promises is that
-the wobble gets smaller. As a rough guide, 100 times as many runs make
-the wobble about 10 times smaller.
+few more runs can make it worse for a while. It promises that the
+distance from the probability gets smaller. As a rough guide, 100 times
+as many runs make that distance about 10 times smaller.
 
 A picture shows the same thing. The chart below tosses one coin 2,000
 times and plots the fraction of heads so far, after every toss.
@@ -522,7 +522,7 @@ def seven_or_more():
 print(simulate(seven_or_more, 10000))
 ```
 
-Near 0.17. Now the exact answer, by counting. Ten tosses have
+It is near 0.17. Now the exact answer, by counting. Ten tosses have
 $2^{10} = 1024$ outcomes, each one a row of heads and tails, and each
 equally likely. How many rows have exactly 7 heads? That is the number
 of ways to choose which 7 of the 10 tosses are the heads:
@@ -543,8 +543,8 @@ close to that, and a little off, as the last section said it would be.
 
 So a fair coin gives 7 heads or more in about 1 test in 6. That happens
 often enough that seven heads is no real evidence of an unfair coin.
-Your friend's claim is not foolish, but ten tosses are too few to show
-it.
+Your friend may be right about the coin, but ten tosses are too few to
+show it.
 
 What about 70 heads in 100 tosses? It is the same fraction, 70%. Guess
 before you run: is it about as likely as 7 in 10?
@@ -560,7 +560,7 @@ print(total(ways) / 2 ** 100)
 Python writes the answer as `3.925069822796835e-05`. The `e-05` at the
 end means "times $10^{-5}$": move the decimal point five places to the
 left, to get 0.0000392…. So it is about 0.00004, or 4 in 100,000. A fair coin almost never does
-that. More tosses give the same wobble less room, just as the law of
+that. With more tosses, the fraction stays closer to 0.5, just as the law of
 large numbers said. With 100 tosses, 70 heads would be strong evidence
 that something about the coin is not fair.
 
@@ -575,15 +575,15 @@ that something about the coin is not fair.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page asked whether a coin was unfair, and answered: a fair coin
+This page asked whether a coin was unfair, and answered it. A fair coin
 gives 7 heads or more in about 1 test in 6. A statistics book would call
 that a "hypothesis test", and it would call the 0.17 a "p-value". The
 page used neither name.
 
-Giving the names has real value. They are the words in a news report on
+The names are useful. They are the words in a news report on
 a medical study, and in any later course on statistics.
 
-We left them out because the question does the work, not the name. "How
+We left them out because the question matters more than the name. "How
 often would a fair coin do this?" is a question you can ask in words,
 then answer by counting and by simulating. Once you can ask it, the
 names are labels for something you already know how to do.
@@ -620,3 +620,16 @@ share a birthday more often than you would think.
 
 For another route through the same ideas, the integrated course has
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+
+## Where to read more
+
+MinutePhysics (2014). *An Impossible Bet: The 100 Prisoners Problem.*
+<https://www.youtube.com/watch?v=eivGlBKlK6M>. A hundred prisoners each
+open half of a hundred boxes, looking for their own number. Would you take
+the bet? The puzzle takes under two minutes. Make a guess before you watch
+the answer.
+
+MinutePhysics (2014). *Solution to The Impossible Bet: The 100 Prisoners
+Problem.* <https://www.youtube.com/watch?v=C5-I0bAuEUE>. It sounds
+hopeless, but one plan wins about three times in ten. Four minutes. A
+simulation like the ones on this page is a good way to check it.

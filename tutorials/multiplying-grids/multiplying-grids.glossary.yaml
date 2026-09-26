@@ -14,12 +14,13 @@ entries:
       The dot product of two lists of the same length is the number you
       get when you multiply each pair of matching entries and add up the
       results. Matrix multiplication is built from dot products.
-  - term: matrix multiplication
+  - term: matrix multiplication, product
     kind: concept
     definition: >
-      Matrix multiplication combines two matrices by rows and columns. The
-      entry at row i, column j of the result is the dot product of row i
-      of the first matrix with column j of the second.
+      The product TS of two 2x2 transformation matrices is the one matrix
+      that does S and then T: the move that happens first is written on
+      the right. In general, the entry at row i, column j of AB is the dot
+      product of row i of A with column j of B.
   - term: "c_ij = sum(a_ik * b_kj)"
     kind: formula
     definition: The matrix multiplication rule, written as a formula. The sum runs over k, the position along the row and down the column.

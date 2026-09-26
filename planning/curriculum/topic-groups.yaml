@@ -28,6 +28,19 @@
 # than a silently broken link.
 
 groups:
+  - key: fractions-and-powers-from-the-start
+    name: Fractions and powers, from the beginning
+    intro: >
+      For anyone who wants to start again with the maths school was
+      supposed to teach: what a fraction is, why two fractions can be the
+      same amount, and what a power means. Small steps, pictures first,
+      and nothing to memorise.
+    tutorials:
+      - before-we-start
+      - one-whole-many-slices
+      - same-amount-different-names
+      - the-long-way
+
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations
     intro: >
@@ -100,9 +113,9 @@ groups:
       object, and how both turn into a program that actually chooses
       between paths.
     tutorials:
-      - logic-and-truth
-      - venn-diagrams
       - sets-as-sorted-lists
+      - venn-diagrams
+      - logic-and-truth
       - making-decisions
 
   - key: data-and-pictures
@@ -114,6 +127,7 @@ groups:
     tutorials:
       - making-sense-of-data
       - pictures-worth-numbers
+      - a-chart-that-tells-the-truth
       - mixed-data
 
   - key: matrices
@@ -125,11 +139,14 @@ groups:
       of one at a time.
     tutorials:
       - grid-of-numbers
-      - multiplying-grids
       - what-a-matrix-does-to-a-picture
+      - multiplying-grids
       - undoing-it
       - solving-systems
+      - matrices-in-numpy
       - where-chains-lead
+      - a-filter-or-a-sprite
+      - mixed-matrices
 
   - key: computer-graphics
     name: Computer graphics — depth, perspective, and things that move
@@ -310,11 +327,13 @@ groups:
       - keeping-details-inside-an-object
       - one-class-many-methods
       - a-polynomial-class
+      - from-a-description-to-classes
       - one-parent-many-children
       - objects-inside-objects
       - testing-what-a-class-does
       - documenting-a-class
       - a-front-end-for-a-class
+      - your-world-playable
       - mixed-programming-with-objects
 
   - key: big-picture
@@ -335,7 +354,8 @@ groups:
     intro: >
       Asking a machine for a number nobody could predict, and what becomes
       possible once you can: answering a question by running something
-      thousands of times and counting, rather than by solving it.
+      thousands of times and counting, rather than by solving it. Then
+      moving a model forward in time, one small step after another.
     tutorials:
       - what-are-the-chances
       - three-doors
@@ -343,6 +363,7 @@ groups:
       - counting-darts
       - a-model-that-corrects-itself
       - when-a-queue-never-clears
+      - stepping-forward-in-time
 
   - key: problem-solving-and-debugging
     name: Solving problems and finding faults

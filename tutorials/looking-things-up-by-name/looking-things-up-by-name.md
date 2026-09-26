@@ -33,10 +33,10 @@ What will it print?
   - A dictionary is looked up by position, like a list.
 ```
 
-It prints `EQW`: CAB, in code. A list finds a value by its position. A
+It prints `EQW`, which is CAB in code. A list finds a value by its position. A
 dictionary finds a value by a name we choose, here a letter. Most of this
 page is about that one change, and what it makes easy: a cipher's key, a
-picture's palette, and counting how often each thing turns up.
+picture's palette, and counting how often each thing appears.
 
 ## Making a dictionary
 
@@ -60,9 +60,9 @@ To look up a value, write the dictionary's name, then the key in square
 brackets: `palette["r"]`. The brackets are the ones a list uses for an
 index, with a key inside them where a list would have a position. `len()`
 counts the pairs. Python shows the strings with single quotes when it
-prints a dictionary; single and double quotes mean the same thing.
+prints a dictionary. Single and double quotes mean the same thing.
 
-The name comes from a paper dictionary: you look up a word, and find its
+The name comes from a paper dictionary. You look up a word, and find its
 meaning beside it. Each key appears only once in a dictionary, but two keys
 can share a value. A value can be any type, a list included.
 
@@ -147,12 +147,11 @@ How many pairs will it have at the end?
 ```
 
 Four. `"g"` was not a key yet, so Python added a new pair. `"r"` was a key
-already, so Python replaced its value. The two lines look the same, and
-what decides between them is whether the key is already there. A new pair
-goes at the end: a dictionary keeps its pairs in the order they were
-added.
+already, so Python replaced its value. The two lines look the same. The
+only difference is whether the key is already there. A dictionary keeps
+its pairs in the order they were added, so a new pair goes at the end.
 
-A value can be used to work out its own new value, the way
+A value can be used to calculate its own new value, the way
 `total = total + n` did in
 [Repeating steps with loops](tutorial:repeating-yourself):
 
@@ -163,7 +162,7 @@ counts["E"] = counts["E"] + 1
 print(counts)
 ```
 
-Python works out the right-hand side first: it reads 4, and adds 1. Then
+Python calculates the right-hand side first. It reads 4, and adds 1. Then
 it stores 5 back under `"E"`. We use this further down to count things.
 
 ### Your turn
@@ -261,7 +260,7 @@ print(key["Z"])
 
 A `KeyError` means that Python looked for a key and did not find it. The
 last line names the key it looked for, here `'Z'`. Often the key is there,
-spelled another way: `"a"` and `"A"` are two different keys.
+spelled another way. `"a"` and `"A"` are two different keys.
 
 We can ask before we look. `in` checks whether a key is in a dictionary,
 and gives `True` or `False`. What will the last line print?
@@ -300,8 +299,8 @@ else:
 ### Looking up with a default
 
 `.get()` does that check and the lookup in one. `key.get(letter, default)`
-gives back the letter's value if it is a key. If it is not, it gives back
-the *default*: the value we choose to get when nothing else is there.
+returns the letter's value if it is a key. If it is not, it returns
+the *default*, the value we choose to get when nothing else is there.
 
 ```python exec
 id: looking-up-with-a-default-1
@@ -311,14 +310,14 @@ print(key.get("Z", "?"))
 print(key.get("Z"))
 ```
 
-With no default, `.get()` gives back `None`, Python's value for "nothing".
+With no default, `.get()` returns `None`, Python's value for "nothing".
 Which should you use? It depends on what a missing key means. If it is a
 mistake, `key["Z"]` says so at once, with a `KeyError`. If it is normal,
-such as a space in a message, `.get()` with a sensible default carries on.
+such as a space in a message, `.get()` with a sensible default continues.
 
 ## Looping over a dictionary
 
-A `for` loop can go through a dictionary. Each time round, it gives a key.
+A `for` loop can loop over a dictionary. Each time round, it gives a key.
 `.items()` gives each pair instead, as a key and a value together, the way
 `enumerate()` gave an index and an element in
 [Lists and looping over them](tutorial:lists-and-sequences).
@@ -336,8 +335,8 @@ for character, colour in palette.items():
 
 <div class="dl-world" data-world="secret-messages">
 
-A key codes a message. To decode it, we need the key the other way round:
-each code letter as a key, and the plain letter as its value. Can you
+A key codes a message. To decode it, we need the key reversed. Each code
+letter is a key, and the plain letter is its value. Can you
 build `decode_key` from `key` with a loop, and use it to set `plain`?
 
 ```python exec
@@ -425,9 +424,9 @@ depends on whether an unknown character is a mistake.
 
 ## Counting things
 
-How often does each letter turn up in a piece of text? We do not know the
+How often does each letter appear in a piece of text? We do not know the
 letters before we start, so we cannot make a variable for each. A
-dictionary can: each letter is a key, and its count is the value.
+dictionary can do it. Each letter is a key, and its count is the value.
 
 ```
 START with an empty dictionary
@@ -463,14 +462,14 @@ for letter in text:
 print(counts)
 ```
 
-The first time a letter turns up, it has no count yet, so `.get()` gives
-back 0, and 0 + 1 stores a count of 1. After that, `.get()` gives back the
+The first time a letter appears, it has no count yet, so `.get()`
+returns 0, and 0 + 1 stores a count of 1. After that, `.get()` returns the
 count so far. Both cells make the same dictionary.
 
 ### Your turn
 
 Can you write `count_letters(text)`, which returns a dictionary of how
-often each capital letter appears in `text`, and leaves out everything
+often each capital letter appears in `text`, and ignores everything
 else?
 
 ```python exec
@@ -508,9 +507,9 @@ no counts.
 
 <div class="dl-world" data-world="secret-messages">
 
-In English, E is the most common letter, then T and A. That is a crack in
-every Caesar shift: the most common letter in a coded message is probably
-a coded E. Which letter is most common in this message? Can you set
+In English, E is the most common letter, then T and A. This is a weakness
+in every Caesar shift. The most common letter in a coded message is
+probably a coded E. Which letter is most common in this message? Can you set
 `most`?
 
 ```python exec
@@ -620,10 +619,10 @@ by side.
 | An example | the pixels in a row | a cipher's key |
 | A missing item gives | `IndexError` | `KeyError` |
 
-One question settles most cases: will you look values up by a name? If so,
-use a dictionary. If you care about the order, or you only go through all
-the values one by one, use a list. And the two go together: a dictionary's
-value can be a list, as the palette of colours was.
+One question decides most cases. Will you look values up by a name? If so,
+use a dictionary. If you care about the order, or you only use the values
+one by one, use a list. And the two work together. A dictionary's value
+can be a list, as the palette of colours was.
 
 For each of these, would you use a list or a dictionary? Write your
 answer, and your reason, as a comment in the cell.
@@ -645,7 +644,7 @@ id: dictionary-or-list-1
 
 <details class="dl-answer"><summary>one way to answer</summary>
 
-1. A list. The order the songs play in is the point.
+1. A list. The order the songs play in matters most.
 2. A dictionary. Each player's name is the key, and their goals are the
    value.
 3. A list. The position is the day: index 0 is the 1st of March.
@@ -653,8 +652,8 @@ id: dictionary-or-list-1
    under it.
 5. A list. A queue is all about order: who is first, and who is next.
 
-Some could go either way. The rainfall could be a dictionary with the date
-as its key. A reason that holds up matters more than which one you picked.
+Some could be either. The rainfall could be a dictionary with the date
+as its key. Your reason matters more than which one you picked.
 
 </details>
 
@@ -666,7 +665,7 @@ contacts, a shopping app, a game. Where do you think it keeps values under
 names, and where in order?
 
 A challenge: crack a Caesar shift with no key at all. Count the letters in
-the coded message, guess that the most common one is a coded E, work out
+the coded message, guess that the most common one is a coded E, find
 the shift, and decode it. What if the guess is wrong? Try T next, then A.
 
 ```python challenge
@@ -690,10 +689,15 @@ better than this one.
 
 Python Software Foundation. *The Python Tutorial*, section 5.5,
 "Dictionaries". <https://docs.python.org/3/tutorial/datastructures.html#dictionaries>.
-The official reference for dictionaries, including the methods this page
+This is the official reference for dictionaries, including the methods this page
 does not cover.
 
 Singh, S. (1999). *The Code Book: The Secret History of Codes and
 Codebreaking*. Fourth Estate. Chapter 1 tells how Arab scholars in the
 ninth century cracked substitution ciphers by counting letters, which is
 the challenge above, done by hand.
+
+SimonDev (2021). *Hash Tables, Associative Arrays, and Dictionaries.*
+<https://www.youtube.com/watch?v=S5NY1fqisSY>. This video shows how a
+dictionary finds a value from its key without looking at everything, and what happens
+when two keys land in the same place. About twelve minutes.

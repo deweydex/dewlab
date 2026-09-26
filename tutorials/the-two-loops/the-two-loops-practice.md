@@ -23,8 +23,8 @@ There are three kinds of problem:
 - changes in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and
+its reason, than from reading the answer.
 
 ## Which loop is it in?
 
@@ -143,10 +143,10 @@ and `git commit -m "..."`, and then closed the terminal?
 <details class="dl-answer"><summary>answer</summary>
 
 `git commit` records only the changes that `git add` has chosen. When
-Sam ran it, nothing had been chosen yet, so Git made no commit. That is
-what `no changes added to commit` means. Then `git add` chose the file,
+Sam ran it, nothing had been chosen yet, so Git made no commit, and it
+said `no changes added to commit`. Then `git add` chose the file,
 but nothing recorded it. So `git push` had no new commit to send, and it
-said `Everything up-to-date`: GitHub already had every commit Sam had
+said `Everything up-to-date`. GitHub already had every commit Sam had
 made.
 
 The change is saved, and chosen for the next commit, but it is still
@@ -193,8 +193,8 @@ So we look at the tab to check it.
 
 On your own computer, the change shows as soon as you save and refresh.
 On your published site, it usually takes a minute or two. If you work
-in GitHub's editor, step 3 has nothing to do: your commit in step 4 is
-the save.
+in GitHub's editor, step 3 has nothing to do. Your commit in step 4
+saves the file.
 
 You can watch the rebuild happen. In your repository on GitHub, open
 the **Actions** tab. Each rebuild of your site is listed there, with a
@@ -230,9 +230,9 @@ step 2 and step 4 happen together.
 In step 5, the list of commits shows the newest first, each with its
 message. Your "Update the footer" commit is at the top. Further down
 are older commits: the starter's own, if you pressed **Fork**, or one
-first commit, if you pressed **Use this template**. Clicking it shows exactly what
-changed: the old line in red, marked `-`, and the new line in green,
-marked `+`. This is the same view of changed lines that a pull request
+first commit, if you pressed **Use this template**. Click it to see
+exactly what changed: the old line in red, marked `-`, and the new line
+in green, marked `+`. This is the same view of changed lines that a pull request
 shows, from [Issues and pull requests](tutorial:issues-and-pull-requests).
 
 </details>

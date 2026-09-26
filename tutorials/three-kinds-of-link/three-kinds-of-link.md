@@ -71,7 +71,7 @@ capital letters included.
 
 Sometimes we might click a `mailto:` link and see nothing happen, or see
 the browser ask which program to use. What a `mailto:` link opens
-depends on the computer. It uses whatever email program is set up
+depends on the computer. It uses whatever email program is installed
 there, and some computers have none.
 
 ## Now in your own site
@@ -118,3 +118,10 @@ working contact link.
 | *same-site link* | A link with a filename in `href`, pointing at another page of your own site | `href="about.html"` |
 | *external link* | A link with a full web address in `href`, pointing at another site | `href="https://developer.mozilla.org"` |
 | *mailto: link* | A link that opens an email program, not a page | `href="mailto:hello@example.com"` |
+
+## Where to read more
+
+CrashCourse (2017). *The World Wide Web: Crash Course Computer Science
+#30.* <https://www.youtube.com/watch?v=guvsH5OFizE>. The web was built on
+one idea: a page that links to other pages. This video tells how it began,
+and what a web address is for. About eleven minutes.

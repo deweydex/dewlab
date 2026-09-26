@@ -13,7 +13,7 @@ covers:
 
 # Recursion: finding every file in a folder tree
 
-A grid has a fixed shape: so many rows, so many columns, and one value
+A grid has a fixed shape: a set number of rows and columns, and one value
 where each row meets each column. A folder on a computer is different.
 It holds files, and it holds other folders. Each of those can hold more
 files and more folders, as many levels deep as anyone likes.
@@ -21,7 +21,7 @@ files and more folders, as many levels deep as anyone likes.
 On this page we build that shape in Python. Then we count every file
 inside it, in two different ways.
 
-## A Structure That Branches
+## A structure that branches
 
 Here is one folder, written as a Python dictionary. It has three keys:
 `"name"`, `"files"` and `"subfolders"`. The value for `"subfolders"` is a
@@ -56,8 +56,8 @@ holds one file. 2026 holds no files and one subfolder, trip, which holds
 two files.](photos-tree.svg)
 
 This shape is called a *tree*. A tree is a structure where each value can
-lead to several others, and following it never leads back to where you
-started.
+lead to several others, and if you follow it, you never come back to
+where you started.
 
 - `photos` holds two files, and two subfolders: `"2025"` and `"2026"`.
 - `"2025"` holds one file, and no subfolders.
@@ -66,7 +66,7 @@ started.
 
 That makes three levels. But nothing in the dictionary says in advance
 how many levels there will be. A grid in
-[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers) is different: its number
+[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers) is different. Its number
 of rows and columns is fixed as soon as it is made.
 
 ### Your turn
@@ -81,7 +81,7 @@ Look at `photos["subfolders"][1]["subfolders"][0]`.
 id: a-structure-that-branches-2
 ```
 
-## Walking It With Recursion
+## Walking it with recursion
 
 We want to count every file, at every level. So we need one function
 that can handle any folder: one that holds only files, one that holds
@@ -135,7 +135,7 @@ id: walking-it-with-recursion-2
 hint: A folder with no subfolders is already at its own deepest level. A folder with subfolders is one level deeper than the deepest of them.
 ```
 
-## Walking It Without Recursion
+## Walking it without recursion
 
 We can do the same count without a function that calls itself. This
 version uses a `while` loop, as in
@@ -143,11 +143,11 @@ version uses a `while` loop, as in
 methods you may not have met yet:
 
 - `to_visit.pop()` removes the last item from the list `to_visit`, and
-  gives it back.
+  returns it.
 - `to_visit.extend(other_list)` adds every item from `other_list` to the
   end of `to_visit`.
 
-`while to_visit:` keeps going as long as the list is not empty. Python
+`while to_visit:` continues as long as the list is not empty. Python
 treats an empty list as false, and a list with anything in it as true.
 
 ```python exec
@@ -171,13 +171,13 @@ starts with only `photos`. Each pass through the loop does three things:
 2. It counts that folder's files.
 3. It adds that folder's subfolders to the list, for a later pass.
 
-Nothing here calls itself. This version is *iterative*: it repeats a
+Nothing here calls itself. This version is *iterative*. It repeats a
 loop, and it keeps its own list of what is left to do.
 
-The recursive version needs a list like that too. Python keeps it
-behind the scenes. Python always keeps a list of the function calls that
+The recursive version needs a list like that too. Python keeps it for
+us, and we do not see it. Python always keeps a list of the function calls that
 have started but not yet finished, called the *call stack*. In the
-recursive version, the call stack keeps track of which folders are left.
+recursive version, the call stack records which folders are left.
 
 Both versions visit the same folders, and count the same files. But they
 visit them in a different order:
@@ -201,14 +201,21 @@ id: walking-it-without-recursion-2
 hint: pop() takes the last item off a list by default. A different argument to pop() takes the first item instead.
 ```
 
-## Where to Read More
+## Where to read more
 
 Sedgewick, R. and Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley.
 Chapter 4 covers graphs, and the depth-first and breadth-first traversal
-strategies this page builds by hand for a tree, at a depth well past what
-this course needs but worth knowing is there.
+strategies this page builds by hand for a tree. It goes much deeper than
+this course needs, but it is worth knowing it is there.
 
 Python Software Foundation. *os.walk().*
-<https://docs.python.org/3/library/os.html#os.walk>. The standard library
-function that walks a real folder tree on disk, the same shape this page
-built by hand with a plain dictionary.
+<https://docs.python.org/3/library/os.html#os.walk>. This is the standard
+library function that walks a real folder tree on disk. It is the same
+shape this page built by hand with a plain dictionary.
+
+Reducible (2020). *Depth First Search (DFS) Explained: Algorithm,
+Examples, and Code.* <https://www.youtube.com/watch?v=PMMc4VsIacU>.
+When we walk a folder tree, we do one kind of depth-first search. It goes
+as deep as it can, then returns and tries the next branch. Reducible shows
+it on other shapes too, with a recursive version and a loop version, as
+this page does. The video is about twenty-one minutes long.

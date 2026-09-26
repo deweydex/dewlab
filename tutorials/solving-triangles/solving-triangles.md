@@ -18,7 +18,7 @@ covers:
 # Solving triangles: the sine rule and the cosine rule
 
 We know some of a triangle's sides and angles. Can we find the rest?
-That question is what this whole page is about.
+This whole page is about that question.
 
 "Solving a triangle" may sound strange the first time you hear it. Until
 now, solving has meant finding an unknown in an equation. *Solving a
@@ -103,7 +103,7 @@ print("opposite / adjacent   =", opposite / adjacent,
       "   and tan of the angle =", math.tan(angle))
 ```
 
-They match, and the reason is the circle. Make the unit circle bigger, by
+They match because of the circle. Make the unit circle bigger, by
 the length of the hypotenuse. The coordinates grow by the same amount, so
 the *ratios* stay exactly what they were.
 
@@ -125,9 +125,9 @@ The idea is that a right-angled triangle is a piece of a circle.
 ### Going backwards
 
 Suppose you know the ratio and want the angle. Then you need the
-inverse: the reflection idea from
+inverse, which we met in
 [Functions and their graphs](tutorial:drawing-functions). The *inverse
-sine*, written $\sin^{-1}$ or arcsin, takes a sine and gives back an
+sine*, written $\sin^{-1}$ or arcsin, takes a sine and returns an
 angle. In Python it is `math.asin`. The inverse cosine and inverse
 tangent are `math.acos` and `math.atan`. All three give their answer in
 radians, so we use `math.degrees` to turn it into degrees.
@@ -224,9 +224,9 @@ print()
 print("a right angle:", area(6, 4, 90), "and half base times height:", 0.5 * 6 * 4)
 ```
 
-The formula $\frac{1}{2}ab\sin C$ is not a new fact. It is half the base
-times the height, with the height worked out for you from the
-information you were given.
+The formula $\frac{1}{2}ab\sin C$ is half the base times the height.
+The height is calculated for you from the information you were given.
+It is not a new fact.
 
 ### Your turn
 
@@ -290,8 +290,8 @@ The two curves are the same curve. So the gap is $2ab\cos C$, and:
 
 $$c^2 = a^2 + b^2 - 2ab\cos C$$
 
-This is the *cosine rule*. In words: it is Pythagoras with a correction,
-and the correction is $2ab\cos C$. At 90 degrees the cosine is zero, so
+This is the *cosine rule*. It is Pythagoras with a correction, and the
+correction is $2ab\cos C$. At 90 degrees the cosine is zero, so
 the correction disappears, and Pythagoras is left exactly.
 
 For example, with $a = 5$, $b = 4$ and $C = 60^\circ$:
@@ -368,9 +368,9 @@ def distance(p, q):
 # Your code here.
 ```
 
-The angle between two lists of numbers is a question that recommendation
-systems ask all the time. Two people's ratings are two vectors. How
-similar their taste is comes out as the angle between them.
+Recommendation systems often ask for the angle between two lists of
+numbers. Two people's ratings are two vectors. The angle between them
+shows how similar their taste is.
 
 ## The sine rule, and its two answers
 
@@ -402,7 +402,7 @@ for side, angle in zip(sides, angles):
 
 We get the same number, all three times.
 
-That is the *sine rule*: in any triangle, each side divided by the sine
+This is the *sine rule*. In any triangle, each side divided by the sine
 of the angle opposite it gives the same value.
 
 $$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$$
@@ -470,7 +470,7 @@ ax.set_title("Two triangles, both fitting the same three facts")
 ```
 
 Both triangles have a side of 8, a side of 6, and a 40-degree angle
-opposite the 6. Neither of them is wrong.
+opposite the 6. Both of them are real triangles.
 
 Why does this happen? Sine gives the same value for an angle and for 180
 minus that angle. You can see this on the wave from
@@ -484,9 +484,9 @@ for angle in [30, 150, 50, 130]:
     print(f"sin({angle:>4}) = {math.sin(math.radians(angle)):.6f}")
 ```
 
-This is called the *ambiguous case*: two correct answers from one
-correct calculation. It is part of the method, not a mistake. Deciding
-which triangle you meant is your job. The answer usually comes from
+This is called the *ambiguous case*. One correct calculation gives two
+correct answers. It is part of the method, not a mistake. You decide
+which triangle you meant. The answer usually comes from
 something you know about the real situation, which the three numbers did
 not include.
 
@@ -510,8 +510,8 @@ id: your-turn-4
 ## Putting it together
 
 First, two helpers. `tidy` rounds a finished triangle so that it is
-easy to read. `side_side_angle` handles the ambiguous case: it gives
-back every triangle that fits, which may be none, one or two.
+easy to read. `side_side_angle` handles the ambiguous case. It returns
+every triangle that fits, which may be none, one or two.
 
 ```python exec
 id: putting-it-together-1
@@ -538,7 +538,8 @@ def side_side_angle(a, b, A):
 print(side_side_angle(6, 8, 40))
 ```
 
-Now one function that picks the right rule for what you were given.
+Now we write one function that picks the right rule for what you were
+given.
 
 ```python exec
 id: putting-it-together-2
@@ -573,14 +574,13 @@ print(solve(a=6, b=8, A=40))
 ```
 
 Look at the second result. A 3-4-5 triangle is right-angled, so there
-should be a 90 in it. Is there? The cosine rule worked out the right
-angle without being told.
+should be a 90 in it. Is there? The cosine rule found the right angle
+without being told.
 
 Now look at the last one. It is a list, with two triangles in it: the
 two from the ambiguous case, with a side of 6, a side of 8, and 40
-degrees opposite the 6. The function gives back both, and does not
-choose. The three numbers cannot choose either. That part is still
-yours.
+degrees opposite the 6. The function returns both, and does not choose.
+The three numbers cannot choose either. You have to choose.
 
 ### Your turn
 
@@ -589,7 +589,7 @@ mast: 32 degrees. She walks 50 m straight towards the mast and measures
 again: 47 degrees. How tall is the mast?
 
 It helps to draw it first. There is a triangle in the drawing with one
-side of 50 m and two angles you can work out.
+side of 50 m and two angles you can find.
 
 ```python exec
 id: your-turn-5
@@ -608,24 +608,29 @@ ratios, and the ratios are the unit circle made bigger.
 height that nobody drew in.
 
 **The cosine rule is Pythagoras with a correction.** The correction is
-zero at 90 degrees. That is why the rule looks like Pythagoras with
-something extra added: it is.
+zero at 90 degrees.
 
 **The sine rule can give two answers**, because sine gives the same value
 for an angle and for 180 minus that angle. Both triangles are real.
-Choosing between them is not a matter of arithmetic.
+Arithmetic cannot choose between them.
 
 Look back at the three cases at the top of this page. Which one do you
 think you would meet most often, and where? Write a few sentences.
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Proof of the Law of Cosines.*
-<https://www.youtube.com/watch?v=pGaDcOMdw48>. Where `c² = a² + b² − 2ab
-cos C` comes from — the same correction-to-Pythagoras idea this
-page arrives at by comparing gaps.
+<https://www.youtube.com/watch?v=pGaDcOMdw48>. This video proves where
+`c² = a² + b² − 2ab cos C` comes from. This page found the same
+correction to Pythagoras by comparing gaps.
 
 Khan Academy. *Proof: Law of Sines.*
-<https://www.youtube.com/watch?v=APNkWrD-U1k>. Why every side divided by
-the sine of its opposite angle gives the same number, derived rather than
-just checked.
+<https://www.youtube.com/watch?v=APNkWrD-U1k>. This video proves that
+every side divided by the sine of its opposite angle gives the same
+number. This page only checked it.
+
+Ellie Sleightholm (2026). *Where Trigonometry Really Comes From.*
+<https://www.youtube.com/watch?v=bkvyu5mxVdY>. This video explains why
+the ratio of two sides stays the same for every triangle with the same
+angles, and how that becomes sine and cosine. It is about twelve minutes
+long.

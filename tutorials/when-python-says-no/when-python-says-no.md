@@ -22,14 +22,13 @@ covers:
 # When Python says no: reading error messages
 
 You press Run, and instead of an answer, red text appears under the
-cell. For a moment it can feel like being told off, or like proof that
-this was never for you. It is neither. It is Python
-telling you, as exactly as it can, which move it could not make, and
+cell. For a moment it can feel like a judgement on you. In fact, Python
+is telling you, as exactly as it can, which move it could not make, and
 where. Every programmer sees these messages every day, including the
 ones who wrote Python.
 
 This page is about reading them. Our code comes from the digit display
-this unit is building: finding a number's digits, and a pixel's row and
+this unit is building. It finds a number's digits, and a pixel's row and
 column, with a mistake in each on purpose.
 
 On this page we:
@@ -115,13 +114,13 @@ the line and marks under the part Python could not use.
 
 A *NameError* means Python met a name that points at nothing. Ask the
 first of the four questions, *what is named here?* We named `number`
-and `ones`. We never named `numbr`. To Python, `numbr` is not a
-spelling mistake. It is a new word it has never been told about.
+and `ones`. We never named `numbr`. To Python, `numbr` is a new
+word it has never been told about, not a spelling mistake.
 
 <aside class="dl-note" id="when-python-note-bug">
 
 **The first bug.** Engineers called faults "bugs" long before
-computers: Thomas Edison used the word in the 1870s. In 1947, the team
+computers. Thomas Edison used the word in the 1870s. In 1947, the team
 working on the Harvard Mark II computer found a real moth stuck in one
 of its switches. They taped it into their logbook, under the words
 "First actual case of bug being found." The page is now in the
@@ -175,7 +174,7 @@ print("Ones digit:", ones)
 ```
 
 Here is a harder one, and I think it is the strangest message on this
-page. Someone types 2026 into a box on a web page. Boxes give back
+page. Someone types 2026 into a box on a web page. Boxes return
 text, so `number` is the string `"2026"`, not the number. Before you
 run it, what do you think Python will say?
 
@@ -193,14 +192,13 @@ TypeError: not all arguments converted during string formatting
 
 That seems to have nothing to do with digits. Here is what happened.
 With numbers, `%` gives a remainder. With text, `%` does a different
-job: it is an old way of filling gaps in a piece of text, a little like
+job. It is an old way of filling gaps in a piece of text, a little like
 filling in a form. Python tried to put the 10 into a gap in `"2026"`,
-found no gap, and said the 10 was "not converted". The same `%`, in a
-different space, means a different move.
+found no gap, and said the 10 was "not converted".
 
 So when a message makes no sense, ask what kind of value each name
-holds. Here, the words after the colon were about text, and that was
-the clue: `number` was text.
+holds. Here, the words after the colon were about text. That was
+the clue that `number` was text.
 
 ### Your turn
 
@@ -249,7 +247,7 @@ ZeroDivisionError: integer division or modulo by zero
 
 The last line names a *ZeroDivisionError*, which means the code tried
 to divide by zero. "Integer division" is `//` on whole numbers, and
-"modulo" is `%`: either one can fail this way. In mathematics, dividing
+"modulo" is `%`. Either one can fail this way. In mathematics, dividing
 by zero has no answer in any of the number families we have met, and
 Python follows the same rule.
 
@@ -358,7 +356,7 @@ The last line says what Python expected. Where on the line does the
 
 ## Compilers, linkers and Python
 
-In many languages, such as C or C++, a program goes through two tools
+In many languages, such as C or C++, two tools handle a program
 before it runs.
 
 A *compiler* reads the whole program first and translates it into
@@ -378,7 +376,7 @@ none of the pieces defines, the linker says so:
 undefined reference to `draw_digt'
 ```
 
-Python does both jobs, as it goes. Before a cell runs, Python compiles
+Python does both jobs itself, as it goes. Before a cell runs, Python compiles
 it, and a SyntaxError is Python's version of a compiler error. While the
 cell runs, Python looks up each name at the moment it is used, and a
 NameError is Python's version of a linker's "undefined reference". So
@@ -452,17 +450,17 @@ title: some steps
 <details class="dl-why"><summary>Why this way?</summary>
 
 A whole page on error messages came in the first unit, before most of
-the code in this course. Many courses leave errors until later, or deal
-with each one when it happens.
+the code in this course. Many courses leave errors until later, or explain
+each one when it happens.
 
-Leaving them until later has a real reason. With little code there is
+There is a real reason to leave them until later. With little code there is
 little to go wrong, and a beginner can spend the first weeks writing
 things that work.
 
 We put this page early because the red text comes anyway, usually on the
 first day. If nobody has said what it is, it can look like a mark against
-you. Read early, a traceback is Python answering one of the four
-questions: which move is not allowed here, and where. A mistake becomes
+you. If you read tracebacks early, you see Python answering one of the
+four questions: which move is not allowed here, and where? A mistake becomes
 information about one line.
 
 </details>
@@ -487,7 +485,7 @@ information about one line.
 | `SyntaxError` | code that is not valid Python; nothing in the cell runs |
 | `IndentationError` | the spaces at the start of a line are not what Python expected |
 | `str()`, `int()`, `float()` | turn a number into text; turn text into a whole number, or into a float |
-| compiler, linker | tools that check a program before it runs; Python does their jobs as it goes |
+| compiler, linker | tools that check a program before it runs; Python does their jobs itself, as it goes |
 | failed and responsible | the line where Python stopped, and the line that caused it |
 
 That is the end of Unit 1. Next is its practice page, and after it the

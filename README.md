@@ -105,7 +105,7 @@ Everything a learner's code can call beyond ordinary Python is defined in
 ```text
 tutorials/       one folder per module, then one folder per tutorial
 setup/           setup snippets tutorials pull in with {{include: ...}}
-data/            shared CSV datasets
+data/            shared datasets, each with a yaml saying where it came from
 assets/          the page template, styles, runtime, editors, and vendored libraries
 compose/         the Notebook and the Workspace (dewmini and dewmini web in the code)
 dewmark/         the exam track — specifications for authoring, sitting, and marking exams

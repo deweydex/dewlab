@@ -47,7 +47,9 @@ page follows from them.
 It shows what their code did and, when they ask, what a solution does
 with the same inputs. A mismatch is information about a line, not a
 judgement of a person. `check()` and its ticks were retired for this
-reason (#314).
+reason (#314). The quiet verdicts count too: *not yet*, *fair*,
+*strong*, *honest*, *sound*, *the tests are the judge*. So does a
+verdict raised only to deny it: *Is that a foolish move? No.*
 
 <a id="mistakes"></a>
 **Mistakes are part of the process.** A wrong prediction is the most
@@ -172,7 +174,45 @@ English words, who may be reading in their second language.
   out*, *set up* and *give up* each mean several things. Use one word
   where a common one exists: *find*, *continue*, *happen*, *prepare*,
   *stop*. Idioms from any dialect go the same way: *already behind you*,
-  *says on the tin*.
+  *says on the tin*. The ones that keep coming back: *work out* (use
+  *find*), *give back* (use *return*), *go through* and *reach in* (use
+  *use*), *throw away* (use *delete*), *left behind*, *read off*, and
+  *out of order*, which in Dublin means *broken*.
+
+<a id="say-it-directly"></a>
+**Say it directly.** Somebody or something does something, in that
+order. Clever framing reads well to the writer and costs a
+second-language reader two reads. Each of these came from a real page.
+
+- **A verb, not a noun made from one.** Not *the deciding can be tested
+  if it is kept apart from the asking*. Write *you can test the code
+  that decides, if it is in its own function*.
+- **A sentence has a subject and a verb.** Not *Two front ends, one set
+  of classes: the classes never knew which one was asking*. Write *We
+  now have two front ends. The classes do not know which one is
+  asking.* A heading may be a label; a sentence may not.
+- **Say the thing first.** Not *What changes is where the rules live*.
+  Write *A class changes where the rules live*. Not *Getting stuck is
+  where most of the learning happens*. Write *You learn most when you
+  are stuck*.
+- **A colon brings in a list or an example.** The main point never
+  waits behind one. Not *Where does the rule live? Nowhere: every line
+  has to remember it*. Write *The rule is not in one place. Every line
+  has to remember it.*
+- **End on the fact, not a saying.** A closing line that says the
+  paragraph again, cleverly, goes. *"Has a" bends where "is a" breaks*,
+  *only as good as*, *the tests are the judge*.
+- **No reversals or mirror pairs.** *The first thing the cell does is
+  the last thing it shows* makes the reader solve a puzzle. Write *The
+  cell prints this line first, so it is at the top of the output.*
+- **No private words.** A metaphor or a planning word the reader was
+  never given stays off the page: *no top*, *floor*, *ceiling*, *a door
+  left open*, *earns its place*, *that is sequence, our third
+  question*. If a metaphor is worth using across a series, say it
+  plainly on the page where it first appears.
+- **A sentence that repeats across pages is written once.** The line in
+  an answer fold is *Here is one answer. Yours may be different and
+  work too.*
 
 <a id="invitations"></a>
 **Tasks are invitations.** A task is a question, a challenge, or a
@@ -302,6 +342,9 @@ frontmatter, the build) are in
   [invitations](#invitations)
 - Does every sentence pass the plain-language checks, phrasal verbs
   included? [plain language](#plain-language)
+- Does every sentence have somebody doing something, with no saying at
+  the end of a paragraph and no main point after a colon?
+  [say it directly](#say-it-directly)
 - Is a feeling named only rarely, and with a route?
   [feelings](#feelings)
 - Does every task have a first step anyone can take, and room above it?

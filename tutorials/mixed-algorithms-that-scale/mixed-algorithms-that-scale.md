@@ -13,9 +13,9 @@ version: 2026.09.25.1
 # Mixed problems: algorithms that scale
 
 Each problem here draws on at least one page of Unit 6, and many draw on
-two or more. None of them is harder than what those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+two or more. None of them is harder than what those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself, and that is part of the problem.
 
 Along the way, the problems build this unit's product: a phone-book
 search that stays fast. You will look up the same name three ways, in
@@ -28,7 +28,7 @@ Your toolkit is loaded on this page: `linear_search`, `binary_search`,
 `selection_sort`, `insertion_sort`, `shell_sort`, `count_items` and
 `halvings` from this unit, and every tool from Units 1 to 5, such as
 `total`, `mean` and `largest`. Each answer is hidden until you open it,
-and each one is one way through: yours may go another way. Where a
+and each one is only one way. Yours may be different and work too. Where a
 problem asks you to predict, make the prediction before you run
 anything. It is the most useful part.
 
@@ -55,11 +55,11 @@ print(binary_search(["Cork", "Galway", "Athlone"], "Athlone"))
 
 13 is at index 3 of a sorted list, so binary search finds it. The
 linear search reads from the front and finds Athlone at index 2. The
-last line is an answer that is not true, given calmly: the list is not
-sorted. The
+last line gives an untrue answer, with no error, because the list is
+not sorted. The
 binary search looks at Galway first. Athlone comes before Galway in the
-alphabet, so it throws away Galway and everything after it, and
-Athlone goes too. Binary search keeps its promise only in the space of
+alphabet, so it stops looking at Galway and every name after it, and
+it never sees Athlone. Binary search keeps its promise only in the space of
 sorted lists, as on
 [Finding things fast](tutorial:finding-things-fast#only-in-a-sorted-list).
 
@@ -79,8 +79,8 @@ print(halvings(1000000) + 1)
 
 $\log_2 1000$ is about 9.97, and $\log_2 1000000$ is about 19.93, and
 `halvings` rounds down. The last line is the most looks a binary search
-can need among a million names: one look for each halving, and one at
-the name that is left, as on
+can need among a million names. It makes one look for each halving,
+and one at the name that is left, as on
 [Doubling and halving](tutorial:doubling-and-halving#why-binary-search-is-so-quick).
 
 </details>
@@ -117,7 +117,7 @@ are not sorted by artist. For binary search, "this song's artist comes
 before the one I want" says nothing about the songs to its left, so the
 only safe move is to look at every song: a linear search, 2,000 looks.
 
-A list sorted one way is a space where one kind of question is quick.
+A list sorted by title makes one kind of question quick.
 Apps that need both usually keep a second list, sorted by artist, beside
 the first.
 
@@ -126,8 +126,8 @@ the first.
 ## Core
 
 This cell makes phone books of any size, with made-up names. You do not
-need to read how it works. What it does is enough: `make_phone_book(size)`
-gives back a list of `size` different names, in no order, like contacts
+need to read how it works. You only need to know what it does. `make_phone_book(size)`
+returns a list of `size` different names, in no order, like contacts
 in the order they were added. A number after each name keeps every entry
 different, the way a real phone book adds an address. The same size
 always gives the same book, so your counts will match the answers.
@@ -171,8 +171,8 @@ id: mixed-scale-scratch-2
 
 **5. Make.** Binary search needs a sorted book, and on an unsorted
 book it can give an untrue answer with no error. So the first part of the product is a check. Write
-`is_in_order(values)`, which gives back True when every value is less
-than or equal to the one after it. Go through the list by index. Test
+`is_in_order(values)`, which returns True when every value is less
+than or equal to the one after it. Loop over the list by index. Test
 it on `[]`, `[3]`, `[1, 2, 2, 5]` and `[2, 1]`, and then on a phone
 book of 1,000 names before and after `sorted()`.
 
@@ -209,16 +209,16 @@ print(is_in_order(book_1000), is_in_order(sorted(book_1000)))
 ```
 
 It prints `False True`. An empty list and a list of one value count as
-in order, since there is no pair out of order. Equal neighbours are
-allowed, which is why the test uses `>` and not `>=`. Going through by
-index is the loop from
+in order, since no pair is in the wrong order. Equal neighbours are
+allowed, which is why the test uses `>` and not `>=`. This loop by
+index is the one from
 [A row of numbers](tutorial:a-row-of-numbers#going-through-by-index).
 
 </details>
 
 **6. Make.** The first way to look a name up is linear search. Write
-`linear_looks(book, name)`, which searches from the front and gives
-back how many names it looked at. Then, for books of 10, 1,000 and
+`linear_looks(book, name)`, which searches from the front and returns
+how many names it looked at. Then, for books of 10, 1,000 and
 100,000 names, count the looks for two names: the last name in the
 book, and `"Zhang, Anna 1"`, who is not in any book.
 
@@ -248,7 +248,7 @@ The 100,000 book takes a moment to make and to search.
 </details>
 
 **7. Fix.** Schlomo, who is learning Python too, wrote this binary
-search. His one change from the toolkit's: `high` starts at
+search. He made one change to the toolkit's version. `high` starts at
 `len(sorted_values)`, since that is how many names there are. It finds
 names in the middle of the book, but one search stops with an error.
 Run it, read the last line of the error, and change the line that
@@ -296,7 +296,7 @@ The first two searches print `4` and `-1`. The third stops with
 `IndexError: list index out of range`. `high` starts at 10, one past the
 last index, which is 9. A search for a name after every other name
 keeps moving `low` up, until `middle` is 10, and there is no index 10.
-Schlomo counted the names; the search needs the last index, which is
+Schlomo counted the names. The search needs the last index, which is
 one less. That is the first line of the toolkit's version:
 
 ```python
@@ -304,8 +304,8 @@ one less. That is the first line of the toolkit's version:
 ```
 
 The search for Aaron never failed because it moves `high` down, away
-from index 10. Searching only in the middle of the book would never
-have found this. The edges of the promise are where to test, as on
+from index 10. A search only in the middle of the book would never
+have found this. Test at the edges of the promise, as on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
 
 </details>
@@ -314,7 +314,7 @@ have found this. The edges of the promise are where to test, as on
 would the toolkit's `selection_sort` make to sort a book of 100,000
 names? Use the formula from
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards#counting-the-comparisons),
-and work it out in one line of Python. Should we use it?
+and calculate it in one line of Python. Should we use it?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -329,13 +329,12 @@ the browser's Python that would take hours. Python's `sorted()`, which
 won the race on
 [Racing the sorts](tutorial:racing-the-sorts#the-fourth-racer-sorted),
 sorts 100,000 names in a fraction of a second, so the product uses
-`sorted()` for the big book. It still helps to know what a sort costs:
-sorting is not free, even when it is fast.
+`sorted()` for the big book. It still helps to know what a sort costs.
 
 </details>
 
 **9. Make.** The second way is binary search. Write
-`binary_looks(sorted_book, name)`, which gives back how many names a
+`binary_looks(sorted_book, name)`, which returns how many names a
 binary search looked at. For sorted books of 10, 1,000 and 100,000
 names, count the looks for `"Zhang, Anna 1"`, and print
 `halvings(size) + 1` beside each count.
@@ -407,7 +406,7 @@ print(n * (n + 1) / 2 / n)
 Both give 500.5. The looks are 1, 2, 3 and so on up to 1,000, and their
 sum is $\frac{n(n+1)}{2}$. Dividing by $n$ leaves $\frac{n + 1}{2}$. So
 a linear search reads about half the book on average, which still grows
-in proportion to the book: double the names, double the looks. The loop
+in proportion to the book. Twice the names means twice the looks. The loop
 makes half a million looks in all, so it takes a moment.
 
 </details>
@@ -419,17 +418,17 @@ hundreds of times a day.
 
 <details class="dl-answer"><summary>answer</summary>
 
-For one search, sorting first does not pay. A linear search costs at
+For one search, it is not worth sorting first. A linear search costs at
 most 100,000 looks. Even Python's `sorted()` needs far more comparisons
 than that to sort 100,000 names, well over a million, and then the
 binary search is 17 looks on top.
 
-For many searches, it pays many times over. The sorting is done once,
+For many searches, it is worth it many times over. You sort once,
 and every search after it costs 17 looks in place of up to 100,000.
 After a few dozen searches, the sorted book is ahead, and it stays
-ahead. A phone also keeps its contacts sorted as it goes: a new contact
-added to a sorted list leaves it nearly in order, which is where
-insertion sort does well, as on
+ahead. A phone also keeps its contacts sorted as it goes. A new contact
+added to a sorted list leaves it nearly in order, and insertion sort
+does well on a list like that, as on
 [Racing the sorts](tutorial:racing-the-sorts#which-sort-where).
 
 The choice depends on the job, not only on which algorithm is fastest
@@ -452,8 +451,8 @@ print(customers, halvings(customers) + 1)
 1,024,000 names. A linear search can need 1,024,000 looks, a thousand
 times more than at the start. A binary search can need 20, up from 10.
 Each doubling of the list adds one halving, so ten doublings add ten
-looks. Exponential growth in the list becomes steady growth, one look a
-year, in the search: the rumour and the phone book from
+looks. The list grows exponentially, but the search grows steadily, one look
+a year. These are the rumour and the phone book from
 [Doubling and halving](tutorial:doubling-and-halving#why-binary-search-is-so-quick),
 side by side.
 
@@ -470,7 +469,7 @@ id: mixed-scale-scratch-3
 
 **13. Make.** The third way to look a name up is a set, from
 [Collections without repeats](tutorial:collections-without-repeats#is-it-in-the-set).
-A set does not look through its names one by one. It works out where a
+A set does not look through its names one by one. It calculates where a
 name would be from a short code made from the name, called a hash, so
 it usually needs about one step whatever its size. We cannot count
 those steps, since the code is not ours, so time all three ways instead,
@@ -486,7 +485,7 @@ the unsorted book.
 
 1. `big_book = make_phone_book(100000)`, then `big_sorted = sorted(big_book)`
    and `big_set = set(big_book)`.
-2. Each small function takes a name and gives back one search's result:
+2. Each small function takes a name and returns one search's result:
    for example, `return name in big_set`.
 3. Write `milliseconds_per_lookup(look_up, names)`, which reads
    `time.perf_counter()`, runs `look_up` on every name, reads the clock
@@ -539,7 +538,7 @@ each run. The order is the same: the linear search takes several
 milliseconds for each lookup, the binary search takes less than a
 thousandth of that, and the set is faster again. The binary search is
 our own Python, 17 looks at most. The set, like `sorted()`, runs as
-the computer's own instructions, and its trick is not halving at all.
+the computer's own instructions, and it does not use halving at all.
 
 </details>
 
@@ -548,7 +547,7 @@ itself, from
 [A function that calls itself](tutorial:a-function-that-calls-itself#a-promise-that-uses-itself):
 to search a part of the book, look at its middle, then search a part
 half the size. Write `binary_looks_by_calls(sorted_book, name, low, high)`
-with no loop, which gives back the number of looks. Check that it agrees
+with no loop, which returns the number of looks. Check that it agrees
 with your `binary_looks` from problem 9 for every name in a sorted book
 of 1,000, and for `"Zhang, Anna 1"`.
 
@@ -611,10 +610,10 @@ print(search_by_calls(tiny_book, "Kelly, Mei 500", 0, 9))
 The first search prints `7`. The second stops with
 `RecursionError: maximum recursion depth exceeded`. The function has no
 base case for a part with nothing left in it. Once `low` passes `high`,
-it goes on calling itself on empty parts, for ever, until Python stops
+it continues calling itself on empty parts, for ever, until Python stops
 it, as on
 [A function that calls itself](tutorial:a-function-that-calls-itself#where-the-promise-stops-the-base-case).
-Schlomi's recursive cases are sound. It needs a base case at the top:
+Schlomi's recursive cases do what she meant. It needs a base case at the top:
 
 ```python
     if low > high:
@@ -622,8 +621,8 @@ Schlomi's recursive cases are sound. It needs a base case at the top:
 ```
 
 With it, the missing name gives `-1`. The loop version has the same
-check, as `while low <= high`: the loop's condition and the base case
-are the same promise, written two ways.
+check, as `while low <= high`. The loop's condition and the base case
+are the same check, written two ways.
 
 </details>
 
@@ -663,7 +662,7 @@ plt.legend()
 | 100,000 | 100,000 | 17 | 1 |
 
 The linear line climbs to 100,000. The binary line lies along the
-bottom, at 17 or less. The set's 1 is not counted by our code: it is
+bottom, at 17 or less. Our code does not count the set's 1. It is
 what the set's design promises, most of the time, and the times in
 problem 13 agree with it.
 
@@ -678,7 +677,7 @@ what it needs to work.
 
 Here is one answer. Yours may say it differently.
 
-"Each look throws away half of the names that are left, so the most
+"Each look removes half of the names that are left, so the most
 looks a binary search can need is the number of halvings that take $n$
 names down to one, plus one: $k = \log_2 n$, rounded down, plus one.
 Because $2^k = n$, doubling the book adds only one look, so 100,000
@@ -686,7 +685,7 @@ names need at most 17 looks where a linear search can need 100,000.
 It only works if the book is sorted, so the book must be sorted once
 and kept in order."
 
-An answer that does the job names the halving, links it to $\log_2 n$, and says what
+This answer names the halving, links it to $\log_2 n$, and says what
 the space must be: a sorted book. The set is faster again, but by a
 different trick, a hash, which a later course explains.
 

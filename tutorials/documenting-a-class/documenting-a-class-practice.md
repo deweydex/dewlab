@@ -2,220 +2,230 @@
 title: "Documenting a class with docstrings — Practice"
 practice_for: documenting-a-class
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.26.1
 ---
 
 # Documenting a class with docstrings — Practice
 
-The answers are hidden until you open them. A few of these problems ask
-you to predict an output before you run anything. Try not to check first.
-When a prediction is wrong, finding out why teaches you more than a lucky
-guess does.
+This page has problems on docstrings and doctest, and three from earlier
+pages. Try each problem before you open anything under it, and run the cells to test
+your guesses.
 
-## A class docstring
+## 1. Which docstring helps?
+
+```question
+id: which-docstring-helps-1
+type: multiple-choice
+answer: 3
+
+A caller wants to know what `ada.heal(-50)` does. Which docstring tells
+them?
+
+- """Heals the character."""
+  - It says what the method is for.
+- """Add amount to health. Uses min() and max_health."""
+  - It says how the method works inside.
+- """Add amount to health, stopping at max_health. Refuses a negative amount, or a character who is down, and prints why."""
+  - It says what the method promises, refusals included.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+The third. The first repeats the method's name. The second tells the
+caller about the inside, which they should not need, and which may change.
+The third says what a caller can count on, including what happens with −50.
+
+</details>
+
+## 2. A promise for enter
+
+Can you write a docstring for `Room.enter` that says the four things a
+method promises: what it does, what its parameter should be, what it
+returns, and what it refuses?
 
 ```python exec
-id: a-class-docstring-1
-class Book:
-    """Represents one book: a title and an author."""
+id: a-promise-for-enter-1
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._characters = []
 
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-
-
-help(Book)
-```
-
-**1.** `Book` above has a class docstring, but `__init__` has no
-docstring. Does `help(Book)` still run? What does it show for `__init__`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It still runs. `__init__(self, title, author)` is listed under "Methods
-defined here". Under it, Python shows a general line of its own:
-`Initialize self.  See help(type(self)) for accurate signature.` That
-line comes from Python itself, and says nothing about books. A method
-you write yourself, with no docstring, has no such built-in text, so
-nothing at all shows under its name.
-
-A docstring is optional. When one is missing, Python does not raise an
-error.
-
-</details>
-
-**2.** Write a class docstring for `Polynomial` that says what one object
-of the class represents. Then check it with `help()`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Polynomial:
-    """Represents a polynomial as a list of coefficients."""
-
-    def __init__(self, coeffs):
-        self.coeffs = coeffs
-
-
-help(Polynomial)
-```
-
-The docstring goes on its own line, straight after `class Polynomial:` and
-before `def __init__`. `Book` and `BankAccount` put theirs in the same
-place.
-
-</details>
-
-**3.** Does `book = Book("Dune", "Frank Herbert")` run the docstring of
-`Book` in any way?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. Python stores a docstring on the class, for `help()`, an editor or a
-reader to find. Creating an object never uses it. In the same way,
-calling a function never runs the function's docstring.
-
-</details>
-
-## Documenting each method
-
-```python exec
-id: documenting-each-method-1
-class Book:
-    """Represents one book: a title and an author."""
-
-    def __init__(self, title, author):
-        """Creates a Book with the given title and author."""
-        self.title = title
-        self.author = author
-
-    def citation(self):
-        """Returns "title, by author" as one string."""
-        return self.title + ", by " + self.author
-
-
-help(Book.citation)
-```
-
-**4.** Predict what `help(Book.citation)` shows. How is that different
-from what `help(Book)` would show?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`help(Book.citation)` shows only the docstring of `citation()`:
-`Returns "title, by author" as one string.`
-
-`help(Book)` would show all three docstrings. First the class docstring,
-then the docstring of `__init__`, then the docstring of `citation()`.
-
-</details>
-
-**5.** Add a docstring to `evaluate()` below. Say what it computes and what
-`x` is for.
-
-```python exec
-id: documenting-each-method-2
-class Polynomial:
-    """Represents a polynomial as a list of coefficients."""
-
-    def __init__(self, coeffs):
-        self.coeffs = coeffs
-
-    def evaluate(self, x):
-        result = 0
-        for i in range(len(self.coeffs)):
-            result = result + self.coeffs[i] * x ** i
-        return result
-
-# Add a docstring to evaluate() above, then call help() on it here
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def evaluate(self, x):
-    """Returns this polynomial's value at x."""
-    result = 0
-    for i in range(len(self.coeffs)):
-        result = result + self.coeffs[i] * x ** i
-    return result
-```
-
-One sentence is enough here. It says what the method returns, and it
-names the one parameter. The docstring of `Book.citation()` above has the
-same shape.
-
-</details>
-
-## Keeping documentation honest
-
-```python exec
-id: keeping-documentation-honest-1
-class Book:
-    def __init__(self, title, author, available=True):
-        self.title = title
-        self.author = author
-        self.available = available
-
-    def borrow(self):
-        """Marks the book as borrowed. Always succeeds."""
-        if not self.available:
-            print("Refused: already borrowed.")
+    def enter(self, character):
+        if character in self._characters:
+            print(f"Refused: {character} is already in {self.name}.")
             return
-        self.available = False
+        self._characters.append(character)
 
-
-book = Book("Dune", "Frank Herbert")
-book.borrow()
-book.borrow()
-print(book.available)
+help(Room.enter)
 ```
 
-**6.** Run the cell above. What does the docstring of `borrow()` say? What
-does the code do on the second call?
+```solution
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._characters = []
 
-<details class="dl-answer"><summary>answer</summary>
+    def enter(self, character):
+        """Put character in the room.
 
-The docstring says "Always succeeds." The second `book.borrow()` prints
-`Refused: already borrowed.` and changes nothing, because the book is
-already out. `book.available` ends up `False`, which is correct. The code
-is right, and the docstring is wrong.
+        character: anyone who can be in a room.
+        Refuses a character who is already inside, and prints why.
+        Returns nothing.
+        """
+        if character in self._characters:
+            print(f"Refused: {character} is already in {self.name}.")
+            return
+        self._characters.append(character)
+
+help(Room.enter)
+---
+One good docstring. "Returns nothing" is worth saying: a caller who
+writes `result = hall.enter(ada)` learns from it that `result` will be
+`None`.
+```
+
+## 3. The same list, written differently
+
+```python exec
+id: the-same-list-written-differently-1
+import doctest
+
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self._names = []
+
+    def enter(self, name):
+        self._names.append(name)
+
+    def standing(self):
+        """Return the names inside.
+
+        >>> hall = Room("Hall")
+        >>> hall.enter("Ada")
+        >>> hall.standing()
+        ["Ada"]
+        """
+        return list(self._names)
+
+doctest.run_docstring_examples(Room.standing, globals(), name="standing")
+```
+
+```question
+id: the-same-list-written-differently-q1
+type: multiple-choice
+answer: 2
+
+Does the example pass?
+
+- Yes: `["Ada"]` and `['Ada']` are the same list.
+  - Python treats both quotes alike.
+- No: doctest compares the text Python would show, and Python shows `['Ada']`.
+  - doctest checks what is printed, character by character.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It fails, with `Expected: ["Ada"]` and `Got: ['Ada']`. doctest does not
+compare values. It compares the text Python shows, and Python shows a list
+of strings with single quotes. Write the example the way Python would show
+the answer.
 
 </details>
 
-**7.** Fix the docstring of `borrow()` so that it says what the method
-really does. Do not change the code under it.
+## 4. A docstring that stopped telling the truth
+
+This method's code and its docstring disagree. Run the cell. Which one
+would you change?
+
+```python exec
+id: a-docstring-that-stopped-1
+import doctest
+
+class Submarine:
+    hull_limit = 400
+
+    def __init__(self, name):
+        self.name = name
+        self._depth = 0
+
+    def can_dive(self, metres):
+        """Return True if the submarine can dive metres deeper.
+
+        >>> Submarine("Nautilus").can_dive(400)
+        True
+        """
+        return self._depth + metres < self.hull_limit
+
+doctest.run_docstring_examples(Submarine.can_dive, globals(), name="can_dive")
+```
 
 <details class="dl-answer"><summary>answer</summary>
+
+The example expects a dive to exactly 400 m to be allowed, and the code
+says no: it uses `<`. The hull is safe to 400 m, so the code is wrong
+and the docstring is right. Change `<` to `<=`. Sometimes it is the other
+way round, and the docstring is out of date. Either way, the example
+found the disagreement.
+
+</details>
+
+## 5. Where does it go?
+
+```question
+id: where-does-it-go-1
+type: fill-in-the-blank
+
+- A class docstring goes on the {first line inside the class|line above the class|last line of __init__}.
+- A method docstring goes on the {first line inside the method|line above the method|line after return}.
+- An example in a docstring starts with {>>>|#|print}.
+```
+
+## 6. From earlier: a test at the edge
+
+From *Testing a class*. `Probe.can_burn(kg)` says whether a probe can
+burn `kg` now. A probe has 70 kg. Which two values of `kg` would you test
+first, and why?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+70 and 71: exactly all of the fuel, and one kilogram past it. That is the
+boundary, where a `<` written for `<=` would show. 0 and −1 are the other
+edge.
+
+</details>
+
+## 7. From earlier: what the container asks
+
+From *Composition*. `Mission.total_fuel()` adds `probe.get_fuel()` for
+each probe. Someone changes it to add `probe._fuel` instead. Both give the
+same number today. What could make them differ later?
+
+<details class="dl-answer"><summary>answer</summary>
+
+A change inside `Probe`: say the fuel is stored in grams, or a child
+class keeps a reserve that `get_fuel` leaves out. `get_fuel()` would keep
+its promise, and `_fuel` would not. That promise is written down in the
+docstring on `get_fuel`.
+
+</details>
+
+## 8. From earlier: one sentence for a child class
+
+From *Inheritance*. A class starts:
 
 ```python
-def borrow(self):
-    """Marks the book as borrowed, refusing if it is already out."""
-    if not self.available:
-        print("Refused: already borrowed.")
-        return
-    self.available = False
+class Bathyscaphe(Submarine):
+    hull_limit = 11000
 ```
 
-Only the words between the triple quotes change. The line
-`if not self.available:` and everything below it stay exactly as they
-were.
+Can you write its class docstring in one sentence, the same sentence you
+might have written as the reason for the child class?
 
-</details>
+<details class="dl-answer"><summary>one answer</summary>
 
-**8.** The original docstring said `"Always succeeds."`, and that no
-longer matches what the method does. Does Python give a warning or an
-error about it?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. A docstring is a plain string. Python does not run it, and does not
-compare it with the code around it. Nothing in Python checks whether
-"Always succeeds" is still true. Whoever reads the method next has to
-notice the out-of-date docstring, and fix it.
-
-Examples are different. If the docstring held an example, a `>>>` line
-and the output it should give, the `doctest` module could run it and
-report the mismatch. A sentence has nothing for it to run.
+`"""A submarine built for the deepest trenches: its hull is safe to
+11,000 m."""` The reason a child class exists is the most useful thing
+its docstring can say.
 
 </details>

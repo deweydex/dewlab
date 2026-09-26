@@ -23,7 +23,7 @@ covers:
 
 Can a computer do algebra? On this page we find out. We take an
 expression like $3x^2 + 5x - 2$ and store it as a list of numbers. Then
-we write functions that work out its value, add two of them together,
+we write functions that calculate its value, add two of them together,
 and multiply them. The algebra turns into something we can hold, run and
 test.
 
@@ -31,7 +31,7 @@ On this page we:
 
 - see how an expression is different from an equation
 - store a polynomial as a list of numbers
-- work out a polynomial's value, and print it in a readable way
+- calculate a polynomial's value, and print it in a readable way
 - add, multiply, subtract and scale polynomials, and test our work
 
 ## Expressions versus equations
@@ -50,9 +50,9 @@ true when $x = 5$, and false for every other value of $x$.
 |---|---|---|
 | Example | $3x + 7$ | $3x + 7 = 22$ |
 | Has an equals sign? | no | yes |
-| What we do with it | *evaluate* it: work out its value | *solve* it: find the $x$ that makes it true |
+| What we do with it | *evaluate* it: calculate its value | *solve* it: find the $x$ that makes it true |
 
-This page is about evaluating. Solving comes in
+On this page we evaluate expressions. We solve equations in
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
 
 ## Representing polynomials
@@ -112,7 +112,7 @@ The cubic $2x^3 - 3x^2 + 1$ has no $x$ term. Its coefficient of $x^1$ is
 
 ## Evaluating polynomials
 
-To *evaluate* a polynomial means to work out its value for one chosen
+To *evaluate* a polynomial means to calculate its value for one chosen
 value of $x$. For $3x^2 + 5x - 2$ at $x = 4$:
 
 $$3(16) + 5(4) - 2 = 48 + 20 - 2 = 66$$
@@ -245,7 +245,7 @@ id: your-turn-6
 
 ## Multiplying polynomials
 
-Multiplying polynomials takes more steps. To multiply $(2x + 3)(x + 4)$,
+It takes more steps to multiply polynomials. To multiply $(2x + 3)(x + 4)$,
 we multiply each term of the first polynomial by every term of the
 second, and then add the results. This is called *expanding the
 brackets*. For two terms times two terms, many people use the *FOIL
@@ -255,7 +255,7 @@ the Last.
 $$(2x + 3)(x + 4) = 2x^2 + 8x + 3x + 12 = 2x^2 + 11x + 12$$
 
 Here is the idea that turns this into code. When we multiply a term
-$a_i x^i$ by a term $b_j x^j$, we get $a_i \cdot b_j \cdot x^{i+j}$: the
+$a_i x^i$ by a term $b_j x^j$, we get $a_i \cdot b_j \cdot x^{i+j}$. The
 coefficients multiply and the powers add. For example,
 $2x \times 4 = 2x^1 \times 4x^0 = 8x^1$.
 
@@ -321,7 +321,7 @@ print("2*25 + 11*5 + 12 =", right_side)
 print("Match:", left_side == right_side)
 ```
 
-Both sides give 117. This is a strong way to test code: use a
+Both sides give 117. This is a strong way to test code. Use a
 mathematical fact that must hold, and check that your code agrees with
 it. Suppose `evaluate_poly(multiply_poly(a, b), x)` equals
 `evaluate_poly(a, x) * evaluate_poly(b, x)` for several values of $x$.
@@ -349,10 +349,10 @@ id: your-turn-10
 
 ## Subtracting and scaling
 
-Two more operations finish our set. One is subtracting two polynomials.
-The other is *scaling*: multiplying every coefficient by the same
+Two more operations finish our set. One subtracts two polynomials. The
+other is *scaling*, which multiplies every coefficient by the same
 number. For example, $2 \times (3x^2 + 5x - 2) = 6x^2 + 10x - 4$, so
-scaling `[-2, 5, 3]` by 2 gives `[-4, 10, 6]`.
+`[-2, 5, 3]` scaled by 2 gives `[-4, 10, 6]`.
 
 ### Your turn
 
@@ -361,7 +361,7 @@ scaling `[-2, 5, 3]` by 2 gives `[-4, 10, 6]`.
 3. Test both in the second cell.
 
 If you want to go further, try a `poly_derivative(coeffs)` function too.
-Differentiating a polynomial follows its own short rule about
+The derivative of a polynomial follows its own short rule about
 coefficients and exponents. You will meet that rule properly in
 [Derivatives: the rate of change of a curve](tutorial:rates-of-change).
 
@@ -384,9 +384,9 @@ builds on the others.
 
 The deeper lesson is about *representation*: the way we choose to store
 something as data. We chose to store polynomials as lists, and that
-turned abstract algebra into work with lists. Adding became adding list
-items. Multiplying became a loop inside a loop. The algebra did not
-change. Our way of looking at it did.
+turned abstract algebra into work with lists. To add polynomials, we add
+list items. To multiply them, we use a loop inside a loop. The algebra
+did not change, but we looked at it in a new way.
 
 Next, in
 [Rearranging formulae: changing the subject](tutorial:rearranging-formulae),
@@ -397,13 +397,18 @@ we solve equations and factorise polynomials.
 What was the trickiest part of this page for you: the formatting in
 `poly_to_string`, or the loops in `multiply_poly`?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Adding and Subtracting Polynomials.*
-<https://www.youtube.com/watch?v=ZGl2ExHwdak>. The same coefficient-by-
-coefficient operation this page builds as `add_poly`, worked by hand
-first.
+<https://www.youtube.com/watch?v=ZGl2ExHwdak>. It shows the same
+coefficient-by-coefficient operation this page builds as `add_poly`,
+worked by hand.
 
 Khan Academy. *Multiplying Polynomials Example.*
-<https://www.youtube.com/watch?v=yJzLYa-_Y1k>. The FOIL method this page
-turns into a nested loop over coefficients.
+<https://www.youtube.com/watch?v=yJzLYa-_Y1k>. It shows the FOIL method,
+which this page turns into a nested loop over coefficients.
+
+Stand-up Maths (2023). *Beware the Runge Spikes!*
+<https://www.youtube.com/watch?v=F_43oTnTXiw>. Draw a polynomial through a
+few points and it behaves. Add more points and it can swing wildly between
+them. Matt Parker shows why. The video is about seventeen minutes long.

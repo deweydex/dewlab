@@ -107,10 +107,10 @@ how:
   `method="post"`, they travel inside the request, and the address
   stays clean.
 
-`get` suits a search form: the answers are part of the address, so a
+`get` suits a search form. The answers are part of the address, so a
 visitor can bookmark the results or share them. `post` suits anything
 that sends a message or changes something, such as a contact form or a
-sign-up form. The answers do not show up in the address bar or the
+sign-up form. The answers do not appear in the address bar or the
 browser's history.
 
 At the other end of the address there has to be a *server*. A server,
@@ -134,7 +134,7 @@ contact.html?name=Ana&email=ana%40example.com&message=Hello
 
 Nothing keeps them. GitHub Pages sends back files, and it runs no
 program of yours, so there is nobody at that address to read the
-answers. The comment at the top of `contact.html` says the same: the
+answers. The comment at the top of `contact.html` says the same. The
 project asks for a form's markup, and a working form needs something
 behind it.
 
@@ -168,7 +168,7 @@ Anyone can do the same, and a program can send answers to a server with
 no page and no browser at all. So the server has to check every answer
 again, and never trust that the browser checked it. The browser's check
 also only looks at the shape of an address. `a@b` passes, because it
-has the right shape. Only sending an email to it shows whether it is
+has the right shape. Only an email sent to it shows whether it is
 real.
 
 ## Labels, more closely
@@ -213,3 +213,10 @@ sends, where it goes, and what has to be waiting at the other end.
 | *server* | A program on a computer connected to the internet, that receives requests and sends back replies | the program that reads a contact form |
 | *validation* | Checking that each answer is the kind of thing it should be. The browser's check helps the visitor. The server must check again. | `required`, `type="email"` |
 | *placeholder* | Grey example text inside a field, which disappears when the visitor types. It is not a label. | `placeholder="ana@example.com"` |
+
+## Where to read more
+
+CrashCourse (2017). *The Internet: Crash Course Computer Science #29.*
+<https://www.youtube.com/watch?v=AEaKrq3SpW8>. It shows where a form's
+answers travel after you press the button: to the right computer, in small
+packets, across many networks. Twelve minutes.

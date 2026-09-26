@@ -25,7 +25,7 @@ line of customers at a checkout. They all work the same way:
 This raises one question every time. Does the queue stay under control,
 or does it grow forever? On this page we simulate a queue to find out.
 
-## Arrivals You Cannot Predict, One at a Time
+## Arrivals you cannot predict, one at a time
 
 We split time into steps. In each step, we check twice whether something
 new has arrived, like flipping a coin twice. Then we count how many times
@@ -35,7 +35,7 @@ The function below does this with a short form we have not used much
 yet. `sum(1 for _ in range(2) if random.random() < arrival_prob)` works
 like a list comprehension from
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids). It
-makes a 1 for each of the two checks that comes up yes, and `sum` adds
+makes a 1 for each of the two checks that gives yes, and `sum` adds
 up the 1s.
 
 ```python exec
@@ -51,8 +51,8 @@ def arrivals_this_step(arrival_prob):
 print([arrivals_this_step(0.3) for _ in range(10)])
 ```
 
-`arrival_prob` is the chance that each of the two checks comes up yes.
-Over many steps, the average number of arrivals per step works out to
+`arrival_prob` is the chance that each of the two checks gives yes.
+Over many steps, the average number of arrivals per step is
 `2 * arrival_prob`. Keep that number in mind. It decides everything that
 follows.
 
@@ -94,10 +94,10 @@ id: arrivals-you-cannot-predict-one-at-a-time-3
 hint: Average arrivals per step is 2 * arrival_prob, from the paragraph above.
 ```
 
-## A Queue That Clears
+## A queue that clears
 
 Here, `arrival_prob` is `0.3` and `service_capacity` is `1`. Before you
-run the cell, work out the average number of arrivals per step. Is it
+run the cell, calculate the average number of arrivals per step. Is it
 more or less than the server can clear?
 
 ```python exec
@@ -117,15 +117,15 @@ print("queue length at the end:  ", stable[-1])
 Average arrivals here are `2 * 0.3 = 0.6` per step. The server can clear
 `1`. So on average, the server can clear more than arrives, and the queue
 never grows for long. It rises after a run of bad luck. Then it drains
-again, once arrivals fall back below what the server can handle.
+again, once arrivals drop below what the server can handle.
 
 A queue like this is called *stable*. A stable queue keeps coming back
 to empty, and it has a typical length that it hovers around. A long run
 of bad luck can still push it high, and nothing promises it will stay
-below any particular length. But it always comes back down, and over a
+below any particular length. But it always gets shorter again, and over a
 long run its average length settles.
 
-## A Queue That Never Clears
+## A queue that never clears
 
 Now we change one number: `arrival_prob` goes from `0.3` to `0.6`. What
 do you think the plot will look like?
@@ -142,11 +142,11 @@ print("queue length at the end:", unstable[-1])
 ```
 
 Average arrivals are now `2 * 0.6 = 1.2` per step. The server can still
-clear only `1`. So on average, the server falls behind by `0.2` items
-every step. That is never much on any one step, but the server never
-catches up either.
+clear only `1`. So on average, the queue grows by `0.2` items every
+step. That is not much on any one step, but the server never clears
+the extra items either.
 
-This queue does not drain back down the way the first one did. It goes
+This queue does not return to empty the way the first one did. It goes
 down a little now and then, but over the whole run it climbs.
 
 A queue like this is called *unstable*. An unstable queue has no
@@ -164,7 +164,7 @@ id: a-queue-that-never-clears-2
 hint: Print the queue length at a few points along the way, such as step 200, step 1000 and step 2000. The last value alone does not show the shape.
 ```
 
-## Predicting It Before Running It
+## Predicting it before running it
 
 We could have predicted both results before running either simulation.
 Compare `2 * arrival_prob` with `service_capacity`:
@@ -203,7 +203,7 @@ queue is stable. It says nothing about some other questions:
 - How long does a stable queue get on an unlucky run, before it drains?
 - How long does an unstable queue take to become a real problem?
 
-Only running the simulation answers those.
+Only the simulation answers those.
 
 ### Your turn
 
@@ -224,22 +224,28 @@ hint: Try two different seeds and compare them. The stable run stayed small and 
 Most runs look like something in between. The queue does not climb
 steadily, like the unstable run. It often drains back to empty. But it
 has no level that it settles around either. Some runs wander well above
-ten before they come back down, and a longer run can wander further
+ten before they come back, and a longer run can wander further
 still. Its average length keeps growing the longer it runs. It has no
 typical length, and that is why the rule counts this setting as
 unstable.
 
-## Where to Read More
+## Where to read more
 
 Kendall, D. G. (1953). *Stochastic Processes Occurring in the Theory of
 Queues and their Analysis by the Method of the Imbedded Markov Chain.*
-The Annals of Mathematical Statistics, 24(3), 338–354. The paper that
-started queueing theory as its own field of mathematics, considerably
-more formal than this tutorial's simple step-by-step count, but asking
+The Annals of Mathematical Statistics, 24(3), 338–354. This paper
+started queueing theory as its own field of mathematics. It is much more
+formal than this tutorial's simple step-by-step count, but it asks
 exactly the same stability question.
 
 Harchol-Balter, M. (2013). *Performance Modeling and Design of Computer
-Systems: Queueing Theory in Action*. Cambridge University Press. A
-textbook aimed squarely at computing rather than at queueing theory for
-its own sake — written for exactly the print-queue, request-queue,
-packet-queue examples this tutorial opened with.
+Systems: Queueing Theory in Action*. Cambridge University Press. This
+textbook is about computing, not queueing theory for its own sake. It is
+written for exactly the print-queue, request-queue and packet-queue
+examples this tutorial opened with.
+
+engineerguy (2010). *Why the other line is likely to move faster.*
+<https://www.youtube.com/watch?v=F5Ri_HhziI0>. Bill Hammack explains
+queueing theory, which started with telephone calls in Copenhagen, and how
+a shop can arrange its lines so that people wait less. The video is four
+minutes long.

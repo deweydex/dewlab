@@ -4933,3 +4933,222 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 - **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
 
 *Cost to change: none for the data and length; the sweep is page prose.*
+
+---
+
+**7.245 — The second half of the OOP course keeps growing the reader's class, to a world someone else can play.** The OOP rebuild, part 2 (#323), part of #306.
+
+**One project from the first page to the last.** The milestones of 7.242 go on, one version a page, each in `setup/oop/<world>-<n>.py`: a child class with one sentence that says why (`Healer`, `Bathyscaphe`, `Lander`); a container that holds the reader's objects (`Room`, `Expedition`, `Mission`); five tests, and the open door from 7.242 closed; docstrings, with examples doctest can run; a `run_choice` front end. A new page at the end, `your-world-playable`, runs each world's eighth version with its five tests passing and a menu to play from, then asks the reader to add one rule the way the series did: test first, then the rule, the docstring, the command. Where a page's task changes a class, its starter includes the version before and its solution the version after; where it adds a new class, a cell of its own holds the classes so far, so the task cell shows only what is new.
+
+**A new design page, `from-a-description-to-classes`, before inheritance.** A paragraph about the expedition becomes CRC cards, then a skeleton that runs. Three designs are shown and weighed, not ranked; the reader does the same with a paragraph about their own world. The cave paragraph gives heroes and monsters that share most of what they know, which is the next page's question.
+
+**Inheritance shows the class-attribute trap.** Part 1's classes read their limits as `Character.max_health`, `Submarine.hull_limit` and `Probe.tank_size`. A child with its own limit is then ignored: a troll with a limit of 20 heals *down* to 10. The page predicts it, then reads the limit through `self`, and every world's fourth version makes the same change. The contrast the issue asked to keep is a troll that goes through `super()`, because the parent's rules still hold, and a phoenix that cannot, because the parent's rule is the one it breaks.
+
+**Composition adds four cases that are not clear-cut:** a dictionary or a class; a child class or a flag (Pluto, which changed kind in 2006, against a new kind being named); `Square(Rectangle)`, where doubling the width quadruples the area; and an astronaut who is two things at once. None is given a single answer.
+
+**Testing is a hunt.** Five versions of the submarine, four with one bug each, and a `check` the reader grows until one is left standing; three of the bugs sit at a boundary. Then a ten-line runner over `globals()`, the same idea as pytest; a test written before the fix, for the open door; and a test that is wrong, because `0.1` is stored nearly. The old `expect: callable(...)`, which only checked that a function existed, is gone. The reader's own tests go in a `tests:` cell, so the comparison runs them against their class and against the next version.
+
+**The second front end is a menu, not a button.** The issue asked for one built from `text_input` and `button`. `button()` raises on a tutorial page: the page runs Python in a Worker (7.77), and a click has no way to call Python there. `text_input()` and `dropdown()` do work, since their values reach the Worker as messages, so the second front end is a `dropdown` of commands, and the cell's own Run is the Go button. The page says so, and turns the limit into a design point: a menu makes a mistyped command impossible. `docs/WRITING_TUTORIALS.md` listed `button()` among what any cell can call; it now says which widgets need a downloaded copy. Making `button()` work in the Worker is runtime work, left for its own issue.
+
+**The mixed set** covers every page of the series in the worlds, with one problem that adds a method to the reader's own container.
+
+*Cost to change: the `setup/oop/` files are a chain, each read by the page that makes it and the page that builds on it, and the last by `your-world-playable` and the mixed set; a change to one version belongs in every later one too. `from-a-description-to-classes` and `your-world-playable` are new ids.*
+
+---
+
+**7.246 — 99 videos from the video library added to "Where to read more" on 89 tutorials and 10 practice pages.** Josh asked for a video or two at the bottom of the pages, and then narrowed it: only videos from the channels on the list behind `planning/video-library/` (7.243).
+
+**One video per page, two where each does a different job.** Most pages got one: the video that sits closest to what the page teaches, at a length a reader might watch the same evening. A second goes in only when it adds something the first does not, such as the 100 prisoners puzzle and its solution, or a short lesson next to a long story. Pages that already had a read-more section keep everything in it; the video goes at the end, before any line that points to the practice page. Pages without one get a `## Where to read more` heading, in the style guide's sentence case.
+
+**Practice pages get a problem, not a repeat.** A practice page gets a video only when it poses something more to try, such as a puzzle, a coupon-collector run to simulate, or a sine pattern to check, and the entry asks the reader to try before watching. The other practice pages are unchanged, as are all the web, SQL and OOP pages the channel list has nothing for.
+
+**Checked before writing, not watched.** Each video's title, date, description and chapter list were read, and captions where they could be fetched. That caught three picks that were wrong for their page (a "perspective" video about physics, a card puzzle that was not the Wason task, and a "gibberish generator" about fake handwriting). One strong fit, a Tantacrul interface critique for `critique-and-reflection`, was left out because its language could not be checked. Each entry is cited in the form the pages already use, and gives the video's length so a reader knows what they are starting.
+
+*Cost to change: low. Each entry is one paragraph at the end of a page, with no cell or id involved, so it can be removed or replaced by hand. A dead link is the likely failure over time, since the build does not check outside links.*
+
+---
+
+**7.247 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
+
+`_table_html()` gained `index=True`, and `_run_sql_cell()` passes `False`. A SQL result has no index of its own; the numbers were pandas', added on the way to HTML. A Python cell that shows a DataFrame keeps them, since the pandas pages teach the index and a reader there needs to see it. `run_query()`, the public one-statement version called from a Python cell, still shows the index; no tutorial calls it, and whether it should follow the SQL cell is left until one does.
+
+*Cost to change: trivial. One argument in one call, and one test in `TestRunSqlCell`.*
+
+---
+
+**7.248 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
+
+**The bold terms had never reached this course.** 7.207 brought bold-italic key terms to six graphics pages and left the rest for later; the glossary file for `a-table-is-a-list-of-rows` already noted that the whole series had no marked terms at all. The three pages now mark theirs as 7.207 did (`***term***`), so the Reference panel links back to where each is introduced. Page one gains the terms it used without defining: *database*, *query* (which every later page in the course leans on), *cell*, *record*, *attribute*, *header*, *comment*, *data type* and *primary key*. Page two gains *condition* and the six comparison operators. *Cell* is the table's own word here, which is why these pages call the code editor a *box* throughout.
+
+**Six pictures, drawn from the pages' own SQL.** `dev/graphics/database_methods.py` gains a table drawer beside its ERDs. Every value in a picture comes from running the page's cell in sqlite at generation time, the same rule the ERDs follow, so a picture cannot show a row the box does not build. Page one: the parts of a table, on a shopping list (Josh's own example from his opening paragraph), and what `CREATE TABLE`, `INSERT` and `SELECT` each leave behind. Page two: `SELECT` picking columns and `WHERE` picking rows, with the result as the cells in both; and `WHERE` then `ORDER BY` as two steps. Page three: `UPDATE` and `DELETE`, each with and without its `WHERE`, side by side. Each picture has labels as well as tints, so colour is never the only signal.
+
+**Three things the old prose said that the runtime does not do.** Running a box a second time never rebuilt the table: it failed with `table dinosaur_tbl already exists`, because a page's database lives for as long as the page is open. The per-cell Reset (↺) clears output and never touched the table. And page three's "run it without the `WHERE` and watch every length become 2.5" could not show that, since the box's own `SELECT` kept its `WHERE` too. The fix is `DROP TABLE IF EXISTS` at the top of each dinosaur box, the idiom `sets-in-databases` and `many-languages-one-idea` already use, taught on page one with an experiment that fails on purpose when it is commented out. The reader's own-table steps start with it too. Page three now asks the reader to remove both `WHERE`s.
+
+**Cell ids unchanged,** so no saved work moves. `version:` is bumped on all three, because a cell's starter code changed.
+
+**Left alone:** the tail of page two's recap, where the video pull request (7.246) adds a "Where to read more". The pandas row numbers that sat beside every SQL result, next to `dinosaur_id`, are gone since 7.247, which page three's look at the ids 1, 2, 3, 4 and 6 relies on.
+
+*Cost to change: low. Prose and six generated SVGs; a picture changes by editing its function and re-running the generator. Removing `DROP TABLE IF EXISTS` would need the "run it again" sentences on all three pages changed back.*
+
+---
+
+**7.249 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to 7.248, which fixed the first three pages of "A table of your own".
+
+**The same bug, in more places than the first three pages.** A page's sqlite database lasts for as long as the page is open, so a `CREATE TABLE` that has already run stops the next run with `table X already exists`. Neither per-cell button changes that. Reset (↺) clears the output, and Clear (↻) puts back the starter code; neither touches the database. A sweep of every page in `courses/database-methods.yaml` found four more pages that ask for a create box to run a second time:
+
+- `a-second-table-and-a-join`: both dinosaur boxes, and the reader's own box, which the page asks them to grow a second table in and run again. Each worked box drops its own table. The prose tells the reader to drop their second table before their first. No foreign key is declared in the worked boxes, so their order does not matter.
+- `joining-two-real-tables`: "Change `'USA'` to `'United States'` in the `INSERT` above, then re-run both cells" could never work.
+- `a-college-timetable`: "Run that box again to rebuild the whole database with your row included" could never work either. Five drops, in the reverse of the `CREATE` order, `session_tbl` first, because the box declares its foreign keys.
+- Both quizzes: the workspace says "Run this box after every change", and the reader's own `CREATE TABLE` from Task 1 failed on every run after the first, so Task 2's table was never built. The workspace starter now carries the drop lines, with the tables that point into others first, so a reader never meets the error. The worked solutions start with the same lines.
+
+**Pre-filled in the quizzes, taught elsewhere.** A quiz assesses the tables, not the drop idiom, and a reader stuck on `already exists` halfway through a quiz is stuck on the wrong thing. So the quizzes put the lines in the starter code. The worked pages explain them where they appear.
+
+**Order was run, not reasoned.** Each worked solution was run twice with `PRAGMA foreign_keys = ON`, the setting under which a parent table cannot be dropped while a child table still points into it.
+
+**`working-with-tables`** said "Reset brings back the code the page started with". That is Clear. The sentence now names both buttons, with their symbols.
+
+**Left alone:** `sql-practice` and `a-form-that-writes-a-row` each have a create box that fails on a second run, but neither page asks for one. `version:` is bumped on every page whose cell code changed. Cell ids are unchanged, so no saved work moves. A reader's saved copy of an old box keeps its old code, without the drop lines.
+
+*Cost to change: low. Each drop line is one line of starter code. Removing one would need the "run it again" sentence on its page changed back.*
+
+---
+
+**7.250 — Datasets are fetched live, with a saved copy as the backup, and every copy says where it came from and when.** The datasets issue (#324), part of #306. Josh's decision in the issue: live from the source, with a dated snapshot in `data/` as the backup.
+
+**One loader, three outcomes.** `load_csv` and `load_text` fetch a `live: true` dataset from its source, shape it with its recipe into the snapshot's own columns (`tutorial_tools.shape_live()`), and use the snapshot on any failure: no answer in 10 seconds, a page offline, or a source whose columns no longer fit. A dataset that is not live comes from its snapshot. Either way one quiet line under the cell says which copy it got and when that copy was saved. The line is HTML, not printed output, so a prediction or a comparison never reads its date as the cell's answer. The same recipe makes the snapshot (`dev/datasets.py --refresh`), so on the day a snapshot is saved the live copy and the saved one are the same table.
+
+**Live only where a browser may read the source.** A page can only fetch from a website that says other pages may (`Access-Control-Allow-Origin`). Our World in Data, the Paleobiology Database, the Marine Institute and NASA POWER do; the NASA Exoplanet Archive, JPL Horizons and Project Gutenberg do not, so those datasets are snapshots only, and their yaml says why. CO₂ is snapshot only by choice: its source file is 14 MB, too much to fetch on every run.
+
+**Provenance is checked, not hoped for.** Every file in `data/`, declared by a page or not, needs a yaml with its source, url, licence, snapshot date, what was trimmed, and a description; the build fails without them. Tracing the old files found two gaps: `the-montessori-method.txt` is Project Gutenberg #39863 with its header removed, and `democracy-and-education.txt` is the Internet Archive's OCR of a Google scan; neither yaml said so. The Paleobiology Database's own service states CC0, not the CC BY this work assumed until it asked.
+
+**The page's numbers name their copy.** `{{snapshot: life-expectancy}}` in prose becomes the date in the yaml, so a refresh cannot leave a page naming the old date. `life-expectancy.csv` was refreshed to Our World in Data's current release (1950 to 2023, and renamed and revised countries), and every page that quotes it was run against both copies and corrected: 17 cells' output changed with the data, and the answers in folds with them. Two pages changed more than a number: Nigeria's spread is no longer the widest of three, and the derivative page fits its line to 1990–2019, the thirty years before the pandemic, with 2020 and 2021 left as the next question. `kinds-of-data-and-honest-charts` moved to 2023, and its histogram's last edge to 95: `range(50, 90, 5)` had been quietly leaving out every place above 85.
+
+**A page carries its datasets.** A page's download now holds the datasets it declares, gzipped, so it works offline. A page must declare every file from `data/` it loads, or the build fails. The four Database Methods pages load an Our World in Data address, as they teach; `data/` keeps a copy of that exact file (`address: true`), which stands in when the address cannot be reached.
+
+**New datasets for the worlds.** Dinosaur genera and finds (Paleobiology Database, older than 66 million years, so early birds such as Archaeopteryx are in: a sets question of its own), tides at Dublin Port for March 2026 (Marine Institute), Dublin's daily weather for 2023–2025 (NASA POWER), sunrise and sunset in four places through 2026 (NASA/JPL Horizons, `dev/daylight.py`), and chapters and character names in six novels (`dev/book_counts.py`). Planetary data is `planet-orbits.csv`, already here. A transit network, a star catalogue and handwritten digits wait for the issues that need them.
+
+*Cost to change: moderate. The note's wording and the recipe steps are small; the pages that quote life expectancy name their copy by token, so a refresh moves their dates for free, and their numbers still need a run each time.*
+
+---
+
+**7.251 — A weekly check that every linked video is still there.** Josh, after 7.246 put 99 videos on the pages: "lets do a link check". `dev/check_video_links.py` asks YouTube's oEmbed endpoint about every video linked from a tutorial, a practice page (frozen releases included) or a site page, and `.github/workflows/video-links.yml` runs it every Monday, keeping one `video-link` issue open while anything has gone.
+
+**On a schedule, not in the tests.** A video disappears on YouTube's timetable, not on a commit's, so checking in `tests.yml` would turn an unrelated pull request red the week a video went, and a YouTube outage would turn every pull request red. A weekly issue reaches the same people without blocking anyone. For the same reason the check never counts a timeout or a 5xx as a dead link: those are retried, and if more than a quarter of the checks fail that way the run changes no issue at all.
+
+**Private is listed, not assumed.** oEmbed answers 401 both for a private video and for one whose creator turned embedding off, and the second still plays for a reader. So 401 is reported under its own heading for a person to open, and a video found to play goes in `EMBEDDING_OFF` in the script, with a date, so it does not reopen the issue every week. The first one there is the Random Noise Lights Out video on `solving-systems`.
+
+**The first run found two links that never worked.** Computerphile entries on `first-steps` and `three-ways-to-make-change` pointed at IDs YouTube has no record of, most likely written wrong when the pages were drafted. Both entries are removed rather than replaced: the channel is not on the list behind `planning/video-library/`, and both pages keep other reading.
+
+*Cost to change: low. One script, one workflow, one issue label. Removing the workflow stops the checks and leaves the script runnable by hand.*
+
+---
+
+**7.252 — 39 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
+
+Two kinds of fit. Some pages have a twin in another course (`repeating-yourself` and `doing-it-again`, `making-decisions` and `choosing-a-path`, `sorting-a-hand-of-cards` and `putting-things-in-order`), and take the same video, since a reader only meets one of the pair. The rest get a video aimed at one section: Cramer's rule for "One formula for every pair", gradient descent and curve fitting for the two derivative projects, point-to-line distance for "Did the ball hit the player?", Russell's paradox for "Where the picture stops helping". The Tantacrul critique 7.246 left out now goes on `critique-and-reflection`.
+
+Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the list teaches those subjects. Filling them needs channels added to the list first.
+
+*Cost to change: low, as for 7.246.*
+
+---
+
+**7.253 — A fifth Simulation tutorial: a ball stepped forward in time.** Josh, after the video library: "I like the stepping forward in time", with MinuteLabs and Sebastian Lague as the models rather than Primer. `stepping-forward-in-time` drops a ball from Liberty Hall with Euler's method, checks it against the physics formula, shrinks the time step, and then makes the ball bounce. It goes last in the Simulation series, after the queue, which already moves in steps of time.
+
+**Nothing on the page is random.** The four pages before it all use chance. This one shows the other half of simulation, a rule run forward from where the last step finished, and its practice page asks whether a seed would change anything (it would not).
+
+**The error is shown, not hidden.** The page keeps the order of the two lines that most readers write first (move the ball, then change its velocity), because that order makes the error easy to see: the ball does not move in its first second, lands late by about one time step, and a perfectly bouncy ball climbs from 60 metres to 80. The practice page swaps the two lines, finds the ball losing height instead, and says that most games choose that order. The tutorial could have taught the better order from the start; it would then have had no error worth looking at.
+
+**Outcomes.** CMPS-LO3 and LO13 as the main ones; LO7, because the formula and the loop are two ways to get answers from one model; LO11 touched, since checking a simulation against a known answer is validation, but not against the real world, which the air-resistance challenge only points at. The comparison with the darts page (ten times the steps for one more decimal place, against a hundred times the darts) is deliberate: it is the first time the series compares two numerical methods by cost.
+
+*Cost to change: `stepping-forward-in-time` is a new id, and its cell ids become a contract once a class has used it. Moving it within the series is one line in `courses/computational-methods.yaml`.*
+
+---
+
+**7.254 — A module of its own for readers who struggle with maths: The Zen of Slashes and Surds, with a calm check on every page.** Josh, 26 September 2026, first asking for a fractions lesson and an exponents lesson, then: "a separate maths preliminaries module that is for folks who struggle with maths ... fill in for primary and secondary school ... emphasize things like 'we aren't trying to memorize' and talk about 'gaining fluency' ... notice when our curiosity and optimism gets replaced by frustration, and work on calm as the goal." On the name: "the whole track is 'the Zen of Slashes and Surds' for both fractions and exponents". On roots and logarithms: "we can do the definitions or notation at the end after there has been shown need for the notation, and we can use some other notation first ... because surds and logs are often scary for people." The plan is `planning/outlines/zen-of-slashes-and-surds.md`.
+
+**A module, not a series inside another course.** The first proposal was a review series in the integrated maths course, with the Drake equation as its spine. A reader who arrives unsure of themselves in the subject, not only of a topic, needs smaller steps, more practice and a different stance than any existing course takes, so the module is `courses/zen-of-slashes-and-surds.yaml`. The Drake equation, *Fractions in the Wild* and the Grade 8 scale sheets become each strand's last page, a "view from the top", not its opening.
+
+**A departure from 7.229, on purpose.** 7.229 names a feeling rarely, and always with a route, across the site. This module names one more often, because noticing when curiosity has turned into frustration is part of what it teaches. What 7.229 protects is kept: every mention carries a route, and none is a verdict on the reader. What changes is how often, and why: a fixed "calm check" twice on every page, in the same words each time so it becomes a habit rather than a surprise. The words live once, in `setup/zen-calm-check.md`, and every page includes that file, so changing them changes every page. The rest of the site keeps 7.229 as it is.
+
+**Squiggles, letters and numbers are worlds.** The same problem can be written with shapes (♡, △, ★), with letters, or with numbers, and the reader chooses. The site's worlds mechanism (`docs/WRITING_TUTORIALS.md#worlds`) already does exactly this for contexts, so these pages use it for notation, with `numbers`, `squiggles` and `letters` as the world keys. Squiggles stay in prose and questions, since Python cannot use them as names.
+
+**Pictures are drawn, not typed.** `dev/graphics/zen.py` draws the pizzas, the fraction walls, the folded paper and the golden beads in the site's theme colours, so they read in light, dark and high contrast, and computes every count it shows. The pizza a reader can change is a matplotlib pie in the page's own cell, eight lines long, not a hidden helper: a cell that draws a picture is the Montessori material made runnable, and there is no way to hide a setup cell.
+
+**Friendly notation first for roots and logarithms.** In strand C, a root is *side(49)*, the side of a square of 49 beads, and a logarithm is *hops(10 → 1000)*, until the reader has used the friendly name often enough to want something shorter. The signs $\sqrt{\;}$ and $\log$ come last on each page, under a heading that says they mean exactly the friendly name.
+
+**Plainer than plain.** Josh, while the pages were being written: "lets make sure we use really simple friendly language (especially for ESL learners)". The pages go further than the style guide's plain-language rules: short sentences with one idea each, common words (*normal*, *scary*, *aloud*), every hard word explained where it appears, frustration included ("annoyed, tired or stuck"), no idioms or phrasal verbs, lists in place of long sentences, and one gap per line in a fill-in-the-blank question. The outline's "Language: plainer than plain" section has the list, for whoever writes the next page.
+
+**A pilot, with both halves.** Written now: `before-we-start`, `one-whole-many-slices`, `same-amount-different-names` and `the-long-way`, each with a practice page longer than the tutorial. Two fraction pages and one powers page, so a class meets both slashes and powers. The course is `status: beta`. What the pilot should answer: are the steps small enough, does the calm check help or annoy, and do readers use the notation switch.
+
+*Cost to change: the four page ids and their question ids become a contract once a class has used them. The calm check's words are one file. Moving the course on the front page is one line in `courses/index.yaml`.*
+
+---
+
+**7.255 — A dropdown gap starts on a blank "choose", not on the page's word.** Found while checking the Zen of Slashes and Surds pages (7.254) in a browser: every dropdown in a fill-in-the-blank question opened showing its own answer. `build.py` writes the page's word as the first `<option>`, so the browser selects it, and `buildQuestions()` then shuffled the options without touching which one was selected. The page's word moved, and stayed selected wherever it landed. Loading one page five times showed the answer selected in all 20 dropdowns.
+
+**The fix is in both places.** `build.py` now writes `<option value="" selected disabled>choose</option>` first, so a page with no JavaScript, or one whose runtime has not started yet, shows the blank too. The runtime shuffles every option except that one. A reader cannot pick "choose" back, so a saved value is always a real choice or nothing. One leftover: a record saved before the fix holds whatever the dropdown showed, which was usually the page's word whether or not the reader chose it, and it restores that way. It clears when the reader picks again.
+
+**Why not `selectedIndex = -1`.** A select with nothing selected is an empty box with no word in it, which reads as broken. "choose" says what to do.
+
+*Cost to change: low. One line in `build.py`, one in the runtime (and the rebuilt `standalone.bundle.js`), and a browser test that the dropdown starts blank. Every page with a dropdown gap changes on the next build; no saved work moves.*
+
+---
+
+**7.256 — Say it directly: a style rule against clever framing, and a sweep of every page.** Josh, 26 September 2026, after a review of the recent pull requests: "those gerunds and weird indirect framing are just not the same as simple friendly prose… lets see if we can get rid of all those!"
+
+**What the review found.** Five readers, each given a different group of recent pages (Programming Foundations, both halves of OOP, the long Dewey Track pages, and the newest merges), found the same drift on their own. Sentences had not grown longer: the recent groups average 12.5 to 14 words, against a site median of 12.4, and dashes were nearly gone. The drift was in how sentences were built. Colons carried the main point where dashes used to (about 130 to 170 mid-sentence colons in each OOP half). Paragraphs ended on a saying ("'has a' bends where 'is a' breaks"). Verbs became nouns ("the deciding… kept apart from the asking"). Sentences put the point last ("What changes is where…") or had no verb at all. Planning words reached students ("This one has no top"). Quiet verdicts slipped past the #376 sweep ("not yet", "a fair answer", "the tests are the judge"). Each reads well to a native speaker and asks a second-language reader to read twice.
+
+**The rule.** `PEDAGOGICAL_STYLE_GUIDE.md#say-it-directly`: somebody or something does something, in that order. It lists the eight shapes with an example of each from a real page, and a line joins the checklist. The quiet verdicts join `#no-verdicts`, and the phrasal verbs that kept coming back (*work out*, *give back*, *go through*, *reach in*, *throw away*, *out of order*) join `#plain-language`. Length was left alone: 7.244 still holds, and the long Dewey Track pages are long mostly because of their guess-run-explain cycles.
+
+**One stock line.** "One way through; yours may differ and work as well." sat in 75 answer folds on 29 pages: an idiom with a semicolon in it. It is now "Here is one answer. Yours may be different and work too." everywhere.
+
+**A fact the review turned up.** Four pages (the shared "When a cell does not do what you expect" section, `first-steps-cm-practice`, `four-questions` and the FAQ) said Reset brings back the starter code. Reset (↺) clears the output; Clear (↻) puts the code back (`build.py`, `dl-btn-reset` and `dl-btn-clear`). 7.249 fixed the same sentence on `working-with-tables` and missed these.
+
+**The sweep.** Every current page in `tutorials/` was read by one of eight readers against the rule, who rewrote only the sentences that break it. Code, frontmatter, headings' wording (their slugs are `covers:` keys), cell ids and frozen releases were not touched; Title Case headings became sentence case. No `version:` bump, since no cell changed. Four more readers then read the whole diff against the old text, looking only for damage: about 120 sentences, one in forty, had come out ungrammatical, lost a reason (why gradient descent stops in the wrong valley), or changed a fact (a binary search that "removed" names it only skipped). Those were fixed. A rewrite that is simpler and less true is the cost this rule has to watch for.
+
+**Left for later.** Four sideline sections on long Dewey Track pages could move to a context page (7.208): the Timsort aside in `racing-the-sorts`, "Three weights for a curve" in `rules-with-letters-in-them`, the Pascal detour in `machines-that-take-a-number`, and the $x^2$ against $2^x$ race in `drawing-a-rule`. The data-copy note is written by hand on 10 pages in 5 wordings, and its runtime strings in `assets/tutorial-runtime.js` and `assets/tutorial_tools.py` need the same plain rewrite and a vendor rebuild. Glossary files were not swept. Nor were the Zen of Slashes and Surds pages (7.254), which reached `main` during the sweep, or the Data, Chance and Logic pages that #385 rewrites; each should be read against `#say-it-directly` on its own.
+
+*Cost to change: none for the rule. The sweep is prose only; a rewritten sentence can be changed back by hand.*
+
+---
+
+**7.257 — Data, Chance and Logic is reordered so each page builds on the one before, plays each game before counting it, and draws on the worlds' real data.** The content issue (#325), part of #306.
+
+**The order.** Sets, Venn diagrams, logic, counting, probability, three doors, statistics, charts, and a new making task, `a-chart-that-tells-the-truth`. Events are sets, so probability now comes after the pages that teach union, intersection and complement, and uses them by name: "or" is a union, and the addition rule is inclusion-exclusion with probabilities. With Venn diagrams before logic, a term had to be introduced where it is first used: the complement on Venn diagrams, De Morgan's laws, XOR and the truth table on logic. The Venn page states the two laws on sets without naming them, and the logic page names them. `dev/curriculum_map.py`'s "used before it was introduced" table is how those were found.
+
+**Play it, then count it.** `three-doors` was already guess, play once, play ten thousand times, read the line that makes the difference, count the cases, change the host, and it is now the pattern for every probability page. `what-are-the-chances` starts with ten thousand rolls of two dice and the histogram before the 36 outcomes. The medical test moved from the practice page into the tutorial: a million people simulated, then the same million counted as a table (natural frequencies), then $P(B \mid A)$, and each world asks one conditional probability both ways round (Jurassic given Portugal against Portugal given Jurassic). `counting-carefully` lists the cases with `itertools` before each formula, and answers its opening dinner-table question at the end. `three-doors` gets a practice page with the three hosts the issue named (a favourite door, an offer only sometimes, four doors) and a glossary.
+
+**The data pages use the worlds' own data.** The quiz scores are gone. The statistics page's prose world is the exoplanet archive, and it begins with where the data comes from: the file of 6,372 planets has 507 the size of the Earth and none of them with a year of 200 to 500 days, because a small planet with a long year is the hardest kind to find. That sampling bias is the thread through both pages. Drawing the planets' orbits against their radii showed a flat line near 13 Earth radii: radial-velocity planets whose radius the archive estimated from their mass. They are 48 of the 59 planets at the mode, 12.8, so the page says the mode reflects how the numbers were made; an earlier draft blamed rounding. The ideas that lived only in answer folds are short "go further" sections: percentiles and box plots, and the binomial distribution, on the statistics page; the central limit theorem by simulation (the means of 50-planet samples make a bell, though the radii have two humps), and the 68–95–99.7 rule, which the sample means follow and the orbits break, on the charts page. The misleading-axes problems moved into the charts tutorial, on real numbers: 260 and 245 planets drawn four to one; "discoveries collapse by 87%" from a window starting at Kepler's 2016; the dinosaur genera's unfinished 2020s.
+
+**Every page has blocks and a closer that belongs to it.** Predict blocks where the misconceptions are, tasks with `solution` and `inputs` in each world, practice pages in blocks with problems from earlier pages, and a "Looking back" question about that page with a challenge for the Notebook. About twenty card problems that repeated one kind of task were cut; one card example stays, for drawing without replacement.
+
+**The mixed set** covers all nine pages, three doors included (the three prisoners), and the making task (a headline drawn from two small samples on a cut axis).
+
+**Every number was run.** Each page was run with its solutions in place of its starters, one world at a time, and every figure in the prose checked against the output. That found a password figure a thousand times too large, a decade-pace claim that was wrong, and a narrator who does have a row in the data after all.
+
+**`dev/curriculum_map.py` finds "Where to read more" whatever its capitals.** It matched only "Where to Read More", which 35 pages use, so the titles in the other hundred-odd pages' bibliographies were counted as terms (*the python tutorial* in five pages). The build already matched the heading case-insensitively; the map now does too, with a test.
+
+**Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept.
+
+*Cost to change: moderate. The order lives in the course file and topic groups; the pages' cross-references assume it, so moving logic back before Venn diagrams would mean moving the names of the two laws back as well. Cell ids are new throughout, which is free until 2 October.*
+
+---
+
+**7.258 — Matrices start from pictures, and multiplication is one move after another.** The content issue (#326), part of #306.
+
+**The order.** A grid of numbers, a matrix moving a picture, multiplication, undoing, systems, a new NumPy page (`matrices-in-numpy`), Markov chains, and a making task, `a-filter-or-a-sprite`, with a mixed set, `mixed-matrices`. The rules used to be taught on abstract $A$, $B$ and $C$, with the geometry arriving on the third page. Composition, which is the reason row-times-column exists, never appeared in two dimensions.
+
+**Pictures first.** `grid-of-numbers` adds, scales and transposes pictures, and keeps the diamond and the `IndexError` from scaling past the ramp as a planned surprise. `what-a-matrix-does-to-a-picture` moves an F, because the unit square hides a flip, and has a matching game and one playground cell in place of four copied plotting cells. `multiplying-grids` starts from "a shear, then a quarter turn: which one matrix does both?", and the row-times-column rule comes out of that, with the `zip` warning kept. `undoing-it` measures the F's area with the shoelace formula, lets the quarter turn break the $a \times d$ guess before $ad - bc$ appears, and shows the flip's $-8$ without `abs`.
+
+**The reader does the elimination.** `solving-systems` opens with two lines crossing, solved with the inverse, then draws parallel lines and one line drawn twice, and links a determinant of 0 to the F flattened onto a line: a point off that line is never reached, and a point on it is reached by a whole line of points. The site has no Parsons block, so the row operations come as shuffled lines in an ordinary cell. Run as they are, they stop with a `NameError`, and the error says what has to come first. The reader then writes `eliminate(M)` as a toolkit cell. Back substitution and `solve(M)` come with it, so `solve` is there on the NumPy page and in the Markov practice.
+
+**NumPy as a check, not a replacement.** `matrices-in-numpy` checks each of the reader's functions against its one line in NumPy, shows `A * B` beside `A @ B`, times a 200×200 multiply both ways, solves a 5×5 system chosen answer-first, and moves a planet 1,000 steps with `matrix_power`.
+
+**Markov chains.** The page names the switch from a column times a matrix to a row times a matrix, splits its word-counting cell into three, and adds a chain built from real data: NASA's daily sunlight for Dublin, with each day bright or dull against the middle day of its own month. A bright day is followed by another 61% of the time, and a dull day by another 62%. After two bright days, the next is bright 65% of the time, and after a dull day then a bright one, 55%: the page says this, because it is where a one-day chain falls short.
+
+**Solutions carry their own setup.** The build runs each solution after the page's starter cells, where a toolkit function from an earlier page is a stub. A world solution that calls `transform`, `inverse` or `solve` therefore includes the matching file from `setup/matrices/`, which holds the reference versions.
+
+**Found while checking.** Every page was run with its solutions, one world at a time. That found a brightness claim the matrix contradicted, a flip described as a turn, two claims about the Plough that were not true, "the one kind of move where order does not matter" (there are others), and an explanation of the $a \times d$ guess that did not say which way it was off.
+
+*Cost to change: moderate. The order lives in the course file and topic groups. Cell ids are new throughout, which is free until 2 October; after that, the toolkit cell ids (`grid-scale`, `matrix-move`, `matrix-dot-multiply`, `matrix-det-inverse`, `systems-eliminate`, `systems-solve` and the rest) are keys for the reader's saved functions on every later page.*

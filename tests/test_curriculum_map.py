@@ -134,6 +134,24 @@ class TestProseExcludesTheBibliography:
         assert "actual term" in prose
         assert "getting sorted" not in prose.lower()
 
+    def test_the_heading_is_found_whatever_its_capitals(self, tmp_path, monkeypatch):
+        # Most pages write "Where to read more"; matching only the capitalised
+        # form counted every title in their bibliographies as a term.
+        (tmp_path / "mod").mkdir(parents=True)
+        (tmp_path / "mod" / "sample.md").write_text(
+            "# Sample\n\nSome *actual term* here.\n\n"
+            "## Where to read more\n\n"
+            "Stand-up Maths (2020). *The Datasaurus Dozen.*\n"
+        )
+        monkeypatch.setattr(cm, "TUTORIALS", tmp_path)
+        tutorial = cm.Tutorial(
+            slug="sample", title="Sample", course="mod", series="s", order=1,
+            sections=[],
+        )
+        prose = cm.prose_of(tutorial)
+        assert "actual term" in prose
+        assert "datasaurus" not in prose.lower()
+
 
 class TestStatus:
     def covered(self, **kw):

@@ -95,6 +95,11 @@ counterpart, what the tutorials it writes actually build into, is
 
 *My Notes:* `test_my_notes.py` — the cross-tutorial notes/highlights page.
 
+*Datasets:* `test_loading_data.py` — a live source that answers, one that
+fails, and a downloaded copy with no network (#324). The live source is
+answered by the test, never fetched. The order and shaping underneath are
+in `tests/test_tutorial_tools.py`'s `TestDatasets`.
+
 *Everything else:* `test_multi_course_pages.py`, `test_student_notes_prose_only.py`.
 
 *Cross-cutting properties, each owning one thing completely rather than

@@ -24,10 +24,10 @@ On this page we:
 - meet codes that fix a flipped bit, not only notice it
 - count our way to the moment the internet ran out of addresses
 
-> **The space we're in.** The real world, which is messier than a
-> page of problems. Each story names the assumption its maths rests on,
-> because in the real world that assumption is where things go right or
-> wrong.
+> **The space we're in.** We are in the real world, which is messier
+> than a page of problems. Each story names the assumption its maths
+> rests on, because that assumption decides whether the maths works in
+> the real world.
 
 ## Three doors and thousands of letters
 
@@ -39,7 +39,7 @@ where the car is, opens one of the other two and shows you a goat. Then
 he asks: do you want to switch to the last closed door?
 
 Most people say it makes no difference, because two doors are left and
-one hides the car. In fact, switching wins two times in three. A
+one hides the car. In fact, if you switch, you win two times in three. A
 statistician, Steve Selvin, wrote about the puzzle in two letters to the
 journal *The American Statistician* in 1975. The second one called it
 the Monty Hall problem, after the host of the American game show
@@ -51,13 +51,13 @@ magazine, and she said: switch. Thousands of readers wrote in to say she
 was wrong, and some of those letters came from people with doctorates in
 mathematics. She was right.
 
-Why did so many careful people get it wrong? The usual argument treats
+Why did so many careful people disagree with her? The usual argument treats
 the two closed doors as the same. They are not, because the host's
 choice was not random. He could never open the door with the car. His
 choice carries information, and the answer changes because of it.
 
-The story also shows a way to settle an argument that does not depend
-on who argues best: play the game many times and count, the way
+The story also shows a way to settle an argument without depending on
+who argues best. Play the game many times and count, the way
 `simulate` does. If you want to do exactly that, the page
 [The Monty Hall problem: three doors and a simulation](tutorial:three-doors)
 plays it ten thousand times in Python, and then changes the host to see
@@ -72,7 +72,7 @@ more than a half. There are only 365 birthdays, but there are 253 pairs
 of people, and any one pair can match.
 
 Computers meet the same problem with a different kind of birthday. A
-*hash* is a short code worked out from a piece of data, such as a file
+*hash* is a short code calculated from a piece of data, such as a file
 or a password, so that the same data always gives the same code. A
 program can compare two short hashes much faster than it can compare two
 long files. When two different pieces of data get the same hash, that is
@@ -104,7 +104,7 @@ trouble starts at about the square root of the number of possible
 values: $\sqrt{365}$ is about 19, and $\sqrt{2^{32}}$ is $2^{16}$, which
 is 65,536.
 
-That is why hashes that must never collide are long. Git, the program
+So hashes that must never collide are long. Git, the program
 many programmers use to keep the history of their code, names every
 saved version by a hash of 160 bits, written as 40 hexadecimal digits.
 By the square-root guide, a collision by chance only becomes likely at around
@@ -115,13 +115,13 @@ $2^{80}$ versions, and that is far more than all the code ever written.
 This story goes with [Bits that flip](tutorial:bits-that-flip).
 
 A parity bit notices that one bit has flipped, but it cannot say which
-one. The only thing a computer can do is ask for the message again.
+one. The computer can only ask for the message again.
 
 In the late 1940s, Richard Hamming worked at Bell Labs, in the United
 States, on a computer built from electrical switches called relays. On
 weekdays, when the machine found an error, it stopped and waited for an
-operator. At weekends there was no operator, so it dropped the job and
-moved on to the next one. Hamming ran his work at weekends, and more
+operator. At weekends there was no operator, so it stopped the job and
+started the next one. Hamming ran his work at weekends, and more
 than once came back on Monday to find nothing done. So he asked a
 better question: if a machine can notice an error, why can it not fix
 one? In 1950 he published codes that do exactly that. An
@@ -157,7 +157,7 @@ print("decoded: ", decoded)
 ```
 
 The third group arrived as `011`, and the vote still says 1, so the
-message comes back as `1011`. The price is high: every bit is sent
+decoded message is `1011`. This costs a lot. Every bit is sent
 three times. Hamming's codes are much cheaper. His best-known one adds
 three check bits to every four bits of message, and still fixes any one
 flipped bit. Each check bit is a parity bit, but over a different group
@@ -169,9 +169,9 @@ Codes like these are inside many things you use.
 - **QR codes.** A QR code uses a family called *Reed–Solomon codes*. The
   person making the code chooses one of four levels. At the lowest,
   about 7% of the code can be damaged and it still reads. At the
-  highest, about 30% can. That is why a QR code with a logo printed
-  over its middle still works: the logo is damage the code was built to
-  survive.
+  highest, about 30% can. So a QR code with a logo printed over its
+  middle still works. The code treats the logo as damage, and it was
+  built to survive that much.
 - **Music CDs** use Reed–Solomon codes too, so a scratched disc can
   often still play.
 - **Deep space.** The two Voyager probes were launched in 1977. For the
@@ -180,9 +180,9 @@ Codes like these are inside many things you use.
   A signal from that far away is very weak by the time it reaches Earth,
   and without codes that fix errors, a great deal of it would be lost.
 
-Each of these rests on an assumption, as the parity bit did: that only
-so many bits are damaged. Scratch more than a third of a QR code, and no
-code can bring it back.
+Each of these assumes, as the parity bit did, that only a few bits are
+damaged. Scratch more than a third of a QR code, and no code can repair
+it.
 
 ## Running out of numbers
 
@@ -211,7 +211,7 @@ easier to read. Python ignores them.)
 There are about 4.3 thousand million IPv4 addresses, which is about half
 an address for every person alive, before counting phones, laptops,
 printers and servers. The people who build the internet knew for years
-that the addresses would run out. In February 2011, the organisation that hands out the
+that the addresses would all be used. In February 2011, the organisation that gives out the
 world's addresses gave away its last free blocks of them. Today much of
 the internet uses IPv6, whose $2^{128}$ addresses are a number 39 digits
 long. Adding 96 more bits did not add 96 more addresses. It multiplied
@@ -229,11 +229,17 @@ made for a superstition, and it has stayed ever since.
 ## Where to read more
 
 Rosenhouse, J. (2009). *The Monty Hall Problem: The Remarkable Story of
-Math's Most Contentious Brain Teaser*. Oxford University Press. A whole
-book on the three doors, and on the many versions where the answer
+Math's Most Contentious Brain Teaser*. Oxford University Press. This
+whole book is about the three doors, and about the many versions where the answer
 changes.
 
 Hamming, R. W. (1950). Error detecting and error correcting codes.
-*Bell System Technical Journal*, 29(2). The paper that started the
+*Bell System Technical Journal*, 29(2). This paper started the
 subject. Its opening pages explain the idea in words, before the maths
 begins.
+
+PurpleMind (2025). *This Coding Mistake Cost $370 Million.*
+<https://www.youtube.com/watch?v=Qehl4h5MDsg>. In 1996, a new rocket
+exploded less than a minute after launch, because a number grew too big
+for the space the program kept for it. This video tells the story. Twenty
+minutes.

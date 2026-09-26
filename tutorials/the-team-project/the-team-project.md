@@ -58,7 +58,7 @@ anything where the interesting part is a library you have not used yet.
 
 ## Three releases, not one deadline
 
-Three releases are what make this a project and not an assignment. A
+Three releases make this a project and not an assignment. A
 *release* is a version of your program that somebody outside the team
 could use on the day it comes out. It is a working thing, however little
 it does. A plan is not a release, and neither is most of a program.
@@ -67,7 +67,7 @@ it does. A plan is not a release, and neither is most of a program.
 |---|---|---|
 | **Release 1** | The smallest thing that does anything at all | Does the shape of this work? |
 | **Release 2** | The main feature, done properly | Can we build the thing we described? |
-| **Release 3** | Finished, tidied, and documented | Would we hand this to somebody? |
+| **Release 3** | Finished, tidied, and documented | Would we give this to somebody? |
 
 **Every release:**
 
@@ -76,7 +76,7 @@ it does. A plan is not a release, and neither is most of a program.
 - [ ] has a line in the change log saying what changed;
 - [ ] is kept after the next release comes out.
 
-**Release 1 is the one most teams get wrong.** It should feel almost too
+**Most teams make Release 1 too big.** It should feel almost too
 small to show anyone. Here is a Release 1 of a text adventure: two rooms,
 one way between them, and a way to quit.
 
@@ -108,8 +108,8 @@ while True:
 print("Goodbye.")
 ```
 
-That is enough. It proves the pieces connect: the rooms, the loop, the
-asking, the moving. Release 2 might add rooms, things to pick up, and a
+That is enough. It proves that the pieces work together: the rooms, the
+loop, the code that asks, and the code that moves the player. Release 2 might add rooms, things to pick up, and a
 way to win. Release 3 adds docstrings, tests for the parts that can be
 tested, and a change log a stranger could follow. Because Release 1 was
 so small, you find out in week two, not week six, when two people's code
@@ -132,14 +132,14 @@ ready for it.
 3. **Write that agreement down,** in the interface agreement from
    [From cells to a program](tutorial:from-cells-to-a-program#templates-for-a-team).
    Now both people can build against it, and neither has to wait.
-4. **Tell the team what you are working on.** Two people editing the same
-   file at the same time is the most common way a week's work is lost. A
+4. **Tell the team what you are working on.** A week's work is most often
+   lost when two people edit the same file at the same time. A
    short message like "I'm in the scoring code this evening" prevents
    nearly all of it.
 
 The agreement in steps 2 and 3 is worth more than any amount of planning
-about features. It is what lets four people work at the same time, instead
-of one after another.
+about features. It lets four people work at the same time, instead of
+one after another.
 
 ## Reviewing each other's work
 
@@ -181,7 +181,7 @@ answer, in your own words:
 
 Take the last one seriously. Building something with three to five people
 is the closest this course comes to how software is made in real jobs, and
-most of what people take away from it is something they watched somebody
+most of what people learn from it is something they watched somebody
 else do.
 
 ## A last thing
@@ -192,13 +192,20 @@ because they think everybody else understands. It happens in professional
 teams all the time, and it is the most expensive thing that goes wrong.
 
 If you are stuck, say so on the same day. If somebody in your team has
-gone quiet, ask them how they are getting on. Neither is only a small
-kindness: together, they are the skill this learning outcome is about.
+stopped talking to the group, ask them how their work is going. These
+are more than small kindnesses. Together, they are the skill this
+learning outcome is about.
 
 ## Where to read more
 
 Fowler, M. (2006). *Continuous Integration*.
-<https://martinfowler.com/articles/continuousIntegration.html>. The
-professional version of "release early, release small": merging and
-testing everyone's work together all the time, rather than once at the
-end.
+<https://martinfowler.com/articles/continuousIntegration.html>. This
+article describes the professional version of "release early, release
+small". Teams merge and test everyone's work together all the time,
+rather than once at the end.
+
+Tantacrul (2025). *How We Designed Audacity 4.*
+<https://www.youtube.com/watch?v=QYM3TWf_G38>. This video shows how a
+team changed a program millions of people already use, a little at a
+time, and then released a new version. It is about fifty-three minutes
+long.

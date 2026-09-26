@@ -22,13 +22,12 @@ That can sound like a way of avoiding the question. Calculus began, in
 the 1600s, with numbers that were "infinitely small": smaller than any
 number you could name, but still not zero. For about two hundred years,
 mathematicians were uneasy about those numbers. The philosopher George
-Berkeley called them "the ghosts of departed quantities". Limits were
-the way out. A limit says the same thing using only ordinary numbers,
-and limits turned out to be one of the most useful ideas in
-mathematics. They are the one idea we still need before we can say how
+Berkeley called them "the ghosts of departed quantities". Limits solved
+this problem. A limit says the same thing using only ordinary numbers.
+Limits became one of the most useful ideas in mathematics. They are the one idea we still need before we can say how
 fast something is changing at a single instant.
 
-The good news is that a computer makes limits easy to see. We can try
+A computer makes limits easy to see. We can try
 numbers and watch what happens.
 
 On this page we:
@@ -127,20 +126,20 @@ approaches 1 is 2.** In symbols, we write:
 
 $$\lim_{x \to 1} f(x) = 2$$
 
-The sentence those symbols stand for is: *we can make the output as
-close to 2 as we like, by taking the input close enough to 1.*
+Those symbols mean *we can make the output as close to 2 as we like, by
+taking the input close enough to 1.*
 
 Look at what that sentence does *not* say. It does not say that the
 function equals 2 at 1. The function has no value at 1.
 
 **A limit is about the numbers near a point. It says nothing about the
 point itself.** Mathematicians call the numbers near a point its
-*neighbourhood*. This is the whole idea, and it is why a limit can
-describe places a function cannot reach.
+*neighbourhood*. This is the whole idea. It lets a limit describe
+places a function cannot reach.
 
 ### Both sides have to agree
 
-Here is a function that jumps: it gives −1 for every negative number,
+Here is a function that jumps. It gives −1 for every negative number,
 and 1 for zero and every positive number. What happens as we come
 towards 0 from each side?
 
@@ -161,7 +160,7 @@ for step in [0.1, 0.01, 0.001]:
 
 Coming towards zero from the left, the answers stay at −1. From the
 right, they stay at 1. The two sides do not agree, so there is no single
-number the function is heading for.
+number the function is moving towards.
 
 So **this limit does not exist.** The calculation is not hard. The
 question has two different answers, depending on which side we come
@@ -222,9 +221,8 @@ You have met this shape twice before. In
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
 a vertical line had no slope. In
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle),
-the tangent function had no value at 90 degrees. The same fact sits
-under all three: we are dividing by something that is shrinking to
-nothing.
+the tangent function had no value at 90 degrees. All three have the
+same cause. We are dividing by something that is shrinking to nothing.
 
 ### A limit at infinity
 
@@ -238,7 +236,7 @@ for x in [1, 10, 100, 1000, 100000, 10000000]:
     print(f"1/{x:<10} = {1 / x}")
 ```
 
-As $x$ grows, $\dfrac{1}{x}$ heads for 0 and never gets there. That is a
+As $x$ grows, $\dfrac{1}{x}$ moves towards 0 and never gets there. That is a
 limit too. A *limit at infinity* is the value a function settles on as
 its input grows without end. Here, the limit as $x$ approaches infinity
 is 0:
@@ -260,7 +258,7 @@ for n in [1, 10, 100, 1000, 100000]:
 ```
 
 It settles on 3. We could have guessed this. When $n$ is very large, the
-$+5$ and the $+2$ are tiny next to $3n$ and $n$. What is left is
+$+5$ and the $+2$ are tiny next to $3n$ and $n$. That leaves
 $\dfrac{3n}{n}$, which is 3.
 
 ## Why we need limits
@@ -291,8 +289,8 @@ print()
 print("Average speed over that second:", fallen(2) - fallen(1), "m/s")
 ```
 
-That is the *average* speed over a whole second. The ball was speeding
-up the whole time, so this is not its speed at any one moment.
+That is the *average* speed over a whole second. The ball was getting
+faster the whole time, so this is not its speed at any one moment.
 
 So let's make the time interval smaller. The function `average_speed`
 below divides the distance fallen by the length of the interval, which
@@ -310,7 +308,7 @@ for gap in [1, 0.5, 0.1, 0.01, 0.001, 0.0001, 0.00001]:
     print(f"   gap of {gap:<9} : {average_speed(1, gap)}")
 ```
 
-The numbers are heading for 9.8, and they never arrive. We cannot set
+The numbers are moving towards 9.8, and they never arrive. We cannot set
 the gap to zero, because that gives $\dfrac{0}{0}$.
 
 **But the limit exists, and it is 9.8 m/s.** That is the speed at the
@@ -318,7 +316,7 @@ instant $t = 1$. It is a real answer to a question that ordinary
 arithmetic could not answer.
 
 The graph shows the same thing. The gap gets smaller as we move to the
-right, and the average speed closes in on the red line at 9.8.
+right, and the average speed gets closer to the red line at 9.8.
 
 ```python exec
 id: why-anybody-needs-this-3
@@ -337,10 +335,10 @@ ax.set_title("Closing in on the speed at one instant")
 
 ### Your turn
 
-1. How fast is the ball travelling three seconds after it is let go? Use
+1. How fast is the ball travelling three seconds after it is released? Use
    `average_speed` with `t = 3` and smaller and smaller gaps.
 2. Now try `t = 0`. Does your answer make sense for a ball that has only
-   just been let go?
+   just been released?
 
 ```python exec
 id: your-turn-2
@@ -381,12 +379,12 @@ In double-precision floating point, **`1 + 1e-16` is the same number as
 `x - 1` on the bottom is exactly zero, and the division fails.
 
 Look at *how* it failed. The answers did not drift away from 2. They
-printed 2.0, and then the calculation stopped. That is the kind way to
+printed 2.0, and then the calculation stopped. This is a helpful way to
 fail, because you cannot miss it.
 
-**The mathematics is fine. The arithmetic ran out.** The limit is still
-2. Nothing about the function changed at `1e-16`. What changed is that
-the computer could no longer tell `1 + 1e-16` apart from `1`.
+**The mathematics works. The computer's arithmetic does not have enough
+digits.** The limit is still 2. Nothing about the function changed at
+`1e-16`. The computer could no longer tell `1 + 1e-16` from `1`.
 
 The ball's speed from earlier fails in a less kind way. The cell below asks
 `average_speed` for the speed at $t = 3$, with smaller and smaller gaps.
@@ -402,13 +400,14 @@ for gap in [1e-6, 1e-10, 1e-12, 1e-14, 1e-15, 1e-16]:
 The answers drift away from 29.4, a little and then a lot. At `1e-16`,
 the cell prints 0.0, with no error at all. `3 + 1e-16` is stored as 3,
 so the two distances are the same number, and the top of the fraction
-is exactly zero. The speed is still 29.4. The arithmetic ran out again,
-only more quietly this time, and a wrong number that looks like an
-answer is much harder to catch than a calculation that stops.
+is exactly zero. The speed is still 29.4. The arithmetic ran out of
+digits again, but this time there was no error. A wrong number that
+looks like an answer is much harder to catch than a calculation that
+stops.
 
-You met the same floor on the practice page for
+You met the same problem on the practice page for
 [Variables, data types and text](tutorial:storing-and-computing). There,
-`0.1 + 0.2 == 0.3` came out `False`, because two floats that should have
+`0.1 + 0.2 == 0.3` gave `False`, because two floats that should have
 been equal were not.
 
 So we use the numbers to *see* what the answer is, and we use algebra to
@@ -418,7 +417,7 @@ approximation anywhere.
 
 ## Reflection
 
-A limit is the value a function is heading towards, whether or not it
+A limit is the value a function is moving towards, whether or not it
 ever gets there.
 
 **A limit is about the numbers near a point, not the point itself.** The
@@ -428,24 +427,29 @@ interesting cases are exactly the ones where it has none.
 **Both sides have to agree**, or there is no limit.
 
 **Some limits do not exist.** On this page we met two ways that
-happens. The two sides can head for different numbers, as the jump did.
-Or the values can run away to infinity, as $\dfrac{1}{x}$ did near 0.
+happens. The two sides can move towards different numbers, as the jump
+did. Or the values can grow without end, as $\dfrac{1}{x}$ did near 0.
 
-**Limits are what make the next tutorial possible.** "How fast is it
+**Limits make the next tutorial possible.** "How fast is it
 changing right now?" is $\dfrac{0}{0}$ if we ask it directly. A limit
 makes it a question we can answer. That is the subject of
 [Derivatives: the rate of change of a curve](tutorial:rates-of-change).
 
-**Numbers show you the answer; algebra proves it.** And past about
+**Numbers show you the answer. Algebra proves it.** And past about
 fifteen decimal places, the numbers stop showing you anything at all.
 
 In a few sentences, in your own words: what is the difference between
 "$f(1) = 2$" and "the limit of $f(x)$ as $x$ approaches 1 is 2"?
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2017). *Essence of Calculus, Chapter 7:
 Limits, L'Hôpital's Rule, and Epsilon Delta Definitions.*
-<https://www.youtube.com/watch?v=kfF40MiS7zA>. The formal definition
-behind the "getting closer without arriving" this page does by trying
-numbers.
+<https://www.youtube.com/watch?v=kfF40MiS7zA>. This video gives the
+formal definition behind "getting closer without arriving". This page
+only tried numbers.
+
+Up and Atom (2020). *3 Paradoxes That Gave Us Calculus.*
+<https://www.youtube.com/watch?v=EbHqtENNnSY>. Jade Tan-Holmes tells three
+old puzzles about the infinitely small, and shows how trying to answer
+them led to the limit. It is about fourteen minutes long.

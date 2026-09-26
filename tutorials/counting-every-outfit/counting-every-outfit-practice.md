@@ -9,8 +9,8 @@ version: 2026.09.25.1
 
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
-anything. An answer shows one way through. Yours may be different, and
-work as well.
+anything. An answer shows one way. Yours may be different and work
+too.
 
 Your toolkit is loaded on this page, so `all_pairs`, `total` and
 `product` are ready to use, and so is everything from earlier pages.
@@ -34,7 +34,7 @@ are, and which one comes first and which last, before you run it.
 [('light', 'small'), ('light', 'large'), ('dark', 'small'), ('dark', 'large')]
 ```
 
-Four pairs, $2 \times 2$. The first is `('light', 'small')` and the
+There are four pairs, $2 \times 2$. The first is `('light', 'small')` and the
 last is `('dark', 'large')`. Every pair with `"light"` comes first,
 because the first list is the outer loop inside `all_pairs`.
 
@@ -104,7 +104,7 @@ print(len(all_pairs(die, die)))
 ```
 
 **5. Make.** A message goes from your laptop to a website in two hops.
-First it passes through one of 3 routers, boxes that pass messages on,
+First it passes through one of 3 routers, boxes that forward messages,
 called A, B and C. Then it passes through one of 2 more, X and Y. List
 every route with `all_pairs`, and count them.
 
@@ -118,10 +118,10 @@ print(routes)
 print(len(routes))    # 6
 ```
 
-Six routes: AX, AY, BX, BY, CX, CY. Every first router can be followed
+There are six routes: AX, AY, BX, BY, CX, CY. Every first router can be followed
 by either second one, so $3 \times 2 = 6$. The internet has many more
 routers than this, and many more routes, which is one reason a message
-still gets through when one router fails.
+still arrives when one router fails.
 
 </details>
 
@@ -154,11 +154,10 @@ for first, second in all_pairs(die, die):
 print(sevens)    # 6
 ```
 
-Six outcomes: (1, 6), (2, 5), (3, 4), (4, 3), (5, 2) and (6, 1). No
+There are six outcomes: (1, 6), (2, 5), (3, 4), (4, 3), (5, 2) and (6, 1). No
 other total has as many, which is why 7 matters so much in dice games.
-Listing the outcomes and then counting the ones we want is the start of
-probability, on
-[How likely is it?](tutorial:how-likely-is-it).
+Probability, on [How likely is it?](tutorial:how-likely-is-it), starts
+by listing the outcomes and counting the ones we want.
 
 </details>
 
@@ -183,7 +182,7 @@ print(len(every_style(fonts, sizes)))    # should be 6
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Which styles does the function give back? Print the list, not only
+1. Which styles does the function return? Print the list, not only
    its length.
 2. Which loop is the `return` line inside?
 3. What happens to a function when it reaches `return`?
@@ -200,7 +199,7 @@ level further, inside the inner loop?
 
 The `return` line is pushed in under the outer loop. So after the first
 font, serif, has met every size, the function returns, and sans is never
-used. It gives 3 styles, not 6. Schlomo's loops did their job; one line was
+used. It gives 3 styles, not 6. Schlomo's loops did their job. One line was
 four spaces too far in.
 
 `return` must sit outside both loops, level with `for font`:
@@ -241,8 +240,8 @@ laptops = len(screens) * len(memory)
 print(laptops)    # 12
 ```
 
-`+` would fit "a new screen or more memory, not both": 7
-choices. And multiplies, or adds.
+`+` would fit "a new screen or more memory, not both", which
+gives 7 choices.
 
 </details>
 
@@ -259,8 +258,8 @@ print(three[0])
 
 <details class="dl-answer"><summary>answer</summary>
 
-$2 \times 2 \times 2 = 8$ outcomes. The first is `(('H', 'H'), 'H')`:
-the pair for the first two coins, then the third coin.
+$2 \times 2 \times 2 = 8$ outcomes. The first is `(('H', 'H'), 'H')`.
+It is the pair for the first two coins, then the third coin.
 
 This is the same count as a truth table with three inputs, $2^3 = 8$
 rows. Heads and tails, like True and False, are a choice of two.
@@ -277,9 +276,9 @@ It is not true. By the counting principle there are $8 \times 12 = 96$
 robots, which is fewer than 100.
 
 Adding one head gives $9 \times 12 = 108$. Adding one body gives
-$8 \times 13 = 104$. Either would make the claim true. So would
-allowing "a body with no head": that adds 12 more, for 108. That is one
-way through, and you may have found others.
+$8 \times 13 = 104$. Either would make the claim true. You could
+also allow "a body with no head". That adds 12 more, for 108. That is
+one answer, and you may have found others.
 
 </details>
 
@@ -319,11 +318,11 @@ numbers matter, not which die showed which. Then "a 3 and a 4" is one
 outcome. The count of 36 fits when the dice can be told apart, such
 as a red die and a blue one.
 
-Both are real sample spaces. But the 21 are not equally likely: a 3 and
+Both are real sample spaces. But the 21 are not equally likely. A 3 and
 a 4 can happen two ways, and a double 3 only one. That matters on
-[How likely is it?](tutorial:how-likely-is-it). Counting where order
-does not matter is what
-[Orders and choices](tutorial:orders-and-choices) is about.
+[How likely is it?](tutorial:how-likely-is-it).
+[Orders and choices](tutorial:orders-and-choices) is about counting
+where order does not matter.
 
 </details>
 
@@ -358,7 +357,7 @@ id: counting-every-practice-scratch-3
 
 **13. Make.** A website lets you make a password of 1, 2, 3 or 4 small
 letters. How many passwords is that in all? Write it in sigma notation,
-then work it out with a loop and `total`.
+then calculate it with a loop and `total`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -393,9 +392,9 @@ little.
 </details>
 
 **14. Make.** Here is a start on the unit's password checker. Write
-`password_strength(choices, length)`. It works out how many passwords
+`password_strength(choices, length)`. It calculates how many passwords
 there are with `choices` characters for each of `length` places. Then
-it gives back `"weak"` for fewer than a million, `"fair"` for fewer than
+it returns `"weak"` for fewer than a million, `"fair"` for fewer than
 a million million ($10^{12}$), and `"strong"` otherwise. Test it on a
 four-digit PIN, 8 small letters, and 12 small letters.
 
@@ -420,7 +419,7 @@ print("password_strength keeps its promise.")
 
 The counting principle gives the count, and `if` and `elif` from
 [Choosing a path](tutorial:choosing-a-path) turn it into a word. The
-order of the checks matters: the smallest limit is checked first.
+order of the checks matters. The smallest limit is checked first.
 
 </details>
 
@@ -450,15 +449,15 @@ would you say to him? Is there a kind of problem where his idea works?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It agrees with Schlomo where his idea works,
+Here is one answer. It agrees with Schlomo where his idea works,
 and also says what the list is for.
 
 - **Where Schlomo's idea works.** When the choices do not change each
   other, and there are too many to list, the formula is the only way. No
   loop will list $26^{12}$ passwords. In an exam, multiplying is faster
   too.
-- **What the list gives.** The list is how we know the formula can be
-  trusted. It also catches a problem the formula cannot see. If the
+- **What the list gives.** The list shows us that we can trust the
+  formula. It also catches a problem the formula cannot see. If the
   choices do change each other, $m \times n$ gives the wrong count, and
   only a list, or careful thought, will show it. Three songs in a
   playlist are an example: $3 \times 3 \times 3$ is 27, but only 6
@@ -469,3 +468,11 @@ One answer might say: multiply when you are sure the choices do not
 change each other, and list a small case when you are not sure.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2016). *How many different Youtube videos are possible?*
+<https://www.youtube.com/watch?v=5Yy_unGaD-w>. How many different pictures
+can a small grey screen show? Matt Parker starts with the pixel counting
+from the tutorial and continues, up to every video that could ever exist.
+Try the first count yourself before he does. About seventeen minutes.

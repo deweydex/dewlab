@@ -29,13 +29,13 @@ which is 5 KB. The log did not keep count of which kind was which. How
 many images did it send, and how many pages of text?
 
 Before you read on, take a guess. You have two facts and two things you
-do not know. Is that enough to find them? It turns out to be exactly
-enough, and this page is about why.
+do not know. Is that enough to find them? It is exactly enough, and
+this page shows why.
 
 On this page we:
 
 - see that one fact about two unknowns has many answers, and two facts
-  can pin down one
+  can have just one
 - draw each fact as a line, and find the answer where the lines cross
 - solve by elimination, said in words and then in symbols
 - turn elimination into a formula, and add `solve_simultaneous` to the
@@ -46,8 +46,7 @@ On this page we:
 > **The space we're in.** Equations where each unknown is only
 > multiplied by a number: no squares, no unknowns multiplied together.
 > Each such equation in $x$ and $y$ draws a straight line on a flat
-> plane. One thing usually goes unsaid: the answer must make every
-> equation true at once, and we check that by substituting it back into
+> plane. The answer must make every equation true at once, and we check that by substituting it back into
 > each one. Your toolkit is loaded, with `plot_rule`, `solve_linear` and
 > `vertex` from earlier in this unit.
 
@@ -163,7 +162,7 @@ plt.legend()
 
 Every point on the first line fits the count. Every point on the
 second fits the data sent. Only one point is on both: the crossing, at
-$(130, 100)$. Solving simultaneous equations in two unknowns is finding
+$(130, 100)$. To solve simultaneous equations in two unknowns, we find
 where two lines cross.
 
 ## Elimination: one unknown at a time
@@ -189,7 +188,7 @@ Step 2 takes that away from $12a + 5c = 2060$:
 $$7a = 910$$
 
 Step 3 divides by 7, so $a = 130$. Step 4 puts 130 into $a + c = 230$,
-so $c = 100$. The order matters: we cannot find $c$ in step 4 until
+so $c = 100$. The order matters. We cannot find $c$ in step 4 until
 step 3 has found $a$.
 
 Now the rule of this unit: substitute back, into both equations. Which
@@ -204,9 +203,8 @@ print(images + texts == 230)
 print(12 * images + 5 * texts == 2060)
 ```
 
-Both are `True`. Checking only the equation we used in step 4 would
-prove little, since we built $c$ from it. The second check is the one
-that counts.
+Both are `True`. The equation we used in step 4 must fit, because we
+built $c$ from it. The second check tells us more.
 
 <aside class="dl-note" id="several-unknowns-note-nine-chapters">
 
@@ -221,7 +219,7 @@ another. That is elimination, long before Europe had a name for it.
 ### Your turn
 
 In a game, a level hides coins worth 4 points and gems worth 6 points.
-One player picked up 45 of them and scored 222 points.
+One player collected 45 of them and scored 222 points.
 
 1. Name the two unknowns, and write the two facts as equations.
 2. Eliminate one unknown, by hand, in the steps above.
@@ -260,8 +258,8 @@ and take the second product from the first.
 
 A fraction with 0 on the bottom has no answer. So when the determinant
 is 0, the formulas cannot give a single answer, and the next section
-shows what that means. Here is the promise for your toolkit. It gives
-back `None`, Python's "nothing here", when there is no single answer.
+shows what that means. Here is the promise for your toolkit. It
+returns `None`, Python's "nothing here", when there is no single answer.
 
 ```python exec
 id: several-unknowns-toolkit
@@ -303,7 +301,7 @@ title: some steps
 divisions, and not after?
 ```
 
-The tests start with the server log. The last one makes up two equations
+The tests start with the server log. The last one builds two equations
 from an answer we choose, and checks that the tool finds that answer
 again. Until your function is written, the first test stops with an
 error.
@@ -321,7 +319,7 @@ print("solve_simultaneous keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may use other names and keep the same promise.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def solve_simultaneous(a1, b1, c1, a2, b2, c2):
@@ -347,7 +345,7 @@ the same 7 that elimination divided by, with its sign turned round.
 
 **Cramer.** Gabriel Cramer, a Swiss mathematician, published the rule
 in 1750, in a book about curves. He wanted to find the curve through a
-set of points: the same question the practice page asks of a letter.
+set of points. The practice page asks the same question of a letter.
 
 </aside>
 
@@ -367,7 +365,7 @@ print(solve_simultaneous(3, 2, 80, 6, 4, 150))
 print(3 * 4 - 6 * 2)
 ```
 
-It gives back `None`, because the determinant is 0. Let's draw the two
+It returns `None`, because the determinant is 0. Let's draw the two
 facts as rules that give a song's size from a photo's size. What will
 the lines do?
 
@@ -386,10 +384,10 @@ plt.ylabel("MB in one song")
 plt.legend()
 ```
 
-The lines are *parallel*: they have the same steepness, and never meet.
+The lines are *parallel*. They have the same steepness, and never meet.
 No pair of sizes fits both facts. Six photos and four songs are twice
 three and two, so they should make twice 80 MB, which is 160 MB. One of
-the two readings is off, or the files were not all the same size.
+the two readings is wrong, or the files were not all the same size.
 
 If the second reading had said 160 MB, the two equations would be one
 fact said twice, and the two lines would be the same line. Every point
@@ -397,8 +395,8 @@ on it fits, so there are endless answers and still no single one. The
 determinant is 0 in both cases, and `None` covers both.
 
 So two straight lines on a flat plane can meet in three ways: once,
-never, or everywhere. That is what this space allows, and the
-determinant tells us which kind we have before we draw anything.
+never, or everywhere. The determinant tells us which kind we have
+before we draw anything.
 
 ```question
 id: several-unknowns-none-3
@@ -419,16 +417,17 @@ Which pair of equations has no single solution?
 
 The backup log has three more lines. Each line is one upload, and gives
 only its total size, not the size of a photo, a song or a short video
-clip. (The sizes are made up, but they are the size real ones are.)
+clip. (The sizes are invented, but real files are about this size.)
 
 - 2 photos, 1 song and 1 clip made 12.5 MB;
 - 1 photo, 2 songs and 1 clip made 11.5 MB;
 - 1 photo, 1 song and 2 clips made 12.0 MB.
 
 Three unknowns need three facts. Elimination works the same way, one
-unknown at a time. Call the sizes $p$, $s$ and $v$. Taking the second
-upload from the first eliminates the clip: $p - s = 1$. Taking the
-third from twice the second eliminates it again: $p + 3s = 11$. Now
+unknown at a time. Call the sizes $p$, $s$ and $v$. Take the second
+upload from the first, and the clip cancels, leaving $p - s = 1$. Take
+the third from twice the second, and it cancels again, leaving
+$p + 3s = 11$. Now
 there are two equations in two unknowns, and your toolkit can finish
 the job. (This cell needs your `solve_simultaneous`.) What do you
 expect?
@@ -443,11 +442,11 @@ print(2 * photo + song + clip, photo + 2 * song + clip, photo + song + 2 * clip)
 ```
 
 A photo is 3.5 MB, a song 2.5 MB and a clip 3.0 MB, and all three
-uploads check out. The big job was made of smaller promises: two
+uploads pass the check. The big job was made of smaller promises: two
 eliminations, one call to `solve_simultaneous`, and one substitution.
 
-Three facts for three unknowns is also how a curve is found from a
-picture: the practice page finds the letter's bowl from
+Three facts for three unknowns can also find a curve from a picture.
+The practice page finds the letter's bowl from
 [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line)
 from three of its pixels.
 
@@ -465,7 +464,7 @@ totals = [12.5, 11.5, 12.0]
 print(np.linalg.solve(uploads, totals))
 ```
 
-The same three sizes. The Computational Methods course works with
+It finds the same three sizes. The Computational Methods course works with
 these grids in depth, starting at
 [Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers).
 
@@ -482,8 +481,8 @@ the number of unknowns grows.
 
 We used the formula because, for two unknowns, it shows the whole
 method at once, and its bottom line, the determinant, says in one
-number whether there is a single answer. The cost is that it does not
-grow: for three unknowns we had to eliminate by hand first.
+number whether there is a single answer. The cost is that it only
+works for two unknowns. For three, we had to eliminate by hand first.
 
 </details>
 
@@ -511,3 +510,11 @@ grow: for three unknowns we had to eliminate by hand first.
 
 For another route through the same ideas, the integrated course has
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations#simultaneous-equations).
+
+## Where to read more
+
+3Blue1Brown (2019). *Cramer's rule, explained geometrically: Chapter 12,
+Essence of linear algebra.* <https://www.youtube.com/watch?v=jBsC34PxzoM>.
+The formula this page finds for every pair of equations has a name,
+Cramer's rule. Grant Sanderson shows why it works, with areas. About
+twelve minutes.

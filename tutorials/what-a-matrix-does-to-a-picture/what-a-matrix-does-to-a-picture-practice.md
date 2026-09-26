@@ -2,240 +2,309 @@
 title: "Matrix transformations: what a matrix does to a picture — Practice"
 practice_for: what-a-matrix-does-to-a-picture
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
+worlds:
+  pixel-art: Pictures made of small squares, the way a screen draws them.
+  starships: Starships, and the structures they are built from.
+  space-scenes: Stars, planets and the paths they take across the sky.
 ---
 
 # Matrix transformations: what a matrix does to a picture — Practice
 
 Before you run anything, predict the picture from the matrix, or the
-matrix from the picture. The prediction is the real practice. The plot
-only tells you whether you were right.
-
-## Reading columns
+matrix from the picture. The prediction is the practice, and the plot
+checks it. Your own `transform`, `transform_all` and `draw_shapes`
+are already loaded, and so are the functions from the page before.
 
 ```python exec
 id: reading-1
-def dot(a, b):
-    if len(a) != len(b):
-        raise ValueError("lengths do not match")
-    return sum(x * y for x, y in zip(a, b))
-
-
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
-
-
-def multiply(a, b):
-    bt = transpose(b)
-    return [[dot(row, col) for col in bt] for row in a]
-
-
-square = [[0, 1, 1, 0], [0, 0, 1, 1]]
+F = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0, 5)]
+m = [[3, 0], [0, 3]]
+draw_shapes([F, transform_all(m, F)])
 ```
 
-**1.** Without running anything, where does
-$M = \begin{bmatrix} 3 & 0 \\ 0 & 3 \end{bmatrix}$ send $(1, 0)$ and
-$(0, 1)$? What would you call its effect on the square?
+## Reading the columns
+
+**1.** Where does $\begin{bmatrix} 3 & 0 \\ 0 & 3 \end{bmatrix}$ send
+$(1, 0)$ and $(0, 1)$? What does it do to the F?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(1,0) \to (3,0)$ and $(0,1) \to (0,3)$. We read these straight from the
-two columns.
-
-Both directions grow by the same amount, so this is a *uniform scaling*.
-The square becomes a bigger square, three times as wide and three times
-as tall. It does not become a rectangle.
+$(1, 0) \to (3, 0)$ and $(0, 1) \to (0, 3)$, read from the two columns.
+Both directions grow by the same amount, a *uniform scaling*: the F
+three times as big, the same shape.
 
 </details>
 
-**2.** Where does $M = \begin{bmatrix} -1 & 0 \\ 0 & 1 \end{bmatrix}$ send
-$(1, 0)$ and $(0, 1)$? Check it against the picture.
+**2.** Where does $\begin{bmatrix} -1 & 0 \\ 0 & 1 \end{bmatrix}$ send
+$(1, 0)$ and $(0, 1)$, and which way does the F face afterwards?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(1,0) \to (-1,0)$, and $(0,1) \to (0,1)$, which does not change.
-
-```python
-result = multiply([[-1, 0], [0, 1]], square)
-```
-
-Only the $x$-coordinates change sign. Every $y$-coordinate stays exactly
-where it was. This is a reflection across the $y$-axis. The square is
-flipped from left to right, not upside down.
+$(1, 0) \to (-1, 0)$, and $(0, 1)$ stays put. Every x changes sign and
+every y stays, so the F is mirrored left to right. Its arms point left.
 
 </details>
 
-## From description to matrix
-
-**3.** What 2×2 matrix rotates every point 180°?
+**3.** What matrix turns every point 180° about $(0, 0)$?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. A 180° turn sends $(1, 0)$ to the point exactly opposite it. What
-   point is that?
-2. It sends $(0, 1)$ to the point exactly opposite it too. What point is
-   that?
-3. Those two answers are the two columns of your matrix, in order.
-4. Write the matrix and check it against the square. Does every corner
-   end up on the other side of the origin from where it started?
+1. A half turn sends $(1, 0)$ to the point opposite it. Which point?
+2. And $(0, 1)$?
+3. Those two answers are the two columns, in order.
 
-**Think about:** a 180° rotation is the same as scaling by $-1$ in every
-direction at once. Does your matrix agree with that?
-
-**Try this next:** what matrix rotates by 180° and then reflects across
-the $x$-axis? Is that the same as reflecting across the $y$-axis?
+**Think about:** a half turn is the same as scaling by $-1$ in every
+direction. Does your matrix agree?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$
-
-$(1,0) \to (-1,0)$ and $(0,1) \to (0,-1)$. Both points land exactly
-opposite where they started. That is what turning something upside down
-and back to front means. On the square, every corner ends up on the
-other side of the origin, along a line through $(0,0)$.
-
-</details>
-
-**4.** What matrix swaps the $x$ and $y$ coordinates of every point? It
-sends $(x, y)$ to $(y, x)$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$
-
-$(1,0) \to (0,1)$ and $(0,1) \to (1,0)$. The two points change places.
-That is what "swap the coordinates" means for every other point too.
-This is a reflection across the diagonal line $y = x$.
+$\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$. It sends $(1, 0)$ to
+$(-1, 0)$ and $(0, 1)$ to $(0, -1)$. Every corner of the F moves to the
+other side of the origin. The F is upside down with its arms pointing
+left. This is a half turn, not a flip, because turning the page gets you
+there.
 
 </details>
 
-**5.** Here is a square that a matrix has already transformed:
+**4.** Can you write the matrix that does each of these, and check it on
+the F?
 
 ```python exec
-id: mystery-1
-import matplotlib.pyplot as plt
+id: matrix-four-moves
+twice_as_tall = [[1, 0], [0, 1]]
+lean_left = [[1, 0], [0, 1]]
+half_turn = [[1, 0], [0, 1]]
+swap_x_and_y = [[1, 0], [0, 1]]
 
-mystery = [[0, 0, 1, 1], [0, 1, 1, 0]]
-
-def plot_shape(pts, color, label):
-    plt.plot(pts[0] + [pts[0][0]], pts[1] + [pts[1][0]], color=color, marker="o", label=label)
-
-plot_shape(square, "C0", "original")
-plot_shape(mystery, "C2", "mystery")
-plt.gca().set_aspect("equal")
-plt.legend()
+draw_shapes([F, transform_all(lean_left, F)])
 ```
 
-What matrix produced this? Is it the same one you found in problem 4?
-Look at the lists of corners, `square` and `mystery`, as well as the
-picture.
+```inputs
+transform(twice_as_tall, (1, 1))
+transform(lean_left, (0, 2))
+transform(half_turn, (1, 2))
+transform(swap_x_and_y, (1, 2))
+```
+
+```hint
+For each, decide where "right", $(1, 0)$, and "up", $(0, 1)$, should
+go, and write those in as the two columns. Leaning left, the bottom stays
+and the top slides left, so "up" goes to something like $(-0.5, 1)$.
+```
+
+```solution
+twice_as_tall = [[1, 0], [0, 2]]
+lean_left = [[1, -0.5], [0, 1]]
+half_turn = [[-1, 0], [0, -1]]
+swap_x_and_y = [[0, 1], [1, 0]]
+
+draw_shapes([F, transform_all(lean_left, F)])
+---
+Any negative number in the top-right corner leans the F left, and a
+half is one choice. The swap is the flip across the line $y = x$. It is
+the transpose from the page before, done to points.
+```
+
+## Matrix and picture
+
+**5.** What does $\begin{bmatrix} 1 & 0 \\ 0.5 & 1 \end{bmatrix}$ do to
+the F? Predict, then draw it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes, it is $\begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$ again, the
-coordinate swap from problem 4.
-
-The picture alone cannot tell you this. The square reflected across the
-line $y = x$ lands exactly on itself, so the mystery shape covers the
-original square. The corner lists show what happened. The second corner
-of `square` is $(1,0)$, and the second corner of `mystery` is $(0,1)$.
-The fourth corner was $(0,1)$ and is now $(1,0)$. So $(1,0)$ and $(0,1)$
-have changed places. $(0,0)$ and $(1,1)$ both sit on the line $y=x$, so
-they stay where they are.
+$(1, 0) \to (1, 0.5)$ and $(0, 1)$ stays. The left edge stays where it
+is, and each point rises by half its distance to the right, so the F's
+arms tilt upwards. It is a shear in the other direction from the
+tutorial's. There, the extra number was in the first row, and the x's
+moved. Here it is in the second row, and the y's move.
 
 </details>
 
-## Gallery, continued
-
-```python exec
-id: gallery-1
-def show_transform(M, name):
-    result = multiply(M, square)
-    plot_shape(square, "C0", "original")
-    plot_shape(result, "C1", name)
-    plt.gca().set_aspect("equal")
-    plt.legend()
-```
-
-**6.** What does $M = \begin{bmatrix} 1 & 0 \\ 0.5 & 1 \end{bmatrix}$ do to
-the square? Predict first, then check.
+**6.** Is there a matrix that sends every corner of the F to $(0, 0)$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(1,0) \to (1, 0.5)$ and $(0,1) \to (0,1)$. The left edge stays where it
-is, and the right edge slides upward by 0.5. So the bottom and top edges
-tilt.
-
-This is a shear, along the other axis from the one in the tutorial.
-There, the bottom edge stayed where it was and the top edge slid
-sideways, so the left and right edges tilted. Here, the extra number is
-in the second row, so the $y$-coordinates change, not the
-$x$-coordinates.
-
-```python
-show_transform([[1, 0], [0.5, 1]], "sheared")
-```
+Yes, $\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$, the *zero matrix*.
+Both columns are $(0, 0)$, so "right" and "up" land on the origin, and
+every other point is built from those two. Some matrices flatten a
+picture onto a line. This one flattens it to a point. The page after
+next asks which matrices can be undone, and this one cannot.
 
 </details>
 
-**7.** Is there a matrix that sends the square to a single point, with
-every corner landing on $(0, 0)$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Yes: $\begin{bmatrix} 0 & 0 \\ 0 & 0 \end{bmatrix}$, the *zero matrix*.
-
-Both columns are $(0,0)$, so both $(1,0)$ and $(0,1)$ land on the
-origin. Every other point is built from those two, so every other point
-lands there too.
-
-This is the most extreme matrix that cannot be undone. Some matrices
-flatten a picture onto a line. This one flattens it all the way to a
-point. The next page,
-[Inverse matrices: undoing a transformation](tutorial:undoing-it),
-introduces the determinant. The determinant marks this case as exactly
-as impossible to undo as the line case.
-
-</details>
-
-## Thinking about it
-
-**8.** Two matrices both send $(1, 0)$ to $(2, 0)$. Must they be the same
+**7.** Two matrices both send $(1, 0)$ to $(2, 0)$. Must they be the same
 matrix?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Where $(1,0)$ lands fixes only the first column of the matrix. The
-second column, where $(0,1)$ lands, can be anything.
-
-$\begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}$ and
-$\begin{bmatrix} 2 & 5 \\ 0 & 3 \end{bmatrix}$ both send $(1,0)$ to
-$(2,0)$, and they are different everywhere else. In problems 3 to 5, we
-could read a matrix from a picture or a description only because we
-knew where both points went, not only one.
+No. That fixes only the first column. $\begin{bmatrix} 2 & 0 \\ 0 & 1
+\end{bmatrix}$ and $\begin{bmatrix} 2 & 5 \\ 0 & 3 \end{bmatrix}$ both do
+it, and differ everywhere else. To know a matrix, you need to know where
+both "right" and "up" go.
 
 </details>
 
-**9.** Every matrix on this practice page sends $(0, 0)$ to $(0, 0)$. Why
-is that not a coincidence? What kind of transformation would move the
-origin?
+**8.** Why does every 2×2 matrix send $(0, 0)$ to $(0, 0)$? What kind of
+move would need more than a 2×2 matrix?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Any matrix times the zero vector $(0, 0)$ gives the zero vector. Every
-term in every dot product has a zero in it, so every sum is zero. This is
-true for every matrix, not only the ones chosen here.
+$(a \times 0 + b \times 0, \; c \times 0 + d \times 0)$ is $(0, 0)$ for
+any $a$, $b$, $c$ and $d$. So no 2×2 matrix can slide a picture across
+the page, a *translation*. The graphics pages later in the course add a
+third number to every point to make that possible.
 
-A *translation* slides the whole square to a new place, without
-stretching or turning it. A translation does move the origin. So no 2×2
-matrix multiplication can do it. It also needs an addition, like the one
-in
-[Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers):
-$\text{new point} = M\mathbf{p} + \mathbf{t}$. This has the same form as
-the neural-network layer in problem 5 of the practice page for
-[Matrix multiplication: rows times columns](tutorial:multiplying-grids).
+</details>
+
+## Your world
+
+**9.** A move in the world you chose.
+
+<div class="dl-world" data-world="pixel-art">
+
+Italic letters lean. Can you find the matrix that turns the F into an
+italic F, leaning right, with its bottom edge where it was and its top
+shifted one square right?
+
+```python exec
+id: matrix-world--pixel-art
+italic = [[1, 0], [0, 1]]
+draw_shapes([F, transform_all(italic, F)])
+```
+
+```inputs
+transform(italic, (0, 5))
+transform(italic, (3, 0))
+```
+
+```hint
+The top of the F is at height 5 and should move right by 1. So each
+point moves right by a fifth of its height: "up" goes to $(0.2, 1)$.
+```
+
+```solution
+italic = [[1, 0.2], [0, 1]]
+draw_shapes([F, transform_all(italic, F)])
+---
+A shear. Fonts make italics roughly this way. A well-made italic font is
+drawn letter by letter, because a shear makes the curved letters look
+stretched.
+```
+
+</div>
+
+<div class="dl-world" data-world="starships">
+
+A ship flying away from the camera looks smaller and smaller. Can you
+draw the ship at full size, half size and a quarter size, each with one
+matrix?
+
+```python exec
+id: matrix-world--starships
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+```
+
+```hint
+A uniform scaling by $k$ is $\begin{bmatrix} k & 0 \\ 0 & k
+\end{bmatrix}$.
+```
+
+```solution
+ship = [(0, 4), (1, 1), (2, -1), (1, -0.5), (-1, -0.5), (-2, -1), (-1, 1)]
+half = [[0.5, 0], [0, 0.5]]
+quarter = [[0.25, 0], [0, 0.25]]
+draw_shapes([ship, transform_all(half, ship), transform_all(quarter, ship)])
+---
+Every ship shrinks towards $(0, 0)$, so the smaller ones sit inside the
+bigger, around the origin, not off in the distance. Making a thing
+smaller as it goes away is only half of perspective. The graphics pages
+divide by the distance to do the rest.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-scenes">
+
+Orion is in the skies of both hemispheres, and seen from the southern
+one it is upside down compared with the northern view. Which matrix turns a star map upside down, without making it
+a mirror image?
+
+```python exec
+id: matrix-world--space-scenes
+# Betelgeuse, Bellatrix, Mintaka, Alnilam, Alnitak, Saiph, Rigel
+orion = [(-3, 5), (3, 4.5), (1, 0.5), (0, 0), (-1, -0.5), (-2.5, -5), (3, -5.5)]
+upside_down = [[1, 0], [0, 1]]
+draw_shapes([orion, transform_all(upside_down, orion)], closed=False)
+```
+
+```inputs
+transform(upside_down, (1, 2))
+```
+
+```hint
+Upside down but not mirrored is a half turn. Where does it send "right"
+and "up"?
+```
+
+```solution
+orion = [(-3, 5), (3, 4.5), (1, 0.5), (0, 0), (-1, -0.5), (-2.5, -5), (3, -5.5)]
+upside_down = [[-1, 0], [0, -1]]
+draw_shapes([orion, transform_all(upside_down, orion)], closed=False)
+---
+A half turn, $\begin{bmatrix} -1 & 0 \\ 0 & -1 \end{bmatrix}$. The flip
+$\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ would also put
+Betelgeuse at the bottom, but as a mirror image, which no sky shows:
+from the south you are looking at the same stars from the other side of
+the Earth, turned, not reflected. (The positions are a sketch of
+Orion's shape, not measured ones.)
+```
+
+</div>
+
+## From earlier
+
+**10.** From *Matrices: adding, scaling and transposing*. `scale(3, m)`
+multiplies every entry of a matrix by 3. What does
+`scale(3, [[1, 0], [0, 1]])` do to the F, used as a transformation?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It is `[[3, 0], [0, 3]]`, problem 1's uniform scaling, which makes the
+F three times as big. Scaling the do-nothing matrix makes the matrix that scales
+pictures.
+
+</details>
+
+**11.** From *Comprehensions, grids and aliasing*. `transform_all` is one
+line: `[transform(m, point) for point in shape]`. Can you write it as a
+loop with `append` instead?
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+def transform_all(m, shape):
+    result = []
+    for point in shape:
+        result.append(transform(m, point))
+    return result
+```
+
+The comprehension says the same thing in one line. It makes a new list,
+with one moved point for each point of the shape.
+
+</details>
+
+**12.** From *Writing your own functions*. `transform(m, point)` returns a
+new point. Why not change the point where it is, as `point[0] = ...`?
+
+<details class="dl-answer"><summary>answer</summary>
+
+A point is a tuple, and a tuple cannot be changed, so Python would raise
+a `TypeError`. Returning a new point is also safer. It leaves the
+original F alone, so the playground can draw the before and the after
+side by side.
 
 </details>

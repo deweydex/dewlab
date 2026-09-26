@@ -27,16 +27,16 @@ way to build a website among several. On this page we:
 HTML and CSS did not arrive finished. Tim Berners-Lee described the
 first HTML in 1991, with about eighteen tags. Numbered versions
 followed: HTML 2.0 in 1995, 3.2 in 1997 and 4.01 in 1999. Then a group
-of browser makers took the work on, and their HTML5 became an official
+of browser makers continued the work, and their HTML5 became an official
 standard in 2014. Today HTML is a *living standard*: a document that is
 updated as the web changes. There is no HTML6 waiting to happen. HTML5
 keeps growing instead.
 
-CSS came out as CSS1 in 1996, CSS2 in 1998 and CSS2.1 in 2011. After
+CSS appeared as CSS1 in 1996, CSS2 in 1998 and CSS2.1 in 2011. After
 CSS2.1, it split into many separate *modules*, each developed, tested
 and released on its own schedule. Flexbox and grid are two of them.
 
-Along the way, some tags lost their jobs to CSS. A *deprecated* tag or
+Over the years, CSS replaced some tags. A *deprecated* tag or
 property is one that browsers still understand, but the standard no
 longer recommends. `<center>` centred content, before CSS had
 `text-align`. `<font>` set a typeface and a colour, before CSS could
@@ -87,16 +87,16 @@ screens offer.
    particular spacing, an animation, or a layout the template does not
    offer.
 
-Neither answer is wrong. A site you wrote yourself and a Carrd page
+A site you wrote yourself and a Carrd page
 built from a template solve the same problem, with different amounts of
 time and control.
 
-What stays the same across all these tools? What a browser receives:
+One thing stays the same across all these tools. A browser receives
 HTML and CSS, however they were made. A WordPress theme, a Carrd
 template and your own pages all reach the browser as the same two
 languages. You can read and write them directly now, and that makes
-every other tool easier to understand. From here, the question is which
-tool fits a given job.
+every other tool easier to understand. Now you can choose the tool that
+fits each job.
 
 ## What we have now
 
@@ -111,3 +111,10 @@ Solo that trade control for speed.
 | *deprecated* | Still understood by browsers, but no longer recommended, usually because CSS replaced it | `<center>`, `<font>` |
 | *website management system* | A tool that publishes your files or content as a website | GitHub Pages |
 | *content management system (CMS)* | A website management system that builds pages from a database and a theme | WordPress |
+
+## Where to read more
+
+CrashCourse (2017). *The World Wide Web: Crash Course Computer Science
+#30.* <https://www.youtube.com/watch?v=guvsH5OFizE>. It shows where the web
+came from: linked pages, the first browser, and search engines. About eleven
+minutes.

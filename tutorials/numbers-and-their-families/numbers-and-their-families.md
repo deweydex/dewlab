@@ -70,15 +70,15 @@ addition but not under subtraction, and Z is closed under subtraction.
 | Q | always works | always works | always works |
 | R | always works | always works | always works |
 
-Every natural number is an integer. Every integer is a rational number:
-we can put it over 1, so $7 = \frac{7}{1}$. Every rational number is a
+Every natural number is an integer. Every integer is a rational number.
+We can put it over 1, so $7 = \frac{7}{1}$. Every rational number is a
 real number. The families sit one inside the next, like Russian dolls:
 $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
 The symbol $\subset$ means "is inside" (you met it as "is a subset of"
 in [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)).
 
-![Four rings, one inside the next. Naturals 0, 1, 2, 3 innermost; then
-integers with −5 and −1; then rationals with 2/3 and 0.25; then reals with
+![Four rings, one inside the next. Naturals 0, 1, 2, 3 innermost, then
+integers with −5 and −1, then rationals with 2/3 and 0.25, then reals with
 root 2, pi and −1.5 outermost.](number-domains.svg)
 
 In the picture, each number sits in the ring of the smallest family it
@@ -142,7 +142,7 @@ them all the time in algebra.
 
 | Rule | In words | Example |
 |---|---|---|
-| $a^m \times a^n = a^{m+n}$ | Multiplying powers of the same base: add the exponents. | $2^2 \times 2^3 = 2^5 = 32$ |
+| $a^m \times a^n = a^{m+n}$ | When you multiply powers of the same base, add the exponents. | $2^2 \times 2^3 = 2^5 = 32$ |
 | $(a^m)^n = a^{m \times n}$ | A power of a power: multiply the exponents. | $(2^2)^3 = 2^6 = 64$ |
 | $a^0 = 1$ for any $a \neq 0$ | Any base (except 0) to the power 0 is 1. | $5^0 = 1$ |
 | $a^{-n} = \frac{1}{a^n}$ | A negative exponent means one over the positive power (the *reciprocal*). | $2^{-3} = \frac{1}{8}$ |
@@ -166,7 +166,7 @@ print("a^(-2)   =", a**(-2), "  1/a^2 =", 1/a**2)
 The two numbers on each line match: 243 and 243, then 729 and 729. Also
 $3^0$ is 1, and $3^{-2}$ and $\frac{1}{3^2}$ are both $0.111\ldots$
 
-A note on names: the syllabus, and any exam paper you sit, calls powers
+A note on names. The syllabus, and any exam paper you sit, calls powers
 *indices*, and calls the rules above the *laws of indices*. Indices and
 powers are the same thing, so it is good to recognise the word. This
 course says *power* and *exponent*, because the word *index* already
@@ -177,7 +177,7 @@ means something else here: the position of an item in a list.
 Can we build `power(base, exponent)` ourselves, without Python's `**`
 operator? There are three cases to think about:
 
-- A positive exponent means multiplying by the base again and again.
+- A positive exponent means we multiply by the base again and again.
 - An exponent of zero gives 1.
 - A negative exponent gives one over the positive power.
 
@@ -218,14 +218,14 @@ power of $a$ gives $x$?"
 $$\text{If } a^n = x, \text{ then } \log_a(x) = n.$$
 
 Here $a$ is the base again. For example, $2^{10} = 1024$, so
-$\log_2(1024) = 10$. In words: we need ten 2s multiplied together to
+$\log_2(1024) = 10$. In words, we need ten 2s multiplied together to
 make 1024.
 
 Logarithms matter a lot in computing. In
 [Searching a list: linear and binary search](tutorial:finding-things)
 we saw that binary search needs about $\log_2(n)$ steps to search $n$
-items. That count is a logarithm: it is how many times we can halve $n$
-before we reach 1.
+items. That count is a logarithm. It counts how many times we can halve
+$n$ before we reach 1.
 
 Python's `math` module has logarithm functions. `math.log2(x)` gives the
 base-2 logarithm, and `math.log10(x)` gives the base-10 logarithm. What
@@ -241,8 +241,8 @@ print("log2(1000000) =", round(math.log2(1000000), 2), "(binary search steps for
 ```
 
 The first two give 10.0 and 3.0, because $2^{10} = 1024$ and
-$10^3 = 1000$. The third gives 19.93: binary search on a million items
-needs about 20 steps.
+$10^3 = 1000$. The third gives 19.93. So binary search on a million
+items needs about 20 steps.
 
 ### Your turn
 
@@ -277,8 +277,8 @@ takes measurements as input and returns a value. For example, the area
 of a circle takes a radius $r$ and returns $\pi r^2$. For $r = 5$ that
 is $\pi \times 25$, about 78.54. Let's build a small geometry toolkit.
 
-The arithmetic here is the easy part. The more useful habit is writing
-clean functions: parameter names that say what they mean, and a
+The arithmetic here is the easy part. The more useful habit is to write
+clean functions, with parameter names that say what they mean, and a
 docstring that says what goes in and what comes back. That habit turns a
 formula you typed once into a tool you can still use months later.
 
@@ -323,11 +323,11 @@ id: your-turn-8
 ## Putting it together: a number explorer
 
 Now we can combine our tools into a small program. It takes a number and
-prints what it can work out about it.
+prints what it can tell us about it.
 
 The program uses `classify_number` from earlier on this page. If you
 have not written that function yet, the cell tells you so, and the rest
-still runs. That is worth noticing: a function that reports what is
+still runs. That is worth noticing. A function that reports what is
 missing is much easier to work with than one that stops with an error.
 
 What do you think it will say about 49? Run it to check.
@@ -382,7 +382,7 @@ What else could `explore_number` tell us? Here are a few ideas:
 - whether it appears in the Fibonacci sequence
 - what its prime factors are, when it is a positive whole number
 
-One extension is plenty. The interesting part is deciding what belongs
+One extension is plenty. The interesting part is to decide what belongs
 in a function like this, and what does not.
 
 ```python exec
@@ -397,8 +397,8 @@ families, powers, logarithms and geometry formulas. None of them is
 complicated on its own. Together they are the base for everything that
 follows.
 
-The main idea underneath all of this is that every formula is already a
-function: it takes inputs and produces an output. When we write it as
+Underneath all of this, every formula is already a function. It takes
+inputs and produces an output. When we write it as
 code, we make that clear, and we can test it.
 
 Next, in
@@ -410,25 +410,32 @@ searching and sorting in
 [Searching a list: linear and binary search](tutorial:finding-things)
 and [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order)?
 
-## Where to Read More
+## Where to read more
 
 3Blue1Brown (2017). *Logarithm fundamentals* (Essence of Calculus supplement).
-<https://www.youtube.com/watch?v=cEvgcoyZvB4>. Why a logarithm is an exponent
-read backwards, shown rather than stated.
+<https://www.youtube.com/watch?v=cEvgcoyZvB4>. It shows, and does not only
+state, why a logarithm is an exponent read backwards.
 
 Veritasium (2021). *The Discovery That Transformed Pi*.
-<https://www.youtube.com/watch?v=gMlf1ELvRzc>. Not about pi's irrationality
-directly, but the best available demonstration that a number can be perfectly
-well defined and impossible to write down.
+<https://www.youtube.com/watch?v=gMlf1ELvRzc>. It is not directly about why
+pi is irrational. But it is the best demonstration we know that a number can
+be perfectly well defined and impossible to write down.
 
 Stewart, I. (2008). *Taming the Infinite: The Story of Mathematics.* Quercus.
-Chapters 2 and 3 on how the number families were built one at a time, each to
+Chapters 2 and 3 describe how the number families were built one at a time, each to
 solve a problem the previous one could not.
 
 Python Software Foundation. *Floating Point Arithmetic: Issues and Limitations.*
-<https://docs.python.org/3/tutorial/floatingpoint.html>. The authoritative short
-answer to why `0.1 + 0.2` is not `0.3`, and worth reading once properly.
+<https://docs.python.org/3/tutorial/floatingpoint.html>. It gives the official
+short answer to why `0.1 + 0.2` is not `0.3`. It is worth reading once,
+carefully.
 
 Khan Academy. *Exponents, radicals, and scientific notation.*
 <https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:rational-exponents-radicals>.
-Practice on the index laws, if the ones here went past too quickly.
+It gives practice on the index laws, if the ones here went too quickly.
+
+3Blue1Brown (2016). *Triangle of Power.*
+<https://www.youtube.com/watch?v=sULa9Lc4pck>. Powers, roots and
+logarithms are three questions about the same three numbers. This short
+video draws all three with one triangle. The video is about eight minutes
+long.

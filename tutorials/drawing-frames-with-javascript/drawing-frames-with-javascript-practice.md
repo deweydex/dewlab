@@ -197,7 +197,7 @@ circle, and in front of the sun at the front.
    one drawn first, or the one drawn last?
 2. The code sorts the sun and the ball before it draws them. Which one
    comes first in the sorted list?
-3. `sort` puts `a` before `b` when the function gives a number below
+3. `sort` puts `a` before `b` when the function returns a number below
    `0`. With `a.z - b.z`, which comes first: the smaller depth, or the
    larger?
 
@@ -371,14 +371,14 @@ frame();
 ```
 
 
-How much should `frame` add to `angle` each time? Work it out before
+How much should `frame` add to `angle` each time? Calculate it before
 you change the code.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. A full turn is `2π` radians. In JavaScript, that is `2 * Math.PI`.
 2. How many frames are there in ten seconds, at sixty a second?
-3. Share one full turn out between that many frames.
+3. Divide one full turn between that many frames.
 
 **Think about:** on a 120 Hz screen, `frame` runs twice as often. How
 long would one turn take there?
@@ -480,7 +480,7 @@ frame();
 3. To go behind and in front at the right times, the moon must be in the
    list that gets sorted.
 4. The drawing loop draws everything that is not the sun as a white
-   ball. How can it tell the moon apart?
+   ball. How can it know which body is the moon?
 
 **Think about:** why does one sort by depth handle all three bodies,
 with no extra rules for which is in front of which?
