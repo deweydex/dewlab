@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Simulation, trial, conditional probability and the law of large numbers
+# come from what-are-the-chances, earlier in this series; None from
+# writing-your-own-functions.
+entries:
+  - term: Monty Hall problem
+    kind: concept
+    definition: >
+      A game-show puzzle with three doors, one car and two goats. You pick
+      a door; the host, who knows where the car is, opens another door
+      with a goat, and offers you the switch. Switching wins two times in
+      three, because it wins exactly when your first pick was wrong. The
+      answer depends on the host: one who opens a door at random makes it
+      a half.
+  - term: "random.randrange()"
+    python: random.randrange
+    kind: function
+    definition: >
+      Picks a whole number at random from a range, as range() would list
+      it: random.randrange(100) gives one of 0 to 99.
+    example: "car = random.randrange(100)"

@@ -20,7 +20,7 @@ covers:
 
 A weather buoy off the west coast of Ireland sends the sea temperature to
 land as a row of bits, over the radio. Radio is noisy. Now and then a
-single bit arrives flipped: a 0 that was sent arrives as a 1.
+single bit arrives flipped. A 0 that was sent arrives as a 1.
 
 Think about how strange it would be to catch that. The computer on land
 has never seen the message before. It does not know what the buoy meant
@@ -39,8 +39,8 @@ On this page we:
 
 > **The space we're in.** Every value on this page is a bit, 0 or 1, or a
 > whole number made of bits, from 0 upwards. Python lets us treat `True`
-> and `False` as bits too. One thing usually goes unsaid when people talk
-> about checking messages: we assume that at most one bit flips. We will
+> and `False` as bits too. When people talk about checking messages, they
+> rarely say that we assume at most one bit flips. We will
 > see what happens when that is not true.
 
 ## Warm-up
@@ -117,8 +117,8 @@ print(same_rule(stairs_light, different, 2))
 ```
 
 For single True/False values, `^` and `!=` are the same rule, checked on
-every row. So why have both? Because `!=` only asks whether two values are
-different. The `^` can do more: it works on every bit of a whole number at
+every row. So why have both? `!=` only asks whether two values are
+different. The `^` can do more. It works on every bit of a whole number at
 once, as we will see.
 
 ### Your turn
@@ -162,16 +162,16 @@ print(shuffle)
 
 After an odd number of presses, shuffle is on. After an even number, it
 is back where it started. Each line gives the name `shuffle` a new value,
-worked out from the old one, and the order of those lines is the whole
-story.
+calculated from the old one, and the order of those lines decides the
+result.
 
 There is a second fact hiding here. XOR with the same bit twice leaves a
 bit as it was, whatever that bit is:
 
 $$b \oplus k \oplus k = b$$
 
-In words: XOR with $k$ is a promise that undoes itself. Flip, then flip
-again, and you are home.
+In words, XOR with $k$ undoes itself. If you flip, then flip again, you
+are back where you started.
 
 ## XOR on whole numbers
 
@@ -181,8 +181,8 @@ own. An operation that works on each column of bits separately is called
 *bitwise*.
 
 On [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-`format(n, "b")` gave a number in binary. Putting `04` in front of the `b`
-asks for at least four digits, with zeros filled in on the left. That
+`format(n, "b")` gave a number in binary. If we put `04` in front of the `b`,
+`format` gives at least four digits, with zeros filled in on the left. That
 keeps the columns lined up.
 
 | | 8 | 4 | 2 | 1 |
@@ -213,7 +213,7 @@ in the columns worth 8 and 2".
 ### Flipping a colour
 
 On [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-`#FF8800` was orange: three bytes, for red, green and blue. What happens if
+`#FF8800` was orange. It was three bytes, for red, green and blue. What happens if
 we flip every bit of it? The mask for that is all 1s: `0xFFFFFF`. Each
 light that was bright goes dark, and each dark one goes bright.
 
@@ -233,10 +233,11 @@ plt.bar(colours, [1, 1], color=colours)
 plt.yticks([])
 ```
 
-`to_hex` prints `77FF`, because it leaves out zeros at the front, the same
-way `to_binary(6)` gave `"110"`. A colour needs all six digits, so we put
-the zeros back: `#0077FF`, a bright blue. Painters call these two colours
-*complementary*: they sit opposite each other on the colour wheel. Here,
+`to_hex` prints `77FF`, because it does not print zeros at the front, the
+same way `to_binary(6)` gave `"110"`. A colour needs all six digits, so we
+add the zeros again. That gives `#0077FF`, a bright blue. Painters call
+these two colours *complementary*, because they sit opposite each other
+on the colour wheel. Here,
 each light's brightness has become 255 minus what it was.
 
 ### Your turn
@@ -319,8 +320,8 @@ def parity_bit(bits):
 ```
 
 Then run the tests. Until the gap is filled, the function always gives 0,
-so expect the first test to stop with an `AssertionError`. That is the
-test telling you the promise is not kept yet.
+so expect the first test to stop with an `AssertionError`. The test is
+telling you that the function does not keep its promise yet.
 
 ```python exec
 id: bits-toolkit-tests
@@ -358,7 +359,7 @@ The buoy sends the byte for 14 and its parity bit. On the way, the radio noise f
 ourselves with a mask: XOR with `0b00000100` flips the bit worth 4.
 
 The computer on land does not know what was sent. It only has what
-arrived. So it works out the parity of the byte that arrived, and compares
+arrived. So it calculates the parity of the byte that arrived, and compares
 it with the parity bit that arrived. If they differ, something flipped.
 
 What temperature will land receive? Will the check catch it? Run it to
@@ -381,15 +382,15 @@ print("Looks right?", looks_right)
 The buoy sent 14 degrees, and land received 10. Without the parity bit,
 nobody would know. With it, land sees that the count of 1s has changed
 from odd to even, and says the message does not look right. It can then
-ask the buoy to send it again. One bit, and a computer can notice a
-mistake in a message it has never seen. I still find that a little
+ask the buoy to send it again. With one extra bit, a computer can
+notice a mistake in a message it has never seen. I still find that a little
 magical.
 
-Here is why it works. Flipping any one bit changes the number of 1s by
-exactly one, up or down. So an even count becomes odd, and an odd count
+Here is why it works. If any one bit flips, the number of 1s changes
+by exactly one, up or down. So an even count becomes odd, and an odd count
 becomes even. The parity always changes, and the check always sees it.
 
-Now the limit. The assumption in "the space we're in" was that at most one
+Now let's look at the limit. The assumption in "the space we're in" was that at most one
 bit flips. What if two do? This cell has noise that flips the bits worth 4
 and 2. Before you run it, think about the count of 1s. Will the check catch
 this one?
@@ -405,15 +406,14 @@ print("Looks right?", looks_right)
 ```
 
 Land receives 8 degrees, and the check says it looks right. Two flips
-change the count of 1s twice, and odd, then even, then odd again, puts it
-back where it started. So a parity bit promises to catch any one flipped
+change the count of 1s twice. It goes from odd to even, and back to odd. So a parity bit promises to catch any one flipped
 bit, and it promises nothing about two.
 
 That is still a useful promise. When flips are rare, two in one short
 message are much rarer than one. For this reason, parity bits have been
 used in computer memory, and on the cables that joined early computers to
-modems. The check letter at the end of an Irish PPS number is a
-cousin of the same idea: one extra character, worked out from the others,
+modems. The check letter at the end of an Irish PPS number uses a
+similar idea. It is one extra character, calculated from the others,
 that catches a mistyped digit.
 
 <aside class="dl-note" id="bits-note-hamming">
@@ -421,7 +421,7 @@ that catches a mistyped digit.
 **A weekend lost, and an idea found.** In 1947, Richard Hamming left a
 relay computer at Bell Labs running a job over a weekend. It found an
 error early on, and stopped, so on Monday he had nothing. He asked
-himself: if the machine can find out that there is an error, why can it
+himself: if the machine can find that there is an error, why can it
 not find where it is, and flip it back? His answer used several parity
 bits, each checking a different group of bits. It was published in 1950,
 and codes like it still protect the memory in many servers today.
@@ -451,19 +451,18 @@ To flip three bits, the mask needs three 1s in it, for example
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page did not stop when the parity bit worked. It went on to flip
+This page did not stop when the parity bit worked. It continued, and flipped
 two bits, and showed the check saying "looks right" about a wrong
 message. The page could have shown the check catching one flipped bit,
 and ended there, on a success.
 
-Ending on a success is a fair choice. It keeps the page shorter, and you
+A page can end on a success. That keeps the page shorter, and you
 leave with a tool that works.
 
-We showed the failure because a promise is only as good as the space it
-was made in. The parity bit promises to catch one flip, and says nothing
-about two. Naming the assumption, "at most one bit flips", is the fourth
-question at work. A tool whose limits you know is a tool you can trust,
-inside those limits.
+We showed the failure because a promise holds only in the space it was
+made in. The parity bit promises to catch one flip, and says nothing
+about two. When we name the assumption, "at most one bit flips", we are
+asking the fourth question: what does this space let us do?
 
 </details>
 
@@ -474,7 +473,7 @@ inside those limits.
 | What is named here? | Up and down became 1 and 0. A mask is a number whose bits are named as instructions: flip, or leave. The parity bit names a fact about a whole message in one bit. |
 | What is promised? | `parity_bit` promises the bit that makes the count of 1s even. A parity check promises to catch any one flipped bit, and promises nothing about two. |
 | What happens when? | Each toggle depends on the value before it. XOR with the same mask twice brings a value back. The parity loop works through the bits one at a time, from left to right. |
-| What does this space let us do? | In the space of bits, XOR is its own undo. The whole check rests on an assumption that often goes unsaid: at most one bit flips. |
+| What does this space let us do? | In the space of bits, XOR is its own undo. The whole check rests on an assumption that people rarely say: at most one bit flips. |
 
 ## What we have now
 

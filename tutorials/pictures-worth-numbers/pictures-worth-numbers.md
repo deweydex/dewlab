@@ -1,348 +1,742 @@
 ---
 title: "Charts: choosing the right chart for your data"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  exoplanets: Planets around other stars, and the ways they were found.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  book-characters: The people in six novels, chapter by chapter.
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+datasets: [exoplanets, dinosaur-genera, book-characters]
 covers:
-  why-visualize:
+  why-draw-the-data:
     covers: [MIT-5.10]
   choosing-the-right-chart:
     covers: [MIT-5.10]
   writing-reusable-plotting-functions:
     covers: [PDP-LO8]
-  combining-statistics-and-visualization:
-    covers: [MIT-5.12]
-  good-practices-for-visualization:
+  how-a-chart-can-mislead:
     covers: [MIT-5.10]
+  numbers-and-a-chart-together:
+    covers: [MIT-5.12]
 ---
 
 # Charts: choosing the right chart for your data
 
-In [Statistics: averages, spread and frequency](tutorial:making-sense-of-data)
-we wrote functions for the mean, the median, the mode and the standard
-deviation. We also drew our first histogram. On this page we look more
-closely at charts. A good chart does more than make a report look nice.
-It helps us understand the data.
+[Statistics](tutorial:making-sense-of-data) summarised the planets in a
+few numbers, and drew one histogram, which showed two humps that no
+average could. This page is about charts: which chart suits which
+question, how to write plotting code once and use it again, and how a
+chart can tell the truth about data, or not.
 
-On this page we:
-
-- see how summary numbers can hide what a dataset looks like
-- match five kinds of chart to the jobs they do well
-- wrap plotting code in functions we can use again
-- put summary numbers and a chart side by side
-- collect a few rules that make any chart easier to read
-
-Along the way we practise writing clean code, in small functions that
-each do one job.
-
-## Why visualize?
+## Why draw the data?
 
 Can four datasets have the same averages and the same spread, and still
 look nothing like each other?
 
-*Anscombe's Quartet* is a set of four small datasets, made by the
-statistician Francis Anscombe in 1973. The four datasets have nearly
-the same mean and the same standard deviation. They also have the same
-correlation. *Correlation* is a number between $-1$ and $1$ that
-measures how closely two lists of numbers follow a straight line. A
-correlation near $1$ means the points lie close to a line that goes up;
-a correlation near $0$ means there is no straight-line pattern. We will
-not calculate it on this page.
-
-For the four datasets, every one of those numbers is about the same. So
-the numbers cannot tell the datasets apart. What happens when we plot
-them? Run the cell to see.
+*Anscombe's quartet* is four small datasets made by the statistician
+Francis Anscombe in 1973. Each is eleven points, an x and a y. The four
+have nearly the same means, the same standard deviations, and the same
+*correlation*. Correlation is a number from $-1$ to $1$ that measures
+how closely the points follow a straight line. Near 1, they lie close to
+a line going up. Near 0, there is no straight-line pattern. This cell
+prints the means, and draws all four.
 
 ```python exec
 id: why-visualise-1
 import matplotlib.pyplot as plt
 
-# Anscombe's Quartet
 datasets = {
     "I":   {"x": [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
-             "y": [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68]},
+            "y": [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68]},
     "II":  {"x": [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
-             "y": [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74]},
+            "y": [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74]},
     "III": {"x": [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5],
-             "y": [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73]},
+            "y": [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73]},
     "IV":  {"x": [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8],
-             "y": [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]},
+            "y": [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89]},
 }
 
-fig, axes = plt.subplots(2, 2, figsize=(10, 8))
-for ax, (name, data) in zip(axes.flat, datasets.items()):
-    ax.scatter(data["x"], data["y"])
+for name in datasets:
+    xs = datasets[name]["x"]
+    ys = datasets[name]["y"]
+    print(name, " mean x", round(sum(xs) / len(xs), 2), " mean y", round(sum(ys) / len(ys), 2))
+
+fig, axes = plt.subplots(2, 2, figsize=(9, 7))
+for ax, name in zip(axes.flat, datasets):
+    ax.scatter(datasets[name]["x"], datasets[name]["y"])
     ax.set_title("Dataset " + name)
     ax.set_xlim(3, 20)
     ax.set_ylim(2, 14)
 plt.tight_layout()
-plt.show()
 ```
 
-The four summaries are the same, but the four pictures tell very
-different stories. One is a loose cloud around a line. One is a smooth
-curve. One is a neat line with a single point far away from it. One is
-a column of points with one point far off to the right. This is why
-charts matter: they show us what the numbers alone cannot.
+The summaries agree, and the pictures do not. One is a loose cloud
+around a line. One is a smooth curve. One is a neat line with a single
+point far off it. And one is a column of points with one point far to
+the right, which makes the whole "relationship" on its own.
+`plt.subplots(2, 2)` makes a grid of four charts, called *axes*, and the
+loop draws one set of points on each.
 
 ## Choosing the right chart
 
-Different kinds of data need different kinds of chart. Each chart type
-answers its own kind of question:
+Each kind of chart answers its own kind of question:
 
 | Chart | What it shows | A question it answers |
 |---|---|---|
-| **Histogram** | How the values of one numerical variable are spread out | How often does each range of values occur? |
-| **Bar chart** | Amounts compared across categories | How many students prefer each programming language? |
-| **Line chart** | A trend over time, or along some other ordered sequence | How did the temperature change during the day? |
-| **Scatter plot** | The relationship between two numerical variables | Do students who study for more hours get higher test scores? |
-| **Pie chart** | The parts of a whole | What fraction of students passed, got a merit, or got a distinction? |
+| Histogram | How one set of numbers is spread out | What sizes are planets? |
+| *Bar chart* | Amounts compared across categories | How many planets did each method find? |
+| *Line chart* | A trend along something ordered, often time | How many planets were found each year? |
+| *Scatter plot* | How two sets of numbers relate | Do planets with longer years tend to be larger? |
+| *Pie chart* | The parts of a whole | What share of planets did each method find? |
 
-Use pie charts rarely. A bar chart usually shows the same information
-more clearly, because people compare the lengths of bars more easily
-than the sizes of slices.
+Use pie charts rarely. People compare the lengths of bars much more
+easily than the sizes of slices, so a bar chart usually shows the same
+thing more clearly.
 
-We made a histogram on the statistics page. Here are the other three
-most useful types.
+### A bar chart
 
-### Making a bar chart
-
-Suppose we asked a class of students for their favourite programming
-language, and counted the answers:
+How many planets did each method find? The methods are categories, so
+this is a bar chart. With long labels, horizontal bars (`plt.barh`) keep
+them readable.
 
 ```python exec
 id: making-a-bar-chart-1
-languages = ["Python", "JavaScript", "Java", "C++", "Other"]
-counts = [15, 8, 5, 3, 4]
+import matplotlib.pyplot as plt
 
-plt.figure(figsize=(8, 5))
-plt.bar(languages, counts, color='steelblue', edgecolor='black')
-plt.xlabel('Language')
-plt.ylabel('Number of Students')
-plt.title('Favourite Programming Language')
-plt.show()
+planets = await load_csv("exoplanets.csv")
+by_method = planets.method.value_counts()
+top = by_method[:6]
+
+plt.barh(top.index, top.values)
+plt.gca().invert_yaxis()
+plt.xlabel("planets found")
+plt.title("How known planets were found")
 ```
 
-### Making a line chart
+`value_counts()` counts each method and puts the largest first.
+`invert_yaxis()` keeps the largest at the top. Transit found about three
+planets in four.
 
-This chart shows the temperature at each hour of one day, from midnight
-(hour 0) to the next midnight (hour 24). The hours are in order, so a
-line joining them makes sense.
+### A line chart
+
+How many planets were announced each year? Years are in order and evenly
+spaced, so a line joining them means something. It is a path through
+time.
 
 ```python exec
 id: making-a-line-chart-1
-hours = list(range(0, 25))
-temperatures = [8, 7, 6, 6, 5, 5, 6, 7, 9, 11, 13, 15, 
-                16, 17, 17, 16, 15, 14, 12, 11, 10, 9, 9, 8, 8]
+import matplotlib.pyplot as plt
 
-plt.figure(figsize=(10, 5))
-plt.plot(hours, temperatures, marker='o', linewidth=2, markersize=4)
-plt.xlabel('Hour of Day')
-plt.ylabel('Temperature (C)')
-plt.title('Temperature Throughout the Day')
-plt.grid(True, alpha=0.3)
-plt.show()
+per_year = planets.discovered.value_counts().sort_index()
+
+plt.plot(per_year.index, per_year.values, marker="o")
+plt.xlabel("year announced")
+plt.ylabel("planets")
+plt.title("Planets announced each year")
+plt.grid(alpha=0.3)
 ```
 
-### Making a scatter plot
+There are two spikes: 2014, with 872 planets, and 2016, with 1,504. Both
+are single announcements of planets found by the Kepler telescope,
+checked in batches. The line shows that discoveries come in lumps, as
+work is published, not steadily.
 
-Each point in a scatter plot is one student: how many hours they studied,
-and the score they got. The cell makes up data for 20 students, using
-`random` as we did in
-[Probability: simple, compound and conditional](tutorial:what-are-the-chances).
-Before you run it, what shape do you expect the points to make?
+### A scatter plot
+
+Each point in a scatter plot is one planet: how long its year is, and how
+big it is. Both cover huge ranges, so both axes are logarithmic. Before
+you run it, which corner of the chart do you expect to be nearly empty?
 
 ```python exec
 id: making-a-scatter-plot-1
-# Study hours vs test scores for 20 students
-import random
-random.seed(42)
+import matplotlib.pyplot as plt
 
-study_hours = [random.uniform(1, 10) for _ in range(20)]
-test_scores = [min(100, max(20, hours * 8 + random.uniform(-10, 10) + 15)) 
-               for hours in study_hours]
-
-plt.figure(figsize=(8, 6))
-plt.scatter(study_hours, test_scores, color='coral', edgecolor='black', s=60)
-plt.xlabel('Hours Studied')
-plt.ylabel('Test Score')
-plt.title('Study Hours vs Test Score')
-plt.grid(True, alpha=0.3)
-plt.show()
+plt.scatter(planets.orbit_days, planets.radius_earths, s=4, alpha=0.3)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlabel("orbit, in days")
+plt.ylabel("radius, in Earth radii")
+plt.title("Year length against size")
 ```
 
-### Your turn
+```predict
+Which corner will be nearly empty?
 
-Here are five situations:
+- Bottom right: small planets with long years
+  - They are the hardest to find.
+- Top left: large planets with short years
+  - Giants that close to their stars seem unlikely.
+- None of them
+  - Planets come in every size at every distance.
+```
 
-- (a) Showing how your daily step count changed over a month
-- (b) Comparing the number of bugs found in five different modules of a
-  program
-- (c) Showing the distribution of response times for a web server
-- (d) Looking for a relationship between how much coffee people drink
-  and how much work they get done
-- (e) Showing what percentage of a project's budget went to each
-  department
+It is the bottom right. There is a crowd of small planets with years of
+a few days, and a clump of giants at the top left, the *hot Jupiters*,
+as big as Jupiter and closer to their stars than Mercury is to the Sun.
+The empty corner shows the sampling bias from the last page. Small
+planets with long years exist, but we can hardly find them.
 
-1. For each situation, choose the chart type you think fits best.
-2. Write down why, as a comment in the cell.
-3. Pick one of the five, and build its chart with matplotlib. You can
-   make up the data.
+Look again at the flat line of points near 13 Earth radii, running out
+to years of thousands of days. Nature rarely makes a line that flat.
+Most of those planets were found by the wobble of their star, which
+gives a planet's mass but not its size, and the archive estimated their
+radius from their mass. A chart shows how the numbers were made, as well
+as what they measure.
 
-```python exec
-id: your-turn-1
-# Your chart type choices (in comments) and one implementation
+```question
+id: choosing-a-chart
+type: fill-in-the-blank
+
+- How your daily step count changed over a month: a {line chart|bar chart|histogram|scatter plot}.
+- The number of bugs found in each of five parts of a program: a {bar chart|line chart|histogram|scatter plot}.
+- How long a website takes to answer, over 10,000 requests: a {histogram|bar chart|line chart|scatter plot}.
+- Whether people who drink more coffee sleep less: a {scatter plot|histogram|bar chart|line chart}.
 ```
 
 ## Writing reusable plotting functions
 
-On the statistics page we wrapped each calculation in a function. We can
-do the same with plotting code that we keep writing again. Here is a
-function that draws a labelled histogram:
+Every chart above needed the same few lines: draw, label the axes, add a
+title. A function can hold them, so each new chart is one line. Can you
+write `bar_chart(labels, values, title, xlabel)`, which draws a labelled
+horizontal bar chart with the first label at the top?
 
 ```python exec
 id: writing-reusable-plotting-functions-1
-def plot_histogram(data, title, xlabel, num_bins=10, colour='steelblue'):
-    """Create a labelled histogram from a list of numerical data."""
-    plt.figure(figsize=(8, 5))
-    plt.hist(data, bins=num_bins, color=colour, edgecolor='black', alpha=0.7)
+import matplotlib.pyplot as plt
+
+
+def bar_chart(labels, values, title, xlabel):
+    """Draw a labelled horizontal bar chart, first label at the top."""
+    # Your code here
+
+
+by_method = planets.method.value_counts()
+bar_chart(by_method.index[:6], by_method.values[:6], "How known planets were found", "planets")
+```
+
+```hint
+The bar chart earlier on this page has every line you need: `plt.barh`,
+`plt.gca().invert_yaxis()`, `plt.xlabel` and `plt.title`. Use the
+parameters in place of the fixed labels.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+
+def bar_chart(labels, values, title, xlabel):
+    """Draw a labelled horizontal bar chart, first label at the top."""
+    plt.figure()
+    plt.barh(labels, values)
+    plt.gca().invert_yaxis()
     plt.xlabel(xlabel)
-    plt.ylabel('Frequency')
     plt.title(title)
-    plt.show()
 
-# Now we can create histograms with one line
-scores = [42, 38, 35, 47, 29, 41, 44, 33, 39, 48,
-          31, 36, 43, 27, 45, 40, 37, 34, 46, 32,
-          38, 41, 35, 43, 30, 39, 44, 36, 42, 28]
 
-plot_histogram(scores, 'Quiz Score Distribution', 'Score', num_bins=6)
+planets = await load_csv("exoplanets.csv")
+by_method = planets.method.value_counts()
+bar_chart(by_method.index[:6], by_method.values[:6], "How known planets were found", "planets")
+---
+`plt.figure()` starts a new chart each time, so two calls in one cell
+draw two charts rather than piling bars on top of each other. The
+function now holds every choice about how a bar chart should look.
+Change one there, and every chart that uses the function changes too.
 ```
 
-The last line draws a whole labelled chart. The details, like the colour
-and the axis labels, live inside the function. `num_bins` and `colour`
-have default values, so we only give them when we want something
-different.
+## How a chart can mislead
 
-### Your turn
+A chart can be made from true numbers and still leave a false picture.
+The most common ways are few, and once you know them, you see them
+everywhere.
 
-1. Write a function `plot_bar_chart(categories, values, title, xlabel, ylabel)`
-   that draws a labelled bar chart. Give it a docstring.
-2. Write a function `plot_scatter(x, y, title, xlabel, ylabel)` that
-   draws a labelled scatter plot. Give it a docstring too.
-3. Test both functions with data from earlier on this page: the
-   favourite languages, and the study hours and test scores.
+### A bar that does not start at zero
+
+The file has 260 planets announced in 2024 and 245 in 2025. Here they
+are twice: on the left with the axis starting at zero, and on the right
+with it starting at 240. `plt.subplots(1, 2)` makes two charts side by
+side.
 
 ```python exec
-id: your-turn-2
-# Your plot_bar_chart function
+id: mislead-truncated-axis
+import matplotlib.pyplot as plt
+
+years = ["2024", "2025"]
+counts = [260, 245]
+
+fig, (left, right) = plt.subplots(1, 2, figsize=(9, 4))
+left.bar(years, counts)
+left.set_title("Axis from 0")
+right.bar(years, counts)
+right.set_ylim(240, 262)
+right.set_title("Axis from 240")
+
+print("The real ratio:", round(260 / 245, 2))
+print("On the right, 2024's bar is drawn", (260 - 240) / (245 - 240), "times as tall")
 ```
+
+```predict
+type: number
+
+On the right, how many times as tall as 2025's bar will 2024's bar be
+drawn?
+```
+
+It is four times as tall, for a difference of 6%. The length of a bar
+shows its value, so a bar chart must start at zero. A line chart need
+not. It shows how steeply something rises and falls, and forcing it to
+zero can flatten a real change until it disappears. Plotting libraries
+often choose the axis that fills the frame, so the truncated chart is
+the one you get if you do nothing.
+
+### A window chosen to tell a story
+
+"Planet discoveries collapse by 87%!" Here are the years that headline
+might use, and the whole record beside them.
 
 ```python exec
-id: your-turn-3
-# Your plot_scatter function
+id: mislead-chosen-window
+import matplotlib.pyplot as plt
+
+per_year = planets.discovered.value_counts().sort_index()
+window = per_year.loc[2016:2019]
+
+fig, (left, right) = plt.subplots(1, 2, figsize=(10, 4))
+left.plot(window.index, window.values, marker="o")
+left.set_title("2016 to 2019")
+right.plot(per_year.index, per_year.values, marker="o")
+right.set_title("Every year")
+print("2016:", per_year[2016], " 2019:", per_year[2019])
 ```
 
-```python exec
-id: your-turn-4
-# Test them
-```
+From 1,504 to 194 is a fall of 87%, and every number is true. But 2016
+was the year of Kepler's great batch, and the whole record shows no
+collapse at all. The easiest way to make a trend is to start a window
+at a peak, or end it at a dip. A last period that is not over yet does
+the same. This year's count, compared with whole years, always looks like
+a fall.
 
-## Combining statistics and visualization
+### Three more
 
-We learn the most about a dataset when we look at summary numbers and a
-chart together. Here is the start of a function that does both. It
-prints a few numbers, and then it draws a histogram with our
-`plot_histogram()` function.
+- **Area for length.** A picture of a planet twice as wide looks four
+  times as big, because its area is four times as big. Pictures sized by
+  a number exaggerate it.
+- **A logarithmic axis nobody mentions.** On a log scale, equal steps
+  multiply. A reader who does not notice will misjudge every difference.
+- **Correlation read as cause.** Ice cream sales and drownings rise
+  together, because both rise in hot weather. A *confounder* is a third
+  thing that makes two others move together. The mistake is often in
+  the sentence written under the chart.
+
+## Numbers and a chart together
+
+A summary and a chart each show things the other misses. Can you write
+`summarise(data, title)`, which prints the mean, median and standard
+deviation, and draws a histogram with dashed lines at the mean and the
+median? The cell starts with `mean`, `median` and `std_dev`, the
+functions from the Statistics page, so you can use them.
 
 ```python exec
 id: combining-statistics-and-visualisation-1
-def analyse_dataset(data, title):
-    """Print summary statistics and show a histogram for a dataset."""
-    # We are using our functions from *Statistics: averages, spread and frequency*
-    # (you may need to redefine mean, median, mode, std_dev here
-    #  or copy them from your previous work)
-    
-    print("=== " + title + " ===")
-    print("Count:    ", len(data))
-    print("Min:      ", min(data))
-    print("Max:      ", max(data))
-    # Add calls to mean, median, mode, std_dev here
-    print()
-    
-    plot_histogram(data, title, 'Value')
+{{include: setup/data/functions.py}}
+
+import matplotlib.pyplot as plt
+
+
+def summarise(data, title):
+    """Print the centre and spread of data, and draw its histogram."""
+    # Your code here
+
+
+distances = planets.distance_ly.dropna().tolist()
+summarise(distances, "Distance from us, in light years")
 ```
 
-### Your turn
+```hint
+Print the three numbers first. Then use `plt.hist(data, bins=50)`, and
+`plt.axvline(value, linestyle="--", label="mean")` for each line, with
+`plt.legend()` to name them.
+```
 
-The function is not finished yet. How might you complete it?
+```solution
+{{include: setup/data/functions.py}}
 
-1. Bring in your `mean()`, `median()`, `mode()` and `std_dev()`
-   functions from
-   [Statistics: averages, spread and frequency](tutorial:making-sense-of-data).
-   You can copy them from your earlier work, or write them again.
-2. Add calls to them inside `analyse_dataset()`, where the comment says.
-3. Run `analyse_dataset()` on the quiz scores.
-4. If you want a challenge, make a second dataset of your own. Analyse
-   both, and compare the two results side by side. What does each chart
-   show that its numbers do not?
+import matplotlib.pyplot as plt
+
+
+def summarise(data, title):
+    """Print the centre and spread of data, and draw its histogram."""
+    print(title)
+    print("  mean   ", round(mean(data), 1))
+    print("  median ", round(median(data), 1))
+    print("  sd     ", round(std_dev(data), 1))
+    plt.figure()
+    plt.hist(data, bins=50)
+    plt.axvline(mean(data), color="red", linestyle="--", label="mean")
+    plt.axvline(median(data), color="green", linestyle="--", label="median")
+    plt.title(title)
+    plt.legend()
+
+
+planets = await load_csv("exoplanets.csv")
+distances = planets.distance_ly.dropna().tolist()
+summarise(distances, "Distance from us, in light years")
+---
+It prints a mean of about 2,322 light years, a median of 1,172, and a
+standard deviation of 4,031, larger than the mean itself. The histogram
+shows why. There is a tall crowd near us, and a long tail out past 20,000
+light years, the microlensing planets. The gap between the two lines
+shows the skew at a glance.
+```
+
+## Go further: the central limit theorem
+
+Roll one die many times, and the histogram is flat, because every face
+appears equally often. Add two dice, and it is a triangle, as on the
+[Probability](tutorial:what-are-the-chances) page. What happens with
+ten?
 
 ```python exec
-id: your-turn-5
-# Your completed analyse_dataset function
+id: clt-dice
+import random
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.5))
+for ax, dice in zip(axes, [1, 2, 10]):
+    totals = []
+    for trial in range(10_000):
+        total = 0
+        for die in range(dice):
+            total = total + random.randint(1, 6)
+        totals.append(total)
+    ax.hist(totals, bins=range(dice, 6 * dice + 2))
+    ax.set_title(str(dice) + " dice")
+plt.tight_layout()
 ```
+
+With ten dice, the totals make a smooth hump, highest in the middle and
+falling evenly on both sides. It is a bell. The same happens with
+anything added up from many independent random parts, whatever shape
+each part has. That is the *central limit theorem*.
+
+It is most useful for means. The planets' radii have two humps. Take a
+random sample of 50 planets, and calculate its mean radius. Do that 2,000
+times, and draw the means.
 
 ```python exec
-id: your-turn-6
-# Apply it
+id: clt-sample-means
+import random
+import matplotlib.pyplot as plt
+
+radii = planets.radius_earths.dropna().tolist()
+sample_means = []
+for trial in range(2000):
+    sample = random.sample(radii, 50)
+    sample_means.append(sum(sample) / 50)
+
+plt.hist(sample_means, bins=40)
+plt.xlabel("mean radius of 50 planets")
+plt.ylabel("samples")
+print("The mean of all the radii:", round(sum(radii) / len(radii), 2))
 ```
 
-## Good practices for visualization
+The means make a single bell, centred on the mean of all the radii,
+5.88, though the radii themselves are nowhere near a bell. Each sample's
+mean misses the true one, some by more than a whole Earth radius, and
+the bell says how likely each size of miss is. This is why a survey of a
+thousand people can say something about a million.
 
-Here are a few rules that help with almost any chart:
+## Go further: the 68–95–99.7 rule
 
-- **Title and labels.** Give every chart a clear title, and label both
-  axes. Imagine someone sees the chart with no text around it. They
-  should still understand what it shows.
-- **Colour.** Choose colours to make the chart clearer, not to decorate
-  it. For separate categories, use colours that are easy to tell apart.
-  For a quantity that changes smoothly, use a *gradient*: one colour
-  that goes smoothly from light to dark.
-- **No chart junk.** *Chart junk* is anything on a chart that is only
-  decoration and carries no information. A simple chart is easier to
-  understand.
-- **The same scale.** When you compare groups in separate charts, use
-  the same scale on each one. Different scales can make a difference
-  look bigger or smaller than it is.
+A bell shape like that is called a *normal distribution*. For data that
+is close to normal, about 68% of values are within one standard deviation
+of the mean, about 95% within two, and about 99.7% within three. This
+is the *68–95–99.7 rule*. Does it hold for the sample means? And for the
+planets' orbits?
 
-### Your turn
+```python exec
+id: rule-68-95-99
+{{include: setup/data/functions.py}}
 
-Can you find a chart online, in a news article, a textbook or a website,
-that communicates well? Can you find one that communicates badly? What
-makes each one work, or fail?
 
-## Reflection
+def share_within(data, how_many_sds):
+    """The share of values within how_many_sds standard deviations of the mean."""
+    centre = mean(data)
+    spread = std_dev(data)
+    inside = [value for value in data if abs(value - centre) < how_many_sds * spread]
+    return len(inside) / len(data)
 
-Drawing charts and calculating statistics are two parts of the same
-job: understanding data. A good analyst moves between numbers and
-pictures all the time, and uses each one to check the other.
 
-We now have a complete set of tools for exploring a dataset: counting,
-probability, summary statistics and charts. From here on, we use them
-together.
+orbits = planets.orbit_days.dropna().tolist()
+for k in [1, 2, 3]:
+    print(k, "sd:  sample means", round(share_within(sample_means, k), 3),
+          "  orbits", round(share_within(orbits, k), 4))
+```
 
-What is the most important thing you have learned about presenting
-data?
+The sample means follow the rule closely: about 0.68, 0.95 and 0.99.
+The orbits do not. 99.9% of them are within one standard deviation,
+not 68%. One enormous orbit made the standard deviation over 5,000,000
+days, so almost everything is "close" by that measure. The rule works
+for bell-shaped data. On skewed data, a statement like "three standard
+deviations from the mean" can mean almost nothing.
 
-## Where to Read More
+## Your world
+
+Each world asks one question that a chart can answer.
+
+<div class="dl-world" data-world="exoplanets">
+
+Has the typical distance of newly found planets changed over the years?
+Draw the median distance of each year's planets as a line chart, with a
+log scale on the y axis.
+
+```python exec
+id: charts-your-world--exoplanets
+import matplotlib.pyplot as plt
+
+planets = await load_csv("exoplanets.csv")
+median_distance = planets.groupby("discovered").distance_ly.median()
+print(median_distance.loc[2014:2019])
+```
+
+```hint
+`median_distance.index` is the years and `median_distance.values` the
+medians. Call `plt.yscale("log")` after `plt.plot`.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+planets = await load_csv("exoplanets.csv")
+median_distance = planets.groupby("discovered").distance_ly.median()
+print(median_distance.loc[2014:2019])
+
+plt.plot(median_distance.index, median_distance.values, marker="o")
+plt.yscale("log")
+plt.xlabel("year announced")
+plt.ylabel("median distance, light years")
+---
+With the copy saved on {{snapshot: exoplanets}}, the median rises from
+about 50 light years in the late 1990s to over 2,000 in Kepler's big
+years, 2014 and 2016, then falls to a few hundred. Kepler stared at one
+patch of sky, deep into it. TESS, launched in 2018, watches bright stars
+all over the sky, and bright stars are mostly near. The planets did not
+move. The telescopes changed, and the sample changed with them.
+```
+
+</div>
+
+<div class="dl-world" data-world="dinosaurs">
+
+How many dinosaur genera were named in each decade? Draw a bar for each
+decade. Then look closely at the last bar before you say what the chart
+shows.
+
+```python exec
+id: charts-your-world--dinosaurs
+import matplotlib.pyplot as plt
+
+genera = await load_csv("dinosaur-genera.csv")
+decades = {}
+for name in genera.named_by:
+    year = int(name.strip("()")[-4:])
+    decade = year // 10 * 10
+    if decade not in decades:
+        decades[decade] = 0
+    decades[decade] = decades[decade] + 1
+print(sorted(decades.items())[-4:])
+```
+
+```hint
+Use `plt.bar(list(decades.keys()), list(decades.values()), width=8)`.
+The width of 8 years leaves a gap between the ten-year bars.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+genera = await load_csv("dinosaur-genera.csv")
+decades = {}
+for name in genera.named_by:
+    year = int(name.strip("()")[-4:])
+    decade = year // 10 * 10
+    if decade not in decades:
+        decades[decade] = 0
+    decades[decade] = decades[decade] + 1
+print(sorted(decades.items())[-4:])
+
+plt.bar(list(decades.keys()), list(decades.values()), width=8)
+plt.xlabel("decade named")
+plt.ylabel("genera")
+---
+With the copy saved on {{snapshot: dinosaur-genera}}, the chart shows a
+bump in the 1870s, the "Bone Wars" between two American collectors
+racing to name new animals; a dip in the 1940s, during the Second World
+War; and a climb from the 1970s to 457 in the 2010s. The last bar, 254,
+looks like a fall, but mostly it is not. The 2020s are not yet seven
+years old, and at that pace the decade would end near 380, not 254. An
+unfinished last period is one of the easiest ways for a chart to
+mislead.
+```
+
+</div>
+
+<div class="dl-world" data-world="book-characters">
+
+When do Mr Darcy and Mr Wickham appear in *Pride and Prejudice*? Draw
+each one's mentions, chapter by chapter, as two lines on one chart, with
+a legend.
+
+```python exec
+id: charts-your-world--book-characters
+import matplotlib.pyplot as plt
+
+characters = await load_csv("book-characters.csv")
+pride = characters[characters.book == "pride-and-prejudice"]
+darcy = pride[pride.character == "Darcy"]
+wickham = pride[pride.character == "Wickham"]
+print(len(darcy), "chapters")
+```
+
+```hint
+Use `plt.plot(darcy.chapter, darcy.mentions, label="Darcy")`, the same
+for Wickham, then `plt.legend()`.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+characters = await load_csv("book-characters.csv")
+pride = characters[characters.book == "pride-and-prejudice"]
+darcy = pride[pride.character == "Darcy"]
+wickham = pride[pride.character == "Wickham"]
+print(len(darcy), "chapters")
+
+plt.plot(darcy.chapter, darcy.mentions, label="Darcy")
+plt.plot(wickham.chapter, wickham.mentions, label="Wickham")
+plt.xlabel("chapter")
+plt.ylabel("times named")
+plt.legend()
+---
+Darcy peaks at chapter 18, the Netherfield ball, where he is named 41
+times. Wickham peaks at chapter 16, where he tells Elizabeth his story
+about Darcy. Wickham appears in bursts, and Darcy is named in most
+chapters, even the ones he is not in, because the others talk about him.
+Chapters are in order, so a line chart fits. The x axis is the book's
+own time.
+```
+
+</div>
+
+<div class="dl-world" data-world="games-of-chance">
+
+Roll three dice and add them. Count every one of the $6^3 = 216$
+outcomes, with no simulation at all, and draw a bar for each total.
+Which totals are the most common?
+
+```python exec
+id: charts-your-world--games-of-chance
+import itertools
+import matplotlib.pyplot as plt
+
+totals = {}
+for roll in itertools.product(range(1, 7), repeat=3):
+    total = sum(roll)
+    if total not in totals:
+        totals[total] = 0
+    totals[total] = totals[total] + 1
+print(len(totals), "different totals")
+```
+
+```hint
+Use `plt.bar(list(totals.keys()), list(totals.values()))`, then look for
+the tallest bars.
+```
+
+```solution
+import itertools
+import matplotlib.pyplot as plt
+
+totals = {}
+for roll in itertools.product(range(1, 7), repeat=3):
+    total = sum(roll)
+    if total not in totals:
+        totals[total] = 0
+    totals[total] = totals[total] + 1
+print(len(totals), "different totals")
+print(totals[10], totals[11], totals[3])
+
+plt.bar(list(totals.keys()), list(totals.values()))
+plt.xlabel("total of three dice")
+plt.ylabel("outcomes, of 216")
+---
+10 and 11 are the most common, with 27 outcomes each. 3 and 18 have one each.
+Two dice made a triangle. Three already make a rounded hump, the start of
+the bell in the central limit theorem, and this time we counted it
+exactly rather than simulated it.
+```
+
+</div>
+
+## Good practice
+
+Here is a checklist for any chart that someone else will see:
+
+- **A title, and labels with units** on both axes. The chart should make
+  sense with no text around it, because it will be copied into places
+  where there is none.
+- **Bars start at zero.** Line charts may not, and should say so.
+- **The same scale** for charts meant to be compared.
+- **Say where the data came from**, and when.
+- **No chart junk.** *Chart junk* is decoration that carries no
+  information. Colour should separate things, not decorate them.
+
+## Looking back
+
+This page drew the same planets many ways, and made one pair of true
+numbers look like a fourfold difference. If you had to make a chart of
+the planets that misled without a single false number, which of the
+tricks on this page would you use, and what would show the trick?
+
+A challenge: try the central limit theorem on something far from a bell.
+The wait for a six, from the Statistics page, is skewed: mostly short,
+sometimes very long. Take the mean wait of a sample of players, many
+times, and draw the means. How big must a sample be before the bell
+appears?
+
+```python challenge
+import random
+import matplotlib.pyplot as plt
+
+
+def rolls_until_six():
+    rolls = 1
+    while random.randint(1, 6) != 6:
+        rolls = rolls + 1
+    return rolls
+
+
+# For samples of 2, 10 and 50 players: work out 2,000 sample means,
+# and draw a histogram of each.
+```
+
+The last page of the series asks you to make exactly that: one chart
+that tells the truth about your world's data, and one that does not.
+
+## Where to read more
 
 Anscombe, F. J. (1973). *Graphs in Statistical Analysis.* The American
-Statistician, 27(1), 17–21. The original paper behind the quartet this
-page opens with — four datasets, one lesson.
+Statistician, 27(1), 17–21. The paper behind the quartet this page opens
+with.
+
+Stand-up Maths (2020). *The Datasaurus Dozen.*
+<https://www.youtube.com/watch?v=iwzzv1biHv8>. Twelve sets of points with
+the same means and spread, which look nothing alike when drawn, and one
+of them is a dinosaur. Eight minutes.
 
 Matplotlib development team. *Pyplot Tutorial.*
 <https://matplotlib.org/stable/tutorials/pyplot.html>. The official
-reference for everything this page's charts do, and the many options it
-does not have room to cover.
+reference for everything this page's charts do.
 
 CrashCourse (2018). *Charts Are Like Pasta: Data Visualization Part 1:
 Crash Course Statistics #5.*

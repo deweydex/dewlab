@@ -98,8 +98,7 @@ line must have the same number of words. When one does not, the
 browser ignores the whole `grid-template-areas` declaration. Then no
 area called `header`, `nav`, `main` or `footer` exists, so every
 `grid-area` points at nothing, and the four boxes were piled into the
-same spot. That is why the whole layout broke, and not only the second
-row.
+same spot. So the whole layout broke, and not only the second row.
 
 </details>
 
@@ -319,7 +318,7 @@ footer { grid-area: footer; }
 ```
 
 The dots in `". footer ."` name the two empty cells, so the last line
-still has three words. The name `aside` is our choice: any word works,
+still has three words. The name `aside` is our choice. Any word works,
 as long as the map and the `grid-area` line use the same one.
 
 </details>
@@ -387,7 +386,7 @@ block again, and the heading, the text and the buttons stack, as
 before.
 
 Your stylesheet's other block starts at `max-width: 768px`. With
-`min-width: 769px`, the two never overlap: at `768px` only the old
+`min-width: 769px`, the two never overlap. At `768px` only the old
 block applies, and at `769px` only the new one.
 
 </details>

@@ -72,8 +72,8 @@ and we cannot divide by zero.
 
 The slope asks "how much does $y$ change when $x$ goes up by one?" On
 this line $x$ never goes up, so the question has no answer. This is the
-vertical line that $y = mx + c$ cannot describe, and it is why the form
-$ax + by + c = 0$ exists.
+vertical line that $y = mx + c$ cannot describe. The form
+$ax + by + c = 0$ exists for lines like this.
 
 </details>
 
@@ -100,8 +100,8 @@ Write it as $y = mx + c$. What does each of the two numbers mean?
 $y = 0.06x + 12$, where $x$ is the number of minutes and $y$ is the
 cost in euro.
 
-The 0.06 is the rate: what one more minute costs. The 12 is what you
-pay for zero minutes. This is the fixed monthly charge.
+The 0.06 is the rate. It is the cost of one more minute. The 12 is the
+cost for zero minutes. This is the fixed monthly charge.
 
 </details>
 
@@ -113,7 +113,7 @@ the cost for each item, and what is the fixed cost?
 
 The slope is $\dfrac{610 - 250}{30 - 10} = 18$, so each item costs €18.
 
-To find the fixed cost, work back to $x = 0$: $250 - 10 \times 18 = 70$.
+To find the fixed cost, go back to $x = 0$: $250 - 10 \times 18 = 70$.
 The fixed cost is €70.
 
 </details>
@@ -180,8 +180,7 @@ $\dfrac{\text{rise}}{\text{run}}$ becomes $\dfrac{\text{run}}{-\text{rise}}$,
 or $\dfrac{-\text{run}}{\text{rise}}$.
 
 Multiply the two slopes together. The rise and the run cancel
-completely, and $-1$ is left. The swap makes everything cancel, and the
-change of sign is all that remains.
+completely, and $-1$ is left.
 
 </details>
 
@@ -300,8 +299,8 @@ does the cable need to be?
 
 $\sqrt{33^2 + 44^2} = \sqrt{1089 + 1936} = \sqrt{3025} = 55$ m.
 
-This is a 3-4-5 triangle, made 11 times bigger. These triangles turn up
-often, and spotting one saves a calculation.
+This is a 3-4-5 triangle, made 11 times bigger. These triangles appear
+often. If you spot one, you save a calculation.
 
 </details>
 
@@ -328,8 +327,8 @@ meet at a right angle. The straight-line distance is the third side of
 that triangle.
 
 So $\text{distance}^2 = \text{across}^2 + \text{up}^2$ is exactly
-$c^2 = a^2 + b^2$, with the two gaps as the two short sides. Neither is
-a special case of the other. They are one statement.
+$c^2 = a^2 + b^2$, with the two gaps as the two short sides. The two
+formulas say the same thing.
 
 </details>
 
@@ -357,7 +356,7 @@ Call the point $(x, 0)$. The two squared distances must be equal:
 
 $$x^2 + 16 = (x - 6)^2 + 4$$
 
-Multiplying out the bracket gives $x^2 + 16 = x^2 - 12x + 40$. So
+If we expand the bracket, we get $x^2 + 16 = x^2 - 12x + 40$. So
 $12x = 24$, and $x = 2$.
 
 The point is $(2, 0)$. It is $2\sqrt{5}$ from each of the two points.

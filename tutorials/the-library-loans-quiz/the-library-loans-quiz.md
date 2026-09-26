@@ -26,13 +26,12 @@ has a check cell below it. Run that cell, and it tells you, instantly
 and only in your own browser, whether the task's requirements are met.
 Run it as often as you like.
 
-This library's own books do not always have one author each — some are
-written by two people together. That single fact is what makes this
-database genuinely different from [a college
-timetable](tutorial:a-college-timetable): every relationship there was
-one thing pointing at one other thing. A book can point at *several*
-authors, and an author can point at several books. Task 2 is where that
-shows up.
+This library's books do not always have one author each. Some are
+written by two people together. This one fact makes this database
+different from [a college timetable](tutorial:a-college-timetable).
+Every relationship there was one thing pointing at one other thing. A
+book can point at *several* authors, and an author can point at several
+books. You meet this in Task 2.
 
 Write your SQL in this box as you go. Your code is saved on this
 device, the same as every cell on this site. After a reload, run this
@@ -103,24 +102,24 @@ if bool(author_columns and book_columns) and not missing:
 
 ## Task 2: a book can have more than one author
 
-Neither `author_tbl` nor `book_tbl` says which author wrote which book
-— a third table does, since either one could point at several of the
+Neither `author_tbl` nor `book_tbl` says which author wrote which book.
+A third table does, since either one could point at several of the
 other. Create a table called `book_author_tbl` with these columns:
 
 - `book_id` is a whole number naming a row in `book_tbl`.
 - `author_id` is a whole number naming a row in `author_tbl`.
 
-No key of its own this time: no `book_author_id`. One row of
-`book_author_tbl` means "this book has this author," and that pairing is
-what identifies the row. A separate key would add nothing. Make `book_id`
-and `author_id` *together* the table's primary key, with `PRIMARY KEY
+This table has no key of its own, so there is no `book_author_id`. One
+row of `book_author_tbl` means "this book has this author," and that
+pair identifies the row. A separate key would add nothing. Make
+`book_id` and `author_id` *together* the table's primary key, with `PRIMARY KEY
 (book_id, author_id)` as a line of its own inside the `CREATE TABLE`,
 after the two columns. Each column keeps the name of the key it points
 at, the same as any other foreign key.
 
 A table like this, joining two others many-to-many, is called a
-*junction table* — junction, because every row is a single crossing
-point between one book and one author.
+*junction table*. Each row is one point where one book and one author
+meet, like a junction where two roads meet.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -131,19 +130,19 @@ point between one book and one author.
    key, rather than marking one column `PRIMARY KEY` on its own the way
    every earlier table in this module did.
 3. Run `PRAGMA table_info(book_author_tbl);` in the SQL box and look at its
-   last column. A `0` means that column is not part of the primary key;
-   any other number means it is, and shows its position within it.
+   last column. A `0` means that column is not part of the primary key.
+   Any other number means it is, and shows its position within it.
    Both `book_id` and `author_id` should show a non-zero number.
 
-**Think about:** why an ordinary single-column key, such as a
-`book_author_id`, would not actually stop the same book being linked to
-the same author twice, the way the composite key here does.
+**Think about:** why would an ordinary single-column key, such as a
+`book_author_id`, not stop the same book being linked to the same author
+twice? The composite key here does stop it.
 
 **Try this next:** [a college timetable](tutorial:a-college-timetable)
-solved a different problem — finding two rows that clash — by comparing
-a table to itself. This table solves a different problem again: letting
+solved a different problem. It found two rows that clash by comparing a
+table to itself. This table solves a different problem again: letting
 one row on each side connect to several rows on the other. Compare the
-two designs once both are fresh in your mind.
+two designs while you remember both.
 
 </details>
 
@@ -223,9 +222,9 @@ into `book_author_tbl` connecting them, so that:
 
 <details class="dl-hint"><summary>hint</summary>
 
-A real pair of co-written books works well here — *Good Omens*, written
-together by two authors who also each wrote books of their own, is one
-example. Insert both authors, then insert a `book_author_tbl` row for
+A real pair of co-written books works well here. *Good Omens* is one
+example. Its two authors also each wrote books of their own. Insert both
+authors, then insert a `book_author_tbl` row for
 each of them against the same book's `book_id`.
 
 </details>
@@ -276,8 +275,8 @@ covering a genuinely co-written book, can satisfy both counts at once.
 Insert at least three members. Then insert at least four loans, each
 naming a real `book_id` and `member_id`. At least one loan needs a
 `returned_date` before `'2026-09-01'`, and at least one other loan needs
-`returned_date` left blank, with a `due_date` before `'2026-09-01'` —
-a book that is overdue right now.
+`returned_date` left blank, with a `due_date` before `'2026-09-01'`.
+That book is overdue right now.
 
 <details class="dl-hint"><summary>hint</summary>
 
@@ -364,7 +363,7 @@ if bool(book_with_two_authors) and overdue_count > 0:
 
 ## One way to do it
 
-Every check passing means your own database already meets the tasks.
+If every check passes, your own database already meets the tasks.
 This is one complete solution, not the only one. Compare it with your
 own to see a full example.
 
@@ -458,7 +457,7 @@ JOIN member_tbl ON loan_tbl.member_id = member_tbl.member_id
 WHERE loan_tbl.returned_date IS NULL AND loan_tbl.due_date < '2026-09-01';
 ```
 
-`Good Omens`, `book_id` 1, has two rows in `book_author_tbl` — one for
+`Good Omens`, `book_id` 1, has two rows in `book_author_tbl`: one for
 Terry Pratchett, one for Neil Gaiman. Running the first `SELECT` on its
 own returns both names. The second returns one row: `Good Omens`,
 borrowed by Grace Lin, due back before the cutoff and never returned.

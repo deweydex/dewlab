@@ -3,9 +3,9 @@
 A cell can fail when nothing is wrong with the site. Here are three things
 to try, in this order.
 
-**Reset the cell.** The reset button next to Run brings back the code the
-page started with. If the cell works again after that, the problem was in
-an edit, not in the page.
+**Clear the cell.** The **Clear** button (↻) next to Run puts back the
+code the page started with. If the cell works again after that, the
+problem was in an edit, not in the page.
 
 **Run the cells above it.** A later cell often uses something an earlier
 cell made. The cells on a page share their work, so the order you run them

@@ -9,7 +9,7 @@ version: 2026.09.25.1
 
 The answers are hidden in folds under each problem. Try each
 rearrangement by hand first, and write your answer down. The checking
-cell below can then tell you whether it is right.
+cell below then shows whether your answer agrees with the original.
 
 ## Tools
 
@@ -60,7 +60,7 @@ Multiply both sides by 100. Then divide both sides by $R$ and by $T$.
 
 $C = \frac{5(F - 32)}{9}$.
 
-Subtract 32 first, because adding 32 was the last operation done (the
+Subtract 32 first, because the formula added 32 last (the
 outermost one). Then undo the multiplication by $\frac{9}{5}$: multiply
 by 5 and divide by 9.
 
@@ -98,13 +98,13 @@ With $u = 0$ the formula is $s = \frac{1}{2}at^2$, so $t = \sqrt{\frac{2s}{a}}$.
 When $u$ is not zero, the formula is a quadratic in $t$, and you need
 the quadratic formula from
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
-This is worth noticing: whether a rearrangement is easy often depends on
+This is worth noticing. A rearrangement is often easy or hard because of
 what else you know.
 
 </details>
 
-**6.** Why does undoing go from the outside in, when evaluating goes
-from the inside out?
+**6.** Why do we undo from the outside in, when we evaluate from the
+inside out?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -112,8 +112,7 @@ To evaluate $u + at$, you multiply first and add last. To undo it, you
 must first remove the last thing that was done. So you subtract first,
 then divide.
 
-It is the same order as taking off a coat and a jumper: the last thing
-you put on is the first thing you take off.
+Think of a coat over a jumper. You take off the coat before the jumper.
 
 </details>
 
@@ -126,8 +125,8 @@ you put on is the first thing you take off.
 $R = \frac{1}{\frac{1}{a} + \frac{1}{b}}$. Another way to write the same
 thing is $R = \frac{ab}{a + b}$.
 
-Find $\frac{1}{R}$ first, then flip it. The second form comes from
-putting the right-hand side over a common denominator:
+Find $\frac{1}{R}$ first, then flip it. To get the second form, put the
+right-hand side over a common denominator:
 $\frac{1}{a} + \frac{1}{b} = \frac{b + a}{ab}$.
 
 </details>
@@ -137,15 +136,15 @@ parallel? And of 100 Ω beside 1 Ω?
 
 <details class="dl-answer"><summary>answer</summary>
 
-5 Ω, and about 0.99 Ω.
+It is 5 Ω, and about 0.99 Ω.
 
 Two equal resistors give exactly half the resistance of one. A large one
 beside a small one gives a little *less* than the small one. The 100
 hardly matters, because the current takes the easy path.
 
 Both facts are easy to read from $R = \frac{ab}{a + b}$, and neither is
-easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$. That is what
-rearranging is for.
+easy to see in $\frac{1}{R} = \frac{1}{a} + \frac{1}{b}$. That is why we
+rearrange formulas.
 
 </details>
 
@@ -221,8 +220,8 @@ def broken(f):
 print(all(abs(broken(to_fahrenheit(c)) - c) < 1e-9 for c in [-40, 0, 20, 37, 100]))
 ```
 
-The first prints True and the second prints False. **A test that has
-never failed has not really been tested.**
+The first prints True and the second prints False. **If you never see a
+check fail, you cannot know that it works.**
 
 </details>
 
@@ -231,7 +230,7 @@ a rearrangement?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because these are floats. Two calculations that should agree exactly can
+These are floats. Two calculations that should agree exactly can
 differ in the last decimal place.
 
 In Python, `0.1 + 0.2 == 0.3` is False, and that is not a bug. With
@@ -247,7 +246,7 @@ values, does that prove it is correct?
 
 No. It is strong evidence, but it is not a proof. Compare
 [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
-There, checking four rows *was* a proof, because there were only four
+There, we checked all four rows, and that *was* a proof, because there were only four
 cases.
 
 Here there are infinitely many possible inputs. So a check can only fail
@@ -294,9 +293,8 @@ $\frac{4 \text{ GB}}{90 \text{ s}} \approx 0.0444$ GB/s. That is about
 you count a GB as 1024 MB, the answer is about 45.5 MB/s, or 364
 Mbit/s.)
 
-Watching the units is most of the work in a question like this. Bytes
-and bits differ by a factor of eight, and mixing them up is a very
-common mistake.
+In a question like this, most of the work is to watch the units. Bytes
+and bits differ by a factor of eight, and people often mix them up.
 
 </details>
 

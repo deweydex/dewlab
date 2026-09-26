@@ -27,7 +27,7 @@ player looks round. Every one of those turns is a matrix, and the
 `multiply` you built in [Matrix multiplication: rows times columns](tutorial:multiplying-grids)
 does all the work.
 
-## Eight Corners, Twelve Edges
+## Eight corners, twelve edges
 
 Here is a cube. Each side is two units long, and its centre is at
 $(0, 0, 0)$, so every corner is made of $-1$s and $1$s:
@@ -46,10 +46,10 @@ edges = [(0, 1), (1, 2), (2, 3), (3, 0),   # the square at the front
          (0, 4), (1, 5), (2, 6), (3, 7)]   # the four joining them
 ```
 
-Two lists, and it is worth being clear what each holds:
+There are two lists. Here is what each holds:
 
 - `cube` is three rows, one for each coordinate, and eight columns, one
-  for each corner. Column 0 is the corner $(-1, -1, -1)$: read down the
+  for each corner. Column 0 is the corner $(-1, -1, -1)$. Read down the
   first entry of each row. Column 6 is $(1, 1, 1)$, the opposite corner.
 - `edges` says which corners to join, by their column numbers. `(0, 1)`
   joins corner 0 to corner 1. A cube has twelve edges: four round the
@@ -78,14 +78,14 @@ print(project(move(cube, 0, 0, 5)))
 ```
 
 Let's read one of those numbers. Corner 0 was $(-1, -1, -1)$. After
-`move(cube, 0, 0, 5)` it is $(-1, -1, 4)$: only $z$ changed. After
+`move(cube, 0, 0, 5)` it is $(-1, -1, 4)$. Only $z$ changed. After
 `project` it is $(-1/4, -1/4) = (-0.25, -0.25)$, the first entry in
 each of the two rows printed. Corner 4, directly behind it, was
 $(-1, -1, 1)$, moves to $(-1, -1, 6)$, and projects to
-$(-0.167, -0.167)$: closer to the centre, because it is further away.
+$(-0.167, -0.167)$. It is closer to the centre, because it is further away.
 
-Sixteen numbers, and not much of a cube yet. Drawing the twelve edges
-between them is what makes it one:
+These are sixteen numbers, and not much of a cube yet. The twelve edges
+between them make it a cube:
 
 ```python exec
 id: eight-corners-twelve-edges-3
@@ -108,8 +108,8 @@ The front face is the bigger square. The back face is the smaller one
 inside it, because it is two units further away. Nothing here drew a
 cube. Twelve straight lines were drawn between projected corners, and
 your eye did the rest. A drawing made only of lines like this is called
-a ***wireframe***, and it is how every 3D model starts out, whether it
-ends up as a game character or a car.
+a ***wireframe***, and every 3D model starts as one, whether it
+becomes a game character or a car.
 
 ### Your turn
 
@@ -127,7 +127,7 @@ Far away, the two squares are nearly the same size and the cube looks
 flat. That is also why a photograph taken with a zoom lens from far
 away looks flat, and one taken up close does not.
 
-## A Matrix That Turns
+## A matrix that turns
 
 In [the playground of 2×2
 matrices](tutorial:what-a-matrix-does-to-a-picture#a-playground),
@@ -156,15 +156,15 @@ column that do nothing:
 $$R_y(\theta) = \begin{bmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{bmatrix}$$
 
 Look at the minus sign. In the 2D matrix it was top right. Here it is
-bottom left. That is not a slip, and it is worth a moment, because it
-catches almost everybody.
+bottom left. That is not a mistake. Take a moment here, because it
+surprises almost everybody.
 
 The three axes go round in a circle: $x$, then $y$, then $z$, then back
 to $x$. A turn in 2D takes $x$ towards $y$. A turn about the $x$ axis
 takes $y$ towards $z$, one step along the circle, so it has the same
 pattern as 2D. But a turn about the $y$ axis takes $z$ towards $x$, and
 in the matrix the $z$ row comes after the $x$ row. The pair is written
-the other way round, so the minus sign moves to the other corner.
+in the opposite order, so the minus sign moves to the other corner.
 
 To apply it we need `multiply`. Each page here begins with no code from
 earlier pages, so here it is again, exactly as before:
@@ -199,9 +199,9 @@ draw(move(turned, 0, 0, 5))
 
 Notice the order. The cube is turned first, while it is still centred
 on the origin, and moved out to depth 5 afterwards. The ***origin*** is
-the point $(0, 0, 0)$. Turning is always about the origin, because the
+the point $(0, 0, 0)$. A turn is always about the origin, because the
 origin is the one point every matrix leaves alone. What happens if you
-do it the other way round, and turn the cube after moving it?
+use the opposite order, and turn the cube after moving it?
 
 ```python exec
 id: a-matrix-that-turns-3
@@ -214,18 +214,18 @@ and it would go all the way round the camera, behind it, and come back.
 
 The ball's orbit in [the last
 tutorial](tutorial:a-ball-in-orbit#a-ball-in-orbit) was the other order.
-Its circle had its centre 5 units ahead of the camera: a point 2 units
-from the origin, turned, and then moved out 5. So the order decides
+Its circle had its centre 5 units ahead of the camera. The ball was a
+point 2 units from the origin, turned, and then moved out 5. So the order decides
 where the centre of the circle is. Turn and then move, and the circle
 goes round a centre out in front. Move and then turn, and the circle
 goes round the camera.
 
 ### Your turn
 
-Turning about the vertical axis is `rotate_y`. Nodding forwards and
-back is turning about the $x$ axis: $x$ stays the same, and $y$ and $z$
-change into each other. How might you write `rotate_x(angle)`? Small
-steps:
+`rotate_y` turns about the vertical axis. A nod forwards and
+back is a turn about the $x$ axis: $x$ stays the same, and $y$ and $z$
+change into each other. How might you write `rotate_x(angle)`? Here are
+some small steps:
 
 1. Start from the 2D rotation matrix, not from `rotate_y`. A turn
    about $x$ takes $y$ towards $z$, in the same order as 2D, so the
@@ -263,12 +263,12 @@ id: a-matrix-that-turns-5
 print(multiply(rotate_x(math.radians(90)), [[0], [1], [0]]))
 ```
 
-The middle number is about $6 \times 10^{-17}$. That is 0, give or take
+The middle number is about $6 \times 10^{-17}$. That is 0, apart from
 the rounding in `math.cos`.
 
-## A Flip-Book
+## A flip-book
 
-In the last tutorial, a moving picture turned out to be many still
+In the last tutorial, we saw that a moving picture is many still
 pictures, or **frames**, shown one after another. Here are twelve
 frames of the cube, each turned 30° further than the last:
 
@@ -287,9 +287,9 @@ for index, frame in enumerate(frames.flat):
 At 90° the picture is the same as at 0°, because a different face has
 turned to the front and a cube's faces are all alike. Halfway between,
 at 45°, it is at its widest, with two faces showing. A game does
-exactly this, sixty times a second: the same eight columns, multiplied
-by a slightly different matrix each time, then divided and drawn. When
-a game feels smooth, that is because it manages sixty of these every
+exactly this, sixty times a second. It uses the same eight columns,
+multiplied by a slightly different matrix each time, then divided and
+drawn. When a game feels smooth, that is because it manages sixty of these every
 second. When it stutters, it has fallen behind.
 
 Here are the pages turned for you. `FuncAnimation` did the same job for
@@ -331,14 +331,14 @@ Change the two 48s to 96 and the cube turns more slowly and more
 smoothly. Change `rotate_y` to your own `rotate_x` and it tumbles
 forwards instead.
 
-## Two Turns at Once
+## Two turns at once
 
 A cube spinning on a turntable, seen straight on, never shows you its
 top. To look down on it a little, tilt it about $x$ as well, by a fixed
 angle, and keep the spin about $y$ going at the same time. Two
-matrices, applied one after the other, are one matrix: their product.
-Putting two turns together like this is called ***composing*** them:
-the output of one turn goes straight into the next, the way the output
+matrices, applied one after the other, make one matrix, their product.
+When we put two turns together like this, we are ***composing*** them.
+The output of one turn goes straight into the next, the way the output
 of one function can go straight into another.
 
 ```python exec
@@ -356,14 +356,14 @@ for index, frame in enumerate(frames.flat):
 
 `multiply(tilt, rotate_y(angle))` spins first and tilts second, because
 the matrix nearest the points is the one that acts first. That is the
-one you want here: spin the cube on its own vertical axis, then tip the
-whole turntable towards the camera.
+one you want here. It spins the cube on its own vertical axis, then tips
+the whole turntable towards the camera.
 
 ### Your turn
 
 What does `multiply(rotate_y(angle), tilt)` do instead, with the two
 swapped? Draw the same four frames and compare them. [Order
-Matters](tutorial:multiplying-grids#order-matters) said that $AB$ and
+matters](tutorial:multiplying-grids#order-matters) said that $AB$ and
 $BA$ are different matrices. Here is what the difference looks like.
 
 ```python exec
@@ -373,12 +373,12 @@ hint: Copy the cell above and swap the two arguments to multiply. Watch which ax
 
 ## Reflection
 
-Eight columns of numbers, a list of which to join, and a matrix. Was
+We used eight columns of numbers, a list of which to join, and a matrix. Was
 there a moment where the cube stopped being sixteen numbers and started
 being a cube? For most people it is the first `draw`, which is worth
 noticing, because nothing changed in the numbers at that moment.
 
-Turning was a matrix. Moving was not: `move` added a number to every
+A turn was a matrix. A move was not. `move` added a number to every
 coordinate, and there is no 3×3 matrix that does that, because every
 one of them leaves the origin where it is. The next tutorial,
 [Homogeneous coordinates and the projection
@@ -386,18 +386,18 @@ matrix](tutorial:the-fourth-number), fixes that with a trick that looks
 like cheating. Then it uses the same trick on the perspective divide
 itself.
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra,
 Chapter 4: Matrix Multiplication as Composition.*
-<https://www.youtube.com/watch?v=XkY2DOUCWMU>. Why two turns applied
-one after the other are one matrix, and why the one nearest the points
+<https://www.youtube.com/watch?v=XkY2DOUCWMU>. This video shows why two
+turns applied one after the other are one matrix, and why the one nearest the points
 goes first.
 
 O'Flaherty-Chan, G. (2026). *Divide by depth for instant 3D.*
-<https://gabrieloc.com/2026/09/15/perspective.html>. The rotating cube
-this tutorial's flip-book is a paper version of, drawn live in a
-browser.
+<https://gabrieloc.com/2026/09/15/perspective.html>. This post draws,
+live in a browser, the rotating cube that this tutorial's flip-book
+copies on paper.
 
 Hughes, J. F., van Dam, A., McGuire, M., Sklar, D. F., Foley, J. D.,
 Feiner, S. K. and Akeley, K. (2013). *Computer Graphics: Principles and

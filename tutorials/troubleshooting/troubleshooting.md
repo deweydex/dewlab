@@ -11,11 +11,11 @@ covers:
 
 # Troubleshooting
 
-Something not working is the normal shape of building a website, not a
-sign you have done anything wrong. This page groups the problems people
+When you build a website, things often do not work at first. This is
+normal. This page groups the problems people
 meet most often, each with the checks that usually find it.
 
-Changing one thing at a time can help us see which change makes a
+If we change one thing at a time, we can see which change makes a
 difference.
 
 ## A page or a style doesn't look right
@@ -60,7 +60,7 @@ disagreeing about the same element.
   as a class name, usually takes priority over a tag name. The
   [Looking inside a page with the inspector](tutorial:the-inspector) can show which rules the browser
   uses.
-- Does every value have its unit? `font-size: 16;` does nothing;
+- Does every value have its unit? `font-size: 16;` does nothing.
   `font-size: 16px;` works.
 
 ### An image won't show
@@ -104,9 +104,9 @@ everything that follows it.
 <p>This paragraph never ends, so everything after it
 ```
 
-Work through the file from the top and check that each tag you opened
-has a matching close in the right place. `<img>` and `<br>` are the
-exception: they never need a closing tag.
+Read the file from the top and check that each tag you opened has a
+matching close in the right place. `<img>` and `<br>` are the
+exception. They never need a closing tag.
 
 ### An unclosed brace in CSS
 
@@ -180,7 +180,7 @@ normal. Once that time has passed, these questions usually help:
 - A push needs you to be signed in. If there is a sign-in message,
   signing in through your editor or the GitHub website usually helps.
 - `git add`, `git commit` and `git push` are three separate steps.
-  Skipping any one of them means the file never reaches GitHub, even if
+  If you skip any one of them, the file never reaches GitHub, even if
   the other two ran without an error.
 - GitHub can reject a push with a message about the remote having
   changes you do not have. Pull first, then push again.
@@ -191,10 +191,11 @@ the message before asking.
 
 ## My SQL work is missing
 
-Every cell — Python, SQL, or an HTML, CSS or JavaScript site editor —
-saves its own code and its last result in this browser as you go, so
-nothing here needs a separate save step. **Reset** restores one cell to
-the code the tutorial started with; it does not touch a table an earlier
+Every cell saves its own code and its last result in this browser as you
+go. That includes Python and SQL cells, and the site editors for HTML, CSS
+and JavaScript. You never need to save by hand. **Clear** (↻) puts back the code
+the tutorial started with, in one cell. **Reset** (↺) only clears that
+cell's result. Neither one touches a table an earlier
 cell built or a variable an earlier cell set.
 
 If the saved code is gone, these are the usual causes:
@@ -206,8 +207,8 @@ If the saved code is gone, these are the usual causes:
 
 **Settings** offers ways to keep a copy outside the browser — a
 downloadable HTML file, a printed or PDF version, or your cells as a
-Jupyter notebook. The [FAQ](tutorial:faq) explains saving and resetting
-in more detail.
+Jupyter notebook. The [FAQ](tutorial:faq) explains saving, Reset and
+Clear in more detail.
 
 ## This site itself
 

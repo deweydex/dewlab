@@ -27,7 +27,7 @@ covers:
 
 # What a function can see: scope and parameters
 
-You write a function that works out how fast a file downloaded, and
+You write a function that calculates how fast a file downloaded, and
 inside it you give the speed a name. On the next line, outside the
 function, you ask Python to print that name. Python says it has never
 heard of it. The name was there a moment ago. Where did it go, and what
@@ -45,10 +45,10 @@ On this page we:
 
 > **The space we're in.** Every call to a function gets a small space
 > of names of its own. Python makes it when the call starts, and
-> usually throws it away when the call ends. From inside that space, a
+> usually deletes it when the call ends. From inside that space, a
 > function can read the names on the page around it, but a new name made
-> with `=` stays inside. Those rules are almost never written down, and
-> they are what this page is about. Your toolkit from every earlier page
+> with `=` stays inside. Those rules are almost never written down. This
+> page is about them. Your toolkit from every earlier page
 > is loaded here, as usual.
 
 ## Warm-up
@@ -119,8 +119,8 @@ Here is what happened, in order.
 2. In that space, `megabytes` points at 700 and `seconds` points at 56.
 3. `megabytes_per_second = megabytes / seconds` makes a third name, in
    the same space.
-4. `return` hands the value 12.5 out to the line that called.
-5. The call ends, and Python throws the space away, with every name in it.
+4. `return` gives the value 12.5 to the line that called.
+5. The call ends, and Python deletes the space, with every name in it.
 
 A *local name* is a name made inside a function. It exists only inside
 that function, and only while one call is running. The *scope* of a name
@@ -129,7 +129,7 @@ is the part of a program where the name can be seen. So the scope of
 line of the cell is outside it.
 
 You can picture each call as a small room, built when the call starts
-and taken down when it ends. The only thing carried out of the room is
+and removed when it ends. The only thing carried out of the room is
 the value in the `return` line.
 
 If you want that value outside, keep it under a name of your own:
@@ -174,9 +174,9 @@ It prints `1` three times. Each call gets a new space, so each call
 starts again with `packets = 0`. Nothing is kept from one call to the
 next.
 
-For a counter, that is a problem: a counter has to remember. But it is
-also what makes a function a promise we can test: the same inputs give
-the same result every time. A later section on this page fixes the
+For a counter, that is a problem, because a counter has to remember.
+But it also means we can test the function's promise. The same inputs
+give the same result every time. A later section on this page fixes the
 counter.
 
 Fresh spaces help in a second way. Two functions can use the same
@@ -196,7 +196,7 @@ def sound_bytes(seconds):
 print(image_bytes(1920, 1080) + sound_bytes(10))
 ```
 
-It prints `7984800`: about 6.2 million bytes for one full-HD picture,
+It prints `7984800`. That is about 6.2 million bytes for one full-HD picture,
 and 1.8 million for ten seconds of CD sound. Each `size` lives in its
 own function's space, like two files called `notes.txt` in two
 different folders.
@@ -225,7 +225,7 @@ def fall_time(height):
 print(fall_time(20))
 ```
 
-It works, and shows `2.02`: a ball dropped from 20 metres lands in
+It works, and shows `2.02`. A ball dropped from 20 metres lands in
 about 2 seconds. A *global
 name* is a name made on the page itself, outside every function. Every
 function on the page can read it.
@@ -237,11 +237,11 @@ this order:
 2. the page's space, where the global names are;
 3. Python's own space, where `print`, `round` and `len` live.
 
-The first place that has the name wins. Your toolkit functions, like
+Python uses the first place that has the name. Your toolkit functions, like
 `digit_at`, are in the page's space too. They were loaded there before
 the first cell ran.
 
-Now a question about sequence. We take the ball to the Moon, where
+Now a question about when things happen. We take the ball to the Moon, where
 gravity is much weaker: 1.62 metres a second, every second. The
 function was written for Earth. What will it give now?
 
@@ -251,12 +251,12 @@ gravity = 1.62
 print(fall_time(20))
 ```
 
-It gives `4.97`: the same drop takes more than twice as long. The
+It gives `4.97`. The same drop takes more than twice as long. The
 function looks the name up each time it runs, not when it was written.
 Compare that with `water_ml` on
-[Recipes are algorithms](tutorial:recipes-are-algorithms#names-that-hold-values):
-there, a line worked out a value once, and changing `cups` later made no
-difference. A function's lines run again at every call, so they see the
+[Recipes are algorithms](tutorial:recipes-are-algorithms#names-that-hold-values).
+There, a line calculated a value once, and a later change to `cups` made
+no difference. A function's lines run again at every call, so they see the
 page as it is at that moment.
 
 <aside class="dl-note" id="what-function-note-moon">
@@ -292,7 +292,7 @@ print(fall_time(20))
 It prints `2.02`, even though the page's `gravity` is still 1.62. The
 parameter `gravity` is a local name, and the function's own space is
 searched first. Now everything the function needs is on its `def` line,
-where a reader can see it, and the Moon is one argument away.
+where a reader can see it. For the Moon, you change one argument.
 
 ## Changing a name from inside
 
@@ -325,8 +325,8 @@ local `score`. The right side of `score = score + 1` asks for its value
 before it has one. An *UnboundLocalError* is a NameError about a local
 name that has no value yet.
 
-Python decided this while reading the `def`, before the function ever
-ran: reading first, running after, as on
+Python decided this while it read the `def`, before the function ever
+ran, as on
 [When Python says no](tutorial:when-python-says-no#mistakes-python-finds-before-it-starts).
 
 Python does have a way to say "use the page's name". The keyword
@@ -340,8 +340,8 @@ def add_point():
 
 It works, and most programmers use it rarely. A function that changes a
 page's names without saying so makes a promise it never writes down,
-and a test can only check what a function gives back. The usual way is
-to take the value in and give the new value back:
+and a test can only check what a function returns. The usual way is
+to take the value in and return the new value:
 
 ```python exec
 id: what-function-change-2
@@ -364,7 +364,7 @@ changes it is on the page, where you can see it.
 ### Your turn
 
 1. Rewrite `add_packet` so that it takes the count of packets in, and
-   gives back one more.
+   returns one more.
 2. Test it with two `assert` lines.
 3. Start a count at 0, and use a loop from
    [Doing it again](tutorial:doing-it-again) to add ten packets. Print
@@ -397,14 +397,13 @@ print(digit_at(place, year))
 ```
 
 The first line gives `2`, the thousands digit of 2026. The second gives
-`0`: the digit in place 2026 of the number 3, far past its only digit.
+`0`. That is the digit in place 2026 of the number 3, far past its only digit.
 `digit_at` never saw the names `year` and `place`. Even the page's
 `place` went into the slot called `number`, because it came first. The
 function saw the values 3 and 2026, in the order they came.
 
-This answers the question from the top of the page, from the other side.
 A function cannot see your variable's name. It sees only the value you
-hand it. That is also why your toolkit works on every page:
+hand it. This is also why your toolkit works on every page.
 `digit_at` was written on another page, knows nothing about this one,
 and needs nothing from it.
 
@@ -429,7 +428,7 @@ print(score)
 ```
 
 The first line shows `168`, the score with its bonus. The second shows
-`84`: `score` did not change. A trace table, like the ones on
+`84`, so `score` did not change. A trace table, like the ones on
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand), shows why. This one has a column
 for each space.
 
@@ -438,7 +437,7 @@ for each space.
 | `score = 84` | `score` → 84 | (no call yet) |
 | the call `add_bonus(score)` starts | `score` → 84 | `points` → 84 |
 | `points = points * 2` | `score` → 84 | `points` → 168 |
-| `return` hands 168 out | `score` → 84 | (thrown away) |
+| `return` hands 168 out | `score` → 84 | (deleted) |
 
 The `=` inside made `points` point at a new value, in the call's own
 space. It did nothing to `score`, which lives in another space.
@@ -463,7 +462,7 @@ add_reading(today, 15.1)
 print(today)
 ```
 
-Three. This time the function changed something on the page. Why is
+It has three. This time the function changed something on the page. Why is
 this different from `add_bonus`?
 
 When the call starts, `readings` is made to point at the same list that
@@ -480,10 +479,10 @@ So there are two different moves, and it helps to keep them apart:
 A number cannot be changed in place, so for numbers only the first move
 exists. That is why `score` was safe. A list can be changed in place, so a
 function that is handed a list can change it. `add_reading` says so in
-its docstring, which is the honest thing to do. It is a procedure, in
+its docstring. It is a procedure, in
 the words of
-[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do):
-it gives back `None`, and its job reaches outside its own space, through
+[Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
+It returns `None`, and it changes something outside its own space, through
 the list it was handed.
 
 ```question
@@ -504,12 +503,12 @@ After `today = add_reading(today, 15.6)`, what does `today` point at?
 ## A function made inside a function
 
 On [Machines that take a number](tutorial:machines-that-take-a-number#machines-in-a-row-composition),
-`compose` made a function called `both` inside itself, and gave it back.
+`compose` made a function called `both` inside itself, and returned it.
 That page left a puzzle. When `both` runs, the call to `compose` has
 already ended. So how does `both` still know `outer` and `inner`?
 
 Here is a smaller machine of the same shape. `converter` is given a
-factor, and gives back a function that multiplies by that factor. There
+factor, and returns a function that multiplies by that factor. There
 are 8 bits in a byte, and exactly 2.54 centimetres in an inch. What will
 the last line show?
 
@@ -526,11 +525,11 @@ inches_to_cm = converter(2.54)
 print(bytes_to_bits(100), inches_to_cm(6.1))
 ```
 
-It shows `800 15.494`: 100 bytes are 800 bits, and a phone screen 6.1
+It shows `800 15.494`. So 100 bytes are 800 bits, and a phone screen 6.1
 inches from corner to corner is about 15.5 cm. Each call to `converter`
 made its own space, with its own `factor` in it. Each `convert` was made
-inside one of those spaces, and it keeps hold of that space. So Python
-does not throw the space away when the call ends, because something
+inside one of those spaces, and it keeps that space. So Python
+does not delete the space when the call ends, because something
 still needs it.
 
 A *closure* is a function that keeps the space it was made in. So a
@@ -541,7 +540,7 @@ function looks for a name in up to four spaces, in this order:
 3. the page's space;
 4. Python's own space.
 
-That is how `both` finds `outer` and `inner`: in step 2. The mixed
+`both` finds `outer` and `inner` in step 2. The mixed
 problems at the end of this unit use this idea to build a unit converter.
 
 ## What does a function need?
@@ -551,7 +550,7 @@ download takes 2 seconds to start, then the time the data needs at the
 connection's speed. (A byte is 8 bits, and speeds are given in megabits
 a second.) It runs, and it prints the time we expect. Let's ask three
 questions of it: what does it need, where does it get it, and what does
-it give back?
+it return?
 
 ```python exec
 id: what-function-need-1
@@ -565,18 +564,18 @@ download_seconds(700)
 ```
 
 It needs two things, the size and the speed. It gets the size from its
-parameter, and the speed from the page: a hidden input. It gives back
+parameter, and the speed from the page, which is a hidden input. It returns
 nothing, so no `assert` can check it, and no other function can use its
-answer. Its local name `seconds` is thrown away at the end of the call.
+answer. Its local name `seconds` is deleted at the end of the call.
 
-Three habits keep a function's promise in plain sight:
+Three habits make a function's promise easy to see:
 
 1. Everything it needs comes in through its parameters.
 2. Everything it gives comes out through `return`.
 3. It changes nothing outside itself, unless its docstring says so.
 
-Every function in your toolkit keeps these three habits, and that is
-the reason it can travel from page to page.
+Every function in your toolkit keeps these three habits, so it can
+work on any page.
 
 ### Your turn
 
@@ -627,7 +626,7 @@ Leaving them out is a reasonable choice. The page is long already, and
 that section is the hardest on it.
 
 We kept it because [Machines that take a number](tutorial:machines-that-take-a-number)
-made a promise. Its `compose` gave back a function that still knew
+made a promise. Its `compose` returned a function that still knew
 `outer` and `inner`, and that page said a later page would explain how.
 A course that asks you to check promises should keep its own. The
 section is last on the page, so you can stop before it and come back to
@@ -640,9 +639,9 @@ it another day.
 | Question | On this page |
 |---|---|
 | What is named here? | Parameters and local names, made fresh in each call's space. Global names, made on the page. A list can have two names, one in each space. |
-| What is promised? | A function promises what it gives back. Its parameters and its docstring should say everything it needs, and anything it changes. |
-| What happens when? | Each call's space is made when the call starts, and thrown away when it ends unless a closure still needs it. Python decides which names are local while reading the `def`, before it runs. |
-| What does this space let us do? | Inside a function: read the page's names, but not give them new values with `=`. Outside: see only what the function hands back. |
+| What is promised? | A function promises what it returns. Its parameters and its docstring should say everything it needs, and anything it changes. |
+| What happens when? | Each call's space is made when the call starts, and deleted when it ends unless a closure still needs it. Python decides which names are local while reading the `def`, before it runs. |
+| What does this space let us do? | Inside a function: read the page's names, but not give them new values with `=`. Outside: see only what the function returns. |
 
 ## What we have now
 

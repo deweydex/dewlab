@@ -77,7 +77,7 @@ The `href` names the file to load. `rel="stylesheet"` tells the browser
 that the file holds CSS rules.
 
 Why keep the rules in a file of their own? One stylesheet can style many
-pages at once. That is why `index.html` and `about.html` look consistent
+pages at once. So `index.html` and `about.html` look consistent
 without repeating any CSS.
 
 ![Two page files, index.html and about.html, side by side. Each has a link tag in its head, and an arrow runs from each link tag down to one shared file, styles.css. Inside styles.css is the rule p with color darkslateblue, so this one rule styles the paragraphs on both pages.](one-stylesheet-two-pages.svg)

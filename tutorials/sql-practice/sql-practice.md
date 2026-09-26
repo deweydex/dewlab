@@ -18,10 +18,9 @@ covers:
 # SQL practice: five short exercises
 
 This page has five short exercises, using a shared table of students,
-`student_tbl`, and a shared table of courses, `course_tbl`. None of
-this is graded; the hints and the solutions at the bottom are there to
-use freely. Getting an exercise wrong, then reading why, usually
-teaches you more than skipping the hint just to avoid the mistake.
+`student_tbl`, and a shared table of courses, `course_tbl`. None of this
+is graded. You can use the hints and the solutions at the bottom freely.
+You usually learn more when you make a mistake and then read why.
 
 Run this first to build both tables.
 
@@ -115,8 +114,8 @@ id: order-students-by-name
 
 <details class="dl-hint"><summary>hint</summary>
 
-`ORDER BY name ASC` sorts alphabetically; leaving `ASC` out does the
-same thing.
+`ORDER BY name ASC` sorts alphabetically. If you leave `ASC` out, it
+does the same thing.
 
 </details>
 

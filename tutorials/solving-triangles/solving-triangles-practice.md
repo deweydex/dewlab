@@ -107,8 +107,8 @@ horizontal. How tall is the mast?
 $50\tan 32^\circ \approx 31.24$ m above eye level. Add the 1.6 m, and the
 mast is about 32.84 m tall.
 
-The usual mistake here is to forget to add the eye height. A diagram is
-exactly the thing that catches it.
+The usual mistake here is to forget to add the eye height. A diagram
+helps you catch it.
 
 </details>
 
@@ -133,7 +133,7 @@ straight down to the base, at a right angle. It makes a right-angled
 triangle with hypotenuse $b$ and angle $C$. So its vertical side, the
 height, is $b\sin C$.
 
-The formula is half base times height, with the height worked out from
+The formula is half base times height, with the height calculated from
 what you were given.
 
 </details>
@@ -192,7 +192,7 @@ before you compute it. That is a useful check.
 <details class="dl-answer"><summary>answer</summary>
 
 Pythagoras. $\cos 90^\circ = 0$, so the correction term $2ab\cos C$
-disappears, and $c^2 = a^2 + b^2$ is what is left.
+disappears, and $c^2 = a^2 + b^2$ is left.
 
 The cosine rule is Pythagoras with a correction for an angle that is not
 a right angle.
@@ -209,8 +209,8 @@ $180 - 70 = 110^\circ$.
 
 Then $\sqrt{200^2 + 150^2 - 2 \times 200 \times 150 \times \cos 110^\circ} \approx 288.1$ m.
 
-Going from the bearings to the inside angle is the hard part. A sketch
-makes it quick.
+It is hard to get the inside angle from the bearings. A sketch makes it
+quick.
 
 </details>
 
@@ -334,8 +334,8 @@ that they add up to 180°.
 Opposite the 5: about 44.42°. Opposite the 6: about 57.12°. Opposite the
 7: about 78.46°.
 
-The sum is 180.00°. Finding all three angles and checking the sum is a
-good habit. It catches a mistyped side straight away.
+The sum is 180.00°. It is a good habit to find all three angles and
+check the sum. It catches a mistyped side straight away.
 
 </details>
 
@@ -353,7 +353,7 @@ def possible(a, b, c):
 ```
 
 `possible(1, 2, 10)` is `False`. If you give those sides to the cosine
-rule, `acos` stops with a `math domain error`. That is the arithmetic
-saying the same thing, less helpfully.
+rule, `acos` stops with a `math domain error`. The error means the same
+thing, but it explains it less clearly.
 
 </details>

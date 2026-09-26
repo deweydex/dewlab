@@ -7,7 +7,8 @@ version: 2026.09.26.1
 
 # Testing a class: hunting for the bug — Practice
 
-Problems on tests, boundaries and runners, and three from earlier pages.
+This page has problems on tests, boundaries and runners, and three from
+earlier pages.
 Try each problem before you open anything under it, and run the cells to
 test your guesses.
 
@@ -28,8 +29,8 @@ type: fill-in-the-blank
 <details class="dl-answer"><summary>why</summary>
 
 10, 0 and 11. A hit of 5 is in the middle, where bugs are least likely.
-Tests at 0, 10 and 11 are where a `>` written as `>=`, or a missing
-`max(0, ...)`, would show itself.
+A `>` written as `>=`, or a missing `max(0, ...)`, would show itself in
+tests at 0, 10 and 11.
 
 </details>
 
@@ -77,7 +78,7 @@ What will the last line print?
 
 `FAILED test_three sums`, then `1 passed, 1 failed`. `check_two` is never
 run: its name does not start with `test_`. pytest works the same way, so
-a test with the wrong name is a test that silently never runs.
+a test with the wrong name never runs, and nothing tells you.
 
 </details>
 
@@ -163,7 +164,7 @@ do not?
 
 Find tests in every file, not only on one page. Say which line of a test
 failed, and what the values were. Run only the tests you name. Run each
-test with a fresh start, so no test leaves anything behind for the next.
+test with a fresh start, so no test changes anything the next one uses.
 pytest does all of these.
 
 </details>
@@ -219,9 +220,9 @@ knight pass, if `Character` is right?
 <details class="dl-answer"><summary>answer</summary>
 
 All three. (a) 5 − 2 = 3. (b) `max(0, -5)` is 0, and a hit of 0 changes
-nothing. (c) 18 goes through the parent, whose `max(0, ...)` stops health
-at 0. The knight passes (b) and (c) because it goes through `super()`:
-the parent's rules do that work.
+nothing. (c) 18 is passed to the parent, whose `max(0, ...)` stops health
+at 0. The knight passes (b) and (c) because it uses `super()`. The
+parent's rules do that work.
 
 </details>
 
@@ -235,6 +236,6 @@ the method?
 
 It fails, since `pass` returns `None`. Written before the method, the
 test says exactly what the method must do, and the method is finished
-when the test passes: test first, as on the tutorial page.
+when the test passes. This is test first, as on the tutorial page.
 
 </details>

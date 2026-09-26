@@ -28,6 +28,19 @@
 # than a silently broken link.
 
 groups:
+  - key: fractions-and-powers-from-the-start
+    name: Fractions and powers, from the beginning
+    intro: >
+      For anyone who wants to start again with the maths school was
+      supposed to teach: what a fraction is, why two fractions can be the
+      same amount, and what a power means. Small steps, pictures first,
+      and nothing to memorise.
+    tutorials:
+      - before-we-start
+      - one-whole-many-slices
+      - same-amount-different-names
+      - the-long-way
+
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations
     intro: >
@@ -100,9 +113,9 @@ groups:
       object, and how both turn into a program that actually chooses
       between paths.
     tutorials:
-      - logic-and-truth
-      - venn-diagrams
       - sets-as-sorted-lists
+      - venn-diagrams
+      - logic-and-truth
       - making-decisions
 
   - key: data-and-pictures
@@ -114,6 +127,7 @@ groups:
     tutorials:
       - making-sense-of-data
       - pictures-worth-numbers
+      - a-chart-that-tells-the-truth
       - mixed-data
 
   - key: matrices

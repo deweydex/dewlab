@@ -20,7 +20,8 @@ class names, so read the HTML and the CSS side by side.
 
 ## Fix the broken page
 
-**1.** Two buttons, a blue one and a red one. The red one has lost its
+**1.** Here are two buttons, a blue one and a red one. The red one has
+lost its
 padding and its rounded corners, and it is not red.
 
 ```html site
@@ -176,8 +177,8 @@ letter. Fix the HTML.
 
 A BEM element is joined to its block with two underscores, `__`. The
 HTML had only one, so `card_title` and `card__title` were two different
-names, and the rule matched nothing. The same goes for modifiers: they
-need two hyphens, `--`.
+names, and the rule matched nothing. Modifiers are the same. They need
+two hyphens, `--`.
 
 </details>
 
@@ -268,8 +269,8 @@ green of your choosing.
 ```
 
 The modifier sets `--card-color` again on the second card. The price
-sits inside that card, so it reads the new value too. That is a scoped
-override: one change on the block, and every part inside it follows.
+sits inside that card, so it reads the new value too. This is a scoped
+override. We change the block once, and every part inside it follows.
 The `margin-bottom` is only there to keep the two cards apart.
 
 We set `--card-color` on `:root`, as the tutorial did. Setting it on
@@ -300,7 +301,7 @@ What would you see if you forgot one of the three files?
 
 <details class="dl-answer"><summary>answer</summary>
 
-When all three files agree, nothing changes on screen: the same rules
+When all three files agree, nothing changes on screen. The same rules
 match the same buttons, under a new name. The filled button is "Learn
 More About Me" on `index.html`, and "View Portfolio" on `about.html`.
 

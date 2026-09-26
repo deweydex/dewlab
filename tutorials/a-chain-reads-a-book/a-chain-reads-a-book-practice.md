@@ -12,7 +12,7 @@ Every question below works on the real book, loaded and cleaned just as
 in the tutorial. Each section starts with a cell that does that
 loading. Run it before you try the questions in that section.
 
-## Cleaning the Text
+## Cleaning the text
 
 ```python exec
 id: cleaning-setup-1
@@ -54,8 +54,8 @@ in `book`?
    letters Roman numerals use.
 3. `set(line.strip())` is the set of different letters in the line. The
    test `set(line.strip()) <= set("IVXLC")` is `True` when every one of
-   those letters is also in `"IVXLC"`. That saves checking the letters one
-   at a time.
+   those letters is also in `"IVXLC"`. Then you do not need to check the
+   letters one at a time.
 4. An empty line passes that test too, because an empty set counts as
    being inside any set. So check that `line.strip()` is not empty
    first.
@@ -80,7 +80,7 @@ it, and a title has letters that are not `I`, `V`, `X`, `L` or `C`.
 
 </details>
 
-## How Many Words Does the Chain Know?
+## How many words does the chain know?
 
 ```python exec
 id: chain-setup-1
@@ -102,7 +102,7 @@ for word, next_word in zip(words, words[1:]):
    count so far.
 3. Or `max()` can do the loop for you. `key=` tells `max()` what to
    compare. `lambda word: len(next_words[word])` is a small function
-   written in one line. It takes a word and gives back its number of
+   written in one line. It takes a word and returns its number of
    followers.
 
 **Think about:** is this likely to be a rare, distinctive word, or a very
@@ -159,7 +159,7 @@ place, so the chain never sees one either.
 
 </details>
 
-## Generating Your Own Sentences
+## Generating your own sentences
 
 ```python exec
 id: generating-setup-1
@@ -198,9 +198,9 @@ recorded follower at all?
 1. `set(words)` is every distinct word in the book.
 2. `set(next_words.keys())` is every word that has at least one recorded
    follower.
-3. Taking one set away from the other,
-   `set(words) - set(next_words.keys())`, leaves only the words that are
-   in the first set and not in the second.
+3. If you take one set away from the other,
+   `set(words) - set(next_words.keys())`, only the words that are in the
+   first set and not in the second are left.
 
 </details>
 
@@ -231,7 +231,7 @@ gone from between them.
 
 </details>
 
-## A Different Book
+## A different book
 
 This series comes with six real books: *The Time Machine*, *The War of
 the Worlds*, *Frankenstein*, *A Princess of Mars*, *The Lost World*, and

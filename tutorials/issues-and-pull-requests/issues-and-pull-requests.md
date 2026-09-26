@@ -8,7 +8,7 @@ version: 2026.09.11.1
 
 What does a repository hold, apart from its files? It also keeps a
 record of every problem that anyone has reported, and every change that
-anyone has proposed. Both are worth reading, because they are how we fix
+anyone has proposed. Both are worth reading, because we use them to fix
 this course when something is wrong. On this page we:
 
 - look inside this course's own repository

@@ -211,7 +211,7 @@ is 0 everywhere.
 `__str__` that shows it the way we write it: `-5x^2 + 20x + 1.5`? A
 computer usually writes $x^2$ as `x^2`, since it cannot raise the 2.
 
-This one has no top. A first version might show every term, as
+You can take this one as far as you like. A first version might show every term, as
 `-5x^2 + 20x^1 + 1.5x^0`. Then take the cases one at a time: leave out a
 term whose coefficient is 0; write `x^1` as `x`, and leave `x^0` out;
 write `- 5` in place of `+ -5`; and write `x^2`, not `1x^2`.
@@ -253,7 +253,7 @@ the top.
 
 ## Polynomials that make polynomials
 
-Two polynomials can be added: add the coefficients of each power. Can you
+Two polynomials can be added. Add the coefficients of each power. Can you
 give `Polynomial` an `add(other)` method that returns a new polynomial,
 and leaves both of the old ones as they were?
 
@@ -378,5 +378,5 @@ overloading", shows `__add__` at work on a class of its own.
 Python Software Foundation. *The Python Language Reference*, section 3.3.8,
 "Emulating numeric types".
 <https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types>.
-Every method like `__add__` that Python calls for an operator, for when
-the challenge wants more.
+It lists every method like `__add__` that Python calls for an operator,
+if you want to go further with the challenge.

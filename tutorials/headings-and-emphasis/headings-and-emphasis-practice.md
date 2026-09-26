@@ -15,8 +15,8 @@ important or emphasised. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, once you
+see why it happened, than from reading the answer.
 
 One check helps with every problem here. Read only the headings of the
 page, from top to bottom. Do they look like a list of contents?
@@ -145,8 +145,7 @@ contents above?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your paragraphs will say something different. The levels are what
-matter:
+Your paragraphs will say something different. The levels matter most:
 
 ```html
 <h1>Greyhound Rescue</h1>

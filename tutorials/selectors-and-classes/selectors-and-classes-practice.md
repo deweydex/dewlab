@@ -16,8 +16,8 @@ problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 ## Fix the broken page
 
@@ -56,7 +56,7 @@ Compare the selector with the one in the tutorial. What is missing?
 The dot was missing. Without it, `highlight` is a tag name, so
 `highlight p` looks for a paragraph inside an element called
 `<highlight>`. There is no such element in HTML, so the rule matched
-nothing. The dot is what makes `.highlight` mean "an element with
+nothing. The dot makes `.highlight` mean "an element with
 `class="highlight"`".
 
 </details>

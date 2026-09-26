@@ -54,12 +54,12 @@ dewey_chain = build_chain(dewey_book)
 montessori_chain = build_chain(montessori_book)
 ```
 
-## Comparing One Word
+## Comparing one word
 
 **1.** How many different words follow `"child"` in Dewey's chain? In
 Montessori's? Which writer's use of the word is more repetitive? Here,
-more repetitive means going back to the same few next words again and
-again.
+more repetitive means that the writer uses the same few next words again
+and again.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -69,12 +69,12 @@ again.
    is followed by anything at all. That is how many times the writer
    used the word.
 3. Divide the number of different followers by the number of uses. A
-   smaller answer means the same followers come back more often: the use
+   smaller answer means the same followers come back more often. So the use
    is more repetitive.
 
 **Think about:** why is it not fair to compare the numbers of different
-followers on their own? And is dividing by the number of uses enough to
-make it fair?
+followers on their own? And if we divide by the number of uses, is that
+enough to make it fair?
 
 </details>
 
@@ -93,13 +93,13 @@ make her less repetitive? Not necessarily. She uses the word 604 times,
 and Dewey uses it only 53 times. Her book is about children from start
 to finish, so the word meets many more neighbours.
 
-Dividing looks like the fix. For Dewey, $38 / 53 \approx 0.72$. For
+Dividing by the uses looks like the fix. For Dewey, $38 / 53 \approx 0.72$. For
 Montessori, $230 / 604 \approx 0.38$. But that is not a fair test either.
 The more times anybody uses a word, the more its followers repeat,
 because only so many words can sensibly come next. Anybody who writes
 "child" 604 times will score lower than somebody who writes it 53 times.
 
-A fair test puts both writers on the same footing. Take 53 of
+A fair test compares both writers in the same way. Take 53 of
 Montessori's 604 uses, at random, as many as Dewey has, and count how
 many different followers they have. Then do that a thousand times:
 
@@ -115,11 +115,11 @@ counts = [len(set(random.sample(uses, 53))) for _ in range(1000)]
 print(sum(counts) / len(counts))
 ```
 
-The average is about 37. Dewey's 53 uses have 38. So, like for like, the
+The average is about 37. Dewey's 53 uses have 38. So, compared fairly, the
 two writers use "child" with about the same variety. The first
 difference came from *how often* each one wrote the word, not from how.
 
-What does differ is *which* words come next:
+The difference is in *which* words come next:
 
 ```python
 print(sorted(montessori_chain["child"].items(), key=lambda kv: -kv[1])[:3])
@@ -133,7 +133,7 @@ sentence around the word, even though neither is more repetitive.
 
 </details>
 
-## Comparing the Whole Vocabulary
+## Comparing the whole vocabulary
 
 **2.** How many different words appear in *both* chains? How many appear
 in only one of them?
@@ -162,18 +162,18 @@ only in Montessori. So two books on a related subject share less than
 half of their words. Most of the words each writer uses never appear in
 the other's book.
 
-Cleaning the scan mattered here. Before `clean_scan`, about 1,700 more
+It mattered here that we cleaned the scan. Before `clean_scan`, about 1,700 more
 words counted as "only in Dewey". They were halves of words the printer
 had split at the end of a line, such as `environ-`.
 
-One thing to keep in mind: `split()` cuts only at spaces, so `"child"`
+Remember that `split()` splits only at spaces, so `"child"`
 and `"child,"` count as different words. Some of the words "only in
 Dewey" are words Montessori also uses, with different punctuation next
 to them.
 
 </details>
 
-## Generating and Comparing
+## Generating and comparing
 
 ```python exec
 id: generate-setup-1
@@ -214,7 +214,7 @@ like `"child"`, with ordinary joining words.
    `"development"`.
 2. Choose a very ordinary word that both books use all the time,
    whatever the subject, like `"and"` or `"the"`.
-3. Work out the same numbers for both.
+3. Calculate the same numbers for both.
 
 **Think about:** which kind of word do you expect to differ more between
 the two writers?

@@ -41,14 +41,14 @@ millisecond is a thousandth of a second.
 
 ## What the browser does for each frame
 
-For every frame, the browser works through the same steps, in order:
+For every frame, the browser follows the same steps, in order:
 
 1. It runs any JavaScript that asked for this frame, with
    `requestAnimationFrame`.
-2. **Style.** It works out which CSS rules apply to each element, and
-   their values. For a CSS animation, this is where it works out how
-   far through the animation each element has got.
-3. **Layout.** It works out the size and the place of every box on the
+2. **Style.** It finds which CSS rules apply to each element, and
+   their values. For a CSS animation, it also finds how far through
+   the animation each element has got.
+3. **Layout.** It calculates the size and the place of every box on the
    page. [How a browser lays out a
    page](tutorial:how-a-browser-lays-out-a-page) describes the rules it
    follows.
@@ -124,7 +124,7 @@ site: smooth
 }
 ```
 
-On a fast computer, the two look the same. The difference shows up on
+On a fast computer, the two look the same. The difference shows on
 a slow phone, or on a busy page. In Chrome and Edge, we can see the
 extra work:
 
@@ -166,12 +166,12 @@ The orbit on the canvas adds `0.02` to `angle` in every frame. On a
 `frame` runs twice as often, so one turn takes about two and a half.
 
 CSS animations do not have this problem. `6s` means six seconds on
-every screen, because the browser works out how far through the
+every screen, because the browser calculates how far through the
 animation it is from the time, in the style step.
 
 A JavaScript animation can do the same. `requestAnimationFrame` gives
 the function it calls one number: the time, in milliseconds, since the
-page started to load. We can work out the angle from the time, and not
+page started to load. We can calculate the angle from the time, and not
 from a count of frames:
 
 ```html site
@@ -237,8 +237,8 @@ requestAnimationFrame(frame);
 
 Three things changed from the orbit on the canvas:
 
-1. `frame(time)` takes the time that `requestAnimationFrame` hands it.
-2. `angle` is worked out from that time, so there is no `let angle`
+1. `frame(time)` takes the time that `requestAnimationFrame` passes to it.
+2. `angle` is calculated from that time, so there is no `let angle`
    and no `angle + 0.02` any more. `time / 1000` is the time in
    seconds, so the ball goes round `1.2` radians a second, whatever the
    screen does.
@@ -287,10 +287,10 @@ animations cost it more work than others.
 | Word | Meaning | Example |
 |---|---|---|
 | *refresh rate* | How many times a second a screen shows a new picture, in hertz | `60 Hz`, `120 Hz` |
-| *layout* | The step where the browser works out the size and place of every box | changing `width` needs it |
+| *layout* | The step where the browser calculates the size and place of every box | changing `width` needs it |
 | *paint* | The step where the browser fills in the pixels of each part of the page | changing `box-shadow` needs it |
 | *composite* | The step where the browser puts the painted layers together into one picture | changing `transform` needs only this, after style |
-| `requestAnimationFrame(frame)` | Calls `frame` once, before the next frame, and hands it the time in milliseconds | `function frame(time) { … }` |
+| `requestAnimationFrame(frame)` | Calls `frame` once, before the next frame, and passes it the time in milliseconds | `function frame(time) { … }` |
 | `prefers-reduced-motion` | A media query that is true when the visitor has asked for less motion | `@media (prefers-reduced-motion: reduce)` |
 
 ## Where to read more

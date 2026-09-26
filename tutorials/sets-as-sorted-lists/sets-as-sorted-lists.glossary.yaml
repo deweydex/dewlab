@@ -42,3 +42,10 @@ entries:
       The size of a union is the two sizes added, minus the size of the
       overlap: |A ∪ B| = |A| + |B| - |A ∩ B|. It is the same idea as the
       general addition rule for probabilities.
+  - term: event
+    kind: concept
+    definition: >
+      In probability, an event is a set of outcomes: "a double" on two
+      dice is the set of six outcomes (1, 1) to (6, 6). Because an event is
+      a set, "A or B" is a union and "A and B" is an intersection.
+    example: "doubles = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6)]"

@@ -2,20 +2,25 @@
 title: "Venn diagrams: drawing sets and their overlaps — Practice"
 practice_for: venn-diagrams
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  book-characters: The people in six novels, chapter by chapter.
+datasets: [dinosaur-finds, book-characters]
 ---
 
 # Venn diagrams: drawing sets and their overlaps — Practice
 
-Each answer is hidden until you open it. When a question is about three
-sets, sketch the diagram first, and then work out the answer. Helping
-you think is what the diagram is for.
+Here are problems on two and three sets, and three from earlier pages.
+When a question is about three sets, sketch the diagram first, then find
+the answer. The diagram is there to help you think.
 
 ## Tools
 
-This cell sets up the whole class, `everyone`, and the three sets of
-students from the tutorial. It also defines `complement()`. Run it
-before you try the problems, and use it to check your answers.
+This cell makes a class of nine students, `everyone`, and three sets:
+who knows Python, who knows SQL, and who knows JavaScript. Run it before
+the problems, and use it to check your answers.
 
 ```python exec
 id: tools-1
@@ -30,229 +35,276 @@ def complement(s):
 
 
 print("python & sql :", sorted(python & sql))
-print("python - sql :", sorted(python - sql))
-print("python | sql :", sorted(python | sql))
-print("python ^ sql :", sorted(python ^ sql))
 ```
 
 ## Two sets
 
-**1.** Using the sets above, who knows Python but not SQL?
+```question
+id: venn-two-sets-who
+type: fill-in-the-blank
 
-<details class="dl-answer"><summary>answer</summary>
+- Python but not SQL is the {difference|intersection|union|symmetric difference}, `python - sql`.
+- Exactly one of Python and SQL is the {symmetric difference|difference|intersection|union}, `python ^ sql`.
+- Neither Python nor SQL is everything outside the {union|intersection|difference|symmetric difference}.
+```
 
-`python - sql` gives Aoife, Ben and Fiona.
+<details class="dl-answer"><summary>who they are</summary>
 
-</details>
-
-**2.** Who knows exactly one of Python and SQL?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`python ^ sql` gives Aoife, Ben, Fiona, Gearoid and Hannah.
-
-This is the symmetric difference, which is XOR for sets: the people in
-one set or the other, but not in both.
+Aoife, Ben and Fiona know Python but not SQL. Aoife, Ben, Fiona, Gearoid
+and Hannah know exactly one. This is the symmetric difference, XOR for sets.
+Only Iarla knows neither.
 
 </details>
 
-**3.** Who knows neither Python nor SQL?
+**1.** How many regions does a two-circle diagram have, if you count the
+outside?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`everyone - (python | sql)` gives Iarla.
-
-</details>
-
-**4.** How many regions does a two-circle diagram have, if you count the outside?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It has four: only in the left circle, only in the right circle, in both,
-and in neither.
-
-The outside region is easy to forget, and it is often the one a
+Four: only in the left circle, only in the right, in both, and in
+neither. The outside region is easy to forget, and it is often the one a
 question asks about.
 
 </details>
 
-**5.** In a class of 30, 18 students take Maths and 15 take Physics. 7 of them take both. How many take neither?
+**2.** In a class of 30, 18 students take Maths and 15 take Physics. 7
+take both. How many take neither?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The number taking at least one subject is $18 + 15 - 7 = 26$. So
-$30 - 26 = 4$ take neither.
-
-Taking away the 7 is the key step. When we add 18 and 15, we count
-those seven students twice, once in each subject.
-
-</details>
-
-**6.** Why does $|A \cup B| = |A| + |B| - |A \cap B|$ need that last term?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Anyone in both sets is counted twice in $|A| + |B|$, once in each set.
-So we take the overlap away once.
-
-This is the inclusion-exclusion principle. On the diagram you can see
-why it works: the overlap sits inside both circles. The formula alone
-does not show that.
+$18 + 15 - 7 = 26$ take at least one, so $30 - 26 = 4$ take neither.
+You need to subtract the 7, because adding 18 and 15 counts those seven
+students twice.
 
 </details>
 
 ## Three sets
 
-**7.** How many regions does a three-circle diagram have, if you count the outside?
+**3.** How many regions does a three-circle diagram have, if you count
+the outside?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It has eight. For each of the three sets, a person is either in it or
-out of it. That gives $2 \times 2 \times 2 = 2^3 = 8$ combinations.
+Eight. For each of the three sets, a person is in it or out of it:
+$2 \times 2 \times 2 = 8$ combinations.
 
 </details>
 
-**8.** Who knows Python or SQL, but not JavaScript?
+**4.** Who knows Python or SQL, but not JavaScript? And who knows all
+three?
 
 <details class="dl-answer"><summary>answer</summary>
 
 `(python | sql) - javascript` gives Aoife, Ben, Cara and Gearoid.
-
-</details>
-
-**9.** Who knows all three?
-
-<details class="dl-answer"><summary>answer</summary>
-
 `python & sql & javascript` gives Dara and Eoin.
 
 </details>
 
-**10.** Are `(python & sql) | (python & javascript)` and `python & (sql | javascript)` the same set?
+**5.** Can you write `exactly_two(a, b, c)`, which gives the elements in
+exactly two of the three sets? Sketch which regions it means first.
+
+```python exec
+id: venn-exactly-two
+def exactly_two(a, b, c):
+    """Return the set of elements that are in exactly two of a, b and c."""
+    # Your code here
+
+
+print(sorted(exactly_two(python, sql, javascript)))
+```
+
+```inputs
+sorted(exactly_two(python, sql, javascript))
+sorted(exactly_two({1, 2}, {2, 3}, {3, 1}))
+sorted(exactly_two({1}, {1}, {1}))
+```
+
+```hint
+There are three regions, one for each pair: in a and b but not c, in a
+and c but not b, in b and c but not a. Join them with `|`.
+```
+
+```solution
+def exactly_two(a, b, c):
+    """Return the set of elements that are in exactly two of a, b and c."""
+    return ((a & b) - c) | ((a & c) - b) | ((b & c) - a)
+
+
+print(sorted(exactly_two(python, sql, javascript)))
+---
+Cara, Fiona and Hannah. The three pair-overlaps each lose the middle,
+since the middle is in all three, not two. Another way is to count.
+An element is in exactly two when `(x in a) + (x in b) + (x in c)` is 2,
+since `True` counts as 1.
+```
+
+**6.** In a survey of 100 people, 60 use email, 45 use messaging and 40
+use the phone. 30 use email and messaging, 20 email and the phone, and 15
+messaging and the phone. 10 use all three. How many use at least one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. Both give Cara, Dara, Eoin and Fiona.
-
-This is the distributive law. You met it in problem 6 of
-[Sets: building them from sorted lists — Practice](tutorial:sets-as-sorted-lists-practice).
-It has the same shape as
-a rule about `True` and `False`: `(a and b) or (a and c)` is the same as
-`a and (b or c)`. You could check that rule with a loop over every case,
-as in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
+$60 + 45 + 40 - 30 - 20 - 15 + 10 = 90$. Add the single sets, subtract
+the pairs, then add the triple again. The ten who use all three were
+added three times, once for each single set, then subtracted three times,
+once for each pair. That leaves them counted zero times, so we add them
+once more.
 
 </details>
 
-**11.** On a three-circle diagram, shade the region for $A \setminus (B \cup C)$. Describe it in words.
+**7.** Each world has three sets, and a diagram that says something
+about them.
 
-<details class="dl-answer"><summary>answer</summary>
+<div class="dl-world" data-world="games-of-chance">
 
-It is the part of circle A that does not overlap either of the other
-circles. That is A's outer region, the one that belongs to A alone.
+Roll two dice, with three events: the total is even, the total is at
+least 10, and a double. How
+many outcomes are in exactly two of the three events, and why are none
+of them a double with an odd total?
 
-In words: in A only.
+```python exec
+id: venn-world--games-of-chance
+rolls = {(a, b) for a in range(1, 7) for b in range(1, 7)}
+even = {r for r in rolls if (r[0] + r[1]) % 2 == 0}
+high = {r for r in rolls if r[0] + r[1] >= 10}
+double = {r for r in rolls if r[0] == r[1]}
+```
 
-</details>
+```solution
+rolls = {(a, b) for a in range(1, 7) for b in range(1, 7)}
+even = {r for r in rolls if (r[0] + r[1]) % 2 == 0}
+high = {r for r in rolls if r[0] + r[1] >= 10}
+double = {r for r in rolls if r[0] == r[1]}
+two = ((even & high) - double) | ((even & double) - high) | ((high & double) - even)
+print(len(two), sorted(two))
+---
+Six: the four low doubles, which are even and not high, and (4, 6) and
+(6, 4), which are even and high and not doubles. A double always has an
+even total, so the double circle sits wholly inside the even one, and
+the parts of it outside the even circle are empty. `{r for r in rolls
+if ...}` is a *set comprehension*. It is a list comprehension in
+curly brackets, and it builds a set.
+```
 
-**12.** In a survey of 100 people, 60 use email, 45 use messaging, and 30 use both. How many use at least one?
+</div>
 
-<details class="dl-answer"><summary>answer</summary>
+<div class="dl-world" data-world="dinosaurs">
 
-$60 + 45 - 30 = 75$.
+This cell finds the dinosaur genera in three countries: the United
+States, China and Argentina. Which genera are found in more than one?
+Draw the diagram in your head before you run the answer. Is any circle
+on its own?
 
-</details>
+```python exec
+id: venn-world--dinosaurs
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
 
-**13.** The same survey adds a third option, the phone. Now 60 use email, 45 use messaging and 40 use the phone. 30 use email and messaging, 20 use email and the phone, and 15 use messaging and the phone. 10 use all three. How many use at least one?
 
-<details class="dl-answer"><summary>answer</summary>
+def genera_in(code):
+    """The genera found in one country: the first word of each find's name."""
+    names = finds[finds.country_code == code]["name"]
+    return {name.split()[0] for name in names}
 
-$60 + 45 + 40 - 30 - 20 - 15 + 10 = 90$.
 
-There are three steps: add the single sets, take away the pairs, then
-add the triple back. Why add the triple back? The ten people who use all
-three were added three times, once for each single set. Then they were
-taken away three times, once for each pair. That leaves them counted
-zero times, so we add them back once.
+us = genera_in("US")
+china = genera_in("CN")
+argentina = genera_in("AR")
+print(len(us), len(china), len(argentina))
+```
 
-This is hard to do without a diagram. That is the argument for drawing
-one.
+```solution
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
 
-</details>
+
+def genera_in(code):
+    """The genera found in one country: the first word of each find's name."""
+    names = finds[finds.country_code == code]["name"]
+    return {name.split()[0] for name in names}
+
+
+us = genera_in("US")
+china = genera_in("CN")
+argentina = genera_in("AR")
+print(sorted(us & china))
+print(us & argentina, china & argentina)
+---
+Eight genera are found in both the United States and China, with the
+copy saved on {{snapshot: dinosaur-finds}}. Argentina shares none with
+either, so its circle stands alone. Through much of the age of dinosaurs,
+South America was part of a southern continent, Gondwana, which was
+separating from the northern lands, and that is likely part of the
+reason.
+```
+
+</div>
+
+<div class="dl-world" data-world="book-characters">
+
+In *Pride and Prejudice*, Mr Collins marries Charlotte, and works for
+Lady Catherine. Which chapters name Mr Collins and Charlotte, but not
+Lady Catherine? And which name Lady Catherine alone?
+
+```python exec
+id: venn-world--book-characters
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+collins = set(pride[pride.character == "Mr Collins"]["chapter"])
+charlotte = set(pride[pride.character == "Charlotte"]["chapter"])
+catherine = set(pride[pride.character == "Lady Catherine"]["chapter"])
+```
+
+```solution
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+collins = set(pride[pride.character == "Mr Collins"]["chapter"])
+charlotte = set(pride[pride.character == "Charlotte"]["chapter"])
+catherine = set(pride[pride.character == "Lady Catherine"]["chapter"])
+print(sorted((collins & charlotte) - catherine))
+print(sorted(catherine - collins - charlotte))
+---
+Chapters 20, 24 and 25 name Mr Collins and Charlotte without Lady
+Catherine, and 58 and 61 name her alone, both near the end of the book,
+after her visit to Longbourn. Fifteen chapters name all three, which
+shows how closely linked the three of them are.
+```
+
+</div>
 
 ## De Morgan on sets
 
-**14.** Is the complement of $A \cup B$ the same as the intersection of the two complements?
+**8.** Is the complement of $A \cup B$ the same as the intersection of
+the two complements? And the complement of $A \cap B$, the same as the
+union of the complements?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes. Being outside both circles is the same as being outside the first
-circle and outside the second.
-
-Shade both descriptions on a diagram, and they cover exactly the same
-region.
-
-</details>
-
-**15.** Is the complement of $A \cap B$ the same as the union of the two complements?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Yes. Being outside the overlap means missing at least one of the two
-circles. That is the same as being outside the first circle or outside
-the second.
-
-</details>
-
-**16.** How is this proof different from the truth-table proof in [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The truth table checks all four cases. It is complete because there are
-no other cases.
-
-The diagram convinces you in a different way. It shows you that two
-descriptions pick out the same region, so you see the answer.
-
-Neither proof is better. They are the same claim in two notations, and
-that is why it helps to have both. If one of them did not make sense to
-you, the other might.
+Yes, both. An element outside both circles is outside the first and
+outside the second. An element outside the overlap misses at least one
+of the circles, so it is outside the first or outside the second. Shade
+each pair on a diagram, and they cover the same region.
 
 </details>
 
 ## Where it runs out
 
-**17.** How many regions would four sets need? Can four circles make them?
+**9.** What still works well at four sets, when four circles cannot draw
+them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Four sets need fifteen regions, plus the outside, which makes sixteen.
-And no: no arrangement of four circles on a flat page gives all sixteen
-regions.
-
-Diagrams for four sets do exist. They use ovals or stranger shapes, and
-they get much harder to read, which defeats the purpose of drawing
-them.
-
-</details>
-
-**18.** What still works well at four sets?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The set operations. `A & B & C & D` is no harder to compute than
-`A & B`. Inclusion-exclusion also works for any number of sets.
-
-Every way of showing an idea stops working somewhere, and part of
-knowing a tool is knowing where. A picture that helps a lot at three
-sets and not at all at four is still a good tool.
+The set operations still work. `A & B & C & D` is no harder to compute
+than `A & B`, and inclusion-exclusion works for any number of sets.
 
 </details>
 
 ## One longer one
 
-**19.** A support team sorts its tickets by category. There are 120 hardware tickets, 95 software tickets and 60 network tickets. 30 tickets are both hardware and software, 25 are hardware and network, and 20 are software and network. 10 are in all three categories. There are 250 tickets in total.
+**10.** A support team sorts its tickets by category. There are 120
+hardware tickets, 95 software and 60 network. 30 are both hardware and
+software, 25 hardware and network, and 20 software and network. 10 are in
+all three. There are 250 tickets in total.
 
-- (a) How many tickets are in at least one category?
+- (a) How many are in at least one category?
 - (b) How many are in none?
 - (c) How many are hardware only?
 
@@ -262,13 +314,56 @@ sets and not at all at four is still a good tool.
 
 (b) $250 - 210 = 40$.
 
-(c) Start with the 120 hardware tickets. Take away the ones that are
-also software (30) and the ones that are also network (25). But that
-takes away the ten tickets in all three categories twice, so add ten
-back: $120 - 30 - 25 + 10 = 75$.
+(c) Start with the 120 hardware tickets. Subtract those also software
+(30) and those also network (25). That subtracts the ten in all three
+twice, so add ten again: $120 - 30 - 25 + 10 = 75$. Without a diagram, it
+is easy to miss that the all-three region was subtracted twice. The
+diagram shows it.
 
-Part (c) is where a diagram becomes useful. Without one, it is very hard
-to notice that the all-three region was taken away twice. With one, it
-is easy to see.
+</details>
+
+## From earlier
+
+**11.** From *Sets*. On that page, `is_subset(a, b)` checked that every
+element of a is in b. Python writes it `a <= b`. With `double` as every
+double on two dice and `even` as every even total, what do these print?
+
+```python exec
+id: venn-from-earlier-subset
+rolls = {(a, b) for a in range(1, 7) for b in range(1, 7)}
+double = {r for r in rolls if r[0] == r[1]}
+even = {r for r in rolls if (r[0] + r[1]) % 2 == 0}
+print(double <= even, even <= double)
+```
+
+```predict
+What will it print?
+
+- True False
+  - Every double is even, and most even totals are not doubles.
+- True True
+  - They are the same kind of roll.
+- False False
+  - Neither set fits inside the other.
+```
+
+**12.** From *Sets*. With inclusion-exclusion, how many cards in a deck
+are hearts or aces?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$13 + 4 - 1 = 16$: 13 hearts, 4 aces, and the ace of hearts is both.
+
+</details>
+
+**13.** From *Making decisions*. The numbers for which `x > 2 and x < 8`
+is true form a set. Is it the intersection or the union of the numbers
+more than 2 and the numbers less than 8?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The intersection. `and` asks for both, the overlap of the two sets. With
+`or`, every number would be in at least one of them, so the union would
+be every number there is.
 
 </details>

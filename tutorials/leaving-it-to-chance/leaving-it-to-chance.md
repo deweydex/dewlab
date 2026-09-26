@@ -18,15 +18,15 @@ covers:
 
 Every simulation in this series starts with one instruction: give me a
 number I could not have predicted. Shuffling a deck, drawing lottery
-numbers, simulating a queue, testing a design against a thousand
-situations nobody wrote down: all of these need that one instruction.
+numbers, simulating a queue and testing a design against a thousand
+situations nobody wrote down all need that one instruction.
 
 So on this page we look at that instruction on its own, before we build
 anything on top of it. We will find that the computer is not doing what
 it seems to be doing. And we will find that this is useful, not
 disappointing.
 
-## Asking the Machine for a Number
+## Asking the machine for a number
 
 Python's `random` module is part of the standard library. There is
 nothing to install. We only need to import it.
@@ -59,7 +59,7 @@ print("heads or tails:   ", random.choice(["heads", "tails"]))
 
 Here are the three functions in that cell:
 
-| Function | What it gives back |
+| Function | What it returns |
 |---|---|
 | `random.randint(1, 6)` | a whole number from 1 to 6, including both 1 and 6 |
 | `random.uniform(0, 100)` | a number with decimals, anywhere from 0 to 100 |
@@ -75,7 +75,7 @@ id: asking-the-machine-for-a-number-3
 hint: Call randint twice and add the results. Storing each roll in its own variable makes the total easier to read afterwards.
 ```
 
-## The Same Numbers Twice
+## The same numbers twice
 
 The next cell does something that looks like a mistake.
 
@@ -130,7 +130,7 @@ Numbers made this way are called *pseudo-random*. A pseudo-random number
 comes from a calculation, but it is so close to random that no test we
 use can tell the difference.
 
-## What Random Is Good Enough For
+## What random is good enough for
 
 Your first thought might be that pseudo-random is second-best, and that
 we only use it because true randomness is hard to get. In one field that
@@ -146,7 +146,7 @@ know why. With truly random numbers, that run is gone forever. You cannot
 repeat it, step through it, or show it to anyone else. With a seed, you
 write down one whole number, and the whole run comes back exactly.
 
-An experiment that nobody can run again is not much of an experiment.
+Scientists need to be able to run an experiment again and check it.
 Being able to repeat a run exactly is called *reproducibility*, and it is
 why careful simulation code always sets a seed and writes it down.
 
@@ -167,7 +167,7 @@ print("seed 2, again:", one_experiment(2))
 
 Three numbers are easy to check by eye. Two thousand are not, so the
 next cell shows the same idea as a picture. It rolls a die 2,000 times,
-and after each roll it works out the average of all the rolls so far. It
+and after each roll it calculates the average of all the rolls so far. It
 does this three times: with seed 7, with seed 7 again, and with seed 8.
 Before you run it, what do you expect the two seed 7 lines to look like?
 
@@ -206,14 +206,14 @@ The same seed gives the same dice, every time.
 Seed 8 takes a different path. It is not a better or worse run. It is
 only another run, and it settles towards the same average of 3.5 as the
 others. The seed decides which path you get. It does not decide where
-the path ends up.
+the path finishes.
 
 There is one field where pseudo-random really is second-best: security.
-If an attacker can find your seed, they can work out every "random"
+If an attacker can find your seed, they can calculate every "random"
 number you will ever make. For a login code or a password reset link,
 that is a complete failure. Python's `secrets` module is the tool for
 that job. For simulation, nobody is trying to guess your dice. So
-`random` is the right choice, and reproducibility is the reason.
+`random` is the right choice, because it gives reproducibility.
 
 ### Your turn
 
@@ -227,7 +227,7 @@ Can you show that a seed repeats a run?
 id: what-random-is-good-enough-for-2
 ```
 
-## Choosing From a List
+## Choosing from a list
 
 The rest of this series uses one more tool. Often we do not want a
 number. We want a thing: a customer, a word, a country, a row of data.
@@ -261,10 +261,10 @@ print("without replacement:", random.sample(deck, k=4))
 
 `random.choices`, with an **s**, puts each card back before it draws the
 next one. This is called drawing *with replacement*, and the same card
-can come up twice. Here the K came up twice.
+can appear twice. Here the K appeared twice.
 
 `random.sample` does not put the card back. This is drawing *without
-replacement*, so no card can come up twice.
+replacement*, so no card can appear twice.
 
 | Function | Puts each item back? | Can repeat? | Example |
 |---|---|---|---|
@@ -294,7 +294,7 @@ names = ["Aoife", "Brendan", "Ciara", "Dara", "Eimear", "Fionn", "Gráinne"]
 The word *random* has a narrower meaning now than it had at the start of
 this page. It no longer means "impossible to predict". It means
 "impossible to predict for anyone who does not know the seed". It also
-means "regular enough that the difference never shows up in the answer".
+means "regular enough that the difference never appears in the answer".
 
 When you first saw the numbers repeat, did it feel like a
 disappointment? Or did the reason make sense before you read the
@@ -304,21 +304,21 @@ from one afternoon spent chasing a bug.
 
 Where else have you met something that is not exactly what it claims to
 be, but is so close that the difference never matters? Computing has many
-examples like this. Noticing them is a large part of understanding a
-system, and not only using it.
+examples like this. When you notice them, you understand a system
+better, and do not only use it.
 
-## Where to Read More
+## Where to read more
 
 Python Software Foundation. *`random` — Generate pseudo-random numbers.*
-<https://docs.python.org/3/library/random.html>. The module's own
-documentation, and unusually readable for a standard-library page — the
-opening note on which functions are and are not suitable for security is
-worth the visit on its own.
+<https://docs.python.org/3/library/random.html>. This is the module's own
+documentation. It is unusually easy to read for a standard-library page.
+The opening note on which functions are safe for security is worth
+reading on its own.
 
 Python Software Foundation. *`secrets` — Generate secure random numbers for
-managing secrets.* <https://docs.python.org/3/library/secrets.html>. The
-other half of the story, for the cases where being predictable is a
-vulnerability rather than a feature.
+managing secrets.* <https://docs.python.org/3/library/secrets.html>. This
+page covers the cases where a predictable number is a weakness, not a
+feature.
 
 Downey, A. B. (2015). *Think Python* (2nd ed.). O'Reilly. Chapter 13 builds a
 word-frequency study on `random` and is a good next step if the "choose a
@@ -328,11 +328,11 @@ Matsumoto, M. and Nishimura, T. (1998). *Mersenne Twister: A 623-dimensionally
 equidistributed uniform pseudo-random number generator.* ACM Transactions on
 Modeling and Computer Simulation, 8(1), 3–30.
 <https://doi.org/10.1145/272991.272995>. The algorithm behind Python's own
-generator. Considerably heavier than anything in this series, and included
-because "an algorithm produces the sequence" is a claim you are entitled to
-go and check.
+generator. It is much harder than anything in this series. We include it
+because you can go and check the claim that an algorithm makes the
+sequence.
 
 Veritasium (2014). *What is NOT Random?*
 <https://www.youtube.com/watch?v=sMb00lz-IfE>. Is anything truly random,
 or would it all be predictable if we knew enough? Veritasium asks
-physicists. Ten minutes.
+physicists. The video is ten minutes long.

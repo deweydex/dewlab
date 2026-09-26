@@ -15,8 +15,8 @@ what its content is. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 Two questions help with every problem here. What is this piece of
 content: navigation, the main content, one meaningful part of the page?
@@ -245,7 +245,7 @@ a `<section>`. Why do you think the cards are not sections too?
 
 The section is one meaningful part of the page, "What I'm Learning",
 with its own `<h2>` heading, so it gets a tag that says so. Each card is
-a box that the CSS styles: the class `card` gives it its background,
+a box that the CSS styles. The class `card` gives it its background,
 padding and shadow. The card does not add a new meaning of its own, so
 a `<div>` is the right choice.
 

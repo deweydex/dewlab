@@ -25,7 +25,7 @@ On this page we:
 
 - build a small DataFrame, and look at it
 - ask it a question, the way `WHERE` does in SQL
-- guess the mean of a column, then work it out
+- guess the mean of a column, then calculate it
 
 ## A Python cell
 
@@ -128,7 +128,7 @@ hint: Start from the filter-evening cell. Change the column name, the comparison
 
 ## A guess, then the mean
 
-`readings["morning"].mean()` works out the mean, or average, of the
+`readings["morning"].mean()` calculates the mean, or average, of the
 `morning` column. Before you run it, look at the four morning readings.
 What do you think their mean is?
 
@@ -162,13 +162,13 @@ into the database so that SQL can query it.
 
 Corey Schafer (2020). *Python Pandas Tutorial (Part 4): Filtering — Using
 Conditionals to Filter Rows and Columns.*
-<https://www.youtube.com/watch?v=Lw2rlcxScZY>. The exact operation this page
-teaches — selecting rows with a comparison — worked through on a different
-dataset.
+<https://www.youtube.com/watch?v=Lw2rlcxScZY>. Corey Schafer selects
+rows with a comparison, as this page does, on a different dataset.
 
 pandas development team. *10 minutes to pandas.*
-<https://pandas.pydata.org/docs/user_guide/10min.html>. The official quick
-tour of the DataFrame, for the parts this page did not have room to cover.
+<https://pandas.pydata.org/docs/user_guide/10min.html>. This is the
+official quick tour of the DataFrame. It covers the parts this page did
+not have room for.
 
 MinutePhysics (2017). *Are University Admissions Biased? Simpson's Paradox
 Part 2.* <https://www.youtube.com/watch?v=E_ME4P9fQbo>. A table of

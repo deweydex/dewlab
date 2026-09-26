@@ -207,8 +207,8 @@ only as tall as its own content, because `max-height` is a limit, and
 not a height.
 
 Why not `height: auto`? A transition cannot animate a change to `auto`,
-so the answer would snap open with no slide. That is why the checkbox
-hack uses `max-height`, with a number larger than the answer will ever
+so the answer would snap open with no slide. So the checkbox hack uses
+`max-height`, with a number larger than the answer will ever
 need.
 
 </details>

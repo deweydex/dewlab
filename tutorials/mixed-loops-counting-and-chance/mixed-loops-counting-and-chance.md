@@ -13,7 +13,7 @@ version: 2026.09.25.1
 # Mixed problems: loops, counting and chance
 
 These problems draw on every page of Unit 3, and on Units 1 and 2 as
-well. None of them says which page it needs. Working that out is part of
+well. None of them says which page it needs. Finding that is part of
 the problem. When you are not sure where to start, the four questions
 are always allowed: what is named here, what is promised, what happens
 when, and what does this space let us do?
@@ -22,15 +22,15 @@ Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (find
 why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route, or find the space where a "wrong" answer
-is right). Answers are in the folds, and each is one way through, not
-the only one.
+is right). Answers are in the folds. Each is one answer, not the only
+one.
 
 Along the way, the problems build this unit's product: a
 password-strength checker. I think it is the most useful thing in the
-unit, because you can test passwords like your own. Make up ones like
-yours: never type a real password into a web page. Problems 6, 8, 10 and 15 are its parts, and
+unit, because you can test passwords like your own. Invent ones like
+yours. Never type a real password into a web page. Problems 6, 8, 10 and 15 are its parts, and
 each one uses the part before it. If you skip one, copy its answer into
-a scratch cell before you go on.
+a scratch cell before you continue.
 
 ## Your toolkit
 
@@ -38,7 +38,7 @@ Your toolkit from this unit is loaded on this page: `total`, `product`,
 `all_pairs`, `factorial`, `permutations`, `combinations`, `simulate` and
 `at_least_one`. So are the tools from Units 1 and 2, like `between` and
 `truth_table`. Run this cell to check the ones from this unit. If one of
-them gives a `NameError`, its page is where to build it.
+them gives a `NameError`, build it on its page.
 
 ```python exec
 id: mixed-loops-toolkit-check
@@ -67,10 +67,10 @@ the pixels in the first 10 rows. What will it print?
 
 `55`.
 
-`range(1, 11)` is the whole numbers from 1 to 10: the 11 is left out.
-The triangle has $\sum_{i=1}^{10} i = \frac{10 \times 11}{2} = 55$ pixels, the
-pairing trick from [Doing it again](tutorial:doing-it-again): 1 and 10
-make 11, 2 and 9 make 11, and there are five such pairs.
+`range(1, 11)` is the whole numbers from 1 to 10. The 11 is left out.
+The triangle has $\sum_{i=1}^{10} i = \frac{10 \times 11}{2} = 55$ pixels.
+This is the pairing trick from [Doing it again](tutorial:doing-it-again).
+1 and 10 make 11, 2 and 9 make 11, and there are five such pairs.
 
 </details>
 
@@ -89,14 +89,14 @@ print(10 ** 4)
 
 Each of the 4 places can be any of 10 digits, and each choice goes with
 every choice before it. That is the counting principle from
-[Counting every outfit](tutorial:counting-every-outfit): multiply the
+[Counting every outfit](tutorial:counting-every-outfit). Multiply the
 number of choices at each step.
 
 </details>
 
 **3. Make.** Some phones do not let a code use the same digit twice. How
 many 4-digit codes have four different digits? Write one line that
-works it out with a toolkit function.
+calculates it with a toolkit function.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -124,8 +124,8 @@ the characters. With 26 letters, each old password turns into 26 new
 ones. So the count is multiplied by 26 for each new character.
 
 It is the same reason a truth table doubles its rows with each new
-input, on [True, false and every case](tutorial:true-false-and-every-case):
-every old row appears once for each value of the new input.
+input, on [True, false and every case](tutorial:true-false-and-every-case).
+Every old row appears once for each value of the new input.
 
 </details>
 
@@ -168,7 +168,7 @@ print("a" in lowercase_letters, "A" in lowercase_letters)
 ```
 
 It prints `True False`. `in` works on a string the way it works on a
-list: `"a" in lowercase_letters` is True when the character `"a"` is in
+list. `"a" in lowercase_letters` is True when the character `"a"` is in
 the text. And `for character in password:` visits each character of
 `password` in turn.
 
@@ -179,7 +179,7 @@ id: mixed-loops-scratch-2
 # Your pool_size, count_passwords and strength_bits go here
 ```
 
-**6. Make.** Write `pool_size(password)`. It gives back how many
+**6. Make.** Write `pool_size(password)`. It returns how many
 different characters each place in the password could hold: 26 if the
 password uses any lowercase letter, 26 more for any capital letter, 10
 more for any digit, and 32 more for any other character, which we call
@@ -196,7 +196,7 @@ a symbol. Test it with `assert`:
 3. After the loop, start `size` at 0, and add 26, 26, 10 or 32 for each
    name that is `True`.
 
-**Think about:** why the adding happens after the loop, not inside it.
+**Think about:** why the numbers are added after the loop, not inside it.
 
 </details>
 
@@ -237,7 +237,8 @@ assert pool_size("1234") == 10
 print("pool_size keeps its promise.")
 ```
 
-Inside the loop, `elif` is right: each character is exactly one kind.
+Inside the loop, `elif` works, because each character is exactly one
+kind.
 After the loop, the four checks are separate `if` lines, because a
 password can use several kinds at once. With `elif` there, only the
 first kind found would count.
@@ -270,16 +271,16 @@ print(schlomis_pool_size("hello"))    # should be 26
 
 <details class="dl-answer"><summary>answer</summary>
 
-The adding happens inside the loop, so it happens once for every
-character. `"hello"` has five lowercase letters, so it adds 26 five
-times: 130. `"Hi"` looked fine only because its two characters are of
+The code adds inside the loop, so it adds once for every character.
+`"hello"` has five lowercase letters, so it adds 26 five times, to make
+130. `"Hi"` looked fine only because its two characters are of
 two different kinds.
 
 The pool should grow once for each kind of character, however many
 characters of that kind there are. So the loop should only note which
-kinds appear, and the adding should come after it, as in the answer to
-problem 6. It is about what happens when: the lines it needs, in the
-wrong place.
+kinds appear, and the code should add after it, as in the answer to
+problem 6. This is about what happens when. The function has the lines
+it needs, but one is in the wrong place.
 
 </details>
 
@@ -292,7 +293,7 @@ there are of the same length, using the same pool. Test it:
 
 Each of the places can hold any character from the pool, so by the
 counting principle the count is the pool size multiplied by itself once
-for each place: a power.
+for each place. That is a power.
 
 ```python
 def count_passwords(password):
@@ -323,20 +324,22 @@ print(count_passwords("correcthorsebatterystaple"))
 ```
 
 The first uses all four kinds, so its pool is 94, but it has only 11
-characters: $94^{11}$, a number with 22 digits. The second uses only
-lowercase letters, a pool of 26, but it has 25 characters: $26^{25}$, a
-number with 36 digits.
+characters. That gives $94^{11}$, a number with 22 digits. The second
+uses only lowercase letters, a pool of 26, but it has 25 characters.
+That gives $26^{25}$, a number with 36 digits.
 
-The length is the power, and the pool is only the base. Adding places
-multiplies the count again and again, so length usually beats variety.
+The length is the power, and the pool is only the base. Each extra
+place multiplies the count again, so length usually matters more than
+variety.
 
 </details>
 
 **10. Another way.** Numbers like $26^{25}$ are too long to compare by
-eye. Security people count *bits of strength* instead: how many times
-you would double 1 to reach the count. That is a logarithm, base 2,
+eye. Security people count *bits of strength* instead. The bits are how
+many times you would double 1 to reach the count. That is a logarithm,
+base 2,
 from [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
-Work out the bits for `"hello"` two ways: as `math.log2` of the count,
+Find the bits for `"hello"` two ways: as `math.log2` of the count,
 and as the length times `math.log2` of the pool. Do they agree? Then
 write `strength_bits(password)`.
 
@@ -368,13 +371,13 @@ print(round(strength_bits("hello"), 1))
 ```
 
 Both ways give about 23.5, and they differ only in the last digit or
-two, because floats are very close rather than exact. That is why the
+two, because floats are very close rather than exact. So the
 test rounds both first.
 
 They agree because each character multiplies the count by 26, and one
 multiplication by 26 is $\log_2 26 \approx 4.7$ doublings. Five
 characters make $5 \times 4.7 = 23.5$ doublings. The second way is the
-better one for long passwords: it never has to build the huge count.
+better one for long passwords. It never has to build the huge count.
 
 </details>
 
@@ -395,8 +398,8 @@ print(years_to_try_all(94 ** 11, 10000000000))    # the count for "Tr0ub4dor&3"
 
 <details class="dl-answer"><summary>answer</summary>
 
-The order of operations. Python works through `/` and `*` from left to
-right, so the line divides by 60, and then multiplies by 60, 24 and 365.
+The trouble is the order of operations. Python does `/` and `*` from
+left to right, so the line divides by 60, and then multiplies by 60, 24 and 365.
 It should divide by all four. Brackets fix it:
 
 ```python
@@ -409,8 +412,8 @@ def years_to_try_all(count, guesses_per_second):
 print(round(years_to_try_all(94 ** 11, 10000000000)))
 ```
 
-Now it prints `16055`. Giving the number of seconds in a year its own
-name does the same job as brackets, and makes the line easier to read.
+Now it prints `16055`. A name for the number of seconds in a year does
+the same job as brackets, and makes the line easier to read.
 
 </details>
 
@@ -478,7 +481,7 @@ truth_table(accepted, ["long_enough", "has_digit", "has_symbol"])
 It is accepted in 3 rows: long enough with a digit, long enough with a
 symbol, and long enough with both. The brackets matter, as they did on
 [True, false and every case](tutorial:true-false-and-every-case).
-Without them, Python works out `and` first, and a short password with a
+Without them, Python does `and` first, and a short password with a
 symbol would be accepted.
 
 </details>
@@ -515,12 +518,12 @@ is still less than $94^{12}$. With 17, it is more.
 
 In bits, one lowercase letter is about 4.7 bits, and one character from
 all 94 is about 6.55 bits. So 12 mixed characters are about 78.7 bits,
-and $78.7 \div 4.7$ is about 16.7, so 17 letters.
+and $78.7 \div 4.7$ is about 16.7, so it needs 17 letters.
 
 </details>
 
 **15. Make.** Now put the checker together. Write
-`password_strength(password)`. It gives back a message with the bits of
+`password_strength(password)`. It returns a message with the bits of
 strength, a rating, and how long a thief would need to try every
 password at 10 billion guesses a second. Use these ratings:
 
@@ -537,10 +540,10 @@ Try it on `"hello"`, `"Hello1!"`, `"9Lq#v2!mZx"` and
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out `bits = strength_bits(password)` first.
+1. Set `bits = strength_bits(password)` first.
 2. Choose the rating with `if`, `elif` and `else`, from the weakest up.
    Each `elif` only runs when every check above it was False.
-3. Work out the seconds: `count_passwords(password) / 10000000000`.
+3. Find the seconds: `count_passwords(password) / 10000000000`.
    Then write a small function that turns seconds into a sensible unit:
    seconds, hours, days or years.
 4. Join the pieces into one message with `+` and `str()`.
@@ -603,7 +606,7 @@ correcthorsebatterystaple: 117.5 bits, strong. Trying every one takes 7508048896
 ```
 
 `"hello"` takes about a thousandth of a second, which rounds to 0.0.
-The last number is so big that "years" stops meaning much: it is about
+The last number is so big that "years" stops meaning much. It is about
 50 million times the age of the universe. Its last few digits are float
 rounding, the same closeness you met with `0.1 + 0.2`.
 
@@ -616,7 +619,7 @@ into bits, and `if`, `elif` and `else` from Unit 2 choose the rating.
 **16. Predict.** A company gives each member of staff a random 4-digit
 PIN for the front door, from all 10,000. How many staff must there be
 before the chance that two of them share a PIN is more than a half?
-Guess first: 5,000? 1,000? 100? Then write a `while` loop to find out.
+Guess first: 5,000? 1,000? 100? Then write a `while` loop to find it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -650,12 +653,12 @@ print(staff, chance_of_shared_pin(staff))
 print(combinations(staff, 2), "pairs")
 ```
 
-It prints `119`, a chance of about 0.506, and `7021 pairs`. Only 119
-people, out of 10,000 possible PINs, and two of them probably match.
+It prints `119`, a chance of about 0.506, and `7021 pairs`. With only 119
+people and 10,000 possible PINs, two of them probably match.
 Each pair has a tiny chance of matching, but 119 people make over 7,000
 pairs.
 
-This is why a PIN should never be used as the only thing that tells
+So a PIN should never be used as the only thing that tells
 people apart, and why computers that give files short codes need those
 codes to be very long.
 
@@ -687,7 +690,7 @@ than `"9Lq#v2!mZx"`.
 
 This belongs to the fourth question: what does this space let us do,
 and what does it assume? The maths in the checker is right. It answers
-the question for a space of random characters, and a real password is
-only as strong as the space the thief believes it came from.
+the question for a space of random characters. A real password's
+strength depends on the space the thief believes it came from.
 
 </details>

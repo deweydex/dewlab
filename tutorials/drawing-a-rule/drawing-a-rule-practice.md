@@ -37,7 +37,7 @@ find your three points on the line.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(0, 1)$, $(1, 3)$ and $(2, 5)$.
+The points are $(0, 1)$, $(1, 3)$ and $(2, 5)$.
 
 ```python
 def double_plus_one(x):
@@ -65,7 +65,7 @@ it too: 5 at $-3$ and at 3, $-3$ at $-1$ and at 1.
 
 </details>
 
-**3. Make.** Draw $y = 3 - x$ from $-2$ to 5. Read its root off the
+**3. Make.** Draw $y = 3 - x$ from $-2$ to 5. Read its root from the
 graph, then check it by substituting.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -89,7 +89,7 @@ Guess, then draw it from $-3$ to 3.
 
 <details class="dl-answer"><summary>answer</summary>
 
-None.
+It never crosses.
 
 ```python
 def square_plus_one(x):
@@ -135,7 +135,7 @@ print(celsius_to_fahrenheit(-40))
 ```
 
 The lines meet at $(-40, -40)$, and `celsius_to_fahrenheit(-40)` is
-`-40.0`. Where the graph of a rule meets $y = x$, the rule gives back
+`-40.0`. Where the graph of a rule meets $y = x$, the rule returns
 the number it was given.
 
 </details>
@@ -171,8 +171,8 @@ plot_rule(arch, -3, 3)
 ```
 
 Now it draws an upside-down U, with its top at $(0, 4)$ and roots at
-$-2$ and 2. Schlomo's memory was sound: spreadsheets do write powers
-with `^`. Python keeps that sign for XOR. With whole numbers only,
+$-2$ and 2. Spreadsheets do write powers with `^`, as Schlomo
+remembered. Python keeps that sign for XOR. With whole numbers only,
 `4 - x ^ 2` would have run and given other numbers with no error at
 all, which is harder to notice.
 
@@ -185,19 +185,19 @@ read the answer to one decimal place, then check by substituting.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write `basketball_height(seconds)`, which gives back the rule.
+1. Write `basketball_height(seconds)`, which returns the height.
 2. Draw it from 0 to 2 seconds. Where does it meet the x-axis?
 3. Substitute your reading, and the numbers either side of it. Which
    side of 0 is each?
 
-**Think about:** a reading from a graph is only as fine as the picture.
-How could you get the second decimal place?
+**Think about:** you can read a graph only to about the width of its
+line. How could you get the second decimal place?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def basketball_height(seconds):
@@ -258,14 +258,14 @@ the value changes from negative to positive, or back.
 3. When `before` and the new value have different signs, or the new
    value is 0, print $x$.
 
-**Think about:** `plot_rule` works out a table like this and draws it.
+**Think about:** `plot_rule` calculates a table like this and draws it.
 What do you get from the table that the picture did not give you?
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 before = evaluate([-4, 0, 1], -3)
@@ -279,8 +279,8 @@ for step in range(-299, 301):
 
 It prints `-2.0 0.0`, then `-1.99`, then `2.0 0.0`. The roots are $-2$
 and 2. The line at $-1.99$ is where the value first goes below 0, one
-step after the root. A table like this gives numbers you can print; a
-picture gives the shape at a glance. Here the search found each root
+step after the root. A table like this gives numbers you can print. A
+picture shows the shape at once. Here the search found each root
 exactly, because $-2$ and 2 are on the table's steps.
 
 </details>
@@ -301,10 +301,10 @@ believe, the graph or Python? Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both, each in its own space. In the real numbers, $\frac{1}{x}$ is
+We can believe both, each in its own space. In the real numbers, $\frac{1}{x}$ is
 the number that, times $x$, makes 1. If it were 0, then 0 times $x$
 would be 1, but 0 times any number is 0. So $\frac{1}{x}$ can be as
-small as you like, when $x$ is large, but never 0: the equation
+small as you like, when $x$ is large, but never 0. The equation
 $\frac{1}{x} = 0$ has no answer in $\mathbb{R}$.
 
 Schlomi's `0.0` is true of floats. A float cannot hold a number much
@@ -376,7 +376,7 @@ print(cubed(10), two_to_the(10))
 
 $2^{10}$ is 1,024 and $10^3$ is 1,000, so $2^x$ is barely ahead. The
 graphs meet twice, at about 1.4 and about 9.9. Between those, $x^3$ is
-ahead. After 9.9, $2^x$ pulls away and never looks back. Every power
+ahead. After 9.9, $2^x$ pulls away and stays ahead. Every power
 of $x$, however high, is overtaken by $2^x$ in the end.
 
 </details>
@@ -423,9 +423,9 @@ plot_rule(ten, 0, 5)
 print(math.log2(10))
 ```
 
-The graphs meet at about $x = 3.3$. `math.log2(10)` is about 3.32: the
+The graphs meet at about $x = 3.3$. `math.log2(10)` is about 3.32. The
 logarithm answers "how many doublings make 10?", which is the same
-question. Reading off the graph and using the inverse function are two
+question. Reading from the graph and using the inverse function are two
 routes to one answer.
 
 </details>
@@ -446,10 +446,10 @@ plot_rule(server_time, 0, 10)
 
 The last line of the error is
 `TypeError: '<' not supported between instances of 'NoneType' and 'NoneType'`.
-The function works out `8 + 2 * thousands` and then throws it away,
-because there is no `return`. So it gives back `None` for every
+The function calculates `8 + 2 * thousands` and then loses it,
+because there is no `return`. So it returns `None` for every
 point, and `plot_rule` stops when it asks for the smallest of its
-values to decide where the x-axis goes: `None` cannot be compared with
+values to decide where the x-axis goes. `None` cannot be compared with
 `None`.
 
 ```python
@@ -466,7 +466,7 @@ what happened, and the lines above say where it came from.
 
 </details>
 
-**16. Explain.** Run this cell. The tutorial said `plot_rule` works out
+**16. Explain.** Run this cell. The tutorial said `plot_rule` calculates
 401 points so that it does not miss a dip. Does this graph cross zero?
 Then substitute 3.002. What happened, and how could you have found out?
 
@@ -482,7 +482,7 @@ plot_rule(narrow_dip, 0, 7)
 <details class="dl-answer"><summary>answer</summary>
 
 The graph seems to touch 0 and stay above it. Every one of the 401
-points is above 0: the smallest is about 0.00006. But the rule has two
+points is above 0. The smallest is about 0.00006. But the rule has two
 roots, 3.001 and 3.003, and between them it dips below 0:
 
 ```python

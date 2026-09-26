@@ -46,9 +46,9 @@ What will the last line print?
 
 It prints `True`. `==` compares what two lists hold, element by element,
 and both hold `[1, 4, 9, 16, 25]`. The one-line version is a
-*comprehension*, and it is where this page starts. After it, a whole
-picture goes into a list of lists, and then we meet the thing about lists
-most likely to catch you out: two names for one list.
+*comprehension*, and this page starts with it. Then a whole picture goes
+into a list of lists. Then we meet the thing about lists most likely to
+surprise you: two names for one list.
 
 ## Comprehensions: a loop that builds a list
 
@@ -72,7 +72,7 @@ To turn the loop into a comprehension:
 3. Put square brackets round the whole thing.
 
 Read it out loud as "a list of `n * n`, for each `n` in `range(1, 6)`". A
-comprehension can go through any list, and the value at the front can be
+comprehension can use any list, and the value at the front can be
 any calculation. What do you think each line will show?
 
 ```python exec
@@ -103,14 +103,14 @@ message = "MEET AT NOON"
 print([letter for letter in message if letter != " "])
 ```
 
-An `if` at the end of a comprehension is a *filter*: it keeps only the
+An `if` at the end of a comprehension is a *filter*. It keeps only the
 values that pass a test. Here the tests are `value >= 128` and
 `letter != " "`.
 
 ### Inside sum(), max() and join()
 
 Python's own `sum()` adds up the values it is given, and `max()` gives the
-largest. `join()` joins strings into one: the string before the dot goes
+largest. `join()` joins strings into one. The string before the dot goes
 between the pieces. The first two lines here look almost the same. What is
 different about them?
 
@@ -128,9 +128,9 @@ print("".join(word[0] for word in words))
 ```
 
 The first two lines both print 500. The second has no square brackets.
-When a comprehension is the only thing inside a function's brackets, its
-square brackets can go. It is then a *generator expression*: it makes its
-values one at a time and hands each one to the function, without building a
+When a comprehension is the only thing inside a function's brackets, you
+can drop its square brackets. It is then a *generator expression*. It makes
+its values one at a time, and passes each one to the function, without building a
 list first.
 
 The third line counts. It adds 1 for each pixel of 128 or more, so it
@@ -235,10 +235,10 @@ What will it print?
 It prints 1. `picture[1]` is a whole row, `[0, 0, 1, 1, 0]`, and `[3]`
 picks one element from that row. So a grid's index is the row first, then
 the column: down, then across. A graph gives x first, across, so the two
-orders are easy to mix up. Swap the two numbers and run it again.
+orders are easy to confuse. Swap the two numbers and run it again.
 
-To draw the grid, a loop goes through the rows, and a loop inside it goes
-through the values in each row, as the nested loops did in
+To draw the grid, a loop visits each row, and a loop inside it visits
+each value in that row, as the nested loops did in
 [Repeating steps with loops](tutorial:repeating-yourself):
 
 ```python exec
@@ -284,7 +284,7 @@ comprehension: the inner one builds one row, and the outer one does that
 for each `row` from 1 to 3. Counting from 0, `times_table[1][2]` is row 1,
 column 2, and that is 2 × 3, which is 6.
 
-If your course goes on to matrices, as Computational Methods does in
+If your course continues to matrices, as Computational Methods does in
 [Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
 every grid there is kept like this.
 
@@ -446,7 +446,7 @@ brighten(row)
 print(row)
 ```
 
-It prints `[20, 30, 40]`: the function changed the caller's list. It did
+It prints `[20, 30, 40]`. The function changed the caller's list. It did
 not give `pixels` a new value with `=`. It changed the list that `pixels`
 names, which is the same list `row` names. So there are two different
 actions. Giving a name a new value stays inside the function. Changing a
@@ -472,8 +472,8 @@ grid[0][0] = 5
 print(grid)
 ```
 
-In `shortcut`, one change shows up in all three rows. `* 3` did not make
-three rows: it put the same row into the outer list three times. There is
+In `shortcut`, one change appears in all three rows. `* 3` did not make
+three rows. It put the same row into the outer list three times. There is
 one row, with three names. The comprehension ran `[0] * 3` three times, and
 made three separate rows.
 
@@ -565,7 +565,7 @@ goes: `darker = [value // 2 for value in row]`.
 ## Mathematical sequences as functions
 
 In mathematics, a *sequence* is a list of numbers made by a rule. The rule
-is a function: it takes a position, $n$, and gives back the value at that
+is a function. It takes a position, $n$, and returns the value at that
 position. The square numbers $1, 4, 9, 16, 25, \ldots$ come from the rule
 $f(n) = n^2$. The triangular numbers $1, 3, 6, 10, 15, \ldots$ come from
 $f(n) = \frac{n(n+1)}{2}$, which is the same as $\sum_{i=1}^{n} i$, the sum
@@ -587,7 +587,7 @@ print([triangular_number(n) for n in range(1, 9)])
 
 A function can be passed to another function, like any other value.
 `square_number` without brackets is the function itself, and
-`square_number(3)` is what it gives back for 3. Can you write
+`square_number(3)` is what it returns for 3. Can you write
 `generate_sequence(rule, n)`, which returns a list of the first `n` terms
 of the sequence that `rule` makes?
 
@@ -631,15 +631,15 @@ the range is empty, and so is the list.
 
 ## The dot product: lists meet arithmetic
 
-When two lists have the same length, we can pair them up element by
+When two lists have the same length, we can pair them, element by
 element. The *dot product* of two lists multiplies each pair, and adds up
 the results:
 
 $$\vec{a} \cdot \vec{b} = \sum_{i=0}^{n-1} a_i \times b_i$$
 
 So $[1, 2, 3] \cdot [4, 5, 6] = 1 \times 4 + 2 \times 5 + 3 \times 6 = 32$.
-A dot product turns up whenever some parts count for more than others: a
-weighted average, a check digit, how bright a colour looks.
+A dot product appears whenever some parts count for more than others, as
+in a weighted average, a check digit, or how bright a colour looks.
 
 ### Your turn
 
@@ -747,15 +747,15 @@ shows how to make it refuse on purpose.
 
 ## Looking back
 
-Two names for one list is the idea on this page most likely to catch you
-out, weeks from now, in a program much longer than these. When is it
+Two names for one list is the idea on this page most likely to surprise
+you, weeks from now, in a program much longer than these. When is it
 useful that a function can change the list it was given? When does it
 cause trouble?
 
 A challenge: write a message in rows of four letters, then read it down
 the columns. That is a *transposition cipher*, and the same move turns a
 grid on its side. Can you build the columns from the rows, and read the
-coded message off them? Can you get the message back?
+coded message from them? Can you decode the message again?
 
 ```python challenge
 # Write the message in rows of four, then read it down the columns.
@@ -778,23 +778,24 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Batchelder, N. (2015). *Facts and myths about Python names and values*.
-PyCon 2015. <https://nedbatchelder.com/text/names.html>. The clearest
-account there is of two names for one list, with pictures of names and
+PyCon 2015. <https://nedbatchelder.com/text/names.html>. This is the
+clearest account of two names for one list, with pictures of names and
 values, and why a function can change what it was given.
 
 Python Software Foundation. *The Python Tutorial*, sections 5.1.3 and
 5.1.4, "List Comprehensions" and "Nested List Comprehensions".
 <https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions>.
-The official reference for comprehensions, including one that turns a grid
+This is the official reference for comprehensions, including one that turns a grid
 on its side.
 
 Sanderson, G. (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 9:
 Dot Products and Duality*. <https://www.youtube.com/watch?v=LyGKycYT2v0>.
-The dot product this page meets as arithmetic, seen as geometry instead.
+This video shows the dot product, which this page treats as arithmetic,
+as geometry instead.
 
 argonaut (2022). *Cellular Automata: Life from Simple Rules.*
-<https://www.youtube.com/watch?v=wbPgoZ2d0Nw>. A grid of cells, where each
-cell looks at its neighbours to decide what it will be next. The rules of
+<https://www.youtube.com/watch?v=wbPgoZ2d0Nw>. This video shows a grid of cells,
+where each cell looks at its neighbours to decide what it will be next. The rules of
 Conway's Game of Life can be held in a list of lists like the ones on this
-page. Seven minutes; the second half is about making it run fast in a game
+page. Seven minutes. The second half is about making it run fast in a game
 engine.

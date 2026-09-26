@@ -10,9 +10,9 @@ worlds:
 
 # Making decisions with if, elif and else — Practice
 
-Before you write an `if`, work out which values its condition is `True`
-for. When a decision goes a way you did not expect, the place to look is
-usually the condition, not the lines under it. Try each problem before you
+Before you write an `if`, find which values its condition is `True`
+for. When a decision goes a way you did not expect, look first at the
+condition, not the lines under it. Try each problem before you
 open anything under it.
 
 ## 1. Capitals and small letters
@@ -35,7 +35,7 @@ Then try `"apple" < "banana"`, `10 == 10.0` and `"10" == 10`.
 
 <details class="dl-answer"><summary>why</summary>
 
-`True`: Python compares strings character by character, using each
+`True`. Python compares strings character by character, using each
 character's number, and capitals come before small letters. That is why a
 simple sort puts `Zoe` before `adam`. `"apple" < "banana"` is `True` too.
 `10 == 10.0` is `True`, because both are the number ten, and `"10" == 10`
@@ -49,10 +49,10 @@ What is the difference between `=` and `==`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`=` gives a name a value. `==` asks a question, and gives back `True` or
+`=` gives a name a value. `==` asks a question, and returns `True` or
 `False`. In Python, `if x = 5:` stops with a syntax error, and that helps
-you. In some other languages that line is allowed: it quietly sets `x` to
-5, and the condition is then always true.
+you. In some other languages that line is allowed. It sets `x` to 5 with
+no warning, and the condition is then always true.
 
 </details>
 
@@ -306,11 +306,11 @@ simpler way.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`a <= b`: the opposite of "greater than" is "less than *or equal to*".
-Forgetting the equal case is one of the most common slips there is.
+`a <= b`. The opposite of "greater than" is "less than *or equal to*".
+People often forget the equal case.
 
-`(not a) or (not b)`: the opposite of "both" is "at least one is not". This
-is De Morgan's law. The other half: the opposite of "either" is "neither".
+`(not a) or (not b)`. The opposite of "both" is "at least one is not". This
+is De Morgan's law. Its other half says the opposite of "either" is "neither".
 We meet it again in
 [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
 
@@ -340,7 +340,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-It prints `no`, with no error. Python stops working out an `and` as soon as
+It prints `no`, with no error. Python stops checking an `and` as soon as
 one side is `False`, because nothing on the right could make the whole
 thing `True`. This is called *short-circuiting*, and here it guards the
 division. Swap the two conditions, and the program stops with a
@@ -535,10 +535,10 @@ For the floats themselves, yes. Apart from a few special values, such as
 infinity, every float is a whole number times a power of two, and that is
 a fraction.
 
-For the numbers the floats *stand for*, no. `math.pi` is a float, and π is
+For the numbers the floats *represent*, no. `math.pi` is a float, and π is
 irrational, so the float is only a rational number close to π. A computer
-cannot store an irrational number exactly: every number it stores is
-rational, whether or not the thing it stands for is.
+cannot store an irrational number exactly. Every number it stores is
+rational, even when the number it represents is not.
 
 </details>
 

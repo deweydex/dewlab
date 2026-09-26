@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # A front end: letting someone use your classes — Practice
 
-Problems on front ends, commands and checking what people type, and three
-from earlier pages. Try each problem before you open anything under it,
+This page has problems on front ends, commands and checking what people
+type, and three from earlier pages. Try each problem before you open anything under it,
 and run the cells to test your guesses.
 
 ## 1. Four commands
@@ -47,8 +47,8 @@ What will the last line print?
 
 `[True, True, False, True]`. `Look`, with a capital, is not a command, so
 it prints `Not a command: Look` and returns `True`. `quit` returns
-`False`, but the list loop does not stop for it: only a `while` loop that
-checks the answer would.
+`False`, but the list loop does not stop for it. Only a `while` loop that
+checks the answer would stop.
 
 </details>
 
@@ -100,9 +100,10 @@ it. What would be lost if `run_choice` called `input()` itself?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It could no longer be tested with a list of commands: every test would
+It could no longer be tested with a list of commands. Every test would
 wait for somebody to type. And it could not be given a menu as a second
-front end without being written again. One job each keeps both.
+front end without being written again. With one job each, you can test
+it and reuse it.
 
 </details>
 
@@ -127,7 +128,7 @@ type: fill-in-the-blank
 Each run reads the menu once, and calls `run_choice` once. `command.value`
 is whatever is chosen at that moment, and the page remembers the choice
 between runs. The menu offers only four commands, so a mistyped one cannot
-happen: the `else` in `run_choice` is still there for front ends that let
+happen. The `else` in `run_choice` is still there for front ends that let
 people type.
 
 </details>
@@ -143,7 +144,7 @@ end, or the submarine?
 The submarine. `dive` already keeps the hull limit, for every caller: this
 front end, the menu, and any front end written next year.
 A front end that checks the limit itself would be a second copy of the
-rule, free to drift from the first.
+rule, and the two copies could become different.
 
 </details>
 
@@ -154,8 +155,8 @@ about a command it does not know?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-That it prints that the text is not a command, and returns `True`, so the
-game goes on. That is the refusal a caller most needs to know about,
+It should say that `run_choice` prints a message saying the text is not a
+command, and returns `True`, so the game continues. That is the refusal a caller most needs to know about,
 since players type something unexpected all the time.
 
 </details>
@@ -174,7 +175,7 @@ def test_quit_stops_and_nonsense_does_not():
     assert run_choice("xyzzy") == True
 ```
 
-Because `run_choice` is kept apart from `input()`, testing it is two
+Because `run_choice` is kept apart from `input()`, the test is only two
 lines. The printing still happens, and the test ignores it.
 
 </details>
@@ -188,6 +189,6 @@ a `Probe` or a `Lander`. Does the front end need to check which?
 
 No. Each object runs its own class's version: a landed lander refuses
 through its own `can_burn`, and the front end prints whatever happened.
-That is polymorphism, at work in a front end.
+That is polymorphism, working in a front end.
 
 </details>

@@ -1,8 +1,8 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Deliberately short — this tutorial's own point is that it introduces no
-# new set operations, only a picture of ones already covered in
-# sets-as-sorted-lists.glossary.yaml and logic-and-truth.glossary.yaml.
+# The page draws set operations the sets page already built, so its own
+# entries are the picture, Python's set type (first used here, in the
+# series' new order, sets then Venn then logic), and the complement.
 entries:
   - term: Venn diagram
     kind: concept
@@ -17,3 +17,19 @@ entries:
     definition: >
       A diagram of n sets needs 2^n - 1 regions inside the circles, one for
       each combination of in and out except "in none of them".
+  - term: "Python's set: set(), in, |, &, -, ^, <="
+    kind: operator
+    definition: >
+      Python's own set type, written {1, 2, 3} or made with set(items).
+      x in s asks about membership; | is union, & is intersection, - is
+      difference, ^ is symmetric difference, and a <= b asks whether a is a
+      subset of b. They are the operations the Sets page built from sorted
+      lists. A Python set keeps no order, so print one with sorted().
+    example: "doubles | eights   # union;  doubles & eights   # intersection"
+  - term: complement (of a set)
+    kind: concept
+    definition: >
+      The complement of a set is everything we are talking about that is
+      not in that set: every outcome of two dice that is not a double, for
+      the doubles.
+    example: "outcomes - doubles"

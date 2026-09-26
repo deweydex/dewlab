@@ -13,9 +13,9 @@ version: 2026.09.26.1
 # Mixed problems: shapes, angles and waves
 
 Each problem here draws on at least one page of Unit 8, and many draw on
-two or more. None of them is harder than what those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+two or more. None of them is harder than what those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself, and that is part of the problem.
 
 Along the way, the problems build this unit's product: a small collision
 checker for a 2D game. A ball and a player are circles, and a wall is a
@@ -32,7 +32,7 @@ from this unit, and every tool from Units 1 to 7, such as
 `solve_simultaneous` and `close_enough`. A cell that says
 `distance = ...` hides that tool for the rest of the page, so give your
 numbers names like `gap`. Each answer is hidden until you open it, and
-each one is one way through: yours may go another way. Where
+each one is only one way. Yours may be different and work too. Where
 a problem asks you to predict, make the prediction before you run
 anything. It is the most useful part.
 
@@ -67,7 +67,7 @@ The midpoint is halfway across and halfway up.
 </details>
 
 **2. Predict.** What do these three lines print? The last one is a
-note: which note is it?
+musical note. Which note is it?
 
 ```python
 x, y = point_on_circle(2, 90)
@@ -105,7 +105,7 @@ print(round(angle_between((0, 90), (10, 45), (0, 0)), 1))
 
 The knee is the middle point, so it goes in the middle of
 `angle_between`. A straight leg would be 180°, and this knee is bent by
-about 25°. The picture is symmetric: the thigh and the shin each lean
+about 25°. The picture is symmetric. The thigh and the shin each lean
 about 12.5° away from straight.
 
 </details>
@@ -124,11 +124,11 @@ which adds up to 270°. On a flat plane, a triangle's angles always make
 180°, and three equal walks with 90° turns trace three sides of a
 square, which does not close.
 
-On a ball it can happen: this is the triangle from the North Pole to two
+On a ball it can happen. This is the triangle from the North Pole to two
 points on the equator, from
 [Going round in circles](tutorial:going-round-in-circles#triangles-on-a-ball).
 Each walk is a quarter of the way round the planet. The game's world is
-curved, and the rule of 180° belongs to the flat plane only.
+curved, and the rule of 180° is true only on a flat plane.
 
 </details>
 
@@ -147,8 +147,8 @@ import math
 
 **5. Make.** A game keeps each circle as a dictionary with a centre and
 a radius, such as `ball = {"centre": (120, 80), "radius": 10}`. The
-first part of the checker is `circles_hit(first, second)`, which gives
-back True when two such circles touch or overlap. Test it with a
+first part of the checker is `circles_hit(first, second)`, which returns
+True when two such circles touch or overlap. Test it with a
 player `{"centre": (160, 110), "radius": 25}`, and then with the ball
 moved to `(140, 95)`.
 
@@ -214,7 +214,7 @@ $(400, 100)$. `solve_simultaneous` from
 line as $ax + by = c$. That is the general form from
 [Straight lines](tutorial:straight-lines#every-line-at-once-ax-by-c-0),
 with the number moved to the other side, so it has room for a wall that
-goes straight up too. Write `wall_line(end_a, end_b)`, which gives back
+goes straight up too. Write `wall_line(end_a, end_b)`, which returns
 `(a, b, c)` for the line through two points, using
 
 $$a = y_2 - y_1 \qquad b = x_1 - x_2 \qquad c = a x_1 + b y_1$$
@@ -224,8 +224,8 @@ that goes straight up, from $(50, 0)$ to $(50, 300)$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Take the two points apart: `x1, y1 = end_a` and `x2, y2 = end_b`.
-2. Work out `a`, `b` and `c` from the three formulas, in that order,
+1. Split the two points: `x1, y1 = end_a` and `x2, y2 = end_b`.
+2. Calculate `a`, `b` and `c` from the three formulas, in that order,
    since `c` needs the other two.
 3. For the check, `a * x + b * y` should equal `c` for both ends.
 
@@ -294,7 +294,7 @@ print(slope((300, 200), foot) * slope((0, 300), (400, 100)))
 ```
 
 The nearest point is $(280.0, 160.0)$, about 44.7 pixels from the
-centre. The last line checks the right angle: the two slopes multiply
+centre. The last line checks the right angle. The two slopes multiply
 to $-1$, as perpendicular slopes must. For the upright wall, the same
 function gives the point level with the centre, straight across.
 
@@ -311,12 +311,12 @@ The centre, the nearest point and any other point on the wall make a
 right-angled triangle, with the right angle at the nearest point. The
 line from the centre to the other point is its hypotenuse, and by
 [Pythagoras](tutorial:how-far-apart#squares-on-the-sides-pythagoras)
-the hypotenuse is always the longest side: its square is the other two
+the hypotenuse is always the longest side. Its square is the other two
 squares added. So every other point on the wall is further away.
 
 </details>
 
-**10. Make.** Now `ball_hits_wall(ball, wall)`, which gives back True
+**10. Make.** Now `ball_hits_wall(ball, wall)`, which returns True
 when a ball, kept as a dictionary as in problem 5, touches or crosses
 the wall. Test it with balls of radius 10 at $(300, 200)$, at
 $(260, 160)$ and at $(200, 200)$.
@@ -371,16 +371,16 @@ angle, about 37°. `angle_between` can measure it: try
 
 </details>
 
-**12. Make.** The last part of the checker is the arrow in the corner:
-it points from the player to the goal, and says how far away the goal
-is. Write `bearing_and_distance(start, end)`, which gives back a pair:
+**12. Make.** The last part of the checker is the arrow in the corner.
+It points from the player to the goal, and says how far away the goal
+is. Write `bearing_and_distance(start, end)`, which returns a pair:
 the bearing from `start` to `end`, from 0° up to 360°, clockwise from
 the top of the screen, and the distance. Test it from $(160, 110)$ to a
 goal at $(360, 260)$, and to one at $(10, 110)$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out how far "east" (across) and "north" (up) `end` is from
+1. Find how far "east" (across) and "north" (up) `end` is from
    `start`.
 2. `math.atan2(east, north)` gives the angle from the top, turning
    clockwise, in radians. Turn it into degrees, then use `% 360`.
@@ -455,7 +455,7 @@ print("The two ways agree.")
 
 They agree every time. The formula is quicker, and a game that checks
 thousands of walls a second might prefer it. The nearest point gives
-more: it says where the ball touches the wall, which a game needs to
+more. It says where the ball touches the wall, which a game needs to
 draw a spark there, or to bounce the ball.
 
 </details>
@@ -470,7 +470,7 @@ as a line, the two circles, and the ball's path so far.
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Keep the wall with `wall_line`, and the player as a dictionary.
-2. In each frame, work out the ball's centre from its start and the
+2. In each frame, find the ball's centre from its start and the
    frame number, and make a ball dictionary.
 3. Check `ball_hits_wall` and `circles_hit`. If either is True, print
    and `break`.
@@ -514,8 +514,8 @@ axes.set_aspect("equal")
 ```
 
 The ball hits the wall in frame 13, with its centre at $(256, 161)$,
-about 9.8 pixels from the wall: just inside its radius of 10. The player is never reached: the wall is
-in the way. Each frame moves the ball 15 pixels, a 3, 4, 5 triangle
+about 9.8 pixels from the wall: just inside its radius of 10. The ball never reaches the player, because
+the wall is in the way. Each frame moves the ball 15 pixels, a 3, 4, 5 triangle
 again, so the check can find a hit up to 15 pixels late. If both were
 hit in the same frame, this loop names the wall, because it checks the
 wall first. That order is a choice about the game.
@@ -539,7 +539,7 @@ apart_angle = 80 - 20
 print(math.sqrt(50 ** 2 + 50 ** 2 - 2 * 50 * 50 * math.cos(math.radians(apart_angle))))
 ```
 
-Both give 50, give or take the last digit. The tower and the two guards
+Both give 50, apart from the last digit. The tower and the two guards
 make a triangle with two sides of 50 and an angle of 60° between them.
 The other two angles are equal, and they share the 120° that is left,
 so all three are 60°. A triangle with three equal angles has three equal
@@ -563,7 +563,7 @@ For a wall from $(0, 300)$ to $(400, 100)$, a ball at $(460, 70)$ is on
 the line $x + 2y = 600$, and the checker says it hits, but the wall
 stopped at $x = 400$.
 
-One fix: after finding the nearest point, check that it lies between
+Here is one fix. After you find the nearest point, check that it lies between
 the two ends, for example with `between` from
 [Choosing a path](tutorial:choosing-a-path) on its $x$ (or on its $y$,
 for an upright wall). If the nearest point is past an end, the nearest
@@ -581,13 +581,13 @@ corner is problem 12's bearing and distance to the goal.
 
 The game comes in two parts. The Python cell below is the level. Its
 first lines are the settings, and those are yours to change. The rest
-works out the ball's whole path, frame by frame, with the tools of this
+calculates the ball's whole path, frame by frame, with the tools of this
 unit: `point_on_circle` turns a speed and an angle into a move, as on
 [Going round in circles](tutorial:going-round-in-circles#a-tool-for-any-point-on-a-circle);
 `solve_simultaneous` finds the nearest point of the wall, as in problem
 8; and `distance` decides every bounce. The cell saves the path in the
-page's database, `db`, where the game can read it. Before you run it:
-the ball starts near the bottom left, moving at 35°. Which does it
+page's database, `db`, where the game can read it. The ball starts
+near the bottom left, moving at 35°. Before you run it, which does it
 reach first, the wall or an edge of the screen?
 
 ```python exec
@@ -679,7 +679,7 @@ plt.gca().set_aspect("equal")
 ```
 
 The ball reaches the wall first, in frame 46. The picture shows the
-first 400 frames of its path: the level before you play it. Now the game. Its three panes are the engine,
+first 400 frames of its path, before you play the level. Now try the game. Its three panes are the engine,
 written in JavaScript, the language of web pages, which
 [Many languages, one idea](tutorial:many-languages-one-idea) meets
 properly in Unit 10. You do not need to change anything in them. Press
@@ -903,9 +903,9 @@ startAgain();
 handle = requestAnimationFrame(loop);
 ```
 
-The ball's path came from your Python, and the game only plays it
-back. The hits, the goal and the arrow are worked out in the engine,
-sixty times a second.
+The ball's path came from your Python, and the game only replays it.
+The engine calculates the hits, the goal and the arrow, sixty times a
+second.
 
 **17. Predict.** In the level cell, change `ball_speed` to 30 and run
 it. Before you look at the picture, predict: will the ball still bounce
@@ -924,14 +924,14 @@ off the wall every time it meets it? Then run it, and play.
 <details class="dl-answer"><summary>answer</summary>
 
 Not every time. The picture shows the path going straight through the
-wall in places: in 1,200 frames it crosses 26 times. At 4, 8 or 12
-pixels a frame, this level's ball never crosses; at 16 it crosses 6
+wall in places. In 1,200 frames it crosses 26 times. At 4, 8 or 12
+pixels a frame, this level's ball never crosses. At 16 it crosses 6
 times.
 
 The check runs once a frame. When the ball can move more than its
 radius towards the wall in one frame, its centre can land on the far
 side of the wall's line. The checker then finds the wall close, but
-the ball already moving away from it on that side, so it lets it go.
+the ball already moving away from it on that side, so it does not bounce it.
 It is the tunnelling from
 [How far apart?](tutorial:how-far-apart#watching-it-frame-by-frame),
 with a wall in place of a player. One fix is to move a fast ball in
@@ -942,23 +942,23 @@ several small steps each frame, and check after each one.
 **18. Explain.** Schlomo, who is learning Python too, reads the engine
 and notices that it has its own `distance`, a second copy of the one in
 his toolkit. He says it would be simpler to keep one copy, since two
-copies can drift apart. Why does this page keep two anyway, and how
+copies can stop agreeing. Why does this page keep two anyway, and how
 could you check that they agree?
 
 <details class="dl-answer"><summary>answer</summary>
 
 The engine runs in the browser's own language, JavaScript, sixty times
-a second. It cannot call a Python function directly: the only thing the
-two parts share is the database. So the Python works out everything
-that can be worked out before the game starts, the ball's path, and the
-JavaScript does what depends on the keys you press.
+a second. It cannot call a Python function directly. The two parts share only
+the database. So the Python calculates everything it can before the
+game starts, which is the ball's path. The JavaScript does what depends
+on the keys you press.
 
-Schlomo's worry is a fair one. If someone changed the Python bounce
+The two copies could stop agreeing. If someone changed the Python bounce
 rule and not the JavaScript hit rule, the game could show a hit the
 Python never predicted. One check: have the Python save a few test
 points and their distances to the wall in a table, and have the engine
-compare its own answers with them when it starts. That is one way
-through, and there are others, such as writing the rule once in a form
+compare its own answers with them when it starts. There are other
+ways too, such as writing the rule once in a form
 both languages can read.
 
 </details>

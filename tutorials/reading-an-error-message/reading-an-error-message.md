@@ -37,14 +37,14 @@ because nothing called `mesage` exists. It says which line, which name,
 and even what you probably meant.
 
 By now you have written code that did not work. Everybody does, all the
-time, and it never stops happening. What changes with experience is how
-long it takes to find out why, and most of that is reading the message.
+time, and it never stops happening. With experience, you find the cause more
+quickly, mostly because you learn to read the message.
 The message puts its most useful line at the bottom, writes in a style you
 have not met yet, and sometimes points a little to the side of the real
 problem. This page is about all three.
 
-So here we break things on purpose. Most cells below are meant to fail, and
-reading the failure is the exercise. Every cell uses only what we have met
+So here we break things on purpose. Most cells below are meant to fail. Your
+job is to read what went wrong. Every cell uses only what we have met
 so far: names, types, arithmetic, text, `print`, `input`, and `if`, `elif`
 and `else`.
 
@@ -53,13 +53,13 @@ about whether you can learn to program.
 
 ## Three kinds of wrong
 
-There are three kinds of error, and each fails in a different way, so
-knowing which kind you have saves a lot of time.
+There are three kinds of error, and each fails in a different way, so if
+you know which kind you have, you save a lot of time.
 
 A *syntax error* is code that is not valid Python at all, like a sentence
 with no verb. Python notices it before it runs a single line, so nothing
-happens. That is annoying, and it is also the best case, because you find
-out straight away.
+happens. That is annoying, and it is also the best case, because you learn
+about it at once.
 
 A *runtime error* is valid Python that tries to do something impossible,
 such as dividing by zero, or turning the word `"hello"` into a number. The
@@ -78,7 +78,7 @@ and it has the last section of the page to itself.
 
 ## Errors Python catches before it starts
 
-This cell will not work, and that is the point. Run it, and read what
+This cell will not work. We made it that way on purpose. Run it, and read what
 comes back before you read on.
 
 ```python exec
@@ -99,7 +99,7 @@ look for three things in the message:
 In recent versions of Python, these descriptions have become much more
 helpful. They often name the exact fix. This one says `expected ':'`.
 
-Now the tricky part. The marker often points *after* the real error.
+Now comes the tricky part. The marker often points *after* the real error.
 Python reads from left to right, and it complains at the moment it
 becomes sure that something is wrong. That can be a character or two
 later, or even on the next line. If the marked spot looks fine, look at
@@ -157,21 +157,21 @@ after it. (Line 1 is the comment.)
 
 Look again at the fourth one. Python is doing something clever there.
 When a bracket is opened and not closed, Python keeps reading past it,
-looking for the closing bracket. It only gives up further along, so the
-error shows up well after the place where the bracket was opened. Older
-versions of Python reported the error where they gave up, which was
+looking for the closing bracket. It only stops further along, so the
+error appears well after the place where the bracket was opened. Older
+versions of Python reported the error where they stopped, which was
 often a line that looked completely fine.
 
 Modern Python tracks the bracket back to where it was opened, and says
-so: *'(' was never closed*, pointing at the opening bracket. That is a
+so. It prints *'(' was never closed*, and points at the opening bracket. That is a
 big improvement. Older versions of Python, and other languages, will
 not always do this for you.
 
 ## Errors that happen while it runs
 
-A runtime error is different in one important way: Python could read
+A runtime error is different in one important way. Python could read
 every line. The program starts, does some work, and stops when it
-reaches a line it cannot carry out.
+reaches a line it cannot run.
 
 What do you think happens when this cell runs? Will anything print at
 all?
@@ -184,8 +184,8 @@ print("With delivery:", price + delivery)
 ```
 
 The first `print` worked. The second did not, because nothing called
-`delivery` was ever created. Every runtime error has this shape: some of
-your program ran before it stopped.
+`delivery` was ever created. In every runtime error, some of
+your program runs before it stops.
 
 Here are the runtime errors you can meet with what we know so far, and
 what each one is telling you.
@@ -252,14 +252,14 @@ type: number
 What will it print?
 ```
 
-It prints 12: `int()` turns the text into a number first, and then `+`
+It prints 12. `int()` turns the text into a number first, and then `+`
 adds. The first cell above stopped because `"10" + 2` asks `+` to join text
-to a number, and that is a `TypeError`: the type is the trouble. In the
-second cell the type is fine, a string, and the content is not: that is a
-`ValueError`. It is the pair people mix up most.
+to a number, and that is a `TypeError`, because the type is the problem.
+In the second cell the type is fine, a string, but the content is not.
+That is a `ValueError`. People confuse these two more than any other pair.
 
 Where does a `ValueError` like this come from in a real program? Most
-often from `input()`. It always gives back a string, and the person
+often from `input()`. It always returns a string, and the person
 typing can type anything at all. `int(input("How old are you? "))`
 works well until somebody types `thirty`.
 
@@ -303,8 +303,8 @@ in the main part of the program. Once our programs have functions, which
 we meet later, a traceback can name other places too.
 
 Now look closer. The line that failed is line 5. But is line 5 wrong? It
-is the same as line 3, and line 3 worked. The mistake is the value that
-line 5 was given: `people` is 0. Which line made it 0?
+is the same as line 3, and line 3 worked. The mistake is in the value that
+line 5 was given. `people` is 0. Which line made it 0?
 
 The answer is line 4. So the line that *failed* is not always the line
 that is *responsible*. The traceback tells you where the program
@@ -337,7 +337,7 @@ print("You earned", pay)
 
 ## When nothing looks wrong
 
-Every error so far has announced itself. What about this one? It finds the
+Every error so far has shown a message. What about this one? It finds the
 middle of a line on a screen, between the pixel at 100 and the pixel at
 300.
 
@@ -360,7 +360,7 @@ middle? Halfway between 100 and 300 is 200, and the program says 250.
 
 Python did exactly what the line says. Division happens before addition,
 so only `right` was divided by 2. The line needs brackets:
-`(left + right) / 2`. Nothing will tell you this, except knowing what the
+`(left + right) / 2`. Nothing will tell you this. You have to know what the
 answer should be.
 
 **So we try answers we already know.** Before you trust a program on
@@ -371,7 +371,7 @@ often worth more than any tool for finding mistakes.
 ### Your turn
 
 This program runs, and gives a different answer from the one it was meant
-to give. Can you find out where, with an answer you already know?
+to give. Can you find where, with an answer you already know?
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -469,17 +469,17 @@ print("Average side:", average_side)
 print("Colours:", colours)
 ```
 
-An error message is the most exact and most patient help you will get from
-anything all day: an exact place, an exact kind, and often the fix.
-Reading one calmly is a skill you can practise on purpose, the way this
-page did: by breaking things when nothing is at stake. Later, our programs
+An error message is the most exact and most patient help you will get
+all day. It gives an exact place, an exact kind, and often the fix.
+You can practise reading one calmly, the way this page did. Break things
+on purpose, when nothing depends on them. Later, our programs
 repeat steps, keep lists and split their work into named pieces, and
-[Finding bugs in bigger programs](tutorial:when-it-goes-wrong) picks the
-three kinds up again there.
+[Finding bugs in bigger programs](tutorial:when-it-goes-wrong) returns to
+the three kinds.
 
 ## Where to read more
 
 Corey Schafer (2015). *Python Tutorial: Using Try/Except Blocks for Error
-Handling.* <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
-this page teaches you to read get handled on purpose, rather than fixed
-by rewriting the line that raised them.
+Handling.* <https://www.youtube.com/watch?v=NIWwJbo-9_8>. This video shows
+how a program can handle the errors from this page on purpose, instead
+of fixing the line that raised them.

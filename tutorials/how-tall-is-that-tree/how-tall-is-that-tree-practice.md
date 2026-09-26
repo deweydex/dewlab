@@ -11,14 +11,14 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page, including `angle_between` from the
 tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not: each cell starts with `import math`.
+not loaded, so each cell starts with `import math`.
 
 ## Warm-up
 
@@ -42,7 +42,7 @@ print(round(math.degrees(math.atan(1)), 1), round(math.sin(math.radians(30)), 2)
 
 A tangent of 1 means the opposite and adjacent sides are the same
 length, so the triangle is half of a square, and its angle is 45°. The
-sine of 30° is 0.5: in a right-angled triangle with a 30° angle, the
+sine of 30° is 0.5. In a right-angled triangle with a 30° angle, the
 side opposite it is half the hypotenuse.
 
 </details>
@@ -58,8 +58,8 @@ print(round(angle_between((1, 1), (0, 0), (2, 2)), 1))
 
 `90.0` and `0.0`.
 
-From the corner $(0, 0)$, one point is due north and the other due east:
-a square corner. In the second line, $(1, 1)$ and $(2, 2)$ are in the
+From the corner $(0, 0)$, one point is due north and the other due east,
+so they make a square corner. In the second line, $(1, 1)$ and $(2, 2)$ are in the
 same direction from $(0, 0)$, so the two lines lie on top of each other
 and the angle between them is 0°.
 
@@ -89,7 +89,7 @@ print(math.degrees(math.atan(4 / 1)))
 ```
 
 About 76°. The tangent is opposite over adjacent, $\frac{4}{1}$, and
-`math.atan` runs it backwards. The ladder's length does not matter: any
+`math.atan` runs it backwards. The ladder's length does not matter. Any
 ladder at 4 up for 1 out has the same shape, and the same angle.
 
 </details>
@@ -139,13 +139,13 @@ $\text{opposite} = \text{hypotenuse} \times \sin 40^\circ$. Then add the
 </details>
 
 **6. Make.** Orienteering maps have a grid with east as x and north as
-y. Write `compass_bearing(start, end)`, which gives back the bearing from
+y. Write `compass_bearing(start, end)`, which returns the bearing from
 one point to another, from 0 up to 360 degrees. Test it with four points
 due north, east, south and west of $(0, 0)$.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out how far east and how far north `end` is from `start`.
+1. Find how far east and how far north `end` is from `start`.
 2. `math.atan2` takes two sides and keeps their signs. For a bearing,
    give it east first, then north.
 3. Turn radians into degrees, and use `% 360` to move a negative answer
@@ -203,9 +203,8 @@ tree_height = distance_to_trunk * math.tan(math.radians(angle_up)) + 1.6
 ```
 
 Python gave no error, because 35 radians is a real angle. The number
-was in a different space from the one Schlomo meant, and only his check
-against an answer he already knew caught it. That check was the
-useful habit here.
+was in a different space from the one Schlomo meant. He only saw the
+problem because he checked against an answer he already knew.
 
 </details>
 
@@ -292,9 +291,9 @@ print(round(d * tan_40, 2), round((d + 15) * tan_28, 2))
 print(round(d * tan_40 + 1.6, 1))
 ```
 
-$d$ is about 25.95 m. Substituting it back, both sides give a height of
+$d$ is about 25.95 m. Put it back in, and both sides give a height of
 about 21.77 m above your eyes, and 23.4 m in all, the same as the sine
-rule. Two routes, one tree.
+rule.
 
 </details>
 
@@ -334,7 +333,7 @@ sine rule gives you a sine and you go back to an angle, both 30° and
 
 `math.asin` is a function, and a function gives one answer for each
 input. So it always picks the angle from −90° to 90°. The other answer,
-$180^\circ$ minus that, is yours to check. One test: add up the
+$180^\circ$ minus that, is yours to check. To test it, add up the
 angles, and see if both choices stay under 180°.
 
 </details>
@@ -343,7 +342,7 @@ angles, and see if both choices stay under 180°.
 normal. The glass has a refractive index of about 1.5, and air about
 1.00. At what angle does the light travel inside the glass? It leaves
 through the other side of the pane, which is parallel to the first.
-Before you work it out: at what angle does it come out into the room?
+Before you calculate it, at what angle does it come out into the room?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -367,10 +366,10 @@ print(round(out_again, 2))
 ```
 
 Inside the glass the light travels at about 19.47° from the normal.
-It comes out at 30° again: the second surface runs Snell's law
+It comes out at 30° again. The second surface runs Snell's law
 backwards, so the ray leaves parallel to how it came in, only moved a
-little to one side. That is why a window does not bend the view behind
-it, while a curved lens does.
+little to one side. So a window does not bend the view behind it, but
+a curved lens does.
 
 </details>
 
@@ -387,10 +386,10 @@ import math
 **14. Make.** Write `height_from_two_angles(walked, first_angle,
 second_angle, eye_height)`. It takes the two angles of elevation from
 two spots, `walked` metres apart on a line towards something tall, and
-gives back its height, using the sine rule as the tutorial did. Test it
+returns its height, using the sine rule as the tutorial did. Test it
 on the oak (15 m, 28°, 40°, 1.6 m gives about 23.4). Then use it on a
 wind turbine: from a road the hub is 20° up, and 100 m closer it is 30°
-up. These numbers are made up. How high is the hub?
+up. These numbers are invented. How high is the hub?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -425,8 +424,8 @@ print(round(height_from_two_angles(100, 20, 30, 1.6), 1))
 ```
 
 The hub is about 100 m up. The angle at the top is
-$180 - 20 - (180 - 30) = 30 - 20 = 10°$: the difference between the two
-angles. If the two angles are the same, that angle is 0, its sine is 0,
+$180 - 20 - (180 - 30) = 30 - 20 = 10°$. That is the difference between
+the two angles. If the two angles are the same, that angle is 0, its sine is 0,
 and Python stops with a `ZeroDivisionError`. The two lines of sight
 never meet, and there is no triangle.
 
@@ -499,11 +498,11 @@ There is no single answer. An answer might weigh a few things:
   sines or tangents. Angles need a way to measure an angle, but work
   on a cloudy day, and across a river with the sine rule.
 - **What it leads to.** The shadow method is two triangles of the same
-  shape, and stops there. Angles lead on to the sine and cosine rules,
+  shape, and stops there. Angles lead to the sine and cosine rules,
   for triangles with no right angle at all.
 - **Your friend.** Someone meeting triangles for the first time may
   trust a shadow they can see. Someone who needs bearings for a map, or
-  angles for a game, needs the tangent sooner or later.
+  angles for a game, will need the tangent at some point.
 
 It helps to say who the friend is and what they will use it for, and
 to choose from that.
@@ -513,7 +512,7 @@ to choose from that.
 **18. Make.** An optical fibre has a core of glass with a refractive
 index of about 1.47, inside a layer of glass, the cladding, of about
 1.46. (These are typical values, rounded.) Find the critical angle
-where the core meets the cladding. Then: light travels down the fibre
+where the core meets the cladding. Next, suppose light travels down the fibre
 at 5° to its middle line, and meets the side. The side runs along the
 middle line, so the normal is at a right angle to it. Does the light
 stay in? And at 10°?
@@ -548,6 +547,6 @@ reflects and stays in. A ray at 10° meets the side at 80°, and some of
 it escapes. So a fibre only carries light that travels almost straight
 along it, within about 6.7° of its middle line. If the cladding's
 index were higher than the core's, there would be no critical angle at
-all: $\sin\theta_c$ would have to be more than 1.
+all, because $\sin\theta_c$ would have to be more than 1.
 
 </details>

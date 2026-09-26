@@ -33,8 +33,8 @@ id: five-suspects-1
 You could read all five closely, line by line, and spot the differences.
 But a real class changes every week, and nobody reads it closely every
 week. A test reads it for you, every time. On this page we hunt for the
-bugs with tests: the suspects are the classes, and nothing about you is
-being checked.
+bugs with tests. The suspects are the classes. Nothing about you is being
+checked.
 
 ## Five suspects
 
@@ -62,15 +62,15 @@ for name in suspects:
 
 All five pass. A class is a value like any other, so it can sit in a
 dictionary, and `Sub("Nautilus")` builds a submarine from whichever class
-`Sub` names. `try` and `except` let the loop carry on after a failed
+`Sub` names. `try` and `except` let the loop continue after a failed
 `assert`, and print its message.
 
 A *test* is code that uses a class and checks what it did. One test that
 every suspect passes tells us very little. The bugs are somewhere a dive
 of 100 m never goes.
 
-Can you add asserts to `check`, so that four suspects fail and one is
-left standing? Think about the edges of what a submarine does: a dive to
+Can you add asserts to `check`, so that four suspects fail and one
+passes? Think about the edges of what a submarine does: a dive to
 exactly the limit, a dive just past it, a rise past the surface.
 
 ```python exec
@@ -128,7 +128,7 @@ past the limit. E rises above the surface. Three of the four bugs sit at
 an edge: exactly 400, just past 400, just past 0.
 ```
 
-That is where bugs like to live. A *boundary* is the edge of what a
+Bugs often live at those edges. A *boundary* is the edge of what a
 method allows: exactly at the limit, one step past it, zero, empty. A
 test at a boundary finds more bugs than ten tests in the middle.
 
@@ -220,7 +220,7 @@ run_tests()
 
 The new test fails: rising by −500 m took the Nautilus 500 m down, past
 its hull limit, and nothing refused. The three tests from before still
-pass, since they build `SubmarineC`, which is still there: the runner
+pass, since they build `SubmarineC`, which is still there. The runner
 runs every test it can find. Now the fix, in `rise`:
 
 ```python
@@ -231,10 +231,10 @@ runs every test it can find. Now the fix, in `rise`:
         self._depth = max(0, self._depth - metres)
 ```
 
-Make that change in the cell above, and run it again: the new test
-passes. Writing the failing test first does two things. It shows the bug
-is real, and it shows the fix is what made it pass, not a lucky run. The
-test then stays, so the bug cannot quietly come back.
+Make that change in the cell above, and run it again. The new test
+passes. When you write the failing test first, it does two things. It
+shows the bug is real, and it shows that the fix made it pass, not a
+lucky run. The test then stays, so the bug cannot quietly come back.
 
 ## Close enough
 
@@ -265,7 +265,7 @@ def test_three_uses():
 test_three_uses()
 ```
 
-It fails, and the tank is not to blame: `tank.get_litres()` is
+It fails, but the tank is not the problem. `tank.get_litres()` is
 `0.7000000000000001`. A decimal like 0.1 is stored very nearly, not
 exactly, so decimals that should be equal can differ in the sixteenth
 place. For decimals, a test asks "close enough?":
@@ -281,9 +281,9 @@ fails, the first question is which one is wrong: the code, or the test.
 
 This is the sixth version of your class: five tests for it, at least one
 of them at a boundary. On [Encapsulation](tutorial:keeping-details-inside-an-object)
-each world's class left one door open. Write the test for that door
-first, watch it fail, then close the door in the class cell. Your tests
-go in the second cell: call each one at the bottom, as the first one is.
+each world's class had one rule missing. Write the test for that rule
+first, watch it fail, then add the rule in the class cell. Your tests go
+in the second cell. Call each one at the bottom, as the first one is.
 The cell runs them against your class, and against one good answer when
 you compare.
 
@@ -397,7 +397,7 @@ when the tank is exactly full?
 <div class="dl-world" data-world="your-own">
 
 Copy your classes from [Composition](tutorial:objects-inside-objects)
-into the first cell. Which door did your class leave open? Write its test
+into the first cell. Which rule is your class missing? Write its test
 first, in the second cell, and watch it fail. Then write four more, with
 at least one at a boundary, and call each one at the bottom of the cell.
 
@@ -449,14 +449,16 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 pytest. *Get Started*.
-<https://docs.pytest.org/en/stable/getting-started.html>. The tool this
-page's ten lines imitate, from installing it to the first failing test.
+<https://docs.pytest.org/en/stable/getting-started.html>. This is the tool
+this page's ten lines imitate. The guide goes from installing it to the
+first failing test.
 
 Beck, K. (2002). *Test-Driven Development: By Example*. Addison-Wesley.
-The book that made "write the failing test first" a habit, worked through
-on real code.
+This is the book that made "write the failing test first" a habit. It
+works through real code.
 
 Python Software Foundation. *The Python Language Reference*, section
 7.3, "The assert statement".
 <https://docs.python.org/3/reference/simple_stmts.html#the-assert-statement>.
-What `assert` does, exactly, and the one case where Python skips it.
+This section explains exactly what `assert` does, and the one case where
+Python skips it.

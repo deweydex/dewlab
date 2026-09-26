@@ -18,7 +18,7 @@ covers:
 In [Random numbers: pseudo-random numbers and seeds](tutorial:leaving-it-to-chance),
 we got the computer to give us unpredictable numbers whenever we asked.
 On this page we spend those numbers on something that seems like a
-strange way to do mathematics. We work out the value of π by throwing
+strange way to do mathematics. We calculate the value of π by throwing
 darts at a wall and counting where they land.
 
 It is a strange way. It also works. And the reason it works is the basis
@@ -30,7 +30,7 @@ and counting how many of them meet some condition. It is named after the
 casino in Monte Carlo, a place built on chance. When we run the method on
 a computer, we call it a *Monte Carlo simulation*.
 
-## A Question You Can Answer by Throwing Things
+## A question you can answer by throwing things
 
 Picture a square, one unit on each side. Inside it, draw a quarter of a
 circle, with its centre at one corner and a radius of 1.
@@ -44,7 +44,7 @@ should be the quarter-circle's share of the square:
 
 $$\frac{\text{quarter-circle area}}{\text{square area}} = \frac{\pi/4}{1} = \frac{\pi}{4}$$
 
-We can turn that round. Take the fraction that lands inside, and multiply
+We can use this the other way. Take the fraction that lands inside, and multiply
 it by 4. That gives an estimate of π. We never measure a circle. We never
 use a formula for its area. And we do not need to know π at the start.
 
@@ -67,7 +67,7 @@ print(inside_circle(0.9, 0.9))   # out past the curve
 
 Where does the point $(0.6, 0.8)$ fall?
 
-1. Work out $0.6^2 + 0.8^2$ on paper first. It is worth doing by hand.
+1. Calculate $0.6^2 + 0.8^2$ on paper first. It is worth doing by hand.
 2. Then check with `inside_circle`.
 
 ```python exec
@@ -75,14 +75,14 @@ id: a-question-you-can-answer-by-throwing-things-2
 hint: 0.36 + 0.64. The answer is exactly on the boundary, which is why this particular point is worth asking about.
 ```
 
-## One Dart at a Time
+## One dart at a time
 
-Now for the throwing. Each dart is a pair of random numbers between 0
+Now we throw the darts. Each dart is a pair of random numbers between 0
 and 1, one for $x$ and one for $y$. That is what `random.random()`
 gives, so each dart costs two calls and nothing else.
 
 The function below throws `n` darts, counts the hits, and returns 4 times
-the fraction that landed inside. It sets its own seed, the habit from the
+the fraction that landed inside. It sets its own seed, as we did on the
 last page. So every call can be repeated, whatever ran before it.
 
 ```python exec
@@ -110,8 +110,8 @@ print(estimate_pi(100))
 The result is 3.04. It came from a hundred darts. The only mathematics was
 Pythagoras, and we never even took a square root.
 
-The answer is also wrong in the second decimal place. Take a moment over
-that, because it matters. The method has not made an error. There is no
+The answer is also wrong in the second decimal place. Think about
+that for a moment, because it matters. The method has not made an error. There is no
 bug to find. A hundred darts do not hold enough information to find π
 more exactly than this, and no amount of care in the code would change
 that.
@@ -126,11 +126,11 @@ id: one-dart-at-a-time-2
 hint: The function already takes n as its argument, so this is three calls. Printing the difference from math.pi alongside each estimate makes the comparison easier to read than the estimates alone.
 ```
 
-## Watching It Settle
+## Watching it settle
 
-Printing three numbers tells you that the answer gets better. It does
-not show you *how* it gets better, and the way it gets better is the
-most important thing on this page.
+Three printed numbers tell you that the answer gets better. They do not
+show you *how* it gets better, and how it gets better is the most
+important thing on this page.
 
 So this version does not throw a batch of darts and report one number.
 It keeps a *running estimate*. After every single dart, it records the
@@ -175,7 +175,7 @@ wandering, only in a narrower band.
 
 **It comes from no particular direction.** The estimate is not climbing
 up to π, or falling down to it. It crosses the line again and again.
-Whether it is above or below π when you stop is luck.
+Luck decides whether it is above or below π when you stop.
 
 ### Your turn
 
@@ -189,7 +189,7 @@ id: watching-it-settle-2
 hint: Look at the shape of the settling rather than the particular wiggles. The wiggles are different every time; something about them is not.
 ```
 
-## More Darts, Better on Average
+## More darts, better on average
 
 This method has real limits. The table below shows them. For each number
 of darts, it prints the estimate, and how far that estimate is from π.
@@ -215,7 +215,7 @@ thousand*.
 This is not a mistake in the code, and it is not a bad seed. Ten times
 the work gave a slightly worse answer on this run. That is a normal thing
 for this method to do. With another seed the numbers will be different,
-but the pattern will be the same: on average, more darts give a better
+but the pattern will be the same. On average, more darts give a better
 answer, slowly, but not on every single run.
 
 The next cell makes four runs of a hundred thousand darts each, with four
@@ -235,19 +235,19 @@ model's numbers.
 
 - *Accuracy* is whether the estimates are centred on the true answer. If
   we averaged a great many runs, would the average be π?
-- *Precision* is how close the runs are to each other: how much the
+- *Precision* is how close the runs are to each other, or how much the
   answer changes when the whole thing is run again.
 
 Darts are accurate. The four runs land on both sides of π, and their
 average, 3.14116, is off by less than a thousandth. That is closer than
-any one of the four runs. What darts lack is precision: two runs of a
-hundred thousand darts can differ by more than a hundredth.
+any one of the four runs. Darts lack precision. Two runs of a hundred
+thousand darts can differ by more than a hundredth.
 
-Knowing which of the two is missing tells you what will fix it. An
+If you know which of the two is missing, you know what will fix it. An
 imprecise method, like this one, gets better with more darts, and the
 rule below says how much better. An inaccurate method is different. If
 every run is off in the same direction, more darts only make you more
-sure of the wrong answer, and what you need is a better method.
+sure of the wrong answer, and you need a better method instead.
 
 Underneath all of this is a rule. The typical error shrinks in proportion
 to $1/\sqrt{n}$, where $n$ is the number of darts. This page shows the
@@ -257,16 +257,16 @@ rule at work, but does not prove it. Here is what it means:
   darts.
 - Two more decimal places need about ten thousand times as many.
 
-That is why nobody works out π this way. There are far better methods.
+That is why nobody calculates π this way. There are far better methods.
 But it is still the first example everyone is shown. The arithmetic is
-simple, so the behaviour is what you notice.
+simple, so you notice the behaviour.
 
 ### Your turn
 
 A hundred thousand darts give you roughly two correct decimal places.
 
-1. Roughly how many darts would you need for four? Work it out from the
-   rule above, before you run anything.
+1. Roughly how many darts would you need for four? Use the rule above to
+   find it, before you run anything.
 2. Then decide: is running it a good use of your afternoon?
 
 ```python exec
@@ -277,8 +277,8 @@ hint: Two more decimal places means the error has to fall by a factor of 100. If
 ## Reflection
 
 There is no formula for π anywhere in the method on this page. The
-method does not know what π is. It counts a fraction, and π comes out
-of the shape of the question we asked.
+method does not know what π is. It counts a fraction, and the shape of
+the question we asked gives us π.
 
 That idea goes far beyond circles. Can you write a quantity as "the
 fraction of cases where something is true"? Then you can estimate it by
@@ -291,34 +291,36 @@ as easily as at a quarter-circle.
 Did the wandering estimate feel uncomfortable to look at? Most of the
 mathematics you have met so far gives an answer that is exactly right.
 This method gives an answer that is *roughly* right. We can only describe
-how far off it is using statistics. That asks for a different kind of
-trust, and feeling uncomfortable about it is a sensible reaction.
+how far off it is using statistics. It asks you to trust an answer in a
+different way. It makes sense to feel uncomfortable about that.
 
-## Where to Read More
+## Where to read more
 
 Metropolis, N. and Ulam, S. (1949). *The Monte Carlo Method.* Journal of the
 American Statistical Association, 44(247), 335–341.
-<https://doi.org/10.1080/01621459.1949.10483310>. The paper that named the
-method, written while it was being used on problems nobody could solve any
-other way. Short, and much more readable than its date suggests.
+<https://doi.org/10.1080/01621459.1949.10483310>. This is the paper that
+named the method. The authors wrote it while they were using the method on
+problems nobody could solve any other way. It is short, and much easier to
+read than its date suggests.
 
 Downey, A. B. (2014). *Think Stats* (2nd ed.). O'Reilly.
-<https://greenteapress.com/thinkstats2/>. Chapter 9 works through simulation
-as a way of answering statistical questions without formulas, which is this
-tutorial's argument applied to real data.
+<https://greenteapress.com/thinkstats2/>. Chapter 9 uses simulation to answer
+statistical questions without formulas. It applies this tutorial's argument
+to real data.
 
 Robert, C. P. and Casella, G. (2004). *Monte Carlo Statistical Methods*
-(2nd ed.). Springer. The standard graduate reference, well past this course's
-level — listed because Chapter 1's opening pages make the same argument this
-tutorial does, that the method is most useful on problems where no formula is available,
-and it is worth seeing that stated by the people who use it for real work.
+(2nd ed.). Springer. This is the standard graduate reference, far beyond this
+course's level. We list it because Chapter 1's opening pages make the same
+argument as this tutorial. The method is most useful on problems where no
+formula is available. It is worth seeing the people who use it for real work
+say so.
 
 AlphaPhoenix (2016). *RainPi: Calculate Pi with Raindrops!*
 <https://www.youtube.com/watch?v=I-BC_vI4CAE>. Our darts are random
 numbers from Python. Brian Haidet used real raindrops instead, falling on
-sensors shaped to do the same job. Four minutes.
+sensors shaped to do the same job. The video is four minutes long.
 
 PurpleMind (2025). *Why Do Random Matchsticks Calculate Pi?*
 <https://www.youtube.com/watch?v=8stFid5aI9k>. Drop matchsticks on a floor
 of straight lines, count how many cross a line, and pi appears. This video
-shows why. Eight minutes.
+shows why. It is eight minutes long.

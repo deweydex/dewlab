@@ -21,8 +21,8 @@ So far, every matrix has done something once. We added matrices,
 transformed pictures with them, and solved systems with them.
 
 On this page, we multiply by the same matrix over and over. Something
-strange happens. After enough steps, the answer settles down, and it no
-longer depends on where we started.
+strange happens. After enough steps, the answer stops changing. We say it
+settles. It no longer depends on where we started.
 
 This one idea can forecast the weather, rank every page on the web, and
 write sentences that nobody has written before. On this page we:
@@ -202,8 +202,8 @@ There is a lot in this cell, so here it is one step at a time:
    adds up to 1. The last word, "despair", is never followed by anything.
    Its row stays all zeros.
 
-Look at the words that follow "it". Only one has a chance above zero:
-"was", with a chance of 1. The text repeats "it was the ___ of ___" ten
+Look at the words that follow "it". Only one has a chance above zero.
+It is "was", with a chance of 1. The text repeats "it was the ___ of ___" ten
 times. So the matrix has learned that only one word ever comes after
 "it".
 
@@ -238,7 +238,7 @@ Now we can write new text by walking along the chain:
 
 `random.choices(states, weights=row)` picks one word from `states` at
 random, so that a word with a bigger weight is picked more often. It
-gives back a list with one word in it, so `[0]` takes that word out.
+returns a list with one word in it, so `[0]` gets that word.
 
 ```python exec
 id: words-that-follow-words-4
@@ -303,8 +303,8 @@ for step in range(20):
 print("A, B, C:", [round(v, 4) for v in visits[0]])
 ```
 
-A comes first, with 4 visits in every 9. Why A? It is not the number of
-links pointing at it: B has two pages linking to it as well, A and C.
+A comes first, with 4 visits in every 9. Why A? The number of links pointing
+at it does not explain it. B has two pages linking to it as well, A and C.
 The difference is what those links carry. B has only one link out, so
 every surfer on B goes to A next. A and C each split their surfers in
 half. A page ranks high when the pages that link to it send it a big
@@ -334,8 +334,8 @@ three is one mechanism. We multiply a state by a matrix of
 probabilities, then do it again, and again.
 
 For the weather and the web pages, we watched the answer stop depending
-on where we started. That settling is not a lucky accident of those two
-examples. It comes from the matrix. We saw it with our own eyes before
+on where we started. The answer did not settle by luck in those two
+examples. It settles because of the matrix. We saw it with our own eyes before
 we gave it a name, "stationary distribution". The sentence maker used
 the same kind of matrix, one random step at a time.
 
@@ -343,32 +343,32 @@ Which of the three surprised you most? Weather forecasts, sentence
 making and ranking for a search engine are, in their arithmetic, the
 same few lines.
 
-## Where to Read More
+## Where to read more
 
 Josh Starmer (StatQuest) (2020). *Markov Chains Clearly Explained! Part 1.*
-<https://www.youtube.com/watch?v=i3AkTO9HLXo>. A visual argument for why
-repeated multiplication by a transition matrix settles down at all, which
-this tutorial only demonstrates numerically.
+<https://www.youtube.com/watch?v=i3AkTO9HLXo>. This video shows, in pictures,
+why repeated multiplication by a transition matrix settles at all. This
+tutorial only shows it with numbers.
 
 Brin, S. and Page, L. (1998). *The Anatomy of a Large-Scale Hypertextual Web
 Search Engine.* Computer Networks and ISDN Systems, 30(1-7), 107–117.
-<http://infolab.stanford.edu/~backrub/google.html>. The original PageRank
-paper, from the two Stanford students who wrote it — the small three-page
-example in this tutorial is the same mathematics at a readable scale.
+<http://infolab.stanford.edu/~backrub/google.html>. This is the original
+PageRank paper, by two Stanford students. The small three-page example in
+this tutorial uses the same mathematics at a readable scale.
 
-Dickens, C. (1859). *A Tale of Two Cities.* The opening sentence, sourced for
-the word-transition matrix here, is public domain and among the most
-recognisable in English literature — worth reading in full, well beyond
-what a Markov chain can copy.
+Dickens, C. (1859). *A Tale of Two Cities.* The word-transition matrix here
+uses its opening sentence. The book is in the public domain, and its
+opening is one of the best known in English literature. It is worth
+reading in full.
 
 Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System
 Technical Journal, 27(3), 379–423. Section 2 builds English text from letter
-and word transition frequencies — the origin of the technique used in *Words
-That Follow Words*, from 1948.
+and word transition frequencies. The method in *Words that follow words*,
+on this page, comes from this paper.
 
 Veritasium (2025). *The Strange Math That Predicts (Almost) Anything.*
-<https://www.youtube.com/watch?v=KZeIEiBrT_w>. How an argument between two
-Russian mathematicians led to Markov chains, and where they appeared
+<https://www.youtube.com/watch?v=KZeIEiBrT_w>. This video tells how an
+argument between two Russian mathematicians led to Markov chains, and where they appeared
 later: card shuffling, nuclear physics and web search. About thirty-two
 minutes.
 

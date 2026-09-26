@@ -14,10 +14,10 @@ datasets: [life-expectancy]
 # Mixed problems: many values
 
 Each problem here draws on at least one page of Unit 5, and many draw on
-two or more. None of them is harder than what those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem, and if you are unsure which
-tool fits, open the hint: it names the page to look back at.
+two or more. None of them is harder than what those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself. If you are unsure which tool fits, open the hint. It
+names the page to look back at.
 
 Along the way, the problems build this unit's product: a one-page
 report on real data. It gives typical values, the spread, a frequency
@@ -44,7 +44,7 @@ id: mixed-many-scratch-1
 ```
 
 **1. Predict.** Here are the highest temperatures in Cork on six days
-in May. What does the last line show? Work out all four values before
+in May. What does the last line show? Find all four values before
 you run it.
 
 ```python
@@ -101,7 +101,7 @@ you say about it instead?
 
 Each answer is yes or no, so it is categorical data, and nominal: yes
 and no have no order that means anything here. There is no mean of
-"yes" and "no". What we can do is count: a frequency table of the
+"yes" and "no". We can count instead: a frequency table of the
 answers, or the fraction that said yes. The team found 10 updated
 laptops in 20, so half said yes. The mode, the most common answer, makes sense too.
 The Venn diagram is a picture of those counts, for three questions at
@@ -161,7 +161,7 @@ other = df[df.country == other_country]["life_expectancy"].tolist()
 print(len(ireland), "years for Ireland,", len(other), "for", other_country)
 ```
 
-If the second number is 0, the name is not in the file: check its
+If the second number is 0, the name is not in the file. Check its
 spelling and its capital letters. The problems below expect both lists
 to have 74 values, one for each year.
 
@@ -206,7 +206,7 @@ Spain 61.75 83.67 21.92
 ```
 
 Spain started about 4 years behind Ireland, and ended more than a year
-ahead. The loop goes through a list of pairs, and takes each pair apart
+ahead. The loop visits each pair in the list, and splits it
 into `name` and `values`, as on
 [How likely is it?](tutorial:how-likely-is-it#counting-equally-likely-outcomes).
 
@@ -220,7 +220,7 @@ that.
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. `mean(ireland)` and `median(ireland)` need nothing new.
-2. Start a list with `[]`. Go through `ireland`, and `append`
+2. Start a list with `[]`. Loop over `ireland`, and `append`
    `round(value)` each time round.
 3. Take `mode` of the new list.
 
@@ -231,7 +231,7 @@ almost nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def whole_years(values):
@@ -270,7 +270,7 @@ here? Is it how long people in Ireland live?
 
 No. Each value is one year's life expectancy for the whole country, so
 the list has one value per year, not one per person. The spread is
-across time: it says how much the yearly figure changed over 74 years.
+across time. It says how much the yearly figure changed over 74 years.
 A list that rises steadily has a large spread even if every single year
 was very predictable. How long individual people live varies far more
 than 4.7 years, and this file cannot tell us about that. A report
@@ -333,7 +333,7 @@ does repointing a name change?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomo's name is honest, and that is the trouble. The first line
+Schlomo's name describes the number well, but it causes the error. The first line
 points the name `mean` at a number, 74.56…, and the function is gone
 from this page. On the second line, `mean(other)`
 tries to call that number, and a number cannot be called. Give the
@@ -371,7 +371,7 @@ the lowest bin up.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def five_year_bins(values):
@@ -411,7 +411,7 @@ print(count_if(ireland, seventy_five_or_more), count_if(other, seventy_five_or_m
 ```
 
 This prints `33 44`. The frequency tables give the same answer without
-a new count: the bins from 75 up hold $18 + 15 = 33$ years for Ireland,
+a new count. The bins from 75 up hold $18 + 15 = 33$ years for Ireland,
 and $24 + 20 = 44$ for Spain.
 
 </details>
@@ -425,7 +425,7 @@ agrees with the union.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Go through the lists by index, `for i in range(len(years)):`, and
+1. Loop over the lists by index, `for i in range(len(years)):`, and
    `.add(years[i])` to a set when the value at `i` is 75 or more.
 2. The overlap is `&`. Each "only" region is a difference.
 3. The box is every year, `set(years)`. What is outside both circles?
@@ -436,7 +436,7 @@ agrees with the union.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 ireland_high = set()
@@ -458,7 +458,7 @@ print(len(ireland_high | other_high),
 With Spain: 33 years in both, 0 for Ireland only, 11 for Spain only,
 and 30 in neither. The union has 44 years, and $33 + 44 - 33 = 44$.
 
-The empty region says that Ireland's circle sits inside Spain's: every
+The empty region means that Ireland's circle sits inside Spain's. Every
 year Ireland was at 75 or more, Spain was too. In the language of
 [Collections without repeats](tutorial:collections-without-repeats#sets-too-big-to-list),
 `ireland_high <= other_high` is `True`. Spain reached 75 in 1980, and
@@ -498,12 +498,12 @@ plt.legend()
 ```
 
 The lines cross in the mid-1960s, when Spain overtook Ireland, and the
-gap widens until the early 1980s. They touch again in 2020. A line chart suits it: the order of the
+gap widens until the early 1980s. They touch again in 2020. A line chart suits this data, because the order of the
 years means something, and each point comes after the one before.
 
 The axis does not need to start at 0. A line shows change, and the
 numbers on the axis say where it starts. A bar chart of the two means
-would be different: a bar's length is read as its amount, so its axis
+is different. A reader takes a bar's length as its amount, so its axis
 must start at 0.
 
 </details>
@@ -517,11 +517,11 @@ would you change so that it still makes her point?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Her point is a fair one, and the chart overstates it. The bars'
+Spain's mean is higher, but the chart makes the difference look far bigger. The bars'
 lengths are not the values. Ireland's bar is $74.6 - 74 = 0.6$
 long, and Spain's is $75.7 - 74 = 1.7$, so Spain looks almost three
 times as high, for a difference of about a year. A reader compares the
-lengths, not the axis labels. The honest fix is to start the axis at 0,
+lengths, not the axis labels. One fix is to start the axis at 0,
 so that the bars are almost the same, because the numbers are. If the
 one-year difference is the story, say it in words, or show the change
 over time with a line chart, which may zoom in.
@@ -545,7 +545,7 @@ report shows.
    counts from 0.
 2. Inside the procedure, every name should be a new one, such as
    `typical` or `spread`, and never a toolkit function's name.
-3. A procedure prints, and gives back `None`, as on
+3. A procedure prints, and returns `None`, as on
    [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
 
 **Think about:** what would a reader who never saw your code need to be
@@ -555,7 +555,7 @@ told, in the report's own words, to trust the numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def report(name, values, first_year):
@@ -618,7 +618,7 @@ up all 74 rounded values?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 table = frequency_table(whole_years(ireland))
@@ -631,8 +631,8 @@ print(from_table, mean(whole_years(ireland)))
 ```
 
 Both give 74.5675…. That is a little different from the mean of the
-raw values, 74.56, because rounding moved each value a little. Adding 71 eight times is the same as
-adding $71 \times 8$ once, so a frequency table holds everything a mean
+raw values, 74.56, because rounding moved each value a little. Adding 71 eight times gives the same as
+$71 \times 8$, so a frequency table holds everything a mean
 needs. In symbols, with $f$ for each value's frequency:
 $\bar{x} = \frac{\sum f x}{\sum f}$. This is how a mean is found when a
 survey gives only a table, not the raw list.
@@ -646,23 +646,22 @@ the report so that nobody reads more into it than it holds.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are many answers worth giving. Here is one way through:
+There are many good answers. Here is one:
 
 - **What one value is.** Each value is a whole country's life
   expectancy at birth for one year, an estimate. It says nothing about
   how long any one person lives, or about the differences between
   people in the same country.
 - **Why.** The report shows that Spain rose faster. It cannot say why:
-  health care, diet, income, or something else. A chart shows *that*,
-  and rarely *why*.
+  health care, diet, income, or something else.
 - **After the last year.** The copy saved on
   {{snapshot: life-expectancy}} stops in 2023, so the report cannot say
   what happened since, and a mean over all 74 years mixes 1950 with 2023.
 
 A sentence worth adding: "Each value is the life expectancy of a baby
 born in that year, as estimated by Our World in Data; the figures
-describe countries, not people, and end in 2023." Saying where the data
-came from, and what it stands for, is part of an honest report, as it
-is part of an honest chart.
+describe countries, not people, and end in 2023." A report should say
+where the data came from, and what it stands for, just as a chart
+should.
 
 </details>

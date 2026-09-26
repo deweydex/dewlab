@@ -15,8 +15,8 @@ On this page we practise writing links, and choosing the right shape of
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
 The previews on this page have no other pages to open. So if you click
 a link to a file such as `about.html`, the preview goes blank. Run the
@@ -56,7 +56,7 @@ outside the link. Does the link change?
 ```
 
 The closing tag `</a>` was missing, so the browser had to guess where
-the link ends. It carried the link on past the end of the first
+the link ends. It continued the link past the end of the first
 paragraph, and wrapped the second paragraph in it too. With `</a>`
 after "About page", only those two words are a link. The full stop now
 sits outside the link, where it belongs.
@@ -89,7 +89,7 @@ there is no content?
 <p>Email us at <a href="mailto:hello@example.com">hello@example.com</a>.</p>
 ```
 
-The link had no content: `</a>` came straight after the opening tag. So
+The link had no content. The `</a>` came straight after the opening tag. So
 the link was there, but it had no words in it, and nothing on the page
 to click. The words a visitor clicks go between `<a ...>` and `</a>`.
 
@@ -202,7 +202,7 @@ Pages a capital letter makes a different name.
 
 On your own computer, the link may still work, because Windows and
 macOS usually treat `About.html` and `about.html` as the same name.
-That is what makes this mistake easy to miss until the site is
+This makes the mistake easy to miss until the site is
 published.
 
 The navigation link has its own `href`, which still says `about.html`,

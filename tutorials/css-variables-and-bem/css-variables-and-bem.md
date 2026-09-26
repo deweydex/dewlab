@@ -100,7 +100,7 @@ the CSS to find out.
 ### How the modifier changes the colour
 
 The `.button--danger` rule sets no `background`. How does the button
-turn red? The answer is the CSS variable `--button-color`, which works
+turn red? It uses the CSS variable `--button-color`, which works
 the way `--brand-color` did on [Colours, and naming them with
 variables](tutorial:variables-and-colour). "Custom property" is its
 official CSS name.

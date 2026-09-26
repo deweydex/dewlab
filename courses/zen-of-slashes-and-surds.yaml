@@ -1,0 +1,42 @@
+title: The Zen of Slashes and Surds
+status: beta
+card: >-
+  For anyone who was told they are not a maths person. Fractions, powers,
+  roots and logarithms, in small calm steps with pictures, and nothing to
+  memorise.
+description: >-
+  This module is for you if maths has ever made you feel stuck, slow or
+  lost. It covers what school was supposed to: fractions (the slashes),
+  powers, roots (the surds) and logarithms, and how to see numbers as
+  pictures.
+
+
+  Nothing here is to be memorised. We practise each idea until it feels
+  ordinary, and a rule always comes after the picture that makes it
+  sensible. Every step starts with a guess, and a guess that differs
+  from what happens is the most useful kind.
+
+
+  Calm is the goal. Twice on every page there is a calm check, a moment
+  to notice whether the work still feels interesting or has started to
+  feel like a fight, with three ways on if it has.
+
+
+  You can do most of this module with pictures and questions, and no
+  programming at all. When a page offers Python, it is there to draw a
+  picture you can change, or to check your own work.
+
+
+  The first pages are written, and they will change as people use them.
+  Tell us what works for you and what does not.
+contents:
+- title: Before we start
+  tutorials:
+  - before-we-start
+- title: Slashes, the parts of a whole
+  tutorials:
+  - one-whole-many-slices
+  - same-amount-different-names
+- title: Powers, the long way and the short way
+  tutorials:
+  - the-long-way

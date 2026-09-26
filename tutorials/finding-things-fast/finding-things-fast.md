@@ -32,7 +32,7 @@ planet on that list in about a dozen looks. Your phone does the same
 trick with its contacts: you type "Niamh", and her number is there
 before you finish.
 
-Here is the surprise ahead. If everyone on Earth were on one list,
+If everyone on Earth were on one list,
 about 8 billion names, the same trick would find any one of them in 33
 looks. How can so few looks be enough? And what does the list have to
 be like for the trick to work?
@@ -48,14 +48,14 @@ On this page we:
 - plot the number of looks as the list grows
 - add `linear_search` and `binary_search` to the toolkit
 
-> **The space we're in.** Lists, with indexes that start at 0, as on
-> [A row of numbers](tutorial:a-row-of-numbers). One thing usually goes
-> unsaid: a computer looks at one item of a list at a time, and
+> **The space we're in.** We work with lists, with indexes that start
+> at 0, as on [A row of numbers](tutorial:a-row-of-numbers). We usually
+> do not say it, but a computer looks at one item of a list at a time, and
 > "finding" means looking and comparing, again and again. It does not
 > see the whole list at once, the way your eye takes in a short
 > list of eight names. Whether the list is *in order* decides which
-> moves are allowed, and that is the question this page keeps coming
-> back to.
+> moves are allowed, and this page asks that question again and
+> again.
 
 ## Warm-up
 
@@ -99,7 +99,7 @@ people would read from the top until they reach her.
 A *search* is a way of finding where a value,
 the *target*, sits in a list. A *linear search* looks at each item in
 turn, from the front, until it finds the target or runs out of items.
-"Linear" means "in a line": it goes along the list one step at a time.
+"Linear" means "in a line". It goes along the list one step at a time.
 
 Before you run the cell, count: how many names will Python look at to
 find Niamh?
@@ -121,7 +121,7 @@ def find_contact(names, target):
 print("Niamh is at index", find_contact(contacts, "Niamh"))
 ```
 
-Five looks, and Niamh is at index 4. The loop goes through by index,
+It takes five looks, and Niamh is at index 4. The loop runs by index,
 as on [A row of numbers](tutorial:a-row-of-numbers#going-through-by-index).
 When the names match, `return i` ends the whole function at once, so
 the loop does not go on to Oisín.
@@ -134,8 +134,8 @@ id: finding-fast-linear-2
 print("Zara is at index", find_contact(contacts, "Zara"))
 ```
 
-Eight looks, one for every contact, and then the answer `-1`. The loop
-ran out, so Python reached the last line, `return -1`.
+It takes eight looks, one for every contact, and then the answer is
+`-1`. The loop finished, so Python reached the last line, `return -1`.
 
 Why −1? A search promises an index, and every real index is 0 or more.
 So −1 cannot be mistaken for "found at the front", which 0 would mean.
@@ -170,14 +170,14 @@ print(linear_looks(contacts, "Niamh"))
 print(linear_looks(contacts, "Zara"))
 ```
 
-One look for Siobhán, at the front. Five for Niamh. Eight for Zara,
-who is not there. The first is the *best case*, the fewest looks a
+Siobhán, at the front, takes one look. Niamh takes five. Zara, who is
+not there, takes eight. The first is the *best case*, the fewest looks a
 search can need. The last is the *worst case*, the most it can need.
 For a linear search, the worst case is one look for every item: a
 target at the very end, or not there at all.
 
 With 8 contacts, 8 looks is nothing. With 2,000, it is 2,000. With a
-million, a million. Double the list, and the worst case doubles too.
+million, it is a million. Double the list, and the worst case doubles too.
 
 ## The guessing game
 
@@ -186,17 +186,17 @@ Here is a game to play with someone. They think of a whole number from
 guesses do you need?
 
 You could guess 1, then 2, then 3. That is a linear search, and it can
-take 100 guesses. Most people find a better way: start at 50. If they
+take 100 guesses. Most people find a better way. They start at 50. If they
 say "higher", the number is from 51 to 100, and half the numbers are
 gone with one guess. Guess 75, then 62 or 63, and so on. Each guess
-throws away half of what is left.
+removes half of what is left.
 
 $$100 \to 50 \to 25 \to 12 \to 6 \to 3 \to 1$$
 
 Each arrow is one guess that missed, and the numbers are how many are
 still possible after it. After 6 missed guesses at most, only
-one number is left, and the 7th guess is that number. Seven guesses,
-not 100.
+one number is left, and the 7th guess is that number. That is seven
+guesses, not 100.
 
 This trick has a name. *Divide and conquer* is a way of solving a
 problem by splitting it into smaller problems of the same kind, and
@@ -225,7 +225,7 @@ instead?
 Now the same trick on the contacts. For it to work, the list must be
 in order, so that "after the middle" means "later in the alphabet".
 Python's `sorted()`, from
-[What is typical?](tutorial:what-is-typical), gives back a new list in
+[What is typical?](tutorial:what-is-typical), returns a new list in
 order. The next page,
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards), shows how
 sorting works inside. For now we let Python do it.
@@ -234,8 +234,8 @@ Python compares two words with `<` letter by letter, the way a
 dictionary does, so `"Aoife" < "Kwame"` is True.
 
 A *binary search* finds a target in a sorted list by looking at the
-middle item and throwing away the half the target cannot be in, again
-and again. "Binary" means "in two": each look splits what is left into
+middle item and removing the half the target cannot be in, again
+and again. "Binary" means "in two". Each look splits what is left into
 two halves. Here is the plan in pseudocode:
 
 ```text
@@ -277,11 +277,11 @@ def binary_steps(sorted_values, target):
 print("Priya is at index", binary_steps(in_order, "Priya"))
 ```
 
-Two looks. The first look was at index 3, Niamh, halfway between 0 and
+It takes two looks. The first look was at index 3, Niamh, halfway between 0 and
 7. `(low + high) // 2` finds the middle, and `//` rounds down, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
-Priya comes after Niamh, so the left half, Aoife to Niamh, was thrown
-away, and `low` became 4. The second look was halfway between 4 and 7,
+Priya comes after Niamh, so the left half, Aoife to Niamh, was
+skipped, and `low` became 4. The second look was halfway between 4 and 7,
 at index 5, and that was Priya.
 
 Three names change at every look, and that is a lot to hold in your
@@ -298,9 +298,9 @@ breaks once a list has more than about a billion items. Joshua Bloch
 found this in the binary search in Java's own library, and wrote about
 it in 2006. The same line is in Jon Bentley's well-known book
 *Programming Pearls*, from 1986. Python's
-whole numbers never run out, as on
+whole numbers have no size limit, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#two-kinds-of-number-in-python),
-so the line is safe here: the space we are in matters.
+so the line is safe here. The space we are in matters.
 
 </aside>
 
@@ -309,7 +309,7 @@ so the line is safe here: the space we are in matters.
 1. Search for `"Aoife"`. Before you run it, which three names do you
    think it will look at?
 2. Search for `"Zara"`, who is not there. How many looks does it take
-   before it gives back −1? Compare that with the 8 looks of the linear
+   before it returns −1? Compare that with the 8 looks of the linear
    search.
 3. Follow the values of `low` and `high` for the Zara search on paper,
    and find the moment `low` goes past `high`.
@@ -343,9 +343,8 @@ print(linear_looks(planets, "Proxima Cen b"), "looks for a linear search")
 
 There are 6,372 planets in this copy of the list. The binary search
 took 11 looks, and the linear search took 4,915, because Proxima Cen b
-happens to sit far down the file. Eleven looks against almost five
-thousand. I think that is worth a second look: the binary search
-skipped straight past thousands of planets it never needed to see.
+happens to sit far down the file. I think that is surprising. The
+binary search skipped thousands of planets it never needed to see.
 
 <aside class="dl-note" id="finding-fast-note-planets">
 
@@ -370,23 +369,23 @@ print(contacts)
 print("Aoife is at index", binary_steps(contacts, "Aoife"))
 ```
 
-It says −1: not there. There was no error message. It gave an answer
+It says −1, which means not there. There was no error message. It gave an answer
 that is not true, calmly, like the oven converter on
 [Does it work?](tutorial:does-it-work#code-that-runs-and-code-that-works).
 
 Follow the looks. The first was Kwame. Aoife comes before Kwame in the
 alphabet, so the search kept the left half: Siobhán, Tomasz and Aoife.
 So far, Aoife is still in the part kept. The second look was Tomasz. Aoife comes before Tomasz
-too, so the search threw away Tomasz and everything after him, and
+too, so the search skipped Tomasz and everything after him, and
 Aoife went with them. In a sorted list, every name after Tomasz would
 come later in the alphabet than Tomasz. In this list, that is not
 true.
 
-So is binary search broken? No. It keeps its promise in one space: a
+Binary search still keeps its promise, but only in one space: a
 sorted list. There, "this item comes before the target" means "so does
 everything to its left". In an unsorted list, one look says nothing
 about the other items, and the only move that works is to look at all
-of them. The moves allowed depend on the space.
+of them.
 
 That is why the promise belongs in the function's name and docstring:
 `binary_search(sorted_values, target)`. It also tells us what a phone
@@ -436,8 +435,8 @@ And `math.log2(1000)` is about 9.97.
 On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times)
 we met the logarithm as "how many times do I double to reach this
-number?". The number of halvings asks the same question, from the
-other end. Doubling 1 about ten times reaches 1,000, so halving 1,000
+number?". Counting halvings asks the same question in
+reverse. Doubling 1 about ten times reaches 1,000, so halving 1,000
 about ten times reaches 1:
 
 $$2^{10} = 1024 \quad \text{so} \quad \log_2 1000 \text{ is a little less than } 10$$
@@ -466,8 +465,8 @@ printing. The cell then searches lists of 10, 100, 1,000, 10,000 and
 
 Only the length of the list changes the count, so we use quick lists
 of even numbers in order, `range(0, 2 * size, 2)`. We search for
-`2 * size`, which is bigger than every number in the list: the worst
-case for both searches. Before you run it, guess the binary column.
+`2 * size`, which is bigger than every number in the list. That is the
+worst case for both searches. Before you run it, guess the binary column.
 
 ```python exec
 id: finding-fast-grow-1
@@ -500,7 +499,7 @@ print(linear_counts)
 print(binary_counts)
 ```
 
-The linear counts are 10, 100, 1,000, 10,000 and 100,000: the same as
+The linear counts are 10, 100, 1,000, 10,000 and 100,000. They are the same as
 the length every time. The binary counts are 4, 7, 10, 14 and 17, as
 the table in the last section said. Each time the list gets 10 times
 longer, the binary search needs only 3 or 4 more looks, because 10 is
@@ -521,15 +520,15 @@ plt.legend()
 ```
 
 The linear line climbs straight up to 100,000. The binary line lies so
-flat along the bottom that it looks like 0. It is not 0: it is 17,
+flat along the bottom that it looks like 0. It is not 0. It is 17,
 which is too small to see on a scale that goes to 100,000.
 
 The two lines have different shapes of growth. The linear count grows
-*in proportion* to the list: twice as many items, twice as many looks.
-The binary count grows like the *logarithm* of the list: twice as many
-items, one more look. Programmers write these as $O(n)$ and
-$O(\log n)$, said "order n" and "order log n". That is the name you
-will see in books; on this course, we count.
+*in proportion* to the list. Twice as many items need twice as many
+looks. The binary count grows like the *logarithm* of the list. Twice
+as many items need one more look. Programmers write these as $O(n)$ and
+$O(\log n)$, said "order n" and "order log n". You will see those
+names in books. On this course, we count.
 
 ### Your turn
 
@@ -541,13 +540,13 @@ will see in books; on this course, we count.
 
 ## Two tools for your toolkit
 
-Two searches, each a promise worth keeping. Here they are as stubs,
-with their promises written. Both give back an index, or −1 when the
+Each search is a promise worth keeping. Here they are as stubs,
+with their promises written. Both return an index, or −1 when the
 target is not there.
 
 1. For `linear_search`, start from `find_contact` at the top of the
-   page, and take out the `print` line.
-2. For `binary_search`, start from `binary_steps`, and take out the
+   page, and delete the `print` line.
+2. For `binary_search`, start from `binary_steps`, and delete the
    `print` line and the comment.
 
 ```python exec
@@ -653,8 +652,8 @@ not sit in an `else` inside it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way to write them. Yours may differ and still keep the
-promises: the tests are the judge.
+Here is one answer. Yours may be different and work too. Run the
+tests to see what yours does.
 
 ```python
 def linear_search(values, target):
@@ -694,7 +693,7 @@ def binary_search(sorted_values, target):
 Python has its own linear search. `contacts.index("Niamh")` gives 4,
 and `"Niamh" in contacts` gives True. Both look through the list from
 the front, one item at a time. `.index()` does not give −1 for a
-missing item: it stops with a `ValueError`. That is a different promise
+missing item. It stops with a `ValueError`. That is a different promise
 for the same search, and both are useful. You now know what both do
 inside.
 
@@ -722,7 +721,7 @@ it looks fewer times, and you can see why it looks fewer times.
 |---|---|
 | What is named here? | the target; `low`, `high` and `middle`, three indexes that mark the part still worth searching; −1, a value used as a name for "not found" |
 | What is promised? | `linear_search` promises the first index of the target in any list; `binary_search` promises an index, but only for a sorted list |
-| What happens when? | a linear search looks from the front, one item at a time; a binary search looks at the middle, then throws half away, again and again |
+| What happens when? | a linear search looks from the front, one item at a time; a binary search looks at the middle, then removes half, again and again |
 | What does this space let us do? | in an unsorted list, only looking at everything works; in a sorted list, one look tells us about half the list; in Python, −1 is also a real index |
 
 ## What we have now
@@ -733,7 +732,7 @@ it looks fewer times, and you can see why it looks fewer times.
 | linear search | look at each item in turn, from the front |
 | best case, worst case | the fewest looks a search can need; the most it can need |
 | divide and conquer | split a problem into smaller problems of the same kind, and solve those |
-| binary search | look at the middle of a sorted list, and throw away the half the target cannot be in |
+| binary search | look at the middle of a sorted list, and remove the half the target cannot be in |
 | `<` on words | compares letter by letter, the way a dictionary orders words |
 | $\log_2 n$ as halvings | how many times $n$ can be halved before 1 is left: about the worst case of a binary search |
 | in proportion, logarithmic | twice the items, twice the looks; twice the items, one more look |

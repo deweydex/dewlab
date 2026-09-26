@@ -45,9 +45,9 @@ On this page we:
 > **The space we're in.** This page starts in the real numbers,
 > $\mathbb{R}$, and builds a bigger space around them, the complex
 > numbers. Every real number is still there, and almost every move we
-> could make before still works: the last section finds the one that
-> does not. One thing usually goes unsaid: the name
-> "imaginary", which we will meet, is a name from history. It is not a
+> could make before still works. The last section finds the one that
+> does not. The name "imaginary", which we will meet, comes from
+> history. It is not a
 > sign that these numbers are less useful than the others. Your toolkit
 > is loaded, with `evaluate`, `solve_quadratic` and `close_enough`.
 
@@ -97,12 +97,12 @@ print(solve_quadratic(1, 0, 1))
 Every square is 0 or more. A negative times a negative is positive, a
 positive times a positive is positive, and 0 times 0 is 0. So
 $x^2 = -1$, which is $x^2 + 1 = 0$, has no answer in $\mathbb{R}$, and
-your `solve_quadratic` gives back an empty list.
+your `solve_quadratic` returns an empty list.
 
 We have been here before. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
-$3 - 5$ had no answer in $\mathbb{N}$. The answer was not to call the
-question foolish. It was to build a bigger space, $\mathbb{Z}$, with new
+$3 - 5$ had no answer in $\mathbb{N}$. The answer was to build a
+bigger space, $\mathbb{Z}$, with new
 numbers in it, −1, −2 and so on, where $3 - 5$ has an answer. The old
 numbers stayed, and adding and multiplying them worked as before.
 
@@ -112,8 +112,8 @@ gave a name to a number that does what no real number can. The
 
 $$i^2 = -1$$
 
-That is the whole definition. Naming comes first here: we name the
-number we want, and then find out what it lets us do.
+That is the whole definition. Here we name the number we want first,
+and then find what it lets us do.
 
 <aside class="dl-note" id="no-real-note-history">
 
@@ -122,8 +122,8 @@ negative numbers in his book *Ars Magna*, in 1545, and called them
 useless. Rafael Bombelli, in his *Algebra* of 1572, wrote down the
 rules for adding and multiplying them, and used them to find real
 answers. In 1637 René Descartes called such numbers "imaginary", and
-he did not mean it kindly. The name stayed; the numbers turned out to
-be some of the most useful in science.
+he did not mean it kindly. The name stayed. The numbers are now some
+of the most useful in science.
 
 </aside>
 
@@ -148,7 +148,7 @@ print(type(2j))
 A *complex number* is a number of the form $a + bi$, where $a$ and $b$
 are real numbers. The number $a$ is its *real part*, and $b$ is its
 *imaginary part*. The space of all complex numbers is written
-$\mathbb{C}$. Python writes $3 + 2i$ as `3 + 2j`, and can give back each
+$\mathbb{C}$. Python writes $3 + 2i$ as `3 + 2j`, and can show each
 part:
 
 ```python exec
@@ -195,7 +195,7 @@ the 1. On its own, `j` would be a name, not a number.
 
 ### Your turn
 
-1. Work out $(1 + i)^2$ by hand. Remember the rule for $i^2$.
+1. Find $(1 + i)^2$ by hand. Remember the rule for $i^2$.
 2. Check it with `(1 + 1j) ** 2`.
 3. Now guess $(1 + i)^4$. It is $(1 + i)^2$ squared. Check that too.
 
@@ -232,8 +232,7 @@ point a quarter turn about 0, against the clock.
 
 So here is a picture for $i^2 = -1$. Multiplying by −1 is a half turn:
 it sends 3 to −3, to the other side of 0. Two quarter turns make a half
-turn. The number that squares to −1 is the number that does a quarter
-turn.
+turn. So the number that squares to −1 does a quarter turn.
 
 Does it turn a whole shape? A game keeps the corners of a small ship as
 complex numbers, and turns it by multiplying every corner by `1j`. What
@@ -322,8 +321,8 @@ has its roots, −8 and 5, now written with `+0j`.
 
 Look at the two roots of $x^2 - 2x + 5$. They have the same real part,
 and imaginary parts that are opposites. Two such numbers are called
-*conjugates*. The $\pm$ in the formula is the reason: the square root of the
-discriminant is added once and taken away once. On the plane, the two
+*conjugates*. The $\pm$ in the formula causes this. The square root of
+the discriminant is added once and taken away once. On the plane, the two
 roots are mirror images across the line of real numbers.
 
 Are these truly roots? The rule of this unit is to check, by putting
@@ -346,8 +345,8 @@ rounding, very close to 0, as on
 because `abs` of a complex number is its distance from 0 on the plane.
 
 In $\mathbb{C}$, every quadratic has two roots, counting a repeated
-root twice. Two roots, one root and "no real roots" turn out to be one
-case, seen from a bigger space.
+root twice. So two roots, one root and "no real roots" are all one
+case in this bigger space.
 
 ### Your turn
 
@@ -379,19 +378,19 @@ with `TypeError: '<' not supported between instances of 'complex' and
 'int'`. Nothing was mistyped. The message says that `<` is a move this
 space does not have. Points on a plane have no one order, left to
 right, that keeps the rules of $\mathbb{R}$. Is $i$ bigger than 0, or
-smaller? Either answer breaks a rule: in $\mathbb{R}$, a number above
+smaller? Either answer breaks a rule. In $\mathbb{R}$, a number above
 0 or below 0 always squares to more than 0, and $i^2$ is −1. So
 mathematicians give neither answer.
 
-That is why your toolkit's `solve_quadratic` promised real roots,
-smallest first. "Smallest first" means nothing in $\mathbb{C}$.
+So your toolkit's `solve_quadratic` promised real roots, smallest
+first. "Smallest first" means nothing in $\mathbb{C}$.
 
 So which space should we work in? It depends on the question. A
-sprite sheet's rows must be real, and the order matters: $\mathbb{R}$
-is the space for it, and "no real roots" is the honest answer. A
-question about a turning shape, or a signal that swings, is better
-asked in $\mathbb{C}$. Asking "which space are we in?" is always
-allowed. Here it chooses the answer.
+sprite sheet's rows must be real, and the order matters. So
+$\mathbb{R}$ is the space for it, and "no real roots" is the answer it
+needs. A question about a turning shape, or a signal that swings, is
+better asked in $\mathbb{C}$. You can always ask "which space are we
+in?" Here, the space decides the answer.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -439,8 +438,8 @@ Electrical engineers use complex numbers every day. The current in the
 wires of a house swings back and forth, 50 times a second in Ireland,
 and they write it as a complex number, whose turn on the plane says
 where in its swing the current is.
-[Waves](tutorial:waves), in the next unit, is where a swing becomes a
-sine wave.
+In [Waves](tutorial:waves), in the next unit, a swing becomes a sine
+wave.
 
 For another route through these numbers, the integrated course has
 [Complex numbers: roots that are not real](tutorial:complex-roots).

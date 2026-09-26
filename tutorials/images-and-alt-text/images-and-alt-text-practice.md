@@ -15,8 +15,8 @@ There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, once you
+see why it happened, than from reading the answer.
 
 The previews on this page load images from `picsum.photos`, a site that
 gives out stand-in images. You need to be online to see them. A preview
@@ -85,8 +85,8 @@ The address is a full web address this time. So what is wrong? Fix it.
 
 An `<img>` finds its file with the `src` attribute. `href` is the
 attribute a link uses, so the image had no address at all. It is an
-easy mix-up, because both attributes hold an address. One way to
-remember: `src` is short for "source", where the image comes from.
+easy mix-up, because both attributes hold an address. To remember it,
+note that `src` is short for "source", where the image comes from.
 
 </details>
 
@@ -178,7 +178,7 @@ folder as `index.html`, so it would use the same path. A page inside a
 out of `blog`, and then into `images`.
 
 On GitHub, the old copy of the photo is still beside `index.html`. You
-could delete it: open it on GitHub, and choose **Delete file** from the
+could delete it. Open it on GitHub, and choose **Delete file** from the
 **...** menu.
 
 </details>

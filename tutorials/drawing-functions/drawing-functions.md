@@ -33,7 +33,7 @@ derivatives all use graphs. Once you can draw a function and read an
 answer from it, those topics become much less abstract.
 
 In [Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
-we wrote a function that works out a polynomial's value. We never drew
+we wrote a function that finds a polynomial's value. We never drew
 its output. Now we can.
 
 On this page we:
@@ -50,7 +50,7 @@ The word "function" has two meanings in this course, one in Python and
 one in mathematics. How are they related?
 
 In Python, a function is a piece of code with a name. In mathematics, a
-function is a rule that takes an input and gives back exactly one
+function is a rule that takes an input and gives exactly one
 output. These are the same idea, and the mathematical meaning is the
 stricter of the two.
 
@@ -130,11 +130,9 @@ print(square_root(9))
 
 The domain answers the question "what am I allowed to put in?". It
 matters. When we put in something outside the domain, Python gives an
-error, and that error is the function telling us so.
+error. The error tells us that the input is outside the domain.
 
 ## A machine has a picture
-
-This is the connection this page is about.
 
 A function turns one number into another. Suppose we do that for many
 numbers, keep each (input, output) pair, and plot the pairs. Then we
@@ -176,7 +174,7 @@ There is no magic inside `draw`. It does three things:
 3. It plots the $(x, y)$ pairs.
 
 **The list of $(x, y)$ pairs and the curve are the same thing.** The
-curve is what a very long list of pairs looks like from far away.
+curve is a very long list of pairs, seen from far away.
 
 This is worth saying, because a graph can feel like a separate object
 that a function somehow owns. The *graph* of a function is its outputs,
@@ -251,9 +249,9 @@ The letters are a habit, not a rule. Different countries use different
 letters for these same two numbers. In the United States, for example,
 the line is often written $y = mx + b$.
 
-The function `line` does something new: it is a function that returns a
-function. `line(2, 0)` gives us back a new function, and that new
-function multiplies its input by 2. This pattern is useful whenever we
+The function `line` does something new. It returns a function.
+`line(2, 0)` returns a new function, and that new function multiplies
+its input by 2. This pattern is useful whenever we
 want a family of similar functions, and we use it again in the next
 section.
 
@@ -355,11 +353,11 @@ draw(cubic(1, 0, -4, 0), low=-3, high=3, label="x^3 - 4x", ax=ax)
 ax.set_title("Cubics")
 ```
 
-The curve $x^3 - 4x$ turns twice. The curve $x^3$ flattens out for a
-moment at 0, but it keeps going up, so it never turns.
+The curve $x^3 - 4x$ turns twice. The curve $x^3$ is flat for a moment
+at 0, but it keeps going up, so it never turns.
 
-There is a general pattern here. **The highest power tells us how many
-times the curve can turn: at most one less than that power.**
+There is a general pattern here. **The number of turns is at most one
+less than the highest power.**
 
 | Function | Highest power | Turns at most |
 |---|---|---|
@@ -399,7 +397,7 @@ The curve crosses at 2 and at 3. The solver from
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
 gives the same two numbers.
 
-That gives us two methods and one answer. It is worth doing this once
+The two methods give the same answer. It is worth doing this once
 for a question where we already know the answer. Then we can trust the
 picture for questions where we do not.
 
@@ -432,7 +430,7 @@ Where is $x^3 - 4x = 1$? We can find the answer, roughly, from a
 picture.
 
 1. Plot $x^3 - 4x$ and the flat line $y = 1$ on one pair of axes.
-2. Read off the $x$ values where they cross.
+2. Find the $x$ values where they cross on the plot.
 
 ```python exec
 id: your-turn-3
@@ -465,8 +463,9 @@ for value in [1, 5, -3, 0]:
     print(f"{value} -> double -> {double(value)} -> halve -> {halve(double(value))}")
 ```
 
-Every value comes back to where it started. That round trip is what
-"inverse" means. It is also a test we can run for ourselves.
+Every value ends where it started. An inverse always brings a value
+back where it started. This round trip is also a test we can run for
+ourselves.
 
 The picture of an inverse is a mirror image. The inverse swaps inputs
 and outputs, so it swaps the two axes. The graph flips across the
@@ -491,7 +490,7 @@ ax.set_title("A function and its inverse, mirrored in y = x")
 ### When you cannot undo it
 
 Not every function has an inverse. The reason is the "exactly one
-output" rule again, this time seen from the other side.
+output" rule again.
 
 ```python exec
 id: undoing-a-function-3
@@ -543,7 +542,8 @@ numbers in a line each do one job. In a quadratic, $a$ changes the width.
 But $b$ moves the turning point sideways and down at once, along the
 curve $y = -x^2$. Only the picture showed us that.
 
-**Crossing the axis is solving the equation.** Once we trust that, a
+**The points where a curve crosses the axis solve the equation.** Once
+we trust that, a
 picture becomes a way to answer questions, including questions with no
 neat algebraic method.
 
@@ -553,15 +553,15 @@ function can be undone only if no two inputs give the same output.
 For $x^2 - 5x + 6 = 0$, which did you find easier: the formula or the
 picture? What would change your answer? Write a few sentences.
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Domain and Range of a Function.*
-<https://www.youtube.com/watch?v=O0uUVH8dRiU>. The same two ideas this
-page introduces through `reciprocal` and `square_root`, from a graph
-instead of an error message.
+<https://www.youtube.com/watch?v=O0uUVH8dRiU>. This video explains the
+two ideas this page shows with `reciprocal` and `square_root`. It uses a
+graph instead of an error message.
 
 SimonDev (2022). *An In-Depth look at Lerp, Smoothstep, and Shaping
 Functions.* <https://www.youtube.com/watch?v=YJB1QnEmlTs>. Game developers
 use small functions to shape movement: a straight line from one value to
 another, or a curve that starts slowly and ends slowly. SimonDev draws
-each one as a graph. About eight minutes.
+each one as a graph. It is about eight minutes long.

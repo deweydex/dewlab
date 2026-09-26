@@ -7,11 +7,11 @@ version: 2026.09.22.1
 
 # 3D animation: a camera and a ball in orbit — Practice
 
-Work each one out by hand first, then run it. Every problem is still
-one division. The practice is in deciding what to subtract first, and
+Solve each one by hand first, then run it. Every problem is still
+one division. The practice is to decide what to subtract first, and
 what to divide by.
 
-## Moving the Camera
+## Moving the camera
 
 ```python exec
 id: camera-setup-1
@@ -36,8 +36,8 @@ From $(0, 0, -2)$ the point is four units ahead, so it appears at
 $(1/4, 1/4) = (0.25, 0.25)$.
 
 From $(1, 0, 0)$ the point is directly ahead in $x$, since
-$1 - 1 = 0$, and two units away, so it appears at $(0, 0.5)$: on the
-centre line, half a unit up.
+$1 - 1 = 0$, and two units away, so it appears at $(0, 0.5)$. That is on
+the centre line, half a unit up.
 
 ```python
 print(project_from((1, 1, 2), camera=(0, 0, -2)))
@@ -46,7 +46,7 @@ print(project_from((1, 1, 2), camera=(1, 0, 0)))
 
 </details>
 
-## The Orbit
+## The orbit
 
 ```python exec
 id: orbit-1
@@ -71,7 +71,7 @@ there than at its smallest?
 Largest at three quarters of a turn, where the depth is $5 - 2 = 3$,
 and smallest at a quarter turn, where it is $5 + 2 = 7$. The drawn
 radius is the real radius divided by the depth, so the ratio is
-$7 / 3$, about $2.33$: the ball at the front is a little more than
+$7 / 3$, about $2.33$. The ball at the front is a little more than
 twice the size of the ball at the back.
 
 </details>

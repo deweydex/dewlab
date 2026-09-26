@@ -29,8 +29,8 @@ every folder?
 
 A loop cannot answer that on its own, and you will see why. The answer
 is a function that uses itself. That sounds like a circle, the kind of
-answer that says "a word means the word". Here is the surprise: done
-with care, it works, and it can be the shortest code on the page.
+answer that says "a word means the word". But if you are
+careful, it works, and it can be the shortest code on the page.
 
 On this page we:
 
@@ -44,13 +44,13 @@ On this page we:
 - add `count_items` to the toolkit
 - count the same photos with a loop and a to-do list, and compare
 
-> **The space we're in.** Lists, from
+> **The space we're in.** We use lists, from
 > [A row of numbers](tutorial:a-row-of-numbers), and functions, which
-> can call any function they can see. New on this page: a function can
-> see its own name, so it can call itself. Every call gets a fresh space
+> can call any function they can see. This page adds one new idea. A
+> function can see its own name, so it can call itself. Every call gets a fresh space
 > of names, as on
 > [What a function can see](tutorial:what-a-function-can-see#a-fresh-space-for-every-call).
-> One thing usually goes unsaid: Python only lets calls wait inside
+> We usually do not say it, but Python only lets calls wait inside
 > other calls to a certain depth, usually about a thousand.
 
 ## Warm-up
@@ -101,7 +101,7 @@ holidays = [
 print(len(holidays))
 ```
 
-Count the photos by eye first: there are 9. Before you run the cell,
+Count the photos by eye first. There are 9. Before you run the cell,
 what will `len(holidays)` say?
 
 It says 4. `len` counts what is directly inside the list: two photos
@@ -165,20 +165,20 @@ def factorial_again(n):
 print(factorial_again(5))
 ```
 
-It gives 120. Look at the last line of the function: `factorial_again`
+It gives 120. Look at the last line of the function. `factorial_again`
 calls `factorial_again`. A function that calls itself is a *recursive
 function*. *Recursion* is solving a problem by using the same promise
 on a smaller problem.
 
 Here is how to read that last line. Do not follow the call down. Trust
-the promise instead: `factorial_again(n - 1)` gives back $(n - 1)!$,
+the promise instead. `factorial_again(n - 1)` returns $(n - 1)!$,
 because that is what the docstring promises. Then $n \times (n - 1)!$
 is $n!$, which is what this call promised. So the promise keeps itself,
 as long as it stops somewhere.
 
-If trusting the promise feels like cheating, that is a fair feeling to
-have here. The next section follows every call, one at a time, so you
-can see that nothing is hidden. You can read it first and come back.
+If trusting the promise feels like cheating, the next section can help.
+It follows every call, one at a time, so you can see that nothing is
+hidden. You can read it first and come back.
 
 Every recursive function has two parts:
 
@@ -188,7 +188,7 @@ Every recursive function has two parts:
 - The *recursive case* is every other input. It hands a smaller problem
   to the same function, and builds its own answer from what comes back.
 
-A promise is only worth something if it is kept. Does `factorial_again`
+Let's check the promise. Does `factorial_again`
 agree with the `factorial` you wrote on Orders and choices, for every
 $n$ from 0 to 20?
 
@@ -220,11 +220,11 @@ print(sum_up_to(100))
 
 ## What happens when: calls that wait
 
-Trusting the promise is how to write recursion. Now let's watch what
+When you write recursion, you trust the promise. Now let's watch what
 Python does. This version of the function prints a line when each call
-starts, and another when it gives back its answer. The name `depth` is
-there only for the printing: it pushes each deeper call in by four more
-spaces. How many "starts" lines will there be?
+starts, and another when it returns its answer. The name `depth` is
+there only for the printing. It moves each deeper call four more spaces
+to the right. How many "starts" lines will there be?
 
 ```python exec
 id: calls-itself-wait-1
@@ -247,16 +247,16 @@ Five calls start, for 4, 3, 2, 1 and 0. Here is what happens, in order.
 1. The call for 4 starts. It needs `factorial_shown(3)` before it can
    multiply, so it waits, and the call for 3 starts.
 2. The call for 3 waits for 2, 2 waits for 1, and 1 waits for 0.
-3. The call for 0 is the base case. It gives back 1 at once.
+3. The call for 0 is the base case. It returns 1 at once.
 4. Now the call for 1 can finish: $1 \times 1 = 1$. Then 2 finishes
    with $2 \times 1 = 2$, then 3 with $3 \times 2 = 6$, then 4 with
    $4 \times 6 = 24$.
 
-The first call to start is the last to finish. While the call for 0
+The call for 4 starts first and finishes last. While the call for 0
 runs, four other calls are waiting, each at the same line. Each one has
 its own space of names, and in each space `n` is a different number:
 
-| Call | Its own `n` | Waiting for | Then gives back |
+| Call | Its own `n` | Waiting for | Then returns |
 |---|---|---|---|
 | first | 4 | the call for 3 | $4 \times 6 = 24$ |
 | second | 3 | the call for 2 | $3 \times 2 = 6$ |
@@ -264,15 +264,15 @@ its own space of names, and in each space `n` is a different number:
 | fourth | 1 | the call for 0 | $1 \times 1 = 1$ |
 | fifth | 0 | nothing: the base case | 1 |
 
-Five names called `n`, all at once, and they never get in each other's
-way. That is the fresh space for every call, from
+There are five names called `n`, all at once, and they never get in
+each other's way. This is the fresh space for every call, from
 [What a function can see](tutorial:what-a-function-can-see#a-fresh-space-for-every-call),
-doing real work.
+and here it does real work.
 
 The calls that have started and not yet finished make a list, with the
 newest at the top. This list is the *call stack*. A new call goes on
-top, and only the call on top can run. When it gives back its answer, it
-comes off, and the call under it goes on. It works like a stack of
+top, and only the call on top can run. When it returns its answer, it
+comes off, and the call under it continues. It works like a stack of
 plates: the last plate put on is the first one taken off.
 
 ```question
@@ -286,7 +286,7 @@ all, counting the first call, there are {11} calls.
 <aside class="dl-note" id="calls-itself-note-search">
 
 **Did you mean: recursion?** For years, a search for the word
-"recursion" on Google has come back with the line "Did you mean:
+"recursion" on Google has shown the line "Did you mean:
 recursion". Click it, and you are back where you started. It is a
 programmers' joke: the definition of recursion that uses recursion,
 with no base case to stop it.
@@ -296,7 +296,7 @@ with no base case to stop it.
 ## Where the promise stops: the base case
 
 What if we forget the base case? Here is `factorial_again` with its
-first two lines taken out. This cell is meant to fail. Before you run
+first two lines removed. This cell is meant to fail. Before you run
 it, which numbers will `n` be, one call after another?
 
 ```python exec
@@ -327,10 +327,10 @@ import sys
 print(sys.getrecursionlimit())
 ```
 
-On most computers it is 1000. So the error is the space we are in
-saying "no further". In maths, the rule $n! = n \times (n - 1)!$ would
+On most computers it is 1000. So the error means we have reached the
+limit of this space. In maths, the rule $n! = n \times (n - 1)!$ would
 go on for ever too, without $0! = 1$ to stop it. The computer does not
-go on for ever: it runs out of room.
+go on for ever. It has no more room.
 
 On [Doing it again](tutorial:doing-it-again#until-something-is-true-while)
 we asked of every `while` loop: what makes it end? Recursion needs the
@@ -357,10 +357,10 @@ Outside it, the steps never land on the place where they stop.
 ## Counting every file
 
 Back to the photos. Let's say the promise first, in words:
-`count_items(folder)` gives back how many photos are inside `folder`,
+`count_items(folder)` returns how many photos are inside `folder`,
 at any depth.
 
-Now keep the promise by using it on a smaller problem. Go through the
+Now keep the promise by using it on a smaller problem. Look at the
 folder one item at a time, and keep a running count:
 
 - if the item is a photo, add 1;
@@ -368,8 +368,8 @@ folder one item at a time, and keep a running count:
   on a smaller folder.
 
 Where is the base case? A folder that holds only photos never calls
-again: its loop runs to the end and gives back its count. An empty
-folder gives back 0. So the recursion stops at the bottom of every
+again. Its loop runs to the end and returns its count. An empty
+folder returns 0. So the recursion stops at the bottom of every
 branch, even without an `if` for it.
 
 This goes in your toolkit, with the name `nested` for the list it is
@@ -380,7 +380,7 @@ body is yours to write:
 2. Loop over every `item` in `nested`.
 3. If `isinstance(item, list)`, add `count_items(item)` to `found`.
    Otherwise, add 1.
-4. After the loop, give back `found`.
+4. After the loop, return `found`.
 
 ```python exec
 id: calls-itself-toolkit
@@ -449,8 +449,8 @@ print("count_items keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way to write it. Yours may differ and still keep the
-promise: the tests are the judge.
+Here is one answer. Yours may be different and work too. Run the
+tests to see what yours does.
 
 ```python
 def count_items(nested):
@@ -510,7 +510,7 @@ plan:
    each item inside. Count each photo. Put each folder you meet into
    `to_open`, for later.
 
-`to_open.pop()` takes the last item off the list, and gives it back.
+`to_open.pop()` removes the last item from the list, and returns it.
 Will this loop find 9 photos, too?
 
 ```python exec
@@ -545,8 +545,8 @@ can be written as a recursion. So which is better?
 A folder tree is rarely 1,000 levels deep, so for folders, recursion
 reads better and costs nothing. For a list of a million numbers, a
 recursion that makes one call per number, like `factorial_again`, runs
-out of room, and a loop is the better tool. The question to ask is the
-fourth one: what does this space let us do?
+out of room, and a loop is the better tool. Ask what this space lets us
+do.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -573,7 +573,7 @@ checks to prove a rule for every whole number.
 |---|---|
 | What is named here? | a folder, as a list of what is inside it; a function's own name, used inside its body; a different `n` in every call |
 | What is promised? | `factorial_again(n)` promises $n!$ and keeps it by using the promise on $n - 1$; `count_items` promises every item, at any depth |
-| What happens when? | each call waits for the one it made; the first call to start is the last to finish; the base case gives back first |
+| What happens when? | each call waits for the one it made; the first call waits until all the others finish; the base case returns first |
 | What does this space let us do? | a function can call itself; Python allows about 1,000 waiting calls; a loop with a to-do list has no such limit |
 
 ## What we have now
@@ -589,7 +589,7 @@ checks to prove a rule for every whole number.
 | call stack | the calls that have started and not finished, newest on top |
 | `RecursionError` | too many calls waiting at once, usually because the recursion never reaches its base case |
 | `sys.getrecursionlimit()` | how many calls Python lets wait at once |
-| `list.pop()` | takes the last item off a list, and gives it back |
+| `list.pop()` | removes the last item from a list, and returns it |
 | `count_items(nested)` | your toolkit tool: every item in a nested list, at any depth |
 
 The practice page is next. After it,
@@ -603,7 +603,7 @@ The dewlab page
 walks through real folders on a computer, with and without recursion.
 [Making change: brute force, memoization and greedy algorithms](tutorial:three-ways-to-make-change)
 shows a recursion that repeats the same work, and a way to remember
-what it already worked out.
+what it already calculated.
 
 Reducible (2019). *5 Simple Steps for Solving Any Recursive Problem.*
 <https://www.youtube.com/watch?v=ngCos392W4w>. Reducible solves three

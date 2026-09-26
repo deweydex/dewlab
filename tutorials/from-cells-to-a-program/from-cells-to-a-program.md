@@ -39,7 +39,7 @@ What will it print?
 
 It prints 3. `while True` would go round for ever, because `True` never
 becomes `False`. `break` leaves the loop at once, from wherever it is, and
-the program carries on after it.
+the program continues after the loop.
 
 Every program on this site so far has lived in cells: run one, look at the
 answer, change something, run it again. A program somebody else can use is
@@ -52,11 +52,11 @@ on, assumes all of it.
 ## A loop that waits for quit
 
 `input("Choose: ")` shows its prompt, waits for the person to type
-something and press Enter, and gives back what they typed, always as a
+something and press Enter, and returns what they typed, always as a
 string. A cell on this page cannot wait for typing. So here the typing is
-written in advance, in a list, and a small function stands in for
-`input()`. `.pop(0)` takes the first element out of a list and gives it
-back.
+written in advance, in a list, and a small function takes the place of
+`input()`. `.pop(0)` takes the first element out of a list and returns
+it.
 
 ```python exec
 id: a-loop-that-waits-for-quit-1
@@ -88,8 +88,8 @@ your own computer, the whole of `ask` becomes one line, `ask = input`, and
 the same program waits for a real person.
 
 The menu is a `while True` loop with one way out: the choice that says
-quit. Everything else goes round again. That shape is at the heart of every
-program that talks to a person, from a cash machine to a game.
+quit. Everything else goes round again. Every program that talks to a
+person uses that shape, from a cash machine to a game.
 
 ### Your turn
 
@@ -179,17 +179,17 @@ def ask_shift():
 print("Shift:", ask_shift())
 ```
 
-`return` inside the loop is the way out: it ends the function, and the
-loop with it, as soon as the answer makes sense. The `and` matters too.
-`int(text)` is only worked out when `text.isdigit()` is `True`, so
-`int("seven")` never runs, which is the short-circuit from
+`return` inside the loop ends the function, and the loop with it, as
+soon as the answer makes sense. The `and` matters too. `int(text)` only
+runs when `text.isdigit()` is `True`, so `int("seven")` never runs. This
+is the short-circuit from
 [Making decisions with if, elif and else](tutorial:making-decisions).
 
 ### Your turn
 
-The deciding can be tested without any typing at all, if it is kept apart
-from the asking. Can you write `first_valid(answers, low, high)`, which
-gives back the first answer in the list that is a whole number from `low`
+You can test the code that decides without any typing at all, if it is in
+its own function. Can you write `first_valid(answers, low, high)`, which
+returns the first answer in the list that is a whole number from `low`
 to `high`, as a number, or `None` if there is none?
 
 ```python exec
@@ -277,8 +277,8 @@ def main():
 main()
 ```
 
-Reading `main()` tells you what the program does, in a few lines, without
-any of the arithmetic. In a file, the last line is usually written a
+When you read `main()`, you see what the program does, in a few lines,
+without any of the arithmetic. In a file, the last line is usually written a
 little differently:
 
 ```python
@@ -311,8 +311,9 @@ so keep your `ask` there, and swap it for `input` when the program moves
 to a computer.
 
 To share the file, send it, or keep it on GitHub, the way the web-authoring
-pages do: [Creating a GitHub account](tutorial:a-github-account) sets one
-up, and every version you upload is kept, which is what a release needs.
+pages do. [Creating a GitHub account](tutorial:a-github-account) shows
+how to make one. GitHub keeps every version you upload, and a release
+needs that.
 
 ## Three releases of a small game
 
@@ -321,8 +322,8 @@ each one something a person could use. The game is *Codebreaker*: the
 computer codes a word with a secret shift, and the player tries to read
 it.
 
-**Release 1: the smallest thing that is a game.** One round, one word,
-written into the code. It asks once, and says whether the answer is right.
+**Release 1: the smallest thing that is a game.** It has one round and
+one word, written into the code. It asks once, and says whether the answer is right.
 
 ```python exec
 id: three-releases-of-a-small-game-1
@@ -355,13 +356,14 @@ else:
     print("No: it was", word)
 ```
 
-It is almost too small to show anyone, and that is the point. It proves
-the pieces connect: coding, asking, checking. Anything built later is
+It is almost too small to show anyone, on purpose. It proves that the
+three pieces work together: the code that encodes, the code that asks,
+and the code that checks. Anything built later is
 built on something that works.
 
-**Release 2: the game, done properly.** A menu, several rounds, a score,
-and answers checked with care: a guess is compared in capitals, so `otter`
-counts.
+**Release 2: the game, done properly.** It has a menu, several rounds, a
+score, and answers checked with care. A guess is compared in capitals, so
+`otter` counts.
 
 ```python exec
 id: three-releases-of-a-small-game-2
@@ -418,10 +420,11 @@ main()
 ```
 
 `words[rounds % len(words)]` takes the words in turn, and goes back to
-the first after the last: the remainder, again, doing the job of a clock.
+the first after the last. This uses the remainder again, like the hours
+on a clock.
 
 **Release 3: finished, tidied, and tested.** Release 3 adds nothing
-flashy. It adds what makes Release 2 safe to hand over:
+flashy. It adds what makes Release 2 safe to give to somebody else:
 
 - a docstring on every function, saying what goes in and what comes out;
 - tests for the parts that can be tested without typing, such as
@@ -431,12 +434,11 @@ flashy. It adds what makes Release 2 safe to hand over:
 - a change log, saying what each release changed.
 
 Each release was something a person could play on the day it came out.
-None of them was a plan, and none was most of a program.
 
 ## Templates for a team
 
 Copy these into a shared document, or into a file beside your code, and
-fill them in. Each is short on purpose.
+complete them. Each is short on purpose.
 
 **An interface agreement**, written before anybody writes code, for each
 place where one person's code calls another's:
@@ -523,4 +525,5 @@ Starch Press. Free at <https://automatetheboringstuff.com/>. Chapter 2 has
 Python Software Foundation. *The Python Tutorial*, section 6.1.1,
 "Executing modules as scripts".
 <https://docs.python.org/3/tutorial/modules.html#executing-modules-as-scripts>.
-What `if __name__ == "__main__":` is for, in the official words.
+This section explains what `if __name__ == "__main__":` is for, in the
+official words.

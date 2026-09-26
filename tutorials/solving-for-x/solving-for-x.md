@@ -34,9 +34,9 @@ people, and A and C somewhere near 9. A graph can only say "about".
 Can we find the exact crowd where A and C are equally fast, and be sure
 of it?
 
-And a second question, with a ball in it: a footballer volleys a ball
+The second question has a ball in it. A footballer volleys a ball
 upwards. When does it land? This one has a square in it, and a square
-changes everything.
+makes it harder.
 
 On this page we:
 
@@ -48,10 +48,10 @@ On this page we:
 - count a quadratic's answers first, with the discriminant
 - see `math.sqrt` refuse a negative number, and ask what that means
 
-> **The space we're in.** The real numbers, $\mathbb{R}$: every point
+> **The space we're in.** We work in the real numbers, $\mathbb{R}$: every point
 > on the number line. A letter in an equation is a name for a number we
 > do not know yet, and every answer is checked by putting it back in.
-> One thing usually goes unsaid: an
+> We usually do not say it, but an
 > equation can have one answer, two, none, or every number as an
 > answer. Your toolkit is loaded, with `evaluate` and `plot_rule` from
 > the last two pages, and `close_enough` from
@@ -139,7 +139,7 @@ a time:
 2. Subtract 8 from both sides: $0.8g = 7$.
 3. Divide both sides by 0.8: $g = 8.75$.
 
-The rule of this unit is that every answer is checked. We put it back
+In this unit, we check every answer. We put it back
 into both sides and see if they agree. What do you expect?
 
 ```python exec
@@ -149,7 +149,7 @@ print(thousands)
 print(8 + 2 * thousands, 15 + 1.2 * thousands)
 ```
 
-`8.75`, and both servers take 25.5 ms there. Below 8,750 people server
+It prints `8.75`, and both servers take 25.5 ms there. Below 8,750 people server
 A is faster, and above it server C is. Each side of this equation has
 degree 1, so it is a *linear equation*: the unknown is only multiplied
 by a number and added to. Each side, drawn as on the last page, is a
@@ -175,7 +175,7 @@ There is one space to watch. If $a$ is 0, the equation says $0x + b = 0$.
 When $b$ is 5, no $x$ works, because $0x$ is always 0. When $b$ is 0,
 every $x$ works. Either way there is no single answer, and dividing by
 $a$ would stop with a `ZeroDivisionError`. So the promise says what to
-give back instead: `None`, Python's value for "nothing here".
+return instead: `None`, Python's value for "nothing here".
 
 Can you write the body? It needs an `if` for the case where `a` is 0,
 then one line for every other case.
@@ -206,7 +206,7 @@ def solve_linear(a, b):
 The tests check three known answers. Then the loop checks each answer
 the way this unit always will: it substitutes the answer back. The rule
 $ax + b$ is a polynomial with two coefficients, so `evaluate([b, a], x)`
-works it out. Until your `solve_linear` is written, this cell stops
+calculates it. Until your `solve_linear` is written, this cell stops
 with an error.
 
 ```python exec
@@ -230,8 +230,8 @@ last line of the function is not written yet. It starts with `return`.
 ### Your turn
 
 Two phones are charging. Phone A is at 20% and gains 1.5% a minute.
-Phone B is at 50% and gains 0.9% a minute. (A steady rate is a model:
-real phones charge more slowly as they fill.)
+Phone B is at 50% and gains 0.9% a minute. (A steady rate is a model.
+Real phones charge more slowly as they fill.)
 
 1. Write the equation for "the two show the same charge", with $m$ for
    the minutes.
@@ -261,7 +261,7 @@ $$w^2 + 3w - 40 = 0$$
 
 Now $w$ appears twice, once squared, and no single move gets it alone.
 An equation of the shape $ax^2 + bx + c = 0$, where $a$ is not 0, is a
-*quadratic equation*: its left side is a quadratic, of degree 2. The
+*quadratic equation*. Its left side is a quadratic, of degree 2. The
 numbers that make it true are its roots. As on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule),
 a root is a place where the graph meets the x-axis.
@@ -312,7 +312,7 @@ Now one fact does the rest. If two numbers multiply to make 0, then one
 of them must be 0. So either $w - 5 = 0$, which gives $w = 5$, or
 $w + 8 = 0$, which gives $w = -8$.
 
-Two roots. Which one answers the question? A count of rows is never
+There are two roots. Which one answers the question? A count of rows is never
 negative. The equation lives in all of $\mathbb{R}$, and the sprite
 sheet lives in the whole numbers from 0 up. So it has 5 rows and 8
 columns. We check both roots anyway. What do you expect?
@@ -364,8 +364,8 @@ other":
 
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
-Where the formula comes from is on
-[The top of the curve](tutorial:the-top-of-the-curve#completing-the-square).
+[The top of the curve](tutorial:the-top-of-the-curve#completing-the-square)
+shows where the formula comes from.
 Here we check it instead. Here are the four steps for the ball, one
 line each. Before you run it, guess: is the ball in the air for more
 than 3 seconds, or less? I'll wait.
@@ -384,7 +384,7 @@ print((-b - root) / (2 * a))
 The two roots are about −0.07 and 2.93. The ball lands a little before
 3 seconds. What is the other root? It is a time 0.07 seconds *before*
 the kick. The rule's curve, run backwards, would have left the grass
-then; the real ball was still on the boot. So, as with the sprite
+then. The real ball was still on the boot. So, as with the sprite
 sheet, the equation has two answers and the question has one. Let's
 put the landing time back into the rule:
 
@@ -394,7 +394,7 @@ landing = (-b - root) / (2 * a)
 print(landing, 1 + 14 * landing - 4.9 * landing ** 2)
 ```
 
-`0.0`: at 2.93 seconds the ball is back on the grass.
+It prints `0.0`. At 2.93 seconds the ball is back on the grass.
 
 ## How many answers? The discriminant
 
@@ -445,10 +445,10 @@ Now the formula can go in your toolkit. `solve_quadratic` promises a
 list of the real roots, smallest first: two, one, or none. Here are the
 steps for the body:
 
-1. Work out the discriminant.
+1. Calculate the discriminant.
 2. If it is less than 0, return an empty list, `[]`.
 3. If it is 0, return a list holding the one root, $-\frac{b}{2a}$.
-4. Otherwise, work out both roots with `math.sqrt`, and return them in
+4. Otherwise, calculate both roots with `math.sqrt`, and return them in
    a list, smallest first. `sorted` from
    [What is typical?](tutorial:what-is-typical) puts them in order.
 
@@ -522,7 +522,7 @@ $-b + \sqrt{\ }$ and $-b - \sqrt{\ }$ gives the smaller root?
 
 ### Your turn
 
-1. Before you run anything, work out the discriminant of
+1. Before you run anything, calculate the discriminant of
    $2x^2 - 7x + 3$. How many roots will it have?
 2. Check with `solve_quadratic(2, -7, 3)`.
 3. Can you factorise it? Its roots give a hint: $(2x - 1)(x - 3)$.
@@ -544,18 +544,18 @@ root = math.sqrt(under_the_root)
 
 It prints `-4`, and then stops at the last line with
 `ValueError: math domain error`. We met this message on
-[Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out):
-the value is a number, but outside what `math.sqrt` accepts.
+[Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out).
+The value is a number, but outside what `math.sqrt` accepts.
 
 $x^2 + 1 = 0$ asks for a number that squares to make −1. In
 $\mathbb{R}$ there is none, so `solve_quadratic` keeps its promise by
-giving back `[]`.
+returning `[]`.
 
-But is asking the question a foolish move? On
+But the question still makes sense. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
 $3 - 5$ had no answer in $\mathbb{N}$, and it had one in a bigger
-space, $\mathbb{Z}$. So the question to ask is this: which space would
-$x^2 = -1$ have an answer in? The next page builds it.
+space, $\mathbb{Z}$. So we can ask which space would give $x^2 = -1$ an
+answer. The next page builds it.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -582,7 +582,7 @@ builds it.
 |---|---|
 | What is named here? | a letter, $g$, $w$ or $x$, for a number we do not know yet; $a$, $b$ and $c$ for the numbers in an equation; roots |
 | What is promised? | `solve_linear` gives the one answer, or `None`; `solve_quadratic` gives every real root, smallest first; every answer is checked by substituting it back |
-| What happens when? | the same move on both sides, one step at a time; the discriminant is worked out before any square root is taken |
+| What happens when? | the same move on both sides, one step at a time; the discriminant is calculated before any square root is taken |
 | What does this space let us do? | in $\mathbb{R}$, $x^2 = -1$ has no answer and `math.sqrt` refuses; a count of rows lives in the whole numbers, and a landing time comes after the kick, so one root may not fit the question |
 
 ## What we have now

@@ -22,9 +22,9 @@ version: 2026.09.26.1
 # Mixed problems: programming
 
 Every problem here needs more than one page of the series, and none of
-them says which. That is the point: seeing that a problem wants a loop
-with a decision inside it, or a count followed by a sort, is a different
-skill from being able to write either.
+them says which. That is on purpose. You need to see that a problem wants
+a loop with a decision inside it, or a count followed by a sort. That is
+a different skill from writing either one.
 
 Most problems have more than one good answer. Where a problem hides a
 decision, the solution says what it decided and why, rather than
@@ -33,7 +33,7 @@ anything under it.
 
 ## 1. Even, odd and zero
 
-Can you write `parity_counts(numbers)`, which gives back a list of three
+Can you write `parity_counts(numbers)`, which returns a list of three
 counts: how many are even, how many odd, and how many are zero?
 
 ```python exec
@@ -70,7 +70,7 @@ is fair, once the docstring says which.
 
 ## 2. Above the average
 
-Can you write `above_average(marks)`, which gives back the marks above the
+Can you write `above_average(marks)`, which returns the marks above the
 average, and an empty list for no marks?
 
 ```python exec
@@ -156,7 +156,7 @@ after.
 
 ## 4. FizzBuzz
 
-Can you write `fizzbuzz(n)`, which gives back `"Fizz"` for a multiple of 3,
+Can you write `fizzbuzz(n)`, which returns `"Fizz"` for a multiple of 3,
 `"Buzz"` for a multiple of 5, `"FizzBuzz"` for a multiple of both, and the
 number as a string otherwise?
 
@@ -262,7 +262,7 @@ can correct.
 
 ## 7. The longest word, however it is written
 
-Can you write `longest_word(sentence)`, which gives back the longest word
+Can you write `longest_word(sentence)`, which returns the longest word
 in capitals, with any punctuation left off?
 
 ```python exec
@@ -395,13 +395,13 @@ Binary search each one: about 10,000 × 20 = 200,000 comparisons. Linear
 search each one: about 10,000 × 500,000 = five billion, twenty-five
 thousand times slower. If the list were not sorted, sorting it first would
 cost about twenty million comparisons, and 10,000 lookups would still
-repay it many times over.
+save far more than that.
 
 </details>
 
 ## 11. A pair that adds up
 
-Can you write `pair_summing_to(numbers, target)`, which gives back two
+Can you write `pair_summing_to(numbers, target)`, which returns two
 numbers from the list that add up to `target`, or `None`?
 
 ```python exec
@@ -477,7 +477,7 @@ most of this list. "Surname" is not something every name in the world has.
 
 ## 13. Merging two sorted lists
 
-Can you write `merge(a, b)`, which gives back one sorted list from two
+Can you write `merge(a, b)`, which returns one sorted list from two
 sorted lists, without sorting the result?
 
 ```python exec
@@ -541,7 +541,7 @@ print(report("row 1", [30, 90, 250]))
 It prints 123.33… and then stops with a `TypeError`, in `report`: `round`
 cannot round `None`. The line responsible is the `print` inside
 `average`, which should be a `return`. `average` shows its answer and then
-gives back `None`, so the number never reaches `report`.
+returns `None`, so the number never reaches `report`.
 
 </details>
 
@@ -569,9 +569,10 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 `[1, 2, 3]`. `items = []` gives the local name a new, empty list, and
-leaves the caller's list alone. Changing a list in place, as `append()`
-does, would have been seen by the caller. Giving a name a new value never
-is. Two pages, scope and two names for one list, meet in two lines.
+leaves the caller's list alone. If you change a list in place, as
+`append()` does, the caller sees it. If you give a name a new value, the
+caller never sees it. These two lines use ideas from two pages: scope,
+and two names for one list.
 
 </details>
 
@@ -617,7 +618,7 @@ between: the base is a parameter, not a new program.
 
 ## 17. A week of steps
 
-Can you write `report(steps)`, which gives back a dictionary with the day
+Can you write `report(steps)`, which returns a dictionary with the day
 of the most steps and of the fewest, counting from day 1, how many days
 were above the average, and the longest run of days above it in a row?
 
@@ -757,16 +758,17 @@ the good answer is.
 
 ## 20. Somebody else's function
 
-You are handed somebody else's function. It works. What would you check
+You are given somebody else's function. It works. What would you check
 before you use it in your own code?
 
 <details class="dl-answer"><summary>answer</summary>
 
-What it does with nothing: an empty list, a zero, an empty string. Whether
-it changes what it is given, or only reads it. Whether it gives the same
-answer every time. And what it does with input it was not designed for: a
-negative where a count was expected, text where a number was. None of this
-is about whether it is right on the cases it was written for. It is about
-the edges, where code you did not write meets data you did not expect.
+Check what it does with nothing: an empty list, a zero, an empty string.
+Check whether it changes what it is given, or only reads it. Check whether
+it gives the same answer every time. And check what it does with input it
+was not designed for: a negative where a count was expected, text where a
+number was. It probably works on the cases it was written for. The
+problems are at the edges, where code you did not write meets data you
+did not expect.
 
 </details>

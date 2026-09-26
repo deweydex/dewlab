@@ -53,7 +53,7 @@ div { color: white; padding: 12px; margin-bottom: 4px; }
 3. Put `40%` back. Now change `210` to `0`, and then to `120`. What
    happens?
 4. In the `.rgb` rule, change `153` to `51`. Which part of the colour
-   did we take away?
+   did we remove?
 
 Now we can explain what we saw. All four boxes are the same colour,
 written four ways.
@@ -67,7 +67,7 @@ written four ways.
   `#fff` means `#ffffff`.
 - **rgb()**, as in `rgb(51 102 153)`, writes the same three amounts
   as ordinary numbers, from `0` (none) to `255` (full). It is the same
-  colour as `#336699`. In step 4, we took away most of the blue.
+  colour as `#336699`. In step 4, we removed most of the blue.
 - **hsl()**, as in `hsl(210 50% 40%)`, describes a colour by its hue,
   its saturation and its lightness. The hue is an angle on a colour wheel, from `0` to `360`: `0` is red,
   `120` is green, and `240` is blue. Saturation says how strong the
@@ -122,8 +122,8 @@ Here are some pairs, with their ratios:
 
 Two things in this table surprise most people. First, `#767676` and
 `#777777` look the same to our eyes, but one passes and one fails. The
-line has to be drawn somewhere, and a checker is the only sure way to know
-which side a colour is on. Second, a bright, strong colour like
+standard sets one exact number, and a checker is the only sure way to know
+which side of it a colour is on. Second, a bright, strong colour like
 `#3498db` can still fail with white text. How strong a colour is and
 how light it is are two different things.
 
@@ -175,8 +175,8 @@ gaps harder to read.
 Centred text works well for a few short lines, like a heading, or the
 short welcome in your site's hero section. In a long paragraph, each
 line starts in a different place, so the eye has to search for the
-start of every line. That is why most body text on the web is lined up
-on the left.
+start of every line. So most body text on the web is lined up on the
+left.
 
 ## What we have now
 

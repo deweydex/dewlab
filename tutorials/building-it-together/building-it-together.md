@@ -43,8 +43,7 @@ practice.
 > working over several weeks, with a teacher who agrees the plan. A
 > team can use any tested function in any member's toolkit. The page's
 > Python runs in a browser, so values a user would type are names at
-> the top of a cell. One thing usually goes unsaid: most of what goes
-> wrong in a team project is about people, not code.
+> the top of a cell. Most of what goes wrong in a team project is about people, not code.
 
 ## Warm-up
 
@@ -126,7 +125,7 @@ kilowatt-hours.
 - Unit 7 or 8: `line_through`, for a trend over the days
 - Unit 9, if you want it: `derivative_at`, for when it warmed fastest
 
-The starter uses a made-up day. Before you run it, look at the
+The starter uses an invented day. Before you run it, look at the
 readings. Will the mean be above or below the median?
 
 ```python exec
@@ -166,7 +165,7 @@ The collision checker from
 [Unit 8's mixed problems](tutorial:mixed-shapes-angles-and-waves) is an
 engine to start from, and its last section,
 [Play it: your checker in a real game](tutorial:mixed-shapes-angles-and-waves#play-it-your-checker-in-a-real-game),
-turns it into a game you move with the arrow keys: a Python cell sets
+turns it into a game you move with the arrow keys. A Python cell sets
 the level, and a JavaScript engine plays it on a canvas. For more on
 how a page draws one frame after another,
 [Drawing frames with JavaScript](tutorial:drawing-frames-with-javascript)
@@ -202,13 +201,13 @@ print("exact chance:", circle_area(1.5) / 2 / 100)
 
 About 3.5% of throws hit, and each run of the cell gives a slightly
 different count. The exact answer is half a circle of radius 1.5,
-because the player is on the edge, over the pitch's area of 100. A
-simulation and a formula that agree are a first test worth having.
+because the player is on the edge, over the pitch's area of 100. When a
+simulation and a formula agree, that is a useful first test.
 
 ### A planet tracker
 
 NASA's list of planets around other stars, from
-[Finding things fast](tutorial:finding-things-fast): how were they
+[Finding things fast](tutorial:finding-things-fast). How were they
 found, when, and how far away are they? Which are most like the Earth?
 
 - Unit 4: `travel_time`, for how long light takes to arrive from each
@@ -220,7 +219,7 @@ found, when, and how far away are they? Which are most like the Earth?
   NASA's eight planets
 - Unit 8: `point_on_circle`, to draw an orbit
 
-Before you run it: which year do you think found the most planets?
+Before you run it, which year do you think found the most planets?
 
 ```python exec
 id: building-it-planets-1
@@ -249,8 +248,8 @@ most surprising bar on this page.
 
 ### A digit display, in pixels
 
-Unit 1's project, grown up: a display that draws any number in a
-4 by 7 pixel font, then a clock, a score, or a countdown. How many
+This is Unit 1's project, grown up. It is a display that draws any
+number in a 4 by 7 pixel font, then a clock, a score, or a countdown. How many
 different glyphs could the font hold? Can a parity bit catch a pixel
 that flipped?
 
@@ -363,7 +362,7 @@ they meet.
 Every function the team writes has tests before anyone else uses it.
 The tests come from the design: the docstring's promise, its edges, and
 a second route. Here is `number_rows`, written, with the tests its
-design asked for. Before you run it: which test would catch a builder
+design asked for. Before you run it, which test would catch a builder
 who forgot the last digit?
 
 ```python exec
@@ -404,7 +403,7 @@ for line in number_rows(2026):
     print(line)
 ```
 
-The width test catches it: a display with three digits has rows 14
+The width test catches it. A display with three digits has rows 14
 pixels long, not 19. The last test is a second route. It compares the
 bottom row with the one the Unit 1 mixed page printed by hand, glyph by
 glyph.
@@ -437,12 +436,12 @@ By the last release, the program also has a short page for the person
 who will use it: what it does, how to run it, and one example.
 
 **Before each release**, someone who did not write a part reviews it,
-with the checklist. The builder answers each comment: they change the
+with the checklist. The builder answers each comment. They change the
 code, or they say why not. Write down what you decided, in a line.
 
 If you are stuck, say so the same day, to the team or to the teacher.
 If someone in the team has said little for a few days, ask how they
-are getting on. A team often loses more time to silence than to bugs.
+are doing. A team often loses more time to silence than to bugs.
 
 ## Agreeing what done means
 
@@ -484,7 +483,7 @@ They are a record of what building this was like, not a mark.
 
 **For a team**
 
-6. How did the roles work out? Did they change at each release, as
+6. How well did the roles work? Did they change at each release, as
    planned?
 7. When was someone stuck, and how long was it before the team knew?
 8. What did the interfaces you agreed in week one save you, and what
@@ -503,11 +502,11 @@ any program at all, marked against a table of levels. A free project is
 good for motivation, and some of the best projects are ones no teacher
 would think of.
 
-We tied the project to the toolkit because that is what the course has
-been building to: small tested promises, written by you, joined into
-something bigger. We ask questions at the end, not levels, because the
-questions are where you notice what you learned. The cost is choice. A
-great idea that needs only one unit has to widen, or be talked over
+We tied the project to the toolkit because the course has been
+building to it: small tested promises, written by you, joined into
+something bigger. We ask questions at the end, not levels, because you
+notice what you learned when you answer them. The cost is choice. A
+great idea that needs only one unit has to widen, or be discussed
 with the teacher.
 
 </details>

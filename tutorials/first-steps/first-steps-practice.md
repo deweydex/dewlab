@@ -11,7 +11,7 @@ worlds:
 # Algorithms, pseudocode and your first Python — Practice
 
 Problems on the operators, `print()`, algorithms and pseudocode. Most are
-short. Try each one before you open anything under it: say what you think
+short. Try each one before you open anything under it. Say what you think
 first, then run it.
 
 ## 1. Which comes first
@@ -33,7 +33,7 @@ each give, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`20 - 6 / 3` is 18.0: the division happens first, 6 / 3 is 2.0, and 20 −
+`20 - 6 / 3` is 18.0. The division happens first, 6 / 3 is 2.0, and 20 −
 2.0 is 18.0. The others are 17, 26 and 4.666…
 
 Multiplication and division happen before addition and subtraction, unless
@@ -106,7 +106,7 @@ What will it print?
 It prints 2, and most people expect −1.
 
 In Python, the result of `%` always has the same sign as the number on the
-right, or is 0. Python makes `(a // b) * b + (a % b)` always give back `a`.
+right, or is 0. Python makes `(a // b) * b + (a % b)` always equal `a`.
 And `-7 // 3` is −3, not −2, because `//` rounds down, and down from −2.33
 is −3. So (−3 × 3) + 2 = −7.
 
@@ -127,10 +127,10 @@ print(2 ** 10)
 
 <details class="dl-answer"><summary>answer</summary>
 
-1024, 100, 1.4142… and 0.5. A power of 0.5 is a square root, and a
-negative power is one divided by the number. Both are the main ideas of
+They give 1024, 100, 1.4142… and 0.5. A power of 0.5 is a square root,
+and a negative power is one divided by the number. Both are main ideas of
 [Number types, powers and logarithms](tutorial:numbers-and-their-families),
-arriving early.
+and you meet them early here.
 
 </details>
 
@@ -177,7 +177,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-Quotes mean "this is text, so do not work it out". Without quotes,
+Quotes mean "this is text, so do not calculate it". Without quotes,
 `print(5 + 3)` prints 8. With them, Python has a piece of writing that
 happens to contain a plus sign.
 
@@ -186,7 +186,7 @@ happens to contain a plus sign.
 ## 8. Let Python work it out
 
 Can you write one `print()` that displays `The answer is 42`, with Python
-working out the 42 from `6 * 7` rather than you typing it?
+calculating the 42 from `6 * 7` rather than you typing it?
 
 ```python exec
 id: let-python-work-it-out-1
@@ -237,7 +237,7 @@ following it?
 Step 2 does not say how long to wait, or what to wait *for*. A machine
 cannot follow "Wait". It can follow "While the toaster has not popped,
 wait", because that step names what ends the waiting. Every loop needs
-something like this. A loop whose ending never comes never stops.
+something like this.
 
 Something else is missing too: nobody switches the toaster on.
 
@@ -257,8 +257,8 @@ in a list written on paper? You can look at only one number at a time.
 4. The largest so far is the answer
 ```
 
-Because you can see only one number at a time, you have to carry something
-with you as you go: the "largest so far". That is a variable, which the
+Because you can see only one number at a time, you have to remember one
+number as you go, the "largest so far". That is a variable, which the
 next page explains. Python's own `max()` finds the largest value for you,
 and inside, it follows this same algorithm.
 
@@ -272,13 +272,14 @@ other gets a cup, then boils the kettle. Are they the same algorithm?
 <details class="dl-answer"><summary>one good answer</summary>
 
 No, even though they make the same tea. The order of the steps is part of
-an algorithm. Some steps cannot swap places: if the second step needs the
-first, swapping them breaks the whole thing. Part of reading an algorithm is
-spotting which orders are forced and which are free.
+an algorithm. Some steps cannot swap places. If the second step needs the
+first, the algorithm breaks when you swap them. When you read an algorithm,
+look for the steps whose order matters, and the steps whose order does not.
 
 In real life you would probably do something faster than either: switch the
-kettle on, then get the cup while the water boils. Doing two things at the
-same time like this is called concurrency, and it is a topic for later.
+kettle on, then get the cup while the water boils. When you do two things
+at the same time like this, it is called concurrency. It is a topic for
+later.
 
 </details>
 
@@ -290,7 +291,7 @@ Can you turn this plan into Python, one line for each step?
 
 Number the letters from 0: A is 0, B is 1, and so on, up to Z, which is 25.
 This plan moves a letter five places along the alphabet, going back to A
-after Z. It is the heart of a secret code called a Caesar shift.
+after Z. It is the main step of a secret code called a Caesar shift.
 
 ```
 SET the letter to 23, which is X
@@ -320,7 +321,7 @@ remainder is what makes the alphabet go round like a clock.
 <div class="dl-world" data-world="pixel-art">
 
 A small picture is 64 pixels wide and 48 tall. Each pixel takes three bytes
-of memory: one for red, one for green and one for blue. This plan works out
+of memory: one for red, one for green and one for blue. This plan calculates
 how much memory the picture takes.
 
 ```
@@ -357,23 +358,22 @@ away?
 
 <details class="dl-answer"><summary>one good answer</summary>
 
-Because programming has two hard parts, and doing both at once is what
-makes it feel impossible at the start. Working out *what* the steps are is
-thinking about the problem. Working out how to say them in Python is
-thinking about Python. Pseudocode lets you finish the first before you
-start the second. Then, when the code does something you did not expect,
+Programming has two hard parts. If you do both at once, it can feel
+impossible at the start. When you decide *what* the steps are, you think
+about the problem. When you decide how to say them in Python, you think
+about Python. Pseudocode lets you finish the first before you start the
+second. Then, when the code does something you did not expect,
 you know which of the two to look at.
 
 For a three-line program, pseudocode is more than you need. Keep the habit
-anyway: you will not notice the moment a problem stops being three lines
-long.
+anyway. You will not notice the moment a problem grows past three lines.
 
 </details>
 
 ## 15. Even or odd
 
-A number is even when its remainder after dividing by 2 is 0. Can you find
-out whether 1234567 is even, using only what the tutorial covered?
+A number is even when its remainder after dividing by 2 is 0. Can you check
+whether 1234567 is even, using only what the tutorial covered?
 
 ```python exec
 id: even-or-odd-1
