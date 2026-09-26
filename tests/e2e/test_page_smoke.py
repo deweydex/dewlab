@@ -139,6 +139,8 @@ PAGES = [
     "index.html",
     "about.html",
     "features.html",
+    "studying.html",
+    "reading-helpers.html",
     "all-tutorials.html",
     "all-notes.html",
     f"{COURSE}.html",

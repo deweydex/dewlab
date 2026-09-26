@@ -293,7 +293,8 @@ last section, we found a docstring that no longer matched its code. Have
 you ever read code with a comment or docstring like that? If so, what did
 you do about it?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

@@ -33,7 +33,7 @@ Three things to keep in mind as you go:
 - A cell that gives an error has told you something about a line, not
   about you. There is one cell below that is *meant* to go wrong.
 - If a word is new, it is in bold the first time it appears, and the
-  Reference panel on the right has all of them.
+  Reference panel, on the left, has all of them.
 
 ## Where the Camera Stands
 

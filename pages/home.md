@@ -47,7 +47,9 @@ Already know the topic you want? Search for it directly.
 
 Or choose one of the courses below and start there.
 
-Not sure where to begin? We recommend
+Not sure which course is yours? [Studying here](studying.html) compares
+them, and says how to get the most from a page. New to both programming and
+maths? Start with
 [Programming and Maths, Integrated](mit-pdp-maths-prog-integration.html).
 
 [[course-cards]]

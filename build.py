@@ -6246,22 +6246,26 @@ SITE_PAGES: dict[str, tuple[str, str, str]] = {
     "home": ("index", "", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
     "about": ("about", "about", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
     "features": ("features", "features", '<a class="dl-nav-up" href="index.html">Home</a>'),
+    "studying": ("studying", "studying here", '<a class="dl-nav-up" href="index.html">Home</a>'),
+    "reading-helpers": ("reading-helpers", "reading helpers",
+                        '<a class="dl-nav-up" href="index.html">Home</a>'),
 }
 
 
 def write_page(shell: str, name: str) -> Path:
-    """One of the site's own pages — the home page, About, or the features
-    page — from `pages/<name>.md`, read through `read_page()`.
+    """One of the site's own pages — the home page, About, the features
+    page, Studying here or Reading helpers — from `pages/<name>.md`, read
+    through `read_page()`.
 
     A page is a hand-written markdown file with a `title` and nothing else
     in its frontmatter: no course, no version, no cells. `read_page()`
     converts its body the way a tutorial's prose converts, fills any
     `[[name]]` marker (`GENERATED_BLOCKS` — the live search box, the
     course cards) and any ```card fence, and this function only assembles
-    the shell around what it returns. The three pages differ in their
-    file name, the crumb in the corner and the one link the bottom nav
-    offers, which is what `SITE_PAGES` holds; everything else is the same,
-    and was written out three times before this function existed.
+    the shell around what it returns. The pages differ in their file
+    name, the crumb in the corner and the one link the bottom nav offers,
+    which is what `SITE_PAGES` holds; everything else is the same, and was
+    written out once per page before this function existed.
 
     Every word on these pages is student-facing: the plain-language rules
     in PEDAGOGICAL_STYLE_GUIDE.md#plain-language apply.
@@ -7309,6 +7313,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         if topics_page is not None:
             written.append(topics_page)
         written.append(write_page(shell, "about"))
+        written.append(write_page(shell, "studying"))
+        written.append(write_page(shell, "reading-helpers"))
         written.append(write_editor_page(shell))
         written.extend(write_redirects(written))
 

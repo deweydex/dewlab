@@ -1,8 +1,13 @@
 title: Database Methods
 code: 5N0783 · QQI Level 5
 status: beta
-card: We build a table, then several, with SQL running right beside the Python that
+card: >-
+  We build a table, then several, with SQL running right beside the Python that
   reads it.
+description: >-
+  This is Database Methods (5N0783). You build a table, then several joined
+  together, and ask questions of them in SQL, with the Python that reads the
+  answers on the same page. You do not need to have used a database before.
 contents:
 - title: A GitHub account and an editor
   tutorials:

@@ -588,6 +588,13 @@ steps the way the base feature was:
   beside each gap instead. Neither says right or wrong (#314). Once shown,
   a new choice re-runs `revealAnswer()`, and a reload restores the choice
   and the reveal from the saved record.
+- **"Why doesn't the browser translate the code?"** (#317) —
+  `keepCodeFromTranslation()` marks every `pre`, `code`, `.dl-editor`,
+  `.dl-output` and `.dl-math` on the page `translate="no"`, once the cells
+  are built, and again for each cell a reader adds. A translated `print`
+  would not run, and a translated formula would not say the same thing;
+  the prose around them translates as usual. `pages/reading-helpers.md`
+  tells a reader so.
 - **"What does a challenge's button do on a downloaded page?"** (#316) —
   `initChallenges()`. On the hosted site the build's link does it all, and
   the runtime leaves it alone. On a downloaded page (`manifest.standalone`)

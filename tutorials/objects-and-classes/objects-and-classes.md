@@ -407,7 +407,8 @@ felt more natural at first, the loose-variable version or the class
 version? If the class version made sense in the end, what made it
 click?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

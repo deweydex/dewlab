@@ -4839,3 +4839,17 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Offline.** A downloaded page has no Notebook beside it. There the runtime hides the link and shows **Save it as a file**, which saves `running-totals.py`, or one `running-totals.html` with the CSS and JavaScript inside it, since a single file is what opens from a student's disk.
 
 *Cost to change: the address format is read in three places, `render_challenge()` writing it and `openChallengeFromAddress()` and `takeChallengeFromAddress()` reading it; a change to one is a change to all three.*
+
+---
+
+**7.238 — What a student reads first: choosing a course, studying here, and reading helpers.** The student-docs issue (#317), part of #306.
+
+**Two site pages, not only a guide on GitHub.** `studying.html` ("Studying here") says what each course is for and how the integrated course and the Dewey Track differ, and says plainly that in a class the teacher decides. It then gives the habits the revision is built on: guess before you run, come back after a gap, try the "from earlier" problems, and, when stuck, the hint, "I'm not sure yet", an earlier page, the Reference, then a person, in that order. `reading-helpers.html` covers dewlab's own Appearance settings and the browser's translation, read-aloud and Edge's Immersive Reader. Both are site pages (`pages/`), linked from the home page and About, because a student meets the site on 2 October, not the repository. `FOR_STUDENTS.md` and the FAQ link to them rather than repeating them.
+
+**Translation leaves code alone.** The reading-helpers page says translation leaves the code, a cell's output and the maths as they are. Nothing made that true, so the runtime now marks them `translate="no"` (`keepCodeFromTranslation()`). A translated `print` would not run.
+
+**Directions to controls, checked against the page.** The page has three corner panels (Notes, Python, Settings) and a feedback circle. Hints and the contents-page badge are switched in Settings → Behavior, and Export a copy and Start again are in Notes, Restart Python in Python. The FAQ, the guide, the README and three tutorials said otherwise in places, and now agree. The eight "Double-click this cell to write your thoughts" lines on the OOP pages pointed at nothing; they now point at Your notes. "Each page starts fresh" is true except for the Dewey Track's toolkit, and now says so.
+
+**Course cards.** Each card says who the course is for, what you do in it, which worlds it offers, and ends as an invitation; no time estimates. Descriptions no longer repeat their cards, and Database Methods and Web Authoring have one. The worlds named are the ones #306 plans; the content issues bring them to the pages.
+
+*Cost to change: the two pages are `pages/studying.md` and `pages/reading-helpers.md`, listed in `SITE_PAGES`; the course text is in `courses/*.yaml`.*

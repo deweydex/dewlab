@@ -2304,6 +2304,16 @@ function initWorlds() {
   });
 }
 
+/* Code, what a cell printed, and maths stay as they are when a reader asks
+ * the browser to translate the page (#317): a translated `print` would no
+ * longer run, and a translated formula would not say the same thing. The
+ * prose around them translates as usual. */
+function keepCodeFromTranslation(root = document) {
+  for (const el of root.querySelectorAll("pre, code, .dl-editor, .dl-output, .dl-math")) {
+    el.setAttribute("translate", "no");
+  }
+}
+
 /* A closer's challenge (#316). The build's link carries the starter in its
  * address and opens the Notebook or the Workspace, which do the rest. A
  * downloaded page has neither beside it, so there the link gives way to a
@@ -3108,6 +3118,7 @@ function lastDividerFor(anchor) {
 
 function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   const host = createCustomCellElement(id, type);
+  keepCodeFromTranslation(host);
   host.dataset.anchor = anchor;
   const divider = createCustomInsertDivider(anchor);
   afterNode.insertAdjacentElement("afterend", divider);
@@ -6315,6 +6326,7 @@ if (currentManifest.appCells && currentManifest.appCells.length) {
 }
 initProgressSection();
 initCustomCellsSection();
+keepCodeFromTranslation();
 initExecutionSection();
 initRunStatsToggle();
 initStagedHintsToggles();

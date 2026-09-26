@@ -346,7 +346,8 @@ surprise you that Python lets code reach in and change a field? Can you
 think of something in daily life that works the same way, with a rule
 that people follow even though nothing forces them to?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

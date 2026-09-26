@@ -2,6 +2,11 @@ title: Web Authoring
 code: 5N1910 · QQI Level 5
 status: beta
 card: Build pages with HTML and CSS, then publish a small site.
+description: >-
+  This is Web Authoring (5N1910). You build web pages with HTML for their
+  structure and CSS for how they look, make them work for every visitor, and
+  publish a small site of your own. You do not need to have made a web page
+  before.
 contents:
 - title: Welcome
   tutorials:
