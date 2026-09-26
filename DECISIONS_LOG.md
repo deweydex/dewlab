@@ -5317,3 +5317,23 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not kept.** A Notebook's sliders are not saved across a reload: Python starts afresh then, and running the cell brings the slider back. A tutorial page does keep them (7.264), because its saved output stands for the reader's work on that page.
 
 *Cost to change: small. `cell-widgets.js` is seven functions; the engine adds a map of per-cell state and two exports.*
+
+---
+
+**7.269 — Text Generation: a book of your own, and a chain that names the writer of a passage it has never seen.** The content issue (#331), part of #306.
+
+**Books as worlds.** Four more Project Gutenberg books, each with a provenance file in `data/`: *Dracula* (#345), *Dubliners* (#2814), *Irish Fairy Tales* (#2892) and *Treasure Island* (#120). With *The Time Machine* they are the worlds of the first two pages. The issue suggested "a book of myths"; the one tried, *A Book of Myths*, opens with a preface of dated racial theory, so James Stephens's *Irish Fairy Tales* takes its place. The third page's worlds are pairs of writers: Dewey and Montessori, Stoker and Shelley, Stevenson and Doyle.
+
+**`a-chain-reads-a-book`.** A predict asks whether "Project Gutenberg" survives the cleaning (it does, in the closing line before the END marker). The reader writes `strip_gutenberg`, which finds any file's `*** START OF` and `*** END OF` lines, and `chain_from`, and builds a chain from their book. Every sentence the page shows comes with its seed, and the closer asks the reader to make a classmate's sentence again from the book, the seed and the start word.
+
+**`how-much-it-remembers`.** The task "does `order2` have more keys than `order1`?" sat below a cell that had already printed the answer; the cell no longer prints it, and the question is a predict. The reader builds an order-2 chain from their book and finds a stretch it copied (15 of 22 words from *A Painful Case*). The practice measures the copying: with `longest_copied_run`, `order2` copies between 6 and 19 words in a row across five seeds, `order1` 3 to 5, and the share of keys with one follower climbs from about 0.6 to 0.85 to 0.95 from order 1 to 3 in every book.
+
+**`whose-voice-is-this`.** The real task. The last tenth of each book is held back, the chains are built from the rest, and a passage's score is the average probability a chain gives each next word, with 0 for a pair it never saw. Dewey's chain names 124 of his 137 held-back passages of 100 words, and every pair of writers lands near nine in ten; at 20 words, near seven in ten. Perplexity is named as the refined score, with the reason a real model never gives a word a chance of 0. A smoothed log score was tried and left out: add-one smoothing favoured whichever chain was built from the longer book (every *Dracula* passage named correctly, 26 of 75 *Frankenstein* ones). The practice shows why a close call went the wrong way: Montessori's chain has seen "dwelt" once, followed by "in", so it gives "dwelt in" a probability of 1.
+
+**Fixed while checking.** The explanation of the `education` counts said `("is", 57)` where the cell prints 58, and "every form" of the word counted 210 for Montessori; it is 227, once `_education_` (the file's italics) is counted.
+
+**Practice.** All three practice pages move to blocks, with a problem in each world and two from earlier pages.
+
+**Not done.** The issue's "done when" asks that both course files list the pages. The machine-learning course file is #338's; that issue lists these three pages as its first part.
+
+*Cost to change: small. The new ids are cells within existing pages; the world keys and the cell ids ending in a world key become a contract on 2 October.*

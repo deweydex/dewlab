@@ -40,3 +40,11 @@ entries:
       string appears. When the search text is not there at all, it raises
       an error, where str.find() would give back -1.
     example: 'raw.index("\n", start)'
+  - term: "random.seed()"
+    python: random.seed
+    kind: function
+    definition: >
+      Sets where the random choices start, so the choices that follow come
+      out the same every time. Two people who use the same seed, the same
+      text and the same start word get the same sentence from a chain.
+    example: "random.seed(1)"

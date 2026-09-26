@@ -1,0 +1,28 @@
+# Attribution for data/dracula.txt.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the text they are working with back to its source.
+
+source: >
+  Project Gutenberg eBook of Dracula, by Bram Stoker (eBook #345).
+
+url: https://www.gutenberg.org/ebooks/345
+
+license: >
+  Public domain in the United States. Project Gutenberg's own licence terms
+  apply to redistribution — see the file itself, which carries them in full.
+  https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Only the line endings, changed from Windows (CRLF) to plain new lines, to
+  match the other books here. Otherwise the file is Project Gutenberg's own
+  plain-text edition as it stood when it was saved (released 1 October 1995, most recently updated 24 September 2025, as its header
+  says), header and licence footer included. It has no live source: the text
+  does not change, and Project Gutenberg does not let pages on other websites
+  read its files.
+
+description: >
+  The complete novel, first published in 1897 by the Dublin-born writer Bram Stoker, told in letters and diaries, exactly as Project Gutenberg distributes it — including its own
+  header and licence footer, which a tutorial strips out before treating the
+  file as prose.
