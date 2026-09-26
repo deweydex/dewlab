@@ -293,7 +293,6 @@ def thunder_km(seconds, celsius=20):
 
 assert thunder_km(3) == 1.03
 assert thunder_km(3, celsius=0) == 0.99
-print("thunder_km keeps its promise.")
 ```
 
 At 20 °C, 3 seconds means about 1.03 km. On a freezing day the same 3

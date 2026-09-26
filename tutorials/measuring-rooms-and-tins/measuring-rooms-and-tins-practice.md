@@ -152,8 +152,8 @@ millimetres, and means nothing.
 **6. Fix.** A satellite dish catches radio signals over its whole
 round face, so a bigger face catches more. Dishes are sold by their
 diameter. Schlomo, who is learning Python too, writes a function to
-give a dish's area from its diameter. Its answer for a 60 cm dish is not
-the 2,827 cm² the shop gives. Can you find the line that does not do
+give a dish's area from its diameter. For a 60 cm dish, the round face
+covers about 2,827 cm², and Schlomo's function gives a different answer. Can you find the line that does not do
 what Schlomo meant?
 
 ```python exec

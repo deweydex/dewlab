@@ -158,11 +158,10 @@ assert megabits_to_megabytes(8) == 1
 assert megabytes_to_megabits(1) == 8
 for megabits in [50, 200, 1234.56]:
     assert round(megabytes_to_megabits(megabits_to_megabytes(megabits)), 9) == megabits
-print("The converter works both ways.")
 print(megabits_to_megabytes(100))
 ```
 
-It prints `The converter works both ways.`, then `12.5`. A 100 Mb/s
+An assert prints nothing when it holds, so the only line is `12.5`. A 100 Mb/s
 connection downloads 12.5 MB a second. A known value checks the factor.
 A round trip checks that the two functions undo each other, and it
 would still pass if both used a factor other than 8. The two kinds of

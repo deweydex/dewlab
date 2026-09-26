@@ -208,6 +208,21 @@ id: solving-by-bisect-your-turn
 
 ## A tool that halves
 
+Two more rules will help us compare your tool later. `quadratic_rule`
+has a root that
+[Solving for x](tutorial:solving-for-x#the-quadratic-formula) could
+find with a formula, and `line_rule` has a root at 3. Run this cell to
+make them.
+
+```python exec
+id: solving-by-bisect-rules
+def quadratic_rule(x):
+    return x ** 2 - 5 * x + 6
+
+def line_rule(x):
+    return 2 * x - 6
+```
+
 The loop becomes a tool. Its promise has a condition: the rule must
 have a sign change between `low` and `high`. You write the body. It is
 the last cell with `square_gap` changed to `rule`, and
@@ -267,23 +282,10 @@ title: some steps
 had one?
 ```
 
-How does your `bisect_root` compare with one way to write it? Here are
-two more rules to try it on. `quadratic_rule` has a root that
-[Solving for x](tutorial:solving-for-x#the-quadratic-formula) could
-find with a formula, and `line_rule` has a root that sits exactly on
-`low`. Run this cell to make them.
-
-```python exec
-id: solving-by-bisect-rules
-def quadratic_rule(x):
-    return x ** 2 - 5 * x + 6
-
-def line_rule(x):
-    return 2 * x - 6
-```
-
-The table below runs the same calls on your function and on a
-solution, side by side. Some rows are not calls to `bisect_root`. They
+How does your `bisect_root` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. It tries `square_gap` and the two rules from the start of this
+section. Some rows are not calls to `bisect_root`. They
 give the same root another way, so you can compare. While the body is
 still `...`, your column shows `None`.
 
@@ -422,6 +424,17 @@ Newton–Raphson method.
 
 ## A tool that follows tangents
 
+A water tank shaped like a cube must hold 10 cubic metres. How long is
+each side? The side $s$ must make $s^3 = 10$, a cube root. This cell
+makes the rule for the tank.
+
+```python exec
+id: solving-by-tank-rule
+def tank_gap(side):
+    """Return how far a cube with this side, in metres, is from holding 10 cubic metres."""
+    return side ** 3 - 10
+```
+
 The six-step loop becomes your second tool. Its promise has a
 condition too. Newton's method needs a start close enough to a root,
 where the curve is not flat.
@@ -466,17 +479,6 @@ title: some steps
 
 **Think about:** the loop runs 20 times even when the guess stopped
 changing after 5. Does that do any harm?
-```
-
-A water tank shaped like a cube must hold 10 cubic metres. How long is
-each side? The side $s$ must make $s^3 = 10$, a cube root. This cell
-makes the rule for the tank.
-
-```python exec
-id: solving-by-tank-rule
-def tank_gap(side):
-    """Return how far a cube with this side, in metres, is from holding 10 cubic metres."""
-    return side ** 3 - 10
 ```
 
 How does your `newton` compare with one way to write it? The table

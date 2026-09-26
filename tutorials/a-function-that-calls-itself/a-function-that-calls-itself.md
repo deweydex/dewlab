@@ -190,16 +190,18 @@ Every recursive function has two parts:
 - The *recursive case* is every other input. It hands a smaller problem
   to the same function, and builds its own answer from what comes back.
 
-Let's check the promise. Does `factorial_again`
-agree with the `factorial` you wrote on Orders and choices, for every
-$n$ from 0 to 20?
+Let's check the promise. Does `factorial_again` agree with the
+`factorial` you wrote on Orders and choices? The cell prints each $n$,
+then the two answers side by side.
 
 ```python exec
 id: calls-itself-promise-2
-for n in range(0, 21):
-    assert factorial_again(n) == factorial(n), n
-print("factorial_again keeps its promise from 0 to 20.")
+for n in [0, 1, 5, 10, 20]:
+    print(n, factorial_again(n), factorial(n))
 ```
+
+Where the two columns differ, one of the two functions has a line to look
+at again.
 
 ### Your turn
 

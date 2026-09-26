@@ -380,8 +380,8 @@ needs exactly one answer, and her three `if` lines gave three.
 
 **11. Fix.** A home heating app says a room is comfortable from 18 to 22
 degrees, both included. For 18 degrees, this function says `False`. Can
-you find the part of the line that does not keep the promise, and fix
-it?
+you find the part of the line that does not do what the docstring says,
+and fix it?
 
 ```python exec
 id: choosing-practice-fix-comfort

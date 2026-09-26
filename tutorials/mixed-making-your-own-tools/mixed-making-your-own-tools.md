@@ -653,10 +653,9 @@ for pair in [("km", "miles"), ("kg", "pounds"), ("C", "F")]:
     back = converter_for(pair[1], pair[0])
     assert works_both_ways(there, back, test_values), pair
     assert works_both_ways(back, there, test_values), pair
-print("Every conversion works both ways.")
 ```
 
-It prints `Every conversion works both ways.` Each pair is tested
+It prints nothing, because every assert holds. Each pair is tested
 twice, starting from each end, so there are six round trips over five
 values each.
 
