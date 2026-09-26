@@ -1,7 +1,10 @@
 ---
 title: "The rotation matrix: turning a cube in 3D"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
+worlds:
+  starships: Starships, and the structures they are built from.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   eight-corners-twelve-edges:
     covers: [CMPS-LO4]
@@ -137,7 +140,7 @@ $\theta$, the matrix that turns the plane by that angle is
 $$R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$
 
 This is the ***rotation matrix***. Read its columns the way you did in
-that gallery:
+that playground:
 
 - The first column is where $(1, 0)$ lands: at $(\cos\theta, \sin\theta)$,
   which is the point on the unit circle at angle $\theta$.
@@ -145,7 +148,7 @@ that gallery:
   round.
 - Put in $\theta = 90°$, so $\cos\theta = 0$ and $\sin\theta = 1$, and
   the two columns are $(0, 1)$ and $(-1, 0)$. Those are the columns of
-  `rotate90`. The old matrix was this one with one angle filled in.
+  `turn`. That matrix was this one with one angle filled in.
 
 In three dimensions, a turn about the vertical axis is like a
 turntable: $y$ stays the same, and $x$ and $z$ change into each other.
@@ -166,8 +169,10 @@ pattern as 2D. But a turn about the $y$ axis takes $z$ towards $x$, and
 in the matrix the $z$ row comes after the $x$ row. The pair is written
 in the opposite order, so the minus sign moves to the other corner.
 
-To apply it we need `multiply`. Each page here begins with no code from
-earlier pages, so here it is again, exactly as before:
+To apply it we need `multiply`, from [Matrix multiplication: rows times
+columns](tutorial:multiplying-grids). The cell below writes it out
+again, as it was there, so that everything this page uses is in front
+of you:
 
 ```python exec
 id: a-matrix-that-turns-1
@@ -370,6 +375,177 @@ $BA$ are different matrices. Here is what the difference looks like.
 id: two-turns-at-once-2
 hint: Copy the cell above and swap the two arguments to multiply. Watch which axis the cube spins about.
 ```
+
+<details class="dl-answer"><summary>the same in NumPy</summary>
+
+In [NumPy](tutorial:matrices-in-numpy), `@` turns all eight corners at
+once, and adding a column moves them:
+
+```python
+import numpy as np
+
+angle = np.radians(30)
+rotation = np.array([[np.cos(angle), 0, np.sin(angle)],
+                     [0, 1, 0],
+                     [-np.sin(angle), 0, np.cos(angle)]])
+moved = rotation @ np.array(cube) + np.array([[0], [0], [5]])
+screen = moved[:2] / moved[2]
+print(np.round(screen[:, 0], 3))
+```
+
+`np.array([[0], [0], [5]])` is a column, and NumPy adds it to every
+column of the cube, so every corner moves 5 in $z$. `moved[:2] /
+moved[2]` divides the $x$ and $y$ rows by the $z$ row. Corner 0 lands
+at $(-0.295, -0.216)$, the same place `draw` puts it.
+
+</details>
+
+## Your world
+
+A shape of your own, turned, in the world you chose.
+
+<div class="dl-world" data-world="starships">
+
+A spire is a square tower with a pointed roof. Make the tower 1 unit
+wide and 3 units tall, from $y = -2$ to $y = 1$, and put the point of
+the roof at $y = 2.5$. Can you write its corners and edges, and draw
+it turned 30°?
+
+```python exec
+id: cube-your-world--starships
+```
+
+```hint
+Number the corners: 0 to 3 round the bottom, 4 to 7 round the top of
+the tower, and 8 for the point. The edges are the two squares, the four
+sides between them, and four lines from the top square to the point.
+`draw_edges` uses the cube's `edges`, so write a small `draw_shape` that
+takes its own list.
+```
+
+```solution
+import math
+
+import matplotlib.pyplot as plt
+
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+
+def transpose(m):
+    rows, cols = len(m), len(m[0])
+    return [[m[r][c] for r in range(rows)] for c in range(cols)]
+
+
+def multiply(a, b):
+    bt = transpose(b)
+    return [[dot(row, col) for col in bt] for row in a]
+
+
+def rotate_y(angle):
+    cos_angle, sin_angle = math.cos(angle), math.sin(angle)
+    return [[cos_angle, 0, sin_angle], [0, 1, 0], [-sin_angle, 0, cos_angle]]
+
+
+spire = [
+    [-0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0],
+    [-2, -2, -2, -2, 1, 1, 1, 1, 2.5],
+    [-0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0],
+]
+spire_edges = [(0, 1), (1, 2), (2, 3), (3, 0), (4, 5), (5, 6), (6, 7), (7, 4),
+               (0, 4), (1, 5), (2, 6), (3, 7), (4, 8), (5, 8), (6, 8), (7, 8)]
+
+
+def draw_shape(points, shape_edges, depth=7):
+    xs, ys, zs = points
+    for start, end in shape_edges:
+        plt.plot([xs[start] / (zs[start] + depth), xs[end] / (zs[end] + depth)],
+                 [ys[start] / (zs[start] + depth), ys[end] / (zs[end] + depth)], color="C0")
+    plt.xlim(-0.6, 0.6)
+    plt.ylim(-0.6, 0.6)
+    plt.gca().set_aspect("equal")
+
+
+plt.figure(figsize=(4, 4))
+draw_shape(multiply(rotate_y(math.radians(30)), spire), spire_edges)
+---
+Here is one answer. Yours may be different and work too. The spire has
+9 corners and 16 edges. `draw_shape` moves each corner 7 units out and
+divides, in one step. The tower was turned before it was moved, so it
+turns on the spot.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A sprite is painted on a card. Here is the F from the matrices series,
+flat, with its middle at the origin. What happens to it as the card
+turns about the vertical axis, by 0°, 30°, 60° and then 90°?
+
+```python exec
+id: cube-your-world--pixel-art
+outline = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0, 5)]
+card = [[x - 1.5 for x, y in outline], [y - 2.5 for x, y in outline], [0] * len(outline)]
+card_edges = [(k, (k + 1) % len(outline)) for k in range(len(outline))]
+```
+
+```hint
+`multiply(rotate_y(angle), card)` turns the card. Move it 8 units out
+before dividing, and draw the four frames side by side with
+`plt.subplots(1, 4)`.
+```
+
+```solution
+import math
+
+import matplotlib.pyplot as plt
+
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+
+def transpose(m):
+    rows, cols = len(m), len(m[0])
+    return [[m[r][c] for r in range(rows)] for c in range(cols)]
+
+
+def multiply(a, b):
+    bt = transpose(b)
+    return [[dot(row, col) for col in bt] for row in a]
+
+
+def rotate_y(angle):
+    cos_angle, sin_angle = math.cos(angle), math.sin(angle)
+    return [[cos_angle, 0, sin_angle], [0, 1, 0], [-sin_angle, 0, cos_angle]]
+
+
+outline = [(0, 0), (1, 0), (1, 2), (2, 2), (2, 3), (1, 3), (1, 4), (3, 4), (3, 5), (0, 5)]
+card = [[x - 1.5 for x, y in outline], [y - 2.5 for x, y in outline], [0] * len(outline)]
+card_edges = [(k, (k + 1) % len(outline)) for k in range(len(outline))]
+
+figure, frames = plt.subplots(1, 4, figsize=(10, 2.8))
+for frame, degrees in zip(frames, [0, 30, 60, 90]):
+    xs, ys, zs = multiply(rotate_y(math.radians(degrees)), card)
+    plt.sca(frame)
+    for start, end in card_edges:
+        plt.plot([xs[start] / (zs[start] + 8), xs[end] / (zs[end] + 8)],
+                 [ys[start] / (zs[start] + 8), ys[end] / (zs[end] + 8)], color="C0")
+    frame.set_xlim(-0.4, 0.4)
+    frame.set_ylim(-0.4, 0.4)
+    frame.set_aspect("equal")
+    frame.set_title(f"{degrees}°")
+---
+The F gets narrower as the card turns, and the side turning away is
+drawn a little smaller than the side turning towards you. At 90° the
+card is edge on, and the F is a single vertical line. A sprite in a
+game is often a card like this, turned to face the camera every frame
+so that you never see it edge on.
+```
+
+</div>
 
 ## Reflection
 
