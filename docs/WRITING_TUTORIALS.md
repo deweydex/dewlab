@@ -1528,12 +1528,12 @@ A page can hold three things ordinary prose cannot:
 
 - A tile linking somewhere, as a ```card fence: header lines `url:` (the
   link), and optionally `status:` (a badge), `meta:` (small text under the
-  heading) and `wide: true` (two columns wide), then a markdown heading and
+  heading) and `wide: true` (the whole row), then a markdown heading and
   a paragraph. Tiles next to each other share one grid.
 - `[[search-box]]`, the live search, and `[[course-cards]]`, one tile per
   course from the course files, `courses/index.yaml`'s `cards:` first and
-  then its `order:`. Write the
-  marker on a line of its own; the build fills it.
+  then its `order:`, in one column. Write the marker on a line of its own;
+  the build fills it.
 - A `<div class="dl-hero">`, `<div class="dl-audience">`,
   `<div class="dl-attribution">` or `<ul class="dl-feature-list">` wrapper,
   with a blank line after the opening tag and before the closing one, so
