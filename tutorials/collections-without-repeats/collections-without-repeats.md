@@ -511,6 +511,7 @@ draws one square for each, with each light at full strength (1) or off
 id: collections-power-2
 import matplotlib.pyplot as plt
 
+plt.axis("off")
 for position in range(len(colours)):
     strengths = []
     for light in lights:
@@ -519,7 +520,6 @@ for position in range(len(colours)):
         else:
             strengths.append(0)
     plt.bar(position, 1, color=strengths, edgecolor="grey")
-plt.axis("off")
 ```
 
 The colours are black, red, green, yellow, blue, magenta, cyan and
