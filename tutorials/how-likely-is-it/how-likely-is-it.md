@@ -620,3 +620,16 @@ share a birthday more often than you would think.
 
 For another route through the same ideas, the integrated course has
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+
+## Where to read more
+
+MinutePhysics (2014). *An Impossible Bet: The 100 Prisoners Problem.*
+<https://www.youtube.com/watch?v=eivGlBKlK6M>. A hundred prisoners each
+open half of a hundred boxes, looking for their own number. Would you take
+the bet? The puzzle takes under two minutes. Make a guess before you watch
+the answer.
+
+MinutePhysics (2014). *Solution to The Impossible Bet: The 100 Prisoners
+Problem.* <https://www.youtube.com/watch?v=C5-I0bAuEUE>. It sounds
+hopeless, but one plan wins about three times in ten. Four minutes. A
+simulation like the ones on this page is a good way to check it.

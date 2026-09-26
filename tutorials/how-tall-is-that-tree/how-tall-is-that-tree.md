@@ -651,3 +651,11 @@ that never says which side an angle is on.
 
 The practice page is next, and after it the mixed problems for this
 unit, where a small game checks whether a ball hits a wall.
+
+## Where to read more
+
+Howtown (2024). *How do we know Earth's circumference?*
+<https://www.youtube.com/watch?v=CzncKN2AO30>. More than 2,000 years ago,
+Eratosthenes measured the Earth with a shadow, an angle and a distance,
+the tools this page uses on a tree. Howtown looks at how he did it, and
+how we know. About fifteen minutes.

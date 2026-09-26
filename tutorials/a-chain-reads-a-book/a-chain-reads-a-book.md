@@ -250,3 +250,11 @@ can build a chain from any of them.
 The next tutorial, [N-grams: a Markov chain that remembers more
 words](tutorial:how-much-it-remembers), asks a different question. How
 much of the sentence so far should the chain remember?
+
+## Where to read more
+
+3Blue1Brown (2024). *Large Language Models explained briefly.*
+<https://www.youtube.com/watch?v=LPZh9BOjkQs>. A chatbot also writes one
+word at a time, and chooses each word from the words that came before it.
+That is the job our chain does with a dictionary. Grant Sanderson shows
+what is different inside, in eight minutes.

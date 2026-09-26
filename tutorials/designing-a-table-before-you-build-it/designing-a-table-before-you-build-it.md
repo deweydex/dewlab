@@ -96,3 +96,11 @@ series builds, one page at a time.
   links one row in one table to many rows in another.
 - **A foreign key keeps the name of the key it points at**, and sits
   directly under its own table's key.
+
+## Where to read more
+
+Stand-up Maths (2022). *How Roman numerals broke the official dog
+database.* <https://www.youtube.com/watch?v=jMxoGqsmk5Y>. A kennel club
+gives dogs that share a name a Roman numeral, and found that it could only
+count so high. Matt Parker looks at what went wrong, and at better ways to
+number things. About fifteen minutes.

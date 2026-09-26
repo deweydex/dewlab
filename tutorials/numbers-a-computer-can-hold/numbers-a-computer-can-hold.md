@@ -569,3 +569,10 @@ come when a page needs them.
 | logarithm | how many times you multiply the base to reach a number: $\log_2 128 = 7$ |
 | `return`, docstring, `assert` | hand back a value; the promise in words; a check that the promise is kept |
 | `digit_at(number, place, base=10)` | your first toolkit tool: `number // base ** place % base` |
+
+## Where to read more
+
+Stand-up Maths (2019). *Why didn't GPS crash?*
+<https://www.youtube.com/watch?v=iyz7dSnZItw>. GPS counts weeks with only
+ten bits, so every 1024 weeks the count returns to zero. Matt Parker
+explains what happened when it did, in 2019. Twelve minutes.

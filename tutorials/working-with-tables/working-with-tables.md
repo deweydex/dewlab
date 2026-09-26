@@ -168,3 +168,8 @@ dataset.
 pandas development team. *10 minutes to pandas.*
 <https://pandas.pydata.org/docs/user_guide/10min.html>. The official quick
 tour of the DataFrame, for the parts this page did not have room to cover.
+
+MinutePhysics (2017). *Are University Admissions Biased? Simpson's Paradox
+Part 2.* <https://www.youtube.com/watch?v=E_ME4P9fQbo>. A table of
+university admissions seems to show one thing. Split the rows into groups
+and it shows the opposite. Four minutes.

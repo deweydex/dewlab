@@ -137,3 +137,11 @@ We can now move, resize and turn an element, and we know how
 | `translateY()` | Shifts an element up or down | `translateY(-15px)` |
 | `scale()` | Grows or shrinks an element | `scale(1.2)` |
 | `rotate()` | Turns an element | `rotate(8deg)` |
+
+## Where to read more
+
+SimonDev (2022). *An In-Depth look at Lerp, Smoothstep, and Shaping
+Functions.* <https://www.youtube.com/watch?v=YJB1QnEmlTs>. The easing in a
+CSS transition is a small function from time to position. SimonDev draws
+the common ones as graphs, from a straight line to a curve that starts and
+ends slowly. About eight minutes.

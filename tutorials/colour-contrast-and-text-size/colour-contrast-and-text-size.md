@@ -191,3 +191,10 @@ test a page the way a reader with bigger text sees it.
 | *contrast ratio* | Compares how light the text and its background are, from 1 to 1 up to 21 to 1 | 4.5 to 1 |
 | *WCAG* | The Web Content Accessibility Guidelines. Level AA asks for 4.5 to 1 for ordinary text. | WCAG AA |
 | *em* | A unit measured against a font size nearby, not the root one | `padding: 1em;` |
+
+## Where to read more
+
+Answer in Progress (2024). *how dark mode killed good design.*
+<https://www.youtube.com/watch?v=Ieq5sNEoc1E>. Is light text on a dark
+page easier to read? Sabrina Cruz looks at what research says about dark
+mode, reading and tired eyes. About thirteen minutes.

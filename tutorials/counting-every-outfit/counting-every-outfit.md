@@ -571,3 +571,11 @@ arrange things, where each choice leaves one fewer for the next.
 
 For another route through counting, the integrated course has
 [Counting: factorials, permutations and combinations](tutorial:counting-carefully).
+
+## Where to read more
+
+Stand-up Maths (2025). *The fewest items of clothes to never repeat an
+outfit.* <https://www.youtube.com/watch?v=yoR2obq4YUw>. How few clothes do
+you need to wear a different outfit every day of the year? Matt Parker
+answers it with the counting principle from this page, and then buys the
+clothes. About seventeen minutes.

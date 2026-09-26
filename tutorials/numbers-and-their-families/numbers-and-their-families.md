@@ -432,3 +432,8 @@ answer to why `0.1 + 0.2` is not `0.3`, and worth reading once properly.
 Khan Academy. *Exponents, radicals, and scientific notation.*
 <https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:rational-exponents-radicals>.
 Practice on the index laws, if the ones here went past too quickly.
+
+3Blue1Brown (2016). *Triangle of Power.*
+<https://www.youtube.com/watch?v=sULa9Lc4pck>. Powers, roots and
+logarithms are three questions about the same three numbers. This short
+video draws all three with one triangle. About eight minutes.

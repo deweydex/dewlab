@@ -469,3 +469,11 @@ One answer might say: multiply when you are sure the choices do not
 change each other, and list a small case when you are not sure.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2016). *How many different Youtube videos are possible?*
+<https://www.youtube.com/watch?v=5Yy_unGaD-w>. How many different pictures
+can a small grey screen show? Matt Parker starts with the pixel counting
+from the tutorial and continues, up to every video that could ever exist.
+Try the first count yourself before he does. About seventeen minutes.

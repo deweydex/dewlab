@@ -343,3 +343,9 @@ Matplotlib development team. *Pyplot Tutorial.*
 <https://matplotlib.org/stable/tutorials/pyplot.html>. The official
 reference for everything this page's charts do, and the many options it
 does not have room to cover.
+
+CrashCourse (2018). *Charts Are Like Pasta: Data Visualization Part 1:
+Crash Course Statistics #5.*
+<https://www.youtube.com/watch?v=hEWY6kkBdpo>. Which chart suits which
+kind of data, starting with bar charts and pie charts for categories.
+About ten minutes.

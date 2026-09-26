@@ -365,3 +365,14 @@ Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System
 Technical Journal, 27(3), 379–423. Section 2 builds English text from letter
 and word transition frequencies — the origin of the technique used in *Words
 That Follow Words*, from 1948.
+
+Veritasium (2025). *The Strange Math That Predicts (Almost) Anything.*
+<https://www.youtube.com/watch?v=KZeIEiBrT_w>. How an argument between two
+Russian mathematicians led to Markov chains, and where they appeared
+later: card shuffling, nuclear physics and web search. About thirty-two
+minutes.
+
+Stand-up Maths (2016). *The Mathematics of Winning Monopoly.*
+<https://www.youtube.com/watch?v=ubQXz5RBBtU>. Matt Parker and Hannah Fry
+treat a Monopoly board as a Markov chain, and find where players settle,
+and so which squares are worth buying. About nineteen minutes.

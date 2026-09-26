@@ -749,3 +749,11 @@ needs one.
 
 For another route through the same ideas, the integrated course has
 [Searching a list: linear and binary search](tutorial:finding-things).
+
+## Where to read more
+
+Reducible (2020). *What Is Big O Notation?*
+<https://www.youtube.com/watch?v=Q_1M2JaijjQ>. We counted how many looks
+each search needs as the list grows. Big O notation is the name for that
+way of counting. Reducible explains it with examples. About eighteen
+minutes.

@@ -212,3 +212,10 @@ loop.
 | `requestAnimationFrame()` | Asks the browser to call a function once, just before it next draws the screen | `requestAnimationFrame(frame);` |
 | *animation loop* | A function that draws one frame, moves things on a little, and asks to be called again | `frame` |
 | *painter's algorithm* | Sort what is to be drawn by depth, and draw from the back forwards, so nearer things cover farther ones | the sort line in `frame` |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Frame Rate.*
+<https://www.youtube.com/watch?v=DyqjTZHRdRs>. Captain Disillusion
+explains frame rate: how many still pictures each second it takes for
+movement to look smooth. Four minutes.

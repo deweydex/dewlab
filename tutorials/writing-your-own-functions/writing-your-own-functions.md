@@ -756,3 +756,8 @@ Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
 (2nd ed.). Green Tea Press. Free at <https://greenteapress.com/wp/think-python-2e/>.
 Chapter 3 covers defining and calling functions, and chapter 6 covers
 functions that return a value, at greater length than this page.
+
+CrashCourse (2017). *Programming Basics: Statements & Functions: Crash
+Course Computer Science #12.*
+<https://www.youtube.com/watch?v=l26oaHV7D40>. Statements, then functions
+that give a value back, written for a small game. About eleven minutes.
