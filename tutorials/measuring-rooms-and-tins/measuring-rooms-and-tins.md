@@ -341,25 +341,61 @@ def circle_area(radius):
     return math.pi * radius ** 2
 ```
 
-The tests below check each promise against something we already know.
-Until you write all three functions, they stop with an error.
+How do your three functions compare with one way to write them? The
+table below runs the same calls on your functions and on a solution, side
+by side. Where a row is different, try that call on its own.
 
-```python exec
-id: measuring-rooms-toolkit-flat-tests
-assert rectangle_perimeter(4, 3.5) == 15
-assert rectangle_area(4, 3.5) == 14
-assert triangle_area(4, 1.8) == 3.6
-assert 2 * triangle_area(6, 5) == rectangle_area(6, 5)
-assert circle_circumference(1) == 2 * math.pi
-assert circle_area(1) == math.pi
-assert round(circle_area(20)) == 1257
-print("The flat-shape tools keep their promises.")
+```inputs
+for: measuring-rooms-toolkit-flat
+rectangle_perimeter(4, 3.5)
+rectangle_area(4, 3.5)
+triangle_area(4, 1.8)
+2 * triangle_area(6, 5)    # two triangles...
+rectangle_area(6, 5)       # ...make the rectangle round them
+circle_circumference(1)    # 2π
+circle_area(1)             # π
+round(circle_area(20))
+```
+
+```solution
+for: measuring-rooms-toolkit-flat
+import math
+
+
+def rectangle_perimeter(length, width):
+    """Return the distance round a rectangle."""
+    return 2 * (length + width)
+
+
+def rectangle_area(length, width):
+    """Return the area of a rectangle. For a square, give the side twice."""
+    return length * width
+
+
+def triangle_area(base, height):
+    """Return the area of a triangle.
+
+    height is measured at a right angle to the base.
+    """
+    return 0.5 * base * height
+
+
+def circle_circumference(radius):
+    """Return the distance round a circle of this radius."""
+    return 2 * math.pi * radius
+
+
+def circle_area(radius):
+    """Return the area of a circle of this radius."""
+    return math.pi * radius ** 2
 ```
 
 ```hint
-Which line does the error point at? Try `print(triangle_area(4, 1.8))`
-on its own. If it shows `None`, that function still has `...` where its
-`return` line should be.
+for: measuring-rooms-toolkit-flat
+after: 3 runs
+Which row is different? Try `print(triangle_area(4, 1.8))` on its own. If
+it shows `None`, that function still has `...` where its `return` line
+should be.
 ```
 
 ## How much a tin holds: volume
