@@ -4965,3 +4965,11 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Checked before writing, not watched.** Each video's title, date, description and chapter list were read, and captions where they could be fetched. That caught three picks that were wrong for their page (a "perspective" video about physics, a card puzzle that was not the Wason task, and a "gibberish generator" about fake handwriting). One strong fit, a Tantacrul interface critique for `critique-and-reflection`, was left out because its language could not be checked. Each entry is cited in the form the pages already use, and gives the video's length so a reader knows what they are starting.
 
 *Cost to change: low. Each entry is one paragraph at the end of a page, with no cell or id involved, so it can be removed or replaced by hand. A dead link is the likely failure over time, since the build does not check outside links.*
+
+---
+
+**7.247 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
+
+`_table_html()` gained `index=True`, and `_run_sql_cell()` passes `False`. A SQL result has no index of its own; the numbers were pandas', added on the way to HTML. A Python cell that shows a DataFrame keeps them, since the pandas pages teach the index and a reader there needs to see it. `run_query()`, the public one-statement version called from a Python cell, still shows the index; no tutorial calls it, and whether it should follow the SQL cell is left until one does.
+
+*Cost to change: trivial. One argument in one call, and one test in `TestRunSqlCell`.*
