@@ -4987,3 +4987,15 @@ Two kinds of fit. Some pages have a twin in another course (`repeating-yourself`
 Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the list teaches those subjects. Filling them needs channels added to the list first.
 
 *Cost to change: low, as for 7.246.*
+
+---
+
+**7.249 — A fifth Simulation tutorial: a ball stepped forward in time.** Josh, after the video library: "I like the stepping forward in time", with MinuteLabs and Sebastian Lague as the models rather than Primer. `stepping-forward-in-time` drops a ball from Liberty Hall with Euler's method, checks it against the physics formula, shrinks the time step, and then makes the ball bounce. It goes last in the Simulation series, after the queue, which already moves in steps of time.
+
+**Nothing on the page is random.** The four pages before it all use chance. This one shows the other half of simulation, a rule run forward from where the last step finished, and its practice page asks whether a seed would change anything (it would not).
+
+**The error is shown, not hidden.** The page keeps the order of the two lines that most readers write first (move the ball, then change its velocity), because that order makes the error easy to see: the ball does not move in its first second, lands late by about one time step, and a perfectly bouncy ball climbs from 60 metres to 80. The practice page swaps the two lines, finds the ball losing height instead, and says that most games choose that order. The tutorial could have taught the better order from the start; it would then have had no error worth looking at.
+
+**Outcomes.** CMPS-LO3 and LO13 as the main ones; LO7, because the formula and the loop are two ways to get answers from one model; LO11 touched, since checking a simulation against a known answer is validation, but not against the real world, which the air-resistance challenge only points at. The comparison with the darts page (ten times the steps for one more decimal place, against a hundred times the darts) is deliberate: it is the first time the series compares two numerical methods by cost.
+
+*Cost to change: `stepping-forward-in-time` is a new id, and its cell ids become a contract once a class has used it. Moving it within the series is one line in `courses/computational-methods.yaml`.*
