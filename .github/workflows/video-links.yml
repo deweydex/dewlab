@@ -1,0 +1,30 @@
+# Weekly: asks YouTube about every video linked from a page students read,
+# and opens, updates or closes one `video-link` issue listing any that have
+# gone or gone private. See dev/check_video_links.py for what each answer
+# means, and DECISIONS_LOG.md 7.251 for why it runs on a schedule rather
+# than in the tests.
+name: video-links
+
+on:
+  schedule:
+    - cron: "30 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: python3 dev/check_video_links.py --issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

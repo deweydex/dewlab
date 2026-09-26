@@ -229,3 +229,11 @@ it, with CSS alone.
 | `rotateY()` | Turns an element about its vertical axis, like a turntable | `transform: rotateY(90deg);` |
 | `translateZ()` | Pushes an element towards us, or away with a minus value. It shows only when an element around it has a `perspective`. | `transform: translateZ(100px);` |
 | `transform-style: preserve-3d` | Keeps an element's children at their real depth when the element itself is transformed | `transform-style: preserve-3d;` |
+
+## Where to read more
+
+Welch Labs (2024). *How the Bizarre Path of Mars Reshaped Astronomy
+[Kepler's Laws Part 1].* <https://www.youtube.com/watch?v=Phscjl0u6TI>.
+Our orbit is a perfect circle. Real orbits are not, and working out the
+true shape of Mars's path changed astronomy. About seventeen minutes, with
+a second part after it.

@@ -126,3 +126,10 @@ and move text sideways.
 | *rem* | A unit measured against the root font size. It grows with the reader's own font size setting. | `padding: 1rem;` |
 | *root font size* | The font size set on `<html>`. It is `16px` by default. | `html { font-size: 20px; }` |
 | `text-align` | A property that sets where lines of text sit: `left`, `right`, `center` or `justify` | `text-align: center;` |
+
+## Where to read more
+
+Tantacrul (2021). *How I Designed a Free Music Font for 5 Million
+Musicians (MuseScore 3.6).* <https://www.youtube.com/watch?v=XGo4PJd1lng>.
+Martin Keary and an engraving expert design a font for music notation, and
+explain the choices behind it. About twenty minutes.

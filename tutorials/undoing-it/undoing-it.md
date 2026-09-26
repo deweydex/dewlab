@@ -470,3 +470,8 @@ is exactly when an inverse cannot exist, argued from the picture.
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
 Wellesley-Cambridge Press. Chapter 5 covers determinants properly,
 including the 3×3 and larger cases this page leaves out.
+
+Looking Glass Universe (2018). *A simple condition for when the matrix
+inverse exists.* <https://www.youtube.com/watch?v=ESKcF8XFzLM>. When can a
+transformation be undone, and when does it lose something for ever? About
+eighteen minutes.

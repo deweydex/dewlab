@@ -114,9 +114,13 @@ needed — `dev/label_report.py` has the parsing and the label rules.
 `report-patterns` runs weekly and opens or updates a `pattern` issue for
 any page with three or more open reports, or any cell with two, in the
 last fortnight — `dev/report_patterns.py`, tested in
-`tests/test_report_patterns.py`. Both talk to GitHub's REST API directly
+`tests/test_report_patterns.py`. A third, `video-links`, runs weekly
+too and has nothing to do with reports: it asks YouTube about every video
+linked from a page and keeps one `video-link` issue listing any that have
+gone or gone private — `dev/check_video_links.py`, tested in
+`tests/test_video_links.py`. All three talk to GitHub's REST API directly
 over `urllib`, the same "no extra dependency" convention every other
-`dev/` script already follows, since neither needs anything the standard
+`dev/` script already follows, since none needs anything the standard
 library does not already provide.
 
 ---

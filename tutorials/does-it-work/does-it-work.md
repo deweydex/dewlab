@@ -607,3 +607,8 @@ sections on naming and comments are the ones to read first.
 Thonny, at [thonny.org](https://thonny.org), is a free Python editor
 made for learners. Its debugger steps through code and shows every name,
 the way `step_through` does here.
+
+PurpleMind (2025). *This Coding Mistake Cost $370 Million.*
+<https://www.youtube.com/watch?v=Qehl4h5MDsg>. Code that had worked for
+years on one rocket was used on a new one, and a number too big for it
+ended the flight. It ran; it did not work. Twenty minutes.

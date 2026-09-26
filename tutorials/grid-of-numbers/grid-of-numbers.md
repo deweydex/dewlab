@@ -570,3 +570,8 @@ the Python half of what a matrix is built from here.
 Python Software Foundation. *5. Data Structures — Nested List
 Comprehensions.* <https://docs.python.org/3/tutorial/datastructures.html>.
 The pattern behind every nested loop on this page, as its own topic.
+
+Sam Levey (2024). *The Matrix Transpose: Visual Intuition.*
+<https://www.youtube.com/watch?v=wjYpzkQoyD8>. Turning a grid sideways
+looks like bookkeeping. This shows what the transpose means, and why it
+matters later. About twenty-six minutes.

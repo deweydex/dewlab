@@ -387,10 +387,11 @@ Python Software Foundation. *The Python Tutorial*, sections 3.1 and 3.1.1.
 <https://docs.python.org/3/tutorial/introduction.html>. The official reference
 for the arithmetic operators, including the exact behaviour of `//` and `%`.
 
-Computerphile (2017). *What on Earth is an Algorithm?*
-<https://www.youtube.com/watch?v=X0HHUlAiA4E>. Nine minutes on what does and
-does not count as an algorithm, which is a harder question than it first looks.
-
 Khan Academy. *Intro to algorithms*.
 <https://www.khanacademy.org/computing/computer-science/algorithms>. Worked
 through slowly, with exercises, if the pace here was too quick.
+
+CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. What makes a set of
+steps an algorithm, with sorting and finding a route as examples. About
+eleven minutes.

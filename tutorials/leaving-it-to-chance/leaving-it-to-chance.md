@@ -331,3 +331,8 @@ Modeling and Computer Simulation, 8(1), 3–30.
 generator. Considerably heavier than anything in this series, and included
 because "an algorithm produces the sequence" is a claim you are entitled to
 go and check.
+
+Veritasium (2014). *What is NOT Random?*
+<https://www.youtube.com/watch?v=sMb00lz-IfE>. Is anything truly random,
+or would it all be predictable if we knew enough? Veritasium asks
+physicists. Ten minutes.
