@@ -66,7 +66,7 @@ four things:
 
 - what the method does, in one line;
 - what each parameter should be;
-- what comes back, if anything;
+- what it returns, if anything;
 - what happens when the method refuses.
 
 Here are two docstrings for the same `burn`:
@@ -102,9 +102,9 @@ kg. Which docstring tells them?
   - Only the code can say what happens.
 ```
 
-The first docstring is true, and no help to a caller: it says what the
-name `burn` already said. The second answers the questions a caller has
-before they call it. The refusal matters most, because a refusal is where
+The first docstring is true, but it does not help a caller. It says what
+the name `burn` already said. The second answers the questions a caller
+has before they call it. The refusal matters most, because at a refusal,
 a caller's program and the method disagree.
 
 ## Examples Python can check
@@ -155,7 +155,7 @@ again:
 ```
 
 doctest prints `Failed example`, with what it expected and what it got. A
-docstring with examples cannot quietly stop telling the truth: the next
+docstring with examples cannot quietly stop telling the truth. The next
 time its examples run, they say so. That is why the example at the
 boundary, 70 out of 70, is the one worth writing.
 
@@ -300,9 +300,10 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Python Software Foundation. *PEP 257: Docstring Conventions*.
-<https://peps.python.org/pep-0257/>. The agreement most Python
+<https://peps.python.org/pep-0257/>. This is the agreement most Python
 programmers follow about what goes in a docstring, and where.
 
 Python Software Foundation. *doctest: Test interactive Python examples*.
-<https://docs.python.org/3/library/doctest.html>. The module this page
-used, and how to run every example in a whole file at once.
+<https://docs.python.org/3/library/doctest.html>. This is the module this
+page used. It also shows how to run every example in a whole file at
+once.

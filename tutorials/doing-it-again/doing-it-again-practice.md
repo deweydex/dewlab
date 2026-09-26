@@ -255,7 +255,7 @@ tidy ways.)
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Start with two names: the users, 5000, and the number of weeks, 0.
-2. Go round again while the users are not yet more than 20,000.
+2. Go round again while the users are 20,000 or fewer.
 3. Each round, multiply the users by 1.1 and add 1 to the weeks.
 
 **Think about:** why is this a `while` loop, and not a `for` loop?

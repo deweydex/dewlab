@@ -158,7 +158,7 @@ every camera does, whether it is a real camera or a few lines of code.
 One thing in the picture was a choice: the glass stands one unit away.
 Stand it two units away and everything on it is drawn twice as big.
 That is what a zoom lens does. We return to that in [Field of
-View](tutorial:the-fourth-number#field-of-view), in the fourth tutorial
+view](tutorial:the-fourth-number#field-of-view), in the fourth tutorial
 of this series.
 
 ```question

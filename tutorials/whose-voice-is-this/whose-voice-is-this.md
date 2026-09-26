@@ -23,15 +23,15 @@ On this page we build a chain from each writer's book, separately. Then
 we ask an open question. Does a chain trained on one writer's words
 sound different from a chain trained on the other's?
 
-## Cleaning Two Different Books
+## Cleaning two different books
 
 These two files are less tidy than the Project Gutenberg books, such as
 *Pride and Prejudice*, that came with [A Markov chain from a whole book:
 a dictionary of dictionaries](tutorial:a-chain-reads-a-book). Neither
 file has a `*** START OF... ***` marker to show where the book begins.
-Dewey's file is a raw scan of the printed book, and it shows. Each one
-needs its own way of cleaning. That is normal: real data rarely arrives
-in exactly one shape.
+Dewey's file is a raw scan of the printed book, with all the marks of a
+scan. Each one needs its own way of cleaning. That is normal. Real data
+rarely arrives in exactly one shape.
 
 ```python exec
 id: cleaning-two-different-books-1
@@ -79,7 +79,7 @@ where = dewey_book.find("assimilate, imaginatively")
 print(dewey_book[where:where + 160])
 ```
 
-Two things have got into Dewey's sentence. The word "something" did not
+Two extra things are inside Dewey's sentence. The word "something" did not
 fit at the end of a printed line, so it was split with a hyphen:
 `some-` on one line, `thing` on the next. And in between sits the top of
 the next page, a *running header*: a title and a page number, printed on
@@ -92,8 +92,8 @@ print(len(split_words), "words end in a hyphen")
 print(split_words[:10])
 ```
 
-More than two thousand half-words, each of which would become a key in
-the chain. And about four hundred headers would put words like
+There are more than two thousand half-words, and each would become a
+key in the chain. And about four hundred headers would put words like
 "18 Philosophy of Education" into the middle of Dewey's sentences. The
 next cell deals with both.
 
@@ -117,12 +117,12 @@ print(len(dewey_book.split()), "words of real Dewey")
 print(len([word for word in dewey_book.split() if word.endswith("-")]), "words still end in a hyphen")
 ```
 
-Is it perfect? No. A handful of broken words are left, where something
+Some problems remain. A handful of broken words are left, where something
 else sat between the two halves. And a word that really had a hyphen,
-such as "self-control", is glued into "selfcontrol" if the line happened
+such as "self-control", becomes "selfcontrol" if the line happened
 to break at its hyphen. Both are far fewer than the two thousand broken
-words it fixed. Cleaning real data is usually like this: each rule
-fixes a lot and gets a little wrong.
+words it fixed. Real data cleaning usually works like this. Each
+rule fixes a lot, and makes a few new mistakes.
 
 ### Your turn
 
@@ -141,7 +141,7 @@ id: cleaning-two-different-books-3
 hint: montessori_raw = await load_text("the-montessori-method.txt"), then the same find-it-twice pattern used above for Dewey, without a second .find() for an ending — just raw[second:].strip().
 ```
 
-## Two Writers, Two Chains
+## Two writers, two chains
 
 The next cell cleans the Montessori book, in case you want to compare
 your answer. Then it builds a chain from each book. `build_chain()` is
@@ -197,7 +197,7 @@ print("Montessori:", generate(montessori_chain, "education", 20))
 
 Run the cell, then change the seed and run it a few more times. Both
 chains start from the same word. Do they go to the same kind of
-sentence, or does each one wander off in its own way?
+sentence, or does each one go its own way?
 
 ### Your turn
 
@@ -211,7 +211,7 @@ id: two-writers-two-chains-3
 hint: "child" in dewey_chain and "child" in montessori_chain are both True — check before you pick a word, since not every word appears in both books.
 ```
 
-## Investigating the Difference
+## Investigating the difference
 
 Both books are about the same word: `"education"`. Do the two writers
 follow it with the same words?
@@ -231,7 +231,7 @@ Here is how the cell finds the five most common words:
 - `sorted(..., key=...)` puts the pairs in order. `key=` says what to
   sort them by.
 - `lambda kv: -kv[1]` is a small function written in one line. It takes
-  a pair `kv` and gives back its count, `kv[1]`, with a minus sign. The
+  a pair `kv` and returns its count, `kv[1]`, with a minus sign. The
   minus sign puts the biggest count first.
 - `[:5]` keeps the first five.
 
@@ -240,18 +240,17 @@ is `"is"`, 58 times. Montessori's is `"of"`, 68 times. These counts come
 from the whole of each book. They are not a random sample, so the numbers
 are the same every time you run the cell.
 
-One way to read the difference: Dewey keeps coming back to what
-education *is*, which is a philosopher's habit. Montessori keeps coming
-back to the education *of* someone or something, which is a practical
-habit.
+Here is one way to read the difference. Dewey often returns to what
+education *is*, which is a philosopher's habit. Montessori often returns
+to the education *of* someone or something, which is a practical habit.
 
 Dewey's book has 97 different words after `"education"`. Montessori's
 has 36. So Dewey's use of the word ranges more widely. Part of the
 reason is that he also uses the word more than twice as often, 301 times
 against 133, which gives it more chances to meet new neighbours.
 
-Those counts are for `"education"` exactly: a small e, and nothing
-stuck to it. The chain treats `"Education"` at the start of a sentence,
+Those counts are for `"education"` exactly, with a small e and nothing
+attached to it. The chain treats `"Education"` at the start of a sentence,
 and `"education,"` with a comma, as different words. Counted in every
 form, Dewey writes the word 464 times and Montessori 210, so he still
 uses it about twice as often.
@@ -278,12 +277,12 @@ A dictionary of dictionaries knows nothing about Dewey or Montessori as
 people. It only counts which word followed which, in one book. Yet that
 counting alone is enough to show two different habits of writing. A
 writer's voice is, at least in part, a pattern in which words follow
-which. That pattern shows up often enough to be worth counting.
+which. That pattern appears often enough to be worth counting.
 
 ## Where to read more
 
 CrashCourse (2019). *Make an AI sound like a YouTuber (LAB): Crash Course
-AI #8.* <https://www.youtube.com/watch?v=kZWum5omEv4>. A lab that trains a
+AI #8.* <https://www.youtube.com/watch?v=kZWum5omEv4>. This lab trains a
 program on one person's writing and asks it to write more in the same
 style. It builds its model differently from our chain, and comes with a
 notebook you can follow. Fifteen minutes.

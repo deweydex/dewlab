@@ -50,7 +50,7 @@ print(rectangle_area(3, 3))
 
 `14`, `10` and `9`.
 
-Round the frame: $5 + 2 + 5 + 2 = 14$ cm. The frame covers
+Round the frame, it is $5 + 2 + 5 + 2 = 14$ cm. The frame covers
 $5 \times 2 = 10$ cm². The tile is a square, so its area is $3^2 = 9$ cm².
 The first answer is a length, in cm, and the other two are areas, in cm².
 
@@ -68,7 +68,7 @@ print(rectangle_area(145, 90), "m² of grass")
 ```
 
 This prints `470 m round the edge` and `13050 m² of grass`. That is
-more than 1.3 hectares: a hectare is 10,000 m².
+more than 1.3 hectares. A hectare is 10,000 m².
 
 </details>
 
@@ -83,8 +83,8 @@ The two 16s are in different spaces. The perimeter is 16 metres, a
 length. The area is 16 square metres, a count of squares. They only
 look equal because the numbers happen to match.
 
-Change the units and the match goes away. In centimetres, the room is
-400 cm on each side: its perimeter is 1,600 cm, and its area is
+If you change the units, the match disappears. In centimetres, the room
+is 400 cm on each side. Its perimeter is 1,600 cm, and its area is
 160,000 cm². A length and an area cannot be the same, in the same way
 that 16 seconds and 16 kilograms cannot. Her two 16s match, but only in
 metres.
@@ -101,8 +101,8 @@ Be careful: which number does the function want?
 print(circle_circumference(15))
 ```
 
-About 94.2 cm. The function wants the radius, which is half of 30 cm.
-A quick check: the edge is a bit more than 3 times the distance across,
+It is about 94.2 cm. The function wants the radius, which is half of 30
+cm. Here is a quick check. The edge is a bit more than 3 times the distance across,
 and $3 \times 30 = 90$.
 
 </details>
@@ -189,13 +189,13 @@ def dish_area(diameter):
 ```
 
 Now the test passes. Schlomo's version gave 11,310 cm², four times too
-much. Doubling the radius doubles it twice, because the radius is
-squared.
+much. When the radius doubles, the area doubles twice, because the radius
+is squared.
 
 </details>
 
 **7. Another way.** The tutorial found a cylinder's surface area as two
-circles plus a label. Peel the label off and it is a rectangle. Find
+circles plus a label. If you peel the label from the tin, it is a rectangle. Find
 the surface area of a tin with radius 4 cm and height 10 cm in two ways:
 once with `cylinder_surface_area`, and once by adding two circles to a
 rectangle, using `circle_area`, `circle_circumference` and
@@ -255,7 +255,7 @@ do, so it holds more than its width suggests.
 </details>
 
 **10. Explain.** A drone filmed 53 GB of video, and each memory card
-holds 16 GB. Three programmers work out how many cards the video needs:
+holds 16 GB. Three programmers find how many cards the video needs:
 
 ```python
 print(round(53 / 16))
@@ -268,7 +268,7 @@ here?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`math.ceil` gives what we need: 4 cards. $53 \div 16 = 3.3125$, so
+`math.ceil` gives what we need, 4 cards. $53 \div 16 = 3.3125$, so
 three cards hold 48 GB, and 5 GB of video would have nowhere to go.
 
 `round` goes to the nearest whole number, which is 3. `//` keeps only
@@ -303,7 +303,7 @@ print("ball_volume keeps its promise.")
 2. What unit would `radius ** 2` give, if the radius is in cm?
 3. Is a volume in cm² or cm³?
 
-**Think about:** how checking the units finds this line before any
+**Think about:** how a check of the units finds this line before any
 test runs.
 
 </details>
@@ -426,9 +426,9 @@ print(math.pi)
 
 The first line prints a number close to 3.14, such as 3.1418. Yours
 will be a little different on every run, because the points are random.
-With more runs it usually comes closer to `math.pi`, but slowly: to get
+With more runs it usually comes closer to `math.pi`, but slowly. To get
 one more correct digit, you need about 100 times as many points. The
-string and the coin from the tutorial were one route to $\pi$.
+string and the coin from the tutorial were one way to find $\pi$.
 This is another.
 
 </details>
@@ -436,7 +436,7 @@ This is another.
 **15. Make.** A traffic cone is 45 cm tall, and its base has a radius of
 15 cm. Its orange plastic covers only the sloping side. The base is
 open. How much orange plastic is there, in cm²? Use
-`cone_surface_area`, and think about which part to leave out.
+`cone_surface_area`, and think about which part not to count.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -446,32 +446,32 @@ print(round(sloping_side), "cm²")
 ```
 
 This prints `2235 cm²`. `cone_surface_area` gives the base circle and
-the sloping side together, so we take the circle away. Another route is
+the sloping side together, so we subtract the circle. Another way is
 the formula for the side alone, $\pi r l$, with
-$l = \sqrt{15^2 + 45^2}$: it gives the same 2,235 cm².
+$l = \sqrt{15^2 + 45^2}$. It gives the same 2,235 cm².
 
 </details>
 
 **16. Explain.** The sphere's volume,
 $\frac{4}{3}\pi r^3$, came with no reason on the tutorial page. Some
-teachers would leave a formula out until they can explain it. Others would
+teachers would skip a formula until they can explain it. Others would
 give it now, and explain it later. Which would you choose, and why? Does it
 matter that a sphere is a shape people meet every day?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one good answer. Here are some things to weigh.
+There is more than one answer. Here are some things to think about.
 
-- **Leave it out until it can be explained.** Every formula then comes
-  with its reason, and a reader never has to take one on trust. The cost:
-  a common shape is missing for a long time, and raindrops, planets and
+- **Wait until it can be explained.** Every formula then comes
+  with its reason, and a reader never has to take one on trust. The cost
+  is that a common shape is missing for a long time, and raindrops, planets and
   bubbles are all spheres.
 - **Give it now.** The formula is useful at once, and the toolkit is
-  complete. The cost: a formula without a reason is harder to remember,
+  complete. The cost is that a formula without a reason is harder to remember,
   and harder to rebuild if it is forgotten.
 
 Whichever you choose, it helps to say out loud which formulas are taken on
-trust, so a reader does not think they were meant to see why. A strong
+trust, so a reader does not think they were meant to see why. An
 answer might also say that the tests can check a formula agrees with other
 facts, as Archimedes' two thirds did, even when they cannot say why it is
 true.

@@ -273,7 +273,7 @@ key.
 
 Let's ask the four questions of that one line.
 
-**What is named here?** `print` is a name. Python already knows it; we
+**What is named here?** `print` is a name. Python already knows it. We
 did not have to explain it.
 
 **What is promised?** `print` is a function, and its promise is: give me

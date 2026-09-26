@@ -19,8 +19,8 @@ covers:
 # Homogeneous coordinates and the projection matrix
 
 [The rotation matrix: turning a cube in 3D](tutorial:turning-a-cube)
-used two kinds of step. Turning the cube was a matrix. Moving it was
-not: `move` added a number to every coordinate, and no multiplication
+used two kinds of step. A turn of the cube was a matrix. A move was
+not. `move` added a number to every coordinate, and no multiplication
 does that. This tutorial fixes that with a trick that
 looks like cheating. Then it uses the same trick to turn the
 perspective divide itself into a matrix. By the end, everything a
@@ -29,14 +29,14 @@ is exactly how a graphics card works.
 
 Everything we need from the earlier tutorials in this series is
 gathered into one cell. Let's
-run it first, and then it is out of the way:
+run it first:
 
 ```python exec
 id: a-move-no-matrix-can-make-1
 {{include: setup/cube.py}}
 ```
 
-## A Move No Matrix Can Make
+## A move no matrix can make
 
 Is there a 3×3 matrix that shifts every point two units to the right?
 Think about the origin, $(0, 0, 0)$, before you try to build one.
@@ -50,7 +50,7 @@ print(multiply(any_matrix, origin))
 ```
 
 Let's do the top row by hand: $2 \cdot 0 + 7 \cdot 0 + 1 \cdot 0 = 0$.
-The other two rows are the same story. The origin cannot move. Every
+The other two rows give 0 too. The origin cannot move. Every
 3×3 matrix leaves it where it is, so no 3×3 matrix can move
 everything.
 
@@ -65,9 +65,9 @@ a long chain of moves and turns. For one car in a racing game:
    looking along $z$.
 
 A ***graphics card***, the part of a computer that draws, wants to
-combine that whole chain into one matrix, work it out once, and apply
-it once to every point. It cannot do that while moving is an addition
-and turning is a multiplication. They are different kinds of step, and
+combine that whole chain into one matrix, calculate it once, and apply
+it once to every point. It cannot do that while a move is an addition
+and a turn is a multiplication. They are different kinds of step, and
 a chain of different kinds of step cannot be combined into one.
 
 ```question
@@ -85,7 +85,7 @@ Which of these can a 3×3 matrix do to a cube centred on the origin?
   - The turn is possible; the slide would move the origin, which a matrix never does.
 ```
 
-## One More Row
+## One more row
 
 Here is the trick. Give every point a fourth number, and make it 1. The
 cube gets a fourth row, all ones. Now a 4×4 matrix's last column gets
@@ -95,7 +95,7 @@ $$\begin{bmatrix} 1 & 0 & 0 & d_x \\ 0 & 1 & 0 & d_y \\ 0 & 0 & 1 & d_z \\ 0 & 0
 \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} =
 \begin{bmatrix} x + d_x \\ y + d_y \\ z + d_z \\ 1 \end{bmatrix}$$
 
-Work through the top row: $1 \cdot x + 0 \cdot y + 0 \cdot z + d_x \cdot 1$.
+Here is the top row: $1 \cdot x + 0 \cdot y + 0 \cdot z + d_x \cdot 1$.
 The $d_x$ gets in because it is multiplied by the 1 at the bottom. The
 last row, $0, 0, 0, 1$, puts the 1 back, so that the next matrix along
 can do the same.
@@ -127,17 +127,17 @@ id: one-more-row-2
 draw(shifted[:3])
 ```
 
-Three new words, for three things you have just seen:
+Here are three new words, for three things you have just seen:
 
 - A point written with an extra 1 on the end is in ***homogeneous
-  coordinates***. Homogeneous means "all of one kind", and the point
-  of it is that moves and turns become one kind of step.
+  coordinates***. Homogeneous means "all of one kind", and with it,
+  moves and turns become one kind of step.
 - The fourth number is called ***w***. For now it stays at 1.
 - A matrix shaped like `translation` is a ***translation matrix***.
   Translation is the graphics word for a move that keeps the shape and
   the direction and only changes the position.
 
-There is nothing four-dimensional going on. The fourth number is a
+Nothing four-dimensional is happening here. The fourth number is a
 trick for making addition look like multiplication.
 
 ### Your turn
@@ -169,7 +169,7 @@ id: one-more-row-4
 print(multiply(rotation_y(0), cube4) == cube4)
 ```
 
-## Everything in One Matrix
+## Everything in one matrix
 
 Now a move and a turn are the same kind of thing, and the product of
 the two is a single matrix that does both:
@@ -212,26 +212,26 @@ camera, because its circle had its centre 5 units ahead. Which of the
 two matrices, `place` or `swing`, would you put a changing angle into
 to get the ball's orbit instead?
 
-## The Divide as a Matrix
+## The divide as a matrix
 
 Dividing by $z$ is not a multiplication, so no matrix can do it. But a
 matrix can *arrange* for it. Here is the arrangement. After the
-multiplying is done, every point is divided by its own fourth number,
-$w$. So far $w$ has been 1 throughout, and dividing by 1 changes
+multiplication, every point is divided by its own fourth number,
+$w$. So far $w$ has been 1 throughout, and a division by 1 changes
 nothing. Now watch what this matrix does to $w$:
 
 $$P = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix}$$
 
-The last row reads $0, 0, 1, 0$: the new $w$ is $z$. Let's follow one
+The last row reads $0, 0, 1, 0$, so the new $w$ is $z$. Let's follow one
 point through, the corner $(2, 1, 4, 1)$:
 
-1. Multiply by $P$: the first three rows pass $x$, $y$ and $z$ through
-   unchanged, and the last row copies $z$ into $w$. Result:
+1. Multiply by $P$. The first three rows pass $x$, $y$ and $z$ through
+   unchanged, and the last row copies $z$ into $w$. The result is
    $(2, 1, 4, 4)$.
-2. Divide everything by $w = 4$: $(0.5, 0.25, 1, 1)$.
+2. Divide everything by $w = 4$, to get $(0.5, 0.25, 1, 1)$.
 
-The first two numbers are $2/4$ and $1/4$: the perspective divide,
-exactly as [Perspective projection: dividing by
+The first two numbers are $2/4$ and $1/4$. That is the perspective
+divide, exactly as [Perspective projection: dividing by
 depth](tutorial:a-point-on-the-screen#why-dividing-works) had it.
 
 ```python exec
@@ -258,25 +258,26 @@ camera = multiply(simple_projection, place)
 draw_edges(divide_by_w(multiply(camera, cube4)))
 ```
 
-One matrix, `camera`, built once from a projection, a move and a turn.
-Then, for every point in the scene, one multiplication and one divide.
+We build one matrix, `camera`, once, from a projection, a move and a
+turn. Then every point in the scene needs one multiplication and one
+divide.
 A matrix shaped like $P$ is a ***projection matrix***. The divide by
 $w$ afterwards is the perspective divide, under the name graphics
-people use for it. This is the arrangement a graphics card is built
-around: it multiplies millions of points by one 4×4 matrix, divides
+people use for it. A graphics card is built around this
+arrangement. It multiplies millions of points by one 4×4 matrix, divides
 each by its $w$, and draws. That is why a game can draw a whole city
 sixty times a second. Each point is one multiplication and one divide,
 and a graphics card does thousands of those at the same time.
 
-## Field of View
+## Field of view
 
 The blog post this series follows ends with the projection matrix a
-graphics card is really handed. It differs from `simple_projection` in
+graphics card is really given. It differs from `simple_projection` in
 two places.
 
 The first is the pair of 1s at the top of the diagonal. They become a
-number $f$. This is where the zoom lens from the first tutorial comes
-back. A camera is described by its ***field of view***, the angle it
+number $f$. Here the zoom lens from the first tutorial
+returns. A camera is described by its ***field of view***, the angle it
 can see from one edge of the picture to the other, and
 
 $$f = \frac{1}{\tan(\text{fov} / 2)}$$
@@ -326,13 +327,13 @@ Reading the printout:
 - Depth 1, the near plane, comes out as exactly $-1$.
 - Depth 20, the far plane, comes out as exactly $1$.
 - Anything nearer than the near plane, or beyond the far plane, is
-  ***clipped***: cut away before the divide. A point at depth 0, right
-  at the camera, is nearer than the near plane, so it is always cut
-  away. That is how a renderer avoids ever dividing by a depth of zero.
-- The range is shared out unevenly. Depths 1 to 2 use up half of it,
-  and 10 to 20 use a twentieth. Nearby things get the finest depth
-  steps. That is where you would most easily notice two surfaces, one
-  just behind the other, drawn in the wrong order.
+  ***clipped***, which means removed before the divide. A point at
+  depth 0, right at the camera, is nearer than the near plane, so it is
+  always removed. That is how a renderer avoids ever dividing by a depth of zero.
+- The range is shared unevenly. Depths 1 to 2 use half of it, and 10
+  to 20 use a twentieth. Nearby things get the finest depth steps,
+  because near the camera you would most easily notice two surfaces,
+  one just behind the other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with
 the screen's edges now at $-1$ and $1$:
@@ -375,8 +376,8 @@ divide. Which of the two tricks felt more like cheating: the row of
 ones that lets a matrix add, or the last row that lets a divide hide
 inside a multiplication? Both are ordinary matrix multiplication, which
 you built by hand out of the dot product in [Matrix multiplication: rows times columns](tutorial:multiplying-grids). Nothing new was added to the
-arithmetic. What changed was what the rows and columns were made to
-mean.
+arithmetic. Only the meaning of the rows and columns
+changed.
 
 A browser has all of this built in. CSS has a property called
 `perspective`, and it is this divide. [An orbit in pure
@@ -384,26 +385,26 @@ CSS](tutorial:an-orbit-in-css), on the Web Authoring course, has the
 ball from the second tutorial of this series going round with no
 arithmetic written down at all.
 
-## Where to Read More
+## Where to read more
 
 O'Flaherty-Chan, G. (2026). *Divide by depth for instant 3D.*
-<https://gabrieloc.com/2026/09/15/perspective.html>. The post whose
-closing matrix this tutorial builds up to, and a clear answer to the
-question "what is the extra 1 for?".
+<https://gabrieloc.com/2026/09/15/perspective.html>. This tutorial
+builds to the matrix at the end of this post. The post also gives a
+clear answer to the question "what is the extra 1 for?".
 
 Scratchapixel. *The Perspective and Orthographic Projection Matrix.*
 <https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/>.
-Every entry of the matrix in Field of View derived from the near plane,
-the far plane and the field of view, one at a time.
+This lesson derives every entry of the matrix in Field of view from the
+near plane, the far plane and the field of view, one at a time.
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra,
 Chapter 4: Matrix Multiplication as Composition.*
-<https://www.youtube.com/watch?v=XkY2DOUCWMU>. Why a chain of matrices
-is one matrix, which is the whole reason a graphics card wants moving
-to be a multiplication.
+<https://www.youtube.com/watch?v=XkY2DOUCWMU>. This video shows why a
+chain of matrices is one matrix. That is why a graphics card wants a
+move to be a multiplication.
 
 Josh's Channel (2022). *In Video Games, The Player Never Moves.*
-<https://www.youtube.com/watch?v=wiYTxjJjfxs>. Why a game moves the whole
-world instead of the camera, and why moving things needs the extra number
-this page adds. The video ends with homogeneous coordinates. About
+<https://www.youtube.com/watch?v=wiYTxjJjfxs>. This video explains why a
+game moves the whole world instead of the camera, and why a move needs
+the extra number this page adds. The video ends with homogeneous coordinates. About
 nineteen minutes.

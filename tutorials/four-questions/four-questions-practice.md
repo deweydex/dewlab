@@ -15,7 +15,7 @@ answer in words. **Another way** asks you to reach an answer by a second
 route, or to find the space where a "wrong" answer is right.
 
 Many of these can be answered in more than one way. The answer folds
-show one way through, with the thinking behind it. If yours is
+show one answer, with the thinking behind it. If yours is
 different, it may be more interesting. Check it against the four
 questions. Try each one before you open its fold. A guess that misses
 shows you exactly where to look.

@@ -16,7 +16,7 @@ the real exercise, so try it first.
 This cell defines `table()`, which prints the truth table for any
 operation on two inputs. The last line shows how to call it. There,
 `lambda a, b: a and b` is a short way to write a small function with no
-name: it takes `a` and `b`, and gives back `a and b`. To see another
+name: it takes `a` and `b`, and returns `a and b`. To see another
 table, change the part after the colon.
 
 ```python exec
@@ -50,8 +50,8 @@ four.
 
 Three inputs give eight rows, and $n$ inputs give $2^n$ rows.
 
-Each new input doubles the number of cases. That is why checking every
-case stops being practical quite quickly. Twenty inputs give over a
+Each new input doubles the number of cases. That is why a check of every
+case soon stops being practical. Twenty inputs give over a
 million rows.
 
 </details>
@@ -62,8 +62,8 @@ million rows.
 
 `A or B` is true in three rows, and `A and B` in one.
 
-`or` is the generous one: it is false only when both inputs are false.
-`and` is the strict one: it is true only when both inputs are true.
+`or` is the generous one. It is false only when both inputs are false.
+`and` is the strict one. It is true only when both inputs are true.
 
 </details>
 
@@ -181,8 +181,8 @@ Nothing is left untested.
 
 For almost anything else, such as a function that takes whole numbers,
 the possible inputs never run out. A test can then only fail to find a
-problem. Checking every case is a proof when there are few enough cases
-to check them all, and almost never otherwise.
+problem. A check of every case is a proof only when there are few enough
+cases to check them all.
 
 </details>
 
@@ -195,9 +195,9 @@ to check them all, and almost never otherwise.
 `attended and submitted`.
 
 People rarely write the first version on purpose. It grows a little at a
-time: someone adds a condition, later puts a `not` around the whole
-thing, then adds another condition. That is why knowing the rule
-matters.
+time. Someone adds a condition, later puts a `not` around the whole
+thing, then adds another condition. That is why the rule is worth
+knowing.
 
 </details>
 
@@ -207,8 +207,8 @@ matters.
 
 `status != "ok" or errors != 0`.
 
-Now it reads as what it means: either something is wrong with the
-status, or there are errors.
+Now it says what it means. Either something is wrong with the status,
+or there are errors.
 
 </details>
 
@@ -219,7 +219,7 @@ status, or there are errors.
 `age < 18 or not has_id`.
 
 Look at the first part. `not (age >= 18)` becomes `age < 18`, and not
-`age <= 18`. Getting a boundary wrong by one, like this, is called an
+`age <= 18`. A boundary that is wrong by one, like this, is called an
 *off-by-one error*. It is one of the most common mistakes in
 conditions.
 
@@ -257,8 +257,8 @@ laws hold for both.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The symmetric difference: everything that is in exactly one of the two
-sets. Python writes it `A ^ B`. It uses the same operator as XOR on
+It is the symmetric difference, which holds everything that is in exactly
+one of the two sets. Python writes it `A ^ B`. It uses the same operator as XOR on
 `True` and `False`, for the same reason.
 
 </details>
@@ -280,13 +280,12 @@ sets. Python writes it `A ^ B`. It uses the same operator as XOR on
 `lockdown`.
 
 (c) `not (hours or manager)` becomes `not hours and not manager`. In
-words: outside working hours, and not a manager.
+words, it is outside working hours, and the person is not a manager.
 
 So the whole expression reads: the door does not unlock if the card is
 invalid, or it is outside working hours and the person is not a
 manager, or the door is in lockdown. Somebody could check that sentence
-against the real rules for the door, and that is the point of
-rewriting it.
+against the real rules for the door. That is why we rewrite it.
 
 </details>
 
@@ -294,7 +293,7 @@ rewriting it.
 
 Up and Atom (2018). *Can You Guess Who's Lying? 3 Logic Riddles to Train
 Your Problem Solving Skills.*
-<https://www.youtube.com/watch?v=xjSjxVAbhJ8>. Three puzzles about people
-who always tell the truth and people who always lie. A truth table can
-solve each one. Try before Jade Tan-Holmes gives her answers. About twelve
-minutes.
+<https://www.youtube.com/watch?v=xjSjxVAbhJ8>. It gives three puzzles about
+people who always tell the truth and people who always lie. A truth table
+can solve each one. Try before Jade Tan-Holmes gives her answers. The video
+is about twelve minutes long.

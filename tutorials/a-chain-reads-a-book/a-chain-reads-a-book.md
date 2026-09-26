@@ -17,18 +17,18 @@ covers:
 In "Words that follow words", a section of [Markov chains: where
 repeated steps settle](tutorial:where-chains-lead#words-that-follow-words), we built a Markov chain from one short
 text. It was a single sentence pattern, "it was the ___ of ___", repeated
-ten times: 60 words, and only 20 different ones.
+ten times. It had 60 words, and only 20 different ones.
 
 On this page we build the same kind of chain from a whole novel, H. G.
 Wells's *The Time Machine*. A whole book brings a real problem that the
 short text never had. The grid we used before gets far too big. We solve
 that with a new way of storing the chain.
 
-## Loading a Real Book
+## Loading a real book
 
 The book is already in dewlab's shared data folder. `load_text()` fetches
 it in the same way that `load_csv()` fetches a table. The difference is
-what comes back. `load_csv()` gives back a table. `load_text()` gives back
+in what they return. `load_csv()` returns a table. `load_text()` returns
 one long string.
 
 ```python exec
@@ -96,13 +96,13 @@ It is the very last line of `book`: *End of the Project Gutenberg EBook
 of The Time Machine, by H. G. Wells*. Project Gutenberg put that closing
 line before its END marker, not after it, so our slice kept it. Nothing
 is broken. The cell did exactly what we asked. The marker was just not
-quite where we assumed. That is the reason to check a cleaned text,
-and not only trust it. One line of 14 words makes no real difference to
+quite where we assumed. So always check a cleaned text,
+and do not only trust it. One line of 14 words makes no real difference to
 a chain built from more than 32,000 words, so we leave it in.
 
-## Too Many Words for a Grid
+## Too many words for a grid
 
-In *Words That Follow Words*, the chain was a transition matrix: a grid
+In *Words that follow words*, the chain was a transition matrix: a grid
 with one row and one column for every different word. Most of the grid
 held zeros. A grid worked there because the text had only 20 different
 words. How many different words does a whole novel have?
@@ -116,9 +116,9 @@ print(len(states), "distinct words")
 print(len(states) ** 2, "cells a dense grid would need")
 ```
 
-`book.split()` cuts the book into words at every space and new line.
+`book.split()` splits the book into words at every space and new line.
 `set(words)` keeps one copy of each different word, and `sorted()` puts
-them in order. One thing to know: `split()` cuts only at spaces, so
+them in order. Note that `split()` splits only at spaces, so
 `"time"` and `"time,"` count as two different words.
 
 The book has 6,991 different words. A grid with a row and a column for
@@ -127,14 +127,14 @@ and almost all of them hold a zero. There is a zero for every pair of
 words that never sit next to each other anywhere in the book.
 
 A grid that size is too big for a browser tab to hold in memory. Worse,
-building it means writing tens of millions of zeros before a single real
-count goes in.
+to build it, Python must write tens of millions of zeros before a single
+real count goes in.
 
 There is another way to write down the same chain. For each word, we
 keep a dictionary of only the words that really followed it somewhere in
 the book. A dictionary like this never has to store a zero.
 
-## A Dictionary of Dictionaries
+## A dictionary of dictionaries
 
 The chain is one big dictionary, and its keys are words. Each value is
 another dictionary. That inner dictionary holds every word that followed
@@ -161,7 +161,7 @@ print(len(next_words), "words have at least one dictionary of their own")
 print(len(next_words["Weena"]), "different words follow 'Weena' somewhere in the book")
 ```
 
-What each line of the loop does:
+Here is what each line of the loop does:
 
 - `zip(words, words[1:])` pairs every word with the word after it. We met
   `zip` in [Matrix multiplication: rows times columns](tutorial:multiplying-grids). `words[1:]`
@@ -170,7 +170,7 @@ What each line of the loop does:
 - `next_words.setdefault(word, {})` gives `word` an empty inner
   dictionary, but only if it does not have one yet.
 - The last line adds 1 to the count for `next_word` inside that inner
-  dictionary. `.get(next_word, 0)` gives 0 the first time a pair is seen,
+  dictionary. `.get(next_word, 0)` returns 0 the first time a pair is seen,
   so there is no need for a separate check.
 
 Why ask about `"Weena"`? Weena is the only person in the far future whom
@@ -178,8 +178,9 @@ the Time Traveller calls by name. Her name appears often enough to have
 many different words after it. It is also not one of the very common
 words, like "the", "and" or "I", whose inner dictionaries grow huge.
 
-The values in each inner dictionary are counts: how many times that word
-followed. They are not probabilities. In *Words That Follow Words*, we
+The values in each inner dictionary are counts. Each one says how many
+times that word followed. They are not probabilities. In *Words that
+follow words*, we
 divided every row by its total to turn counts into probabilities before
 `random.choices()` could use them. With a dictionary we can skip that
 step, because `random.choices()` accepts plain counts as weights. It
@@ -220,8 +221,8 @@ Change the 1 to a 2, and run it again. Seed 2 gives this:
 > Weena lay awake most of intense relief, I was free from which I thought
 > of increasing apprehensions drew her hands, and
 
-Every other seed gives another sentence. Every run mixes up the same
-32,467 words, but always by what really follows what in this
+Every other seed gives another sentence. Every run mixes the same
+32,467 words, but only in the orders that really happen in this
 one book. Each pair of words next to each other in the output is a pair
 from the book.
 

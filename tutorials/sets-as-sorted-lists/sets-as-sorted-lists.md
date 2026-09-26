@@ -49,10 +49,10 @@ On this page we:
 Python has its own `set` type. On this page we build our own sets
 instead, as sorted lists with no repeats. There are two reasons.
 
-First, it lets us practise algorithms we already know. Finding an
-element in a sorted list is a binary search. Combining two sorted lists
-uses a pattern called a merge, which we meet below. These patterns come
-up again and again in programming.
+First, it lets us practise algorithms we already know. We find an
+element in a sorted list with a binary search. To combine two sorted
+lists, we use a pattern called a merge, which we meet below. These
+patterns appear again and again in programming.
 
 Second, it shows that Python's `set` is not magic. Once you have built
 the set operations yourself, you know what they do. Python's `set` gives
@@ -103,7 +103,7 @@ id: your-turn-2
 ## Membership testing
 
 Is a particular element in the set? Our sets are sorted, so we can use
-binary search to find out. Our binary search gives back the item's
+binary search to find out. Our binary search returns the item's
 position, or -1 when the item is missing. For a set, we want a plain yes or no:
 `True` or `False`.
 
@@ -138,9 +138,9 @@ There are three main ways to combine two sets:
   not in b.
 
 We can build all three with one pattern. It is the same pattern that
-merge sort uses. We mentioned merge sort on the sorting page: it is a
+merge sort uses. We mentioned merge sort on the sorting page. It is a
 faster sort that works by combining two sorted lists into one, again
-and again. That combining step is called a *merge*.
+and again. The step that combines them is called a *merge*.
 
 Both of our sets are sorted. So we walk through the two of them at the
 same time, with two pointers. A *pointer* here is an index variable, `i`
@@ -148,17 +148,18 @@ for set a and `j` for set b, that marks our place in each list. At each
 step we compare the two current elements:
 
 - If they are equal, the element goes in the union and in the
-  intersection. Move both pointers on.
+  intersection. Move both pointers forward.
 - If one is smaller, that element goes in the union, but not in the
-  intersection. Move its pointer on.
+  intersection. Move its pointer forward.
 - When one list runs out, the elements left in the other list go in the
   union.
 
 We call this the *merge walk*. The picture shows it step by step.
 
 ![Five steps walking two sorted lists. Each step shows where both pointers
-sit, the comparison that makes, and which pointer moves as a result. Then
-what is left over in b, and the union they build.](merge-walk.svg)
+sit, the comparison that makes, and which pointer moves as a result. The
+last steps show what is left over in b, and the union they
+build.](merge-walk.svg)
 
 The three rules above are the only three things that can happen at one
 comparison. Each step is the same: look at where the two pointers are,
@@ -168,8 +169,8 @@ backwards.
 How much work is that? Say set a has $n$ elements and set b has $m$.
 Each step moves at least one pointer forward, so there are at most
 $n + m$ steps. For two sets of 1,000 elements, that is at most 2,000
-steps. Checking every element of a against every element of b would
-take $n \times m$ steps, which is 1,000,000. So the merge walk is an
+steps. If we checked every element of a against every element of b, it
+would take $n \times m$ steps, which is 1,000,000. So the merge walk is an
 $O(n + m)$ algorithm.
 
 Here is the merge walk written out for union. What do you expect it to
@@ -377,7 +378,7 @@ membership, and find the union, intersection, difference and symmetric
 difference of two sets. It can also test for a subset and for equal
 sets. Every one of these rests on sorted lists and the merge walk.
 
-Each part connects to earlier work. Sorting prepares the data, binary
+Each part connects to earlier work. A sort prepares the data, binary
 search makes membership fast, and the merge step from merge sort drives
 all the set operations.
 
@@ -390,13 +391,13 @@ draws sets as pictures.
 Which connection between sets and earlier material did you find most
 satisfying?
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Intersection and Union of Sets.*
-<https://www.youtube.com/watch?v=jAfNg3ylZAI>. The same two operations
-this page builds with a merge-walk, introduced from the mathematics side.
+<https://www.youtube.com/watch?v=jAfNg3ylZAI>. It introduces the same two
+operations this page builds with a merge walk, from the mathematics side.
 
 Python Software Foundation. *The Python Tutorial — Sets.*
-<https://docs.python.org/3/tutorial/datastructures.html#sets>. The
-built-in `set` this page deliberately avoids, for comparison once you have
-built your own.
+<https://docs.python.org/3/tutorial/datastructures.html#sets>. It covers
+the built-in `set` that this page avoids on purpose. Read it to compare,
+once you have built your own.

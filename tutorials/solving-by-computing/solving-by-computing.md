@@ -31,8 +31,8 @@ times the short side. It is 210 mm across, and $210 \times \sqrt{2}$,
 about 297 mm, down. Your calculator says $\sqrt{2}$ is 1.4142135623730951.
 But a calculator can only add, take away, multiply and divide, and no
 amount of adding gives a number whose digits never end. So where do
-those digits come from? If you have always trusted the square-root
-button without asking, so do most people. This page shows what is
+those digits come from? Most people trust the square-root button
+without asking. This page shows what is
 inside it.
 
 <aside class="dl-note" id="solving-by-note-a4">

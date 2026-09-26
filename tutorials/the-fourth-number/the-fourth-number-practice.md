@@ -8,10 +8,10 @@ version: 2026.09.21.1
 # Homogeneous coordinates and the projection matrix — Practice
 
 Keep track of $w$. In every problem here, ask what the fourth number
-is before and after the multiplication, because that is where the
-trick lives.
+is before and after the multiplication, because the trick happens
+there.
 
-## Moving by Multiplying
+## Moving by multiplying
 
 ```python exec
 id: moving-1
@@ -40,7 +40,7 @@ print(multiply(translation(2, 0, 0), [[1], [1], [1], [1]]))
 ```
 
 **1.** What does `translation(2, 0, 0)` do to the point $(1, 1, 1, 1)$?
-Work through the top row of the multiplication by hand.
+Do the top row of the multiplication by hand.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -56,8 +56,9 @@ matrix do you get, and does the order matter for this pair?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`translation(5, 7, 9)`, in either order. Two moves one after the other
-are one move by the sum, and adding is the same both ways round.
+`translation(5, 7, 9)`, in either order. Two moves, one after the other,
+make one move by the sum, and addition gives the same answer in either
+order.
 Translations are one of the few kinds of matrix where the order does
 not matter.
 
@@ -74,7 +75,7 @@ identity.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`translation(-1, -2, -3)`. Undoing a move is moving back the same
+`translation(-1, -2, -3)`. To undo a move, move back the same
 amount. The product is the 4×4 identity matrix.
 
 ```python
@@ -91,8 +92,8 @@ point after dividing by $w$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(2, 1, 4, 4)$: the last row copies $z$ into $w$, and nothing else
-changes. Dividing by $w = 4$ gives $(0.5, 0.25)$ on the screen, with
+$(2, 1, 4, 4)$. The last row copies $z$ into $w$, and nothing else
+changes. A division by $w = 4$ gives $(0.5, 0.25)$ on the screen, with
 the third and fourth numbers both becoming $1$. That is the same
 $(2 / 4, 1 / 4)$ the plain perspective divide would give.
 
@@ -104,7 +105,7 @@ print(divide_by_w(multiply(simple_projection, [[2], [1], [4], [1]])))
 
 </details>
 
-## Field of View
+## Field of view
 
 ```python exec
 id: field-of-view-1
@@ -160,13 +161,13 @@ the middle of the range.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Depth $5.5$ comes out as about $0.818$, not $0$: most of the range
-between $-1$ and $1$ has already been used up by the time the depth
+Depth $5.5$ comes out as about $0.818$, not $0$. Most of the range
+between $-1$ and $1$ has already been used by the time the depth
 reaches the middle.
 
-The depth that maps to $0$ is $z = 20 / 11 \approx 1.818$: that is
-where $\frac{11}{9} z - \frac{20}{9} = 0$. The depth range is already half used up less than one unit past the
-near plane. The conversion
+The depth that maps to $0$ is $z = 20 / 11 \approx 1.818$, because
+$\frac{11}{9} z - \frac{20}{9} = 0$ there. Half the depth range is
+already used less than one unit past the near plane. The conversion
 is a divide by $z$, like everything else in this series, so it is
 steep near the camera and flat far away.
 

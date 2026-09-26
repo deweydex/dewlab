@@ -329,7 +329,7 @@ points that are not in front of the camera. A real ***renderer***, the
 program that turns points into a picture, has such a rule. It refuses
 to draw anything closer than a small fixed depth, called the ***near
 plane***, and removes those points before any division happens.
-[Field of View](tutorial:the-fourth-number#field-of-view), in the
+[Field of view](tutorial:the-fourth-number#field-of-view), in the
 fourth tutorial of this series, shows where that number lives.
 
 ### Your turn

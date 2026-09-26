@@ -8,8 +8,8 @@ version: 2026.08.23.1
 # Charts: choosing the right chart for your data — Practice
 
 Each answer is hidden until you open it. Most of these problems ask you
-to choose a chart and to explain your choice. The plotting takes only a
-few lines of code. The real skill is the choosing.
+to choose a chart and to explain your choice. The code for a plot takes
+only a few lines. The real skill is to choose the right chart.
 
 ## Tools
 
@@ -83,7 +83,7 @@ points are on a path". If there is no path, the chart is telling a lie.
 A bar chart compares categories. A histogram shows the distribution of
 one continuous variable, grouped into bins.
 
-You can tell them apart by the gaps. The bars of a bar chart have gaps
+You can see the difference in the gaps. The bars of a bar chart have gaps
 between them, because the categories are separate. The bars of a
 histogram touch. Each bin is a range of values on one continuous scale,
 and the next bin starts where the last one ends, so there is nothing
@@ -97,12 +97,12 @@ between them.
 
 Plot three lines on one pair of axes, with a legend.
 
-Three separate charts would each be easy to read, but they would be
-useless for comparing the products, and comparing is the real point of
-the question. With the three lines on one chart, a reader can see one
+Three separate charts would each be easy to read, but they would not
+help you compare the products, and that is the real point of the
+question. With the three lines on one chart, a reader can see one
 product overtake another.
 
-This breaks down if the three products sell on very different scales.
+This fails if the three products sell on very different scales.
 Then the fix is to plot the percentage change for each product.
 Another option is to add a second y axis, but a chart with two y axes
 is nearly always harder to read than it looks.
@@ -125,8 +125,8 @@ This is the most common way a chart misleads, and it is usually not on
 purpose. Plotting libraries often choose an axis range that fills the
 frame.
 
-Bar charts should start at zero, because the *length* of a bar is what
-shows its value. Line charts do not have to start at zero, because the
+Bar charts should start at zero, because the *length* of a bar shows its
+value. Line charts do not have to start at zero, because the
 *slope* of the line carries the meaning. If you force a line chart to
 start at zero, you can flatten a real trend until it disappears.
 
@@ -139,12 +139,12 @@ start at zero, you can flatten a real trend until it disappears.
 It means that both go up in hot weather.
 
 Correlation tells us that two things move together. It does not tell us
-which one causes the other. It also does not rule out a third thing
+which one causes the other. It also does not exclude a third thing
 that causes both. Here that third thing is the temperature. A *confounder*
 is a third thing that causes two others to move together.
 
-The chart is not wrong. The sentence somebody writes underneath it
-usually is.
+The chart is correct. The mistake is usually in the sentence somebody
+writes underneath it.
 
 </details>
 
@@ -208,7 +208,7 @@ A curve like $2^x$, where $x$ is the power, is called *exponential*.
 [Number types, powers and logarithms](tutorial:numbers-and-their-families)
 looks at powers more closely. For large $x$, the two curves are not
 comparable at all. This is why an algorithm whose running time grows
-exponentially is more than a slow algorithm: it quickly becomes
+exponentially is more than a slow algorithm. It quickly becomes
 unusable.
 
 </details>
@@ -230,12 +230,12 @@ flattens.
 
 On a log scale, exponential growth is a straight line, and the
 steepness of the line shows how fast it grows. That is the main reason
-log scales exist. They turn multiplying into equal distances, so one
+log scales exist. They turn each multiplication into an equal distance, so one
 chart can show values from 1 to 1,000,000 and still be readable.
 
-You will also see the $x^2$ line drop off the bottom of the chart at the
-left. Its first value is $0$, and $0$ has no place on a log scale: each
-step down divides by 10, and you never reach 0.
+You will also see the $x^2$ line disappear from the bottom of the chart
+at the left. Its first value is $0$, and $0$ has no place on a log scale.
+Each step down divides by 10, and you never reach 0.
 
 Always label a log axis clearly. A reader who does not notice it will
 underestimate every difference on the chart.
@@ -259,8 +259,8 @@ def scatter(xs, ys, title="", xlabel="", ylabel="", ax=None):
     return ax
 ```
 
-The `ax=None` parameter is what makes the function reusable, and not
-only shorter. With it, the function can draw a chart on its own, or draw
+The `ax=None` parameter makes the function reusable, and not only
+shorter. With it, the function can draw a chart on its own, or draw
 one panel of a larger figure. It returns `ax`, so the caller can keep
 changing the chart afterwards.
 
@@ -310,7 +310,7 @@ The two lines separate when the data is skewed. The mean usually moves away
 from the median towards the long tail. When the distribution is
 symmetric, the two lines land on top of each other.
 
-Drawing both lines is a good habit. It costs two lines of code, and the
+It is a good habit to draw both lines. It costs two lines of code, and the
 gap between them tells you about the shape of the data.
 
 </details>
