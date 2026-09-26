@@ -411,3 +411,39 @@ class TestTheMergeWalk:
     def test_leftovers_are_named_from_the_list_that_still_has_them(self):
         svg = step_renderer.merge_walk(self.A, self.B)
         assert "left in b: 7  8" in svg
+
+
+try:
+    import dewey_units_1_5 as dewey_early
+except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
+    dewey_early = None
+
+needs_dewey_early = pytest.mark.skipif(dewey_early is None, reason="svgwrite is not installed")
+
+
+@needs_dewey_early
+class TestDeweyUnitsOneToFive:
+    """The Dewey Track's Unit 1 to 5 pictures read their numbers from the
+    pages' own cells, so a cell edited without a regeneration leaves a
+    picture that disagrees with the page. This is the generator's check
+    mode, as a test."""
+
+    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
+    def test_the_committed_picture_is_what_the_generator_draws(self, relative):
+        committed = (dewey_early.TUTORIALS / relative).read_text()
+        assert committed == dewey_early.DIAGRAMS[relative](), (
+            f"{relative} is stale: run python3 dev/graphics/dewey_units_1_5.py --write")
+
+    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
+    def test_colours_are_theme_tokens_and_nothing_has_an_id(self, relative):
+        """Several of these are inlined on one page, where two copies of one
+        `id` would collide."""
+        import re
+
+        svg = (dewey_early.TUTORIALS / relative).read_text()
+        literals = {
+            value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
+            if value != "none" and not value.startswith("var(--dl-") and value != "currentColor"
+        }
+        assert not literals, f"literal colours in {relative}: {sorted(literals)}"
+        assert not re.search(r'\sid="', svg), f"{relative} carries an id"

@@ -119,6 +119,8 @@ $$3 \times 2 \times 1 = 6$$
 The choices shrink by one at each place, because a song that has already
 played cannot play again.
 
+<img src="song-order-tree.svg" alt="A tree growing from left to right. From 'shuffle', three branches for the first song: Zombie, Linger and Dreams. Each of those splits into the two songs that are left, and each of those leads to the one song left after that. The six ends are numbered 1 to 6, one for each order.">
+
 ### Your turn
 
 1. Add a fourth song, "Ode to My Family", to the list in the cell above.
@@ -397,6 +399,8 @@ There are six ways, $12 \div 2$. The loops count positions in the list, from 0.
 Because `second` always starts after `first`, each pair of sensors
 appears once, in one order only.
 
+<img src="sensor-pairs.svg" alt="A grid with the first sensor down the side and the second sensor along the top: camera, thermometer, microphone and location. The four squares on the diagonal are crossed out, because one sensor cannot be picked twice. That leaves 12 squares. The 6 squares above the diagonal are shaded and numbered 1 to 6, in the order the loop prints them. Each square below the diagonal has the same number as its mirror square above it, because it holds the same two sensors the other way round. So 12 ordered picks make 6 choices.">
+
 A *combination* is a choice of some things from a group, where the order
 does not matter. The number of combinations of $r$ things chosen from $n$
 is written $C(n, r)$, or $\binom{n}{r}$, and said "n choose r".
@@ -498,7 +502,8 @@ order matter? And can the same thing be picked more than once?
 | **Repeats allowed** | $n^r$, the counting principle: a 4-digit PIN has $10^4$ | a rarer case, which we leave for now |
 | **No repeats** | $P(n, r)$: the first jobs in a queue, a team with jobs | $C(n, r)$: a team, a pair of sensors, a lottery ticket |
 
-The Irish Lotto draws 6 numbers from 1 to 47. A ticket wins the jackpot
+The Irish Lotto draws 6 numbers from 1 to 45 (it was 47 until
+September 2026). A ticket wins the jackpot
 when its six numbers match, in any order. So the order does not matter,
 and no number can come up twice.
 
@@ -512,13 +517,13 @@ you have not written yet.
 
 ```python exec
 id: orders-which-1
-print(combinations(47, 6), "Lotto tickets")
+print(combinations(45, 6), "Lotto tickets")
 print(26 ** 8, "passwords of 8 small letters")
 print(permutations(26, 8), "passwords with no letter used twice")
 ```
 
-There are 10,737,573 different Lotto tickets, so one ticket has about a
-one in ten million chance of the jackpot. The next page,
+There are 8,145,060 different Lotto tickets, so one ticket has about a
+one in eight million chance of the jackpot. The next page,
 [How likely is it?](tutorial:how-likely-is-it), turns counts like this
 into chances.
 

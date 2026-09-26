@@ -174,6 +174,8 @@ This table is different, and the last line says `False`. It is `True` in one row
 stock. So a restaurant that is closed but has stock would show a working
 Order button, and so would one that is open with nothing to sell.
 
+<img src="grey-out-grids.svg" alt="Two grids of four squares, with is_open down the side and has_stock along the top. In the grid for not (is_open and has_stock), three squares say 'greyed out'. Only the square where is_open and has_stock are both True says 'Order works'. In the grid for not is_open and not has_stock, only the square where both are False says 'greyed out', and the other three say 'Order works'.">
+
 If you guessed "the same", many people do. I think it is the most
 natural guess in the whole unit, and the move has a reason behind it.
 It works in arithmetic, the space of numbers,
