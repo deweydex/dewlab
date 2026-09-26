@@ -1,7 +1,7 @@
 ---
 title: "Derivatives: the rate of change of a curve"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 covers:
   the-slope-of-something-that-is-not-straight:
     covers: [MIT-3.6]
@@ -9,38 +9,20 @@ covers:
     covers: [MIT-3.6]
   the-derivative-as-a-function:
     covers: [MIT-3.6]
-  rules-instead-of-limits:
-    covers: [MIT-3.7]
-  the-chain-rule:
-    covers: [MIT-3.7]
+  derivatives-in-your-world:
+    covers: [MIT-3.6]
+worlds:
+  sea-and-sky: A diver going down and coming back up. The numbers are made up.
+  planets-and-moons: A rocket, climbing faster and faster. The numbers are made up.
+  fantasy-maps: The road over a hill near the village. The numbers are made up.
 ---
 
 # Derivatives: the rate of change of a curve
 
-In [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
+In [Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines),
 we described slope as a rate of change: **if $x$ goes up by one, what
 happens to $y$?** For a straight line, the answer is one number, and it
 is the same everywhere on the line.
-
-For anything that bends, the answer changes as we move along it. On
-this page we find that answer at a single point. Then we find rules, so
-that we do not have to calculate it from the start every time.
-
-The tool we need is the limit, from
-[Limits: getting closer without arriving](tutorial:approaching-a-limit).
-That is the only new idea. For everything else, we just need to be
-careful.
-
-On this page we:
-
-- find the slope of a curve at one point, using a limit
-- see three ways of describing that one number
-- treat the slope as a function of its own, and use it to find turning
-  points
-- learn rules that give the slope without a limit: for powers, sums,
-  products, and one function inside another
-
-## The slope of something that is not straight
 
 Here is the curve $y = x^2$, with four points marked on it. How steep is
 the curve at each point?
@@ -67,16 +49,17 @@ ax.set_title("Steep in different amounts at different places")
 
 From left to right, the curve at the marked points is steeply downhill,
 gently downhill, gently uphill, and steeply uphill. The curve has no
-single slope.
-
-But at each point there is a *local* slope: how steep the curve is
-right there. We want to find that local slope.
-
-We use the same method as for the falling ball in
+single slope. On this page we find the slope at a single point, and
+then at every point. The tool we need is the limit, from
 [Limits: getting closer without arriving](tutorial:approaching-a-limit).
-A *chord* is a straight line that joins two points on a curve. We take
-two points on the curve, close together, and find the slope of the chord
-between them. Then we bring the points closer.
+
+## The slope of something that is not straight
+
+At each point there is a *local* slope: how steep the curve is right
+there. We use the same method as for the falling ball on the limits
+page. A *chord* is a straight line that joins two points on a curve. We
+take two points on the curve, close together, and find the slope of the
+chord between them. Then we bring the points closer.
 
 The function `slope_between` does this. It finds the slope of the chord
 from $x$ to $x + \text{gap}$:
@@ -102,54 +85,58 @@ for gap in [1, 0.5, 0.1, 0.01, 0.001, 0.0001]:
 The slopes move towards 6, and never arrive, because the gap can never be
 zero.
 
-**The limit of the chord's slope, as the gap shrinks to nothing, is the
-slope of the curve at that point.** The *derivative* of a function at a
-point is this limit: the slope of the curve at that one point. Here, the
-derivative of $x^2$ at $x = 3$ is 6.
-
-The picture below shows three of those chords, and the line they get
-closer to.
+Here are the chords, one after another, as the second point slides
+towards the first. Watch the line turn.
 
 ```python exec
 id: the-slope-of-something-that-is-not-straight-3
-fig, ax = plt.subplots(figsize=(7, 4.5))
+from matplotlib.animation import FuncAnimation
+
+gaps = [2 * 0.85 ** k for k in range(24)]
+
+figure, ax = plt.subplots(figsize=(5.5, 3.6))
 xs = [x / 50 for x in range(0, 251)]
-ax.plot(xs, [curve(x) for x in xs], linewidth=2, label="x^2")
+ax.plot(xs, [curve(x) for x in xs], linewidth=2, color="tab:blue")
+ax.plot([1.5, 5], [9 + 6 * (x - 3) for x in [1.5, 5]], color="tab:red",
+        linewidth=1, label="the line the chords turn towards")
+chord, = ax.plot([], [], color="tab:orange")
+ends, = ax.plot([], [], "o", color="tab:orange")
+ax.set_xlim(0, 5)
+ax.set_ylim(0, 25)
+ax.legend(loc="upper left", fontsize=8)
 
-at = 3
-for gap, style in [(2, ":"), (1, "--"), (0.3, "-.")]:
-    m = slope_between(curve, at, gap)
-    ax.plot([at, at + gap], [curve(at), curve(at + gap)], "o-", markersize=5)
-    line_xs = [1.5, 4.5]
-    ax.plot(line_xs, [curve(at) + m * (x - at) for x in line_xs], style,
-            linewidth=1, label=f"gap {gap}: slope {m}")
 
-ax.plot([1.5, 4.5], [curve(at) + 6 * (x - at) for x in [1.5, 4.5]],
-        linewidth=2, color="tab:red", label="the limit: slope 6")
-ax.grid(alpha=0.3)
-ax.legend(fontsize=8)
-ax.set_ylim(0, 20)
-ax.set_title("Chords closing in on the tangent")
+def draw_step(k):
+    gap = gaps[k]
+    m = slope_between(curve, 3, gap)
+    chord.set_data([1.5, 5], [curve(3) + m * (x - 3) for x in [1.5, 5]])
+    ends.set_data([3, 3 + gap], [curve(3), curve(3 + gap)])
+    ax.set_title(f"gap {gap:.3f}: slope {m:.3f}")
+
+
+FuncAnimation(figure, draw_step, frames=24, interval=150)
 ```
 
-Each thin line goes through two points on the curve. As the second point
-slides towards the first, the line turns. The line it turns towards is
-the red one. The red line touches the curve at $x = 3$ and has the same
+Each orange line goes through two points on the curve. As the second
+point slides towards the first, the line turns, and it turns towards
+the red line. The red line touches the curve at $x = 3$ and has the same
 steepness as the curve there.
+
+**The limit of the chord's slope, as the gap shrinks to nothing, is the
+slope of the curve at that point.** The *derivative* of a function at a
+point is this limit. Here, the derivative of $x^2$ at $x = 3$ is 6.
 
 The *tangent line* at a point is the straight line that touches the
 curve at that point and has the same steepness as the curve there. Its
-slope is the derivative.
-
-(This "tangent" is a line. It is a different thing from the tangent
-ratio, $\tan$, in
+slope is the derivative. (This "tangent" is a line. It is a different
+thing from the tangent ratio, $\tan$, in
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle),
-even though the two share a name.)
+although the two share a name.)
 
 ## Three descriptions of one number
 
-This part needs care. Here are three ideas that look like three separate
-topics. They all describe the same number.
+Here are three ideas that look like three separate topics. They all
+describe the same number.
 
 | Description | What it means |
 |---|---|
@@ -158,11 +145,12 @@ topics. They all describe the same number.
 | **A rate of change** | How fast the output is changing for each unit of input, right at that point. |
 
 The next cell defines `derivative_at`, which computes the derivative
-with numbers. It takes a very small gap, and uses one point on each side
-of $x$. That gives a more accurate answer than a chord on one side only.
-
-Look at the $x$ values in the loop. Can you predict any of the slopes?
-Run it to check.
+with numbers. It uses one point on each side of $x$, a little way
+before and a little way after, and a gap of `1e-6`. One point on each
+side gives a more accurate answer than a chord on one side only. The
+gap is near the bottom of the V from
+[the limits page](tutorial:approaching-a-limit#how-small-should-the-gap-be),
+for this way of measuring.
 
 ```python exec
 id: three-descriptions-of-one-number-1
@@ -171,8 +159,15 @@ def derivative_at(f, x, gap=1e-6):
     return (f(x + gap) - f(x - gap)) / (2 * gap)
 
 
-for x in [-2, -0.5, 0, 1, 3]:
+for x in [-0.5, 0, 1, 3, -2]:
     print(f"slope of x^2 at x = {x:>4} is {derivative_at(curve, x):>8.4f}")
+```
+
+```predict
+type: number
+tolerance: 0.01
+
+The slope at 3 is 6. What will the last line print, for $x = -2$?
 ```
 
 Compare each answer with the $x$ value beside it. What do you notice?
@@ -180,16 +175,16 @@ Compare each answer with the $x$ value beside it. What do you notice?
 Each slope is double the $x$. **The derivative of $x^2$ is $2x$.** So
 the derivative is a function, and not a single number. It tells us the
 slope wherever we ask. For example, at $x = 5$ the slope is
-$2 \times 5 = 10$.
+$2 \times 5 = 10$. At $x = -2$ it is $-4$: the curve goes downhill
+there, so the slope is negative.
 
 We write $f'$, said "f prime", for the derivative of $f$. So if
 $f(x) = x^2$, then $f'(x) = 2x$. To *differentiate* a function means to
 find its derivative.
 
-The "rate of change" description does not need a graph.
-The falling ball in the last tutorial fell $4.9t^2$ metres after $t$
-seconds. Its speed is the rate of change of that distance, so its speed
-is the derivative:
+The "rate of change" description needs no graph. The falling ball on
+the limits page fell $4.9t^2$ metres after $t$ seconds. Its speed is the
+rate of change of that distance, so its speed is the derivative:
 
 ```python exec
 id: three-descriptions-of-one-number-2
@@ -202,9 +197,9 @@ for t in [0, 1, 2, 3]:
           f"and is travelling at {derivative_at(fallen, t):>5.2f} m/s")
 ```
 
-The first column is distance, and the second is speed. The relationship
-is the same as between a curve and its slope, and no axes are needed.
-This is why the straight-lines page used "rate of change" for slope.
+The first column is distance, and the second is speed. The
+relationship is the same as between a curve and its slope, and no axes
+are needed.
 
 ## The derivative as a function
 
@@ -237,315 +232,266 @@ Read the two graphs together:
 - Where the top curve climbs steeply, the bottom graph is large.
 
 **At a turning point, the curve is flat for a moment, so the derivative
-is zero there.** This is the most useful single fact on this page. It
-connects back to
+is zero there.** This connects back to
 [Parabolas: completing the square](tutorial:parabolas): the vertex of a
 parabola is the point where the slope is zero.
 
 (The opposite is not always true. A zero slope tells you where to *look*
-for a turning point. The curve $x^3$ is flat for a moment at $x = 0$, but it
-keeps climbing on both sides, so that point is not a turning point.)
+for a turning point. The curve $x^3$ is flat for a moment at $x = 0$, but
+it keeps climbing on both sides, so that point is not a turning point.)
 
-Completing the square put the vertex of $x^2 + 6x + 5$ at $x = -3$. What
-should the slope be there? Run the cell to check.
+Completing the square writes $x^2 - 4x + 1$ as $(x - 2)^2 - 3$, so its
+vertex is at $x = 2$. What should the slope be there?
 
 ```python exec
 id: the-derivative-as-a-function-2
 def quadratic(x):
-    return x ** 2 + 6 * x + 5
+    return x ** 2 - 4 * x + 1
 
 
-# Completing the square said the vertex was at x = -3. Ask the slope instead.
-for x in [-5, -4, -3, -2, -1]:
-    print(f"slope at x = {x:>3}: {derivative_at(quadratic, x):>7.4f}")
+for x in [0, 1, 2, 3, 4]:
+    print(f"slope at x = {x}: {derivative_at(quadratic, x):>7.4f}")
 ```
 
-The slope is zero at −3, exactly where completing the square put the
-vertex. (The `-0.0000` is a tiny rounding error, and it means zero.)
-**Two completely different methods give the same answer.** When that
-happens, you can trust both methods.
+The slope is zero at 2, where completing the square put the vertex.
+**Two different methods give the same answer.** When that happens, each one
+checks the other.
 
 ### Your turn
 
-Where are the turning points of $x^3 - 3x$?
-
-1. Use `derivative_at` to find the slope of `cubic` at several values of
-   $x$.
-2. Look for the values of $x$ where the slope is zero.
-3. Check that the curve really turns there: is the slope negative on one
-   side and positive on the other?
+Where does a curve turn? We can let Python look for us. Between two
+points where the slope has different signs, it must pass through zero.
+Can you write `turning_points(f, low, high)`? It tries 1000 small steps
+from `low` to `high`, and returns the middle of each step where the
+slope changes sign, rounded to one decimal place. Try it on
+$2x^3 - 3x^2 - 12x + 1$.
 
 ```python exec
-id: your-turn-1
+id: the-derivative-as-a-function-3
 def cubic(x):
-    return x ** 3 - 3 * x
+    return 2 * x ** 3 - 3 * x ** 2 - 12 * x + 1
 
 
-# Your investigation here.
+def turning_points(f, low, high, steps=1000):
+    """Where the slope of f changes sign, between low and high."""
+    # Your code here.
 ```
 
-## Rules instead of limits
+```hint
+The width of one step is `(high - low) / steps`. For each step, find the
+slope at its left end and at its right end. When one is below zero and
+the other is not, the slope has changed sign inside the step.
+```
 
-Computing a limit every time would be tiring. Luckily, the answers
-follow patterns. The cell below prints the slopes of $x$, $x^2$, $x^3$
-and $x^4$ at three points. Can you find a pattern in each row?
+```hint
+after: 3 errors
+title: The shape of it
+
+    found = []
+    width = (high - low) / steps
+    for i in range(steps):
+        left = derivative_at(f, low + i * width)
+        right = ...
+        if ...:
+            found.append(round(low + (i + 0.5) * width, 1))
+    return found
+
+What should happen when a slope is exactly zero at the end of a step?
+It is best to count it once, not twice.
+```
+
+```inputs
+turning_points(cubic, -3, 3)
+turning_points(quadratic, 0, 5)
+turning_points(lambda x: x ** 3, -3, 3)     # flat at 0, but not a turn
+```
+
+```solution
+def turning_points(f, low, high, steps=1000):
+    """Where the slope of f changes sign, between low and high."""
+    found = []
+    width = (high - low) / steps
+    for i in range(steps):
+        left = derivative_at(f, low + i * width)
+        right = derivative_at(f, low + (i + 1) * width)
+        if left < 0 <= right or left > 0 >= right:
+            found.append(round(low + (i + 0.5) * width, 1))
+    return found
+---
+The cubic turns at $x = -1$ and at $x = 2$. `left < 0 <= right` counts a
+step where the slope goes from negative to zero or positive, and the
+other test counts the opposite. A slope of exactly 0 at the end of one
+step is counted in that step, and not again in the next. $x^3$ has no
+turning points: its slope is never negative, so it never changes sign.
+```
+
+## Derivatives in your world
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A diver goes down and comes back up. Her depth is $6t - 0.3t^2$ metres,
+$t$ minutes after she leaves the surface. How fast is she going down
+after 4 minutes? When is she deepest, and how deep is that? Use
+`derivative_at` and `turning_points`.
 
 ```python exec
-id: rules-instead-of-limits-1
-print("  function        slope at 2      slope at 3      slope at 5")
-for name, f in [("x", lambda x: x),
-                ("x^2", lambda x: x ** 2),
-                ("x^3", lambda x: x ** 3),
-                ("x^4", lambda x: x ** 4)]:
-    row = [f"{derivative_at(f, x):>13.4f}" for x in (2, 3, 5)]
-    print(f"  {name:<12} {''.join(row)}")
+id: derivatives-in-your-world-1--sea-and-sky
+def depth(t):
+    return 6 * t - 0.3 * t ** 2
 ```
 
-Compare each row with powers of the $x$ values. For example, the slope
-of $x^3$ at 3 is 27, which is $3 \times 3^2$. The pattern is:
+```hint
+"How fast" is the derivative. "Deepest" is a turning point: where the
+depth stops growing and starts to shrink.
+```
 
-| Function | Its derivative |
-|---|---|
-| $x$ | $1$ everywhere |
-| $x^2$ | $2x$ |
-| $x^3$ | $3x^2$ |
-| $x^4$ | $4x^3$ |
+```inputs
+round(derivative_at(depth, 4), 2)
+turning_points(depth, 0, 20)
+```
 
-> **The power rule:** the derivative of $x^n$ is $n x^{n-1}$.
+```solution
+def turning_points(f, low, high, steps=1000):
+    found = []
+    width = (high - low) / steps
+    for i in range(steps):
+        left = derivative_at(f, low + i * width)
+        right = derivative_at(f, low + (i + 1) * width)
+        if left < 0 <= right or left > 0 >= right:
+            found.append(round(low + (i + 0.5) * width, 1))
+    return found
 
-In words: bring the power down to the front, and reduce the power by
-one. For example, the derivative of $x^7$ is $7x^6$.
 
-The next cell checks the rule against the numerical derivative, at
-$x = 2.5$. Do you expect the two columns to agree?
+print("going down at", derivative_at(depth, 4), "m a minute")
+deepest = turning_points(depth, 0, 20)[0]
+print("deepest at", deepest, "minutes:", depth(deepest), "m")
+---
+`turning_points` is your function from earlier on the page. After 4
+minutes she is going down at 3.6 metres a minute. She is
+deepest after 10 minutes, at 30 m, where her rate of going down is 0.
+After that, the rate is negative: she is coming back up.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+A rocket's height is $5t^2 + 0.1t^3$ metres, $t$ seconds after launch.
+How fast is it climbing after 10 seconds? After 20? Can you draw its
+speed for the first 30 seconds, under its height?
 
 ```python exec
-id: rules-instead-of-limits-2
-def power_rule(n):
-    """The derivative of x^n, as a function."""
-    return lambda x: n * x ** (n - 1)
-
-
-for n in [1, 2, 3, 4, 7]:
-    numeric = derivative_at(lambda x: x ** n, 2.5)
-    by_rule = power_rule(n)(2.5)
-    print(f"x^{n}:  numerically {numeric:>12.5f}   by the rule {by_rule:>12.5f}")
+id: derivatives-in-your-world-1--planets-and-moons
+def height(t):
+    return 5 * t ** 2 + 0.1 * t ** 3
 ```
 
-### Adding things together
+```hint
+The speed is the derivative of the height. For the drawing, use two
+axes, as the cell with `top` and `bottom` did.
+```
 
-What is the slope of $x^3 + x^2$? Here $f$ is $x^3$ and $g$ is $x^2$.
-Before you run the cell, can you guess how the third slope relates to
-the first two?
+```inputs
+round(derivative_at(height, 10), 2)
+round(derivative_at(height, 20), 2)
+```
+
+```solution
+print(derivative_at(height, 10), derivative_at(height, 20))
+
+times = [t / 10 for t in range(301)]
+fig, (up, fast) = plt.subplots(2, 1, figsize=(7, 5), sharex=True)
+up.plot(times, [height(t) for t in times])
+up.set_ylabel("height (m)")
+fast.plot(times, [derivative_at(height, t) for t in times], color="tab:orange")
+fast.set_ylabel("speed (m/s)")
+fast.set_xlabel("seconds")
+---
+After 10 seconds it climbs at 130 m/s, and after 20 seconds at 320 m/s.
+The speed grows faster and faster, so its graph curves upwards too.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The road from the village goes over a hill. The road's height is
+$40 + 12x - 3x^2$ metres, $x$ km from the village. How steep is the road
+where it leaves the village, in metres of climb for each kilometre?
+Where is the top of the hill, and how high is it?
 
 ```python exec
-id: rules-instead-of-limits-3
-f = lambda x: x ** 3
-g = lambda x: x ** 2
-both = lambda x: f(x) + g(x)
-
-for x in [1, 2, 4]:
-    print(f"at x = {x}:  slope of f is {derivative_at(f, x):>8.4f},"
-          f"  of g is {derivative_at(g, x):>8.4f},"
-          f"  of f+g is {derivative_at(both, x):>8.4f}")
+id: derivatives-in-your-world-1--fantasy-maps
+def road(x):
+    return 40 + 12 * x - 3 * x ** 2
 ```
 
-> **The sum rule:** the derivative of $f + g$ is the derivative of $f$
-> plus the derivative of $g$.
-
-That is as convenient as it sounds. A polynomial is a sum of powers, so
-we can differentiate it one term at a time. For example, the derivative
-of $x^2 + 6x + 5$ is $2x + 6 + 0$, which is $2x + 6$. (A number on its
-own, like 5, never changes, so its slope is 0.)
-
-The next cell stores a polynomial as a list of its coefficients, from
-the constant term upwards. The list `[5, 6, 1]` means $5 + 6x + x^2$.
-
-```python exec
-id: rules-instead-of-limits-4
-def differentiate_polynomial(coefficients):
-    """Coefficients from the constant term upwards: [c, b, a] means a x^2 + b x + c."""
-    return [i * coefficients[i] for i in range(1, len(coefficients))]
-
-
-def evaluate(coefficients, x):
-    return sum(c * x ** i for i, c in enumerate(coefficients))
-
-
-poly = [5, 6, 1]           # 5 + 6x + x^2
-slope_poly = differentiate_polynomial(poly)
-print("the polynomial:", poly)
-print("its derivative:", slope_poly)
-
-for x in [-5, -3, 0, 2]:
-    print(f"  at x = {x:>3}:  by rule {evaluate(slope_poly, x):>8.4f}"
-          f"   numerically {derivative_at(lambda v: evaluate(poly, v), x):>8.4f}")
+```hint
+The steepness is the derivative. The top of the hill is a turning
+point.
 ```
 
-The derivative is `[6, 2]`, which means $6 + 2x$. That is the
-$2x + 6$ we found by hand.
-
-### Multiplying things together
-
-Most people expect this rule: "the derivative of a product is the
-product of the derivatives". It is wrong, and it helps to see that it is
-wrong before we see the right rule.
-
-Here $f$ is $x^2$ and $g$ is $x^3$, at $x = 2$. Do you think the last two
-lines will match?
-
-```python exec
-id: rules-instead-of-limits-5
-f = lambda x: x ** 2
-g = lambda x: x ** 3
-product = lambda x: f(x) * g(x)
-
-x = 2
-print("slope of f:      ", derivative_at(f, x))
-print("slope of g:      ", derivative_at(g, x))
-print("those multiplied:", derivative_at(f, x) * derivative_at(g, x))
-print("slope of f*g:    ", derivative_at(product, x))
+```inputs
+round(derivative_at(road, 0), 2)
+turning_points(road, 0, 4)
 ```
 
-They do not match, and they are not close: 48 against 80. Multiplying
-the two derivatives does not give the derivative of the product.
-
-> **The product rule:** the derivative of $f \cdot g$ is
-> $f' \cdot g + f \cdot g'$.
-
-In words: differentiate the first and leave the second alone. Then
-differentiate the second and leave the first alone. Add the two results.
-
-```python exec
-id: rules-instead-of-limits-6
-def product_rule(f, df, g, dg):
-    return lambda x: df(x) * g(x) + f(x) * dg(x)
+```solution
+def turning_points(f, low, high, steps=1000):
+    found = []
+    width = (high - low) / steps
+    for i in range(steps):
+        left = derivative_at(f, low + i * width)
+        right = derivative_at(f, low + (i + 1) * width)
+        if left < 0 <= right or left > 0 >= right:
+            found.append(round(low + (i + 0.5) * width, 1))
+    return found
 
 
-by_rule = product_rule(lambda x: x ** 2, lambda x: 2 * x,
-                       lambda x: x ** 3, lambda x: 3 * x ** 2)
-
-for x in [1, 2, 3.5]:
-    print(f"at x = {x}:  rule gives {by_rule(x):>10.4f},"
-          f"   numerically {derivative_at(product, x):>10.4f}")
+print("steepness at the village:", derivative_at(road, 0))
+top = turning_points(road, 0, 4)[0]
+print("the top is", top, "km out, at", road(top), "m")
+---
+`turning_points` is your function from earlier on the page. The road
+climbs 12 m for each kilometre as it leaves the village. The
+top is 2 km out, at 52 m. After that the slope is negative, and the
+road goes down.
 ```
 
-We can check this another way. $x^2 \cdot x^3$ is $x^5$, and by the
-power rule its derivative is $5x^4$. The product rule gives:
+</div>
 
-$$2x \cdot x^3 + x^2 \cdot 3x^2 = 2x^4 + 3x^4 = 5x^4$$
-
-The two methods agree. At $x = 2$, $5x^4 = 5 \times 16 = 80$, the same
-80 as the cell above.
-
-### Your turn
-
-How would you differentiate these by hand?
-
-1. $3x^4 - 2x + 7$
-2. $(x + 1)(x^2 - 3)$
-3. $x^2 (x + 5)$
-
-For each one, find the derivative first. Then check it at a few
-points with `derivative_at`.
-
-```python exec
-id: your-turn-2
-# Your answers, then a check with derivative_at.
-```
-
-## The chain rule
-
-There is one more rule. It is worth meeting, but you do not need to
-practise it until it is automatic.
-
-What happens when one function is inside another? Here the inner
-function is $2x + 1$, and the outer function cubes whatever it is given.
-So the whole thing is $(2x + 1)^3$. Look at the last two lines of the
-cell. Do you think they will agree?
-
-```python exec
-id: the-chain-rule-1
-inner = lambda x: 2 * x + 1
-outer = lambda u: u ** 3
-nested = lambda x: outer(inner(x))
-
-x = 1.5
-print("slope of the inner:  ", derivative_at(inner, x))
-print("slope of the outer at inner(x):", derivative_at(outer, inner(x)))
-print("those multiplied:    ",
-      derivative_at(inner, x) * derivative_at(outer, inner(x)))
-print("slope of the whole:  ", derivative_at(nested, x))
-```
-
-Those last two agree: both are 96.
-
-> **The chain rule:** the derivative of $f(g(x))$ is
-> $f'(g(x)) \cdot g'(x)$.
-
-In words: first, differentiate the outside function, and leave the
-inside alone. Then multiply by the derivative of the inside.
-
-The idea behind it is that rates multiply. Suppose $u$ changes three
-times as fast as $x$, and $y$ changes twice as fast as $u$. Then $y$
-changes $3 \times 2 = 6$ times as fast as $x$. Rates multiply along a
-chain, and that gives the rule its name.
-
-### Your turn
-
-How might you differentiate $(3x + 2)^5$ with the chain rule?
-
-1. Name the inside function and the outside function.
-2. Find the derivative by hand.
-3. Check it at a point with `derivative_at`.
-
-```python exec
-id: your-turn-3
-# Your answer, then the check.
-```
-
-## What is not on this page
-
-We have left out two topics on purpose. Here they are, so that you do
-not have to wonder.
-
-**The quotient rule** is a rule for one function divided by another. It
-is mechanical. You can manage without it. Write the division as a
-product with a negative power, and use the product rule and the chain
-rule.
-
-**Integration by parts** is a technique for integration, which undoes
-differentiation: it goes from a rate of change back to the total. A
-course that uses a lot of integration needs it. This course does not.
-
-Calculus is not the focus of this course. You need to know what a
-derivative *is*: a rate of change, the slope of a tangent line, and a
-limit. You also need to compute simple ones. More practice with the
-other techniques would take weeks and give you very little.
-
-## Reflection
+## Looking back
 
 A derivative is the slope of a curve at a single point. It is a limit,
-and the limit makes the question possible to answer.
-
-**One number has three descriptions.** A limit of chords, the slope of the
-tangent line, and a rate of change. Which one you use depends on what
-you are doing.
-
-**The derivative is a function.** It is a rule that gives the slope
-wherever you ask, and not a single number.
-
-**A turning point has zero slope.** This is the most useful fact here,
-and it agrees with what completing the square told you in
-[Parabolas: completing the square](tutorial:parabolas).
-
-**The rules save you the limit.** Bring the power down and reduce it by
-one. Sums split into their parts. Products do not. They need
-$f'g + fg'$. For one function inside another, the rates multiply.
+the slope of a tangent line, and a rate of change: three descriptions
+of one number. The derivative of a function is a function, and where it
+is zero, the curve may turn.
 
 Pick something that changes over time: a bank balance, a temperature, a
 download. In a few sentences, what would its derivative be, in words,
 and what units would it have?
+
+A challenge: `turning_points` says where a curve turns, but not whether
+it is a top or a bottom. Can you make it say which? What does the slope
+do on each side of a top?
+
+```python challenge
+def derivative_at(f, x, gap=1e-6):
+    return (f(x + gap) - f(x - gap)) / (2 * gap)
+
+
+def tops_and_bottoms(f, low, high, steps=1000):
+    """Each turning point, and whether it is a top or a bottom."""
+    # Your code here.
+
+
+print(tops_and_bottoms(lambda x: 2 * x ** 3 - 3 * x ** 2 - 12 * x + 1, -3, 3))
+```
+
+Every slope on this page came from a limit.
+[Derivative rules: found by experiment](tutorial:derivative-rules)
+finds patterns in the answers, so that we can write down a derivative
+without computing one.
 
 ## Where to read more
 

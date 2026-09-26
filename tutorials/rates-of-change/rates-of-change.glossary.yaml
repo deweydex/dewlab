@@ -39,30 +39,6 @@ entries:
     kind: concept
     definition: >
       To differentiate a function means to find its derivative.
-  - term: "power rule: d/dx(x^n) = n*x^(n-1)"
-    kind: formula
-    definition: >
-      The power rule gives the derivative of x^n. Bring the power down to
-      the front, and reduce the power by one.
-    example: "power_rule(3) is the function lambda x: 3 * x ** 2"
-  - term: "sum rule: d/dx(f + g) = f' + g'"
-    kind: formula
-    definition: >
-      The derivative of a sum is the sum of the derivatives. That is why a
-      polynomial can be differentiated one term at a time.
-  - term: "product rule: d/dx(f * g) = f'*g + f*g'"
-    kind: formula
-    definition: >
-      The derivative of a product is not the product of the derivatives.
-      Differentiate each factor in turn, leaving the other alone, and add
-      the two results.
-  - term: "chain rule: d/dx(f(g(x))) = f'(g(x)) * g'(x)"
-    kind: formula
-    definition: >
-      The chain rule is for one function inside another. Differentiate the
-      outside and leave the inside alone, then multiply by the derivative
-      of the inside. Rates multiply: if u changes three times as fast as x,
-      and y twice as fast as u, then y changes six times as fast as x.
   - term: turning point is where the derivative is zero
     kind: concept
     definition: >
