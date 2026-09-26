@@ -33,7 +33,7 @@ not a fact about the person who wrote it.
 If a program stops with an error message, start with
 [Reading an error message](tutorial:reading-an-error-message). Most
 programs on this page do not stop. They run to the end and give a wrong
-answer, which is harder to catch.
+answer, which is harder to find.
 
 ## A star goes missing
 
@@ -146,7 +146,7 @@ scores = [int(score) for score in typed]
 best = max(scores)
 print("Best score:", best)
 ---
-`max` compares text in alphabetical order, one character at a time.
+`max` compares text by its characters, one at a time, from the left.
 `"9"` comes after `"3"`, so `"9"` is after `"30"`. `int()` turns
 each piece of text into a whole number, and then `max` compares numbers.
 
@@ -269,8 +269,8 @@ print(heaviest([2.1, 8.4, 6.5, 1.2]))
 ---
 `return best` was indented one step too far, so it was inside the loop.
 `return` ends the function at once, so the loop stopped after the first
-fossil. Moved out one step, it runs once, after the loop has looked at
-every fossil.
+fossil. When we move it out one step, it runs once, after the loop has
+looked at every fossil.
 
 The bug hides when the heaviest fossil comes first in the list. A test on
 that list alone gives the right answer.
@@ -308,7 +308,7 @@ Before you run it: will the line "First stage away" appear?
 - Yes, once
   - 25 steps of 0.1 make 2.5.
 - No
-  - Something about adding 0.1 so many times.
+  - Adding 0.1 so many times may change something.
 ```
 
 ```hint
@@ -333,12 +333,14 @@ for step in range(50):
 print("Separated:", separated)
 ---
 After 25 steps, `time` is `2.500000000000001`, not `2.5`. A computer
-stores 0.1 very nearly, but not exactly, and 25 small differences add up.
+stores 0.1 very nearly, but not exactly, and the 25 small differences grow
+into a bigger one.
 `==` asks whether two numbers are exactly the same, so it is never true
-here. `round(time, 1)` compares the time to one decimal place.
+here. `round(time, 1)` rounds the time to one decimal place, so `==`
+compares 2.5 with 2.5.
 
 Another way is to count whole steps, which are stored exactly:
-`if step == 24`.
+`if step == 24`. `step` counts from 0, so step 24 is the 25th step.
 ```
 
 ### A star that was added
@@ -485,13 +487,13 @@ half. This is called *bisection*. You check the middle, keep the half that
 still goes wrong, and then check the middle of that half. With sixteen
 stages, four checks are enough.
 
-Bisection needs the right answer at the middle, found without the program.
-We knew the distance, and we could multiply by a million in our heads.
+To use bisection, you need to know the answer at the middle without the
+program. We knew the distance, and we could multiply by a million in our heads.
 That is why we wrote our number down first.
 
 ## The smallest example that still goes wrong
 
-> "My chain reads a ship's log and finds its most common word. It says
+> "My program reads a ship's log and finds its most common word. It says
 > the most common word is `''`, which is nothing at all."
 
 The log below is made up. It has two spaces after each full stop, as many
@@ -524,7 +526,8 @@ print(repr(most_common(count_words(log))))
 `repr` shows text with its quotes, so an empty piece of text shows as
 `''` and does not disappear.
 
-The log is three lines long. The bug is somewhere in those three lines.
+The text of the log is three lines long. Something in those three lines
+makes the program go wrong.
 Here is a different way to find it. Make the text shorter, and keep
 making it shorter, as long as it still goes wrong. Can you find the
 smallest text that still gives `''` in `count_words`?
@@ -588,13 +591,13 @@ print(repr(most_common(count_words(log))))
 nothing, so it makes an empty word, `''`, at every double space. In the
 log it makes ten empty words, and there are only seven of *the*, so `''`
 wins.
-`split()` with nothing in the brackets splits at any run of spaces and new
-lines, and makes no empty words. The most common word is then `'the'`.
+`split()` with nothing in the brackets splits wherever there are one or
+more spaces or new lines, and makes no empty words. The most common word is then `'the'`.
 ```
 
 The bug was two spaces in a row. A text of four characters, an a, two
-spaces and a b, shows it as well as the whole log does. In an example that small, there is
-nowhere else for the bug to hide.
+spaces and a b, shows it as well as the whole log does. A text that small has only one
+place for the bug to be.
 
 The smallest program, or the smallest input, that still shows a bug is
 called a *minimal reproduction*. It is also the best thing to send when you
@@ -644,8 +647,14 @@ Change the 1 to 2, then 3, and so on. Run the cell after each change. When
 it crashes, run it again with the same seed. Does it crash again?
 ```
 
-With `random.seed(4)`, the program crashes every time, at the same turn.
-Now we can test it. The error is an `IndexError`. It means an index that is
+<details class="dl-answer"><summary>one seed that crashes</summary>
+
+Seed 4 is the first one that crashes. Seed 5 and seed 7 crash too.
+
+</details>
+
+With a seed that crashes, the program crashes every time, at the same
+turn. Now we can test it. The error is an `IndexError`. It means an index that is
 not in the list. The list has five rooms, with indexes 0 to 4.
 `random.randint(0, len(rooms))` gives a whole number from 0 to 5,
 *including* 5, so about one turn in six asks for `rooms[5]`.
@@ -746,17 +755,16 @@ You have used five habits on this page. The course names each one.
 - **Logical reasoning.** In the light program, one check showed that
   stages three and four were not the cause. We used that to choose the
   next check.
-- **Persistence.** In the dungeon game, the crash stopped, and we did not
-  stop there. We counted the rooms, and found the bug that was still
-  there.
-- **Lateral thinking.** To test the light program, we did not use a
-  planet. We used the one distance whose answer we already knew: about
-  8 minutes from the Sun to the Earth.
+- **Persistence.** In the dungeon game, the crash stopped. We still
+  counted the rooms, and found the bug that was still in the code.
+- **Lateral thinking.** To test the light program, we used a distance
+  whose answer we already knew. Light takes about 8 minutes from the Sun
+  to the Earth.
 
 ## Looking back
 
-You have met nine bugs. Which one would you have been slowest to find,
-if it had not come with a report? What test would have caught it early?
+You have met nine bugs. Without its report, which bug would take you
+longest to find? What test would find it early?
 
 A challenge: plant a bug of your own. Here is a program that works. Can
 you change one character so that it runs with no error and gives a wrong

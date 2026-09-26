@@ -7,8 +7,8 @@ version: 2026.09.26.1
 
 # Debugging: from a report to the line that caused it — Practice
 
-Four more reports, two questions to think about, and one problem you have
-not met before. Three of the bugs use ideas from earlier pages, and each
+This page has four more reports, two questions to think about, and one
+problem you have not met before. Three of the bugs use ideas from earlier pages, and each
 one says which page. Try each problem before you open anything under it.
 
 Keep a log for every bug, as on the tutorial page: a guess, a test, and
@@ -142,7 +142,7 @@ Before you run it: what will the ten flips be?
 - A mix of heads and tails, the same on every run
   - The seed makes the whole list repeat.
 - Ten of the same
-  - Something about where the seed is set.
+  - Where the seed is set may matter.
 ```
 
 ```hint
@@ -165,8 +165,8 @@ for flip in range(10):
 
 print(flips)
 ---
-A seed sets where the random numbers start. Set inside the loop, it goes
-back to the same start before every flip, so every flip is the first flip.
+A seed sets where the random numbers start. Set inside the loop, it returns
+to the same start before every flip, so every flip is the first flip.
 Set once, before the loop, it lets the flips continue from that start.
 With seed 42, the ten flips have eight heads and two tails.
 ```
@@ -246,9 +246,9 @@ for the cause? What could go wrong next month?
 <details class="dl-answer"><summary>one way through it</summary>
 
 It is a fix for the symptom. The total now looks right, and the cause, the
-line that adds 3 too many, is still there. If the cause changes, say the
-extra 3 becomes 4 when somebody adds a new item, the `- 3` makes the total
-wrong again, and it hides where the real mistake is.
+line that adds 3 too many, is still there. For example, somebody adds a new
+item, and the extra 3 becomes 4. Then the `- 3` makes the total wrong
+again, and it hides where the real mistake is.
 
 </details>
 
@@ -258,8 +258,8 @@ seed help, before we fixed anything?
 <details class="dl-answer"><summary>one way through it</summary>
 
 With a seed, the program makes the same "random" numbers on every run. So
-the crash happened every time, at the same turn. A test that can pass by
-luck says very little. With the seed, a test of a fix meant something.
+the crash happened every time, at the same turn. So with the seed, when
+the crash stopped, we knew the fix had stopped it, and not luck.
 
 </details>
 
@@ -277,16 +277,16 @@ How many different paths reach the treasure?
 
 Before you do anything else, write a guess in the cell.
 
-**First, make sure you understand the question.** What counts as a
-different path? Is right, right, down, down the same path as down, down,
-right, right?
+**What is the question asking?** What counts as a different path? Is
+right, right, right, down, down, down the same path as down, down, down,
+right, right, right?
 
-**Then try smaller dungeons.** How many paths are there in a dungeon of
+**What about smaller dungeons?** How many paths are there in a dungeon of
 one room? Of two rooms by two? Of three by three? Draw them, or list the
 moves.
 
-**Then look for a plan.** Think about any room. From which rooms can you
-arrive in it? How many paths reach it, if you know how many reach those
+**Is there a plan?** Pick any room. From which rooms can you arrive in
+it? How many paths reach it, if you know how many reach those
 rooms?
 
 ```python exec
@@ -298,8 +298,9 @@ def paths(rows, columns):
 ```
 
 ```hint
-Every room in the top row has only one path to it: right, right, right.
-The same is true for every room in the left column. What about the room
+Every room in the top row has only one path to it: go right all the way.
+Every room in the left column has only one path too: go down all the
+way. What about the room
 at row 1, column 1?
 ```
 
