@@ -4914,7 +4914,19 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.243 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
+**7.243 — A video library in `planning/video-library/`: 895 hand-picked YouTube and Nebula videos, keyed to the tutorials they would sit beside.** Josh supplied a list of 119 channels and asked for something filterable to reach for when building pages, and to browse for ideas: coding projects, algorithms, simulations.
+
+**Three CSV files, not a page on the site.** Nothing links to a video yet, and the list is for people writing tutorials, which is what 7.192 kept `planning/` for. A spreadsheet filters by tutorial slug or topic with no tooling. `picks.csv` is the judgement; `channels.csv` says which channels were read and why the rest were not; `all-videos.csv` keeps every title from the 58 reviewed channels, so a search for a technique does not depend on what was picked.
+
+**Picked from titles, not from watching.** Every title on the reviewed channels was read, and each pick names the tutorial folders it fits, checked against `tutorials/`. The README says plainly that a video must be watched before it goes on a page, and that its `note` column is written for authors and is never the sentence a student reads.
+
+**Nebula by channel and by title.** Twenty channels appear in Nebula's public channel list; for six of them, videos were matched to YouTube titles one to one, which gave 90 Nebula links among the picks.
+
+*Cost to change: low. Plain data with no reader in `build.py` or the tests; a row can be added or removed by hand. If a page ever embeds or lists videos, it should read `picks.csv` rather than copy from it.*
+
+---
+
+**7.244 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
 
 - **`data/exoplanets.csv`** stays. The NASA Exoplanet Archive states no licence and asks for an acknowledgment, which `data/exoplanets.yaml` carries; the site uses the data for teaching.
 - **Length.** The 1,800–2,600-word range the unit rewrites were briefed to is dropped. A page is as long as it needs to be to read well. Several Dewey Track tutorials run to 3,000–3,600 words and stay that way.

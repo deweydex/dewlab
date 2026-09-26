@@ -35,6 +35,7 @@ It is short; if you read one part, read `#voice`.
 | Reviewing a tutorial's cell code | `.claude/skills/cell-code-review/SKILL.md` |
 | Working an issue from the report doors | `.claude/skills/triage-report/SKILL.md` |
 | Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md` |
+| Looking for a video to link from a page | `planning/video-library/README.md` |
 | Wondering why something works the way it does | `DECISIONS_LOG.md` |
 | Anything else | `README.md` |
 
