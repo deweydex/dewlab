@@ -4,7 +4,11 @@
 
 source: >
   "Democracy and Education: An Introduction to the Philosophy of Education,"
-  by John Dewey. First published by The Macmillan Company, 1916.
+  by John Dewey. First published by The Macmillan Company, 1916. The text
+  is the Internet Archive's OCR of a library copy Google scanned for Google
+  Books (item democracyandedu00dewegoog).
+
+url: https://archive.org/details/democracyandedu00dewegoog
 
 license: >
   Public domain in the United States — published in 1916, well before the
@@ -13,7 +17,18 @@ license: >
   titles) and back-matter index carry visible OCR errors, and the body
   keeps the printed page's running headers and about 2,100 words split
   with a hyphen at a line end. A tutorial using this file trims down to
-  the chapters and cleans both before treating it as prose.
+  the chapters and cleans both before treating it as prose. Google asks
+  that its scans be used for non-commercial purposes and credited to it,
+  as this site's teaching use and the source above do.
+
+snapshot: 2026-09-20
+
+trimmed: >
+  Google's notice at the start of the scan, its first 3,016 characters,
+  is removed. Everything after it is the archive's OCR text as it was when
+  the file was saved, errors included. It has no live source: the text
+  does not change, and a tutorial's cleaning steps are written for this
+  copy's errors.
 
 description: >
   The complete text of Dewey's 1916 book, front matter and index intact —

@@ -235,11 +235,35 @@ _widget_values: dict[tuple[str, str], object] = {}
 # runtime from the build-time manifest.
 _data_base = "../data/"
 
+# What build.py knows about each file in `data/`: its snapshot date, and
+# the live source it can be fetched from, if it has one. Keyed by file name
+# ("life-expectancy.csv"). None until it is needed: a hosted page fetches
+# `data/index.json` the first time a cell loads a dataset, and a downloaded
+# page is handed its own datasets' entries by configure(), since it cannot
+# fetch anything from disk.
+_data_index: dict | None = None
 
-def configure(data_base: str) -> None:
-    """Point `load_csv` at this page's `/data/` folder."""
-    global _data_base
+# A downloaded page's snapshots, carried inside the page itself: file name
+# to base64 of the gzipped file. Empty on a hosted page, which fetches them.
+_data_files: dict[str, str] = {}
+
+# How long a live source gets to answer before the snapshot is used
+# instead. A reader waiting on a slow website learns nothing from the wait.
+LIVE_SECONDS = 10
+
+
+def configure(data_base: str, data_index: str | None = None,
+              data_files: str | None = None) -> None:
+    """Point `load_csv` at this page's `/data/` folder.
+
+    `data_index` and `data_files` are JSON strings, and only a downloaded
+    page passes them: the entries of `data/index.json` for the datasets
+    it declares, and those datasets' snapshots.
+    """
+    global _data_base, _data_index, _data_files
     _data_base = data_base or "../data/"
+    _data_index = json.loads(data_index) if data_index else None
+    _data_files = json.loads(data_files) if data_files else {}
 
 
 def _require_cell() -> _CellContext:
@@ -1552,52 +1576,26 @@ async def load_csv(name: str, **read_csv_kwargs):
         df = await load_csv("life-expectancy.csv")
         df = await load_csv("https://example.org/some-data.csv")
 
-    Datasets in the shared folder live once and are fetched at runtime —
-    never embedded or copied per tutorial. They come from the same origin
-    as the page, so that fetch is straightforward.
+    A dataset in the shared folder comes from its live source when it has
+    one, and from its snapshot, the copy saved in `data/`, when it has not
+    or when the source does not answer. A quiet line under the cell says
+    which, and how old the copy is, so a number that differs from the
+    page's has its reason beside it. See `_load_bundled()`.
 
-    A URL is not, and the failure needs explaining rather than reporting.
-    A browser will only let a page read a file from another website if that
-    website says it may (the CORS rule); when it refuses, the fetch fails
-    with nothing useful attached, and a student reasonably concludes their
-    own code is wrong. So a remote failure raises a message that says what
-    actually happened and what to do instead — downloading the file and
-    adding it through dewmini's Files section always works, because a file
-    already on the machine has no other website's permission to ask for.
+    A URL is not in the shared folder, and its failure needs explaining
+    rather than reporting. A browser will only let a page read a file from
+    another website if that website says it may (the CORS rule); when it
+    refuses, the fetch fails with nothing useful attached, and a student
+    reasonably concludes their own code is wrong. So a remote failure
+    raises a message that says what happened and what to do instead:
+    downloading the file and adding it through dewmini's Files section
+    always works, because a file already on the machine has no other
+    website's permission to ask for.
     """
     import pandas as pd  # noqa: PLC0415 - deliberately lazy
-    from pyodide.http import pyfetch  # pragma: no cover - browser only
 
-    remote = name.startswith("http://") or name.startswith("https://")
-    url = name if remote else _data_base + name
-
-    try:
-        response = await pyfetch(url)
-    except Exception as exc:  # pragma: no cover - browser-only failure path
-        if not remote:
-            raise
-        raise ConnectionError(
-            f"Couldn't fetch {name}.\n\n"
-            "That file is on another website, and a browser only allows this "
-            "page to read it if that site permits it — many do not. Nothing "
-            "is wrong with your code.\n\n"
-            "What does always work: download the file yourself, then add it "
-            "through Files in the Workbench panel, and load it by name "
-            "instead."
-        ) from exc
-
-    if response.status != 200:
-        if remote:
-            raise ConnectionError(
-                f"{name} returned HTTP {response.status}.\n\n"
-                "The address may have changed, or that site may not be "
-                "handing this file out any more. Downloading it yourself and "
-                "adding it through Files in the Workbench panel always works."
-            )
-        raise FileNotFoundError(
-            f"{name} is not in the shared data folder (HTTP {response.status})"
-        )
-    return pd.read_csv(io.BytesIO(await response.bytes()), **read_csv_kwargs)
+    data = await _load(name)
+    return pd.read_csv(io.BytesIO(data), **read_csv_kwargs)
 
 
 async def load_text(name: str) -> str:
@@ -1609,20 +1607,45 @@ async def load_text(name: str) -> str:
         book = await load_text("pride-and-prejudice.txt")
         page = await load_text("https://example.org/some-page.txt")
 
-    Same shared-folder-or-remote-URL split as `load_csv`, and the same
-    reason a remote failure gets an honest message instead of a bare
-    traceback — see `load_csv`, just above, for the full explanation.
+    Same shared-folder-or-remote-URL split as `load_csv`, the same quiet
+    line about which copy was used, and the same reason a remote failure
+    gets a plain message instead of a bare traceback. See `load_csv`, just
+    above.
     """
+    data = await _load(name)
+    return data.decode("utf-8")
+
+
+def _is_url(name: str) -> bool:
+    return name.startswith("http://") or name.startswith("https://")
+
+
+async def _load(name: str) -> bytes:
+    """A file in the shared folder, a web address a dataset in it was saved
+    from, or any other web address, in that order of care.
+
+    A page that teaches loading from a web address (Database Methods does)
+    names the address, and `data/` keeps a copy of that exact file, marked
+    `address: true`. So the address is fetched as the reader asked, and
+    when it cannot be reached, the copy stands in, with the same note as
+    any other dataset. Any other address gets no copy to fall back to.
+    """
+    if not _is_url(name):
+        return await _load_bundled(name)
+    for file_name, entry in (await _dataset_index()).items():
+        if entry.get("address") and (entry.get("live") or {}).get("url") == name:
+            return await _load_bundled(file_name, shown=name.rsplit("/", 1)[-1])
+    return await _fetch_remote(name)
+
+
+async def _fetch_remote(name: str) -> bytes:
+    """A file from another website, with a message that explains a
+    failure rather than a traceback that blames the reader's code."""
     from pyodide.http import pyfetch  # pragma: no cover - browser only
 
-    remote = name.startswith("http://") or name.startswith("https://")
-    url = name if remote else _data_base + name
-
     try:
-        response = await pyfetch(url)
+        response = await pyfetch(name)
     except Exception as exc:  # pragma: no cover - browser-only failure path
-        if not remote:
-            raise
         raise ConnectionError(
             f"Couldn't fetch {name}.\n\n"
             "That file is on another website, and a browser only allows this "
@@ -1632,19 +1655,190 @@ async def load_text(name: str) -> str:
             "through Files in the Workbench panel, and load it by name "
             "instead."
         ) from exc
-
     if response.status != 200:
-        if remote:
-            raise ConnectionError(
-                f"{name} returned HTTP {response.status}.\n\n"
-                "The address may have changed, or that site may not be "
-                "handing this file out any more. Downloading it yourself and "
-                "adding it through Files in the Workbench panel always works."
-            )
+        raise ConnectionError(
+            f"{name} returned HTTP {response.status}.\n\n"
+            "The address may have changed, or that site may not be "
+            "handing this file out any more. Downloading it yourself and "
+            "adding it through Files in the Workbench panel always works."
+        )
+    return await response.bytes()
+
+
+async def _load_bundled(name: str, shown: str | None = None) -> bytes:
+    """A dataset from the shared folder: live when it can be, the snapshot
+    when it cannot.
+
+    The order is the one #324 decided: a dataset with a live source is
+    fetched from it, shaped by its recipe into the snapshot's own columns
+    (`shape_live()`), and the snapshot is the backup. Any failure on the
+    live side uses the snapshot: a website that is down, one that took
+    longer than LIVE_SECONDS, a page opened offline, or a change in the
+    source's own columns that the recipe no longer fits. None of those is
+    the reader's to fix, so none of them stops the cell.
+
+    `shown` is the name the note uses, when the reader asked for the file
+    by its web address rather than by its name here.
+    """
+    entry = (await _dataset_index()).get(name) or {}
+    live = entry.get("live")
+    if live:
+        try:
+            raw = await asyncio.wait_for(_fetch_bytes(live["url"]), LIVE_SECONDS)
+            data = shape_live(raw, live)
+        except Exception:  # noqa: BLE001 - every live failure means the same thing
+            data = None
+        if data is not None:
+            _data_note(data_note(shown or name, entry, used_live=True))
+            return data
+    data = await _snapshot_bytes(name)
+    _data_note(data_note(shown or name, entry, used_live=False))
+    return data
+
+
+async def _dataset_index() -> dict:
+    """`data/index.json`, fetched once. A page that cannot reach it still
+    loads its data, from the snapshot, without a date to name."""
+    global _data_index
+    if _data_index is None:
+        try:
+            _data_index = json.loads(await _fetch_bytes(_data_base + "index.json"))
+        except Exception:  # noqa: BLE001 - no index is not an error for the reader
+            _data_index = {}
+    return _data_index
+
+
+async def _fetch_bytes(url: str) -> bytes:
+    from pyodide.http import pyfetch  # pragma: no cover - browser only
+
+    response = await pyfetch(url)
+    if response.status != 200:
+        raise ConnectionError(f"{url} returned HTTP {response.status}")
+    return await response.bytes()
+
+
+async def _snapshot_bytes(name: str) -> bytes:
+    if name in _data_files:
+        import gzip  # noqa: PLC0415 - only a downloaded page needs it
+
+        return gzip.decompress(base64.b64decode(_data_files[name]))
+    from pyodide.http import pyfetch  # pragma: no cover - browser only
+
+    response = await pyfetch(_data_base + name)
+    if response.status != 200:
         raise FileNotFoundError(
             f"{name} is not in the shared data folder (HTTP {response.status})"
         )
-    return await response.string()
+    return await response.bytes()
+
+
+def shape_live(raw: bytes, live: dict) -> bytes:
+    """Turn a live source's CSV into the snapshot's own shape.
+
+    `live` is the `recipe:` block of `data/<name>.yaml`, which
+    `data/index.json` carries for a dataset marked `live: true`. Its steps
+    run in this order, and each is optional except `columns`:
+
+      skip_through  drop every line up to and including the first one
+                    that starts with this text (a header block before
+                    the CSV itself)
+      rename        {source column: snapshot column}
+      missing       values that mean "no value", such as -999
+      drop_empty    columns whose empty rows are dropped
+      at_least      {column: lowest value kept}
+      at_most       {column: highest value kept}
+      columns       the snapshot's columns, in its order
+      round         {column: decimal places}
+
+    The same function makes the snapshot (`dev/datasets.py --refresh`),
+    so on the day a snapshot is saved, the live data and the snapshot are
+    the same table. They differ only when the source changes, which is
+    what the note under the cell is for.
+    """
+    import pandas as pd  # noqa: PLC0415 - deliberately lazy
+
+    text = raw.decode("utf-8-sig")
+    marker = live.get("skip_through")
+    if marker:
+        lines = text.splitlines(keepends=True)
+        for number, line in enumerate(lines):
+            if line.startswith(marker):
+                text = "".join(lines[number + 1:])
+                break
+        else:
+            raise ValueError(f"no line starts with {marker!r}")
+    # Only an empty cell is missing: pandas would also read "NA", which is
+    # Namibia's country code, and a handful of other words as no value.
+    frame = pd.read_csv(io.StringIO(text), skipinitialspace=True,
+                        keep_default_na=False, na_values=[""])
+    frame.columns = [str(column).strip() for column in frame.columns]
+    frame = frame.rename(columns=live.get("rename") or {})
+    missing = live.get("missing")
+    if missing:
+        frame = frame.replace(missing, float("nan"))
+    for column in live.get("drop_empty") or []:
+        frame = frame[frame[column].notna()]
+    for column, lowest in (live.get("at_least") or {}).items():
+        frame = frame[frame[column] >= lowest]
+    for column, highest in (live.get("at_most") or {}).items():
+        frame = frame[frame[column] <= highest]
+    frame = frame[list(live["columns"])]
+    for column, places in (live.get("round") or {}).items():
+        frame[column] = frame[column].round(places)
+    return frame.to_csv(index=False, lineterminator="\n").encode("utf-8")
+
+
+def _long_date(iso: str) -> str:
+    """"2026-09-26" as "26 September 2026", the way the page says dates."""
+    import datetime  # noqa: PLC0415
+
+    day = datetime.date.fromisoformat(iso)
+    return f"{day.day} {day.strftime('%B')} {day.year}"
+
+
+def data_note(name: str, entry: dict, used_live: bool, today=None) -> str:
+    """The one line under a cell that says which copy of a dataset it got.
+
+    Three cases. Live: the source's name, and the date of the copy the
+    page's own numbers come from, since those can now differ. A snapshot
+    that stood in for a live source: its date and age, and that the live
+    copy could not be used, which covers a source that did not answer, a
+    page offline, and a copy the recipe no longer fits. A dataset with no
+    live source: its date only. A page whose index could not be read says
+    only the file name.
+    """
+    import datetime  # noqa: PLC0415
+
+    snapshot = entry.get("snapshot")
+    live = entry.get("live") or {}
+    if not snapshot:
+        return f"Loaded {name}."
+    saved = _long_date(snapshot)
+    if used_live:
+        return (
+            f"Loaded {name} from {live.get('source', 'its source')} just now. "
+            f"The numbers on this page come from the copy saved on {saved}, "
+            "so yours may be a little different."
+        )
+    if not live:
+        return f"Loaded the copy of {name} saved on {saved}."
+    today = today or datetime.date.today()
+    days = (today - datetime.date.fromisoformat(snapshot)).days
+    age = "today" if days <= 0 else "1 day ago" if days == 1 else f"{days} days ago"
+    return (
+        f"Loaded the copy of {name} saved on {saved} ({age}). "
+        f"The live copy from {live.get('source', 'its source')} could not be "
+        "used just now, so this is the copy the page was written with."
+    )
+
+
+def _data_note(text: str) -> None:
+    """Puts the note under the running cell. Outside a cell, which is where
+    a comparison's solution runs, there is nowhere to put it, and nothing
+    is lost: the reader's own run already said it."""
+    if _current is None:
+        return
+    _current.sink.append_html(f'<p class="dl-data-note">{html.escape(text)}</p>')
 
 
 def run_query(conn_or_path, sql: str, params=None, max_rows: int = 20, caption: str | None = None):

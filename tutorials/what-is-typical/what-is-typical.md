@@ -45,7 +45,7 @@ On this page we:
   median and the mode
 - add `mean`, `median` and `mode` to the toolkit
 - see when the three disagree, and why, with response times and with
-  real data from 226 places
+  real data from 261 places
 - ask how spread out a list is: first the range, then "how far from the
   mean, on average", then the standard deviation
 - add `std_dev` to the toolkit
@@ -375,10 +375,13 @@ reason.
 Skew can go the other way, and here it is in real data. The life
 expectancy file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
-has a row for each place and year. This line keeps the rows for 2016,
+has a row for each place and year. This line keeps the rows for 2023,
 and takes the life expectancy column as a list. The rows are mostly
-countries, with a few regions, such as Western Europe and the World as
-a whole. For this question, that mix changes little.
+countries, with some regions and groups, such as Europe and the World
+as a whole. For this question, that mix changes little. The numbers
+below come from the copy of the file saved on
+{{snapshot: life-expectancy}}, and the line under the cell says whether
+yours did too.
 
 Before you run it, guess: is the mean higher or lower than the median
 this time?
@@ -386,18 +389,18 @@ this time?
 ```python exec
 id: typical-world-1
 df = await load_csv("life-expectancy.csv")
-life_2016 = df[df.year == 2016]["life_expectancy"].tolist()
+life_2023 = df[df.year == 2023]["life_expectancy"].tolist()
 
-print(len(life_2016), "places")
-print("mean:  ", round(mean(life_2016), 2))
-print("median:", median(life_2016))
-print("lowest:", smallest(life_2016), " highest:", largest(life_2016))
+print(len(life_2023), "places")
+print("mean:  ", round(mean(life_2023), 2))
+print("median:", median(life_2023))
+print("lowest:", smallest(life_2023), " highest:", largest(life_2023))
 ```
 
-Did you guess lower? This time the mean, 72.4 years, is lower than the
-median, 73.6 years.
-Four places in five are bunched between 65 and 84 years, and a tail of
-places reaching down to about 50 years pulls the mean down. The list is skewed to the left. The median is not pulled, so it
+Did you guess lower? This time the mean, 74.1 years, is lower than the
+median, 75.1 years.
+More than four places in five are bunched between 65 and 84 years, and a
+tail of places reaching down to about 54 years pulls the mean down. The list is skewed to the left. The median is not pulled, so it
 stays with the bunch.
 
 A rule of thumb follows from both examples. The mean moves towards the
@@ -608,9 +611,9 @@ divide by $n$.
    make it so big?
 2. Take the two slow loads out with a slice of `sorted(response_ms)`,
    and work out both again. Guess first: which one changes more?
-3. Find the standard deviation of `life_2016`. Is life expectancy
+3. Find the standard deviation of `life_2023`. Is life expectancy
    more spread out across the world, or across Ireland's years from
-   1950 to 2016? Make Ireland's list the way
+   1950 to 2023? Make Ireland's list the way
    [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
    did.
 

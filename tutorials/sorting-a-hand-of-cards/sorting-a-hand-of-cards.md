@@ -673,3 +673,10 @@ against a third, on lists much longer than a hand of cards.
 For another route through the same ideas, with bubble sort as well,
 the integrated course has
 [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
+
+## Where to read more
+
+Polylog (2022). *The Simplest Sorting Algorithm (You've Never Heard Of).*
+<https://www.youtube.com/watch?v=_W0yUJlscRA>. Two loops and one swap. It
+looks wrong, but it sorts. Which of this page's two sorts is it closest
+to? Four minutes.

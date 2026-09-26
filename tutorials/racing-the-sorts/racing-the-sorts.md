@@ -242,8 +242,11 @@ hours.
 Random lists are a fair track. But real lists are often not random.
 Here is one from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950):
-life expectancy in Ireland, in years, for every year from 1950 to 2016.
-The cell takes the `life_expectancy` column for Ireland as a list.
+life expectancy in Ireland, in years, for every year from 1950 to 2023.
+The cell takes the `life_expectancy` column for Ireland as a list. The
+counts below come from the copy of the file saved on
+{{snapshot: life-expectancy}}; the line under the cell says whether
+yours did too.
 
 It mostly goes up, year after year, with a few small dips. So the list
 is nearly in order already. Before you run the cell, which sort do you
@@ -260,9 +263,9 @@ print("selection sort:", selection_count(ireland))
 print("insertion sort:", insertion_count(ireland))
 ```
 
-There are 67 years. Selection sort makes 2,211 comparisons, which is
-$\frac{67 \times 66}{2}$: it cannot tell that the list is nearly
-sorted. Insertion sort makes only 86. Each value only needs to slide
+There are 74 years. Selection sort makes 2,701 comparisons, which is
+$\frac{74 \times 73}{2}$: it cannot tell that the list is nearly
+sorted. Insertion sort makes only 107. Each value only needs to slide
 back a step or two, past a dip, and most values do not move at all.
 
 Lists like this are common: a leaderboard sorted yesterday, with three
@@ -478,8 +481,8 @@ On 1,000 random values, Shell sort makes about 15,000 comparisons,
 where insertion sort made about 250,000. That is about 16 times fewer,
 and the difference grows as the lists get longer.
 
-On Ireland's nearly sorted list, though, Shell sort makes 356
-comparisons, and insertion sort made 86. The long jumps are work that
+On Ireland's nearly sorted list, though, Shell sort makes 401
+comparisons, and insertion sort made 107. The long jumps are work that
 a nearly sorted list did not need. No sort wins every race.
 
 ## The fourth racer: sorted()

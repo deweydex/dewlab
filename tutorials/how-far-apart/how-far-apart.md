@@ -507,3 +507,8 @@ The practice page is next.
 The dewlab page
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances#how-far-apart-and-the-theorem-that-answers-it)
 reaches the same theorem from a different direction.
+
+Sebastian Lague (2017). *Gamedev Maths: distance from point to line.*
+<https://www.youtube.com/watch?v=KHuI9bXZS74>. The next step after this
+page: how far a point is from a line, rather than from another point.
+Sebastian Lague builds the formula for a game. About five minutes.

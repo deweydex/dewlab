@@ -4,12 +4,23 @@
 
 source: >
   Project Gutenberg EBook of The Lost World, by Arthur Conan Doyle
-  (EBook #139). https://www.gutenberg.org/ebooks/139
+  (EBook #139).
+
+url: https://www.gutenberg.org/ebooks/139
 
 license: >
   Public domain in the United States. Project Gutenberg's own licence terms
   apply to redistribution — see the file itself, which carries them in full.
   https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-20
+
+trimmed: >
+  Nothing. The file is Project Gutenberg's own plain-text edition as it
+  stood when it was saved (released 19 June 2008, as its header says),
+  header and licence footer included. It has no live source: the text does
+  not change, and Project Gutenberg does not let pages on other websites
+  read its files.
 
 description: >
   The complete novel, first published in 1912, exactly as Project

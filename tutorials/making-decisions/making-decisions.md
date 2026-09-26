@@ -586,3 +586,9 @@ Khan Academy. *Evaluating Compound Boolean Expressions.*
 <https://www.khanacademy.org/computing/intro-to-python-fundamentals/x5279a44ae0ab15d6:designing-algorithms-with-conditionals/x5279a44ae0ab15d6:compound-boolean-conditions/v/evaluating-compound-boolean-expressions>.
 Traces through `and`, `or` and `not` step by step, which is worth watching
 once before trusting your own head to do it.
+
+Stand-up Maths (2016). *Leap Years: we can do better.*
+<https://www.youtube.com/watch?v=qkt_wmRKYNQ>. A year is a leap year if it
+divides by 4, unless it divides by 100, unless it divides by 400: an `if`,
+`elif` and `else` in one rule. Matt Parker explains where it comes from.
+Twelve minutes.

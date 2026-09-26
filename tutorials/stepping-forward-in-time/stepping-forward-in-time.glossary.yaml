@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Fifth tutorial of the Simulation series. Checked against the earlier
+# four tutorials' cumulative glossary: model and simulation come from
+# a-model-that-corrects-itself, accuracy from counting-darts, and are
+# used here without being introduced again. Nothing on this page is
+# random, so nothing from leaving-it-to-chance is needed.
+entries:
+  - term: velocity
+    kind: concept
+    definition: >
+      Velocity is speed with a direction. On a line, the sign shows the
+      direction: here positive means moving up, and negative means moving
+      down. A ball falling at 20 metres a second has a velocity of -20.
+
+  - term: time step
+    kind: concept
+    definition: >
+      A time step is the length of one piece of time in a simulation that
+      moves forward step by step. Within one step, the simulation treats
+      everything as if it stays the same. A shorter time step gives a
+      closer answer, and takes more steps.
+
+  - term: Euler's method
+    kind: concept
+    definition: >
+      Euler's method moves a simulation forward one time step at a time.
+      Each step uses the values at the start of the step as if they stay
+      the same for the whole step: first the position moves by velocity
+      times the time step, then the velocity changes. Its error is about
+      the size of one time step, and it can grow over many steps.
+    example: "height = height + velocity * step"

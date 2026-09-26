@@ -148,4 +148,11 @@ finding each match, not just substitute fixed text.
   `standalone_html()` builds it, and its own comments (plus
   `DECISIONS_LOG.md` 7.77, referenced throughout) explain what's
   different and why — most notably, Pyodide running on the main thread
-  rather than in a Worker.
+  rather than in a Worker, and the page's datasets packed into its
+  manifest by `standalone_data()` (#324).
+- **"Where does a dataset's provenance come from?"** — `read_dataset()`
+  checks one `data/<name>.yaml`, `data_index()` checks all of them and
+  becomes `site/data/index.json` (`write_data_index()`), and
+  `check_datasets()` makes a page declare every file from `data/` it
+  loads. `expand_snapshot_dates()` turns `{{snapshot: name}}` in a page
+  into the date its copy was saved.

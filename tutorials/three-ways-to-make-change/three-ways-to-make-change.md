@@ -302,10 +302,6 @@ dynamic programming, the general name for the caching strategy this page
 builds. Chapter 15 covers greedy algorithms, including exactly when a
 greedy choice is provably safe.
 
-Computerphile (2017). *Dynamic Programming.*
-<https://www.youtube.com/watch?v=nJ2CjRmr9uw>. The same "remember what you
-already worked out" idea, applied to a different problem.
-
 Spanning Tree (2020). *How to Count Dice Rolls: An Introduction to Dynamic
 Programming.* <https://www.youtube.com/watch?v=oifN-YVlrq8>. Counting the
 ways dice can add to a total, first by trying everything, then by

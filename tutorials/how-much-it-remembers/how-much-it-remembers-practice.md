@@ -3,6 +3,7 @@ title: "N-grams: a Markov chain that remembers more words — Practice"
 practice_for: how-much-it-remembers
 year: "2026-2027"
 version: 2026.09.25.1
+datasets: [the-time-machine]
 ---
 
 # N-grams: a Markov chain that remembers more words — Practice

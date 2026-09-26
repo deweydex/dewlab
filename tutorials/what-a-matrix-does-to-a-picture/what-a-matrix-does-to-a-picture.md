@@ -269,3 +269,8 @@ Hughes, J. F., van Dam, A., McGuire, M., Sklar, D. F., Foley, J. D., Feiner,
 S. K. and Akeley, K. (2013). *Computer Graphics: Principles and Practice*
 (3rd ed.). Addison-Wesley. Chapter 6 covers exactly these transformation
 matrices, as they are actually used to move things on a screen.
+
+Looking Glass Universe (2018). *Matrices, matrix multiplication and linear
+transformations.* <https://www.youtube.com/watch?v=CBIO4xJ1Cok>. A matrix
+as instructions for where each arrow goes, which is how this page moves a
+picture. About fourteen minutes.

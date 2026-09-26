@@ -337,7 +337,7 @@ secret needs is 7, as the tutorial's halving chain said.
 **10. Explain.** On
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950)
 we made the list `ireland`, of life expectancy in each year from 1950
-to 2016. It rises from 65.6 to 81.1. Schlomi, who is learning Python
+to 2023. It rises from 65.6 to 82.4. Schlomi, who is learning Python
 too, has a quick idea: the numbers go up, so a binary search can find
 the first year it reached 70. Can we trust a binary search on this
 list, when the numbers only mostly go up?
@@ -345,10 +345,10 @@ list, when the numbers only mostly go up?
 <details class="dl-answer"><summary>answer</summary>
 
 Not on this list. Schlomi's idea works on a list that is in order all the way
-along, and this list is not: that page found ten years where life
+along, and this list is not: that page found fifteen years where life
 expectancy fell. It
-passed 70 in 1960, at 70.23, and fell back to 69.69 in 1961. A binary
-search that looks at one year and sees 69.69 decides that every
+passed 70 in 1960, at 70.17, and fell back to 69.64 in 1961. A binary
+search that looks at one year and sees 69.64 decides that every
 earlier year is lower, which is false. Mostly sorted is not sorted. For
 a list like this, a linear search from the front is the move that
 keeps its promise.
@@ -565,11 +565,11 @@ thing, or a search that knows they mean the opposite.
 </details>
 
 **15. Make.** The cell at the top of this section also loads
-`countries`: the 226 names from the life expectancy file of
+`countries`: the 261 names from the life expectancy file of
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950),
-in alphabetical order, with a few regions such as "World" among the
-countries. Over all 226 names, how many looks does each search need on
-average? Write two small counting functions, or copy `linear_looks`
+in alphabetical order, with some regions and groups such as "World"
+among the countries. Over all 261 names, how many looks does each
+search need on average? Write two small counting functions, or copy `linear_looks`
 and `binary_looks` from the tutorial. Search for every name in turn,
 keep the counts in two lists, and use `mean` from your toolkit.
 
@@ -625,10 +625,10 @@ print(mean(linear_counts), largest(linear_counts))
 print(round(mean(binary_counts), 2), largest(binary_counts))
 ```
 
-The linear search needs 113.5 looks on average, and 226 at most. Each
+The linear search needs 131 looks on average, and 261 at most. Each
 name is searched for once, so on average the search goes about
-halfway along. The binary search needs about 6.9 looks on
-average, and 8 at most: most names are found on the last two or
+halfway along. The binary search needs about 7.1 looks on
+average, and 9 at most: most names are found on the last two or
 three looks, because each halving has twice as many places to end as
 the one before.
 

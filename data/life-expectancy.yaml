@@ -3,14 +3,37 @@
 # so a reader can trace the numbers they are working with back to their source.
 
 source: >
-  Our World in Data, "Life Expectancy" — their compilation of the Gapminder,
-  UN World Population Prospects and IHME Global Burden of Disease series.
-  https://ourworldindata.org/life-expectancy
+  Our World in Data, "Life expectancy at birth": their compilation of
+  Riley (2005), Zijdeman et al. (2015), the Human Mortality Database (2025)
+  and the UN World Population Prospects (2024), with major processing by
+  Our World in Data.
+
+url: https://ourworldindata.org/grapher/life-expectancy
 
 license: >
   CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
 
+snapshot: 2026-09-26
+
+trimmed: >
+  The years from 1950, and three columns, renamed: entity is country and
+  life_expectancy_0 is life_expectancy, rounded to 2 decimal places. The
+  source's code column is left out. Every country, region and income group
+  the source has is kept, so "World" and "High-income countries" are rows
+  too. Fetched live when a page runs, shaped the same way; Our World in
+  Data plans its next update for 22 October 2026.
+
 description: >
-  Life expectancy at birth, in years, by country and year from 1950 to 2016.
-  Three columns — country, year, life_expectancy — trimmed from the fuller
-  Our World in Data release to the countries and years worth teaching with.
+  Life expectancy at birth, in years, by country and year from 1950. Period
+  life expectancy: how long a baby born that year would live, on average,
+  if the chances of dying at each age stayed as they were that year.
+
+recipe:
+  source: Our World in Data
+  url: https://ourworldindata.org/grapher/life-expectancy.csv?v=1&csvType=full&useColumnShortNames=true
+  rename: {entity: country, life_expectancy_0: life_expectancy}
+  at_least: {year: 1950}
+  columns: [country, year, life_expectancy]
+  round: {life_expectancy: 2}
+
+live: true
