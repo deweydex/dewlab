@@ -5254,6 +5254,24 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.263 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
+**7.264 — `slider()`: moving it runs its own cell, and the slider lives above the output.** Issue #329, part of #306.
+
+`slider(label, low, high, step=None, value=None, id=None)` joins `text_input` and `dropdown`. `.value` is a number, an `int` when the ends and the step are whole. Moving it runs the cell again, so a plot drawn from `.value` follows the thumb.
+
+**Where it lives.** A run clears the cell's output, so a slider left there would disappear from under the reader's pointer halfway through a drag. After each run the page moves a new slider up into a strip between the Run bar and the output, which no run clears, and drops the copy of one already there (matched by its DOM id; edited ends, step or label are copied across). A slider the latest run did not make is removed. The cost: a slider always appears above what the cell prints, wherever the code calls it.
+
+**How often it runs.** At most one run in flight per cell. A drag fires far faster than a plotting cell runs, so each run takes the thumb's value when it starts, and one more follows the last move. Measured on the fixture's sine wave: about 120 ms a run, and the plot redrawn 19 times in a 30-step drag in the Worker and 30 times on the main thread.
+
+**How Python hears it.** Before every run, the page sends each slider's value in (`widget-changed` in the Worker, `_set_widget_value` on the main thread), and `.value` reads only that. One path serves the hosted page and the downloaded copy, and it is also how a slider restored after a reload is heard: the strip is saved with the page (`sliders_html`) and the first run afterwards reads where the reader left it.
+
+**Quiet runs.** A slider's run counts as exploring. It does not count as an attempt for a staged hint, does not settle a prediction, and is not announced to a screen reader; twenty announcements in one drag would drown the page. The Run button still turns into Stop while it runs, so a slow cell can be stopped.
+
+**Not done.** The issue offered re-running "the cell, or a named function". Only the cell: a named function would need a second output area inside the cell and a callback path into the Worker, for a gain a short cell already gives. In the Notebook a slider draws but does not run its cell yet, and its guide says so.
+
+*Cost to change: small. The markup is `.dl-slider` inside `.dl-widget`; the page's half is six functions beside `runCell()`; the saved record's `sliders_html` is optional, so older saves load unchanged.*
+
+---
+
+**7.265 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
 
 *Cost to change: one line at the end of `how-this-course-is-built`.*

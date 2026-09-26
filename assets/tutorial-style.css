@@ -1183,6 +1183,32 @@ p code, li code {
   outline-offset: -1px;
 }
 
+/* A slider lives in its cell's strip, above the output (reconcileSliders()
+ * in tutorial-runtime.js). Hidden in the output for the moment between a
+ * run drawing it there and the page moving it up. */
+.dl-output .dl-slider { display: none; }
+.dl-slider-strip:empty { display: none; }
+.dl-slider-strip {
+  border-top: 1px solid var(--dl-cell-border);
+  padding: 0.45rem 0.85rem 0.2rem;
+}
+.dl-slider { align-items: center; }
+.dl-slider input[type="range"] {
+  flex: 1 1 12rem;
+  max-width: 22rem;
+  accent-color: var(--dl-orange);
+}
+.dl-slider input[type="range"]:focus-visible {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 2px;
+}
+.dl-slider output {
+  font-family: var(--dl-mono);
+  font-size: 0.82rem;
+  min-width: 3ch;
+  color: var(--dl-fg);
+}
+
 .dl-sr-only {
   position: absolute;
   width: 1px;

@@ -915,6 +915,31 @@ class TestWidgetsOnAWorkerPage:
         tt._set_widget_value("test-cell", "answer", "7")
         assert widget.value == "7"
 
+    def test_a_slider_renders_a_range_with_its_value_beside_it(self, worker_cell):
+        tt.slider("Amplitude", 0, 5, value=2, id="amp")
+        markup = "".join(args[3] or "" for args in worker_cell)
+        assert 'type="range"' in markup and 'min="0"' in markup and 'max="5"' in markup
+        assert 'value="2"' in markup and "<output" in markup
+
+    def test_a_whole_number_slider_reads_as_an_int(self, worker_cell):
+        amp = tt.slider("Amplitude", 0, 5, value=2, id="amp")
+        assert amp.value == 2 and isinstance(amp.value, int)
+        tt._set_widget_value("test-cell", "amp", "4")
+        assert amp.value == 4 and isinstance(amp.value, int)
+
+    def test_a_slider_with_decimal_ends_reads_as_a_float(self, worker_cell):
+        phase = tt.slider("Phase", 0.0, 6.0, id="phase")
+        assert phase.value == 0.0
+        tt._set_widget_value("test-cell", "phase", "1.5")
+        assert phase.value == 1.5 and isinstance(phase.value, float)
+
+    def test_a_slider_starts_inside_its_range(self, worker_cell):
+        assert tt.slider("Too high", 0, 5, value=9, id="high").value == 5
+
+    def test_a_slider_needs_high_above_low(self, worker_cell):
+        with pytest.raises(ValueError, match="high above low"):
+            tt.slider("Backwards", 5, 0)
+
     def test_button_and_image_input_still_say_why_they_cannot(self, worker_cell):
         with pytest.raises(RuntimeError, match="main thread"):
             tt.button("Go")
