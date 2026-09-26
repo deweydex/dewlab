@@ -68,7 +68,14 @@ jobs:
           # (resolve_assets()). All three are excluded from this count by
           # depth, not by guessing at names.
           current=$(find site/tutorials -mindepth 1 -maxdepth 1 -name '*.html' | wc -l)
-          echo "of which $current are current releases"
+          # One kind of stub does sit directly under site/tutorials/: a page
+          # whose own id was retired (lines-and-distances, 7.267) leaves a
+          # redirect at tutorials/<old id>.html. It forwards to a page with
+          # its own download, so the count leaves it out, read from the
+          # file that asks for it rather than guessed from the page.
+          moved=$(grep -cE '^tutorials/[^/]+\.html:' courses/redirects.yaml || true)
+          current=$((current - moved))
+          echo "of which $current are current releases ($moved retired addresses left out)"
           # site/download/notebook/ is the Notebook's own offline-capable
           # app bundle (write_dewmini_bundle() in build.py) — a standalone tool,
           # not a tutorial, so its own HTML files have no tutorial page to
