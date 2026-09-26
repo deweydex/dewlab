@@ -191,7 +191,7 @@ There is a lot in this cell, so here it is one step at a time:
 3. `index` is a dictionary that gives each word its row number. It is
    built with a dictionary comprehension, which works like a list
    comprehension but makes a dictionary. Comprehensions are in
-   [Lists: keeping many values in order](tutorial:lists-and-sequences),
+   [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
    and dictionaries are in
    [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name).
 4. `counts` starts as a grid of zeros, one row and one column for each

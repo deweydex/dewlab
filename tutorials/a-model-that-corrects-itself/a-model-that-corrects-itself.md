@@ -67,7 +67,7 @@ turns those nine numbers into one decision, in three steps:
 
 In the code, `predict()` does those three steps. `zip(weights, pixels)`
 pairs each weight with its pixel, as in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 The last line returns 1 if the total is above zero, and 0 if it is not.
 
 What do you think the model will say for each picture, with every weight

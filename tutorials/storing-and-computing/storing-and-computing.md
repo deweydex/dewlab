@@ -12,8 +12,6 @@ covers:
     covers: [PDP-LO4]
   type-conversion:
     covers: [PDP-LO4]
-  number-systems-how-computers-count:
-    covers: [MIT-1.4]
   putting-it-together-a-small-program:
     covers: [PDP-LO7]
   putting-values-into-text:
@@ -285,77 +283,6 @@ id: type-conversion-2
 # print("Next year you will be", user_age + 1)
 ```
 
-## Number Systems: How Computers Count
-
-We count in *base 10*, also called decimal. Base 10 uses ten digits,
-0 to 9. We probably count in tens because we have ten fingers. But there
-is nothing special about ten: you can build a working number system on
-any base.
-
-Computers use base 2, also called *binary*. Binary uses only two
-digits, 0 and 1. The reason is in the hardware: a computer is built from
-tiny switches called transistors, and each one has two states, on and
-off.
-
-In decimal, each position in a number is worth a power of 10. The number
-42 means 4 tens and 2 ones:
-
-    4 × 10 + 2 × 1  =  42
-
-In binary, each position is worth a power of 2: 1, 2, 4, 8, 16, 32, and
-so on. The binary number 101010 means:
-
-    1 × 32 + 0 × 16 + 1 × 8 + 0 × 4 + 1 × 2 + 0 × 1  =  42
-
-Python can write numbers in binary too. The cell below also shows base
-16, *hexadecimal*, which uses the digits 0 to 9 and then the letters A to
-F. What do you think `print(0b101010)` will show? Run the cell to check.
-
-```python exec
-id: number-systems-how-computers-count-1
-# Python can work with binary directly
-print(0b101010)       # 0b prefix means "this is binary"
-print(bin(42))        # bin() converts to a binary string
-
-# And hexadecimal (base 16), which uses digits 0-9 and letters A-F
-print(0x2A)           # 0x prefix means "this is hexadecimal"
-print(hex(42))        # hex() converts to a hex string
-
-# Let's verify that binary conversion by hand
-print(1*32 + 0*16 + 1*8 + 0*4 + 1*2 + 0*1)
-```
-
-Why do people use hexadecimal? Each hex digit matches exactly four
-binary digits, so hexadecimal is a short way to write binary. The hex
-digit `A` is 1010 in binary, `F` is 1111, and so on.
-
-### Your turn
-
-Let's convert these numbers by hand first, and then check them with
-Python.
-
-1. What is the decimal value of binary `11001`?
-2. How do you write decimal 100 in binary?
-3. How do you write decimal 255 in hex?
-
-Write your working in the comments in the cell. Then, under
-`# Verification:`, use Python to check each answer.
-
-```python exec
-id: your-turn-3
-# Work through the conversions by hand, then verify
-# 1. Binary 11001 = ?
-#    Working: 
-
-# 2. Decimal 100 in binary = ?
-#    Working: 
-
-# 3. Decimal 255 in hex = ?
-#    Working: 
-
-# Verification:
-```
-
 ## Putting it together: a small program
 
 Now we can move a letter along the alphabet, which is the heart of the
@@ -593,7 +520,7 @@ print(chr((ord(word[0]) - ord("A") + shift) % 26 + ord("A")))
 ```
 
 `word[0]` is the first letter of the word, and
-[Lists and sequences](tutorial:lists-and-sequences) explains why it is 0,
+[Lists and looping over them](tutorial:lists-and-sequences) explains why it is 0,
 not 1. [Repeating steps with loops](tutorial:repeating-yourself) does the
 tedious part for you.
 
@@ -607,11 +534,6 @@ Python Software Foundation. *The Python Tutorial — An Informal Introduction
 to Python.* <https://docs.python.org/3/tutorial/introduction.html>. The
 official reference for `int`, `float`, `str` and `bool`, with the exact
 rules Python follows for each.
-
-Khan Academy. *The Binary Number System.*
-<https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:digital-information/xcae6f4a7ff015e7d:binary-numbers/v/the-binary-number-system>.
-Slower, worked ground through binary, for anyone who wants a second example
-before trying the conversions themselves.
 
 Singh, S. (1999). *The Code Book.* Fourth Estate. The history of secret
 codes, from Caesar's shift to the machines of the Second World War, and how

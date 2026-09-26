@@ -10,7 +10,7 @@ entries:
       A docstring is a description of a function, written in triple
       quotes at the top of it. It says what the function does, what it
       needs as input and what it gives back.
-    example: 'def mean(numbers):\n    """Compute the arithmetic mean of a list of numbers."""'
+    example: 'def mean(numbers):\n    """Give back the arithmetic mean of a list of numbers."""'
   - term: contract
     kind: concept
     definition: >
@@ -30,10 +30,25 @@ entries:
       An edge case is an unusual input, at the edge of what a function
       expects, that the function must handle on purpose. An empty list
       given to a function that divides by its length is one.
-  - term: test function
+  - term: test
     kind: concept
     definition: >
-      A test function is a function that calls another function with an
-      input whose right answer is known, checks the result, and prints
-      PASS or FAIL. Writing one makes you say clearly what the function
-      should do.
+      A test gives a function an input whose answer is already known, and
+      checks that the function gives that answer. A test that passes shows
+      the function was not caught out, not that it is right.
+  - term: assert
+    python: assert
+    kind: keyword
+    definition: >
+      assert is followed by something that should be True. If it is,
+      nothing happens. If it is not, the program stops with an
+      AssertionError, naming the line.
+    example: "assert mean([10, 20, 30]) == 20"
+  - term: raise
+    python: raise
+    kind: keyword
+    definition: >
+      raise stops a function with an error of its own, naming the problem,
+      at the place it happened. It is the way to refuse input that makes
+      no sense.
+    example: 'raise ValueError("mean() needs at least one number")'

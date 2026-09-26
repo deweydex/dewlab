@@ -715,4 +715,4 @@ The practice page is next. After it,
 stand for a whole list, and finds three different answers.
 
 For more on lists, the integrated course has
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Lists and looping over them](tutorial:lists-and-sequences).

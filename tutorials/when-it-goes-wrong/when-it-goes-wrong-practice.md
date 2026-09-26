@@ -2,520 +2,412 @@
 title: "Finding bugs in bigger programs — Practice"
 practice_for: when-it-goes-wrong
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Finding bugs in bigger programs — Practice
 
-The answers are hidden until you open them. On this page, your
-prediction is the exercise, and running the code is the marking. For
-most questions, try to predict the error, or the wrong answer, before you
-run the code.
+Here your prediction is the exercise. Before you run a cell, say which
+error it will raise, or what wrong answer it will give. Then run it, and
+find out why. There are three problems from earlier pages at the end.
 
-The short errors, such as `TypeError` and `ValueError`, have their own
-questions on the practice page for
-[Reading an error message](tutorial:reading-an-error-message). This page
-uses loops, lists, dictionaries and functions.
-
-## Tools
-
-There is nothing to set up here. Each question is its own cell, and most
-of them are meant to fail.
+## 1. Which error
 
 ```python exec
-id: tools-1
-# A reminder of the three kinds, and how each announces itself.
-print("Syntax error:  Python refuses before running anything.")
-print("Runtime error: some of your program runs, then it stops.")
-print("Logical error: it all runs, and the answer is wrong.")
+id: which-error-1
+word = "OTTER"
+print(word[5])
 ```
 
-## Which Kind?
+```predict
+What will it do?
 
-For each one, is it a syntax error, a runtime error, a logical error, or
-no error at all?
+- Print R
+  - The fifth letter of OTTER is R.
+- Stop with an IndexError
+  - Five letters have positions 0 to 4.
+- Print nothing
+  - There is nothing at position 5.
+```
 
-**1.** `def calculate(x)` followed by `return x * 2`
+<details class="dl-answer"><summary>why</summary>
 
-<details class="dl-answer"><summary>answer</summary>
-
-Syntax error. The colon is missing after `(x)`, so Python cannot read
-the line, and it never runs anything.
-
-</details>
-
-**2.** `def double(x): return x + x` called as `double("5")`
-
-<details class="dl-answer"><summary>answer</summary>
-
-Logical error. It runs and gives back `"55"`, because `+` joins two
-strings together.
-
-Nothing is red, and the answer is wrong. This is the dangerous kind. It
-is even worse than that: `double(5)` gives 10, so the function looks
-correct until somebody passes it a string.
+An `IndexError: string index out of range`. A string is indexed like a
+list, and fails like one: five letters have positions 0 to 4.
 
 </details>
 
-**3.** `numbers = [1, 2, 3]` then `total = sum(numbers)`
-
-<details class="dl-answer"><summary>answer</summary>
-
-No error. It gives 6.
-
-</details>
-
-**4.** `scores = [85, 90]` then `print(scores[2])`
-
-<details class="dl-answer"><summary>answer</summary>
-
-Runtime error: an `IndexError`. The list has two items, at positions 0
-and 1, so position 2 does not exist.
-
-</details>
-
-**5.** `average = sum(marks) / len(marks)` where `marks` is empty
-
-<details class="dl-answer"><summary>answer</summary>
-
-Runtime error: a `ZeroDivisionError`. The length of an empty list is
-zero.
-
-In real programs, this is the most common cause of that error. A
-collection turns out to be empty when the code expected it not to be.
-That happens far more often than somebody typing `/0`.
-
-</details>
-
-## Naming the Error
-
-Which error do you think each one raises? Predict, then run it.
-
-**6.**
+## 2. A count that starts from nothing
 
 ```python exec
-id: naming-the-error-3
-marks = {"Aoife": 72, "Ben": 65}
-print(marks["Cara"])
+id: a-count-that-starts-from-nothing-1
+counts = {}
+counts["E"] = counts["E"] + 1
+print(counts)
+```
+
+```predict
+What will it do?
+
+- Print {'E': 1}
+  - A new count starts at 0, and 0 + 1 is 1.
+- Stop with a KeyError
+  - Python reads `counts["E"]` before there is one.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `KeyError: 'E'`. The right-hand side runs first, and it asks for a key
+that is not there yet. `counts.get("E", 0) + 1` starts it at 0.
+
+</details>
+
+## 3. A name that was a function
+
+```python exec
+id: a-name-that-was-a-function-1
+list = [1, 2]
+letters = list("AB")
+print(letters)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`KeyError`. There is no entry for Cara.
-
-`marks.get("Cara")` gives back `None` instead of raising an error. That
-is often what you want. Sometimes, though, it hides a problem you would
-have preferred to hear about.
+A `TypeError: 'list' object is not callable`. `list` was Python's
+function for making lists, and the first line gave the name to a list.
+From then on, `list(...)` tries to call a list. Choosing a different name,
+such as `numbers`, fixes it. Restart Python, or reload the page, to get
+`list` back.
 
 </details>
 
-**7.**
+## 4. Two things to find
+
+Run this, and read the traceback. Which line failed, and which line is
+responsible?
 
 ```python exec
-id: naming-the-error-4
-name = "Aoife"
-print(name.lenght())
+id: two-things-to-find-1
+def colour_of(character, palette):
+    return palette[character]
+
+
+def row_colours(row, palette):
+    colours = []
+    for character in row:
+        colours.append(colour_of(character, palette))
+    return colours
+
+
+palette = {"#": "black", ".": "white"}
+print(row_colours("#.#", palette))
+print(row_colours("#x#", palette))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`AttributeError`. The name is misspelled. And even spelled correctly, a
-string has no `.length()` method. The way to get the length is
-`len(name)`.
-
-An `AttributeError` often means the value is not the type you thought it
-was. So it is worth printing the value before you decide the method name
-is wrong.
+`return palette[character]` failed, with `KeyError: 'x'`. The line
+responsible is the last one, whose row has an `x` the palette does not
+know. Or the palette is responsible, for not knowing it. Which one to
+change depends on whether `x` was meant to be there.
 
 </details>
 
-**8.**
+## 5. The whole chain
+
+Why does a traceback show the whole chain of calls, and not only the line
+that failed?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Because the line that failed is often correct, and the cause is further
+up: a value made in one place and used in another. The chain shows how
+the bad value travelled, call by call, so you can follow it back to where
+it came from.
+
+</details>
+
+## 6. The same name twice
+
+This is meant to print each row's number, and its row of four `#`.
 
 ```python exec
-id: naming-the-error-5
-def total(items):
-    return sum(items)
-
-print(total(prices))
+id: the-same-name-twice-1
+for i in range(3):
+    line = ""
+    for i in range(4):
+        line = line + "#"
+    print(i, line)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```predict
+What will the first line print?
 
-`NameError`. `prices` was never created.
-
-Python also raises a `NameError` when a variable exists, but not where
-the code can see it. One example is a variable created inside a function
-and used outside it.
-
-</details>
-
-**9.**
-
-```python exec
-id: naming-the-error-6
-week = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-for day in range(1, len(week) + 1):
-    print(week[day])
+- 0 ####
+  - The outer loop is on its first row, row 0.
+- 3 ####
+  - The inner loop used `i` too, and left it at 3.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>why</summary>
 
-`IndexError`, after four days have printed: Tue, Wed, Thu and Fri.
-
-This loop is off by one in two ways. It starts at 1, so it skips `Mon`
-at position 0. And it goes up to 5, but the last position is 4. The
-loop should be `for day in range(len(week)):`, or, simpler,
-`for day in week:`.
+`3 ####`, three times. Both loops use the name `i`, so the inner loop
+overwrites the outer one's, and when the `print` runs, `i` is the inner
+loop's last value. Give each loop its own name: `row` and `column`, say.
 
 </details>
 
-## Reading a Traceback
+## 7. Counting in the wrong thing
 
-**10.** In a traceback with several steps, where do you find the error
-that stopped the program?
+<div class="dl-world" data-world="secret-messages">
 
-<details class="dl-answer"><summary>answer</summary>
-
-The last line names it. Above that line, the steps run from the
-outermost call downwards. So the innermost step, where the error
-happened, is nearest the bottom.
-
-Read from the bottom. The top of a traceback is where your program
-started, and the bottom is where it broke.
-
-</details>
-
-**11.** Run this. Can you find two things: the line that failed, and the
-line that is *responsible*?
+This is meant to count the Es in a word. It runs, and gives 0 for every
+word. Can you find the bug, fix it, and add a test that catches it?
 
 ```python exec
-id: reading-a-traceback-1
-def rate(distance, hours):
-    return distance / hours
-
-
-def report(journey):
-    return "Average speed: " + str(rate(journey[0], journey[1]))
-
-
-print(report([120, 2]))
-print(report([120, 0]))
-```
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Read the last line. What kind of error is it?
-2. The step just above it names a function and a line. That is the line
-   that failed.
-3. Read upwards. Which line first handed over the value that caused it?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-The line that failed is `return distance / hours`, in `rate`. That is
-where the `ZeroDivisionError` happened.
-
-The line that is responsible is `print(report([120, 0]))`, because it
-supplied the zero.
-
-`rate` is not wrong. Dividing distance by hours is the correct thing to
-do. You could "fix" `rate` so that it gives back zero when hours is
-zero. That might be right. Or it might hide the real problem, which is
-a journey that took no time.
-
-</details>
-
-**12.** Why does a traceback show the whole chain of calls, and not only
-the line that failed?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Because the line that failed is often not where the mistake is. A
-function can be completely correct and still fail on bad input. The
-chain tells you where the bad input came from.
-
-</details>
-
-## The Dangerous Kind
-
-Each of these runs, and each one is wrong. Can you find the mistake?
-
-**13.**
-
-```python exec
-id: the-dangerous-kind-1
-def average(numbers):
-    total = sum(numbers)
-    return total / len(numbers) + 1
-
-
-print(average([80, 90, 70]))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-The `+ 1` is outside the division, and it should not be there at all.
-The average of 80, 90 and 70 is 80, and this code says 81.
-
-The only way to find this is to know what the answer should be. That is
-the whole lesson.
-
-</details>
-
-**14.**
-
-```python exec
-id: the-dangerous-kind-2
-def biggest(numbers):
-    largest = 0
-    for n in numbers:
-        if n > largest:
-            largest = n
-    return largest
-
-
-print(biggest([3, 9, 4]))
-print(biggest([-5, -2, -9]))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Starting `largest` at 0 assumes the numbers are positive. On a list of
-only negative numbers, it gives back 0, which is not in the list at all.
-
-The fix is to start at the first item: `largest = numbers[0]`. But then
-an empty list raises an `IndexError`. So decide what an empty list
-should do. Do not leave it to chance.
-
-Notice that the code works on the numbers you would try first. That is
-what makes this kind of error hard.
-
-</details>
-
-**15.**
-
-```python exec
-id: the-dangerous-kind-3
-def classify(score):
-    if score > 50:
-        return "Pass"
-    return "Fail"
-
-
-for score in [49, 50, 51]:
-    print(score, classify(score))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-If 50 is the pass mark, this code fails everyone who scored exactly 50.
-It needs `>=`.
-
-Logical errors live at boundaries. Always test the exact boundary, one
-below it, and one above it. The loop here does exactly that.
-
-</details>
-
-**16.**
-
-```python exec
-id: the-dangerous-kind-4
-def percentage_change(old, new):
-    return (new - old) / new * 100
-
-
-print(percentage_change(50, 60))
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-It divides by the new value, but percentage change is measured against
-the *old* value. The code gives 16.67%, and the right answer is 20%.
-
-The wrong answer is close enough to look believable. That is exactly
-why nobody notices it.
-
-</details>
-
-## Debugging Habits
-
-**17.** This function should count the words longer than four letters.
-In the list below, that is "banana" and "cherry", so the answer is 2.
-Add a `print` inside the loop, with a label, to find out where it goes
-wrong. Then fix it.
-
-```python exec
-id: debugging-habits-practice-1
-def count_long(words):
+id: counting-in-the-wrong-thing-1--secret-messages
+def count_e(word):
+    """Give back how many times E appears in word."""
     count = 0
-    for word in words:
-        if len(word) > 4:
-            count = count + 1
-        return count
-
-
-print(count_long(["fig", "banana", "kiwi", "cherry"]))
-```
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Put `print("checking", word, "count is", count)` as the first line
-   inside the loop.
-2. Run it. How many words does the loop check?
-3. Look at how far `return count` is indented. Which block is it inside?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-The `print` shows only one line: `checking fig count is 0`. The loop
-stops after the first word.
-
-`return count` is indented inside the loop, so the function gives back
-its answer after the first word. Move `return count` out to the same
-indent as `for`:
-
-```python
-def count_long(words):
-    count = 0
-    for word in words:
-        if len(word) > 4:
+    for letter in range(len(word)):
+        if letter == "E":
             count = count + 1
     return count
 ```
 
-Now it gives 2. A `return` one indent too far in is a very common bug,
-and a `print` in the loop finds it quickly.
-
-</details>
-
-**18.** Here are two functions and a line that uses both. The last line
-prints the wrong answer: a 10% discount on 50 plus 30 should give 72.
-Test each function on its own, with numbers you can check in your head.
-Which one has the bug?
+```inputs
+guess: yes
+count_e("TREE")
+count_e("SKY")
+count_e("")
+```
 
 ```python exec
-id: debugging-habits-practice-2
-def add_up(prices):
-    total = 0
-    for price in prices:
-        total = total + price
-    return total
-
-
-def apply_discount(amount, percent):
-    return amount - percent / 100
-
-
-print(apply_discount(add_up([50, 30]), 10))
+id: counting-in-the-wrong-thing-1-tests--secret-messages
+tests: counting-in-the-wrong-thing-1--secret-messages
+assert count_e("EYE") == 2
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Tests like these show it:
-
-```python
-print(add_up([50, 30]), "should be 80")
-print(apply_discount(100, 10), "should be 90")
+```hint
+Add `print(letter)` inside the loop. What is `letter`, each time round?
 ```
 
-`add_up` passes. `apply_discount(100, 10)` gives 99.9, so the bug is
-there. It takes away 10 / 100, which is 0.1, when it should take away
-10% *of the amount*. The line should be
-`return amount - amount * percent / 100`.
+```solution
+def count_e(word):
+    """Give back how many times E appears in word."""
+    count = 0
+    for letter in word:
+        if letter == "E":
+            count = count + 1
+    return count
+---
+`range(len(word))` gives the positions, 0, 1, 2 and 3, so `letter` was a
+number, never equal to `"E"`. A word with no E gives 0 either way, which
+is why a test on `"SKY"` passes the bug.
+```
 
-With that fix, the last line gives 72.0.
+</div>
 
-</details>
+<div class="dl-world" data-world="pixel-art">
 
-**19.** Why is it worth splitting a long function into small ones before
-you go looking for a bug?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Because each small function can be tested on its own, with an answer you
-already know. A failing test then points at one small piece of code. In
-a long function, the bug could be on any line.
-
-[Designing and testing good functions](tutorial:building-reusable-tools) wrote test
-functions that do this for you, and print PASS or FAIL.
-
-</details>
-
-## Fixing
-
-**20.** Can you fix this so that it works for any list, including an
-empty one?
+This is meant to give back one column of a picture, top to bottom. It
+works on some pictures. Can you find the bug, fix it, and add a test that
+catches it?
 
 ```python exec
-id: fixing-1
-def average(numbers):
-    return sum(numbers) / len(numbers)
-
-
-# print(average([]))
+id: counting-in-the-wrong-thing-1--pixel-art
+def column(picture, c):
+    """Give back column c of picture, from the top row down."""
+    values = []
+    for row in range(len(picture)):
+        values.append(picture[c][row])
+    return values
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def average(numbers):
-    if not numbers:
-        return None      # or 0, or raise — the point is to decide
-    return sum(numbers) / len(numbers)
+```inputs
+guess: yes
+column([[1, 2], [3, 4]], 0)
+column([[1, 2, 3], [4, 5, 6]], 0)
+column([[1, 2, 3], [4, 5, 6]], 2)
 ```
-
-The important part is the decision, more than the code. What *should*
-the average of nothing be? There are three choices:
-
-- `None` says "no answer exists".
-- `0` gives an answer that is not true.
-- Raising an error says "you should not have asked".
-
-You could defend any of the three, and they mean different things. If
-you leave the code to crash, nobody made the decision.
-
-</details>
-
-**21.** This code is meant to count how many marks are passes. Can you
-fix it?
 
 ```python exec
-id: fixing-2
-def count_passes(marks):
-    passes = 0
-    for mark in marks:
-        if mark >= 50:
-            passes = 1
-    return passes
+id: counting-in-the-wrong-thing-1-tests--pixel-art
+tests: counting-in-the-wrong-thing-1--pixel-art
+assert column([[7], [8]], 0) == [7, 8]
+```
 
+```hint
+A picture is `picture[row][column]`: the row first. Which index is the
+row here, and which the column?
+```
 
-print(count_passes([35, 50, 60, 20]))
+```solution
+def column(picture, c):
+    """Give back column c of picture, from the top row down."""
+    values = []
+    for row in range(len(picture)):
+        values.append(picture[row][c])
+    return values
+---
+The two indexes were swapped, so it gave back part of row `c`. On a
+2 × 2 picture that is still a list of two numbers, and wrong, with no
+error. On a picture wider than it is tall, it stops with an `IndexError`,
+which is lucky: that at least says something is wrong.
+```
+
+</div>
+
+## 8. Where it stops being right
+
+This is meant to count the words longer than four letters. It gives 0.
+Add a labelled `print` inside the loop, and find where it goes wrong.
+
+```python exec
+id: where-it-stops-being-right-1
+def long_words(sentence):
+    count = 0
+    for word in sentence:
+        if len(word) > 4:
+            count = count + 1
+    return count
+
+print(long_words("MEET ME BY THE BRIDGE TONIGHT"))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`passes = 1` should be `passes += 1`, which is short for
-`passes = passes + 1`. As written, the code sets the count to 1 each
-time. So it gives back 1 for any list with at least one pass.
-
-It gives the right answer for a list with exactly one pass. That is
-probably the list somebody tested it on.
+`print("word:", word)` inside the loop shows `M`, then `E`, then `E`: a
+loop over a string goes through its characters, not its words. Every
+"word" has length 1. `for word in sentence.split():` gives the words, and
+the answer 2: BRIDGE and TONIGHT.
 
 </details>
 
-**22.** Why is an error message better news than no error message?
+## 9. Test the pieces
+
+This is meant to decode a message by moving each letter back. It gives
+nonsense. Test each piece on its own, with a letter whose answer you know,
+and find the one with the bug.
+
+```python exec
+id: test-the-pieces-1
+def shift_back(letter, shift):
+    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))
+
+
+def decode(message, shift):
+    plain = ""
+    for character in message:
+        if character.isupper():
+            plain = plain + shift_back(character, shift)
+        else:
+            plain = plain + character
+    return plain
+
+
+print(decode("PHHW PH", 3))
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because an error message tells you where and what. A syntax error stops
-you before anything happens. A runtime error names the line and the
-reason, and a traceback shows how the program got there.
+`shift_back("D", 3)` should give A, three letters back, and it gives G:
+the `+ shift` moves forward. With `- shift`, it gives A, and the message
+decodes to MEET ME. `decode` was right all along. Testing it first would
+have pointed at it anyway, but testing the smallest piece first says
+exactly which line.
 
-A logical error tells you nothing. It may not be found for weeks, and by
-then it has produced a great deal of confident, wrong output.
+</details>
 
-The red text is the computer helping you as much as it can.
+## 10. Explain it to a duck
+
+Some programmers keep a rubber duck on their desk. When they are stuck,
+they explain their code to it, line by line, out loud. Why would that
+help?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Explaining a line makes you say what it does, not what you meant it to do,
+and the bug is in the gap between the two. Halfway through an explanation,
+people often stop and say "oh". The duck does nothing, and that is the
+point: it does not interrupt, and it does not already know what the code
+is supposed to do. A classmate who lets you finish works as well.
+
+</details>
+
+## 11. From earlier: raise on purpose
+
+From *Designing and testing good functions*.
+
+```python exec
+id: from-earlier-raise-on-purpose-1
+def half(n):
+    if n % 2 == 1:
+        raise ValueError("half() needs an even number")
+    return n // 2
+
+print(half(8))
+print(half(7))
+```
+
+```predict
+What will the last line do?
+
+- Print 3
+  - 7 // 2 is 3.
+- Stop with a ValueError
+  - 7 is odd, so the function raises before it divides.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints 4 for 8, and then stops with
+`ValueError: half() needs an even number`. The error is the function's
+own, with its own message, at the place the problem was found.
+
+</details>
+
+## 12. From earlier: nearly in order
+
+From *Sorting a list: bubble, insertion and selection sort*. A list is
+already sorted except for its last element. Which of the three sorts does
+least work on it?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Insertion sort. Every element but the last is already in place, so each
+costs one comparison, and only the last is moved back to where it belongs.
+Selection sort still searches the whole unsorted part every time, and
+bubble sort, without a flag, still makes every comparison.
+
+</details>
+
+## 13. From earlier: a number and a letter
+
+From *Lists and looping over them*.
+
+```python exec
+id: from-earlier-a-number-and-a-letter-1
+for index, letter in enumerate("AB"):
+    print(index + letter)
+```
+
+```predict
+What will it do?
+
+- Print 0A, then 1B
+  - `+` joins the index and the letter.
+- Stop with a TypeError
+  - The index is a number, and the letter a string.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `TypeError`: `+` will not join a number to a string. `str(index) +
+letter` gives `0A`, and `print(index, letter)` shows both with a space
+between.
 
 </details>

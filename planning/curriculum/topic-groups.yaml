@@ -176,7 +176,9 @@ groups:
       - first-steps-cm
       - storing-and-computing
       - lists-and-sequences
+      - comprehensions-and-grids
       - looking-things-up-by-name
+      - a-program-of-your-own
       - repeating-yourself
       - writing-your-own-functions
       - making-decisions

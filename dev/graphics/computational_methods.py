@@ -200,21 +200,21 @@ def the_range_collapsing() -> str:
 
 def _search_case() -> tuple[list[int], int]:
     page = (TUTORIALS / "finding-things" / "finding-things.md").read_text()
-    if "id: your-turn-6" not in page:
-        raise SystemExit("finding-things: no cell called 'your-turn-6' any more")
-    block = page.split("id: your-turn-6", 1)[1].split("```", 1)[0]
+    if "id: your-turn-2" not in page:
+        raise SystemExit("finding-things: no cell called 'your-turn-2' any more")
+    block = page.split("id: your-turn-2", 1)[1].split("```", 1)[0]
     for line in block.splitlines():
         if line.strip().startswith("sorted_numbers ="):
             return ast.literal_eval(line.split("=", 1)[1].strip()), 3
-    raise SystemExit("finding-things/your-turn-6: no sorted_numbers defined")
+    raise SystemExit("finding-things/your-turn-2: no sorted_numbers defined")
 
 
 def where_the_cuts_are() -> str:
-    """The cut positions behind *Lists and Sequences*' slicing examples.
+    """The cut positions behind *Lists and looping over them*' slices.
 
-    The page writes `scores[2:5]` and explains in a comment that the end
-    index is excluded. That is true and it is the second thing a reader
-    needs; the first is why, and the why is positional. The two numbers
+    The page asks what `letters[2:5]` prints, then says the end index is
+    excluded. That is true and it is the second thing a reader needs;
+    the first is why, and the why is positional. The two numbers
     in a slice are not items, they are the gaps between items, and ten
     items have eleven gaps. Drawn that way the exclusion stops being a
     rule to memorise — you cannot include a fence post, there is nothing
@@ -235,16 +235,16 @@ def _slicing_case() -> tuple[list, list[tuple[int | None, int | None]]]:
     block = page.split("id: lists-ordered-collections-1", 1)[1].split("```", 1)[0]
     items = None
     for line in block.splitlines():
-        if line.strip().startswith("scores ="):
+        if line.strip().startswith("letters ="):
             items = ast.literal_eval(line.split("=", 1)[1].strip())
     if items is None:
-        raise SystemExit("lists-and-sequences: no scores list to draw")
+        raise SystemExit("lists-and-sequences: no letters list to draw")
 
-    if "id: lists-ordered-collections-3" not in page:
-        raise SystemExit("lists-and-sequences: no cell 'lists-ordered-collections-3'")
-    block = page.split("id: lists-ordered-collections-3", 1)[1].split("```", 1)[0]
+    if "id: lists-ordered-collections-4" not in page:
+        raise SystemExit("lists-and-sequences: no cell 'lists-ordered-collections-4'")
+    block = page.split("id: lists-ordered-collections-4", 1)[1].split("```", 1)[0]
     found: list[tuple[int | None, int | None]] = []
-    for match in re.finditer(r"scores\[(-?\d*):(-?\d*)\]", block):
+    for match in re.finditer(r"letters\[(-?\d*):(-?\d*)\]", block):
         start = int(match.group(1)) if match.group(1) else None
         stop = int(match.group(2)) if match.group(2) else None
         found.append((start, stop))

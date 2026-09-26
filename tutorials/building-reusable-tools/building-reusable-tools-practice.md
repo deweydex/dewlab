@@ -2,477 +2,516 @@
 title: "Designing and testing good functions — Practice"
 practice_for: building-reusable-tools
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Designing and testing good functions — Practice
 
-The answers are hidden in folds under each problem. Most problems ask
-you to write a function, and then to say what it does with input it was
-not designed for. That second part is the real exercise.
+Problems on docstrings, edge cases and tests, and three from earlier
+pages. Where a problem has a cell of tests under it, those tests are
+yours: add to them, and they run against your function and against a
+solution. Try each problem before you open anything under it.
 
-In the cell below, `mean.__doc__` gives back the docstring of `mean`.
+## 1. A docstring for f
 
-## Docstrings and Contracts
-
-```python exec
-id: docstrings-and-contracts-1
-def mean(numbers):
-    """The arithmetic mean of a non-empty list of numbers."""
-    return sum(numbers) / len(numbers)
-
-
-print(mean([10, 20, 30]))
-print(mean.__doc__)
-```
-
-**1.** Write a docstring for this function.
+Can you write a docstring for this function, and give it a better name?
 
 ```python
 def f(a, b):
     return (a + b) / 2
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>one answer</summary>
 
 ```python
 def midpoint(a, b):
-    """The number halfway between a and b."""
+    """Give back the number halfway between a and b."""
     return (a + b) / 2
 ```
 
-Here the new name does more than the docstring. Sometimes a good name
-makes the docstring almost unnecessary. That is a success, and it is no
-reason to skip the good name.
+Here the new name does more than the docstring. A good name can make a
+docstring almost unnecessary, which is a success, and no reason to skip
+the name.
 
 </details>
 
-**2.** A docstring is for someone who is about to use the function. What three things should it tell them?
+## 2. What a docstring says
+
+A docstring is for someone about to use the function. What three things
+should it tell them?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. What the function does.
-2. What it expects as input.
-3. What it gives back, including what it does when the input is not what
-   it expects.
-
-People often leave out that last part, and it is the part a reader most
-often needs. The sentence "Returns None for an empty list" can save
-someone an hour.
+What the function does; what it expects as input; and what it gives back,
+including what it does when the input is not what it expects. The last is
+the part most often left out, and the part a reader most often needs.
+"Raises ValueError for an empty list" can save somebody an hour.
 
 </details>
 
-**3.** This function's docstring says something that is not true. What is wrong?
+## 3. A docstring that is not true
+
+What is wrong with this function's docstring?
 
 ```python
 def average(numbers):
-    """Return the mean of a list of numbers, or 0 if the list is empty."""
+    """Give back the mean of a list of numbers, or 0 if it is empty."""
     return sum(numbers) / len(numbers)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-On an empty list, it raises a `ZeroDivisionError`. The docstring
-promises something the code does not do.
-
-A wrong docstring is worse than no docstring, because people trust it.
-Either add the check, or change the sentence. If you cannot decide
-which, you have found a question about the design of the function, and
-not only a problem with its description.
+On an empty list it stops with a `ZeroDivisionError`: the docstring
+promises something the code does not do. A wrong docstring is worse than
+none, because people trust it. Either add the check or change the
+sentence. If you cannot decide which, you have found a question about what
+the function is for.
 
 </details>
 
-## Building on Other Functions
+## 4. The middle value
 
-**4.** Write `data_range(numbers)`. It returns the difference between the largest and the smallest values.
+The *median* is the middle value of a list once it is sorted. With an even
+number of values, it is the mean of the two in the middle. Can you write
+`median(numbers)`, and add tests of your own?
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def data_range(numbers):
-    """The difference between the largest and smallest values.
-
-    Returns None for an empty list. A single value gives 0.
-    """
-    if not numbers:
-        return None
-    return max(numbers) - min(numbers)
-```
-
-One element gives 0. That is the correct answer, and it needs no
-special code: the largest and the smallest are the same value.
-
-</details>
-
-**5.** Write `describe(numbers)`. It prints a summary, using `mean`, `std_dev` and `data_range`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def describe(numbers):
-    """Print a short summary of a list of numbers."""
-    if not numbers:
-        print("no data")
-        return
-    print(f"n         {len(numbers)}")
-    print(f"mean      {mean(numbers):.3f}")
-    print(f"std dev   {std_dev(numbers):.3f}")
-    print(f"range     {data_range(numbers)}")
-```
-
-The f-strings work as in
-[Variables, data types and text](tutorial:storing-and-computing). Here `:.3f`
-gives three decimal places.
-
-On `[42, 38, 35, 47, 29, 41, 44, 33, 39, 48]`, it gives: mean 39.6,
-standard deviation about 5.765, range 19.
-
-Look at the `return` straight after "no data". It ends the function
-early, so the rest of the function never has to think about the empty
-list. Dealing with the awkward input first, and then leaving, is usually
-neater than putting everything else inside an `if`.
-
-</details>
-
-**6.** `std_dev` calls `mean` twice. Why is that better than writing the averaging code inside `std_dev`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Because then there is only one piece of averaging code to get right,
-to test and to fix.
-
-The second call is the interesting one. The standard deviation is the
-square root of the mean of the squared differences. So it uses *the same
-operation twice*. That is easier to see when the operation has a name
-than when it is two loops that happen to look alike.
-
-</details>
-
-**7.** Write `median(numbers)`. What does it do with a list that has an even number of items?
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: the-middle-value-1
 def median(numbers):
-    """The middle value, or the mean of the two middle values."""
-    if not numbers:
-        return None
+    """Give back the middle value of a non-empty list of numbers."""
+    return 0
+```
+
+```inputs
+guess: yes
+median([3, 1, 2])
+median([4, 1, 3, 2])
+median([7])
+```
+
+```python exec
+id: the-middle-value-1-tests
+tests: the-middle-value-1
+assert median([5, 1, 9]) == 5
+```
+
+```hint
+Sort a copy with `sorted()`. The middle index is `len(ordered) // 2`. When
+the length is even, which two indexes are either side of the middle?
+```
+
+```solution
+def median(numbers):
+    """Give back the middle value of a non-empty list of numbers."""
     ordered = sorted(numbers)
     middle = len(ordered) // 2
     if len(ordered) % 2 == 1:
         return ordered[middle]
     return (ordered[middle - 1] + ordered[middle]) / 2
+---
+`sorted()`, not `.sort()`, on purpose: asking for the median must not
+change the order of the caller's list. `[4, 1, 3, 2]` gives 2.5.
 ```
 
-It uses `sorted`, and not `.sort()`, on purpose. Asking for the median
-of a list must not change the order of the caller's list.
+## 5. What breaks them
 
-</details>
-
-## Edge Cases
-
-**8.** For each of these functions, give an input that breaks it: `mean`, `data_range`, `median`, `max`.
+Give an input that breaks each of these: `mean`, `median` from problem 4,
+and Python's own `max`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An empty list breaks all four, unless the function checks for it. The
-`mean` in the cell above divides by zero. `max([])` raises a
-`ValueError`. A `data_range` or `median` with no check fails too:
-`data_range` because it calls `max` and `min`, and `median` because it
-asks for an item from an empty list. The versions in problems 4 and 7
-check first, and return `None`.
-
-`mean` also breaks on a list that holds a string. `max` does not:
-`max(["b", "a"])` works fine. So be clear about which of your
+An empty list breaks all three: `mean` divides by zero, `median` asks for
+an element of an empty list, and `max([])` raises a `ValueError`. `mean`
+also breaks on a list holding a string, and `max` does not:
+`max(["b", "a"])` is `"b"`. So it is worth being clear which of your
 assumptions is "numbers" and which is "not empty".
 
 </details>
 
-**9.** Here are three ways to handle bad input: return `None`, raise an exception, or return a default value. When is each one right?
+## 6. Three ways
+
+A function can meet bad input by returning `None`, by raising an error, or
+by returning a default value. When is each one right?
 
 <details class="dl-answer"><summary>answer</summary>
 
-**Raise an exception** when the call itself was a mistake, and carrying
-on would hide it. `mean([])` almost always means there is a bug
-somewhere earlier in the program, so raising an error points at the real
-problem.
+**Raise** when the call itself was a mistake, and carrying on would hide
+it: `mean([])` almost always means a bug earlier in the program.
 
-**Return `None`** when "no answer" is a fair result that the caller
-should deal with. Searching for something that might not be there is an
-example.
+**Return `None`** when "no answer" is a fair result the caller should deal
+with, such as a search for something that may not be there.
 
-**Return a default** only when the default is correct, and not only
-because it is easy. `sum([])` giving 0 is right. `mean([])` giving 0 is
-wrong, and that wrong 0 will end up in a report.
+**Return a default** only when the default is right, and not because it
+is easy. `sum([])` giving 0 is right. `mean([])` giving 0 is wrong, and
+that wrong 0 ends up in somebody's report.
 
 </details>
 
-**10.** Add input checking to `mean`, so that it refuses a list that holds anything that is not a number.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def mean(numbers):
-    """The arithmetic mean of a non-empty list of numbers."""
-    if not numbers:
-        raise ValueError("mean of an empty list is undefined")
-    for value in numbers:
-        if not isinstance(value, (int, float)):
-            raise TypeError(f"not a number: {value!r}")
-    return sum(numbers) / len(numbers)
-```
-
-`isinstance(value, (int, float))` asks whether `value` is an `int` or a
-`float`. In the f-string, `!r` shows the value the way Python writes it,
-with quotes around a string.
-
-Is the check worth it? Without it, a string in the list still raises a
-`TypeError`, from `sum`. The difference is that this error names the
-value that caused it. That is usually the whole benefit of a check: it
-says which item caused the error.
-
-</details>
-
-**11.** What does `mean([True, True, False])` give? Should it?
-
-<details class="dl-answer"><summary>answer</summary>
-
-0.666…, because in Python `True` counts as 1 and `False` counts as 0.
-
-`isinstance(True, int)` is `True`, so the check in the previous answer
-lets `True` and `False` through. Is that a bug? It depends on what you
-meant. The mean of a list of yes-or-no answers is the fraction that
-said yes, and that is often the number you wanted.
-
-</details>
-
-## Testing
-
-The cell below uses `assert`. An `assert` line checks that something is
-true. If it is not true, Python stops with an `AssertionError`.
+## 7. The mean of True and False
 
 ```python exec
-id: testing-1
-def test_mean():
-    assert mean([10, 20, 30]) == 20
-    assert mean([5]) == 5
-    assert abs(mean([1, 2]) - 1.5) < 1e-9
-    print("mean: all tests passed")
-
-
-test_mean()
+id: the-mean-of-true-and-false-1
+answers = [True, True, False]
+print(sum(answers) / len(answers))
 ```
 
-**12.** Write three tests for `data_range`: an ordinary one, an edge case, and one that should fail loudly.
+```predict
+type: number
+tolerance: 0.01
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+About 0.667. In Python, `True` counts as 1 and `False` as 0, so the sum is
+2. Is that a bug? It depends on what you meant: the mean of a list of
+yes-or-no answers is the fraction that said yes, which is often the
+number you wanted.
+
+</details>
+
+## 8. A test that fails a good function
+
+```python exec
+id: a-test-that-fails-a-good-function-1
+def mean(numbers):
+    return sum(numbers) / len(numbers)
+
+assert mean([0.1, 0.2]) == 0.15
+print("passed")
+```
+
+```predict
+What will it do?
+
+- Print passed
+  - The mean of 0.1 and 0.2 is 0.15.
+- Stop with an AssertionError
+  - A float is often not stored exactly.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It stops with an `AssertionError`, though the function is fine.
+`(0.1 + 0.2) / 2` is `0.15000000000000002`: most decimals cannot be
+stored exactly. A test that checks two floats for exact equality tests
+how the computer stores numbers, not your code. Check that they are close
+instead: `assert abs(mean([0.1, 0.2]) - 0.15) < 1e-9`.
+
+</details>
+
+## 9. A test that passes at once
+
+You write a test, and it passes the first time. What should you check?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-assert data_range([1, 5, 3]) == 4          # ordinary
-assert data_range([7]) == 0                # edge: one item
-assert data_range([]) is None              # edge: empty
-```
+That it would fail if the code were wrong. Break the function on purpose:
+return the wrong thing, or turn a `<` into a `>`. Then make sure the test
+complains. A test that passes on broken code tests nothing, and the
+bug hunt on the tutorial page had three versions ready to show it.
 
-A test that "should fail loudly" checks that an error really happens.
-This one tests the `mean` from problem 10, which raises a `ValueError`
-for an empty list. Here `try` runs `mean([])`. The `except` part runs if
-a `ValueError` is raised. The `else` part runs if no error is raised:
+</details>
+
+## 10. A test that checks for an error
+
+How can a test check that `mean([])` raises a `ValueError`, when an error
+stops the program?
+
+<details class="dl-answer"><summary>answer</summary>
+
+With `try`, which is new here. The `try` part runs the call. The `except`
+part runs only if that kind of error is raised. The `else` part runs only
+if nothing was raised.
 
 ```python
 try:
     mean([])
 except ValueError:
-    print("raised as expected")
+    print("raised, as the docstring promises")
 else:
-    print("did NOT raise — the check is missing")
+    print("did not raise: the check is missing")
 ```
 
-Try it on the first `mean`, at the top of this page, and neither line
-prints. Python stops with a `ZeroDivisionError` instead. That version
-divides by `len([])`, which is 0, and the `except` line is only looking
-for a `ValueError`. The test has still told you something true: the
-first `mean` has no check for an empty list.
-
-Testing that something fails is as important as testing that it
-works. It is also the half that most people skip.
+Testing that something fails is as important as testing that it works,
+and it is the half most people skip.
 
 </details>
 
-**13.** Why is `assert mean([0.1, 0.2]) == 0.15` a bad test?
+## 11. Reads the same both ways
 
-<details class="dl-answer"><summary>answer</summary>
+<div class="dl-world" data-world="secret-messages">
 
-Because the test fails, even though the function is fine.
+A *palindrome* reads the same forwards and backwards, like NOON. Can you
+write `is_palindrome(text)`, which ignores spaces and capital letters, so
+that `"Never odd or even"` counts? Add tests of your own.
 
-`(0.1 + 0.2) / 2` is 0.15000000000000002. A computer cannot store most
-decimals exactly. So a test that checks two floats for exact equality is
-testing how the computer stores numbers, and not your code. Instead,
-check that the difference is very small, as `testing-1` does with
-`abs(...) < 1e-9`.
-
-</details>
-
-**14.** You write a test and it passes immediately. What should you check?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Check that it would fail if the code were wrong.
-
-Break the function on purpose. For example, return the wrong thing, or
-turn a `<` into a `>`. Then make sure the test complains. A test that
-passes on broken code tests nothing, and there are many such tests in
-the world.
-
-</details>
-
-## More functions to write
-
-**15.** Write `convert_temperature(celsius)`. It returns both the Fahrenheit and the Kelvin temperature.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def convert_temperature(celsius):
-    """Return (fahrenheit, kelvin) for a temperature in Celsius."""
-    return celsius * 9 / 5 + 32, celsius + 273.15
-```
-
-A Python function gives back more than one value by returning a
-*tuple*. A tuple is a fixed group of values, with commas between them.
-The caller unpacks it: `f, k = convert_temperature(20)`.
-
-Check it against a value you know: 100 °C should give 212 °F and
-373.15 K.
-
-</details>
-
-**16.** Write `remove_character(text, position)`. It removes the character at a given index.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def remove_character(text, position):
-    """Return text with the character at `position` removed."""
-    return text[:position] + text[position + 1:]
-```
-
-It uses slicing, and does not delete, because a string cannot be
-changed in place.
-
-A position past the end returns the string unchanged, with no error. A
-slice never goes out of range: it stops at the ends. A negative position
-is stranger still: try `remove_character("abc", -1)`. If either result
-is wrong for your purpose, you have to write the check yourself.
-
-</details>
-
-**17.** Write `swap_first_last(text)`. It swaps the first and last characters of a string.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def swap_first_last(text):
-    """Return text with its first and last characters exchanged."""
-    if len(text) < 2:
-        return text
-    return text[-1] + text[1:-1] + text[0]
-```
-
-The `if` at the start does real work. Without it, a one-character
-string comes back doubled, because `text[-1]` and `text[0]` are the same
-character, and `text[1:-1]` is empty. An empty string would raise an
-`IndexError`.
-
-</details>
-
-**18.** Write `is_palindrome(text)`. A palindrome reads the same forwards and backwards. Your function ignores capital letters and punctuation.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: reads-the-same-both-ways-1--secret-messages
 def is_palindrome(text):
-    """True if text reads the same both ways, ignoring case and punctuation."""
-    letters = [c.lower() for c in text if c.isalnum()]
+    """Give back True if text reads the same both ways, ignoring spaces and case."""
+    return False
+```
+
+```inputs
+guess: yes
+is_palindrome("Never odd or even")
+is_palindrome("MEET ME")
+is_palindrome("")
+```
+
+```python exec
+id: reads-the-same-both-ways-1-tests--secret-messages
+tests: reads-the-same-both-ways-1--secret-messages
+assert is_palindrome("NOON")
+```
+
+```hint
+First build a string of the letters only, all in capitals. Then compare
+it with itself backwards: a loop can build the backwards copy, or
+`[::-1]` can.
+```
+
+```solution
+def is_palindrome(text):
+    """Give back True if text reads the same both ways, ignoring spaces and case."""
+    letters = ""
+    for character in text.upper():
+        if character != " ":
+            letters = letters + character
     return letters == letters[::-1]
+---
+An empty string reads the same both ways, so it counts. Is that what you
+wanted? Your tests are the place to say so.
 ```
 
-`"A man, a plan, a canal: Panama"` gives `True`.
+</div>
 
-`c.isalnum()` is `True` for letters and digits, so the list keeps only
-those.
+<div class="dl-world" data-world="pixel-art">
 
-It is much easier to build the cleaned list first and then compare. The
-other way walks two positions inwards from the ends, skipping
-punctuation as it goes, and it is easy to get wrong. The first way is
-also the version you can still read in a month.
+A row of pixels is *symmetric* if it looks the same mirrored. Can you
+write `is_symmetric(picture)`, which gives `True` when every row of a
+picture is symmetric? Add tests of your own.
 
-</details>
+```python exec
+id: reads-the-same-both-ways-1--pixel-art
+def is_symmetric(picture):
+    """Give back True if every row of picture reads the same both ways."""
+    return False
+```
 
-**19.** Write `longest_word(sentence)`.
+```inputs
+guess: yes
+is_symmetric([[0, 255, 0], [255, 0, 255]])
+is_symmetric([[1, 2], [2, 2]])
+is_symmetric([])
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: reads-the-same-both-ways-1-tests--pixel-art
+tests: reads-the-same-both-ways-1--pixel-art
+assert is_symmetric([[1, 0, 1]])
+```
 
-```python
+```hint
+Check the rows one at a time. `row[::-1]` is the row backwards. As soon as
+one row is not symmetric, the answer is `False`.
+```
+
+```solution
+def is_symmetric(picture):
+    """Give back True if every row of picture reads the same both ways."""
+    for row in picture:
+        if row != row[::-1]:
+            return False
+    return True
+---
+An empty picture has no row that breaks the rule, so it gives `True`.
+That is how "every" works in mathematics too, and it is still worth a
+test, so that nobody changes it by accident.
+```
+
+</div>
+
+## 12. The longest word
+
+`sentence.split()` gives a list of the words in a sentence, cut wherever
+there are spaces. Can you write `longest_word(sentence)`, and decide what
+it gives for a sentence with no words?
+
+```python exec
+id: the-longest-word-1
 def longest_word(sentence):
-    """The longest word in a sentence, or None if there are no words."""
-    words = sentence.split()
-    if not words:
-        return None
-    longest = words[0]
-    for word in words:
-        if len(word) > len(longest):
-            longest = word
-    return longest
+    """Give back the longest word in sentence."""
+    return ""
 ```
 
-If two words tie, the first one wins, because the test is `>` and not
-`>=`. Is that right? The problem does not say. Either way, it is worth a
-line in the docstring.
+```inputs
+guess: yes
+longest_word("the quick brown fox")
+longest_word("a bb cc")
+longest_word("")
+```
+
+```python exec
+id: the-longest-word-1-tests
+tests: the-longest-word-1
+assert longest_word("hi there") == "there"
+```
+
+```solution
+def longest_word(sentence):
+    """Give back the longest word in sentence.
+
+    The first one wins a tie. An empty sentence gives an empty string.
+    """
+    best = ""
+    for word in sentence.split():
+        if len(word) > len(best):
+            best = word
+    return best
+---
+"quick", not "brown": both have five letters, and `>` keeps the first.
+The docstring now says so, and says what an empty sentence gives.
+```
+
+## 13. The most frequent
+
+The *mode* is the value that appears most often. Can you write
+`mode(numbers)`, say in its docstring what happens with a tie, and test
+it?
+
+```python exec
+id: the-most-frequent-1
+def mode(numbers):
+    """Give back the most common value in a non-empty list."""
+    return 0
+```
+
+```inputs
+guess: yes
+mode([3, 7, 3, 9, 7, 3, 1])
+mode([5])
+mode([2, 1, 1, 2])
+```
+
+```python exec
+id: the-most-frequent-1-tests
+tests: the-most-frequent-1
+assert mode([4, 4, 1]) == 4
+```
+
+```solution
+def mode(numbers):
+    """Give back the most common value in a non-empty list.
+
+    With a tie, the value that appears first in the list wins.
+    """
+    counts = {}
+    for number in numbers:
+        counts[number] = counts.get(number, 0) + 1
+    best = numbers[0]
+    for number, count in counts.items():
+        if count > counts[best]:
+            best = number
+    return best
+---
+`[2, 1, 1, 2]` gives 2, because 2 comes first. A tie rule nobody wrote
+down is a rule nobody can test.
+```
+
+## 14. From earlier: sorting a string
+
+From *Sorting a list: bubble, insertion and selection sort*.
+
+```python exec
+id: from-earlier-sorting-a-string-1
+print(sorted("CAB"))
+```
+
+```predict
+What will it print?
+
+- ABC
+  - `sorted()` puts the letters of a string in order.
+- ['A', 'B', 'C']
+  - `sorted()` always gives back a list.
+- An error
+  - Only a list can be sorted.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`['A', 'B', 'C']`. `sorted()` takes anything a loop can go through, and
+always gives back a list. `"".join(sorted("CAB"))` makes it a string
+again.
 
 </details>
 
-## Putting It Together
+## 15. From earlier: minus one as an index
 
-**20.** Build a small statistics toolkit: `mean`, `median`, `mode`, `data_range`, `std_dev`, and a `summary` that uses them all. Give each function a docstring and at least two tests.
+From *Searching a list: linear and binary search*.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: from-earlier-minus-one-as-an-index-1
+def linear_search(items, target):
+    for index in range(len(items)):
+        if items[index] == target:
+            return index
+    return -1
 
-The shape matters more than the details. The *mode* is the most common
-value in a list.
-
-```python
-def mode(numbers):
-    """The most common value. Ties are broken by first appearance."""
-    if not numbers:
-        return None
-    return max(numbers, key=numbers.count)
-
-
-def summary(numbers):
-    """Print mean, median, mode, range and standard deviation."""
-    for name, value in [
-        ("mean", mean(numbers)),
-        ("median", median(numbers)),
-        ("mode", mode(numbers)),
-        ("range", data_range(numbers)),
-        ("std dev", std_dev(numbers)),
-    ]:
-        print(f"{name:<10}{value}")
+names = ["OTTER", "HERON"]
+print(names[linear_search(names, "FOX")])
 ```
 
-There are five small functions, each one testable on its own, and a
-sixth that puts them together. In `summary`, `{name:<10}` pads each name
-with spaces to ten characters, so the values line up.
+```predict
+What will it print?
 
-Make every one of them handle the empty list in the same way. A toolkit
-whose pieces disagree about edge cases is harder to use than one that is
-always strict, or always forgiving. Right now they do not agree: `mode`
-returns `None`, but the `mean` from the cell above divides by zero, and
-so does `std_dev`, which calls it.
+- HERON
+  - -1 is a real index: the last element.
+- An error
+  - FOX is not there, so there is nothing to print.
+- -1
+  - The search gives -1 for "not there".
+```
 
-`mode` is the one worth arguing about. A list with two values that are
-equally common has two modes. Returning only one of them, without
-saying so, is a decision. At the least, say so in the docstring. The
-more accurate version returns a list of all the modes.
+<details class="dl-answer"><summary>why</summary>
+
+`HERON`, with no error. The search said "not there" with −1, and the
+caller used it as an index, which picks the last element. A caller must
+check for −1 before using the answer. Raising an error in place of
+returning −1 would make forgetting impossible.
+
+</details>
+
+## 16. From earlier: a key that is not there
+
+From *Dictionaries: looking things up by name*.
+
+```python exec
+id: from-earlier-a-key-that-is-not-there-1
+counts = {"E": 9}
+print(counts.get("Z"))
+```
+
+```predict
+What will it print?
+
+- 0
+  - A missing count is zero.
+- None
+  - `.get()` with no default gives None.
+- An error
+  - Z is not a key.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`None`. `.get()` never raises a `KeyError`: with no default, it gives
+back `None`. `counts.get("Z", 0)` gives 0.
 
 </details>

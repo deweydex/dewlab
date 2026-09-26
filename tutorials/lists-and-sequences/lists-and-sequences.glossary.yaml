@@ -1,67 +1,43 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: list
+  - term: list, element
     kind: concept
-    definition: A list is an ordered sequence of values, written inside square brackets.
-    example: "[42, 38, 35]"
+    definition: >
+      A list is a row of values kept in order, written inside square
+      brackets with commas between them. Each value in it is an element.
+    example: '["MEET", "ME", "AT", "NOON"]'
   - term: index, zero-based indexing
     kind: concept
     definition: >
-      An index is a value's position in a list. Python starts counting at
-      0, so the first element is at index 0. A negative index counts from
-      the end: -1 is the last element.
+      An index is an element's position in a list. Python starts counting
+      at 0, so the first element is at index 0. A negative index counts
+      from the end: -1 is the last element.
+    example: "words[0], words[-1]"
   - term: slice
     kind: concept
-    definition: A slice is a part of a list, taken with [start:end]. The element at end is left out.
-    example: "scores[2:5]"
-  - term: mutable
+    definition: >
+      A slice is a part of a list or a string, taken with [start:end]. The
+      two numbers are cuts between elements, so the element at end is not
+      included.
+    example: 'letters[2:5]  # 3 elements'
+  - term: mutable, immutable
     kind: concept
-    definition: A mutable value is one that can be changed after it is created. A list is mutable, so you can replace, add or remove its elements.
+    definition: >
+      A mutable value can be changed after it is made: a list can have
+      elements replaced or added. An immutable value cannot: a string
+      stays as it was, and a changed one is built new.
   - term: "append()"
     python: list.append
     kind: function
     definition: Adds one element to the end of a list, changing that list.
-    example: "scores.append(50)"
+    example: "row.append(0)"
   - term: "enumerate()"
     python: enumerate
     kind: function
-    definition: Gives both the index and the value of each element as a loop goes through a list.
-    example: "for index, name in enumerate(names):"
-  - term: sequence
-    kind: concept
-    definition: In mathematics, a sequence is a list of numbers made by a rule. The rule takes a position n and gives the value at that position.
-    example: "1, 4, 9, 16, 25, ... from f(n) = n²"
-  - term: dot product
-    kind: formula
-    definition: >
-      The dot product of two lists is the sum you get when you multiply
-      each pair of matching elements and add the results. It is used
-      everywhere in machine learning and physics.
-    example: "[1, 2, 3] . [4, 5, 6] = 1*4 + 2*5 + 3*6 = 32"
-  - term: list comprehension
-    kind: concept
-    definition: >
-      A list comprehension is a loop that builds a list, written on one
-      line inside square brackets. The value to add comes first, then the
-      for line without its colon.
-    example: "[i ** 2 for i in range(1, 11)]"
-  - term: filter
-    kind: concept
-    definition: >
-      A filter is an if at the end of a comprehension. It keeps only the
-      values that pass its test.
-    example: "[score for score in scores if score >= 40]"
-  - term: generator expression
-    kind: concept
-    definition: >
-      A generator expression is a comprehension without its square
-      brackets, written inside a function's brackets. It hands its values
-      to the function one at a time, without building a list first.
-    example: "sum(score for score in scores if score >= 40)"
-  - term: "join()"
-    python: str.join
+    definition: Gives both the index and the element each time a loop goes round a list.
+    example: "for index, word in enumerate(words):"
+  - term: ".split()"
+    python: str.split
     kind: function
-    definition: >
-      Joins a group of strings into one string. The string before .join
-      goes between the pieces.
-    example: '", ".join(names)'
+    definition: Cuts a string into a list of words, wherever there are spaces.
+    example: "\"MEET ME AT NOON\".split()  # ['MEET', 'ME', 'AT', 'NOON']"

@@ -193,7 +193,7 @@ comes back to this.
 
 Can you find the largest number in `[3, 17, 4, 22, 8]` with a loop, without
 `max()`? The square brackets make a *list*, which
-[Lists: keeping many values in order](tutorial:lists-and-sequences) meets
+[Lists and looping over them](tutorial:lists-and-sequences) meets
 properly. For now, `for n in numbers:` takes each number in turn, and
 `numbers[0]` is the first one.
 

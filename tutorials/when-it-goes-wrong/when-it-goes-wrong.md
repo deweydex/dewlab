@@ -1,7 +1,10 @@
 ---
 title: "Finding bugs in bigger programs"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   errors-from-lists-and-dictionaries:
     covers: [PDP-LO9]
@@ -16,452 +19,552 @@ covers:
 
 # Finding bugs in bigger programs
 
-In [Reading an error message](tutorial:reading-an-error-message), we
-broke small programs on purpose. We met the three kinds of wrong: syntax
-errors, runtime errors and logical errors. We learned to read a short
-traceback from the bottom. And we saw that the line that failed is not
-always the line that is responsible.
-
-Since then, our programs have grown. They repeat steps with loops, keep
-values in lists and dictionaries, and split their work into functions.
-Everything on that page still holds. But bigger programs bring a few new
-errors, longer tracebacks, and logical errors that hide much better.
-
-That is what this page is about. Most cells below are meant to fail, or
-to give a wrong answer. Finding out why is the exercise.
-
-If a message makes your heart sink, that is normal. It happens to people
-who have programmed for thirty years. An error is a fact about this line,
-on this run. It is not a fact about whether you can program.
-
-## Errors From Lists and Dictionaries
-
-A list holds values in order, and a dictionary holds values under names.
-Both give us new ways to ask for something that is not there.
-
-What do you think happens when this cell asks for the tenth score?
+This function is meant to count how often each letter appears. It runs
+with no error. What does it print?
 
 ```python exec
-id: errors-that-happen-while-it-runs-1
-scores = [85, 90, 78]
-print("The first score is", scores[0])
-print("The tenth score is", scores[10])
+id: a-count-that-forgets-1
+def count_letters(text):
+    for letter in text:
+        counts = {}
+        counts[letter] = counts.get(letter, 0) + 1
+    return counts
+
+print(count_letters("BANANA"))
 ```
 
-The first `print` worked. The second did not. As with every runtime
-error, some of the program ran before it stopped.
+```predict
+What will it print?
 
-A dictionary fails in a similar way. What happens here?
-
-```python exec
-id: errors-from-lists-and-dictionaries-1
-marks = {"Aoife": 72, "Ben": 65}
-print("Aoife scored", marks["Aoife"])
-print("Cara scored", marks["Cara"])
+- {'B': 1, 'A': 3, 'N': 2}
+  - Each letter is counted as the loop goes.
+- {'A': 1}
+  - `counts = {}` runs every time round, so each letter starts again.
+- An error
+  - `counts` is made inside the loop, so `return` cannot see it.
 ```
 
-Here are the runtime errors that come with the tools we have met since
-[Reading an error message](tutorial:reading-an-error-message), and what
-each one is telling you.
+It prints `{'A': 1}`. `counts = {}` is inside the loop, so every time
+round, the dictionary is thrown away and started again, and only the last
+letter survives. One line is indented one step too far, and nothing
+complains.
+
+[Reading an error message](tutorial:reading-an-error-message) met the three
+kinds of wrong in programs of a few lines. Since then, programs have grown:
+loops, lists, dictionaries, and functions that call functions. Bigger
+programs bring new errors, longer tracebacks, and logical errors that hide
+much better. Most cells on this page are meant to fail, or to give a wrong
+answer. Finding out why is the exercise.
+
+## Errors from lists and dictionaries
+
+A list and a dictionary each give a new way to ask for something that is
+not there.
 
 | Error | What it means |
 |---|---|
-| `IndexError` | You asked for a position that does not exist in a list. |
-| `KeyError` | You asked for a key that does not exist in a dictionary. The message shows the key you asked for. |
-| `AttributeError` | You asked a value for something it does not have. This often means the value is not the type you thought it was. |
-| `NameError` | We met this one before. It also happens when a variable was created inside a function, and the code that uses it is outside that function. |
+| `IndexError` | You asked for a position the list does not have. |
+| `KeyError` | You asked for a key the dictionary does not have. The message shows the key you asked for. |
+| `AttributeError` | You asked a value for something it does not have, such as a method. Often the value is not the type you thought. |
+| `TypeError: '...' object is not callable` | You put brackets after something that is not a function. Often a name you gave a value was already the name of a function. |
 
 ### Your turn
 
-Each cell below raises one of the errors above. For each one:
+Before you run each cell, decide which error it will raise, and write it in
+the comment. Then run it, and read the last line.
 
-1. Before you run it, decide which error it will raise.
-2. Run it. Were you right?
-3. Read the last line of the message. What does it tell you that you
-   did not know?
+```python exec
+id: errors-from-lists-and-dictionaries-1
+letters = ["A", "B", "C"]
+print(letters[len(letters)])
+# I think it raises:
+```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-2
-names = ["Aoife", "Ben", "Cara"]
-print(names[len(names)])
+key = {"A": "Q", "B": "W"}
+print(key["a"])
+# I think it raises:
 ```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-3
-stock = {"apples": 12, "pears": 5}
-print(stock["Apples"])
+row = [0, 255]
+row.add(128)
+# I think it raises:
 ```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-4
-scores = [85, 90]
-scores.add(78)
-print(scores)
+row = [30, 90, 250]
+max = 0
+for value in row:
+    if value > max:
+        max = value
+print(max(row))
+# I think it raises:
 ```
 
-```python exec
-id: errors-from-lists-and-dictionaries-5
-def total_price(price, quantity):
-    total = price * quantity
-    return total
+<details class="dl-answer"><summary>answer</summary>
 
+An `IndexError`: three letters have positions 0, 1 and 2, and
+`len(letters)` is 3. The last position is always one less than the length.
+This slip is common enough to have a name, an *off-by-one error*.
 
-total_price(4, 3)
-print(total)
-```
+A `KeyError: 'a'`: the dictionary has a capital A. The message shows the
+key you asked for, so compare it, letter by letter, with the keys there
+are.
 
-Look at the first one. The list has three names, so `len(names)` is 3.
-But the positions are 0, 1 and 2. The last position is always one less
-than the length. This mistake is so common that it has a name: an
-*off-by-one error*.
+An `AttributeError`: `'list' object has no attribute 'add'`. A list grows
+with `append`.
 
-In the second one, the key `"Apples"` has a capital A, and the key in
-the dictionary does not. To Python, those are two different keys. The
-message shows the key you asked for, so compare it letter by letter with
-the keys you have.
+A `TypeError: 'int' object is not callable`. The loop works, but
+`max = 0` gave the name `max` to a number, so `max` is no longer Python's
+function. Any name can be reused this way, which is a good reason never to
+call a variable `max`, `sum`, `list` or `str`.
 
-In the third one, the message says `'list' object has no attribute
-'add'`. A list has no `add` method. To put a value at the end of a list,
-we use `append`.
+</details>
 
-In the fourth one, `total` exists only inside `total_price`. The
-function gives back its value, but this code never stores it anywhere.
-`result = total_price(4, 3)` would keep it.
+## Tracebacks through several functions
 
-## Tracebacks Through Several Functions
-
-In [Reading an error message](tutorial:reading-an-error-message), every
-traceback had one step, in the main part of the program. Now the next
-cell has one function that calls another. When an error happens inside
-a function that was called by another function, Python shows you the
-whole chain, one step for each call.
+When the error happens inside a function called by another function,
+Python shows the whole chain, one step for each call.
 
 ```python exec
 id: reading-a-traceback-1
-def average(numbers):
-    return sum(numbers) / len(numbers)
+def shift_letter(letter, shift):
+    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))
 
 
-def report(name, numbers):
-    return name + " averaged " + str(average(numbers))
+def encode(message, shift):
+    coded = ""
+    for letter in message:
+        coded = coded + shift_letter(letter, shift)
+    return coded
 
 
-print(report("Class A", [70, 80, 90]))
-print(report("Class B", []))
+print(encode("MEET", 3))
+print(encode("MEET", "3"))
 ```
 
-The first call worked. The second call produced several lines of
-traceback, and they come in a deliberate order.
+The first call works. The second prints several lines of traceback, and
+they come in a deliberate order.
 
-**Read it from the bottom.** The last line names the error and
-describes it. That is what went wrong. Above it, the steps run from the
-outermost call down to the innermost one. So the place where the error
-happened is nearest the bottom.
+**Read it from the bottom.** The last line names the error. Above it, the
+steps run from the outermost call down to the innermost, so the place the
+error happened is nearest the bottom. The top is where your program
+started, and the bottom is where it broke. `in <module>` is the main part
+of the program, and `in encode` and `in shift_letter` mean a line inside
+that function.
 
-This order confuses a lot of people. The top of a traceback is where
-your program started, and the bottom is where it broke. When someone
-sends you an error and asks what it means, look at the last line first.
-
-Each step names a place. `in <module>` is the main part of the program,
-as before. `in report` and `in average` mean the line is inside that
-function.
-
-Now look closer. Where is the error? It is in `average`, on the
-division. But is `average` wrong? It divides by the length of the list,
-which is the correct thing to do. The mistake is the empty list that was
-handed to it, and that came from the line at the top of the traceback.
-
-So the bottom tells you *what* happened, and the lines above tell you
-*how* it came to happen. You need both. You could fix `average` so that
-it gives back zero for an empty list. That might be right. Or it might
-hide the real problem, which is that something produced a class with no
-marks in it.
+The error is in `shift_letter`, on the arithmetic. But is `shift_letter`
+wrong? It adds a shift to a number, which is right. The mistake is the
+shift it was handed: `"3"`, a string, and that came from the line at the
+top. In a real program, it would come from `input()`, which always gives a
+string. The bottom says *what* happened, and the lines above say *how* it
+came to happen.
 
 <div class="dl-drawn dl-traceback">
 <p class="dl-tb-edge">The top is where the program started.</p>
 <div class="dl-tb-body">
 <div class="dl-tb-row"><code>Traceback (most recent call last):</code></div>
-<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 10, in &lt;module&gt;</code></div>
-<div class="dl-tb-row dl-tb-cause"><code>    print(report("Class B", []))</code><span class="dl-tb-note">the line that is responsible</span></div>
-<div class="dl-tb-row dl-tb-cause"><code>          ~~~~~~^^^^^^^^^^^^^^^</code></div>
-<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 6, in report</code></div>
-<div class="dl-tb-row"><code>    return name + " averaged " + str(average(numbers))</code></div>
-<div class="dl-tb-row"><code>                                     ~~~~~~~^^^^^^^^^</code></div>
-<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 2, in average</code></div>
-<div class="dl-tb-row dl-tb-failed"><code>    return sum(numbers) / len(numbers)</code><span class="dl-tb-note">the line that failed</span></div>
-<div class="dl-tb-row dl-tb-failed"><code>           ~~~~~~~~~~~~~^~~~~~~~~~~~~~</code></div>
-<div class="dl-tb-row dl-tb-error"><code>ZeroDivisionError: division by zero</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 13, in &lt;module&gt;</code></div>
+<div class="dl-tb-row dl-tb-cause"><code>    print(encode("MEET", "3"))</code><span class="dl-tb-note">the line that is responsible</span></div>
+<div class="dl-tb-row dl-tb-cause"><code>          ~~~~~~^^^^^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 8, in encode</code></div>
+<div class="dl-tb-row"><code>    coded = coded + shift_letter(letter, shift)</code></div>
+<div class="dl-tb-row"><code>                    ~~~~~~~~~~~~^^^^^^^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 2, in shift_letter</code></div>
+<div class="dl-tb-row dl-tb-failed"><code>    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))</code><span class="dl-tb-note">the line that failed</span></div>
+<div class="dl-tb-row dl-tb-failed"><code>                ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~</code></div>
+<div class="dl-tb-row dl-tb-error"><code>TypeError: unsupported operand type(s) for +: 'int' and 'str'</code></div>
 </div>
 <p class="dl-tb-edge">The bottom is where it broke. That last line is the one to read first.</p>
 </div>
 
 ### Your turn
 
-1. Run the cell below, and read the traceback.
-2. Which line failed?
-3. Which line is *responsible*? Is it the same line?
-4. Write both answers in the comments at the end of the cell.
+Run the cell, and read the traceback. Which line failed? Which line is
+responsible? Write both in the comments at the end.
 
 ```python exec
-id: your-turn-8
-def price_each(total, people):
-    return total / people
+id: tracebacks-through-several-functions-1
+def row_brightness(row):
+    return sum(row) / len(row)
 
 
-def split_bill(bill, names):
-    each = price_each(bill, len(names))
-    return "Each person pays " + str(round(each, 2))
+def brightest_row(picture):
+    best = 0
+    for index in range(len(picture)):
+        if row_brightness(picture[index]) > row_brightness(picture[best]):
+            best = index
+    return best
 
 
-print(split_bill(60, ["Aoife", "Ben", "Cara"]))
-print(split_bill(60, []))
+print(brightest_row([[10, 20], [200, 250], [90, 90]]))
+print(brightest_row([[10, 20], [], [90, 90]]))
 
 # The line that failed:
 # The line that is responsible:
 ```
 
-## The Dangerous Kind
+<details class="dl-answer"><summary>answer</summary>
 
-In [Reading an error message](tutorial:reading-an-error-message), a
-logical error hid in one line of arithmetic. In bigger programs, logical
-errors hide much better: inside a function, a loop, or a condition that
-somebody wrote weeks ago. What is wrong here?
+The line that failed is `return sum(row) / len(row)`, in `row_brightness`,
+with a `ZeroDivisionError`. The line responsible is the last `print`: its
+picture has an empty row. Whether `row_brightness` should refuse an empty
+row with a clear `ValueError`, as
+[Designing and testing good functions](tutorial:building-reusable-tools)
+did for `mean`, or whether the picture should never have had one, is a
+question about the whole program, not one line.
+
+</details>
+
+## The dangerous kind
+
+Logical errors hide better in bigger programs: inside a function, a loop,
+or a condition written weeks ago. Here are three kinds that turn up once
+programs work with lists and functions. What does this one print?
 
 ```python exec
 id: the-dangerous-kind-1
-def average(numbers):
-    total = sum(numbers)
-    return total / len(numbers) + 1
+def has_vowel(word):
+    for letter in word:
+        if letter in "AEIOU":
+            return True
+        else:
+            return False
 
-
-scores = [80, 90, 70]
-print("Average:", average(scores))
+print(has_vowel("EGG"), has_vowel("SKY"), has_vowel("TREE"))
 ```
 
-There is no red text, and no traceback. A number came out, and it looks
-reasonable. But is it right? Work out the average of 80, 90 and 70
-yourself.
+```predict
+What will it print?
 
-The average is 80, and the program says 81. The `+ 1` sits outside the
-division, and it should not be there at all. Nothing will tell you this,
-except knowing what the answer should be.
+- True False True
+  - EGG and TREE have vowels, and SKY has none.
+- True False False
+  - The function gives its answer after looking at one letter.
+```
 
-Here are two more. Both run with no error. The first is meant to pass
-any score of 50 or more. The second is meant to predict a mark from this
-rule: 3.5 marks for every hour of study, plus 20 times the attendance,
-plus 30. What is wrong with each one?
+It prints `True False False`. `return` ends the function at once, so the
+`else` gives up after the first letter: T is not a vowel, and TREE is
+never looked at again. The `return False` belongs after the loop, once
+every letter has been checked. It passes a test on `"EGG"` and on
+`"SKY"`, which is why it survives.
+
+The second kind changes something the caller did not expect to change.
 
 ```python exec
 id: the-dangerous-kind-2
-def classify(score):
-    if score > 50:
-        return "Pass"
-    return "Fail"
+def median(numbers):
+    numbers.sort()
+    return numbers[len(numbers) // 2]
 
-
-print("A score of 50 is a", classify(50))
-print("A score of 51 is a", classify(51))
+readings = [30, 10, 20]
+print(median(readings))
+print(readings)
 ```
+
+The median is right, and the caller's list has been sorted as a side
+effect: two names for one list, from
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
+If the order of `readings` mattered, the time they were taken, say, it is
+now lost, and nothing said so. `sorted(numbers)` would have left it alone.
+
+The third kind changes a list while a loop goes through it. `.remove(value)`
+takes the first element equal to `value` out of a list. This is meant to
+take every 0 out of a row.
 
 ```python exec
 id: the-dangerous-kind-3
-hours = 10
-attendance = 0.85
-
-prediction = (hours * 3.5) + (hours * 20) + 30
-print("Predicted mark:", prediction)
+row = [0, 0, 255, 0]
+for value in row:
+    if value == 0:
+        row.remove(value)
+print(row)
 ```
 
-- The first one uses `>` where it means `>=`. So a student with exactly
-  the pass mark, 50, fails.
-- The second one never uses `attendance` at all. It multiplies by
-  `hours` twice, and prints 265.0 with complete confidence. The rule
-  gives 35 + 17 + 30 = 82.
+It prints `[255, 0]`: one 0 survives. Each removal moves the rest of the
+list one place left, under the loop, so the loop skips the element that
+moved into the gap. Building a new list is safer:
+`[value for value in row if value != 0]`.
 
-**This is why we check answers we already know.** Before you trust a
-function on data you cannot check, give it data you can check. The
-average of 80, 90 and 70 is 80. If your function says 81, you have found
-something. We wrote test functions for exactly this in
-[Designing and testing good functions](tutorial:building-reusable-tools).
+**This is why we check answers we already know.** Each of these gives a
+believable answer. Only an answer you can check for yourself, on a case
+chosen to catch it, shows that it is wrong.
 
 ### Your turn
 
-Each of these runs, and each one is wrong. Can you find the mistake?
-First work out the right answer yourself, then compare it with what the
-code prints.
+<div class="dl-world" data-world="secret-messages">
+
+This function is meant to turn a key round, so that a code letter looks up
+its plain letter. It runs, and it is wrong. Can you find the bug, and fix
+it? Add a test that would have caught it.
 
 ```python exec
-id: your-turn-9
-def biggest(numbers):
-    largest = 0
-    for n in numbers:
-        if n > largest:
-            largest = n
-    return largest
+id: your-turn-1--secret-messages
+def reverse_key(key):
+    """Give back key turned round: each value becomes a key."""
+    reverse = {}
+    for letter, code in key.items():
+        reverse[letter] = code
+    return reverse
+```
 
-
-print(biggest([3, 9, 4]))
-print(biggest([-5, -2, -9]))
+```inputs
+guess: yes
+reverse_key({"A": "Q", "B": "W"})
+reverse_key({})
 ```
 
 ```python exec
-id: your-turn-10
-def percentage(part, whole):
-    return part / whole * 100
-
-
-print(percentage(45, 60))
-print(percentage(60, 45))
+id: your-turn-1-tests--secret-messages
+tests: your-turn-1--secret-messages
+assert reverse_key({"C": "E"}) == {"E": "C"}
 ```
 
-The first one works on the numbers you would try first, and fails on a
-set of numbers that few people think to test. The second one depends on
-which value you meant to put where. The code cannot answer that for
-you, so its mistake is hard to see.
+```solution
+def reverse_key(key):
+    """Give back key turned round: each value becomes a key."""
+    reverse = {}
+    for letter, code in key.items():
+        reverse[code] = letter
+    return reverse
+---
+The buggy version copied the key as it was. On an empty key, both versions
+give `{}`, so a test on `{}` alone passes the bug. A test needs at least
+one pair, and a pair where the two letters differ.
+```
 
-## Debugging Habits
+</div>
 
-A mistake in a program is often called a *bug*. *Debugging* is finding
-the bugs in a program and fixing them. When a program gives a wrong
-answer and no error, where do we start? Two habits help more than any
-others.
+<div class="dl-world" data-world="pixel-art">
 
-**The first habit: print the values in the middle.** This function
-should add up some prices, then take off a discount. The prices add up
-to 60, and 10% off 60 is 54. What does it print?
+This function is meant to count the lit pixels in a row. It runs, and it
+is wrong. Can you find the bug, and fix it? Add a test that would have
+caught it.
+
+```python exec
+id: your-turn-1--pixel-art
+def lit_count(row):
+    """Give back how many pixels in row are "#"."""
+    count = 0
+    for index in range(1, len(row)):
+        if row[index] == "#":
+            count = count + 1
+    return count
+```
+
+```inputs
+guess: yes
+lit_count("#.#")
+lit_count(".##")
+lit_count("")
+```
+
+```python exec
+id: your-turn-1-tests--pixel-art
+tests: your-turn-1--pixel-art
+assert lit_count("###") == 3
+```
+
+```solution
+def lit_count(row):
+    """Give back how many pixels in row are "#"."""
+    count = 0
+    for pixel in row:
+        if pixel == "#":
+            count = count + 1
+    return count
+---
+`range(1, len(row))` starts at index 1, so the first pixel is never
+looked at. `".##"` gives the right answer with the bug, because its first
+pixel is dark: a test needs a row that starts lit.
+```
+
+</div>
+
+## Debugging habits
+
+A mistake in a program is often called a *bug*, and *debugging* is finding
+bugs and fixing them. When a program gives a wrong answer and no error,
+where do we start? Two habits help more than any others.
+
+**The first habit: print the values in the middle.** This is meant to give
+the average length of the words in a sentence. The words in
+`"MEET ME AT NOON"` have 4, 2, 2 and 4 letters, so the average is 3. What
+does it print?
 
 ```python exec
 id: debugging-habits-1
-def shop_total(prices, discount):
-    total = 0
-    for price in prices:
-        total = price
-    return total - total * discount
+def average_word_length(sentence):
+    letters = 0
+    for character in sentence:
+        letters = letters + 1
+    words = len(sentence.split())
+    return letters / words
 
-
-print(shop_total([10, 20, 30], 0.1))
+print(average_word_length("MEET ME AT NOON"))
 ```
 
-The answer is wrong, but where does it go wrong? We cannot see inside
-the loop. So let's make the loop tell us. The next cell is the same
-function, with one extra `print`.
+It prints 3.75. Somewhere a number is wrong, but which? Make the program
+tell you. Add a labelled `print` for each value in the middle, just before
+the `return`:
 
 ```python exec
 id: debugging-habits-2
-def shop_total(prices, discount):
-    total = 0
-    for price in prices:
-        total = price
-        print("after adding", price, "the total is", total)
-    return total - total * discount
+def average_word_length(sentence):
+    letters = 0
+    for character in sentence:
+        letters = letters + 1
+    words = len(sentence.split())
+    print("letters:", letters, "words:", words)
+    return letters / words
 
-
-print(shop_total([10, 20, 30], 0.1))
+print(average_word_length("MEET ME AT NOON"))
 ```
 
-Now we can see it. After 10 the total is 10, which is right. After 20
-it should be 30, but it is 20. The loop replaces the total each time,
-when it should add to it. The line should be `total = total + price`.
+`words` is 4, which is right. `letters` is 15, and there are only 12
+letters: the loop counted the three spaces too. A label on each `print`
+matters, because a column of bare numbers is hard to read. When the bug is
+fixed, take the extra `print` out again.
 
-Give each `print` a label, as this one does. A column of bare numbers is
-hard to read. When the bug is fixed, take the extra `print` lines out
-again.
-
-**The second habit: test the small pieces.** A long function can go
-wrong in many places. Two short functions, each tested on its own, can
-only go wrong in two. Here is the same work split into two pieces:
-
-```python exec
-id: debugging-habits-3
-def add_up(prices):
-    total = 0
-    for price in prices:
-        total = total + price
-    return total
-
-
-def apply_discount(amount, discount):
-    return amount - amount * discount
-
-
-# Test each piece on its own, with answers we know.
-print(add_up([10, 20, 30]), "should be 60")
-print(apply_discount(100, 0.1), "should be 90")
-print(apply_discount(add_up([10, 20, 30]), 0.1), "should be 54")
-```
-
-Each test uses numbers we can check in our heads. If a piece fails its
-test, we know which piece to look at. If both pieces pass, and the whole
-program still goes wrong, the bug is in how the pieces are joined.
+**The second habit: test the small pieces.** A long function can go wrong
+in many places. Short functions, each tested on its own with `assert`, can
+each go wrong in only one, and a failing test points straight at it.
 
 ### Your turn
 
-This program gives each student a grade from the average of their
-marks. A grade of Distinction needs 80 or more, Merit needs 65 or more,
-and Pass needs 50 or more. Something is wrong.
+This program draws a picture from brightnesses, with three functions. It
+runs, and draws the wrong thing. The first row should be `.-#`, and the
+second `#+.`.
 
-1. Work out each student's average and grade by hand.
-2. Run the cell. Which results are wrong?
-3. Test `average` on its own, with a list whose average you know.
-4. Test `grade` on its own, with 85, 70, 55 and 40.
-5. Which function has the bug? Fix it, and run the cell again.
+1. Test `shade` on its own, with 200, 130, 100 and 0.
+2. Test `draw_row` on its own, with `[0, 100, 200]`.
+3. Which function has the bug? Fix it.
 
 ```python exec
-id: debugging-habits-4
-def average(marks):
-    total = 0
-    for mark in marks:
-        total = total + mark
-    return total / len(marks)
+id: your-turn-2
+def shade(value):
+    if value >= 192:
+        return "#"
+    elif value >= 128:
+        return "+"
+    elif value >= 64:
+        return "-"
+    return "."
 
 
-def grade(mark):
-    if mark >= 50:
-        return "Pass"
-    elif mark >= 65:
-        return "Merit"
-    elif mark >= 80:
-        return "Distinction"
-    else:
-        return "Fail"
+def draw_row(row):
+    line = ""
+    for value in row:
+        line = line + shade(value)
+        return line
 
 
-def student_result(name, marks):
-    return name + ": " + grade(average(marks))
+def draw(picture):
+    for row in picture:
+        print(draw_row(row))
 
 
-print(student_result("Aoife", [72, 68, 80]))
-print(student_result("Ben", [55, 60, 50]))
-print(student_result("Cara", [30, 35, 20]))
+draw([[0, 100, 200], [255, 130, 10]])
 ```
 
-## Reflection
+```inputs
+guess: yes
+shade(130)
+draw_row([0, 100, 200])
+draw_row([])
+```
 
-Bigger programs bring the same three kinds of wrong, in new places.
+```python exec
+id: your-turn-2-tests
+tests: your-turn-2
+assert shade(200) == "#"
+```
 
-**New runtime errors** come with new tools. An `IndexError` asks for a
-position a list does not have, and it is very often off by one. A
-`KeyError` asks for a key a dictionary does not have, and the message
-shows the key, so check its spelling and its capitals.
+```hint
+`shade` is right for all four values. What does `draw_row` give back, and
+after how many pixels? Look at how far its `return` is indented.
+```
 
-**Long tracebacks** have one step for each function call. Read the last
-line first. Then read upwards to see how the program got there. The
-function where it broke is often correct, and the bad value came from a
-line higher up.
+```solution
+def shade(value):
+    if value >= 192:
+        return "#"
+    elif value >= 128:
+        return "+"
+    elif value >= 64:
+        return "-"
+    return "."
 
-**Logical errors** hide better in bigger programs. Check against answers
-you already know, and test the exact boundary of every condition.
 
-**Debugging habits** turn a hunt into a search. Print the values in the
-middle, with labels, to see where they stop being right. Test each small
-piece on its own, so that a failing test points at one piece.
+def draw_row(row):
+    line = ""
+    for value in row:
+        line = line + shade(value)
+    return line
 
-In a few sentences: think of a bug you have met in your own code on an
-earlier page. Which of these habits would have found it fastest?
 
-## Where to Read More
+def draw(picture):
+    for row in picture:
+        print(draw_row(row))
 
-Corey Schafer (2015). *Python Tutorial: Using Try/Except Blocks for Error
-Handling.* <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
-this page teaches you to read get handled deliberately, rather than fixed
-by rewriting the line that raised them.
+
+draw([[0, 100, 200], [255, 130, 10]])
+---
+The `return` was inside the loop, so `draw_row` gave back its line after
+one pixel. With an empty row, the loop never ran, so the buggy version
+gave back `None`. Moved out one step, the `return` runs once the loop has
+finished.
+```
+
+## Looking back
+
+Which of this page's bugs would a test have caught first, and which would
+only a person reading the output notice? What does that say about the
+tests worth writing?
+
+A challenge: this program has three bugs, and it runs. The comment says
+what it is meant to do. Can you find all three, and write a test that
+catches each one?
+
+```python challenge
+# busiest gives back the first row with the most "#" in it.
+def lit_count(row):
+    count = 0
+    for index in range(len(row) - 1):
+        if row[index] == "#":
+            count = count + 1
+    return count
+
+def busiest(picture):
+    best = picture[0]
+    for row in picture:
+        if lit_count(row) >= lit_count(best):
+            best = row
+        return best
+
+picture = ["#..#", "####", "##..", "...."]
+print(busiest(picture))
+```
+
+The next page, [How programming languages came to be](tutorial:how-we-got-here),
+steps back from our own programs, to the people who made programming
+possible, and to what the machine underneath is doing.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Evans, J. (2022). *The Pocket Guide to Debugging*. Wizard Zines.
+<https://wizardzines.com/zines/debugging-guide/>. Short, illustrated, and
+full of the habits on this page, and many more, from someone who debugs
+for a living.
+
+Schafer, C. (2015). *Python Tutorial: Using Try/Except Blocks for Error
+Handling*. <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
+this page teaches you to read get handled on purpose, rather than fixed by
+rewriting the line that raised them.

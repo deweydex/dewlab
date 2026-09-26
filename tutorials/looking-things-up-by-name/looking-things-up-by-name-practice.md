@@ -2,329 +2,215 @@
 title: "Dictionaries: looking things up by name — Practice"
 practice_for: looking-things-up-by-name
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Dictionaries: looking things up by name — Practice
 
-On this page we practise dictionaries: making them, changing them,
-looping over them, and counting with them. Each answer is folded away
-under its problem. Try the problem first, then open the answer.
+Problems on dictionaries, and three from earlier pages. Try each problem
+before you open anything under it, and run the cells to test your guesses.
 
-Many of the questions ask you to predict. Write your guess down before
-you run anything. A wrong guess you can explain teaches more than a
-right guess you cannot.
+## 1. Five lookups
 
-## Making and Changing a Dictionary
+With `key = {"A": "Q", "B": "W", "C": "E"}`, what does each of these give?
+Try them in the cell.
 
-The cell below is a scratchpad for this section.
-
-```python exec
-id: making-and-changing-a-dictionary-1
-ages = {"Aoife": 34, "Ben": 29, "Cara": 41}
-print(ages)
-print(ages["Ben"], len(ages))
-```
-
-**1.** Here `ages = {"Aoife": 34, "Ben": 29, "Cara": 41}`. What does each
-of these give?
-
-- (a) `ages["Ben"]`
-- (b) `len(ages)`
-- (c) `"Cara" in ages`
-- (d) `41 in ages`
-- (e) `ages["ben"]`
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) 29. (b) 3. (c) `True`. (d) `False`. (e) a `KeyError`.
-
-(d) is `False` because `in` checks the keys, and 41 is a value.
-
-(e) fails because capital letters matter. `"ben"` and `"Ben"` are two
-different keys, and only `"Ben"` is in the dictionary.
-
-</details>
-
-**2.** What does this print? Why?
-
-```python
-ages = {"Aoife": 34, "Ben": 29, "Aoife": 35}
-print(ages)
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`{'Aoife': 35, 'Ben': 29}`.
-
-A key appears only once in a dictionary. When the same key is written
-twice, the second value replaces the first, in the same way as
-`ages["Aoife"] = 35` would. So there is no error, and one of the values
-is lost without a warning. Watch for this when you type a long
-dictionary by hand.
-
-</details>
-
-**3.** What does `ages[0]` give? Why is it not the first pair?
-
-<details class="dl-answer"><summary>answer</summary>
-
-A `KeyError`, with the key `0`.
-
-A dictionary has no positions. Inside the square brackets, Python reads
-`0` as a key, and there is no key `0` in `ages`. To get at the pairs in
-order, loop over the dictionary.
-
-</details>
-
-**4.** After these lines run, what is `stock`?
-
-```python
-stock = {"apples": 12, "pears": 5}
-stock["plums"] = 20
-stock["apples"] = stock["apples"] - 3
-stock["pears"] = 0
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-`{'apples': 9, 'pears': 0, 'plums': 20}`.
-
-- `"plums"` was a new key, so its line added a pair at the end.
-- The `"apples"` line read the old value, 12, took away 3, and stored 9.
-- The `"pears"` line changed the value to 0. The key is still there. A
-  count of 0 pears and no `"pears"` key at all are two different things.
-
-</details>
-
-## Looping Over a Dictionary
-
-This cell loops over `marks` in the two ways from the tutorial.
+- (a) `key["B"]`
+- (b) `len(key)`
+- (c) `"W" in key`
+- (d) `key.get("D", "?")`
+- (e) `key["D"]`
 
 ```python exec
-id: looping-over-a-dictionary-practice-1
-marks = {"Aoife": 72, "Ben": 65, "Cara": 88, "Dara": 59}
-for name in marks:
-    print(name, marks[name])
-for name, mark in marks.items():
-    print(name, mark)
+id: five-lookups-1
+key = {"A": "Q", "B": "W", "C": "E"}
+print(key["B"])
 ```
-
-**5.** Using `marks` from the cell above, print the total of the marks
-and the average mark.
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
+(a) `'W'`. (b) 3, the number of pairs. (c) `False`: `in` checks the keys,
+and W is a value. (d) `'?'`, the default. (e) A `KeyError: 'D'`.
+
+</details>
+
+## 2. The same key twice
+
+```python exec
+id: the-same-key-twice-1
+counts = {"E": 1, "T": 4, "E": 2}
+print(counts)
+```
+
+```predict
+What will it print?
+
+- {'E': 1, 'T': 4, 'E': 2}
+  - A dictionary keeps every pair it is given.
+- {'E': 2, 'T': 4}
+  - A key appears once, so the later value replaces the first.
+- An error
+  - Python will not allow the same key twice.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`{'E': 2, 'T': 4}`. Each key appears only once, and the second `"E"`
+replaces the first one's value, as `counts["E"] = 2` would. Python gives
+no warning, so a repeated key is a quiet way to lose a value.
+
+</details>
+
+## 3. The first pair
+
+```python exec
+id: the-first-pair-1
+key = {"A": "Q", "B": "W", "C": "E"}
+print(key[0])
+```
+
+```predict
+What will it print?
+
+- Q
+  - `[0]` is the first pair's value, as in a list.
+- An error
+  - A dictionary has no positions, only keys.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `KeyError: 0`. Python looked for the key `0`, and there is none. A
+dictionary finds values by key, never by position, even though it keeps
+its pairs in order.
+
+</details>
+
+## 4. Two changes
+
+```python exec
+id: two-changes-1
+counts = {"E": 2}
+counts["T"] = counts.get("T", 0) + 1
+counts["E"] = counts["E"] + 1
+print(counts)
+```
+
+```predict
+What will it print?
+
+- {'E': 3, 'T': 1}
+  - T was new, so it starts at 0 + 1. E goes up from 2.
+- {'E': 2, 'T': 1}
+  - Only T was added.
+- An error
+  - T is not in the dictionary, so it cannot be looked up.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`{'E': 3, 'T': 1}`. `.get("T", 0)` gives 0 for a missing key, so T starts
+at 1 with no error. `counts["T"] + 1` would have stopped with a
+`KeyError`.
+
+</details>
+
+## 5. How many in all
+
+Can you set `total` to the number of pixels counted in `counts`?
+
+```python exec
+id: how-many-in-all-1
+counts = {"r": 14, ".": 8, "#": 2}
 total = 0
-for name, mark in marks.items():
-    total = total + mark
-average = total / len(marks)
-print(total, average)
+
+print(total)
 ```
 
-The total is 284, and the average is 71.0.
-
-The loop does not use `name`. You could loop over the keys instead, and
-add `marks[name]` each time. Both give the same total.
-
-</details>
-
-**6.** Which student has the highest mark? Print their name and their
-mark.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Make two variables before the loop: one for the best name so far, and
-   one for the best mark so far.
-2. Loop over `marks.items()`.
-3. When a mark is higher than the best mark so far, update both
-   variables.
-
-**Think about:** what should the best mark start as, so that the first
-student is sure to beat it?
-
-**Try this next:** can you find the student with the lowest mark?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-best_name = ""
-best_mark = -1
-for name, mark in marks.items():
-    if mark > best_mark:
-        best_name = name
-        best_mark = mark
-print(best_name, best_mark)
+```inputs
+total
 ```
 
-Cara, with 88.
-
-`best_mark` starts at -1, so any real mark beats it. Starting at 0 also
-works here, because no mark is below 0. If two students tie, this loop
-keeps the first one it finds, because `>` is not true for an equal mark.
-
-</details>
-
-**7.** Here is a dictionary of countries and their capitals. Can you
-build a new dictionary that goes the other way, from capital to
-country?
-
-```python
-capitals = {"Ireland": "Dublin", "France": "Paris", "Peru": "Lima"}
+```solution
+title: with what you've met so far
+counts = {"r": 14, ".": 8, "#": 2}
+total = 0
+for character, count in counts.items():
+    total = total + count
+print(total)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-countries = {}
-for country, city in capitals.items():
-    countries[city] = country
-print(countries)
+```solution
+title: a shorter way you'll meet later
+counts = {"r": 14, ".": 8, "#": 2}
+total = sum(counts.values())
+print(total)
+---
+`.values()` gives the values without the keys, and `sum()` adds them up:
+24.
 ```
 
-`{'Dublin': 'Ireland', 'Paris': 'France', 'Lima': 'Peru'}`.
+## 6. The rarest
 
-This works because every capital here is different. If two keys had the
-same value, they would both try to become the same key in the new
-dictionary, and the second would replace the first. Turning a
-dictionary around only works when its values are all different.
-
-</details>
-
-## Looking Up and Counting
-
-This cell shows `.get()` with and without a default, and counts the
-letters in a short word.
+Which letter turns up least often? Can you set `rarest`?
 
 ```python exec
-id: looking-up-and-counting-1
-prices = {"tea": 2.5, "coffee": 3.2}
-print(prices.get("tea", 0), prices.get("cake", 0), prices.get("cake"))
+id: the-rarest-1
+counts = {"H": 9, "W": 6, "K": 3, "D": 2, "P": 1, "B": 1}
+rarest = ""
 
-counts = {}
-for letter in "banana":
-    counts[letter] = counts.get(letter, 0) + 1
-print(counts)
+print(rarest)
 ```
 
-**8.** Here `prices = {"tea": 2.5, "coffee": 3.2}`. Predict each result,
-then check.
-
-- (a) `prices.get("coffee", 0)`
-- (b) `prices.get("juice", 0)`
-- (c) `prices.get("juice", "not sold here")`
-- (d) `prices.get("juice")`
-- (e) `prices["juice"]`
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) 3.2. (b) 0. (c) `not sold here`. (d) `None`. (e) a `KeyError`.
-
-The default can be any value you like: a number, a string, or anything
-else. Only the square brackets raise an error for a missing key.
-
-</details>
-
-**9.** A class voted for the end-of-term trip. Count the votes for each
-place, then print the place with the most votes.
-
-```python
-votes = ["zoo", "cinema", "zoo", "beach", "cinema", "zoo", "beach", "zoo"]
+```inputs
+rarest
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Start with an empty dictionary.
-2. Loop over `votes`. For each vote, add 1 to that place's count, using
-   `.get()` with a default of 0.
-3. Then loop over the dictionary's items, and keep the place with the
-   highest count so far, as in problem 6.
-
-**Think about:** why do we need two loops, one after the other?
-
-**Try this next:** count the votes for each place, and print how many
-people voted in total.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-counts = {}
-for place in votes:
-    counts[place] = counts.get(place, 0) + 1
-print(counts)
-
-winner = ""
-most = 0
-for place, count in counts.items():
-    if count > most:
-        winner = place
-        most = count
-print(winner, most)
+```hint
+Start with any letter as the rarest so far. Go through `counts.items()`.
+Is this count smaller than the rarest so far?
 ```
 
-`{'zoo': 4, 'cinema': 2, 'beach': 2}`, and the zoo wins with 4 votes.
-
-We need two loops. The first loop builds the counts. The second loop
-can only find the biggest count once every vote has been counted.
-
-</details>
-
-**10.** Count the letters in the sentence `"we meet at noon"`, but leave
-out the spaces. Which letters appear more than once?
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-counts = {}
-for letter in "we meet at noon":
-    if letter != " ":
-        counts[letter] = counts.get(letter, 0) + 1
-print(counts)
-
+```solution
+counts = {"H": 9, "W": 6, "K": 3, "D": 2, "P": 1, "B": 1}
+rarest = "H"
 for letter, count in counts.items():
-    if count > 1:
-        print(letter, count)
+    if count < counts[rarest]:
+        rarest = letter
+print(rarest)
+---
+P. B has the same count, and `<` keeps the first one it finds. Starting
+from `"H"` works because H is a key. Starting from `""` would stop with a
+`KeyError`, the first time round.
 ```
 
-The counts are `{'w': 1, 'e': 3, 'm': 1, 't': 2, 'a': 1, 'n': 2, 'o': 2}`.
-The letters that appear more than once are e (3 times), t, n and o
-(2 times each).
+## 7. By first letter
 
-The `if` skips the spaces. Without it, the space would be counted as a
-character too, 3 times.
+Can you set `groups` to a dictionary that keeps the words in lists, by
+their first letter?
 
-</details>
+```python exec
+id: by-first-letter-1
+words = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE"]
+groups = {}
 
-**11.** Sort these words into groups by their first letter. Make a
-dictionary where each key is a letter, and each value is a list of the
-words that start with that letter.
-
-```python
-words = ["apple", "banana", "avocado", "cherry", "blueberry", "apricot"]
+print(groups)
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```inputs
+groups
+```
 
-1. `word[0]` gives the first letter of a word.
-2. Start with an empty dictionary, and loop over `words`.
-3. If the first letter is not a key yet, store an empty list under it.
-4. Then append the word to the list stored under its first letter.
+```hint
+The first time a letter turns up, its value needs to be a new list. After
+that, the word is appended to that list.
+```
 
-**Think about:** what should happen the first time a letter turns up,
-and what should happen every time after that?
-
-**Try this next:** group the same words by their length.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```solution
+words = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE"]
 groups = {}
 for word in words:
     first = word[0]
@@ -332,63 +218,253 @@ for word in words:
         groups[first] = []
     groups[first].append(word)
 print(groups)
+---
+`{'O': ['OTTER', 'OWL'], 'H': ['HEDGEHOG', 'HARE'], 'B': ['BAT']}`. The
+values are lists, so `append()` changes the list inside the dictionary.
 ```
 
-`{'a': ['apple', 'avocado', 'apricot'], 'b': ['banana', 'blueberry'], 'c': ['cherry']}`.
+## 8. Counting a vote
 
-This is the counting pattern again. Where counting starts each new key
-at 0 and adds 1, grouping starts each new key at an empty list and
-appends a word. `not in` is the opposite of `in`: it is `True` when the
-key is missing.
+A class voted for the colour of a poster. Can you set `votes` to how many
+votes each colour got?
+
+```python exec
+id: counting-a-vote-1
+ballots = ["red", "blue", "red", "green", "red", "blue"]
+votes = {}
+
+print(votes)
+```
+
+```inputs
+votes
+```
+
+```solution
+ballots = ["red", "blue", "red", "green", "red", "blue"]
+votes = {}
+for colour in ballots:
+    votes[colour] = votes.get(colour, 0) + 1
+print(votes)
+---
+`{'red': 3, 'blue': 2, 'green': 1}`. The loop does not need to know the
+colours before it starts. A new one gets a count the first time it turns
+up.
+```
+
+## 9. Two lists into one dictionary
+
+A key has been kept as two lists, in matching order. Can you set `key` to
+one dictionary, with each plain letter as a key and its code letter as the
+value?
+
+```python exec
+id: two-lists-into-one-1
+plain = ["A", "B", "C", "D"]
+code = ["X", "M", "Q", "L"]
+key = {}
+
+print(key)
+```
+
+```inputs
+key
+```
+
+```solution
+title: with what you've met so far
+plain = ["A", "B", "C", "D"]
+code = ["X", "M", "Q", "L"]
+key = {}
+for index in range(len(plain)):
+    key[plain[index]] = code[index]
+print(key)
+```
+
+```solution
+title: a shorter way you'll meet later
+plain = ["A", "B", "C", "D"]
+code = ["X", "M", "Q", "L"]
+key = dict(zip(plain, code))
+print(key)
+---
+Two lists in matching order are easy to break: sort one, and the pairs no
+longer match. One dictionary keeps each pair together.
+```
+
+## 10. List or dictionary
+
+For each of these, would you use a list or a dictionary? Say why.
+
+1. The moves in a game of chess, in the order they were played.
+2. The colour of each character in a pixel-art palette.
+3. How many times each word appears in a book.
+4. The high scores on a game's leaderboard, best first.
+
+<details class="dl-answer"><summary>one way to answer</summary>
+
+1. A list: the order is the game. 2. A dictionary: you look a colour up by
+its character. 3. A dictionary: each word is a key, and its count the
+value. 4. A list, because the order is the point, though each entry might
+be a small dictionary holding a name and a score.
 
 </details>
 
-## Dictionary or List?
+## 11. Letting things through
 
-**12.** For each of these, would you use a list or a dictionary? Give a
-reason.
+<div class="dl-world" data-world="secret-messages">
 
-- (a) The price of each item on a café menu.
-- (b) The finishing order of the runners in a race.
-- (c) The number of pages in each chapter of a book, chapter 1 to 20.
-- (d) Each student's email address.
+This key has only the letters it needs. Can you write `decode(message,
+key)`, which decodes each letter in the key, and lets anything else, such
+as a space, through as it is?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: letting-things-through-1--secret-messages
+key = {"W": "B", "T": "E", "Q": "A", "R": "D"}
 
-(a) A dictionary. You look up a price by the item's name.
+def decode(message, key):
+    plain = ""
+    return plain
+```
 
-(b) A list. The order is the whole point: index 0 is the winner.
+```inputs
+guess: yes
+decode("WTQR", key)
+decode("WTQR WTQR", key)
+decode("", key)
+```
 
-(c) A list works well. The chapter number gives the position, if you
-remember that chapter 1 is at index 0. A dictionary with chapter
-numbers as keys also works, and it avoids that off-by-one.
+```hint
+`key.get(character, character)` gives the character's decoded letter if
+it is a key, and the character itself if it is not.
+```
 
-(d) A dictionary, with the student's name as the key. Names can repeat
-in a real class, though. A student number would make a safer key.
+```solution
+key = {"W": "B", "T": "E", "Q": "A", "R": "D"}
+
+def decode(message, key):
+    plain = ""
+    for character in message:
+        plain = plain + key.get(character, character)
+    return plain
+---
+The default in `.get()` can be the thing being looked up. Here that means
+"if there is no code for it, leave it alone".
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you write `brightness(row, shades)`, which turns a row of characters
+into a list of brightnesses with the `shades` dictionary, and makes any
+character it does not know 0?
+
+```python exec
+id: letting-things-through-1--pixel-art
+shades = {"#": 255, "+": 128, ".": 32}
+
+def brightness(row, shades):
+    values = []
+    return values
+```
+
+```inputs
+guess: yes
+brightness("#+.", shades)
+brightness("# x", shades)
+brightness("", shades)
+```
+
+```hint
+`shades.get(character, 0)` gives the character's brightness if it is a
+key, and 0 if it is not.
+```
+
+```solution
+shades = {"#": 255, "+": 128, ".": 32}
+
+def brightness(row, shades):
+    values = []
+    for character in row:
+        values.append(shades.get(character, 0))
+    return values
+---
+`brightness("# x", shades)` gives `[255, 0, 0]`: a space and an x are
+both unknown, so both are black. Is that right? For a space, probably.
+For an x, it might hide a mistake in the picture.
+```
+
+</div>
+
+## 12. From earlier: two names for one dictionary
+
+From *Comprehensions, grids and aliasing*.
+
+```python exec
+id: from-earlier-two-names-1
+key = {"A": "Q"}
+spare = key
+spare["B"] = "W"
+print(key)
+```
+
+```predict
+What will it print?
+
+- {'A': 'Q'}
+  - Only `spare` was changed.
+- {'A': 'Q', 'B': 'W'}
+  - `key` and `spare` are two names for one dictionary.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`{'A': 'Q', 'B': 'W'}`. A dictionary is mutable, like a list, so the same
+thing happens: `spare = key` gives one dictionary a second name. For a
+separate copy, write `spare = dict(key)`.
 
 </details>
 
-**13.** A program keeps names and marks in two lists, in matching order.
-Turn them into one dictionary.
+## 13. From earlier: counting from 1
 
-```python
-names = ["Aoife", "Ben", "Cara"]
-scores = [72, 65, 88]
+From *Lists and looping over them*.
+
+```python exec
+id: from-earlier-counting-from-1-1
+for index, letter in enumerate(["X", "Y", "Z"], 1):
+    print(index, letter)
 ```
+
+```predict
+What will the last line print?
+
+- 3 Z
+  - Counting starts at 1, so the third letter is 3.
+- 2 Z
+  - The last index of three elements is 2.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`3 Z`. The second number given to `enumerate()` is where the counting
+starts. The list's own indexes are still 0 to 2.
+
+</details>
+
+## 14. From earlier: which error
+
+From *Reading an error message*. Which error does each of these raise?
+
+- (a) `int("12.5")`
+- (b) `[1, 2, 3][3]`
+- (c) `"12" + 5`
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-marks = {}
-for i in range(len(names)):
-    marks[names[i]] = scores[i]
-print(marks)
-```
-
-`{'Aoife': 72, 'Ben': 65, 'Cara': 88}`.
-
-Two lists in matching order are easy to break. Sort one list, or delete
-from one and not the other, and every name gets the wrong mark. In a
-dictionary each mark is joined to its name, so this cannot happen.
+(a) A `ValueError`: `int()` wants a whole number written in digits, and
+12.5 has a point. `float("12.5")` works. (b) An `IndexError`: three
+elements have indexes 0 to 2. (c) A `TypeError`: `+` will not join a
+string to a number.
 
 </details>

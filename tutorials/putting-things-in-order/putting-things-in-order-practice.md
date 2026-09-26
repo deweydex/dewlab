@@ -2,302 +2,446 @@
 title: "Sorting a list: bubble, insertion and selection sort — Practice"
 practice_for: putting-things-in-order
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Sorting a list: bubble, insertion and selection sort — Practice
 
-The answers are hidden in folds under each problem. Try tracing the
-short ones by hand before you run anything. To *trace* a sort is to
-follow it step by step on paper, writing down the list after each step.
-If you have traced a sort once, you can find the mistakes in it. If you
-have only run it, you usually cannot.
+Problems on sorting, and three from earlier pages. Try tracing the short
+ones by hand before you run anything. To *trace* a sort is to follow it
+step by step on paper, writing down the list after each step. Once you have
+traced a sort, you can find the mistakes in it; if you have only run it,
+you usually cannot.
 
-## Tracing
+## 1. One pass
+
+Trace one full pass of bubble sort over `[5, 1, 4, 2, 8]`. What is the
+list after the pass? The cell prints the list after each swap, to check
+your trace.
 
 ```python exec
-id: tracing-1
-def bubble_pass(items):
-    """One pass of bubble sort, printing the list after each swap."""
-    items = items.copy()
-    for i in range(len(items) - 1):
-        if items[i] > items[i + 1]:
-            items[i], items[i + 1] = items[i + 1], items[i]
-            print(items)
-    return items
-
-
-bubble_pass([5, 1, 4, 2, 8])
+id: one-pass-1
+items = [5, 1, 4, 2, 8]
+for i in range(len(items) - 1):
+    if items[i] > items[i + 1]:
+        items[i], items[i + 1] = items[i + 1], items[i]
+        print(items)
 ```
 
-**1.** Trace one full pass of bubble sort over `[5, 1, 4, 2, 8]`. What is the list after the pass?
-
 <details class="dl-answer"><summary>answer</summary>
 
-`[1, 4, 2, 5, 8]`.
-
-1. Compare 5 and 1: swap.
-2. Compare 5 and 4: swap.
-3. Compare 5 and 2: swap.
-4. Compare 5 and 8: no swap.
-
-The 5 moved all the way to its place in one pass. That movement is what
-"bubbling" means. The largest value always reaches the end after the
-first pass, so each pass after that can be one step shorter.
+`[1, 4, 2, 5, 8]`. 5 is swapped with 1, then 4, then 2, and stops at 8.
+The 5 travelled to its place in one pass, which is what "bubbling" means.
 
 </details>
 
-**2.** How many passes does bubble sort need on `[5, 1, 4, 2, 8]` before it is sorted?
+## 2. How many passes
+
+How many passes does bubble sort need on `[5, 1, 4, 2, 8]` before the list
+is sorted? How many does a plain bubble sort do?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two passes sort it. After the second pass, the list is `[1, 2, 4, 5, 8]`.
-
-A plain bubble sort still does all four passes, because it never checks
-whether the list is sorted. We can add a *flag*: a flag is a variable
-that records whether something has happened, here "did this pass swap
-anything?". With the flag, the sort stops as soon as a pass makes no
-swaps. For a list that is already sorted, the work then grows like n,
-and not like n².
+Two passes sort it: after the second, it is `[1, 2, 4, 5, 8]`. A plain
+bubble sort still does all four, because it never checks whether the list
+is sorted. Problem 6 fixes that.
 
 </details>
 
-**3.** Trace insertion sort over `[3, 1, 4, 1, 5]`. Write down the list after each item is placed.
+## 3. Insertion, traced
+
+Trace insertion sort over `[3, 1, 4, 1, 5]`. Write down the list after
+each element is placed.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Start: `[3]`. A list of one item is always sorted.
+Start with `[3]`: one element is always sorted. Insert 1: `[1, 3]`. Insert
+4: `[1, 3, 4]`. Insert 1: `[1, 1, 3, 4]`. Insert 5: `[1, 1, 3, 4, 5]`.
 
-Insert 1: `[1, 3]`. Insert 4: `[1, 3, 4]`. Insert 1: `[1, 1, 3, 4]`. Insert 5: `[1, 1, 3, 4, 5]`.
-
-The second 1 landed *after* the first. Equal items keep the order they
-started in. A sort that does this is *stable*, so insertion sort is
-stable. Stability matters as soon as you sort the same data twice, by
-two different things, such as by name and then by age.
+The second 1 landed *after* the first. Equal elements keep the order they
+started in, and a sort that does that is *stable*. It matters when data is
+sorted twice, by two different things, as in problem 12.
 
 </details>
 
-**4.** Trace selection sort over `[64, 25, 12, 22, 11]`.
+## 4. Selection, traced
+
+Trace selection sort over `[64, 25, 12, 22, 11]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. The smallest is 11. Swap it into position 0: `[11, 25, 12, 22, 64]`.
-2. The smallest of the rest is 12. Swap it into position 1: `[11, 12, 25, 22, 64]`.
-3. The next smallest is 22: `[11, 12, 22, 25, 64]`.
-4. The next is 25, which is already in place. The list is sorted.
+1. The smallest is 11. Swap it into place 0: `[11, 25, 12, 22, 64]`.
+2. The smallest of the rest is 12: `[11, 12, 25, 22, 64]`.
+3. Then 22: `[11, 12, 22, 25, 64]`.
+4. Then 25, already in place. The list is sorted.
 
-There are four swaps at most, one for each position. Selection sort
-makes the fewest swaps of the three sorts. That matters when a swap is
-slow: for example, when each item is a large record, and not a small
-number.
+At most one swap for each place. Selection sort makes the fewest swaps of
+the three, which matters when moving an element is slow.
 
 </details>
 
-## Counting
-
-The last line of this cell uses an f-string, from
-[Variables, data types and text](tutorial:storing-and-computing). Inside it,
-`{size:<4}` pads the number with spaces to four characters wide, so the
-columns line up.
+## 5. Counting comparisons
 
 ```python exec
-id: counting-1
+id: counting-comparisons-1
 def bubble_counted(items):
-    items, comparisons, swaps = items.copy(), 0, 0
-    n = len(items)
-    for outer in range(n - 1):
-        for i in range(n - 1 - outer):
-            comparisons += 1
+    items = items[:]
+    comparisons = 0
+    for pass_number in range(len(items) - 1):
+        for i in range(len(items) - 1 - pass_number):
+            comparisons = comparisons + 1
             if items[i] > items[i + 1]:
                 items[i], items[i + 1] = items[i + 1], items[i]
-                swaps += 1
-    return comparisons, swaps
-
+    return comparisons
 
 for size in [10, 20, 40, 80]:
-    reverse = list(range(size, 0, -1))
-    ordered = list(range(1, size + 1))
-    print(f"n={size:<4} reversed {bubble_counted(reverse)}   sorted {bubble_counted(ordered)}")
+    backwards = list(range(size, 0, -1))
+    in_order = list(range(1, size + 1))
+    print(size, "items:", bubble_counted(backwards), "reversed,",
+          bubble_counted(in_order), "in order")
 ```
 
-**5.** How many comparisons does bubble sort make on 10 items? On 20? What pattern do you see?
+How many comparisons does bubble sort make on 10 items? On 20? Does it
+matter whether they start in order?
 
 <details class="dl-answer"><summary>answer</summary>
 
-45 and 190.
-
-It is always n(n − 1)/2, whatever the data. The loops in the plain
-version do not depend on what they find. When n doubles, the number of
-comparisons goes up about four times. That is what n² growth looks like
-up close.
+45 and 190, in order or not. It is always n(n − 1)/2: the loops run the
+same number of times whatever they find, and only the swaps depend on the
+data. Doubling n makes about four times the comparisons.
 
 </details>
 
-**6.** Bubble sort makes the same number of comparisons on sorted data as on reversed data. Why? How would you fix it?
+## 6. Stop when it is sorted
 
-<details class="dl-answer"><summary>answer</summary>
+Can you change `bubble_counted` so that it stops as soon as a pass swaps
+nothing, and still returns the number of comparisons?
 
-The number of times each loop runs is fixed before the sort starts.
-Only the swaps depend on the data. On 10 sorted items, it makes 45
-comparisons and 0 swaps.
-
-The fix is to notice when a pass makes no swaps:
-
-```python
-for outer in range(n - 1):
-    swapped = False
-    for i in range(n - 1 - outer):
-        if items[i] > items[i + 1]:
-            items[i], items[i + 1] = items[i + 1], items[i]
-            swapped = True
-    if not swapped:
-        break
+```python exec
+id: stop-when-it-is-sorted-1
+def bubble_counted(items):
+    items = items[:]
+    comparisons = 0
+    for pass_number in range(len(items) - 1):
+        for i in range(len(items) - 1 - pass_number):
+            comparisons = comparisons + 1
+            if items[i] > items[i + 1]:
+                items[i], items[i + 1] = items[i + 1], items[i]
+    return comparisons
 ```
 
-Now 10 sorted items cost one pass: 9 comparisons, not 45. Real data is
-very often nearly sorted already. On that kind of data, these four extra
-lines save a lot of work.
+```inputs
+guess: yes
+bubble_counted(list(range(10)))          # already in order
+bubble_counted(list(range(10, 0, -1)))   # reversed
+bubble_counted([5, 1, 4, 2, 8])
+```
 
-</details>
+```hint
+A variable that records whether something has happened is a *flag*. Set
+`swapped = False` at the start of each pass, and `True` when a swap
+happens. After the pass, if nothing was swapped, `break` leaves the loop.
+```
 
-**7.** Which of the three sorts does best on data that is already sorted? Which does worst?
+```solution
+def bubble_counted(items):
+    items = items[:]
+    comparisons = 0
+    for pass_number in range(len(items) - 1):
+        swapped = False
+        for i in range(len(items) - 1 - pass_number):
+            comparisons = comparisons + 1
+            if items[i] > items[i + 1]:
+                items[i], items[i + 1] = items[i + 1], items[i]
+                swapped = True
+        if not swapped:
+            break
+    return comparisons
+---
+Ten items in order now cost one pass, 9 comparisons, not 45. Reversed,
+nothing changes: every pass swaps something. Real data is often nearly in
+order, and there the flag saves most of the work.
+```
 
-<details class="dl-answer"><summary>answer</summary>
+## 7. Best and worst on sorted data
 
-Insertion sort does best. Each item is already in place, so it makes
-n − 1 comparisons and moves nothing. That work grows like n. This is why
-the fast sorting algorithms used in real software often use insertion
-sort for the small pieces of the job, or as their last step.
-
-Selection sort does worst, because it gains nothing from sorted data.
-Every time, it looks through the whole rest of the list to find the
-smallest item, whatever the order. It does n² work on every input, in
-the best case and the worst.
-
-Bubble sort with the early-stop flag matches insertion sort. Without the
-flag, it matches selection sort.
-
-</details>
-
-**8.** For a million items, about how many comparisons does an n² sort make? At ten million comparisons a second, how long does that take?
-
-<details class="dl-answer"><summary>answer</summary>
-
-About 500,000,000,000, or five hundred billion.
-
-At ten million a second, that is 50,000 seconds, or about fourteen
-hours. An n log n sort on the same data makes about twenty million
-comparisons. That takes two seconds.
-
-This is the clearest example in the course of why the way the work
-grows matters more than how fast each step is. However cleverly you
-write the inner loop, you cannot close a gap that size.
-
-</details>
-
-## Writing Them
-
-**9.** Can you write selection sort from nothing?
+Which of the three sorts does best on a list that is already sorted? Which
+gains nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
+Insertion sort does best: each element is already in place, so it makes
+n − 1 comparisons and moves nothing. Fast sorts in real software often
+hand small pieces of the job to insertion sort for that reason.
+
+Selection sort gains nothing: it looks through the whole rest of the list
+for the smallest every time, whatever the order. Bubble sort with the flag
+from problem 6 matches insertion sort; without it, it matches selection
+sort.
+
+</details>
+
+## 8. A million items
+
+For a million items, about how many comparisons does an n² sort make? At
+ten million comparisons a second, how long does that take?
+
+<details class="dl-answer"><summary>answer</summary>
+
+About n(n − 1)/2, which is 500,000,000,000: five hundred billion. At ten
+million a second, that is 50,000 seconds, about fourteen hours. A sort
+that takes about n log n steps makes about twenty million comparisons on
+the same data, which takes two seconds. However quick each step is, it
+cannot close a gap that size.
+
+</details>
+
+## 9. Selection sort from nothing
+
+Can you write `selection_sort(items)` without looking back, so that it
+returns a new sorted list and leaves `items` as it was?
+
+```python exec
+id: selection-sort-from-nothing-1
 def selection_sort(items):
-    items = items.copy()
-    for i in range(len(items)):
+    return items
+```
+
+```inputs
+guess: yes
+selection_sort([64, 25, 12, 22, 11])
+selection_sort([3, 1, 2])
+selection_sort([])
+```
+
+```solution
+def selection_sort(items):
+    items = items[:]
+    for i in range(len(items) - 1):
         smallest = i
         for j in range(i + 1, len(items)):
             if items[j] < items[smallest]:
                 smallest = j
         items[i], items[smallest] = items[smallest], items[i]
     return items
+---
+It keeps the *index* of the smallest, not its value. With only the value,
+it could not do the swap, because it would not know where the value came
+from. `items[:]` makes the copy, so the caller's list is left alone.
 ```
 
-Notice that it keeps the *index* of the smallest item, and not its
-value. If it kept only the value, it could not do the swap, because it
-would no longer know where that value came from.
+## 10. The guard goes first
 
-</details>
-
-**10.** Can you write insertion sort from nothing?
+In insertion sort, the `while` line is
+`while j >= 0 and items[j] > current:`. Why does `j >= 0` come first?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def insertion_sort(items):
-    items = items.copy()
-    for i in range(1, len(items)):
-        current = items[i]
-        j = i - 1
-        while j >= 0 and items[j] > current:
-            items[j + 1] = items[j]
-            j = j - 1
-        items[j + 1] = current
-    return items
+It is a guard: it stops the loop walking off the front of the list. Python
+works out an `and` from left to right, and stops as soon as one side is
+`False`. With the sides swapped, when `j` reaches −1, Python reads
+`items[-1]`, the last element, before the guard is checked. In Python the
+answer still comes out right, because the guard then fails. But the code
+has read something it never meant to, and in many other languages that is
+a crash.
+
+</details>
+
+## 11. Why copy
+
+Why do `bubble_counted` and `selection_sort` above start with
+`items = items[:]`?
+
+<details class="dl-answer"><summary>answer</summary>
+
+So that they sort a copy, and leave the caller's list as it was. Without
+it, `in_order = selection_sort(data)` would sort `data` too: two names for
+one list, from
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
+Python offers both: `sorted(x)` returns a new list, and `x.sort()` changes
+`x` itself.
+
+</details>
+
+## 12. Length, then letters
+
+Can you set `ordered` to these names sorted by length, with names of the
+same length in alphabetical order?
+
+```python exec
+id: length-then-letters-1
+names = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE", "WREN"]
+ordered = []
+
+print(ordered)
 ```
 
-The `j >= 0` in the `while` condition is a guard. It stops the loop
-from walking off the front of the list.
-
-Put the guard first. Python checks the two sides of an `and` from left
-to right, and stops as soon as one is false. If you swap the two sides,
-then when `j` reaches −1, Python first reads `items[-1]`, the last
-element, before the guard is checked. In Python the sort still gives the
-right answer, because the guard then fails. But the code has read an
-element it never meant to read, and in many other languages that is a
-crash.
-
-</details>
-
-**11.** Why does each of these functions start with `items = items.copy()`?
-
-<details class="dl-answer"><summary>answer</summary>
-
-So that the function returns a sorted list, and leaves the caller's
-list as it was.
-
-Without the copy, `sorted_data = my_sort(data)` would also sort `data`.
-Nobody wants that surprise. Python itself offers both ways. `sorted(x)`
-returns a new list. `x.sort()` changes the list `x` itself. The two
-names make the difference clear in the line where you use them.
-
-</details>
-
-**12.** Sort a list of names by length. Where two names have the same length, sort them alphabetically.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-names = ["Ada", "Grace", "Alan", "Bob", "Margaret"]
-print(sorted(names, key=lambda name: (len(name), name)))
+```inputs
+ordered
 ```
 
-`['Ada', 'Bob', 'Alan', 'Grace', 'Margaret']`.
+```hint
+Python's sort is stable: elements that tie keep the order they came in.
+What if the list were already in alphabetical order when you sorted it by
+length?
+```
 
-`key=` tells `sorted` what to sort by. `lambda name: (len(name), name)`
-is a small function with no name. For each name, it gives a pair of
-values: the length, then the name itself. A pair like this is a *tuple*,
-a fixed group of values in round brackets.
+```solution
+title: with what you've met so far
+names = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE", "WREN"]
+ordered = sorted(sorted(names), key=len)
+print(ordered)
+---
+Sort alphabetically first, then by length. The second sort keeps the
+alphabetical order among names of the same length, because it is stable.
+```
 
-Sorting by a tuple sorts by its first value. It uses the second value
-only to break ties.
+```solution
+title: a shorter way you'll meet later
+names = ["OTTER", "OWL", "HEDGEHOG", "BAT", "HARE", "WREN"]
+ordered = sorted(names, key=lambda name: (len(name), name))
+print(ordered)
+---
+`lambda name: (len(name), name)` is a function with no name, written where
+it is used. It gives each name a pair: its length, then the name. Pairs
+sort by their first value, and use the second only to break a tie.
+```
 
-The other way is to sort twice: first alphabetically, then by length.
-That works only because Python's sort is stable, so it keeps the
-alphabetical order among names of equal length.
+## 13. The best first
 
-</details>
+<div class="dl-world" data-world="secret-messages">
 
-## Recursion
+A codebreaker tries every shift, and sorts the decodings so the most
+English-looking is first. A rough score: how many of its letters are E, T,
+A, O, I or N. Can you write `score(text)`, and set `best` to the decoding
+with the highest score?
 
-**13.** Rewrite binary search so that it calls itself instead of looping.
+```python exec
+id: the-best-first-1--secret-messages
+def decode(message, shift):
+    plain = ""
+    for character in message:
+        if character.isupper():
+            plain = plain + chr((ord(character) - ord("A") - shift) % 26 + ord("A"))
+        else:
+            plain = plain + character
+    return plain
 
-<details class="dl-answer"><summary>answer</summary>
+def score(text):
+    return 0
 
-```python
-def binary_search(items, target, low=0, high=None):
-    if high is None:
-        high = len(items) - 1
+message = "WKH HQHPB LV DW WKH EULGJH"
+decodings = []
+for shift in range(26):
+    decodings.append(decode(message, shift))
+best = ""
+print(best)
+```
+
+```inputs
+guess: yes
+score("THE ENEMY")
+score("XYZ")
+best
+```
+
+```hint
+`letter in "ETAOIN"` is `True` for those six letters. Count the letters of
+`text` for which it is `True`. Then sort the decodings with `key=score`,
+largest first, and take the first one.
+```
+
+```solution
+def decode(message, shift):
+    plain = ""
+    for character in message:
+        if character.isupper():
+            plain = plain + chr((ord(character) - ord("A") - shift) % 26 + ord("A"))
+        else:
+            plain = plain + character
+    return plain
+
+def score(text):
+    count = 0
+    for letter in text:
+        if letter in "ETAOIN":
+            count = count + 1
+    return count
+
+message = "WKH HQHPB LV DW WKH EULGJH"
+decodings = []
+for shift in range(26):
+    decodings.append(decode(message, shift))
+best = sorted(decodings, key=score, reverse=True)[0]
+print(best)
+---
+THE ENEMY IS AT THE BRIDGE, with 12. The runner-up scores 10. On a short
+message, a score this rough can tie, and then a person has to read the
+top few.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you write `lit(row)`, which counts the `#` in a row, and set
+`busiest_first` to the rows of this picture sorted from most lit to
+least?
+
+```python exec
+id: the-best-first-1--pixel-art
+picture = ["#..#", "####", "....", "#.#."]
+
+def lit(row):
+    return 0
+
+busiest_first = []
+print(busiest_first)
+```
+
+```inputs
+guess: yes
+lit("#..#")
+lit("....")
+busiest_first
+```
+
+```hint
+Count the `#` characters with a loop. Then sort the rows with `key=lit`,
+largest first.
+```
+
+```solution
+picture = ["#..#", "####", "....", "#.#."]
+
+def lit(row):
+    count = 0
+    for pixel in row:
+        if pixel == "#":
+            count = count + 1
+    return count
+
+busiest_first = sorted(picture, key=lit, reverse=True)
+print(busiest_first)
+---
+`['####', '#..#', '#.#.', '....']`. The two rows with 2 lit pixels keep
+the order they had, because the sort is stable.
+```
+
+</div>
+
+## 14. A function that calls itself
+
+Binary search can be written so that it calls itself on a smaller range,
+in place of a loop. A function that calls itself uses *recursion*. What
+does every recursive function need, to stop?
+
+```python exec
+id: a-function-that-calls-itself-1
+def binary_search(items, target, low, high):
     if low > high:
         return -1
     mid = (low + high) // 2
@@ -306,136 +450,147 @@ def binary_search(items, target, low=0, high=None):
     if target < items[mid]:
         return binary_search(items, target, low, mid - 1)
     return binary_search(items, target, mid + 1, high)
+
+numbers = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
+print(binary_search(numbers, 72, 0, len(numbers) - 1))
 ```
 
-Every recursive function needs two things, and both are here:
+<details class="dl-answer"><summary>answer</summary>
 
-1. A case that returns without calling itself again. Here there are two:
-   `low > high`, and finding the target.
-2. A call that always moves closer to that case. Here the range gets
-   smaller with each call.
-
-Leave out either one, and the function keeps calling itself until Python
-stops it.
-
-The default `high=None` is on purpose; `high=len(items) - 1` would not
-work. Python works out a default value once, when the function is
-defined. At that moment there is no `items` to measure.
+Two things. A case that returns without calling itself again: here, an
+empty range, `low > high`, or finding the target. And a call that always
+moves closer to that case: here, each call has a smaller range. Leave
+either out, and the function calls itself until Python stops it with a
+`RecursionError`.
 
 </details>
 
-**14.** Write a recursive factorial function. Where does it stop?
+## 15. Better than n log n
+
+Can any sort beat about n log n comparisons, for any list?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)
+Not a sort that works by comparing, and that has been proved. Each
+comparison answers one yes-or-no question, so k comparisons can tell apart
+at most 2ᵏ orders. A list of n elements can be in n! orders, and telling
+them all apart takes about n log n questions. Sorts that do not compare,
+such as counting sort, can beat it, but only when something is known about
+the data, such as that it is whole numbers in a small range.
+
+</details>
+
+## 16. One more item
+
+You have a sorted list of a million items, and one new item to add. What
+is the cheapest way to keep it sorted?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Find its place with binary search, about 20 comparisons, and insert it
+there. Sorting the whole list again would take about twenty million. There
+is still a cost: inserting into the middle of a list moves every element
+after it one place along, and that grows with n.
+
+</details>
+
+## 17. Correct, and slower
+
+Two students hand in sorts that both give the right answers. One makes 45
+comparisons on ten items, and the other 90. Is the second one wrong?
+
+<details class="dl-answer"><summary>answer</summary>
+
+No: it is right, and slower, which are two different things. Is ten items
+the real size? Then the difference is millionths of a second, and code
+that is easy to read matters more. If the real input is ten million items,
+the difference is everything. First make it right, then measure it, then
+make it faster where the measurement says it matters.
+
+</details>
+
+## 18. From earlier: at most how many looks
+
+From *Searching a list: linear and binary search*. What is the largest
+number of comparisons binary search can need on a sorted list of 64
+items?
+
+```python exec
+id: from-earlier-at-most-how-many-looks-1
+looks = 0
+left = 64
+while left > 0:
+    left = left // 2
+    looks = looks + 1
+print(looks)
 ```
 
-It stops at 1. What if you wrote `n == 1` in place of `n <= 1`? That
-works for positive numbers. But on 0 or a negative number, the function
-calls itself forever, until Python stops it. A mistake like this often
-shows up only after real users start giving the program real data.
+```predict
+type: number
 
-Python's default recursion limit is about 1,000 calls. So
-`factorial(5000)` raises a `RecursionError`, and gives no answer. The
-loop version has no such limit.
-
-</details>
-
-**15.** Write shell sort. It is insertion sort with a gap that shrinks to 1.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def shell_sort(items):
-    items = items.copy()
-    gap = len(items) // 2
-    while gap > 0:
-        for i in range(gap, len(items)):
-            current, j = items[i], i
-            while j >= gap and items[j - gap] > current:
-                items[j] = items[j - gap]
-                j = j - gap
-            items[j] = current
-        gap = gap // 2
-    return items
+What will it print?
 ```
 
-It is insertion sort with every `1` changed to `gap`. The large gaps
-move items that are far from their place most of the way there, with
-little work. By the time the gap is 1, the list is nearly sorted, and
-insertion sort is fast on a list that is nearly sorted.
+<details class="dl-answer"><summary>why</summary>
 
-How fast shell sort is depends on the list of gaps it uses. Finding the
-best list of gaps is still an open problem. This is one of the few
-places in a first course where nobody yet knows the best method.
+7. Each look halves what is left, 64, 32, 16, 8, 4, 2, 1, and then there
+is nothing left: seven looks. Six halvings of 64 leave one item, which
+still has to be looked at.
 
 </details>
 
-## Thinking About It
+## 19. From earlier: what a loop over a dictionary gives
 
-**16.** Can any sorting algorithm beat n log n comparisons in general?
+From *Dictionaries: looking things up by name*.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: from-earlier-a-loop-over-a-dictionary-1
+key = {"A": "Q", "B": "W"}
+for x in key:
+    print(x)
+```
 
-Not a sort that works by comparing items. This has been proved; it is
-not only that nobody has found one yet.
+```predict
+What will the last line print?
 
-Each comparison answers one yes-or-no question. So k comparisons can
-tell apart at most 2ᵏ different orders. A list of n items can be in n!
-different orders. To tell them all apart, a sort needs log₂(n!)
-questions, and that works out to about n log n. So every sort that works
-by comparing must make at least that many comparisons.
+- B
+  - A loop over a dictionary gives its keys.
+- W
+  - A loop over a dictionary gives its values.
+- B W
+  - A loop over a dictionary gives each pair.
+```
 
-Some sorts do beat it, because they do not compare. Counting sort and
-radix sort use the values themselves as positions. They are faster, but
-they work only when you know something about the data: for example,
-that it is whole numbers in a known range.
+<details class="dl-answer"><summary>why</summary>
 
-</details>
-
-**17.** You have a sorted list of a million items, and one new item to add. What is the cheapest way to keep the list sorted?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Use binary search to find the position, then insert the item there.
-That takes about 20 comparisons.
-
-Sorting the whole list again, with an n log n sort, would take about
-twenty million. Most people first write "add it to the end, then sort".
-In a loop that adds items one at a time, that is the difference between
-instant and hopeless.
-
-There is still a cost. Inserting into the middle of a Python list moves
-every item after it along by one place. So this way needs few
-comparisons, but the moving grows like n. When that moving becomes the
-slowest part, the answer is a different way of storing the data.
+`B`. A loop over a dictionary gives its keys, in the order they were
+added. `key.items()` gives the pairs.
 
 </details>
 
-**18.** Two students hand in sorts that both give correct output. One makes 45 comparisons on ten items, and the other makes 90. Is the second one wrong?
+## 20. From earlier: nothing back
 
-<details class="dl-answer"><summary>answer</summary>
+From *Lists and looping over them*.
 
-No. It is correct, and it is slower. Those are two different
-judgements.
+```python exec
+id: from-earlier-nothing-back-1
+row = [1, 2]
+result = row.append(3)
+print(result)
+```
 
-Before you make it faster, ask: is ten items the real size? If it is,
-the difference is a few millionths of a second, and code that is easy to
-read matters more. If ten was only the test, and the real input is ten
-million items, the difference is the whole assignment.
+```predict
+What will it print?
 
-So, in order:
+- [1, 2, 3]
+  - `append()` adds 3, and gives back the list.
+- None
+  - `append()` changes the list, and gives nothing back.
+```
 
-1. Make it correct.
-2. Measure it.
-3. Improve the part the measurement points to.
+<details class="dl-answer"><summary>why</summary>
 
-People are bad at guessing which part of a program is slow, even people
-who have written programs for years.
+`None`, the same as `.sort()`. A method that changes its list in place
+gives back nothing, so `row` is `[1, 2, 3]` and `result` is `None`.
 
 </details>

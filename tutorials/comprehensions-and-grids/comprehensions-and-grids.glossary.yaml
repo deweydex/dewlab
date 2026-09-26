@@ -1,0 +1,59 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: list comprehension
+    kind: concept
+    definition: >
+      A list comprehension is a loop that builds a list, written on one
+      line inside square brackets. The value to add comes first, then the
+      for line without its colon.
+    example: "[n * n for n in range(1, 6)]"
+  - term: filter
+    kind: concept
+    definition: >
+      A filter is an if at the end of a comprehension. It keeps only the
+      values that pass its test.
+    example: "[value for value in row if value >= 128]"
+  - term: generator expression
+    kind: concept
+    definition: >
+      A generator expression is a comprehension without its square
+      brackets, written inside a function's brackets. It hands its values
+      to the function one at a time, without building a list first.
+    example: "sum(value for value in row if value >= 128)"
+  - term: "sum(), max(), min()"
+    python: sum
+    kind: function
+    definition: >
+      sum() adds up the values it is given. max() gives the largest, and
+      min() the smallest.
+    example: "min(value + 50, 255)"
+  - term: "join()"
+    python: str.join
+    kind: function
+    definition: >
+      Joins a group of strings into one string. The string before .join
+      goes between the pieces.
+    example: '" ".join(words)'
+  - term: grid, list of lists
+    kind: concept
+    definition: >
+      A grid is kept as a list of rows, each row a list. grid[row][column]
+      reads one value: the row first, then the column.
+    example: "picture[1][3]"
+  - term: aliasing
+    kind: concept
+    definition: >
+      Aliasing is one value having two names. After copy = row, a change
+      made to the list through one name shows through the other. row[:]
+      or list(row) makes a separate copy.
+    example: "copy = row  # not a copy"
+  - term: sequence
+    kind: concept
+    definition: In mathematics, a sequence is a list of numbers made by a rule. The rule takes a position n and gives the value at that position.
+    example: "1, 4, 9, 16, 25, ... from f(n) = n²"
+  - term: dot product
+    kind: formula
+    definition: >
+      The dot product of two lists of the same length multiplies each pair
+      of matching elements and adds up the results.
+    example: "[1, 2, 3] . [4, 5, 6] = 1*4 + 2*5 + 3*6 = 32"

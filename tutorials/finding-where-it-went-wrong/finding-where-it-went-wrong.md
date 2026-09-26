@@ -73,7 +73,7 @@ result on to the next. Ours has three small stages, and each does one job:
 3. `average` finds the average.
 
 `summarize` runs the three stages in order. It uses list comprehensions,
-from [Lists: keeping many values in order](tutorial:lists-and-sequences),
+from [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
 to apply a stage to every reading.
 
 ```python exec

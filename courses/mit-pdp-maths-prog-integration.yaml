@@ -38,7 +38,9 @@ contents:
   - repeating-yourself
   - writing-your-own-functions
   - lists-and-sequences
+  - comprehensions-and-grids
   - looking-things-up-by-name
+  - a-program-of-your-own
   - finding-things
   - putting-things-in-order
   - building-reusable-tools

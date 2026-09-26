@@ -133,10 +133,10 @@ bottom of every page does the same for the whole page.
 
 ## Where to go next
 
-This page is about the cells. The Python inside them comes from seven
+This page is about the cells. The Python inside them comes from eight
 Programming Foundations pages, which come next in this series. You may
 be doing them in your programming class at the same time. The later
-pages in this course use all seven:
+pages in this course use all eight:
 
 1. [Variables, data types and text](tutorial:storing-and-computing):
    giving a value a name, and putting numbers into text.
@@ -148,9 +148,11 @@ pages in this course use all seven:
    `while`, and a loop inside a loop.
 5. [Writing your own functions](tutorial:writing-your-own-functions):
    `def` and `return`. Nearly every matrix page asks you to write one.
-6. [Lists: keeping many values in order](tutorial:lists-and-sequences):
-   lists, comprehensions, and a grid stored as a list of lists.
-7. [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name):
+6. [Lists and looping over them](tutorial:lists-and-sequences): many
+   values under one name, and a loop that goes through them.
+7. [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
+   a loop on one line, and a grid stored as a list of lists.
+8. [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name):
    the tool behind the text-generation pages.
 
 ## Where to Read More

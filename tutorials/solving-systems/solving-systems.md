@@ -126,7 +126,7 @@ one column at a time.
 
 The cell below uses the third move twice. It takes 2 × row 1 away from
 row 2, and row 1 away from row 3. Each line uses a list comprehension,
-from [Lists: keeping many values in order](tutorial:lists-and-sequences),
+from [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
 to work out all four numbers in the new row at once. What will the first
 number in each new row be?
 
