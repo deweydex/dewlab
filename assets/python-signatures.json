@@ -62,6 +62,7 @@
     "set": "set(iterable=(), /)",
     "set.add": "set.add(object, /)",
     "sorted": "sorted(iterable, /, *, key=None, reverse=False)",
+    "str.isdigit": "str.isdigit()",
     "str.isupper": "str.isupper()",
     "str.join": "str.join(iterable, /)",
     "str.replace": "str.replace(old, new, /, count=-1)",

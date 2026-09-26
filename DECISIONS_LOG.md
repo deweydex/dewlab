@@ -4869,3 +4869,17 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **What the history page keeps of other languages' ideas.** `map`, `lambda` and `reduce` are cut; functional style is shown with a function handed to another function, which the reader has already met in `sorted(key=)`. One small `class` stays, to be read and not written, because recognising object-oriented code is part of PDP-LO3 and the OOP course builds classes properly.
 
 *Cost to change: a page's id is part of the key its saved work lives under (7.12); after 2 October, renaming `comprehensions-and-grids` or `a-program-of-your-own` loses that work.*
+
+---
+
+**7.240 — From cells to a program: `input()` is written in advance on the page, and the team project is set in the worlds.** The content issue (#320), part of #306.
+
+**A cell cannot wait for typing, so the page says so and writes the typing down.** `input()` needs somebody at a keyboard, and a cell running in Pyodide has no way to pause for one; the existing pages commented `input()` lines out. The new page, "From cells to a program", keeps the programs whole instead. Each keeps its answers in a list, `typed`, and a four-line `ask()` takes the next one and prints it beside its prompt, so the output reads like a session at a keyboard. The page says in the same breath that on a computer the whole of `ask` becomes `ask = input`. A reader sees `while True`, `break` and a validation loop run from start to end, and the typed list doubles as a test: change it, and the program meets different answers. A second point follows: the deciding is kept apart from the asking (`first_valid(answers, low, high)`), which is what lets a `tests:` cell check it.
+
+**`main()` is called plainly on the page.** The runtime names the page namespace `__dewlab__` (7.97), so `if __name__ == "__main__":` in a cell would skip `main()` and print nothing. The cell calls `main()`, and the guard is shown as what goes at the end of a file, with the reason.
+
+**The team project brief asks for a game or tool in one of the worlds,** with a worked Release 1 (a two-room text adventure), and drops ideas that need what the course never teaches: renaming files, a dataset with plots. What is handed in, and when, is left to the teacher; the page keeps the process advice and the reflection questions. Its interface agreement and review checklist point at the templates on the new page.
+
+**Reflections go in Your notes.** `critique-and-reflection` points at "A program of your own" as the work to look back on, and its answers leave the cells of Python comments for the Notes panel, since the block model has no text block yet.
+
+*Cost to change: `from-cells-to-a-program` is a new id; renaming it after 2 October loses the work saved under it (7.12).*

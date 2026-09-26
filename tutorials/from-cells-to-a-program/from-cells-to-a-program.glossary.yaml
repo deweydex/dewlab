@@ -1,0 +1,47 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "while True, break"
+    python: break
+    kind: keyword
+    definition: >
+      while True makes a loop that goes round for ever, until something
+      inside it leaves. break leaves the loop at once, and the program
+      carries on after it.
+    example: "if choice == \"9\":\n    break"
+  - term: ".pop()"
+    python: list.pop
+    kind: function
+    definition: >
+      Takes an element out of a list and gives it back. .pop(0) takes the
+      first; .pop() with nothing in the brackets takes the last.
+    example: "answer = typed.pop(0)"
+  - term: ".isdigit()"
+    python: str.isdigit
+    kind: function
+    definition: >
+      True when a string is all digits, so int() can read it. A minus sign,
+      a point or a space makes it False.
+    example: "\"25\".isdigit()  # True"
+  - term: "main()"
+    kind: concept
+    definition: >
+      A function holding a program's top level, the steps a person would
+      describe, with each detail in a function of its own. The program's
+      last lines call it.
+  - term: "if __name__ == \"__main__\":"
+    kind: concept
+    definition: >
+      True when a file is run as a program, and False when another program
+      borrows its functions with import. Calling main() under it means the
+      file can be both.
+  - term: interface agreement
+    kind: concept
+    definition: >
+      A short written agreement, made before code is written, saying what a
+      function is called, what goes in and what comes out, so two people can
+      build either side of it at the same time.
+  - term: change log
+    kind: concept
+    definition: >
+      A list, one entry for each release, of what changed: what was added,
+      what was fixed, and any problem still known.
