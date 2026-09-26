@@ -96,7 +96,14 @@ of the file: two engines, one dispatcher, one shared public interface.
    shared namespace — what a page's own "Run all" calls between cells
    instead of a full restart), then the filesystem functions
    (`mountNative()` through `mkdir()`) that the calling page's own
-   filesystem module uses.
+   filesystem module uses. `runCell()` also handles the cell's widgets
+   through `assets/cell-widgets.js`, the module a tutorial page uses too:
+   it hands in what each text box, menu and slider holds before the run,
+   and moves a new slider into the cell's strip after it. The engine keeps
+   each cell's strip in `widgetHolders`, because the Notebook redraws a
+   cell's elements; `sliderStripFor()` gives it back to the page, and
+   `clearWidgets()` empties it. A slider's move calls `rerunCell` from
+   `configure()`, the page's own Run (7.265).
 
 ---
 

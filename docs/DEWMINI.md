@@ -136,20 +136,27 @@ copied:
 | `show_table(frame, max_rows=20, caption=None)` | Show a DataFrame or Series as a table |
 | `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value`. **See the note below.** |
 | `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
-| `slider(label="", low=0, high=10, step=None, value=None, id=None)` | A slider — read where it is with `.value`. On a tutorial page moving it runs the cell again; here it does not yet, and `.value` reads the value it was drawn with. |
+| `slider(label="", low=0, high=10, step=None, value=None, id=None)` | A slider — read where it is with `.value`. Moving it runs the cell again. **See the note below.** |
 | `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed. **See the note below.** |
 | `image_input(label="Choose an image", id=None)` | A file picker for an image — read the picked file with `.value`. **See the note below.** |
 | `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there: live from its source where the dataset has one, with the saved copy as the backup, and a line under the cell saying which |
 
-**The four widgets do not work here at the moment, and say so when you
-call one.** A widget attaches a listener to a live element on the page.
-The Notebook runs Python in a background worker, off the page's own thread,
-and that is what lets the Stop button interrupt a runaway cell. On the
-far side of that boundary there is no page to attach a listener to.
-Calling a widget therefore raises a clear error, rather than drawing
-something that quietly does nothing. A tutorial page makes the same
-trade (`DECISIONS_LOG.md` 7.77). The widgets do work in a downloaded
-copy, which runs Python on the page's own thread.
+**Three of the five widgets work here, and two do not.** The Notebook runs
+Python in a background worker, off the page's own thread, and that is what
+lets the Stop button interrupt a runaway cell (`DECISIONS_LOG.md` 7.77).
+`text_input`, `dropdown` and `slider` work anyway: before a cell runs, the
+page reads what each of the cell's widgets holds and hands it to Python,
+so a run sees what the reader typed, chose or dragged to. Moving a slider
+runs its cell again, and the slider sits in a strip above the output that
+a run never clears, so it keeps its place while the cell redraws. This is
+the same code a tutorial page uses (`assets/cell-widgets.js`, 7.265). A
+Notebook does not keep a slider across a reload, since Python starts
+afresh then: run the cell and the slider comes back.
+
+`button` and `image_input` still raise a clear error here. One has to call
+Python the moment it is clicked, with no cell running, and the other has to
+read a picked file's bytes; both need Python on the page's own thread. They
+work in a downloaded copy, which runs Python there.
 
 `numpy`, `pandas` and `matplotlib` are available without importing
 them, and you can still `import` them if you want. The Notebook keeps that

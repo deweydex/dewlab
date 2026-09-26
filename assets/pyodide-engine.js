@@ -1,5 +1,6 @@
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
+import { widgetValues, reconcileSliders, clearSliders, followSlider } from "./cell-widgets.js";
 
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
@@ -39,9 +40,15 @@ let packages = DEFAULT_PACKAGES; // which Pyodide packages to load at boot
 // (compose/) and needs "../data/" to reach the same repo-root data/
 // folder the tutorial pages already share.
 let dataBase = "";
+// How a slider runs its cell again: the page's own Run, so its button,
+// status line and saving all behave as if the reader had pressed it.
+let rerunCell = null; // (cellId) => Promise
+let isBusy = () => false; // is any cell running?
 
 export function configure(options) {
   getOutputEl = options.getOutputEl;
+  if (options.rerunCell) rerunCell = options.rerunCell;
+  if (options.isBusy) isBusy = options.isBusy;
   onStatus = options.onStatus || (() => {});
   if (options.packages && options.packages.length) packages = options.packages;
   if (typeof options.dataBase === "string") dataBase = options.dataBase;
@@ -499,10 +506,55 @@ export function canStop() {
 
 export { requestInterrupt };
 
+/* Each cell's widget state (assets/cell-widgets.js): its slider strip,
+ * and whether a slider is waiting to run it. Kept here rather than on the
+ * page's cell, because the Notebook redraws a cell's elements and the
+ * strip has to outlive that (sliderStripFor()). */
+const widgetHolders = new Map(); // cellId -> holder
+
+function holderFor(cellId) {
+  if (!widgetHolders.has(cellId)) widgetHolders.set(cellId, {});
+  return widgetHolders.get(cellId);
+}
+
+/* The strip a cell's sliders live in, for the page to put back above a
+ * redrawn output; null when the cell has none. */
+export function sliderStripFor(cellId) {
+  const strip = widgetHolders.get(cellId)?.sliderStrip;
+  return strip && strip.childElementCount ? strip : null;
+}
+
+export function clearWidgets(cellId) {
+  const holder = widgetHolders.get(cellId);
+  if (holder) clearSliders(holder);
+}
+
+/* What the cell's text boxes, menus and sliders hold, handed in before
+ * the run clears them — the one way Python hears a widget, in a Worker or
+ * on this thread (7.265). */
+async function seedWidgets(cellId, values) {
+  for (const { widgetId, value } of values) {
+    if (mode === "main-thread") toolsMT._set_widget_value(cellId, widgetId, value);
+    else await workerRequest("widget-changed", { cellId, widgetId, value });
+  }
+}
+
 export async function runCell(cellId, code, label) {
+  const el = getOutputEl ? getOutputEl(cellId) : null;
+  const holder = holderFor(cellId);
+  const values = el ? widgetValues(holder, cellId, el) : [];
   clearOutput(cellId);
-  if (mode === "main-thread") return runCellMainThread(cellId, code, label);
-  return runCellWorker(cellId, code, label);
+  await seedWidgets(cellId, values);
+  const result = mode === "main-thread"
+    ? await runCellMainThread(cellId, code, label)
+    : await runCellWorker(cellId, code, label);
+  const after = getOutputEl ? getOutputEl(cellId) : null;
+  if (after) {
+    reconcileSliders(holder, after, () => {
+      if (rerunCell) followSlider(holder, isBusy, () => rerunCell(cellId));
+    });
+  }
+  return result;
 }
 
 export async function resetPageState() {

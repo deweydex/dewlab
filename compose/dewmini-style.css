@@ -613,6 +613,9 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 .dm-cell-output [style*="1f6b3f"] { background: var(--dl-pass-bg); color: var(--dl-pass-fg); }
 .dm-cell-output [style*="9b2226"] { background: var(--dl-error-bg); color: var(--dl-error-fg); }
 .dm-cell-output .dl-widget { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+/* A slider moves up into its cell's strip after the run that drew it
+ * (assets/cell-widgets.js); hidden in the output until then. */
+.dm-cell-output .dl-slider { display: none; }
 .dm-cell-output .dl-widget input,
 .dm-cell-output .dl-widget select {
   font: inherit;

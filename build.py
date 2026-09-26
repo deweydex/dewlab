@@ -6315,6 +6315,9 @@ DEWMINI_ASSET_FILES = (
     # Imported by both of the two above, so a bundle without it has an
     # engine that cannot start.
     "module-watch.js",
+    # Imported by pyodide-engine.js: what a cell's widgets hold, and its
+    # sliders.
+    "cell-widgets.js",
     # Imported by dewmini.js for its Library search — the one idea of
     # word matching every search box shares.
     "search-words.js",

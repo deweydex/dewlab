@@ -489,7 +489,10 @@ active. `pyodide-engine.js` falls back to running Pyodide on the main thread
 when a module Worker isn't available (e.g. opened from `file://`, which
 dewmini's downloadable copy avoids by serving itself from
 `http://localhost` instead) — same interpreter, same `tutorial_tools.py`,
-just without a genuine Stop button.
+just without a genuine Stop button. What a cell's widgets hold reaches
+Python through `assets/cell-widgets.js`, which the engine and
+`tutorial-runtime.js` share, so a text box, a menu or a slider behaves the
+same in the Notebook as on a tutorial page (7.265).
 
 A JavaScript cell runs through neither of those — `compose/js-cell-engine.js`
 is a second, smaller engine: one persistent sandboxed `<iframe

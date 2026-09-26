@@ -5269,3 +5269,15 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not done.** The issue offered re-running "the cell, or a named function". Only the cell: a named function would need a second output area inside the cell and a callback path into the Worker, for a gain a short cell already gives. In the Notebook a slider draws but does not run its cell yet, and its guide says so.
 
 *Cost to change: small. The markup is `.dl-slider` inside `.dl-widget`; the page's half is six functions beside `runCell()`; the saved record's `sliders_html` is optional, so older saves load unchanged.*
+
+---
+
+**7.265 — The Notebook's text boxes, menus and sliders work, through the same code as a tutorial page.** Follows 7.264.
+
+**What was wrong.** The Notebook's guide said its widgets raise an error because Python runs in a Worker. Only `button` and `image_input` did. `text_input` and `dropdown` drew a box, but nothing on the page told the Worker what was typed, so every run read the value the box was drawn with. A browser test reproduced it before the fix.
+
+**The fix.** The page-side half of widgets moved out of `tutorial-runtime.js` into `assets/cell-widgets.js`, which the runtime and the Notebook's engine (`pyodide-engine.js`) both import. Before each run, the page reads what each of the cell's text boxes, menus and sliders holds and hands it in; after the run, a new slider moves up into the cell's strip. That one path serves the Worker, the main thread and both pages. The engine keeps each cell's strip, because the Notebook redraws a cell's elements on a tab switch, and the page puts the strip back above the new output (`sliderStripFor()`). A slider runs its cell through the Notebook's own Run, so the button, the status line and saving behave as if the reader pressed it.
+
+**Not kept.** A Notebook's sliders are not saved across a reload: Python starts afresh then, and running the cell brings the slider back. A tutorial page does keep them (7.264), because its saved output stands for the reader's work on that page.
+
+*Cost to change: small. `cell-widgets.js` is seven functions; the engine adds a map of per-cell state and two exports.*
