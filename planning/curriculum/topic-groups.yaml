@@ -325,6 +325,7 @@ groups:
     tutorials:
       - how-we-got-here
       - bringing-it-all-together
+      - from-cells-to-a-program
       - the-team-project
       - critique-and-reflection
 
