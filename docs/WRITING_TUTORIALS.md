@@ -223,9 +223,13 @@ tutorial that has it. It warns, without stopping, when two tutorials share a
 title, and when two tutorials cover much the same outcomes — both are worth
 a look, neither is necessarily wrong.
 
-`courses/index.yaml` lists the courses in the order they appear on the front
-page and the contents page. A course's card on the front page is generated
-from its `card:` text; nothing is written by hand in `pages/home.md`.
+`courses/index.yaml` lists the courses under `order:` in the order they
+appear on the contents page and, unless `cards:` says otherwise, on the
+front page. That order also picks each shared page's default course — the
+first that lists it — so to move a card up without changing that, name it
+under `cards:` instead: those tiles come first, the rest follow `order:`. A
+course's card on the front page is generated from its `card:` text; nothing
+is written by hand in `pages/home.md`.
 
 ---
 
@@ -1527,7 +1531,8 @@ A page can hold three things ordinary prose cannot:
   heading) and `wide: true` (two columns wide), then a markdown heading and
   a paragraph. Tiles next to each other share one grid.
 - `[[search-box]]`, the live search, and `[[course-cards]]`, one tile per
-  course from the course files in `courses/index.yaml` order. Write the
+  course from the course files, `courses/index.yaml`'s `cards:` first and
+  then its `order:`. Write the
   marker on a line of its own; the build fills it.
 - A `<div class="dl-hero">`, `<div class="dl-audience">`,
   `<div class="dl-attribution">` or `<ul class="dl-feature-list">` wrapper,
