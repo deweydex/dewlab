@@ -59,6 +59,10 @@ def _serve(site_dir, standalone: bool):
         manifest["toolsSource"] = (DEWLAB / "assets" / "tutorial_tools.py").read_text()
         page = page[:start] + json.dumps(manifest).replace("<", "\\u003c") + page[end:]
     page = page.replace(runtime, before + runtime, 1)
+    # The isolation shim registers a service worker, which this context
+    # blocks (see _open()); left on the page, it trips over the missing
+    # registration.
+    page = re.sub(r'<script src="[^"]*coi-serviceworker\.js"></script>\n?', "", page)
 
     def handle(route):
         route.fulfill(status=200, content_type="text/html; charset=utf-8", body=page)
