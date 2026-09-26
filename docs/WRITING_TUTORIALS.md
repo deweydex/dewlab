@@ -865,6 +865,21 @@ not buy you: it removes the duplication from your source, not from the student's
 browser. Every page is its own Python session, so an included setup cell runs
 again on every page.
 
+Prose that two pages share word for word works the same way, with a
+markdown file. A line holding nothing but the include pulls it into the page:
+
+````markdown
+{{include: setup/when-a-cell-does-not-do-what-you-expect.md}}
+````
+
+The build puts the file's markdown in place before it reads the page, so an
+included heading gets its anchor and joins the page's contents, and an
+included cell or block is the page's own. An include that shares its line
+with other words fails the build, and an include inside an included file is
+left as written. `first-steps` and `first-steps-cm` share their section on
+what to do when a cell fails this way: edit
+`setup/when-a-cell-does-not-do-what-you-expect.md`, and both change.
+
 ### A toolkit the reader carries from page to page
 
 An include shares *your* code. A toolkit cell shares the *reader's*: a

@@ -4883,3 +4883,13 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Reflections go in Your notes.** `critique-and-reflection` points at "A program of your own" as the work to look back on, and its answers leave the cells of Python comments for the Notes panel, since the block model has no text block yet.
 
 *Cost to change: `from-cells-to-a-program` is a new id; renaming it after 2 October loses the work saved under it (7.12).*
+
+---
+
+**7.241 — A page can include shared prose, and Computational Methods opens with a trailer.** The first-steps-cm issue (#321), part of #306.
+
+**Markdown includes.** `{{include: setup/x.py}}` already pasted shared code into a cell. A line holding only `{{include: setup/x.md}}` now pastes shared markdown into a page, before the page is read, so an included heading gets its anchor and an included cell is the page's own (`expand_prose_includes()`). The issue asked for `first-steps` and `first-steps-cm` to share their section on what to do when a cell fails, as an include rather than a copy, and two copies had already drifted: one said the report circle sits "beside a cell's hint", the other "on a cell's bar". The shared file is `setup/when-a-cell-does-not-do-what-you-expect.md`. An include that shares its line with other words fails the build with a clear message, rather than leaving `{{include: …}}` on the page; includes do not nest. The authoring editor shows the include line as written, not what it pulls in.
+
+**The trailer.** `first-steps-cm` opens by running something the course builds: 100,000 darts estimating π, in plain Python, so it runs on the first click with no package to load. Of the three the issue offered, a spinning wireframe or a matrix-flipped photo would need matplotlib or an image on the first click, and the first run of a page should not be its slowest. The page then says what the course does and which worlds it offers. Its copy of `first-steps`' arithmetic is cut, and a line points Computational Methods readers, who never see `first-steps`, to its operators section, since the next pages use `%`.
+
+*Cost to change: two pages read the shared section; a change to it is a change to both, which is the point.*
