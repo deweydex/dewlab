@@ -46,7 +46,7 @@ MAIN_SERIES = (
     "data-chance-and-logic",
     "algebra-and-functions",
     "trigonometry-and-calculus",
-    "capstone-project",
+    "review-problems",
 )
 
 
@@ -546,8 +546,8 @@ def conflicts(found, scope) -> list[str]:
 
 
 # A term's first use is `*term*`, or `***term***` where a page sets its key
-# terms in bold as well (PEDAGOGICAL_STYLE_GUIDE.md §4): the italics are
-# what marks the term, the bold is only how it looks.
+# terms in bold as well (docs/WRITING_TUTORIALS.md#marking-a-term): the
+# italics are what marks the term, the bold is only how it looks.
 EMPHASIS_RE = re.compile(
     r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])"
     r"|(?<![*\w])\*\*\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*\*\*(?![*\w])"

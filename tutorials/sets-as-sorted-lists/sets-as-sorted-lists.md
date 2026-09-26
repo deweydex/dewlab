@@ -1,7 +1,7 @@
 ---
 title: "Sets: building them from sorted lists"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   making-a-set:
     covers: [MIT-2.1]
@@ -341,7 +341,7 @@ id: your-turn-10
 # Test them
 print(is_subset([1, 3], [1, 2, 3, 4]))    # True
 print(is_subset([1, 5], [1, 2, 3, 4]))    # False
-print(is_equal([1, 2, 3], [3, 1, 2]))     # True (after make_set)
+print(is_equal(make_set([1, 2, 3]), make_set([3, 1, 2])))    # True
 ```
 
 ## Sets in practice

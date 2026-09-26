@@ -1,7 +1,7 @@
 ---
 title: "The unit circle: sine, cosine and tangent"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.25.1
 covers:
   going-round-in-circles:
     covers: [MIT-4.6]
@@ -18,12 +18,12 @@ covers:
 # The unit circle: sine, cosine and tangent
 
 This whole page is about one drawing. The *unit circle* is a circle with
-radius 1, with its center at the origin, $(0, 0)$.
+radius 1, with its centre at the origin, $(0, 0)$.
 
 You have met this circle before. At the end of
 [Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
 you drew it, and you checked that every point on it is at distance 1 from
-the center. That one rule is all we need here.
+the centre. That one rule is all we need here.
 
 Sine, cosine, radians and the exact values are often taught as four
 separate things to learn. In fact they are one drawing, described in four
@@ -100,7 +100,7 @@ def distance(p, q):
 
 for step in range(8):
     p = unit_point(step / 8)
-    print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from center: {distance((0, 0), p):.10f}")
+    print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from centre: {distance((0, 0), p):.10f}")
 ```
 
 The distance is exactly 1, every time. That is the key fact. Everything
@@ -150,7 +150,7 @@ $$\sin^2\theta + \cos^2\theta = 1$$
 The small 2 means "squared": $\sin^2\theta$ is $(\sin\theta)^2$.
 
 Can you see why this is true, using what you already know? Every point on
-the circle is at distance 1 from the center. The distance formula comes
+the circle is at distance 1 from the centre. The distance formula comes
 from Pythagoras, so every point on this circle has $x^2 + y^2 = 1$. Now
 put in the names: $x$ is $\cos\theta$ and $y$ is $\sin\theta$. That gives
 the identity.
@@ -520,14 +520,14 @@ a point on a circle of radius 1. Later, triangles use them too, but the
 circle comes first.
 
 **$\sin^2\theta + \cos^2\theta = 1$ is Pythagoras.** Every point on the
-circle is at distance 1 from the center. The distance formula tells us
+circle is at distance 1 from the centre. The distance formula tells us
 what that means for the coordinates.
 
 **A radian is a distance walked.** That is why a full turn is $2\pi$
 radians: $2\pi$ is the distance round a circle of radius 1.
 
 **The exact values are places on the circle.** You do not need to
-memorize them. $\frac{\sqrt{2}}{2}$ is where the 45° line crosses the
+memorise them. $\frac{\sqrt{2}}{2}$ is where the 45° line crosses the
 circle, and one line of Pythagoras shows why.
 
 **Tangent is a slope.** It has no value at 90 degrees, for the same

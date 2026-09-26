@@ -570,7 +570,7 @@ between those two is the whole idea.
 
 </details>
 
-## From the Everlearning Problem Bank
+## A few more with lists and strings
 
 **24.** Given a list of whole numbers, find the number that appears most often.
 
@@ -639,16 +639,19 @@ problem does not say.
 
 ```python
 def unique(numbers):
-    seen, result = [], []
-    for n in numbers:
-        if n not in seen:
-            seen.append(n)
-            result.append(n)
+    result = []
+    for number in numbers:
+        if number not in result:
+            result.append(number)
     return result
 ```
 
-`set(numbers)` also removes repeated values, in one word, but it loses
-the order. Keeping the order is the hard part, and it is the reason the
-`seen` list is there.
+The loop meets the numbers in their original order, and appends each one
+the first time it sees it. That is what keeps the order. `result` does
+two jobs at once: it is the answer, and it is the list of what we have
+already seen.
+
+`set(numbers)` also removes repeated values, in one word, but it does not
+promise to keep the order.
 
 </details>

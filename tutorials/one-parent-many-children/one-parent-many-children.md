@@ -1,7 +1,7 @@
 ---
 title: "Inheritance: one class built on another"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 covers:
   a-class-built-on-another-class:
     covers: [FOOP-LO3, FOOP-LO6]
@@ -14,7 +14,7 @@ covers:
 # Inheritance: one class built on another
 
 A real bank offers more than one kind of account. A savings account earns
-interest. A checking account lets you spend a little more than you have.
+interest. A current account lets you spend a little more than you have.
 Both are still bank accounts: money goes in, and money comes out.
 
 Do we have to write each kind of account from scratch? On this page we:
@@ -95,8 +95,9 @@ When you call `savings.deposit(200.0)`, Python looks for `deposit()` in
 `SavingsAccount` first. It does not find one there, so it uses the one in
 `BankAccount`.
 
-Inheritance is one of the most useful ideas in object oriented
-programming. Most bigger programs rely on it.
+Inheritance saves copying when the new class really is a special kind
+of the old one. The next page shows a case where it looks tempting and
+is wrong.
 
 ### Your turn
 
@@ -167,7 +168,7 @@ the parent's version for `SavingsAccount` objects. This is called
 *overriding*. To override a method is to write a method in the child
 class with the same name as one in the parent class.
 
-Now for a second child class. A checking account allows an *overdraft*.
+Now for a second child class. A current account allows an *overdraft*.
 An overdraft lets the balance go below zero, up to a set limit. A plain
 `BankAccount` refuses every withdrawal that is bigger than the balance.
 How much would we need to change to allow an overdraft? One new field,
@@ -193,7 +194,7 @@ class BankAccount:
         self.balance = self.balance - amount
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -205,38 +206,38 @@ class CheckingAccount(BankAccount):
         self.balance = self.balance - amount
 
 
-checking = CheckingAccount("Ben", 200.0, 100.0)
-checking.withdraw(250.0)
-print(checking.balance)   # 200 - 250 = -50, allowed: within the 100 limit
+current = CurrentAccount("Ben", 200.0, 100.0)
+current.withdraw(250.0)
+print(current.balance)   # 200 - 250 = -50, allowed: within the 100 limit
 ```
 
 The balance is `-50.0`. That is below zero, but inside the limit of
 `100.0`.
 
-Notice that `CheckingAccount.withdraw()` does not call
+Notice that `CurrentAccount.withdraw()` does not call
 `super().withdraw()`, as your fee version did. Why not?
 
 - In the fee example, the parent's check was still the right check:
   "is the amount more than `self.balance`?" Only the amount changed, so
   the fee version could pass a bigger number to the parent.
-- Here the check itself is different. A checking account compares the
+- Here the check itself is different. A current account compares the
   amount with `self.balance + self.overdraft_limit`, not with
   `self.balance` alone. The parent's check would refuse Ben's withdrawal.
-  So `CheckingAccount` writes its own check.
+  So `CurrentAccount` writes its own check.
 
 `deposit()` needs no override at all. Money comes in the same way for
-every kind of account, so `CheckingAccount` keeps the `deposit()` that
+every kind of account, so `CurrentAccount` keeps the `deposit()` that
 `BankAccount` already has.
 
 A parent class can have more than one child. `SavingsAccount` and
-`CheckingAccount` both build on `BankAccount`. Each adds something
+`CurrentAccount` both build on `BankAccount`. Each adds something
 different, and neither one changes the other.
 
 ### Your turn
 
-1. Add an `in_overdraft()` method to `CheckingAccount`. It should return
+1. Add an `in_overdraft()` method to `CurrentAccount`. It should return
    `True` when `self.balance` is below zero, and `False` otherwise.
-2. Call it on `checking` at the end of the cell. The withdrawal has
+2. Call it on `current` at the end of the cell. The withdrawal has
    already made the balance negative, so what should it print?
 
 ```python exec
@@ -256,7 +257,7 @@ class BankAccount:
         self.balance = self.balance - amount
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -269,9 +270,9 @@ class CheckingAccount(BankAccount):
 
     # Add an in_overdraft method here
 
-checking = CheckingAccount("Ben", 200.0, 100.0)
-checking.withdraw(250.0)
-# Call in_overdraft() on checking here
+current = CurrentAccount("Ben", 200.0, 100.0)
+current.withdraw(250.0)
+# Call in_overdraft() on current here
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -279,14 +280,14 @@ checking.withdraw(250.0)
 1. `in_overdraft()` needs no parameter except `self`. It has the same
    shape as `deposit()` and `withdraw()` above it.
 2. The body is one comparison: `return self.balance < 0`.
-3. Call it the same way `withdraw()` is already called on `checking`:
-   `print(checking.in_overdraft())`.
+3. Call it the same way `withdraw()` is already called on `current`:
+   `print(current.in_overdraft())`.
 
 </details>
 
 ## Many kinds, one loop
 
-`BankAccount`, `SavingsAccount` and `CheckingAccount` all have
+`BankAccount`, `SavingsAccount` and `CurrentAccount` all have
 `deposit()` and `withdraw()` methods. Each child either inherits them
 unchanged or has its own version. So can one loop call `withdraw()` on
 every kind of account, without asking first which kind it has?
@@ -294,7 +295,7 @@ every kind of account, without asking first which kind it has?
 The loop below withdraws `250.0` from three accounts:
 
 - Alice has a `SavingsAccount` with `500.0`.
-- Ben has a `CheckingAccount` with `200.0` and an overdraft limit of
+- Ben has a `CurrentAccount` with `200.0` and an overdraft limit of
   `100.0`.
 - Cara has a plain `BankAccount` with `50.0`.
 
@@ -326,7 +327,7 @@ class SavingsAccount(BankAccount):
         self.balance = self.balance + self.balance * self.interest_rate
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -339,10 +340,10 @@ class CheckingAccount(BankAccount):
 
 
 savings = SavingsAccount("Alice", 500.0, 0.05)
-checking = CheckingAccount("Ben", 200.0, 100.0)
+current = CurrentAccount("Ben", 200.0, 100.0)
 plain = BankAccount("Cara", 50.0)
 
-for account in [savings, checking, plain]:
+for account in [savings, current, plain]:
     account.withdraw(250.0)
     print(account.owner, account.balance)
 ```
@@ -397,7 +398,7 @@ class SavingsAccount(BankAccount):
         self.balance = self.balance + self.balance * self.interest_rate
 
 
-class CheckingAccount(BankAccount):
+class CurrentAccount(BankAccount):
     def __init__(self, owner, balance, overdraft_limit):
         super().__init__(owner, balance)
         self.overdraft_limit = overdraft_limit
@@ -410,7 +411,7 @@ class CheckingAccount(BankAccount):
 
 
 savings = SavingsAccount("Alice", 500.0, 0.05)
-checking = CheckingAccount("Ben", 200.0, 100.0)
+current = CurrentAccount("Ben", 200.0, 100.0)
 plain = BankAccount("Cara", 50.0)
 
 # Create your own BankAccount and SavingsAccount here
@@ -426,7 +427,7 @@ On this page:
   everything the parent does, and adds only what is different.
   `super().__init__(...)` lets the child reuse the parent's constructor.
 - A parent class can have more than one child. `SavingsAccount` and
-  `CheckingAccount` both build on `BankAccount`, each adding something
+  `CurrentAccount` both build on `BankAccount`, each adding something
   different, and neither one changes the other.
 - *Overriding* replaces a parent's method with a child's own version. The
   child can still call the parent's version with `super()`, as the fee
@@ -443,7 +444,7 @@ looks at a second way: a `Bank` that holds its accounts.
 
 Write a few sentences about this page, whenever you are ready.
 `SavingsAccount` added a method that `BankAccount` does not have.
-`CheckingAccount` replaced a method that `BankAccount` already had. Can
+`CurrentAccount` replaced a method that `BankAccount` already had. Can
 you think of another kind of account a bank might offer? Which of these
 two things would its class need to do?
 

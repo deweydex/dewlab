@@ -339,7 +339,7 @@ for d in [0, 17, 45, 90, 137, 250, 359]:
 Every line prints 1.0.
 
 It is Pythagoras on the unit circle. The point is at distance 1 from
-the center. Its two coordinates are the two short sides of a right
+the centre. Its two coordinates are the two short sides of a right
 triangle whose longest side is 1.
 
 Every trigonometric identity is a fact about that circle, written in a
@@ -444,7 +444,7 @@ mechanical.
 </details>
 
 **17.** Two points on a circle of radius 5 are 6 apart in a straight
-line. What is the angle between them at the center? How far apart are
+line. What is the angle between them at the centre? How far apart are
 they along the arc?
 
 <details class="dl-answer"><summary>answer</summary>

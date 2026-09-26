@@ -1,7 +1,7 @@
 ---
 title: "Parabolas: completing the square"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   every-quadratic-is-the-same-curve:
     covers: [MIT-3.4]
@@ -149,6 +149,15 @@ turning point.** Watch the first one: its sign flips. The bracket
 $(x + 3)^2$ puts the turning point at $x = -3$, because $x = -3$ is the
 value that makes the bracket zero.
 
+That flip catches almost everybody at least once. So exam papers, and
+most books, write the completed form with a minus sign in the bracket:
+
+$$a(x - h)^2 + k$$
+
+Then the vertex is $(h, k)$, and there is nothing to flip. Our example
+is $(x - (-3))^2 + (-4)$, so $h = -3$ and $k = -4$. Every quadratic on
+this page has $a = 1$, so from here on we write $(x - h)^2 + k$.
+
 Why is this point the bottom of the curve? Because a square is never
 negative. $(x + 3)^2$ is zero at $x = -3$ and positive everywhere else.
 So $-4$ is the smallest value this function ever gives.
@@ -169,23 +178,23 @@ We start with $x^2 + 6x + 5$. The goal is a squared bracket plus a
 number.
 
 First, which bracket would give us the $x^2$ and the $6x$? Multiplying
-out $(x + h)^2$ gives
+out $(x - h)^2$ gives
 
-$$(x + h)^2 = x^2 + 2hx + h^2$$
+$$(x - h)^2 = x^2 - 2hx + h^2$$
 
-The middle term is $2h$ times $x$. So **half of the middle number tells
-us what goes in the bracket.** Half of 6 is 3, so the bracket is
-$(x + 3)$.
+The middle term is $-2h$ times $x$. So **half of the middle number, with
+its sign changed, is $h$.** Half of 6 is 3, so $h = -3$, and the bracket
+is $(x - (-3))$, which is $(x + 3)$.
 
 What does $(x + 3)^2$ multiply out to? The cell compares it with
 $x^2 + 6x + 9$ for a few values of $x$.
 
 ```python exec
 id: doing-the-rearrangement-1
-h = 3
+h = -3
 print("(x + 3)^2 expands to:")
 for x in [0, 1, 2, 5]:
-    print(f"   x={x}:  {(x + h) ** 2}   and   x^2 + 6x + 9 = {x**2 + 6*x + 9}")
+    print(f"   x={x}:  {(x - h) ** 2}   and   x^2 + 6x + 9 = {x**2 + 6*x + 9}")
 ```
 
 So $(x + 3)^2 = x^2 + 6x + 9$. This is close to what we want. It has the
@@ -197,29 +206,40 @@ $$x^2 + 6x + 5 = (x + 3)^2 - 9 + 5 = (x + 3)^2 - 4$$
 
 Here are the steps for $x^2 + bx + c$:
 
-1. Halve the middle number $b$. Call the result $h$. This gives the
-   bracket $(x + h)^2$.
+1. Halve the middle number $b$, and change its sign. Call the result
+   $h$. This gives the bracket $(x - h)^2$.
 2. Square $h$, and take $h^2$ away, because the bracket added it.
 3. Add the number $c$ that was there at the start.
 
-In the example, $h = 3$, so we take away $3^2 = 9$ and add 5. The
+In the example, $h = -3$, so we take away $(-3)^2 = 9$ and add 5. The
 number at the end is $k = c - h^2 = 5 - 9 = -4$.
 
-The next cell does the same steps in code. In its output,
-`(x + -2.0)^2` means $(x - 2)^2$.
+The next cell does the same steps in code. Every quadratic on this page
+starts with $x^2$, so $a = 1$, and `complete_the_square` takes only $b$
+and $c$, in the same order as `solve(a, b, c)` on the complex numbers
+page. The small function `signed`
+only makes the output easier to read. It writes a number with its sign
+in front, so that the cell prints `- 4` and not `+ -4`.
 
 ```python exec
 id: doing-the-rearrangement-2
 def complete_the_square(b, c):
-    """Rewrite x^2 + bx + c as (x + h)^2 + k, and return h and k."""
-    h = b / 2
+    """Rewrite x^2 + bx + c as (x - h)^2 + k, and return h and k."""
+    h = -b / 2
     k = c - h ** 2
     return h, k
 
 
+def signed(number):
+    """Write a number with its sign in front, as ' + 3' or ' - 4'."""
+    if number < 0:
+        return f" - {-number:g}"
+    return f" + {number:g}"
+
+
 for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
     h, k = complete_the_square(b, c)
-    print(f"x^2 + {b}x + {c}  =  (x + {h})^2 + {k}     vertex at ({-h}, {k})")
+    print(f"x^2{signed(b)}x{signed(c)}  =  (x{signed(-h)})^2{signed(k)}     vertex at ({h:g}, {k:g})")
 ```
 
 Do the two forms really agree for every $x$? This cell tries 200 random
@@ -234,7 +254,7 @@ def agree(b, c, tries=200):
     h, k = complete_the_square(b, c)
     for _ in range(tries):
         x = random.uniform(-50, 50)
-        if abs((x ** 2 + b * x + c) - ((x + h) ** 2 + k)) > 1e-9:
+        if abs((x ** 2 + b * x + c) - ((x - h) ** 2 + k)) > 1e-9:
             return False
     return True
 
@@ -292,10 +312,10 @@ import math
 
 def roots_by_completing(b, c):
     h, k = complete_the_square(b, c)
-    if -k < 0:
+    if k > 0:
         return "No real roots — the vertex is above the axis."
     root = math.sqrt(-k)
-    return (-h + root, -h - root)
+    return (h + root, h - root)
 
 
 def roots_by_formula(b, c):
@@ -306,7 +326,7 @@ def roots_by_formula(b, c):
 
 
 for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
-    print(f"x^2 + {b}x + {c}")
+    print(f"x^2{signed(b)}x{signed(c)}")
     print("   completing the square:", roots_by_completing(b, c))
     print("   the formula:          ", roots_by_formula(b, c))
 ```
@@ -340,8 +360,8 @@ horizontal axis?
 id: when-there-is-nothing-to-find-1
 ax = draw(quadratic(1, 2, 7), low=-7, high=5, label="x^2 + 2x + 7")
 h, k = complete_the_square(2, 7)
-ax.plot([-h], [k], "o", markersize=9)
-ax.annotate(f"vertex at ({-h}, {k})", (-h, k), textcoords="offset points", xytext=(12, -6))
+ax.plot([h], [k], "o", markersize=9)
+ax.annotate(f"vertex at ({h:g}, {k:g})", (h, k), textcoords="offset points", xytext=(12, -6))
 ax.set_ylim(-2, 30)
 ax.set_title("A parabola with no roots")
 ```
@@ -393,9 +413,9 @@ Here are four ideas to take with you.
 $(x + 3)^2 - 4$ are the same function. The second one has the turning
 point written on the outside.
 
-**The halving step has a reason.** $(x + h)^2$ has $2h$ in the middle,
-so halving the middle number finds $h$. Multiply out the bracket once,
-and the step stops being a rule to remember.
+**The halving step has a reason.** $(x - h)^2$ has $-2h$ in the middle,
+so halving the middle number, and changing its sign, finds $h$. Multiply
+out the bracket once, and the step stops being a rule to remember.
 
 **The quadratic formula is completing the square, done with letters.**
 If you ever forget the formula, you can build it again.

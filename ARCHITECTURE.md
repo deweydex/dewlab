@@ -508,7 +508,7 @@ the frame. Download therefore saves three files, and the `.html` one is a
 whole page (`pageFile()`): doctype, head, a `<link>` to the `.css` saved
 beside it, and a `<script src>` for the `.js`. Load files reverses it
 (`bodyOf()`), so a downloaded page comes back into the panes as it left
-(DECISIONS_LOG 7.230).
+(DECISIONS_LOG 7.231).
 
 ---
 

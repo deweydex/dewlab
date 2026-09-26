@@ -1,7 +1,7 @@
 ---
 title: "Limits: getting closer without arriving"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.25.1
 covers:
   a-hole-in-a-line:
     covers: [MIT-3.5]
@@ -18,9 +18,13 @@ covers:
 A limit answers a question of this kind: *what would this value be, if
 we could get there?*
 
-That can sound like a way of avoiding the question. For about two
-hundred years, mathematicians were uneasy about limits for exactly that
-reason. But limits turned out to be one of the most useful ideas in
+That can sound like a way of avoiding the question. Calculus began, in
+the 1600s, with numbers that were "infinitely small": smaller than any
+number you could name, but still not zero. For about two hundred years,
+mathematicians were uneasy about those numbers. The philosopher George
+Berkeley called them "the ghosts of departed quantities". Limits were
+the way out. A limit says the same thing using only ordinary numbers,
+and limits turned out to be one of the most useful ideas in
 mathematics. They are the one idea we still need before we can say how
 fast something is changing at a single instant.
 
@@ -52,7 +56,7 @@ for value in [0, 0.5, 2, 3, 10]:
 ```
 
 Each answer is one more than the input: $x + 1$. There is a reason. The
-top, $x^2 - 1$, factorizes into $(x - 1)(x + 1)$. The $(x - 1)$ on the
+top, $x^2 - 1$, factorises into $(x - 1)(x + 1)$. The $(x - 1)$ on the
 top then cancels the $(x - 1)$ on the bottom, and $x + 1$ is left.
 
 That works everywhere except at one place. What do you think happens at
@@ -131,7 +135,7 @@ function equals 2 at 1. The function has no value at 1.
 
 **A limit is about the numbers near a point. It says nothing about the
 point itself.** Mathematicians call the numbers near a point its
-*neighborhood*. This is the whole idea, and it is why a limit can
+*neighbourhood*. This is the whole idea, and it is why a limit can
 describe places a function cannot reach.
 
 ### Both sides have to agree
@@ -168,7 +172,7 @@ from, and a limit needs one.
 What is the limit of $\dfrac{x^2 - 4}{x - 2}$ as $x$ approaches 2?
 
 1. Try values of `g` just below 2 and just above 2.
-2. Then factorize the top, $x^2 - 4$, and cancel.
+2. Then factorise the top, $x^2 - 4$, and cancel.
 3. Does the algebra agree with your numbers?
 
 ```python exec
@@ -376,14 +380,31 @@ In double-precision floating point, **`1 + 1e-16` is the same number as
 `1`**. There is no room left to record such a small difference. So
 `x - 1` on the bottom is exactly zero, and the division fails.
 
-Look at *how* it failed. The answers did not slowly drift away from 2.
-They printed 2.0, and then the calculation stopped. Floating point often
-fails suddenly like this. The failure comes at the first step that asks
-it to store a difference smaller than it can hold.
+Look at *how* it failed. The answers did not drift away from 2. They
+printed 2.0, and then the calculation stopped. That is the kind way to
+fail, because you cannot miss it.
 
 **The mathematics is fine. The arithmetic ran out.** The limit is still
 2. Nothing about the function changed at `1e-16`. What changed is that
 the computer could no longer tell `1 + 1e-16` apart from `1`.
+
+The ball's speed from earlier fails in a less kind way. The cell below asks
+`average_speed` for the speed at $t = 3$, with smaller and smaller gaps.
+The true answer is 29.4. Guess before you run it: what happens at a gap
+of `1e-16`?
+
+```python exec
+id: a-warning-about-trying-it-with-numbers-2
+for gap in [1e-6, 1e-10, 1e-12, 1e-14, 1e-15, 1e-16]:
+    print(f"gap {gap:<8}   speed = {average_speed(3, gap)}")
+```
+
+The answers drift away from 29.4, a little and then a lot. At `1e-16`,
+the cell prints 0.0, with no error at all. `3 + 1e-16` is stored as 3,
+so the two distances are the same number, and the top of the fraction
+is exactly zero. The speed is still 29.4. The arithmetic ran out again,
+only more quietly this time, and a wrong number that looks like an
+answer is much harder to catch than a calculation that stops.
 
 You met the same floor on the practice page for
 [Variables, data types and text](tutorial:storing-and-computing). There,
@@ -406,8 +427,9 @@ interesting cases are exactly the ones where it has none.
 
 **Both sides have to agree**, or there is no limit.
 
-**Some limits do not exist.** The usual reason is that the values run
-away to infinity.
+**Some limits do not exist.** On this page we met two ways that
+happens. The two sides can head for different numbers, as the jump did.
+Or the values can run away to infinity, as $\dfrac{1}{x}$ did near 0.
 
 **Limits are what make the next tutorial possible.** "How fast is it
 changing right now?" is $\dfrac{0}{0}$ if we ask it directly. A limit

@@ -19,9 +19,9 @@ covers:
 
 # Statistics: averages, spread and frequency
 
-In the last three tutorials we counted possibilities and worked out probabilities. Now we turn to real data. Data is a collection of numbers or labels that somebody has counted, measured or observed.
+In the last three tutorials we counted possibilities and worked out probabilities. Now we turn to data. Data is a collection of numbers or labels that somebody has counted, measured or observed.
 
-*Statistics* is the part of mathematics that summarizes, describes and explains data. Every tool on this page can become a Python function that we write ourselves.
+*Statistics* is the part of mathematics that summarises, describes and explains data. Every tool on this page can become a Python function that we write ourselves.
 
 On this page we:
 
@@ -33,7 +33,7 @@ On this page we:
 
 ## A dataset to work with
 
-A *dataset* is one collection of data that belongs together. Here is ours: the scores of 30 students on a programming quiz, marked out of 50.
+A *dataset* is one collection of data that belongs together. Here is ours: the scores of 30 students on a programming quiz, marked out of 50. The scores are made up, and kept small enough that you can check any result on this page by hand.
 
 ```python exec
 id: a-dataset-to-work-with-1
@@ -45,11 +45,11 @@ print("Number of students:", len(scores))
 print("First few scores:", scores[:5])
 ```
 
-A list of 30 numbers on its own does not tell us very much. We need to summarize it. The first question to ask is: what is a "typical" score?
+A list of 30 numbers on its own does not tell us very much. We need to summarise it. The first question to ask is: what is a "typical" score?
 
 ## Measures of central tendency
 
-A *measure of central tendency* is a single number that describes the center, or typical value, of a dataset. There are three common ones.
+A *measure of central tendency* is a single number that describes the centre, or typical value, of a dataset. There are three common ones.
 
 The *mean* is the ordinary average. To find it, we add up all the values and divide by how many values there are. In symbols, with $n$ values $x_1, x_2, \ldots, x_n$:
 
@@ -160,7 +160,7 @@ A measure is *robust* when an outlier hardly changes it. The median is robust, a
 
 ## Measures of spread
 
-The center tells us only part of what we want to know. Two datasets can have the same mean but look very different. In one, the values might be close together. In the other, they might be spread far apart.
+The centre tells us only part of what we want to know. Two datasets can have the same mean but look very different. In one, the values might be close together. In the other, they might be spread far apart.
 
 A *measure of spread* is a number that describes how spread out the values are. We look at two.
 
@@ -216,7 +216,7 @@ print("Range:", data_range(scores))
 print("Standard deviation:", round(std_dev(scores), 2))
 ```
 
-What does your standard deviation tell you? The scores have a mean of about 38 and a standard deviation of about 5 or 6. So most of the scores are within 5 or 6 points of the mean: 18 of the 30 scores are between about 32 and 44.
+What does your standard deviation tell you? The scores have a mean of about 38 and a standard deviation of about 5.7. One standard deviation either side of the mean runs from about 32.4 to 43.8, and 18 of the 30 scores fall inside it.
 
 If the standard deviation were 15, the scores would be much more spread out. If it were 1, they would all be very close to the mean.
 

@@ -1,7 +1,7 @@
 ---
 title: "Homogeneous coordinates and the projection matrix"
 year: "2026-2027"
-version: 2026.09.21.1
+version: 2026.09.25.1
 covers:
   a-move-no-matrix-can-make:
     covers: [CMPS-LO4]
@@ -180,18 +180,23 @@ draw(multiply(swing, cube4)[:3])
 
 ### Your turn
 
-Sixty frames of `swing`, with a different angle in each, is the ball's
-orbit from [3D animation: a camera and a ball in
-orbit](tutorial:a-ball-in-orbit#a-ball-in-orbit) with a cube in place
-of the ball. Could you draw four of those frames,
-at $0°$, $30°$, $60°$ and $90°$? `plt.subplots(1, 4)` and `plt.sca` are
-in the flip-book cells of the last tutorial if you want the shape of
-the loop.
+Sixty frames of `swing`, with a different angle in each, would carry
+the cube all the way round the camera. Could you draw four of those
+frames, at $0°$, $30°$, $60°$ and $90°$? `plt.subplots(1, 4)` and
+`plt.sca` are in the flip-book cells of the last tutorial if you want
+the shape of the loop. Before you run it, guess what the $90°$ frame
+will show.
 
 ```python exec
 id: everything-in-one-matrix-3
-hint: Build swing inside the loop from the frame's own angle. The cube leaves the picture by 90 degrees, which is fine. Where has it gone?
+hint: Build swing inside the loop from the frame's own angle. At 90 degrees, expect lines cutting straight across the picture. Half the cube is behind the camera by then. What does dividing by a negative depth do to a point?
 ```
+
+The ball in [3D animation: a camera and a ball in
+orbit](tutorial:a-ball-in-orbit#a-ball-in-orbit) never went behind the
+camera, because its circle had its centre 5 units ahead. Which of the
+two matrices, `place` or `swing`, would you put a changing angle into
+to get the ball's orbit instead?
 
 ## The Divide as a Matrix
 
@@ -305,9 +310,10 @@ Reading the printout:
 
 - Depth 1, the near plane, comes out as exactly $-1$.
 - Depth 20, the far plane, comes out as exactly $1$.
-- Anything whose converted depth falls outside that range is
-  ***clipped***: cut away before the divide. That is how a renderer
-  avoids ever dividing by a depth of zero.
+- Anything nearer than the near plane, or beyond the far plane, is
+  ***clipped***: cut away before the divide. A point at depth 0, right
+  at the camera, is nearer than the near plane, so it is always cut
+  away. That is how a renderer avoids ever dividing by a depth of zero.
 - The range is shared out unevenly. Depths 1 to 2 use up half of it,
   and 10 to 20 use a twentieth. Nearby things get the finest depth
   steps. That is where you would most easily notice two surfaces, one

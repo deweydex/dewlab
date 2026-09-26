@@ -15,15 +15,15 @@ entries:
     definition: >
       An event is a group of outcomes we are interested in, such as
       rolling an even number.
-  - term: favorable outcome
+  - term: favourable outcome
     kind: concept
     definition: >
-      A favorable outcome is an outcome that makes the event happen.
+      A favourable outcome is an outcome that makes the event happen.
   - term: "P(A), basic probability"
     kind: formula
     definition: >
       When every outcome is equally likely, P(A) is the number of
-      favorable outcomes divided by the total number of outcomes. It is a
+      favourable outcomes divided by the total number of outcomes. It is a
       number between 0 (impossible) and 1 (certain).
     example: "P(heads) = 1 / 2"
   - term: simulate

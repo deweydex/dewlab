@@ -20,7 +20,7 @@ thirty-two, their worksheets (`07a`, `07b`, `07d`) have no answer key in the
 markdown, only a PDF, so every number on those six practice pages was worked
 fresh rather than transcribed (DECISIONS_LOG 7.56).
 
-Three tutorials have no practice page, on purpose. *Review problems: combining numbers, polynomials and equations*
+Three tutorials have no practice page, on purpose. *Review problems: polynomials, equations and sets*
 is already a set of integrative problems, and *Looking Back Before Moving
 Forward* and *The Team Project* ask for reflection rather than answers.
 

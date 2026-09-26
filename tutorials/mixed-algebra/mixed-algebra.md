@@ -69,19 +69,19 @@ draw(lambda x: x ** 2 - 3 * x - 4, label="x^2 - 3x - 4")
 print(roots(1, -3, -4))
 ```
 
-## Expand, factorize, solve
+## Expand, factorise, solve
 
 **1.** Take $(2x - 3)(x + 5)$.
 
 1. Expand it.
 2. Set the result equal to zero, and solve.
-3. Check your roots by factorizing back.
+3. Check your roots by factorising back.
 
 <details class="dl-answer"><summary>answer</summary>
 
 Expanded, it is $2x^2 + 7x - 15$. The roots are 1.5 and −5.
 
-Factorizing back gives $2(x - 1.5)(x + 5)$, which multiplies out to the
+Factorising back gives $2(x - 1.5)(x + 5)$, which multiplies out to the
 original.
 
 The leading 2 is the part people often drop. $(x - 1.5)(x + 5)$ on its
@@ -126,12 +126,12 @@ What is it?
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The roots tell you the shape. Start by writing a quadratic that has
-   roots 1 and 3, in factorized form. Do not worry about its size yet.
-2. Multiply that out, or leave it factorized. Either works for the next
+   roots 1 and 3, in factorised form. Do not worry about its size yet.
+2. Multiply that out, or leave it factorised. Either works for the next
    step.
 3. Now use the third fact. What does "passes through $(0, 6)$" let you
    substitute?
-4. Whatever number your factorized form gives at $x = 0$, you need it to
+4. Whatever number your factorised form gives at $x = 0$, you need it to
    be 6.
 
 **Think about:** the two roots fixed the shape, and the one point fixed
@@ -276,7 +276,7 @@ the picture disagrees with you, the picture is right.
 
 At $(-1, -3)$ and $(4, 12)$.
 
-Set them equal: $x^2 - 4 = 3x$, so $x^2 - 3x - 4 = 0$. That factorizes
+Set them equal: $x^2 - 4 = 3x$, so $x^2 - 3x - 4 = 0$. That factorises
 as $(x - 4)(x + 1) = 0$, so $x = 4$ or $x = -1$. Then $y = 3x$ gives
 the $y$ values.
 
@@ -522,9 +522,9 @@ picture or a numerical method?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) It factorizes: $(x - 2)(x - 3) = 0$, so the roots are 2 and 3.
+(a) It factorises: $(x - 2)(x - 3) = 0$, so the roots are 2 and 3.
 
-(b) It factorizes, with some effort. $x = -1$ is a root, so $(x + 1)$ is
+(b) It factorises, with some effort. $x = -1$ is a root, so $(x + 1)$ is
 a factor, and the cubic is $(x + 1)(x^2 - x - 1)$. The other two roots
 come from $x^2 - x - 1 = 0$. They are the golden ratio,
 $\dfrac{1 + \sqrt{5}}{2}$, and its conjugate, $\dfrac{1 - \sqrt{5}}{2}$.

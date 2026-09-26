@@ -5,7 +5,8 @@ are not there.
 The build already refuses to publish a tutorial whose `tutorial:` link goes
 nowhere, on the grounds that a dead link is a bug rather than a warning. This
 applies the same standard to the documents *about* the project — README,
-ARCHITECTURE, CONTRIBUTING, and everything in `docs/` and `planning/` — which
+ARCHITECTURE, CONTRIBUTING, CLAUDE.md, the skills in `.claude/skills/`, and
+everything in `docs/` and `planning/` — which
 had no such check and had drifted accordingly: renamed files still cited by
 their old paths, retired documents cited as though current, a planning index
 that had fallen behind the directory it indexes.
@@ -22,9 +23,19 @@ What it checks, and deliberately nothing more:
   treated as a claim about a file when it looks like one: it has a directory
   separator or a known extension, and no spaces.
 
+- **Citations of the two writing guides.** `planning/PEDAGOGICAL_STYLE_GUIDE.md`
+  and `docs/WRITING_TUTORIALS.md` are cited from code comments, tests, skills
+  and planning documents, by anchor: `PEDAGOGICAL_STYLE_GUIDE.md#voice`. Every
+  such anchor, in every file in the repository, has to exist in the guide it
+  names, as an `<a id>` or a heading. A citation of the style guide by section
+  number fails outright. The guide used to be cited that way, and a number
+  goes stale silently the first time a section moves: one entry in
+  `DECISIONS_LOG.md` cited a section eleven that never existed.
+
 What it does not check: external URLs (that needs the network, and a link rot
-check is a different job with a different failure mode), anchors within a
-file, and prose that merely mentions a filename without marking it as a path.
+check is a different job with a different failure mode), anchors in any other
+document, and prose that merely mentions a filename without marking it as a
+path.
 
     python3 dev/check_doc_links.py
 
@@ -34,14 +45,16 @@ same way it runs `curriculum_map.py --check`.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-DOC_ROOTS = ("docs", "planning", ".github")
-DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md")
+DOC_ROOTS = ("docs", "planning", ".github", ".claude/skills")
+DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md",
+             "CLAUDE.md")
 
 HISTORY = {
     "DECISIONS_LOG.md",
@@ -190,8 +203,105 @@ def problems_in(doc: Path) -> list[str]:
     return found
 
 
+# The two guides whose anchors are checked wherever they are cited. A
+# citation names the file, not its folder: `PEDAGOGICAL_STYLE_GUIDE.md#voice`.
+ANCHORED = {
+    "PEDAGOGICAL_STYLE_GUIDE.md": ROOT / "planning" / "PEDAGOGICAL_STYLE_GUIDE.md",
+    "WRITING_TUTORIALS.md": ROOT / "docs" / "WRITING_TUTORIALS.md",
+}
+ANCHOR_CITE_RE = re.compile(
+    r"\b(" + "|".join(re.escape(name) for name in ANCHORED) + r")#([\w-]+)")
+# `(#stuck)` inside one of the guides: a link to its own section.
+SELF_LINK_RE = re.compile(r"\]\(#([\w-]+)\)")
+HTML_ID_RE = re.compile(r'<a id="([^"]+)"')
+HEADING_RE = re.compile(r"^#{1,6}\s+(.+?)\s*$", re.M)
+# A fenced example: a `# comment` inside one is not a heading.
+FENCE_RE = re.compile(r"^(```+|~~~+).*?^\1\s*$", re.M | re.S)
+
+# The style guide cited by number: its file name, or the words "style
+# guide", followed by a section sign or the word "section" and a digit; a
+# section sign and a number followed by "of" and the guide; or an old
+# numbered heading's slug after the file name. Backticks, a closing bracket
+# or a possessive may sit between the name and the number.
+NUMBERED_CITE_RE = re.compile(
+    r"PEDAGOGICAL_STYLE_GUIDE\.md(?:#\d|[`')\]]*(?:'s)?,?\s*(?:§\s*\d|section\s+\d))"
+    r"|style\s+guide(?:'s)?,?\s+(?:§\s*\d|section\s+\d)"
+    r"|§\s*\d+\s+of\s+(?:the\s+style\s+guide|`?PEDAGOGICAL_STYLE_GUIDE)",
+    re.I,
+)
+
+# Every file a citation could sit in. The vendored and generated trees are
+# skipped: nothing in them is written by hand.
+CITING_SUFFIXES = {".md", ".py", ".yaml", ".yml", ".js", ".mjs", ".txt",
+                   ".html", ".css", ".toml"}
+NOT_CITING = GENERATED + ("assets/vendor/", ".git/", ".pytest_cache/")
+
+
+def slug(heading: str) -> str:
+    """A heading's anchor, the way GitHub makes one."""
+    text = re.sub(r"<[^>]+>|[`*_]", "", heading).strip().lower()
+    return re.sub(r"[^\w\- ]", "", text).replace(" ", "-")
+
+
+def anchors_of(path: Path) -> set[str]:
+    text = path.read_text()
+    return set(HTML_ID_RE.findall(text)) | {
+        slug(h) for h in HEADING_RE.findall(FENCE_RE.sub("", text))}
+
+
+def skipped(folder: str) -> bool:
+    return any(folder.startswith(skip) or f"/{skip}" in folder
+               for skip in NOT_CITING)
+
+
+def citing_files() -> list[Path]:
+    found = []
+    for folder, subfolders, names in os.walk(ROOT):
+        here = Path(folder)
+        # Pruned in place, so a skipped tree is never walked at all.
+        subfolders[:] = sorted(
+            name for name in subfolders
+            if not skipped((here / name).relative_to(ROOT).as_posix() + "/"))
+        found += [here / name for name in sorted(names)
+                  if Path(name).suffix.lower() in CITING_SUFFIXES]
+    return found
+
+
+def citation_problems(files: list[Path] | None = None,
+                      guides: dict[str, Path] | None = None) -> list[str]:
+    """Guide anchors that do not exist, and style-guide section numbers."""
+    guides = ANCHORED if guides is None else guides
+    anchors = {name: anchors_of(path) for name, path in guides.items()}
+    found: list[str] = []
+    for path in citing_files() if files is None else files:
+        try:
+            text = path.read_text()
+        except UnicodeDecodeError:
+            continue
+        own = next((name for name, guide in guides.items()
+                    if guide.resolve() == path.resolve()), None)
+        where = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+        for number, line in enumerate(text.splitlines(), start=1):
+            cited = ANCHOR_CITE_RE.findall(line)
+            if own:
+                cited += [(own, a) for a in SELF_LINK_RE.findall(line)]
+            for name, anchor in cited:
+                if name in anchors and anchor not in anchors[name]:
+                    found.append(f"{where}:{number}: cites {name}#{anchor}, "
+                                 f"and {name} has no such anchor")
+        # Over the whole text, not line by line: a wrapped line can put the
+        # guide's name at the end of one line and the number on the next.
+        for match in NUMBERED_CITE_RE.finditer(text):
+            number = text.count("\n", 0, match.start()) + 1
+            found.append(f"{where}:{number}: cites the style guide by "
+                         "section number; cite its anchor instead, as "
+                         "PEDAGOGICAL_STYLE_GUIDE.md#voice")
+    return found
+
+
 def main() -> int:
     found = [problem for doc in documents() for problem in problems_in(doc)]
+    found += citation_problems()
     for problem in found:
         print(problem)
     if found:

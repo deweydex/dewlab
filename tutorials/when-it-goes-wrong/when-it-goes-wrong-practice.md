@@ -2,7 +2,7 @@
 title: "Finding bugs in bigger programs — Practice"
 practice_for: when-it-goes-wrong
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.25.1
 ---
 
 # Finding bugs in bigger programs — Practice
@@ -298,18 +298,18 @@ what makes this kind of error hard.
 ```python exec
 id: the-dangerous-kind-3
 def classify(score):
-    if score > 40:
+    if score > 50:
         return "Pass"
     return "Fail"
 
 
-for score in [39, 40, 41]:
+for score in [49, 50, 51]:
     print(score, classify(score))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-If 40 is the pass mark, this code fails everyone who scored exactly 40.
+If 50 is the pass mark, this code fails everyone who scored exactly 50.
 It needs `>=`.
 
 Logical errors live at boundaries. Always test the exact boundary, one
@@ -486,7 +486,7 @@ id: fixing-2
 def count_passes(marks):
     passes = 0
     for mark in marks:
-        if mark >= 40:
+        if mark >= 50:
             passes = 1
     return passes
 

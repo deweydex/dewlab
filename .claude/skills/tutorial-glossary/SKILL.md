@@ -9,7 +9,7 @@ A glossary file says what **this specific tutorial** introduces — not what
 it covers overall (`covers:` in its frontmatter already names broad
 curriculum outcomes), not everything a reader now knows (that is the
 *cumulative* reference build.py assembles from every glossary file in a
-series, in `order.yaml` order) — only the terms, functions, operators, and
+series, in the order its course file lists them) — only the terms, functions, operators, and
 formulas that show up here for the first time in this tutorial's series.
 
 Read `planning/REFERENCE_PANEL.md` first if you have not already; it has the
@@ -19,11 +19,12 @@ step-by-step for running that design on one tutorial.
 ## What you need before you start
 
 1. **The tutorial itself** — `tutorials/<id>/<id>.md` (read the
-   `.md` file directly under the tutorial's own name, not a `vX.md`
-   release file — coverage does not change release to release the way
+   `.md` file directly under the tutorial's own name, not a
+   `v<version>.md` release file — coverage does not change release to release the way
    prose might, so there is one glossary per tutorial regardless of how
    many releases it has).
-2. **Its series' `order.yaml`**, to find what comes immediately before it.
+2. **Its course file**, `courses/<course>.yaml`, whose series lists the
+   tutorials in reading order, to find what comes immediately before it.
 3. **The cumulative glossary of everything before it in that series** — the
    union of every earlier member's own `<slug>.glossary.yaml`. If you are
    running this tutorial-by-tutorial in series order (the normal case),
@@ -43,8 +44,8 @@ step-by-step for running that design on one tutorial.
 
 Two sources, and you need both — neither alone is reliable.
 
-**Emphasis, mechanically.** `PEDAGOGICAL_STYLE_GUIDE.md` requires authors to
-mark a term's first meaningful use in single-asterisk emphasis:
+**Emphasis, mechanically.** `docs/WRITING_TUTORIALS.md#marking-a-term` asks
+authors to mark a term's first meaningful use in single-asterisk emphasis:
 `*transformation matrix*`. `dev/curriculum_map.py`'s `EMPHASIS_RE`/
 `terms_of()`/`prose_of()` already extract these correctly — code fences,
 inline code, and the standing subtitle are already stripped, and a fixed
@@ -116,8 +117,8 @@ entries:
   the more concrete one (a named formula is `formula`, not `concept`, even
   though it is also a concept).
 - `definition` — one to three sentences, dewlab's own voice
-  (`PEDAGOGICAL_STYLE_GUIDE.md` §4, **including its "Plain language"
-  subsection**). This is a reference entry, not the tutorial's own
+  (`PEDAGOGICAL_STYLE_GUIDE.md#voice`, **including its plain-language
+  rules, `#plain-language`**). This is a reference entry, not the tutorial's own
   explanation restated — shorter, and written to jog a reader's memory of
   something they already met, not to teach it fresh.
 
@@ -187,6 +188,6 @@ entries:
 Add its own entries to the cumulative list before moving to the next
 tutorial in series order — the next run needs the updated cumulative list,
 not the one you started with. If you were asked to run this across a whole
-series or module, work in `order.yaml` order for exactly this reason; doing
+series or module, work in the course file's order for exactly this reason; doing
 them out of order means re-gathering the cumulative list by hand each time
 rather than carrying it forward.

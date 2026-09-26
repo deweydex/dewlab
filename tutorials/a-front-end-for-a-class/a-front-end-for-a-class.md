@@ -1,7 +1,7 @@
 ---
 title: "A front end: a text menu for a class"
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.25.1
 covers:
   a-program-only-its-author-can-use:
     covers: [FOOP-LO11]
@@ -223,11 +223,13 @@ When `run_choice()` returns `False`, a real loop knows it is time to
 stop. The cell below puts `run_choice()` together with a real `input()`
 call, and that is the whole front end.
 
-The last lines are comments, so the cell does not wait for someone to
-type while this page builds. [Variables, data types and
-text](tutorial:storing-and-computing) left its own `input()` example the
-same way, for you to try by hand. To try the menu, remove the `#` at the
-start of each of those lines, then run the cell.
+The last lines are comments, because a cell on this site cannot wait for
+someone to type. Try it if you like: remove the `#` marks and run the
+cell. Python stops at the `input()` line with an `OSError`. The menu
+loop is fine; this page is the wrong place to run it. Copy the cell into
+Python on your own computer, such as IDLE or a terminal, and it runs as
+a real menu. The practice page runs the same loop here, with a list of
+answers standing in for the typing.
 
 ```python exec
 id: leaving-the-loop-cleanly-1
@@ -274,7 +276,7 @@ def run_choice(bank, choice):
     return True
 
 
-# Uncomment these lines to try the real menu (they will wait for you to type something)
+# The real menu. It needs Python on your own computer, where input() can wait for typing.
 # bank = Bank("First Local")
 # running = True
 # while running:
@@ -328,17 +330,23 @@ On this page:
 ### Reflection
 
 Write a few sentences about this page, whenever you are ready. Try the
-real menu loop above, with the `#` marks removed. If you were going to
-give this program to somebody else, what would you add to it next?
+real menu loop on your own computer, or the practice page's version
+here. If you were going to give this program to somebody else, what
+would you add to it next?
 
 Double-click this cell to write your thoughts:
 
 ## Where to Read More
 
+Python Software Foundation. *Built-in Functions: `input()`*.
+<https://docs.python.org/3/library/functions.html#input>. Everything
+`input()` does, in a few lines: it shows the prompt, reads one line, and
+always gives back a string.
+
 Python Software Foundation. *The Python Tutorial*, section 7.1: Fancier
 Output Formatting. <https://docs.python.org/3/tutorial/inputoutput.html>.
-Covers `input()` and formatted output together, past what a plain
-`print()` menu needs.
+Neater columns and numbers, for when a plain `print()` menu is not
+enough.
 
 Real Python. *Build a Command-Line To-Do App With Python and Typer*.
 <https://realpython.com/python-typer-cli/>. A longer look at a proper

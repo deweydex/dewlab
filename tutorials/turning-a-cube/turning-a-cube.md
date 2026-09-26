@@ -155,6 +155,17 @@ column that do nothing:
 
 $$R_y(\theta) = \begin{bmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{bmatrix}$$
 
+Look at the minus sign. In the 2D matrix it was top right. Here it is
+bottom left. That is not a slip, and it is worth a moment, because it
+catches almost everybody.
+
+The three axes go round in a circle: $x$, then $y$, then $z$, then back
+to $x$. A turn in 2D takes $x$ towards $y$. A turn about the $x$ axis
+takes $y$ towards $z$, one step along the circle, so it has the same
+pattern as 2D. But a turn about the $y$ axis takes $z$ towards $x$, and
+in the matrix the $z$ row comes after the $x$ row. The pair is written
+the other way round, so the minus sign moves to the other corner.
+
 To apply it we need `multiply`. Each page here begins with no code from
 earlier pages, so here it is again, exactly as before:
 
@@ -199,11 +210,15 @@ draw(multiply(rotate_y(math.radians(15)), move(cube, 0, 0, 5)))
 
 Now the cube moves off to the side. It is being turned about the
 camera, not about its own centre. Keep going, a few degrees at a time,
-and it would go all the way round the camera and come back. That is the
-ball's orbit from [the last
-tutorial](tutorial:a-ball-in-orbit#a-ball-in-orbit), done with a matrix
-instead of with $\cos$ and $\sin$ written out by hand. The ball was a single point being
-turned about the camera.
+and it would go all the way round the camera, behind it, and come back.
+
+The ball's orbit in [the last
+tutorial](tutorial:a-ball-in-orbit#a-ball-in-orbit) was the other order.
+Its circle had its centre 5 units ahead of the camera: a point 2 units
+from the origin, turned, and then moved out 5. So the order decides
+where the centre of the circle is. Turn and then move, and the circle
+goes round a centre out in front. Move and then turn, and the circle
+goes round the camera.
 
 ### Your turn
 
@@ -212,7 +227,9 @@ back is turning about the $x$ axis: $x$ stays the same, and $y$ and $z$
 change into each other. How might you write `rotate_x(angle)`? Small
 steps:
 
-1. Start from the 2D rotation matrix.
+1. Start from the 2D rotation matrix, not from `rotate_y`. A turn
+   about $x$ takes $y$ towards $z$, in the same order as 2D, so the
+   minus sign stays top right.
 2. Decide which row and which column should be the ones that do
    nothing. For `rotate_y` it was the middle row and column, because
    $y$ was left alone.

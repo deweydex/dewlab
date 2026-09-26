@@ -111,6 +111,19 @@ taught in school.
 So the next step is not a special trick. It is the same move, one more
 time.
 
+<aside class="dl-note" id="complex-note-bombelli">
+
+**It was a cubic, not a quadratic.** For centuries, people were content
+to say that $x^2 + 1 = 0$ has no answer. What changed their minds was a
+cubic. In 1572 Rafael Bombelli took $x^3 = 15x + 4$, whose answer is
+plainly 4, and put it through the formula for cubics. Halfway through,
+the formula asked for $\sqrt{-121}$. Bombelli carried on anyway. He
+treated $\sqrt{-1}$ as a number with its own rules, and the square
+roots of negatives cancelled out and left 4. A new number that leads to
+a right answer everybody can check is hard to dismiss.
+
+</aside>
+
 What do you think $i$ squared will be? Run the cell to check.
 
 ```python exec
@@ -284,10 +297,21 @@ The only place an $i$ can come in is the square root of a negative
 discriminant. That square root appears once with a $+$ in front of it,
 and once with a $-$. Nothing else in the formula can make an $i$.
 
-The picture tells the same story. A parabola crosses the axis twice,
-touches it once, or misses it. It cannot cross once and stop. So the
-roots come two at a time. If one of them has left the real line, the
-other one has left too.
+There is a second reason, and it does not need the formula at all. Take
+$x^2 - 4x + 13 = 0$, which has a root at $2 + 3i$. That means
+
+$$(2 + 3i)^2 - 4(2 + 3i) + 13 = 0$$
+
+Now change the sign of every $i$ in that line. Every step of the working
+stays true, because $-i$ behaves exactly like $i$: its square is $-1$
+too. The numbers 1, $-4$ and 13 have no $i$ in them, so they do not
+change, and neither does the 0 on the right. What is left is
+
+$$(2 - 3i)^2 - 4(2 - 3i) + 13 = 0$$
+
+So $2 - 3i$ is a root as well. The only thing this needed was that the
+numbers in the equation are real. The same argument works for a cubic,
+or for any polynomial whose numbers are real.
 
 ### Your turn
 

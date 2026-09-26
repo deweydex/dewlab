@@ -216,8 +216,15 @@ print(hex_to_binary("48"))
 ```
 
 Now compare that last line with the first group of the message in the
-previous section. `48` in hex and `01001000` in binary are the same
-number, written two ways. Both of them are the letter `H`.
+previous section. The message had `01001000`, and the cell printed
+`1001000`. Where did the first zero go?
+
+It was never part of the number. `to_binary` writes only the digits the
+number needs, the same way nobody writes 72 as 072. The message used
+groups of eight digits so that every letter took the same space, and
+`H` needed only seven, so it got a zero in front. `48` in hex, `1001000`
+and `01001000` are the same number, written three ways. All of them are
+the letter `H`.
 
 ### Your turn
 

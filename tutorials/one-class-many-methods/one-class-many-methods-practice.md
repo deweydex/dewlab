@@ -2,7 +2,7 @@
 title: "A class with many methods: building a polynomial class — Practice"
 practice_for: one-class-many-methods
 year: "2026-2027"
-version: 2026.09.04.1
+version: 2026.09.25.1
 ---
 
 # A class with many methods: building a polynomial class — Practice
@@ -89,10 +89,14 @@ class Polynomial:
         return result
 
     def degree(self):
-        return len(self.coeffs) - 1
+        for power in range(len(self.coeffs) - 1, -1, -1):
+            if self.coeffs[power] != 0:
+                return power
+        return None    # every coefficient is zero: no degree at all
 
     def leading_coefficient(self):
-        return self.coeffs[-1]
+        power = self.degree()
+        return 0 if power is None else self.coeffs[power]
 
 
 cubic = Polynomial([1, 0, -3, 2])
@@ -104,8 +108,10 @@ print(cubic.degree(), cubic.leading_coefficient())
 
 <details class="dl-answer"><summary>answer</summary>
 
-`4` and `-1`. The list has five items, at indexes 0 to 4, so the highest
-power is $x^4$. Its coefficient is the last item in the list, `-1`.
+`4` and `-1`. The highest power with a coefficient that is not zero is
+$x^4$, at index 4, and its coefficient is `-1`. The zeros in between do
+not change either answer. A zero at the *top* of the list would:
+`Polynomial([5, -1, 0])` has degree 1.
 
 </details>
 

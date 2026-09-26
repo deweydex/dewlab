@@ -1,7 +1,7 @@
 ---
 title: "Systems of equations: solving them with matrices"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.25.1
 covers:
   a-system-you-can-already-solve:
     touches: [CMPS-LO4]
@@ -127,19 +127,24 @@ one column at a time.
 The cell below uses the third move twice. It takes 2 × row 1 away from
 row 2, and row 1 away from row 3. Each line uses a list comprehension,
 from [Lists: keeping many values in order](tutorial:lists-and-sequences),
-to change all four numbers in the row at once. What will the first
+to work out all four numbers in the new row at once. What will the first
 number in each new row be?
 
 ```python exec
 id: three-unknowns-row-by-row-2
-M[1] = [M[1][k] - 2 * M[0][k] for k in range(4)]
-print("R2 = R2 - 2*R1:", M[1])
+row1 = M[0]
+row2 = [M[1][k] - 2 * row1[k] for k in range(4)]
+print("row 2 - 2 * row 1:", row2)
 
-M[2] = [M[2][k] - 1 * M[0][k] for k in range(4)]
-print("R3 = R3 - R1:", M[2])
+row3 = [M[2][k] - 1 * row1[k] for k in range(4)]
+print("row 3 - row 1:    ", row3)
 ```
 
-Both rows now start with 0. We have removed $x$ from them.
+Both new rows start with 0. We have removed $x$ from them.
+
+Each step gets a new name, and `M` itself never changes. That is on
+purpose. If the cell had changed `M`, running it a second time would
+take 2 × row 1 away again, from a row that had already lost it once.
 
 One more zero to go. Next, we use row 2 to remove the $y$ from row 3.
 Row 3 has $1$ in front of $y$ and row 2 has $-3$. So we first multiply
@@ -147,18 +152,18 @@ row 3 by 3, and then add row 2.
 
 ```python exec
 id: three-unknowns-row-by-row-3
-M[2] = [3 * v for v in M[2]]
-print("R3 = 3*R3:", M[2])
+row3_tripled = [3 * v for v in row3]
+print("3 * row 3:        ", row3_tripled)
 
-M[2] = [M[2][k] + M[1][k] for k in range(4)]
-print("R3 = R3 + R2:", M[2])
+row3_last = [row3_tripled[k] + row2[k] for k in range(4)]
+print("that, plus row 2: ", row3_last)
 ```
 
-Now print `M`. What shape do the zeros make?
+Now put the three rows together. What shape do the zeros make?
 
 ```python exec
 id: three-unknowns-row-by-row-4
-for row in M:
+for row in [row1, row2, row3_last]:
     print(row)
 ```
 
@@ -232,10 +237,11 @@ size.
 
 ## Where to Read More
 
-Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 13:
-Change of Basis.* <https://www.youtube.com/watch?v=P2LTAUO1TdA>. Not about
-elimination directly, but the clearest available picture of what a system of
-equations is actually asking, geometrically.
+Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 7:
+Inverse Matrices, Column Space and Null Space.*
+<https://www.youtube.com/watch?v=uQhTuRlWMxw>. Not about elimination directly,
+but the clearest picture there is of what a system of equations is asking,
+geometrically, and of what goes wrong when the determinant is zero.
 
 Kalid Azad (BetterExplained). *Linear Algebra Guide.*
 <https://betterexplained.com/articles/linear-algebra-guide/>. An intuition-first

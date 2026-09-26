@@ -10,7 +10,9 @@ covers:
   selection-sort-find-the-smallest:
     covers: [MIT-6.8]
   comparing-our-sorts:
-    covers: [MIT-6.8, CMPS-LO5]
+    covers: [MIT-6.8]
+# CMPS-LO5 is taught here, but this page is not on Computational Methods,
+# so it is not claimed for that module until #333 brings it into the course.
   optional-challenges:
     touches: [MIT-6.8]
 ---
@@ -397,11 +399,7 @@ Timo Bingmann (2013). *15 Sorting Algorithms in 6 Minutes.*
 at once. The difference between the $n^2$ sorts and the $n \log n$ ones is
 obvious here in a way no table of numbers manages.
 
-Sebastian Lague (2016). *Coding Adventure: Sorting Algorithms.*
-<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Built from nothing, at a pace
-that assumes you are following along rather than watching.
-
-Computerphile (2016). *Getting Sorted & Big O Notation.*
+Computerphile (2013). *Getting Sorted & Big O Notation.*
 <https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Why the growth rate matters more
 than the constant factor, which is the whole argument of the comparison section.
 

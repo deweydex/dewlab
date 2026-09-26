@@ -1439,7 +1439,7 @@ architecture work whenever it happens.*
 
 **7.68 — A new skill reviews a tutorial's own code for naming and comment
 quality, the same way `tutorial-glossary` reviews it for vocabulary.**
-`PEDAGOGICAL_STYLE_GUIDE.md` §5 had cell-length, boilerplate, and tool rules
+The style guide's code section (then §5, now `PEDAGOGICAL_STYLE_GUIDE.md#code`) had cell-length, boilerplate, and tool rules
 but nothing on variable naming or comment style — a real gap, since
 "clearer, semantic variable names" needs somewhere authoritative to check
 against. §5 gained rules (semantic names over mathy single letters; comments
@@ -2124,7 +2124,7 @@ The button releases the selection when used, which stops it re-offering the same
 
 **7.94 — "Where did I meet this?" answered in the reference panel, after the prose-linking version was built, measured and withdrawn.** `planning/ROADMAP.md` Phase 5 proposed linking every later occurrence of a taught term in the prose back to the tutorial that introduced it. It was built and worked structurally: 347 links across the site, first occurrence per section, skipping code/headings/existing links.
 
-**It was withdrawn because the links were wrong too often to ship.** The glossary's terms include ordinary English words — *set*, *shape*, *limit*, *function*, *list* — and a regex cannot tell which sense a sentence means. Sampling eight uses of *shape* on one page: six were the everyday word, two were a matrix's shape. That is worse than not linking, and specifically worse for the adult learners `PEDAGOGICAL_STYLE_GUIDE.md` §1 describes, many expecting to be bad at mathematics — sending one of them to a tutorial on set theory because the prose said "set a seed" costs confidence.
+**It was withdrawn because the links were wrong too often to ship.** The glossary's terms include ordinary English words — *set*, *shape*, *limit*, *function*, *list* — and a regex cannot tell which sense a sentence means. Sampling eight uses of *shape* on one page: six were the everyday word, two were a matrix's shape. That is worse than not linking, and specifically worse for the adult learners `PEDAGOGICAL_STYLE_GUIDE.md#who-reads-this` describes, many expecting to be bad at mathematics — sending one of them to a tutorial on set theory because the prose said "set a seed" costs confidence.
 
 **The goal survives; the mechanism does not.** Each reference entry a reader inherited from an earlier tutorial now carries "Introduced in *Title*", linking to the section that teaches it (`origin_of()`, `origin_anchor()` in build.py; rendered in `renderReference()`). A tutorial's own new terms carry no origin. This can't be wrong about sense, because it never guesses at one: the entry a reader is looking at *is* the term. It composes with 7.93 — select a word, get the panel, see where you met it.
 
@@ -2360,7 +2360,7 @@ Worth recording because it changes what would reopen this: under my reasoning, r
 
 *Cost to change: medium. `createCellElement()` is substantially rewritten as one well-organised function rather than several scattered ones. `lastRunMs` is no longer persisted, since it's meaningless without `ranOrder`, which was never persisted either — no migration needed.*
 
-**7.111 — The style guide gained a plain-language section, and the four student-facing surfaces were rewritten to it.** The contents page, About page, topic tree, and 251 glossary definitions all passed §4 of `PEDAGOGICAL_STYLE_GUIDE.md` as written — invitational, warm, prose not bullets — and were still hard to read: §4 governed stance, not sentence architecture, and §1 says a reader may be working in a second language.
+**7.111 — The style guide gained a plain-language section, and the four student-facing surfaces were rewritten to it.** The contents page, About page, topic tree, and 251 glossary definitions all passed the style guide's voice section (then §4) as written — invitational, warm, prose not bullets — and were still hard to read: §4 governed stance, not sentence architecture, and §1 says a reader may be working in a second language.
 
 Six habits ran through all four surfaces: a short main clause with an em dash carrying the actual meaning; definitions written as participles rather than sentences; contrast before definition; metaphor replacing the plain statement rather than following it; Irish/British idiom; and a closing aphorism.
 
@@ -2796,7 +2796,7 @@ counters from it — runs, errors, consecutive identical errors, unchanged
 code, failed checks, time since first run. At most one fold appears per
 run, with a dot on the cell's bar until opened and one sentence for a
 screen reader. No count is ever shown — a number on a cell reads as a
-verdict regardless of caption (style guide §11). `run_cell()` still
+verdict regardless of caption (`PEDAGOGICAL_STYLE_GUIDE.md#no-verdicts`). `run_cell()` still
 returns a boolean, since dewmini and `pyodide-engine.js` depend on that.
 
 **What clears nothing.** A hint once shown stays; Reset keeps the
@@ -2805,8 +2805,8 @@ control whether hints appear at all (default on) and whether Restart
 Python hides them (default keep). Counters and revealed folds travel in
 the saved-work record.
 
-**The first fold asks, not tells.** The style guide's new §3 subsection
-sets three stages — a question, then steps, then the shape of the code,
+**The first fold asks, not tells.** The style guide's new subsection on
+hints (now `PEDAGOGICAL_STYLE_GUIDE.md#stuck`) sets three stages — a question, then steps, then the shape of the code,
 never the answer.
 
 Written first in `finding-where-it-went-wrong`, `grid-of-numbers`
@@ -3497,8 +3497,8 @@ affected.*
 
 **7.153 — `web-authoring` is the second module through the full
 plain-language pass.** `planning/PLAIN_LANGUAGE_PASS.md` records
-`database-methods` as fully checked against
-`PEDAGOGICAL_STYLE_GUIDE.md` §4; every other module, `web-authoring`
+`database-methods` as fully checked against the style guide's voice
+section (then §4); every other module, `web-authoring`
 included, had only had the sentence-length and metaphor rules run over
 it, if that. Ran the complete nine-point check over all 43 tutorials
 (welcome's 8, first-site's 22, several-pages' 9, shelf's 4), series by
@@ -4051,7 +4051,7 @@ Kept: anything a person writing, reviewing, or troubleshooting a tutorial actual
 
 ---
 
-**7.193 — `planning/README.md` and `PLAIN_LANGUAGE_PASS.md` deleted; `REFERENCE_PANEL.md` §6 rewritten to describe the panel's current shape instead of its shipped-then-superseded one.** Josh, continuing 7.192's pass: `planning/README.md` was an index for a folder now down to five files, whose names already say what they are; `PLAIN_LANGUAGE_PASS.md` was 355 lines, of which perhaps twenty were not a dated log of already-shipped editorial passes — the nine checks it explained are already in `PEDAGOGICAL_STYLE_GUIDE.md` §4 verbatim, so the log was the only thing left, and it is exactly the kind of history git already keeps.
+**7.193 — `planning/README.md` and `PLAIN_LANGUAGE_PASS.md` deleted; `REFERENCE_PANEL.md` §6 rewritten to describe the panel's current shape instead of its shipped-then-superseded one.** Josh, continuing 7.192's pass: `planning/README.md` was an index for a folder now down to five files, whose names already say what they are; `PLAIN_LANGUAGE_PASS.md` was 355 lines, of which perhaps twenty were not a dated log of already-shipped editorial passes — the nine checks it explained are already in the style guide's voice section (then §4) verbatim, so the log was the only thing left, and it is exactly the kind of history git already keeps.
 
 `REFERENCE_PANEL.md` stayed, since `docs/WRITING_TUTORIALS.md` and the `tutorial-glossary` skill both lean on its accumulation logic (§1-5), but its §6 had drifted into the same problem in miniature: it described the panel "as it originally shipped," then a paragraph underneath correcting that to the real, current shape. Rewritten to state the current shape once — a tab in the left corner dock, a docked sidebar with three internal tabs (Reference/Math Basics/Python Basics), not a floating card — with no "here's what changed" framing needed once there is only one shape being described.
 
@@ -4698,6 +4698,34 @@ Renaming any of these would strand work a student already has. The code keeps it
 
 ---
 
-**7.230 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
+**7.230 — The style guide keeps the reasons, and the principles of the 2026 revision are written into it.** The revision plan (#306) and its style-guide issue (#310). The guide had grown to 441 lines: a voice manual with a thin account of how people learn, three checklists, practice-page mechanics repeated in three files, and rules that pulled against each other.
+
+**The principles.** The guide's "How learning happens here" section now holds the ones #306 decided, each with its own anchor:
+- no verdicts: the site shows what code did, and never says a reader is right or wrong (`check()` goes in #314);
+- mistakes are part of the process;
+- discover, then name;
+- predict in writing, then run;
+- worked, then completed, then your own;
+- nothing is taught once: earlier problems on every practice page, and a mixed set for every series;
+- low floor, high ceiling;
+- the reader chooses the world;
+- a misconception gets a "closer look" page of its own, and is never flagged on an answer.
+
+**Three contradictions, settled.**
+- "A reader who stops after the opening paragraph should already have learned something" lost to "discover first". The opening now runs or shows something and asks about it; it does not define.
+- "Invitational, not commanding" sat beside tasks that were all lists of commands. A task is now a question, a challenge or an invitation, and the steps inside it may be plain instructions. What is never an order is the thinking.
+- The plain-language checks banned "earns its keep" while the guide said "earn" six times. Phrasal verbs are now named as the main barrier for a second-language reader, with idioms beside them, and the guide was read against its own list.
+
+**Mechanics moved to `docs/WRITING_TUTORIALS.md`.** How to mark a new term (`#marking-a-term`), the shape of a cell id (`#cell-ids`), notes in the Reference panel, figures without `plt.show()`, the tools a cell can call without an import, and a practice page's title. The guide points there and keeps none of it.
+
+**Anchors, not numbers.** Every part of the guide has a named anchor, and it is cited that way: `PEDAGOGICAL_STYLE_GUIDE.md#voice`. `dev/check_doc_links.py` now reads every hand-written file in the repository and fails on an anchor that is not in the guide (or in `WRITING_TUTORIALS.md`), and on a citation of the guide by section number. Numbers had already gone wrong: an entry here cited a section 11 that never existed, and the guide's own rationing note pointed at the wrong section. Run over the tree before this change, the checker finds 24 numbered citations: in CLAUDE.md, three skills, `WRITING_TUTORIALS.md`, `build.py`, `dev/curriculum_map.py`, a test, a glossary file, three planning documents and this log. All of them were changed, and one more it cannot see ("the style guide's new §3 subsection"). In this log, a sentence about what the guide said at the time keeps the old number in brackets ("then §4"); a sentence that sends a reader somewhere now names the anchor. CLAUDE.md's trap about section numbers is gone, since the check replaces it. The checker also reads CLAUDE.md and `.claude/skills/` now, which found the glossary skill still naming `order.yaml` files that 7.173 removed.
+
+**Also removed:** "No emoji, unless Josh asks for them". It was about Josh, not about a reader.
+
+*Cost to change: the guide is prose, and changing a principle means changing the pages written to it. Renaming an anchor means changing its citations, and the checker lists every one.*
+
+---
+
+**7.231 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
 
 *Cost to change: two small functions in `compose/dewminiweb.js`; switching to a single file means inlining the CSS and JS in `pageFile()`.*

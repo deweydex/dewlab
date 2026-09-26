@@ -1,14 +1,15 @@
 ---
 name: cell-code-review
-description: "Review a dewlab tutorial's Python code — every exec cell and every illustrative (untagged) code fence — for pedagogical code quality against PEDAGOGICAL_STYLE_GUIDE.md §5: semantic variable names over mathy single letters, comments that explain why rather than restate what, in context (surrounding prose, earlier cells in the same tutorial, whether naming is deliberately withheld as a \"discover first\" moment, whether a cell is a stub with nothing to name). Use when asked to review, clean up, or improve code quality/naming/comments in one or more tutorials' cells, or after writing new tutorial code that should be checked before it ships."
+description: "Review a dewlab tutorial's Python code — every exec cell and every illustrative (untagged) code fence — for pedagogical code quality against PEDAGOGICAL_STYLE_GUIDE.md#code: semantic variable names over mathy single letters, comments that explain why rather than restate what, in context (surrounding prose, earlier cells in the same tutorial, whether naming is deliberately withheld as a \"discover first\" moment, whether a cell is a stub with nothing to name). Use when asked to review, clean up, or improve code quality/naming/comments in one or more tutorials' cells, or after writing new tutorial code that should be checked before it ships."
 ---
 
 # Reviewing a tutorial's cell code
 
 This is not the glossary skill. `.claude/skills/tutorial-glossary/SKILL.md`
 asks "what does this tutorial teach"; this asks "is the code itself, that a
-reader is looking at right now, written the way `PEDAGOGICAL_STYLE_GUIDE.md`
-§5 says dewlab's code should be written." Read that section first — it has
+reader is looking at right now, written the way
+`PEDAGOGICAL_STYLE_GUIDE.md#code` says dewlab's code should be written."
+Read that section first — it has
 the actual rules (semantic names, why-not-what comments, the "discover
 first" exception, stub cells needing nothing) and the reasoning behind
 each one; this file is the process for applying them to one tutorial.
@@ -89,8 +90,8 @@ For each cell, having read the above:
 - **A cell with no comments where one would genuinely help** — a
   non-obvious step, a choice a reader might question, something the
   prose around the cell does not already explain. Propose one short
-  comment, in the tutorial's own voice (`PEDAGOGICAL_STYLE_GUIDE.md` §4:
-  plain, warm, no condescension) — not a comment for every line.
+  comment, in the tutorial's own voice (`PEDAGOGICAL_STYLE_GUIDE.md#voice`:
+  plain and alive, never condescending) — not a comment for every line.
 - **Anything that looks wrong but is a deliberate "discover first" name,
   a formula-matching letter, a stub, or pseudocode** — leave it, and say
   why in your report, so whoever reads it does not wonder whether it was
@@ -100,8 +101,8 @@ For each cell, having read the above:
 
 Edit the `.md` source directly, inside the fence, leaving `id:`/`hint:`
 header lines exactly as they were — a cell's `id` is a contract
-(`PEDAGOGICAL_STYLE_GUIDE.md` §5: "the key somebody's saved work lives
-under"), never touch it as part of a naming cleanup. After editing a
+(`docs/WRITING_TUTORIALS.md#cell-ids`: "the key somebody's saved work
+lives under"), never touch it as part of a naming cleanup. After editing a
 tutorial's cells:
 
 1. **Every edited cell still has to be valid Python.** At minimum,

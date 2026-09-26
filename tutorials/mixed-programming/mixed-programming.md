@@ -38,14 +38,17 @@ show("this is a scratchpad", "change anything here")
 
 ```python
 def parity_counts(numbers):
-    """(even, odd, zero) counts. Zero is counted in both even and zero."""
+    """(even, odd, zero) counts. Zero is counted as even, and again as zero."""
     even = sum(1 for n in numbers if n % 2 == 0)
     odd = len(numbers) - even
     zero = numbers.count(0)
     return even, odd, zero
 ```
 
-The decision hiding in the question: is zero even, or is it its own category? It is even, mathematically — it divides by two exactly. So counting it in both is defensible and needs saying, and counting it in neither would leave the three numbers not adding up.
+The decision hiding in the question: is zero even, or is it its own category? Mathematically it is even, because it divides by two with nothing left over. That leaves two fair answers, and each one costs something.
+
+- Count zero as even, and count it again as zero, as the code above does. Then "even" means even. But the three numbers add up to more than the length of the list whenever the list holds a zero.
+- Count zero only as zero, and leave it out of the even count. Then the three numbers add up to the length of the list. But "even" now means "even and not zero".
 
 A question that does not say what to do about zero is a question you have to answer yourself and write down.
 
@@ -290,7 +293,7 @@ def merge(a, b):
     return result + a[i:] + b[j:]
 ```
 
-The same merge walk as the set operations, and it is the heart of merge sort: split the list until every piece has one item, then merge back up. That is how you get n log n instead of n².
+This merge walk is the heart of merge sort, which [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order) mentions as one of the faster sorts: split the list until every piece has one item, then merge back up. That is how you get n log n instead of n².
 
 `<=` rather than `<` keeps it stable: equal items keep the order they came in.
 
@@ -392,7 +395,7 @@ Two obvious properties, and neither alone is worth anything.
 
 1. Three approaches are all correct here: sort and look for the gap, build a set and test each candidate, or use arithmetic. Try to think of all three before reading on.
 2. You know something about the list that you have not used yet — what its contents *should* have been.
-3. The sum of 1 to n has a formula. You met it in *Repeating Yourself*.
+3. The sum of 1 to n has a formula, n(n + 1)/2. It is the trick behind the Gauss story in [Repeating steps with loops](tutorial:repeating-yourself).
 4. What is the difference between the sum it should be and the sum it is?
 
 **Think about:** the arithmetic version uses knowledge about the data, and the other two only use what they can see in it. That is usually where the good answer lives.

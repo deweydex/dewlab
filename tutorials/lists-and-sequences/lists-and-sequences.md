@@ -279,10 +279,10 @@ test. Here the test is `score >= 40`.
 ### A grid is a list of lists
 
 A list can hold other lists. A list of lists is a good way to store a
-grid of numbers, with one inner list for each row. The matrices pages,
-starting with
+grid of numbers, with one inner list for each row. If your course goes on
+to matrices, as Computational Methods does in
 [Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
-store every grid like this.
+every grid there is stored like this.
 
 Two small tools help us build a grid:
 

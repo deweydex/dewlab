@@ -248,6 +248,9 @@ said yes, and that is often the number you wanted.
 
 ## Testing
 
+The cell below uses `assert`. An `assert` line checks that something is
+true. If it is not true, Python stops with an `AssertionError`.
+
 ```python exec
 id: testing-1
 def test_mean():
@@ -260,9 +263,6 @@ def test_mean():
 test_mean()
 ```
 
-The cell below uses `assert`. An `assert` line checks that something is
-true. If it is not true, Python stops with an `AssertionError`.
-
 **12.** Write three tests for `data_range`: an ordinary one, an edge case, and one that should fail loudly.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -274,8 +274,9 @@ assert data_range([]) is None              # edge: empty
 ```
 
 A test that "should fail loudly" checks that an error really happens.
-Here `try` runs `mean([])`. The `except` part runs if a `ValueError` is
-raised. The `else` part runs if no error is raised:
+This one tests the `mean` from problem 10, which raises a `ValueError`
+for an empty list. Here `try` runs `mean([])`. The `except` part runs if
+a `ValueError` is raised. The `else` part runs if no error is raised:
 
 ```python
 try:
@@ -285,6 +286,12 @@ except ValueError:
 else:
     print("did NOT raise — the check is missing")
 ```
+
+Try it on the first `mean`, at the top of this page, and neither line
+prints. Python stops with a `ZeroDivisionError` instead. That version
+divides by `len([])`, which is 0, and the `except` line is only looking
+for a `ValueError`. The test has still told you something true: the
+first `mean` has no check for an empty list.
 
 Testing that something fails is as important as testing that it
 works. It is also the half that most people skip.
@@ -318,7 +325,7 @@ the world.
 
 </details>
 
-## From the Everlearning Problem Bank
+## More functions to write
 
 **15.** Write `convert_temperature(celsius)`. It returns both the Fahrenheit and the Kelvin temperature.
 
