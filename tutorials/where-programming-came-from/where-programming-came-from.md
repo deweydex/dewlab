@@ -57,15 +57,19 @@ and the second from
 ```question
 id: where-prog-warm-up-1
 type: multiple-choice
-correct: 3
+answer: 3
 
 De Morgan's laws say that `not (a and b)` always gives the same answer
 as which of these?
 
 - `not a and not b`
+  - This is `not (a or b)`: De Morgan turns `and` into `or` as the `not` moves in.
 - `a or b`
+  - This drops the `not`: when a and b are both True, `a or b` is True and `not (a and b)` is False.
 - `not a or not b`
+  - The `not` goes onto each part, and `and` turns into `or`.
 - `not (a or b)`
+  - This is True only when both are False, and `not (a and b)` is True when either one is False.
 ```
 
 ```question

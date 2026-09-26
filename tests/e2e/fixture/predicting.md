@@ -21,9 +21,9 @@ print(spent)
 What will the last line print?
 
 - 12
-  The total starts once, before the loop, and every day adds to it.
+  - The total starts once, before the loop, and every day adds to it.
 - 5
-  This is what you would see if the total started again each time round.
+  - This is what you would see if the total started again each time round.
 ```
 
 ```hint

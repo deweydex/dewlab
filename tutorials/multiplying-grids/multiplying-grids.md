@@ -1,7 +1,7 @@
 ---
 title: "Matrix multiplication: rows times columns"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
 covers:
   the-dot-product-first:
     touches: [CMPS-LO4]
@@ -223,7 +223,9 @@ hint: Ones down the main diagonal, zeros everywhere else.
 
 ```python exec
 id: the-matrix-that-does-nothing-2
-check(multiply(C, I3), C)
+print(multiply(C, I3))
+print(multiply(I3, C))
+print(C)
 ```
 
 This matrix is called the *identity matrix*. The identity matrix is a

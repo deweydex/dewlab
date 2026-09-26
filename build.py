@@ -169,14 +169,11 @@ CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
 # A ```question fence's own header: flat headers, the same loop
 # CARD_HEADER_RE's own caller (parse_card) already uses, then ordinary
 # markdown.
-QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|correct)\s*:\s*(.*)$")
+QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|answer|correct)\s*:\s*(.*)$")
 QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # One flat level of {...} — a gap with no "|" is a typing box, one with
 # "|" a dropdown, the first item either way the expected answer.
 GAP_RE = re.compile(r"\{([^{}]*)\}")
-# "- an option" / "* an option" / "+ an option" — the same three markers
-# Python-Markdown's own sane_lists extension accepts.
-OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
 # (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
 # purpose, but a separate pair of constants: site fences and app fences
@@ -197,8 +194,6 @@ TRIGGER_KEYS = {
     "identical-errors": "same-errors",
     "unchanged runs": "unchanged", "unchanged run": "unchanged", "unchanged": "unchanged",
     "runs": "runs", "run": "runs",
-    "failed checks": "check-fails", "failed check": "check-fails",
-    "check-fails": "check-fails", "failed-checks": "check-fails",
     "empty results": "empty-results", "empty result": "empty-results",
     "empty-results": "empty-results", "empty-result": "empty-results",
     "minutes": "minutes", "minute": "minutes",
@@ -226,8 +221,10 @@ SOLUTION_NOTES_RE = re.compile(r"^---[ \t]*$", re.MULTILINE)
 # The ```predict block (#313): a guess written before the cell runs.
 PREDICT_HEADER_RE = re.compile(r"^\s*(for|type|tolerance)\s*:\s*(.*)$")
 PREDICT_TYPES = ("choice", "number", "text")
-# An option starts at the left margin; an indented line under it is its note.
+# An option starts at the left margin; an indented bullet under it is its
+# note; an indented plain line carries on whichever came last (#314).
 PREDICT_OPTION_RE = re.compile(r"^[-*+]\s+(.*\S)\s*$")
+NOTE_LINE_RE = re.compile(r"^[ \t]+[-*+]\s+(.*\S)\s*$")
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
@@ -386,16 +383,20 @@ class Question:
     multiple-choice, each entry in `options` are raw markdown, converted at render time
     (render_question()) rather than here — the same split parse_hint()/
     render_staged_hint() already make, so the checks below read source
-    text, not converted HTML. `correct` is a multiple-choice option's
-    1-based position in `options`; unused (0) for fill-in-the-blank,
-    where the expected answer for each {...} gap is read straight out
-    of `prompt` at render time instead."""
+    text, not converted HTML. `answer` is the 1-based position in
+    `options` of the page's own answer (the `answer:` line), shown to a
+    reader only when they ask for it, and never called right (#314); unused
+    (0) for fill-in-the-blank, where the page's word for each {...} gap is
+    read straight out of `prompt` at render time instead. `notes` holds,
+    per option, the line naming the thinking that leads to it, or "" for
+    an option without one."""
 
     id: str
     type: str
     prompt: str
     options: list[str] = field(default_factory=list)
-    correct: int = 0
+    answer: int = 0
+    notes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -863,8 +864,9 @@ def _split_solution(text: str) -> tuple[str, str]:
 def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
     """A ```predict fence: `for:`, `type:` and `tolerance:`, then the
     question, then for a choice the options as a list at the left margin.
-    An indented line under an option is its note. `type:` defaults to
-    `choice` when there is a list and `text` when there is not."""
+    An indented bullet under an option is its note (options_and_notes()).
+    `type:` defaults to `choice` when there is a list and `text` when
+    there is not."""
     lines = body.split("\n")
     header = _block_header(lines, PREDICT_HEADER_RE)
     cell = header.get("for") or previous_cell
@@ -884,17 +886,12 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
             fail(path, f"the prediction for cell {cell!r} is a choice with no options — "
                        "list them with `- ` at the left margin")
         prompt_lines = lines[:first_option]
-        for line in lines[first_option:]:
-            option = PREDICT_OPTION_RE.match(line)
-            if option:
-                options.append(PredictOption(text=option.group(1)))
-            elif line.strip() and line[:1].isspace() and options:
-                note = options[-1].note
-                options[-1].note = f"{note} {line.strip()}".strip()
-            elif line.strip():
-                fail(path, f"the prediction for cell {cell!r} has a line after its "
-                           f"options that is neither an option nor an indented note: "
-                           f"{line.strip()!r}")
+        texts, notes, stray = options_and_notes(lines[first_option:])
+        if stray:
+            fail(path, f"the prediction for cell {cell!r} has a line after its "
+                       f"options that is neither an option nor indented under one: "
+                       f"{stray[0].strip()!r}")
+        options = [PredictOption(text=text, note=note) for text, note in zip(texts, notes)]
         if len(options) < 2:
             fail(path, f"the prediction for cell {cell!r} offers one option — a "
                        "choice needs at least two")
@@ -1044,7 +1041,7 @@ def parse_trigger(text: str, path: Path) -> str:
         if canonical is None:
             fail(path, f"a hint's after: line names a signal the runtime does not "
                        f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, failed checks, empty results, minutes, "
+                       f"unchanged runs, runs, empty results, minutes, "
                        f"unsure, guess differed")
         if count < 1:
             fail(path, f"a hint's after: count must be at least 1, not {count}")
@@ -1342,20 +1339,52 @@ def place_cell_blocks(page_html: str, solutions: list[Solution], inputs_blocks: 
     return page_html
 
 
-def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
-    """The prompt, and the options under it: the prose before the first
-    list is the question, the list is the options. The first line that
-    reads as a bullet starts the options; every bullet line from there
-    on is one option, in source order, whatever else sits between them."""
+def options_and_notes(lines: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """A list of options, as a question or a prediction writes them, read
+    into (options, notes, stray lines). An option is a bullet at the left
+    margin. An indented bullet under it is its note: the thinking that
+    leads to it. An indented plain line carries on whichever came last,
+    option or note, so a long option can wrap. Anything else is returned
+    as stray, for the caller to refuse or ignore."""
+    options: list[str] = []
+    notes: list[str] = []
+    stray: list[str] = []
+    last = None
+    for line in lines:
+        option = PREDICT_OPTION_RE.match(line)
+        note = NOTE_LINE_RE.match(line)
+        if option:
+            options.append(option.group(1))
+            notes.append("")
+            last = "option"
+        elif note and options:
+            notes[-1] = f"{notes[-1]} {note.group(1)}".strip()
+            last = "note"
+        elif options and line.strip() and line[:1].isspace():
+            if last == "note":
+                notes[-1] = f"{notes[-1]} {line.strip()}"
+            else:
+                options[-1] = f"{options[-1]} {line.strip()}"
+        elif line.strip():
+            stray.append(line)
+    return options, notes, stray
+
+
+def _split_multiple_choice(text: str) -> tuple[str, list[str], list[str]]:
+    """The prompt, the options under it, and each option's note: the prose
+    before the first list is the question, the list is the options. The
+    first bullet at the left margin starts the options, read by
+    options_and_notes(): a margin bullet is an option, an indented bullet
+    its note (#314), an indented plain line a wrapped continuation."""
     lines = text.split("\n")
     start = len(lines)
     for index, line in enumerate(lines):
-        if OPTION_LINE_RE.match(line):
+        if PREDICT_OPTION_RE.match(line):
             start = index
             break
     prompt = "\n".join(lines[:start]).strip()
-    options = [m.group(1) for line in lines[start:] for m in [OPTION_LINE_RE.match(line)] if m]
-    return prompt, options
+    options, notes, _ = options_and_notes(lines[start:])
+    return prompt, options, notes
 
 
 def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
@@ -1377,7 +1406,7 @@ def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
 
 
 def parse_question(body: str, path: Path) -> Question:
-    """Read `id:`, `type:` and `correct:` off the top of a ```question
+    """Read `id:`, `type:` and `answer:` off the top of a ```question
     fence — the same header loop parse_cell() and parse_hint() use.
     Everything after the header lines is the question's own markdown:
     the prompt (and, for multiple-choice, the options after it) or the
@@ -1406,19 +1435,22 @@ def parse_question(body: str, path: Path) -> Question:
     no_footnotes_in(text, path, f"question {question_id!r}")
 
     if question_type == "multiple-choice":
-        prompt, options = _split_multiple_choice(text)
+        prompt, options, notes = _split_multiple_choice(text)
         if not prompt:
             fail(path, f"question {question_id!r} has options but no question above them")
         if len(options) < 2:
             fail(path, f"question {question_id!r} has fewer than two options")
-        raw_correct = header.get("correct")
-        if not raw_correct:
-            fail(path, f"question {question_id!r} is multiple-choice and has no `correct:` line")
-        if not raw_correct.isdigit() or not (1 <= int(raw_correct) <= len(options)):
-            fail(path, f"question {question_id!r}'s `correct: {raw_correct}` does not "
+        # `answer:` names the page's own answer; `correct:`, its older
+        # spelling, still reads the same.
+        key = "answer" if "answer" in header else "correct"
+        raw_answer = header.get(key)
+        if not raw_answer:
+            fail(path, f"question {question_id!r} is multiple-choice and has no `answer:` line")
+        if not raw_answer.isdigit() or not (1 <= int(raw_answer) <= len(options)):
+            fail(path, f"question {question_id!r}'s `{key}: {raw_answer}` does not "
                        f"name one of its {len(options)} options")
         return Question(id=question_id, type=question_type, prompt=prompt,
-                         options=options, correct=int(raw_correct))
+                         options=options, answer=int(raw_answer), notes=notes)
 
     _check_balanced_gaps(text, path, question_id)
     if not GAP_RE.search(text):
@@ -1427,22 +1459,24 @@ def parse_question(body: str, path: Path) -> Question:
 
 
 def render_question(question: Question) -> str:
-    """The markup `buildQuestions()` (tutorial-runtime.js) binds a Check
-    button and its feedback to.
+    """The markup `buildQuestions()` (tutorial-runtime.js) binds a
+    "Show the page's answer" button and its feedback to.
 
-    Correctness lives in the markup itself, on the option or gap it
-    belongs to (`data-correct="true"`, or a typing gap's own
-    `data-expected`), rather than in a separate manifest entry: a reader
-    who opens the page's source can read the answer, which is the right
-    trade for a self-check and the wrong one for an exam. Marking the
-    answer instead of its position is also what lets the runtime shuffle
-    the options it draws without a second, parallel record of which one
-    moved where.
+    Nothing here is a verdict (#314). The page's own answer lives in the
+    markup, on the option or gap it belongs to (`data-answer="true"`, or a
+    typing gap's own `data-expected`), and the reader sees it only when
+    they ask, beside their own choice: never "right", never "not yet". A
+    reader who opens the page's source can read it, which is the right
+    trade for a question to think with and the wrong one for an exam.
+    Marking the answer instead of its position is also what lets the
+    runtime shuffle the options it draws without a second, parallel record
+    of which one moved where. Each option's note waits hidden in the
+    feedback slot, and the runtime shows the one for the reader's choice.
 
-    Both types share the same outer shell (a prompt, a Check button, a
-    closed feedback slot) and differ only in what sits between: a column
-    of option buttons for multiple-choice, or the prompt's own sentence
-    with each {...} gap already turned into a real control for
+    Both types share the same outer shell (a prompt, the button, a closed
+    feedback slot) and differ only in what sits between: a column of
+    option buttons for multiple-choice, or the prompt's own sentence with
+    each {...} gap already turned into a real control for
     fill-in-the-blank.
     """
     safe_id = html.escape(question.id, quote=True)
@@ -1455,11 +1489,15 @@ def render_question(question: Question) -> str:
             # inline content sitting on a button, not a block of its own.
             if option_html.startswith("<p>") and option_html.endswith("</p>"):
                 option_html = option_html[len("<p>"):-len("</p>")]
-            correct_attr = ' data-correct="true"' if position == question.correct else ""
+            answer_attr = ' data-answer="true"' if position == question.answer else ""
             option_items.append(
                 f'<button type="button" class="dl-question-option" '
-                f'data-option="{position}"{correct_attr}>{option_html}</button>'
+                f'data-option="{position}"{answer_attr}>{option_html}</button>'
             )
+        notes_html = "".join(
+            f'<div class="dl-question-note" data-option="{position}" hidden>{_inline(note)}</div>'
+            for position, note in enumerate(question.notes, start=1) if note
+        )
         options_html = (
             '<div class="dl-question-options" role="group" '
             f'aria-label="Choose one">{"".join(option_items)}</div>'
@@ -1469,7 +1507,7 @@ def render_question(question: Question) -> str:
             choices = [c.strip() for c in raw.split("|")] if "|" in raw else None
             if choices is not None:
                 option_tags = "".join(
-                    (f'<option data-correct="true">{html.escape(choice)}</option>' if i == 0
+                    (f'<option data-answer="true">{html.escape(choice)}</option>' if i == 0
                      else f"<option>{html.escape(choice)}</option>")
                     for i, choice in enumerate(choices)
                 )
@@ -1500,13 +1538,17 @@ def render_question(question: Question) -> str:
         for index, raw in enumerate(gaps):
             prompt_html = prompt_html.replace(f"dlgap{index}z", gap_widget(raw))
         options_html = ""
+        notes_html = ""
+    reveal = ("Show the page\u2019s answer" if question.type == "multiple-choice"
+              else "Show the page\u2019s words")
     return (
         f'<div class="dl-question" id="dl-question-{safe_id}" '
         f'data-question-id="{safe_id}" data-question-type="{question.type}">'
         f'<div class="dl-question-prompt">{prompt_html}</div>'
         f"{options_html}"
-        '<button type="button" class="dl-btn dl-question-check" disabled>Check</button>'
-        '<div class="dl-question-feedback" hidden></div>'
+        f'<button type="button" class="dl-btn dl-question-check" disabled>{reveal}</button>'
+        '<div class="dl-question-feedback" hidden>'
+        f'<p class="dl-question-same" hidden>You chose the same as the page.</p>{notes_html}</div>'
         "</div>"
     )
 

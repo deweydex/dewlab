@@ -70,13 +70,16 @@ decimal, $2^{-3}$ is {0.125}.
 ```question
 id: getting-closer-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 `plot_rule(one_over, -5, 5)` stopped with a `ZeroDivisionError`. Why?
 
 - `plot_rule` cannot draw negative numbers.
+  - The graph drew negative inputs; the problem is one input only.
 - One of its points was exactly 0, and $\frac{1}{0}$ has no value.
+  - Some point in the range was exactly 0, and 1 divided by 0 has no value.
 - The graph of $\frac{1}{x}$ is too steep to draw.
+  - Steep is fine to draw; the trouble is one point with no value at all.
 ```
 
 ## Halfway to the door

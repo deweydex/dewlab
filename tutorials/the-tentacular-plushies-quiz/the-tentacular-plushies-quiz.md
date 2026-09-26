@@ -1,7 +1,7 @@
 ---
 title: "The Tentacular Plushies quiz: products and transactions"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   task-1-a-products-table:
     covers: [DBM-LO10, DBM-LO11]
@@ -54,6 +54,7 @@ type, the way the pages before this quiz did.
 
 ```python exec
 id: check-products-table
+expect: not missing
 # PRAGMA table_info lists a table's columns; an empty result means the
 # table does not exist yet.
 columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
@@ -63,12 +64,13 @@ if not columns:
     print("There is no product_tbl table yet.")
 elif missing:
     print("product_tbl is missing:", ", ".join(sorted(missing)) + ".")
-check(not missing, True, label="product_tbl exists, with the columns this task asks for")
+if not missing:
+    print("Found product_tbl, with every column this task names.")
 ```
 
 ```hint
 for: check-products-table
-after: 2 failed checks
+after: 2 runs
 
 Read what the check says is missing. It names the exact column it could
 not find.
@@ -105,6 +107,7 @@ join](tutorial:a-second-table-and-a-join) covered.
 
 ```python exec
 id: check-transactions-table
+expect: not missing
 columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
 required = {"transaction_id", "product_id", "customer_name", "quantity"}
 missing = required - columns
@@ -112,7 +115,8 @@ if not columns:
     print("There is no transaction_tbl table yet.")
 elif missing:
     print("transaction_tbl is missing:", ", ".join(sorted(missing)) + ".")
-check(not missing, True, label="transaction_tbl exists, with the columns this task asks for")
+if not missing:
+    print("Found transaction_tbl, with every column this task names.")
 ```
 
 ## Task 3: add products
@@ -131,6 +135,7 @@ work well for a shop like this. One `INSERT INTO product_tbl (...) VALUES
 
 ```python exec
 id: check-products-rows
+expect: enough_rows and enough_categories
 columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
 if not columns:
     print("product_tbl needs to exist before this check means anything.")
@@ -141,12 +146,13 @@ else:
     print(f"product_tbl has {len(categories)} rows across {len(set(categories))} categories.")
     enough_rows = len(categories) >= 4
     enough_categories = len(set(categories)) >= 3
-check(enough_rows and enough_categories, True, label="product_tbl has at least four rows across at least three categories")
+if enough_rows and enough_categories:
+    print("Found at least four rows in product_tbl, across at least three categories.")
 ```
 
 ```hint
 for: check-products-rows
-after: 2 failed checks
+after: 2 runs
 
 Read what the check counted: how many rows it found, and how many
 different categories among them. Both numbers are in its message.
@@ -172,6 +178,7 @@ which `product_id` belongs to which product.
 
 ```python exec
 id: check-transactions-rows
+expect: row_count >= 3
 columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
 if not columns:
     print("transaction_tbl needs to exist before this check means anything.")
@@ -179,7 +186,8 @@ if not columns:
 else:
     row_count = db.execute("SELECT COUNT(*) FROM transaction_tbl").fetchone()[0]
     print(f"transaction_tbl has {row_count} rows.")
-check(row_count >= 3, True, label="transaction_tbl has at least three rows")
+if row_count >= 3:
+    print("Found at least three rows in transaction_tbl.")
 ```
 
 ## Task 5: query the data
@@ -236,6 +244,7 @@ way to write a `SELECT`.
 
 ```python exec
 id: check-quiz-queries
+expect: over_30_count > 0 and under_15_count > 0
 products_columns = {row[1] for row in db.execute("PRAGMA table_info(product_tbl)")}
 transactions_columns = {row[1] for row in db.execute("PRAGMA table_info(transaction_tbl)")}
 if not products_columns or not transactions_columns:
@@ -249,7 +258,8 @@ else:
         print("No product has a price over 30, so the first query would return nothing.")
     if under_15_count == 0:
         print("No product has a stock_quantity under 15, so the second query would return nothing.")
-check(over_30_count > 0 and under_15_count > 0, True, label="your data can answer the first two queries")
+if over_30_count > 0 and under_15_count > 0:
+    print("Your data has a product priced over 30 and one with under 15 in stock, so the first two queries have something to find.")
 ```
 
 ## One way to do it

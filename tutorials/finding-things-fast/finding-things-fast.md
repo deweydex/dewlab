@@ -75,15 +75,19 @@ type: fill-in-the-blank
 ```question
 id: finding-fast-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 $\log_2 32$ asks how many times we multiply by 2, starting from 1, to
 reach 32. What is it?
 
 - 2
+  - This is 32 divided by 16, or the number of digits in 32.
 - 4
+  - 2 × 2 × 2 × 2 is 16, one doubling short.
 - 5
+  - Doubling from 1: 2, 4, 8, 16, 32 is five doublings.
 - 16
+  - This is 32 divided by 2, once.
 ```
 
 ## One contact at a time
@@ -201,7 +205,7 @@ solving those: "find it in 1 to 100" becomes "find it in 51 to 100".
 ```question
 id: finding-fast-game-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 The guessing game works because "higher" or "lower" tells you which
 half the number is in. What would change if your friend's numbers
@@ -209,8 +213,11 @@ were written on 100 cards, shuffled, and you guessed a card's position
 instead?
 
 - Nothing: guess the middle card, as before.
+  - The middle card tells you nothing about where the others are, when they are shuffled.
 - "Higher" and "lower" would say nothing about which half the card is in.
+  - Shuffled cards have no order, so no answer rules out half of them.
 - You would need exactly 100 guesses.
+  - In the worst case you might need 100, but you would not always.
 ```
 
 ## Binary search: halve what is left
@@ -390,13 +397,16 @@ every time a name is added, and it is worth it when we search often.
 ```question
 id: finding-fast-sorted-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Which of these lists is ready for a binary search?
 
 - `[3, 9, 4, 12, 15]`
+  - 12 comes after 4 but 9 before it: not in order.
 - `["Cork", "Galway", "Athlone", "Dublin"]`
+  - Athlone comes after Galway: not in alphabetical order.
 - `[2, 5, 5, 8, 13, 21]`
+  - Each number is at least as big as the one before it; a repeat is fine.
 ```
 
 ## How many halvings?

@@ -48,16 +48,34 @@ class TestMultipleChoice:
         assert 'data-question-type="multiple-choice"' in page
         assert "<p>Which of these is a right angle?</p>" in page
         # Three options, in the order written, none pre-marked but the
-        # one `correct:` names.
+        # page's own answer, which `correct:` (or `answer:`) names. The
+        # runtime shows it only when asked, and never as a verdict (#314).
         assert page.count('class="dl-question-option"') == 3
         assert '<button type="button" class="dl-question-option" data-option="1">45 degrees</button>' in page
-        assert '<button type="button" class="dl-question-option" data-option="2" data-correct="true">90 degrees</button>' in page
+        assert '<button type="button" class="dl-question-option" data-option="2" data-answer="true">90 degrees</button>' in page
         assert '<button type="button" class="dl-question-option" data-option="3">180 degrees</button>' in page
-        assert page.count('data-correct="true"') == 1
-        # A Check button, starting disabled — nothing is selected yet —
-        # and a closed feedback slot the runtime fills in.
-        assert '<button type="button" class="dl-btn dl-question-check" disabled>Check</button>' in page
-        assert '<div class="dl-question-feedback" hidden></div>' in page
+        assert page.count('data-answer="true"') == 1
+        assert "data-correct" not in page
+        # A button that asks for the page's answer, starting disabled
+        # (nothing is chosen yet), and a closed feedback slot holding only
+        # the line the runtime shows when the reader chose the same.
+        assert ('<button type="button" class="dl-btn dl-question-check" disabled>'
+                "Show the page\u2019s answer</button>") in page
+        assert ('<div class="dl-question-feedback" hidden>'
+                '<p class="dl-question-same" hidden>You chose the same as the page.</p></div>') in page
+
+    def test_answer_names_the_pages_answer_and_notes_wait_hidden(self, repo):
+        write(repo, "```question\nid: q\ntype: multiple-choice\nanswer: 2\n\n"
+                     "Which is a right angle?\n\n"
+                     "- 45 degrees\n  - Half of one: a square's corner cut in two.\n"
+                     "- 90 degrees, the corner\n  of a square\n```\n")
+        b.build()
+        page = built(repo)
+        # A plain indented line wraps its option; it is not a note.
+        assert 'data-option="2" data-answer="true">90 degrees, the corner of a square</button>' in page
+        assert ('<div class="dl-question-note" data-option="1" hidden>'
+                "Half of one: a square's corner cut in two.</div>") in page
+        assert 'data-option="2" hidden' not in page
 
     def test_markdown_and_escaping_survive_in_the_prompt_and_an_option(self, repo):
         write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\n"
@@ -73,7 +91,7 @@ class TestMultipleChoice:
         "body,match",
         [
             ("```question\nid: q\ntype: multiple-choice\n\nQ?\n\n- a\n- b\n```\n",
-             "no `correct:` line"),
+             "no `answer:` line"),
             ("```question\nid: q\ntype: multiple-choice\ncorrect: 9\n\nQ?\n\n- a\n- b\n```\n",
              "does not name one of its 2 options"),
             ("```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- only one\n```\n",
@@ -102,7 +120,7 @@ class TestFillInTheBlank:
         # The select's first option is the correct one, marked the same
         # way a multiple-choice option is.
         assert ('<select class="dl-question-gap-select">'
-                '<option data-correct="true">right angle</option>'
+                '<option data-answer="true">right angle</option>'
                 '<option>straight angle</option>'
                 '<option>acute angle</option></select>') in page
         # A gap with no "|" is a typing box, its expected word on the
@@ -212,7 +230,7 @@ class TestQuestionMaths:
         b.build()
         page = built(repo)
         assert '<span class="dl-math">2^3</span>' in page
-        assert '<button type="button" class="dl-question-option" data-option="1" data-correct="true"><span class="dl-math">8</span></button>' in page
+        assert '<button type="button" class="dl-question-option" data-option="1" data-answer="true"><span class="dl-math">8</span></button>' in page
         assert manifest(page)["math"] is True
 
         write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
@@ -232,4 +250,4 @@ class TestQuestionMaths:
         b.build()
         page = built(repo)
         assert "dl-math" not in page
-        assert "<option data-correct=\"true\">$5</option>" in page
+        assert "<option data-answer=\"true\">$5</option>" in page

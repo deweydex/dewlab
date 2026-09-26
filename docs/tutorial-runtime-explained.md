@@ -578,6 +578,16 @@ steps the way the base feature was:
   record's `prediction` holds guess, sureness and outcome
   (`predictionRecord()`/`restorePrediction()`), and `downloadAsIpynb()`
   writes a guess as a markdown cell above its code.
+- **"What happens when a reader answers a question?"** — `buildQuestions()`
+  shuffles a multiple-choice question's options (each carries its own
+  `data-answer`, so nothing records where the page's answer moved to) and
+  enables the button once one is picked. `showPageAnswer()` calls
+  `revealAnswer()`, which labels the page's option, shows only the note
+  for the reader's choice, and shows "You chose the same as the page."
+  when they match; a fill-in-the-blank question gets the page's word
+  beside each gap instead. Neither says right or wrong (#314). Once shown,
+  a new choice re-runs `revealAnswer()`, and a reload restores the choice
+  and the reveal from the saved record.
 - **"How does a hint decide to appear under a cell?"** — the staged-hints
   block after `executeCell()`: `noteAttempt()` updates a cell's counters
   from the run's report, `triggerHolds()` tests a fold's `data-after`

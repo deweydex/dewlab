@@ -67,15 +67,19 @@ side, the hypotenuse, is {10} m.
 ```question
 id: how-tall-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A point goes round a circle of radius 1, starting at $(1, 0)$. After it
 has turned through an angle $\theta$, where is it?
 
 - $(\theta, 1)$
+  - This uses the angle as a distance; the point stays on a circle of radius 1.
 - $(\sin\theta, \cos\theta)$
+  - Sine and cosine the other way round: at θ = 0 this gives (0, 1), not the start, (1, 0).
 - $(\cos\theta, \sin\theta)$
+  - Across is cos θ and up is sin θ, and at θ = 0 it is (1, 0), where the point starts.
 - $(1, \tan\theta)$
+  - This is where the angle's line meets the upright line x = 1, outside the circle.
 ```
 
 ## Naming the sides from one angle

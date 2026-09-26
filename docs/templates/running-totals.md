@@ -44,11 +44,11 @@ type: choice
 Before you run it: do the four planets reach round the Earth?
 
 - Yes, easily
-  Four whole planets sounds like a lot of planet.
+  - Four whole planets sounds like a lot of planet.
 - Nearly, but not quite
 - Not even halfway
-  Earth is one of the four, and a planet is small beside the distance
-  round it.
+  - Earth is one of the four, and a planet is small beside the distance
+    round it.
 ```
 
 The four planets come to 36,531 km, about nine tenths of the way round.

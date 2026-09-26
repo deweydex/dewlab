@@ -89,9 +89,9 @@ prints `[[1.0000000000000002, -1.1102230246251565e-16], [0.0, 1.0]]`.
 
 This is not a bug in `inverse`. It is ordinary rounding in
 floating-point numbers, the same kind of small error that makes
-`0.1 + 0.2 == 0.3` come out `False`. So it is better to check the result
-with `check()`, which allows a tiny difference for exactly this reason.
-An exact `==` would say `False`.
+`0.1 + 0.2 == 0.3` come out `False`. So an exact `==` would say `False`
+here. To compare numbers like these, round them first, or use
+`math.isclose()`, which allows a tiny difference for exactly this reason.
 
 </details>
 

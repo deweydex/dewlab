@@ -65,26 +65,32 @@ from
 ```question
 id: sorting-hand-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which of these lists can `binary_search` be trusted with?
 
 - `[9, 4, 7, 1]`
+  - `binary_search` throws away half the list at each look, which only works when the list is in order.
 - `[1, 4, 7, 9]`
+  - In order, so each look tells `binary_search` which half to throw away.
 - both, since they hold the same numbers
+  - The same numbers, but only one list is in order, and the order is what the search relies on.
 ```
 
 ```question
 id: sorting-hand-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 `week = [11, 13, 9]`, then `forecast = week`, then
 `forecast[0] = 20`. What is `week[0]` now?
 
 - 20
+  - `forecast = week` gives the same list a second name, so a change through one name shows through both.
 - 11
+  - This is what you would see if `forecast = week` made a copy.
 - It stops with an error.
+  - A list can be changed through any of its names, so the line runs.
 ```
 
 ## Two ways to sort a hand
@@ -112,14 +118,17 @@ algorithm*: a recipe, like the tea-making robot's on
 ```question
 id: sorting-hand-two-ways-1
 type: multiple-choice
-correct: 3
+answer: 3
 
 Someone is dealt cards one at a time, and puts each new card into its
 place as it arrives. Which way is that?
 
 - The first way: find the lowest each time.
+  - Finding the lowest needs all the cards in front of you, and these arrive one at a time.
 - Neither way.
+  - It is one of the two: each card goes into its place among the cards already held.
 - The second way: slide each card into its place.
+  - Each new card slides into its place among the cards already held, as it arrives.
 ```
 
 The second way works even while the cards are still arriving. The
@@ -287,14 +296,17 @@ whichever card comes next, and does the work of finding its place.
 ```question
 id: sorting-hand-insertion-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 The line `card = cards[place]` keeps the card under its own name before
 the loop. Why is that needed?
 
 - It makes the code shorter.
+  - It adds a line, so the code is longer.
 - The first move, `cards[i] = cards[i - 1]`, puts another card at that index, and the card would be lost.
+  - `cards[i] = cards[i - 1]` writes over the card at that index, so it has to be kept somewhere first.
 - `cards[place]` cannot be used inside a `while` loop.
+  - An index can be used inside a `while` loop; the trouble is that the card at it changes.
 ```
 
 ## Counting the comparisons

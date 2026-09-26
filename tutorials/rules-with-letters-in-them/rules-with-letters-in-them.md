@@ -191,14 +191,18 @@ first, so that each coefficient's index is its power:
 ```question
 id: rules-with-evaluate-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Which list is $2x^2 - 7$?
 
 - `[2, -7]`
+  - This leaves out the 0 for x, and puts the highest power first.
 - `[2, 0, -7]`
+  - Every power is there, but highest first; the list starts from the number on its own.
 - `[-7, 0, 2]`
+  - Lowest power first: −7 on its own, 0 lots of x, 2 lots of x².
 - `[-7, 2]`
+  - Lowest power first, but with no 0 for x the 2 sits in the x place, and means 2x.
 ```
 
 ### Your turn: a tool that evaluates

@@ -257,8 +257,8 @@ class="dl-hint dl-hint-staged">` fold carrying `data-cell` and a canonical
 `data-after` (`errors:5`, `same-errors:3 minutes:2`, …), and reads an
 optional `expect:` line into the manifest. `tutorial_tools.run_cell_report()`
 runs the cell like `run_cell()` and returns a JSON report — `ok`, the
-exception's type and first line, whether `check()` passed, whether `expect`
-holds — which `executeCell()` feeds into per-cell counters
+exception's type and first line, whether a SQL query came back empty,
+whether `expect` holds — which `executeCell()` feeds into per-cell counters
 (`noteAttempt()`), tests each fold's terms against (`triggerHolds()`), and
 reveals at most one fold per run (`maybeRevealHint()`).
 
@@ -280,6 +280,16 @@ compares the guess with the cell's printed output after each run, without a
 verdict, feeds two new staged-hint signals (`unsure`, `guess-differed`),
 and lists the reader's surprises in a `.dl-surprises` section the build
 appends to any page with a prediction.
+
+**Questions** (#314) are a predict block without a run. `render_question()`
+writes a ```` ```question ```` fence's options with the page's own answer
+marked (`data-answer`) and each option's note hidden beside them; nothing
+reaches the reader until they press **Show the page's answer**, when
+`revealAnswer()` marks the page's option, shows the note for theirs, and
+says when the two are the same. Its options and notes follow the predict
+block's rule (`options_and_notes()`). No string on a page says right or
+wrong: `check()` is gone from `tutorial_tools.py`, and with it the
+`failed checks` hint signal.
 
 Everything a cell can call beyond ordinary Python is defined once in
 `tutorial_tools.py` and listed in `__all__`; `docs/WRITING_TUTORIALS.md`'s

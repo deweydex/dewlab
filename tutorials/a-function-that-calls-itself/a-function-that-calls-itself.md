@@ -62,14 +62,17 @@ second from [Orders and choices](tutorial:orders-and-choices).
 ```question
 id: calls-itself-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 A function makes the name `stamps` inside itself. It is called three
 times. What happens to the `stamps` from the first call?
 
 - The second call starts with it, and adds to it.
+  - This is what would happen if a function's names lived on after the call ended.
 - It is thrown away when the first call ends. Each call gets a fresh space.
+  - Each call builds its own space for its names, and clears it when it ends.
 - It becomes a global name on the page.
+  - A name made inside a function stays inside it, unless the function says `global`.
 ```
 
 ```question

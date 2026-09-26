@@ -82,14 +82,18 @@ need more than {7} guesses.
 ```question
 id: solving-by-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 What is the slope of $y = x^2 - 2$ at $x = 3$?
 
 - 7
+  - 7 is the height of the curve at x = 3, not its slope.
 - 6
+  - The slope of x² is 2x, and the −2 moves the curve down without changing its slope: 2 × 3.
 - 9
+  - 9 is 3², the height of x² at 3.
 - 4
+  - This takes the 2 off the slope, but moving a curve down leaves its slope as it was.
 ```
 
 ## Squeezing a root between two guesses

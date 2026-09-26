@@ -1,9 +1,9 @@
-"""Live behaviour of a ```question fence -- selecting an option, filling a
-gap, and Check grading it -- in a real browser. Everything that existed
-before this file (tests/build/test_questions.py) checked the markup a
-question builds; nothing had ever clicked an option or typed a gap and
-watched `evaluateQuestion()`/`gapIsCorrect()` (tutorial-runtime.js) grade
-it, and nothing had proven a reader's answer survives a reload."""
+"""Live behaviour of a ```question fence in a real browser: choosing an
+option or filling a gap, then asking for the page's answer. Since #314 a
+question never grades: it marks the page's own answer beside the reader's
+choice, shows the note for that choice, and says "You chose the same as
+the page." when it is. The reader's answer, and whether they asked,
+survive a reload."""
 
 from __future__ import annotations
 
@@ -36,13 +36,15 @@ version: 2026.08.23.1
 ```question
 id: right-angle
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which of these is a right angle?
 
 - 45 degrees
+  - Half of a right angle: the corner of a square cut in two.
 - 90 degrees
 - 180 degrees
+  - A straight line: two right angles side by side.
 ```
 
 ```question
@@ -103,62 +105,86 @@ def page(browser, site_url):
     context.close()
 
 
-def select_option(page, text: str) -> None:
-    page.click(f'{MC} .dl-question-option:text-is("{text}")')
+def option(page, position: int) -> str:
+    """An option by its place in the source, which travels with it however
+    the page shuffles the buttons."""
+    return f'{MC} .dl-question-option[data-option="{position}"]'
+
+
+def ask(page, where: str) -> None:
+    page.click(f"{where} .dl-question-check")
+
+
+JUDGING = ("right answer", "correct", "wrong", "not quite", "not yet", "✓", "✗")
 
 
 class TestMultipleChoice:
-    def test_the_check_button_starts_disabled_until_something_is_selected(self, page):
-        assert page.is_disabled(f"{MC} .dl-question-check")
-        select_option(page, "90 degrees")
-        assert not page.is_disabled(f"{MC} .dl-question-check")
+    def test_the_button_waits_for_a_choice_and_asks_for_the_pages_answer(self, page):
+        button = f"{MC} .dl-question-check"
+        assert page.is_disabled(button)
+        assert page.inner_text(button) == "Show the page’s answer"
+        page.click(option(page, 1))
+        assert not page.is_disabled(button)
 
-    def test_selecting_the_correct_option_and_checking_shows_pass(self, page):
-        select_option(page, "90 degrees")
-        page.click(f"{MC} .dl-question-check")
-        assert page.is_visible(f"{MC} .dl-check-pass")
+    def test_asking_marks_the_pages_answer_beside_a_different_choice(self, page):
+        page.click(option(page, 1))
+        ask(page, MC)
+        assert "is-page-answer" in page.get_attribute(option(page, 2), "class")
+        assert page.inner_text(f"{option(page, 2)} .dl-question-page-label") == "the page’s answer"
+        assert "is-selected" in page.get_attribute(option(page, 1), "class")
+        assert page.is_visible(f'{MC} .dl-question-note[data-option="1"]')
+        assert page.is_hidden(f'{MC} .dl-question-note[data-option="3"]')
+        assert page.is_hidden(f"{MC} .dl-question-same")
+        text = page.inner_text(MC).lower()
+        for word in JUDGING:
+            assert word not in text, word
 
-    def test_selecting_the_wrong_option_and_checking_shows_fail(self, page):
-        select_option(page, "45 degrees")
-        page.click(f"{MC} .dl-question-check")
-        assert page.is_visible(f"{MC} .dl-check-fail")
+    def test_the_same_choice_as_the_page_is_confirmed(self, page):
+        page.click(option(page, 2))
+        ask(page, MC)
+        assert page.is_visible(f"{MC} .dl-question-same")
 
-    def test_a_selection_and_its_grading_survive_a_reload(self, page):
-        select_option(page, "90 degrees")
-        page.click(f"{MC} .dl-question-check")
+    def test_changing_the_choice_afterwards_updates_the_note(self, page):
+        page.click(option(page, 1))
+        ask(page, MC)
+        page.click(option(page, 3))
+        assert page.is_visible(f'{MC} .dl-question-note[data-option="3"]')
+        assert page.is_hidden(f'{MC} .dl-question-note[data-option="1"]')
+
+    def test_a_choice_and_the_asking_survive_a_reload(self, page):
+        page.click(option(page, 1))
+        ask(page, MC)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         page.reload()
         page.wait_for_function("() => !!globalThis.dewlab")
-        assert "is-selected" in (page.get_attribute(
-            f'{MC} .dl-question-option:text-is("90 degrees")', "class") or "")
-        assert page.is_visible(f"{MC} .dl-check-pass")
+        assert "is-selected" in (page.get_attribute(option(page, 1), "class") or "")
+        assert "is-page-answer" in (page.get_attribute(option(page, 2), "class") or "")
+        assert page.is_visible(f'{MC} .dl-question-note[data-option="1"]')
 
 
 class TestFillInTheBlank:
-    def test_filling_both_gaps_correctly_and_checking_shows_pass(self, page):
-        page.select_option(f"{FIB} .dl-question-gap-select", label="right angle")
-        page.fill(f"{FIB} .dl-question-gap-input", "mitochondrion")
-        page.click(f"{FIB} .dl-question-check")
-        assert page.is_visible(f"{FIB} .dl-check-pass")
-        assert "is-correct" in page.get_attribute(f"{FIB} .dl-question-gap-select", "class")
-        assert "is-correct" in page.get_attribute(f"{FIB} .dl-question-gap-input", "class")
-
-    def test_a_wrong_gap_is_marked_incorrect_and_the_question_fails(self, page):
+    def test_asking_shows_the_pages_word_after_each_gap_and_marks_nothing(self, page):
+        assert page.inner_text(f"{FIB} .dl-question-check") == "Show the page’s words"
         page.select_option(f"{FIB} .dl-question-gap-select", label="straight angle")
-        page.fill(f"{FIB} .dl-question-gap-input", "mitochondrion")
-        page.click(f"{FIB} .dl-question-check")
-        assert page.is_visible(f"{FIB} .dl-check-fail")
-        assert "is-incorrect" in page.get_attribute(f"{FIB} .dl-question-gap-select", "class")
-        assert "is-correct" in page.get_attribute(f"{FIB} .dl-question-gap-input", "class")
+        page.fill(f"{FIB} .dl-question-gap-input", "nucleus")
+        ask(page, FIB)
+        words = page.eval_on_selector_all(f"{FIB} .dl-question-page-word", "els => els.map(e => e.textContent)")
+        assert words == [" (the page: right angle)", " (the page: mitochondrion)"]
+        for gap in (".dl-question-gap-select", ".dl-question-gap-input"):
+            classes = page.get_attribute(f"{FIB} {gap}", "class") or ""
+            assert "correct" not in classes
+        text = page.inner_text(FIB).lower()
+        for word in JUDGING:
+            assert word not in text, word
 
-    def test_the_gap_values_and_their_grading_survive_a_reload(self, page):
+    def test_the_gap_values_and_the_asking_survive_a_reload(self, page):
         page.select_option(f"{FIB} .dl-question-gap-select", label="right angle")
         page.fill(f"{FIB} .dl-question-gap-input", "mitochondrion")
-        page.click(f"{FIB} .dl-question-check")
+        ask(page, FIB)
         page.wait_for_function("globalThis.dewlab.readSaved() !== null", timeout=10_000)
 
         page.reload()
         page.wait_for_function("() => !!globalThis.dewlab")
         assert page.eval_on_selector(f"{FIB} .dl-question-gap-input", "el => el.value") == "mitochondrion"
-        assert page.is_visible(f"{FIB} .dl-check-pass")
+        assert page.locator(f"{FIB} .dl-question-page-word").count() == 2

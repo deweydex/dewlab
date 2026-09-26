@@ -64,15 +64,19 @@ type: fill-in-the-blank
 ```question
 id: counting-every-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A rule has three True/False inputs. How many rows does its truth table
 have?
 
 - 3
+  - This counts the inputs, not the ways they can be set.
 - 6
+  - This is 3 × 2, one row per input and value.
 - 8
+  - Each input is True or False: 2 × 2 × 2.
 - 9
+  - This is 3 × 3.
 ```
 
 ## Every outfit, one by one
@@ -420,14 +424,17 @@ choices now?
 ```question
 id: counting-every-or-1
 type: multiple-choice
-correct: 1
+answer: 1
 
 You can play as one of 3 robots, or one of 4 pets, but not both. How
 many different choices is that?
 
 - 7
+  - One choice from the robots or one from the pets: 3 + 4.
 - 12
+  - Multiplying counts a robot and a pet together, which the game does not allow.
 - 1
+  - This counts the one choice you make, not the choices on offer.
 ```
 
 Seven. Each choice is one robot or one pet, so we list the robots, then

@@ -24,8 +24,10 @@ No. Nothing here is scored, and nobody sees your answers. A wrong answer
 tells you something about the method, not about you. That is as true of the
 practice-page problems as it is of the tutorials themselves.
 
-Some cells offer a `check()` that helps you compare your result with the
-expected one. That feedback is there for you, not for anyone else.
+Some cells have a table of cases under them. When you ask, it shows what
+your code gives for each case beside what one solution gives. It never says
+which is right: where the two differ, that is something to look at, and you
+decide what it means.
 
 ## What if I do not finish a tutorial in one sitting?
 

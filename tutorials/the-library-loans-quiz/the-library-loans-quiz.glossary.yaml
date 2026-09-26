@@ -2,10 +2,10 @@
 #
 # Third tutorial of "Practice" (series: practice, practice.order.yaml),
 # after sql-practice and the-tentacular-plushies-quiz. Checked both
-# earlier glossary files first: COUNT(), check(), PRAGMA table_info, and
+# earlier glossary files first: COUNT(), PRAGMA table_info, and
 # FOREIGN KEY ... REFERENCES are all already introduced and are not
-# repeated here, even though check() and PRAGMA table_info appear again
-# in this quiz's own check() cells.
+# repeated here, even though PRAGMA table_info appears again in this
+# quiz's own checker cells. (check() was retired in #314.)
 #
 # New: junction table (single-asterisk emphasis in Task 2's own prose --
 # dev/curriculum_map.py's EMPHASIS_RE) and composite primary key (not

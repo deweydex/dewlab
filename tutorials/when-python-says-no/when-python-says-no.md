@@ -62,14 +62,17 @@ On [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
 ```question
 id: when-python-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 On [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold),
 what kind of number does Python give for `7 / 2`?
 
 - an int
+  - `7 // 2` gives an int, 3; one slash gives a float.
 - a float
+  - `/` gives a float, 3.5, even when the answer is whole.
 - a string
+  - Dividing two numbers gives a number; a string is text in quotes.
 ```
 
 ## The last line first

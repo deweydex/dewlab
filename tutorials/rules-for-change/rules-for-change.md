@@ -71,14 +71,18 @@ type: fill-in-the-blank
 ```question
 id: rules-for-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 What does `derivative_at(rule, 2)` work out?
 
 - the height of the graph of `rule` at 2
+  - The height at 2 is `rule(2)`; `derivative_at` compares two heights, one either side of 2.
 - the average of `rule` from 0 to 2
+  - An average from 0 to 2 looks at the whole stretch, and `derivative_at` looks only very close to 2.
 - the slope of a very short chord of `rule`, centred on 2
+  - It takes a point just before 2 and a point just after, and works out the slope between them.
 - the root of `rule` nearest to 2
+  - A root is where the rule gives 0; `derivative_at` asks how steep the rule is.
 ```
 
 ## A pattern in the slopes: the power rule

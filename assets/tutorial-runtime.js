@@ -2163,9 +2163,9 @@ const questions = [];
 /* Fisher-Yates, in place. Shared by a multiple-choice question's own
  * option buttons and a fill-in-the-blank gap's own <option> elements —
  * both are "show these DOM nodes in a different order," and the node
- * doing the moving carries its own correctness with it either way
- * (data-correct, data-expected), so shuffling never has to touch which
- * one is right. */
+ * doing the moving carries its own mark with it either way
+ * (data-answer, data-expected), so shuffling never has to touch which
+ * one is the page's answer. */
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -2174,59 +2174,51 @@ function shuffle(list) {
   return list;
 }
 
-/* The one feedback message every question shows, right or not —
- * .dl-check/.dl-check-pass/.dl-check-fail are check()'s own classes
- * (tutorial_tools.py's _check_html), reused rather than duplicated so a
- * question reads as the same kind of thing a reader already met inside
- * a cell, not a second feature with its own voice. */
-function renderQuestionFeedback(question, passed) {
-  const css = passed ? "dl-check-pass" : "dl-check-fail";
-  const mark = passed ? "✓" : "✗";
-  const heading = passed ? "That’s right." : "Not quite yet.";
+/* What a question shows when the reader asks for the page's answer
+ * (#314). Never a verdict: the page's own option is marked "the page's
+ * answer" beside the reader's choice, with the note for the option they
+ * chose; for a fill-in-the-blank, the page's word sits after each gap.
+ * When the reader's choice is the page's, the page may say so. No colour
+ * means right or wrong. Shared by a live click (showPageAnswer(), which
+ * also records that it was asked and saves) and restoreSaved() (which
+ * redraws what the reader had already asked to see). */
+function revealAnswer(question) {
   question.feedbackEl.hidden = false;
-  question.feedbackEl.innerHTML =
-    `<div class="dl-check ${css}"><span class="dl-check-mark">${mark}</span><span>${heading}</span></div>`;
-}
-
-/* A fill-in-the-blank gap is correct when a select's chosen <option>
- * carries data-correct, or a typing box's trimmed value matches the
- * word the build wrote onto it (data-expected) — case-sensitive and
- * exact, the same as check()'s own fallback comparison for anything
- * that is not a number, an array or a table. */
-function gapIsCorrect(gap) {
-  if (gap.tagName === "SELECT") {
-    const chosen = gap.options[gap.selectedIndex];
-    return !!chosen && chosen.dataset.correct === "true";
-  }
-  return gap.value.trim() === gap.dataset.expected;
-}
-
-/* The pass/fail computation and its redraw, with no side effect beyond
- * the DOM — shared by a live Check click (checkQuestion(), below, which
- * also records that this question has now been checked and saves) and
- * restoreSaved() (which is redrawing a check the reader already made,
- * not making a new one, and has no reason to schedule another save
- * moments after the record it just read back in). */
-function evaluateQuestion(question) {
-  let passed;
   if (question.type === "multiple-choice") {
     const selected = question.options.find((option) => option.classList.contains("is-selected"));
-    if (!selected) return;
-    passed = selected.dataset.correct === "true";
+    for (const option of question.options) {
+      const isAnswer = option.dataset.answer === "true";
+      option.classList.toggle("is-page-answer", isAnswer);
+      if (isAnswer && !option.querySelector(".dl-question-page-label")) {
+        const label = document.createElement("span");
+        label.className = "dl-question-page-label";
+        label.textContent = "the page’s answer";
+        option.appendChild(label);
+      }
+    }
+    for (const note of question.feedbackEl.querySelectorAll(".dl-question-note")) {
+      note.hidden = !selected || note.dataset.option !== selected.dataset.option;
+    }
+    question.feedbackEl.querySelector(".dl-question-same").hidden =
+      !selected || selected.dataset.answer !== "true";
   } else {
-    passed = true;
     for (const gap of question.gaps) {
-      const correct = gapIsCorrect(gap);
-      gap.classList.toggle("is-correct", correct);
-      gap.classList.toggle("is-incorrect", !correct);
-      if (!correct) passed = false;
+      const word = gap.tagName === "SELECT"
+        ? [...gap.options].find((option) => option.dataset.answer === "true")?.textContent
+        : gap.dataset.expected;
+      let shown = gap.nextElementSibling;
+      if (!shown || !shown.classList.contains("dl-question-page-word")) {
+        shown = document.createElement("span");
+        shown.className = "dl-question-page-word";
+        gap.after(shown);
+      }
+      shown.textContent = ` (the page: ${word})`;
     }
   }
-  renderQuestionFeedback(question, passed);
 }
 
-function checkQuestion(question) {
-  evaluateQuestion(question);
+function showPageAnswer(question) {
+  revealAnswer(question);
   question.checked = true;
   scheduleSave();
 }
@@ -2249,6 +2241,7 @@ function buildQuestions() {
           for (const other of options) other.classList.remove("is-selected");
           option.classList.add("is-selected");
           checkBtn.disabled = false;
+          if (question.checked) revealAnswer(question);
           scheduleSave();
         });
       }
@@ -2261,7 +2254,7 @@ function buildQuestions() {
       checkBtn.disabled = false;
     }
 
-    checkBtn.addEventListener("click", () => checkQuestion(question));
+    checkBtn.addEventListener("click", () => showPageAnswer(question));
     questions.push(question);
   }
 }
@@ -4372,7 +4365,6 @@ function freshAttempts() {
     errors: 0,        // of those, how many raised
     sameErrors: 0,    // consecutive runs ending in the same error as the one before
     unchanged: 0,     // consecutive runs of code identical to the run before
-    checkFails: 0,    // consecutive runs in which a check() failed
     emptyResults: 0,  // consecutive runs where a SQL query came back with no rows
     firstRunAt: null, // when the first counted run happened, for `minutes`
     lastErrorKey: null,
@@ -4414,7 +4406,6 @@ function noteAttempt(cell, report, previousCode) {
     a.sameErrors = 0;
     a.lastErrorKey = null;
   }
-  if (report.check) a.checkFails = report.check.passed ? 0 : a.checkFails + 1;
   a.emptyResults = report.empty === true ? a.emptyResults + 1 : 0;
 }
 
@@ -4424,7 +4415,6 @@ function triggerHolds(terms, a) {
     "same-errors": a.sameErrors,
     "unchanged": a.unchanged,
     "runs": a.runs,
-    "check-fails": a.checkFails,
     "empty-results": a.emptyResults,
     "minutes": a.firstRunAt == null ? 0 : (Date.now() - a.firstRunAt) / 60000,
     "unsure": a.unsure ?? 0,
@@ -5259,14 +5249,12 @@ function restoreSaved() {
           if (typeof saved.selected[index] === "string") gap.value = saved.selected[index];
         });
       }
-      // Recomputed, not merely redisplayed: a gap's own correctness can
-      // only be read once its saved value is back in the control, and
-      // this is also what redraws the pass/fail classes on each gap the
-      // way they looked when the reader last pressed Check. evaluateQuestion(),
-      // not checkQuestion() — this is redrawing a check already made, not
-      // making a new one, and question.checked is set just below either way.
+      // Redrawn once the saved choice is back in the controls, so the
+      // note shown is the one for the reader's own choice. revealAnswer(),
+      // not showPageAnswer(): this redraws what the reader already asked
+      // to see, and needs no fresh save.
       if (saved.checked) {
-        evaluateQuestion(question);
+        revealAnswer(question);
         question.checked = true;
       }
     }

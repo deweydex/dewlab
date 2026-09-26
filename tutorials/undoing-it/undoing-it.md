@@ -1,7 +1,7 @@
 ---
 title: "Inverse matrices: undoing a transformation"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   measuring-the-square:
     touches: [CMPS-LO4]
@@ -201,9 +201,23 @@ hint: det = M[0][0]*M[1][1] - M[0][1]*M[1][0], then build the swapped-and-negate
 # Your inverse(M)
 ```
 
+```inputs
+inverse(stretch)
+inverse([[1, 2], [3, 4]])
+inverse([[2, 1], [1, 1]])        # determinant 1
+```
+
+```solution
+def inverse(M):
+    det = M[0][0] * M[1][1] - M[0][1] * M[1][0]
+    return [[M[1][1] / det, -M[0][1] / det],
+            [-M[1][0] / det, M[0][0] / det]]
+```
+
 ```python exec
 id: undoing-a-transformation-2
-check(multiply(inverse(stretch), transformed), square)
+print(multiply(inverse(stretch), transformed))
+print(square)
 ```
 
 There is also a way to check an inverse without transforming any shape.
@@ -211,7 +225,7 @@ A matrix times its inverse, $AA^{-1}$, should give the identity matrix.
 
 ```python exec
 id: undoing-a-transformation-3
-check(multiply(stretch, inverse(stretch)), [[1, 0], [0, 1]])
+print(multiply(stretch, inverse(stretch)))
 ```
 
 ## Which ones can be undone?

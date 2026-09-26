@@ -61,27 +61,34 @@ Two questions from [Four questions for any puzzle](tutorial:four-questions).
 ```question
 id: recipes-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 What does `print(2 * "tea ")` show?
 
 - `2tea`
+  - This joins the number to the text; multiplying repeats the text instead.
 - `tea tea `
+  - Two copies of `"tea "`, space and all.
 - An error, because you cannot multiply text.
+  - Adding a number to text raises an error, but multiplying text by a whole number repeats it.
 ```
 
 ```question
 id: recipes-warm-up-2
 type: multiple-choice
-correct: 4
+answer: 4
 
 A film starts at 11 o'clock and lasts 3 hours. One friend says it ends at
 14, and another says it ends at 2. Which question settles it?
 
 - What is named here?
+  - Both friends mean the same film and the same start; the names are not in doubt.
 - What is promised?
+  - Both agree the film lasts 3 hours; the promise is the same for each.
 - What happens when?
+  - Both add the 3 hours after the start, in the same order.
 - What does this space let us do?
+  - A 24-hour clock goes on past 12, and a 12-hour clock goes round: what the numbers can do settles it.
 ```
 
 ## Teaching a robot to make tea
@@ -100,13 +107,16 @@ the gaps without noticing. Let's see what happens when nobody fills them.
 ```question
 id: recipes-empty-kettle
 type: multiple-choice
-correct: 2
+answer: 2
 
 When the robot starts, the kettle is empty. What happens at step 1?
 
 - The robot fills the kettle, then boils it.
+  - This is what a person would do; step 1 does not say to fill it.
 - The robot switches on the empty kettle.
+  - The robot does what step 1 says, and step 1 says nothing about water.
 - The robot stops and asks what to do.
+  - A robot that stopped to ask would need a step telling it when to ask.
 ```
 
 The robot does exactly what step 1 says: it boils the kettle. Nothing
@@ -347,7 +357,7 @@ def make_tea():
     print("Wait 3 minutes, then take out the tea bag.")
 ```
 
-Nothing appears. That is correct, and it is worth a moment. The word
+Nothing appears, and nothing should. It is worth a moment. The word
 `def` is short for "define". This cell writes a recipe card called
 `make_tea`, with five steps on it, and puts it away. Writing a recipe
 card does not make any tea.
@@ -437,14 +447,17 @@ its steps exactly, very fast, and very many times.
 ```question
 id: recipes-satnav
 type: multiple-choice
-correct: 3
+answer: 3
 
 A satnav works out the time for every possible route, then picks the
 fastest one. Which shapes of step does it use?
 
 - Sequence only.
+  - It does steps in order, but it also repeats a step for every route.
 - Selection only.
+  - Picking the fastest is a selection, but first it works out every route, and that is a repetition.
 - Repetition (for every route) and selection (picking the fastest).
+  - Working out each route in turn is repetition; picking the fastest is selection.
 ```
 
 If you would like another view of the same ideas, the page

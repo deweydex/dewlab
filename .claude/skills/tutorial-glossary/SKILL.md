@@ -160,8 +160,8 @@ entries:
     python: [math.sin, math.cos]
   - term: "elif"
     python: elif
-  - term: "check()"
-    python: tutorial_tools.check
+  - term: "show()"
+    python: tutorial_tools.show
   ```
 
   Give one to every Python function, method, keyword and built-in

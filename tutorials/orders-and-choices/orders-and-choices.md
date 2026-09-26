@@ -64,14 +64,18 @@ A game character wears one of 3 hats and one of 4 coats, so it can look
 ```question
 id: orders-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 What does `product([1, 2, 3, 4])` give?
 
 - 10
+  - 10 is the sum, 1 + 2 + 3 + 4; `product` multiplies.
 - 4
+  - 4 is how many numbers are in the list.
 - 24
+  - 1 × 2 × 3 × 4 is 24.
 - 1234
+  - This writes the numbers side by side, the way text would join them.
 ```
 
 ## Three songs in a row
@@ -191,14 +195,17 @@ made because it keeps every formula later on this page working.
 ```question
 id: orders-factorial-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Six files are waiting to print, one after another. How many different
 orders could they print in?
 
 - 21, which is 6 + 5 + 4 + 3 + 2 + 1
+  - This adds the choices at each step; each choice goes with every choice after it, so they multiply.
 - 720, which is 6!
+  - 6 choices for the first file, 5 for the next, and so on: 6 × 5 × 4 × 3 × 2 × 1.
 - 36, which is 6 × 6
+  - 6 × 6 counts two places, and lets the same file print twice.
 ```
 
 ### Your turn: factorial in your toolkit
@@ -523,15 +530,19 @@ stronger only when it makes the space of possible passwords bigger.
 ```question
 id: orders-which-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A test lab has 20 phones, and needs 4 of them to try a new app. Which
 count gives the number of different groups of phones it could use?
 
 - $20^4$
+  - This lets the same phone be picked more than once, and counts the order too.
 - $P(20, 4)$
+  - This counts each group once for every order its 4 phones could be picked in.
 - $C(20, 4)$
+  - A group is the same group whatever order its phones were picked in: 20 choose 4.
 - $4!$
+  - This counts the orders of 4 phones already chosen, not the choosing.
 ```
 
 ### Your turn

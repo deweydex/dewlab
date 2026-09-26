@@ -55,13 +55,16 @@ After `cups = 2`, then `water = cups * 250`, then `cups = 3`, the line `print(wa
 ```question
 id: numbers-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 What does `print(3 * "7")` show?
 
 - `21`
+  - This treats `"7"` as the number 7; the quotes make it text.
 - `777`
+  - Multiplying text by a whole number repeats it: three copies of `"7"`.
 - An error, because `"7"` is not a number.
+  - Adding a number to text raises an error, but multiplying text by a whole number repeats it.
 ```
 
 ## The row and column of a pixel
@@ -158,14 +161,18 @@ $\mathbb{N}$. The move is not foolish. It needs a bigger space.
 ```question
 id: numbers-families-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 What is the smallest family in which $3 - 5$ has an answer?
 
 - $\mathbb{N}$, the natural numbers
+  - The answer is −2, and no natural number is below 0.
 - $\mathbb{Z}$, the integers
+  - The integers add the numbers below 0, and −2 is one of them.
 - $\mathbb{Q}$, the rational numbers
+  - −2 is a rational number, but the integers already hold it, and they sit inside the rationals.
 - $\mathbb{R}$, the real numbers
+  - −2 is a real number, but the integers already hold it, and they sit inside the reals.
 ```
 
 ```question

@@ -44,9 +44,9 @@ type: choice
 Which will you see?
 
 - 0, 10, 20, and 30 at the end
-  This is what idea A predicts.
+  - This is what idea A predicts.
 - 0, 0, 0, and 10 at the end
-  This is what idea B predicts.
+  - This is what idea B predicts.
 - Something else
 ```
 

@@ -420,7 +420,7 @@ def crack_the_vault(groups):
 ```
 
 When your function is ready, remove the `#` from the last line and run
-the cell. If your answer is right, the message describes somebody from
+the cell. When the message reads as English, it describes somebody from
 the first section of this page.
 
 ## Reflection
