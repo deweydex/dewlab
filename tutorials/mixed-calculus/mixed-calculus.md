@@ -101,7 +101,7 @@ which hides the corner.
 
 **5.** A ball is thrown straight up. Its height is $20t - 4.9t^2$ metres
 after $t$ seconds. When is it highest, and how high? How fast is it
-going when it comes back down to 0?
+going when it returns to 0?
 
 <details class="dl-answer"><summary>one way through it</summary>
 

@@ -990,7 +990,7 @@ only the three ratios. Two sides and the angle between them, or three
 sides, need the cosine rule. A side and the angle opposite it need the
 sine rule, and it can give two answers.
 
-Look back at the three cases at the top of this page. Which one do you
+Think about the three cases at the top of this page. Which one do you
 think you would meet most often, and where?
 
 A challenge: `solve` handles four combinations. Can you add a fifth: two

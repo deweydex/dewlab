@@ -325,7 +325,7 @@ cross at a right angle. `slope(*first)` gives `slope` the two points in
 
 <div class="dl-world" data-world="sound">
 
-You shout at a cliff, and the echo comes back after a number of
+You shout at a cliff, and the echo returns after a number of
 seconds. Sound travels about 343 metres every second, and it goes to
 the cliff and back. Can you write `cliff_distance(seconds)`? What is
 the slope of this line, and what does it mean?

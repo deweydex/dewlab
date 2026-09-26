@@ -386,7 +386,7 @@ The kingdom's roads run only north–south and east–west, and positions
 are in kilometres. A crow flies in a straight line. The mill is at
 $(-4, 1)$ and the castle is at $(4, 5)$. Can you write
 `crow_and_road(start, end)`, which returns two distances: how far the
-crow flies, and how far a rider goes on the roads? How much shorter is
+crow flies, and how far a rider travels by road? How much shorter is
 the crow's journey?
 
 ```python exec

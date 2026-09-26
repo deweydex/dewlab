@@ -252,8 +252,8 @@ print(storm_distance(6), "metres after 6 seconds")
 ---
 The line is $y = 343x + 0$. The slope is the speed, and the intercept
 is 0, because the sound has gone nowhere when you start counting. Three
-seconds gives 1029 m, which is very close to 1 km. So "divide by 3" is a
-good rule.
+seconds gives 1029 m, which is very close to 1 km. So "divide by 3" is
+very close.
 ```
 
 </div>

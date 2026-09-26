@@ -166,7 +166,7 @@ No. $x^3$ has a slope of zero at $x = 0$, but the curve keeps going up
 through that point without turning. It is flat for an instant, and then
 it continues. A point like that is called a *point of inflection*. So a
 zero slope tells you where to look, and you still need to check which
-way the slope goes on each side.
+sign the slope has on each side.
 
 </details>
 

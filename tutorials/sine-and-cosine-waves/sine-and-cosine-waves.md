@@ -375,7 +375,7 @@ of 0.
 ## Where a wave comes from
 
 Why would anybody want this? When we draw anything that goes round and
-comes back, with time along the bottom, we get a wave. Daylight through
+returns, with time along the bottom, we get a wave. Daylight through
 the year, the tides, a spinning motor, a sound and an alternating
 current all make waves.
 
@@ -406,7 +406,7 @@ The Earth goes round the Sun once a year, and its axis is tilted. The
 tilt always points the same way in space. So for half the year, our
 half of the Earth leans towards the Sun, and the days are long. For the
 other half, it leans away, and the days are short. The lean changes
-smoothly and comes back every year, so we expect a wave. There is
+smoothly and repeats every year, so we expect a wave. There is
 [a closer look at the seasons](tutorial:why-we-have-seasons) that tests
 this against another idea many people hold.
 
@@ -691,7 +691,7 @@ ax.set_title("Tangent is not a wave")
 
 Tangent repeats, twice as often as sine: its period is half a turn. But
 it does not swing between two limits. Near each red line it grows without
-limit, and then it comes back from the other side. The red lines are a
+limit, and then it returns from the other side. The red lines are a
 quarter turn, three quarters of a turn, and so on, half a turn apart.
 
 At those red lines, the point on the circle is straight up or straight

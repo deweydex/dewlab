@@ -123,7 +123,7 @@ From below, the answers climb towards 2. From above, they fall towards
 2. Neither side ever *reaches* 2, because neither side ever reaches 1.
 
 (You may notice long tails of digits, such as `1.990000000000001`. Those
-are tiny rounding errors in the computer's arithmetic. We come back to
+are tiny rounding errors in the computer's arithmetic. We return to
 them at the end of the page.)
 
 A *limit* is the value a function gets closer and closer to as its

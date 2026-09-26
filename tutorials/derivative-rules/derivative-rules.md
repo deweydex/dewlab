@@ -170,7 +170,7 @@ prints about 75, and `differentiate_polynomial([2, -1, 4, 5])` returns
 
 ## Multiplying things together
 
-Adding worked so simply. Does multiplying work the same way? Here $f$
+Adding split neatly into its parts. Does multiplying work the same way? Here $f$
 is $x^2$ and $g$ is $x^3$, at $x = 2$.
 
 ```python exec

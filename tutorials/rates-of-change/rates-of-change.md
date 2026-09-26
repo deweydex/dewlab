@@ -117,7 +117,7 @@ def draw_step(k):
 FuncAnimation(figure, draw_step, frames=24, interval=150)
 ```
 
-Each orange line goes through two points on the curve. As the second
+Each orange line passes through two points on the curve. As the second
 point slides towards the first, the line turns, and it turns towards
 the red line. The red line touches the curve at $x = 3$ and has the same
 steepness as the curve there.
@@ -329,7 +329,7 @@ turning points: its slope is never negative, so it never changes sign.
 
 <div class="dl-world" data-world="sea-and-sky">
 
-A diver goes down and comes back up. Her depth is $6t - 0.3t^2$ metres,
+A diver dives, then rises to the surface. Her depth is $6t - 0.3t^2$ metres,
 $t$ minutes after she leaves the surface. How fast is she going down
 after 4 minutes? When is she deepest, and how deep is that? Use
 `derivative_at` and `turning_points`.

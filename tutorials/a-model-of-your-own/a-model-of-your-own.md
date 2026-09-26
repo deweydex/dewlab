@@ -48,7 +48,7 @@ for degrees in [30, 135, 250]:
     print(degrees, point, to_angle(point))
 ```
 
-The round trip brings back 30 and 135, apart from rounding. 250 comes
+The round trip returns 30 and 135, apart from rounding. 250 comes
 back as $-110$. Is that the same angle? Once your own pair of functions
 passes a round trip, you have the first piece of your model. Everything
 after this is yours to decide.
@@ -132,7 +132,7 @@ ax.set_xlabel("milliseconds")
 
 Chart the Moon's rise. Seen from one place, the Moon's height in the
 sky, as an angle above the horizon, rises and falls like a wave. The
-Moon comes back to the same place in the sky about every 24.84 hours,
+Moon returns to the same place in the sky about every 24.84 hours,
 which is why it rises about 50 minutes later each day. In this model
 its height is a wave with an amplitude of 50°, a period of 24.84 hours,
 a shift of 18 hours and a lift of $-5°$. The real Moon's wave changes

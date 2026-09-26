@@ -254,7 +254,7 @@ At its fastest, halfway between low and high tide, the water rises
 about 0.76 m an hour. Hour by hour, a sine wave rises 0.067, 0.183,
 0.25, 0.25, 0.183 and 0.067 of the range. The rule of twelfths says
 0.083, 0.167, 0.25, 0.25, 0.167 and 0.083. The rule is a sine wave's
-slope, made easy to work out in your head.
+slope, made easy to use in your head.
 ```
 
 </div>

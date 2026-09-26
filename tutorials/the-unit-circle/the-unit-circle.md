@@ -477,14 +477,14 @@ about 16 digits, so its square misses a half by a very tiny amount.
 Only the exact form $\frac{\sqrt{2}}{2}$ squares to exactly $\frac{1}{2}$.
 That is why we use *surd form*. A *surd* is a root such as $\sqrt{2}$
 that we leave as a root, without turning it into a decimal. The decimal
-is wrong by a small amount, and in some calculations small amounts add
+differs from it by a small amount, and in some calculations small amounts add
 up.
 
 ### Your turn
 
 What are the exact values for 120°, 135° and 150°? Can you find them
 from the first-quarter table, and the signs you found for each quarter?
-Fill in the comments, then run the check.
+Write your answers in the comments, then run the check.
 
 ```python exec
 id: your-turn-3
