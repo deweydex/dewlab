@@ -4976,7 +4976,23 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.248 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to the fix for the first three pages of "A table of your own" (pull request #379).
+**7.248 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
+
+**The bold terms had never reached this course.** 7.207 brought bold-italic key terms to six graphics pages and left the rest for later; the glossary file for `a-table-is-a-list-of-rows` already noted that the whole series had no marked terms at all. The three pages now mark theirs as 7.207 did (`***term***`), so the Reference panel links back to where each is introduced. Page one gains the terms it used without defining: *database*, *query* (which every later page in the course leans on), *cell*, *record*, *attribute*, *header*, *comment*, *data type* and *primary key*. Page two gains *condition* and the six comparison operators. *Cell* is the table's own word here, which is why these pages call the code editor a *box* throughout.
+
+**Six pictures, drawn from the pages' own SQL.** `dev/graphics/database_methods.py` gains a table drawer beside its ERDs. Every value in a picture comes from running the page's cell in sqlite at generation time, the same rule the ERDs follow, so a picture cannot show a row the box does not build. Page one: the parts of a table, on a shopping list (Josh's own example from his opening paragraph), and what `CREATE TABLE`, `INSERT` and `SELECT` each leave behind. Page two: `SELECT` picking columns and `WHERE` picking rows, with the result as the cells in both; and `WHERE` then `ORDER BY` as two steps. Page three: `UPDATE` and `DELETE`, each with and without its `WHERE`, side by side. Each picture has labels as well as tints, so colour is never the only signal.
+
+**Three things the old prose said that the runtime does not do.** Running a box a second time never rebuilt the table: it failed with `table dinosaur_tbl already exists`, because a page's database lives for as long as the page is open. The per-cell Reset (↺) clears output and never touched the table. And page three's "run it without the `WHERE` and watch every length become 2.5" could not show that, since the box's own `SELECT` kept its `WHERE` too. The fix is `DROP TABLE IF EXISTS` at the top of each dinosaur box, the idiom `sets-in-databases` and `many-languages-one-idea` already use, taught on page one with an experiment that fails on purpose when it is commented out. The reader's own-table steps start with it too. Page three now asks the reader to remove both `WHERE`s.
+
+**Cell ids unchanged,** so no saved work moves. `version:` is bumped on all three, because a cell's starter code changed.
+
+**Left alone:** the tail of page two's recap, where the video pull request (7.246) adds a "Where to read more". The pandas row numbers that sat beside every SQL result, next to `dinosaur_id`, are gone since 7.247, which page three's look at the ids 1, 2, 3, 4 and 6 relies on.
+
+*Cost to change: low. Prose and six generated SVGs; a picture changes by editing its function and re-running the generator. Removing `DROP TABLE IF EXISTS` would need the "run it again" sentences on all three pages changed back.*
+
+---
+
+**7.249 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to 7.248, which fixed the first three pages of "A table of your own".
 
 **The same bug, in more places than the first three pages.** A page's sqlite database lasts for as long as the page is open, so a `CREATE TABLE` that has already run stops the next run with `table X already exists`. Neither per-cell button changes that. Reset (↺) clears the output, and Clear (↻) puts back the starter code; neither touches the database. A sweep of every page in `courses/database-methods.yaml` found four more pages that ask for a create box to run a second time:
 
