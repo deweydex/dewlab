@@ -303,6 +303,8 @@ own:
   | `3 failed checks` | a `check()` in the cell has failed on three runs in a row |
   | `2 empty results` | a `sql exec` cell's query has come back with no rows, two runs in a row |
   | `2 minutes` | two minutes have passed since the first run |
+  | `unsure` | the reader has said "I'm not sure yet" in the cell's predict block |
+  | `guess differed` | a run has ended with the reader's guess and the output different |
 
   Join several with a comma or `and`: `3 identical errors and 2 minutes`.
   Every term must hold. The `errors:5` spelling works too, if you prefer
@@ -379,10 +381,9 @@ a prediction, a hint, or a challenge. Write it after its cell. With a
 may follow it in any order, and every block uses the same `key: value`
 header lines a cell does.
 
-**Status.** `hint`, `solution`, `inputs`, the comparison and a cell of the
-reader's own tests are live. `predict` goes live with #313 and `challenge`
-with #316; until then, each of those builds as a plain code block, so a page
-can be written against it now.
+**Status.** Every block here is live except `challenge`, which goes live with
+#316; until then it builds as a plain code block, so a page can be written
+against it now.
 
 ### solution
 
@@ -495,12 +496,24 @@ counts as the same, for an estimate. The prose before the list, or the
 whole body for `number` and `text`, is the question.
 
 The reader also says how sure they are: *sure*, *a hunch*, or *I'm not
-sure yet*. "I'm not sure yet" opens the cell's first hint. After the run,
-the guess and the output sit side by side; for printed output the cell is
-the answer key, so you write nothing more. Guesses save with the cell, and
-the end of the page lists the reader's surprises: the cells where the guess
-and the output differed, and the ones marked "not sure". Two hint signals
-go with it: `unsure` and `guess differed`.
+sure yet*. "I'm not sure yet" opens the cell's first hint straight away, so
+make that the hint that asks a question, and offers two ways on: make a
+guess now, or run it and see.
+
+After the run, the guess and what the cell printed sit side by side; for
+printed output the cell is the answer key, so you write nothing more. A
+number is compared with the last number the cell printed, within
+`tolerance:` (0 unless you say). Anything else is compared with the whole
+output or its last line, ignoring spacing but not case. When they say the
+same thing, the page says so. When they differ, it says nothing about it,
+shows the note for the option the reader chose, and asks "Which line
+explains what you saw?"
+
+Guesses save with the cell, and go into the notebook export above their
+cell. The end of the page lists the reader's surprises: the cells where the
+guess and the output differed, and the ones marked "not sure". Two hint
+signals go with it, `unsure` and `guess differed`, and either can be
+written with no number: `after: unsure`.
 
 Two to four on a page, where the misconceptions are. A page that asks for a
 guess before every cell teaches readers to skip them.

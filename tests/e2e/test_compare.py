@@ -20,7 +20,7 @@ from conftest import DEWLAB
 PAGE = "tutorials/comparing.html"
 
 
-def _open(browser, url, route=None):
+def _open(browser, url, route=None, page=PAGE):
     # No service worker: the page's cross-origin-isolation shim reloads it
     # through one, and a page a service worker serves never reaches the
     # route below. The comparison needs no isolation (that is for Stop).
@@ -30,13 +30,13 @@ def _open(browser, url, route=None):
     tab.on("pageerror", lambda err: problems.append(f"pageerror: {err}"))
     tab.problems = problems
     if route:
-        tab.route(f"**/{PAGE}", route)
+        tab.route(f"**/{page}", route)
     tab.goto(url)
     tab.wait_for_function("globalThis.dewlab !== undefined", timeout=30_000)
     return context, tab
 
 
-def _serve(site_dir, standalone: bool):
+def _serve(site_dir, standalone: bool, path: str = PAGE):
     """The built page, pointed at the Pyodide the fixture site serves (the
     conftest does this for rendering-tour only). With `standalone`, it is
     also changed the way write_standalone() changes a download: the
@@ -44,7 +44,7 @@ def _serve(site_dir, standalone: bool):
     classic Pyodide script is on the page, so Python runs on the main
     thread. Read from disk rather than fetched, so no proxy sits between
     the test and its own server."""
-    page = (site_dir / PAGE).read_text()
+    page = (site_dir / path).read_text()
     runtime = re.search(
         r'<script type="module" src="\.\./assets/tutorial-runtime\.js[^"]*"></script>', page
     ).group(0)
@@ -117,6 +117,10 @@ class TestComparison:
         assert empty.locator(".dl-compare-theirs").inner_text() == "0"
         assert "dl-compare-differ" not in (empty.get_attribute("class") or "")
         assert "an empty list" in empty.inner_text()
+        # The button can start the run before Python has booted; the cell's
+        # own Run button still reads Run afterwards, not "Loading…".
+        label = tab.locator(".dl-cell[data-cell-id='compare-total'] .dl-btn-run .dl-btn-label")
+        assert label.inner_text() == "Run"
 
     def test_no_word_on_the_table_judges(self, tab):
         box = compare(tab, "compare-total")

@@ -3752,6 +3752,63 @@ p code, li code {
 }
 .dl-compare-status { color: var(--dl-muted); font-size: 0.8rem; }
 
+/* The predict block (#313), above its cell. A guess, how sure, and after
+   the run the guess beside what the cell printed. Nothing here is coloured
+   as right or wrong. */
+.dl-predict {
+  max-width: var(--dl-line-width);
+  margin: 1rem 0 0.4rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 6px;
+  background: var(--dl-output-bg);
+  font-size: 0.95rem;
+}
+.dl-predict-prompt > p { margin: 0 0 0.5rem; }
+.dl-predict-options { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.5rem; }
+.dl-predict-option { display: flex; gap: 0.4rem; align-items: baseline; cursor: pointer; }
+.dl-predict-value {
+  font: inherit;
+  font-family: var(--dl-mono);
+  width: 14rem;
+  max-width: 100%;
+  margin-bottom: 0.5rem;
+}
+.dl-predict-sure { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.dl-predict-sure-label { color: var(--dl-muted); font-size: 0.85rem; }
+.dl-predict-sure-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 999px;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  cursor: pointer;
+}
+.dl-predict-sure-btn[aria-pressed="true"] { border-color: var(--dl-navy); font-weight: 600; }
+.dl-predict-unsure { margin-top: 0.5rem; }
+.dl-predict-unsure > p { margin: 0 0 0.4rem; }
+.dl-predict-footer { margin: 0.5rem 0 0; color: var(--dl-muted); font-size: 0.8rem; }
+.dl-predict-after { margin-top: 0.6rem; border-top: 1px solid var(--dl-rule); padding-top: 0.5rem; }
+.dl-predict-sides { display: flex; flex-wrap: wrap; gap: 0.4rem 1.6rem; }
+.dl-predict-side-label {
+  display: block;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+}
+.dl-predict-your, .dl-predict-output { font-family: var(--dl-mono); white-space: pre-wrap; }
+.dl-predict-match, .dl-predict-note, .dl-predict-which { margin: 0.4rem 0 0; }
+.dl-predict-which { font-style: italic; }
+
+.dl-surprises {
+  max-width: var(--dl-line-width);
+  margin: 2rem 0 1rem;
+  border-top: 1px solid var(--dl-rule);
+  padding-top: 0.8rem;
+}
+
 .dl-hint-staged[hidden] { display: none; }
 .dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
 @keyframes dl-hint-arrive {

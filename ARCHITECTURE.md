@@ -274,6 +274,13 @@ writing a page, `check_solutions()` runs its cells and every solution in a
 separate Python, through that same `compare()`, and stops the build if a
 solution raises.
 
+**The predict block** (#313) is drawn above its cell by `render_cell()`
+(`render_predict()`), since a guess comes before the run. The runtime
+compares the guess with the cell's printed output after each run, without a
+verdict, feeds two new staged-hint signals (`unsure`, `guess-differed`),
+and lists the reader's surprises in a `.dl-surprises` section the build
+appends to any page with a prediction.
+
 Everything a cell can call beyond ordinary Python is defined once in
 `tutorial_tools.py` and listed in `__all__`; `docs/WRITING_TUTORIALS.md`'s
 "What your cells can call" table is the reader-facing version. Changing what
