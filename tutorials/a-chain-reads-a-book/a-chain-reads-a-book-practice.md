@@ -283,7 +283,7 @@ random choice, and the seed fixes the whole list of choices in order.
 a short run is always the start of a long one.
 
 Now call `generate("Weena", 5)` twice after one `random.seed(1)`. The
-second sentence is different, because it carries on down the list from
+second sentence is different, because it continues down the list from
 where the first one stopped.
 
 </details>
@@ -549,7 +549,7 @@ probabilities, which is why the tutorial could skip this step.
 
 **11.** From [Dictionaries: looking things up by
 name](tutorial:looking-things-up-by-name). The chain's loop adds 1 with
-`chain[word].get(next_word, 0) + 1`. What goes wrong if it uses
+`chain[word].get(next_word, 0) + 1`. What happens if it uses
 `chain[word][next_word] + 1` instead? Run the cell.
 
 ```python exec

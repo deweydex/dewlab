@@ -192,9 +192,9 @@ common word's inner dictionary grows?
 <details class="dl-answer"><summary>What each line of the loop does</summary>
 
 - `zip(words, words[1:])` pairs every word with the word after it. We met
-  `zip` in [Matrix multiplication: rows times columns](tutorial:multiplying-grids). `words[1:]`
-  is the same list with the first word left off, so the two lists are
-  one step apart.
+  `zip` in [Matrix multiplication: rows times
+  columns](tutorial:multiplying-grids). `words[1:]` is the same list with
+  the first word left off, so the two lists are one step apart.
 - `next_words.setdefault(word, {})` gives `word` an empty inner
   dictionary, but only if it does not have one yet.
 - The last line adds 1 to the count for `next_word` inside that inner
@@ -245,8 +245,8 @@ Change the 1 to a 2, and run it again. Seed 2 gives this:
 Every other seed gives another sentence. Every run mixes the same
 32,467 words, but only in the orders that really happen in this one
 book. Each pair of words next to each other in the output is a pair
-from the book. `for _ in range(steps)` repeats the loop `steps` times;
-the name `_` is the usual way to say "we do not need the loop variable".
+from the book. `for _ in range(steps)` repeats the loop `steps` times.
+The name `_` is the usual way to say "we do not need the loop variable".
 
 ## A chain from your book
 
