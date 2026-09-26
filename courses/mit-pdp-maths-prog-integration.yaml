@@ -61,11 +61,12 @@ contents:
   tutorials:
   - numbers-and-their-families
   - expressions-come-alive
+  - drawing-functions
   - rearranging-formulae
   - cracking-equations
-  - complex-roots
-  - drawing-functions
   - parabolas
+  - complex-roots
+  - a-tool-of-your-own
 - title: Trigonometry and Calculus
   tutorials:
   - lines-and-distances

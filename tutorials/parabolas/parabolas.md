@@ -323,7 +323,8 @@ The $\pm$ is there because both $2^2$ and $(-2)^2$ are 4. That step is
 why a quadratic can have two roots.
 
 The next cell finds roots in two ways: by completing the square, and by
-the formula. Do you expect the two methods to agree?
+the formula. It uses your `complete_the_square`, so run it after you
+have written that function. Do you expect the two methods to agree?
 
 ```python exec
 id: roots-from-the-same-form-1
@@ -364,7 +365,8 @@ forget it.
 ## When there is nothing to find
 
 Where is the vertex of $x^2 + 2x + 7$? Does the curve reach the
-horizontal axis?
+horizontal axis? The cell marks the vertex with your
+`complete_the_square`.
 
 ```python exec
 id: when-there-is-nothing-to-find-1

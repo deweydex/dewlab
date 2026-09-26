@@ -711,6 +711,8 @@ finds both, for a radius of 1, 2 and 4.
 
 ```python exec
 id: what-doubling-does-1
+import math
+
 for radius in [1, 2, 4]:
     area = math.pi * radius ** 2
     volume = 4 / 3 * math.pi * radius ** 3

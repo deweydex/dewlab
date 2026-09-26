@@ -81,8 +81,8 @@ The first curve crosses the horizontal axis twice, and the second
 touches it once. The third curve never comes down to the axis at all.
 
 "No real solutions" is a true description, as long as we only accept
-numbers that sit on that horizontal line. It says there is no answer
-*on this line*. It does not say there is no answer anywhere.
+numbers that sit on that horizontal line. It says there is no answer on
+this line. It does not say there is no answer anywhere.
 
 ## Inventing a new number
 

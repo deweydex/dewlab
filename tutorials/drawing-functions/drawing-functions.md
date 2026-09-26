@@ -532,7 +532,7 @@ line of the cell and run it again.
 Every turning point lies on $y = -x^2$. That is a strange result, isn't
 it? Changing $b$ does not do one separate thing. It slides the curve
 sideways and down at the same time, and the turning point travels along
-a parabola of its own.
+an upside-down curve of its own.
 [Parabolas: completing the square](tutorial:parabolas) shows where that
 path comes from.
 
