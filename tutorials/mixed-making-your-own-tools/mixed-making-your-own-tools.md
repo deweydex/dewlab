@@ -278,7 +278,7 @@ def pounds_to_kg(pounds):
     return pounds * KG_PER_POUND
 ---
 `pounds_to_kg` divides, when it should multiply. The round trip
-arrives back at 0, but not at 1. A walkthrough of 1 kg shows why: `kg_to_pounds(1)` is
+arrives back at 0, but not at 1. Follow 1 kg through both functions. `kg_to_pounds(1)` is
 about 2.2 pounds, and `pounds_to_kg` then divides 2.2 by 0.45 again,
 giving about 4.9 kg, not 1.
 

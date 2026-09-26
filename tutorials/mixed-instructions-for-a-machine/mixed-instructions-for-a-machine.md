@@ -635,8 +635,8 @@ problem. Without it, 14 would have looked like a fine answer.
 **Think about:** the names promise worths of 8, 4, 2 and 1. Does the
 code keep that promise?
 
-**Try this next:** try a call that uses only the last bit,
-`from_bits(0, 0, 0, 1)`. Would that call alone have shown the problem?
+**Try this next:** call `from_bits(0, 0, 0, 1)`, which uses only the
+last bit. Would that call alone have shown the problem?
 
 </details>
 

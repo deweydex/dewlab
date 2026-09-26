@@ -498,7 +498,7 @@ def angle_between(p, q, r):
     return math.degrees(math.acos(cos_q))
 ```
 
-Run the toolkit cell. Then how does your `angle_between` compare with
+Run the toolkit cell. How does your `angle_between` compare with
 one way to write it? The table below runs the same calls on your
 function and on a solution, side by side. Until `angle_between` is
 written, your column shows `None`, because `...` returns `None`. Where
@@ -556,7 +556,8 @@ title: some steps
 **Think about:** why is `across` the side that is taken away?
 ```
 
-Step 3 is there because of the row "a straight line, with rounding". Three points on a straight line
+The `max` and `min` line in the solution is there because of the row
+"a straight line, with rounding". Three points on a straight line
 make an angle of 180°, whose cosine is −1. But 0.1 and 0.2 are not exact
 in binary, so the sum comes out a tiny bit below −1, such as
 −1.0000000000000002. That is outside the domain of `math.acos`, which

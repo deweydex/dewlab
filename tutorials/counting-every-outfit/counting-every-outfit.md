@@ -339,24 +339,9 @@ title: some steps
 that the answer we want?
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and still do the same job.
-
-```python
-def all_pairs(first, second):
-    pairs = []
-    for a in first:
-        for b in second:
-            pairs.append((a, b))
-    return pairs
-```
-
-</details>
-
 The second and third rows are the counting principle, side by side.
 The cells from here on use `all_pairs`. If you have not written it yet,
-copy the answer above into the stub and run it.
+open the solution under the table, copy it into the stub, and run it.
 
 A pair can itself go into a pair. What do you think this cell prints
 last?

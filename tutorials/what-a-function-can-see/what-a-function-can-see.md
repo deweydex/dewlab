@@ -614,7 +614,7 @@ def download_seconds(size_mb, speed_mbps=100):
 
 ```hint
 after: 3 runs
-What does the version above give back? Try
+What does your function give back? Try
 `print(download_seconds(700))` on its own and look at the last line it
 shows.
 ```
@@ -625,10 +625,9 @@ title: some steps
 1. Add `speed_mbps=100` to the `def` line, after `size_mb`.
 2. Swap the `print` line for a `return` line that gives back
    `round(seconds, 1)`.
-3. Nothing on the page needs to change: the table only uses the function.
 
-**Think about:** which line of the old version gives `None` in the
-table, and why did it not raise an error on its own?
+**Think about:** why does the old version give `None` in the table,
+even though it prints the time?
 ```
 
 <details class="dl-why"><summary>Why this way?</summary>

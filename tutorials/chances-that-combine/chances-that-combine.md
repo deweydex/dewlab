@@ -400,7 +400,7 @@ How does your `at_least_one` compare with one way to write it? The
 table below runs the same calls on yours and on a solution, side by
 side. Where a row is different, try that call on its own. The last row
 uses `round`, because a float is very close to the true value, and
-seldom equal to it.
+not often equal to it.
 
 ```inputs
 for: chances-toolkit

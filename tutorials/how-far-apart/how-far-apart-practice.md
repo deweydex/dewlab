@@ -181,10 +181,10 @@ def distance_again(p, q):
 Schlomo's function stops at $c^2$ and never takes the square root.
 This one takes it, with `import math` at the top of the cell.
 
-One step up gave 1 even so, because $1^2 = 1$ and $\sqrt{1} = 1$. For
+One step up gave 1 in both versions, because $1^2 = 1$ and $\sqrt{1} = 1$. For
 a distance of 1, it makes no difference whether we take the square
-root. Schlomo chose the smallest check he could think of, and it
-happened to be that one length.
+root. Schlomo tried the smallest distance first. For a distance of 1, the
+square root changes nothing.
 ```
 
 **7. Another way.** In the tutorial's first picture of Pythagoras, the

@@ -776,10 +776,10 @@ reason slices the ball into very thin pieces and adds them all up, which
 needs more than this unit has.
 
 We kept the sphere because raindrops, planets and 3D-printed balls
-are spheres, and your toolkit needs it now. So we take
-these two formulas on trust, for the moment. The rows with
-Archimedes' two thirds show that two facts agree. It does not say why
-either one is true.
+are spheres, and your toolkit needs it now. So, for now, we
+use these two formulas without a reason. The rows with Archimedes' two
+thirds show that two facts agree. They do not show why either one is
+true.
 
 </details>
 

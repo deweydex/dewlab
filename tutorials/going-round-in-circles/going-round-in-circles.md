@@ -296,7 +296,7 @@ def point_on_circle(radius, angle_degrees):
     return (radius * math.cos(angle), radius * math.sin(angle))
 ```
 
-Run the toolkit cell. Then how does your `point_on_circle` compare with
+Run the toolkit cell. How does your `point_on_circle` compare with
 one way to write it? The table below runs the same calls on your
 function and on a solution, side by side. Until the body is written,
 your column shows `None`, because `...` returns `None`. The last two
@@ -327,8 +327,8 @@ def point_on_circle(radius, angle_degrees):
     return (radius * math.cos(angle), radius * math.sin(angle))
 ```
 
-A number such as `6.123233995736766e-17` is $6.1 \times 10^{-17}$, a
-float's rounding, very close to 0. Where a row is different by more
+A number such as `6.123233995736766e-17` is $6.1 \times 10^{-17}$. This
+number comes from a float's rounding. It is very close to 0. Where a row is different by more
 than that, try that call on its own.
 
 ```hint

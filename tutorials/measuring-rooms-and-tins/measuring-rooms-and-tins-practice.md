@@ -481,8 +481,8 @@ There is more than one answer. Here are some things to think about.
 
 Whichever you choose, it helps to say out loud which formulas are taken on
 trust, so a reader does not think they were meant to see why. An
-answer might also say that a comparison can show a formula agrees with other
-facts, as Archimedes' two thirds did, even when they cannot say why it is
-true.
+answer might also say that a comparison can show that a formula agrees
+with other facts, as Archimedes' two thirds did. It cannot show why the
+formula is true.
 
 </details>

@@ -222,7 +222,7 @@ Replace the `...` with a loop:
 3. After the loop, return the running total.
 
 If the loop feels like hard work, open the hints under the cell, or
-the solution under the table, and come back to your own version later.
+the solution under the table, and return to your own version later.
 
 ```python exec
 id: rules-with-toolkit

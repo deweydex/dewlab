@@ -394,7 +394,7 @@ smallest first, so `in_order[0]` is the lowest score. The highest is
 the last one, `in_order[-1]`.
 
 Schlomi's version gives 7 for `[7]` too, because the smallest and
-largest of `[7]` are the same. So a set of tests needs more than one
+largest of `[7]` are the same. So the inputs need more than one
 case.
 ```
 

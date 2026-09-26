@@ -202,7 +202,7 @@ $32 - 50 = -18$, not $50 - 32$.
 
 Now `celsius` is `10.0`, and it turns back into 50 °F. Moving a number
 across the equals sign and keeping its old sign is one of the most
-common slips in algebra, for everyone. Turning the answer back into
+common slips in algebra. Turning the answer back into
 Fahrenheit showed it.
 ```
 

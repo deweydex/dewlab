@@ -196,7 +196,8 @@ because Python does `/` and `*` from left to right, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first).
 The formula wants the whole of $2a$ on the bottom.
 
-Schlomo's $x$ for the bowl was 88,000, far off the letter. The square
+Schlomo's $x$ for the bowl was 88,000, far outside the letter,
+where $t$ is from 0 to 1. The square
 gave the vertex it should by luck. Its $a$ is 1, and multiplying by 1
 and dividing by 1 give the same answer. A check with $a = 1$ cannot
 tell the two lines apart, which is a reason to check with other values

@@ -256,7 +256,7 @@ def third_side(a, b, angle_c):
 ---
 The correction must be taken away: $c^2 = a^2 + b^2 - 2ab\cos C$.
 
-The right angle gave 5 even so, because $\cos 90^\circ = 0$, so the
+The right angle gave 5 in both versions, because $\cos 90^\circ = 0$, so the
 correction is 0 whether it is added or taken away. Schlomi started from
 the triangle she knew best, the 3, 4, 5, and a check at a right angle
 alone can never tell the two versions apart. For 60°, her version gives

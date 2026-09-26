@@ -258,7 +258,7 @@ def slope(p, q):
     return (y2 - y1) / (x2 - x1)
 ```
 
-Run your cell. Then how does your `slope` compare with one way to
+Run your cell. How does your `slope` compare with one way to
 write it? The table below runs the same calls on your function and on
 a solution, side by side. Until `slope` has its `return` line, it
 returns `None`, and its column shows `None`. Guess the third row
@@ -295,11 +295,7 @@ differences does the formula divide?
 ```
 
 The order does not matter. If we swap the points, we get
-$\frac{-2}{-4}$, which is still $0.5$. A float can differ by a tiny
-amount, so two floats that should be equal can differ in the last
-digit. `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough) compares floats
-like these.
+$\frac{-2}{-4}$, which is still $0.5$.
 
 ## A wall has no slope
 

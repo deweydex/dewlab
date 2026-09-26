@@ -403,7 +403,7 @@ def comfortable(temperature):
     """Return True when the temperature is from 18 to 22 degrees, both included."""
     return 18 <= temperature <= 22
 ---
-The promise says 18 is included, but `18 < 18` is False. The same is
+The docstring says 18 is included, but `18 < 18` is False. The same is
 true of 22. Use `<=` on both sides.
 
 We only see the problem because two of the inputs are exactly on the

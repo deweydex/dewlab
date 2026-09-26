@@ -370,7 +370,7 @@ title: some steps
 ## Catching a flipped bit
 
 Now let's send the reading. The cells in this section use your own
-`parity_bit`, so finish it before you go on. The comparison above shows
+`parity_bit`, so finish it before you continue. The comparison above shows
 where it differs from a solution.
 
 The buoy sends the byte for 14 and its parity bit. On the way, the radio noise flips one bit. We can play the noise

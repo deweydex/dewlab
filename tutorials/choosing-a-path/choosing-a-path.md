@@ -511,7 +511,7 @@ def between(value, low, high):
     return low <= value <= high
 ```
 
-Run your cell. Then how does your `between` compare with one way to
+Run your cell. How does your `between` compare with one way to
 write it? The table below runs the same calls on your function and on a
 solution, side by side. Until you write your `return` line, your column
 shows `None`. A function with no `return` line returns `None`, Python's
@@ -536,8 +536,8 @@ def between(value, low, high):
     return low <= value <= high
 ```
 
-Two rows sit on the ends, and two one step outside. A mistake like `<`
-in place of `<=` would hide at the ends.
+Two rows sit on the ends, and two one step outside. A `<` in
+place of `<=` gives a different answer only at the ends.
 
 ### Your turn
 

@@ -209,7 +209,7 @@ id: solving-by-bisect-your-turn
 ## A tool that halves
 
 Two more rules will help us compare your tool later. `quadratic_rule`
-has a root that
+has two roots, 2 and 3, that
 [Solving for x](tutorial:solving-for-x#the-quadratic-formula) could
 find with a formula, and `line_rule` has a root at 3. Run this cell to
 make them.

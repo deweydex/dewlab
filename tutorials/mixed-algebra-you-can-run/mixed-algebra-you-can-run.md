@@ -336,11 +336,11 @@ Schlomo's version prints `0.25`. At 0.25 thousand people, Small takes
 
 The difference is `[-7, 1.75]`, which is $-7 + 1.75g$. His call passes
 $-7$ as $a$ and $1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a
-different equation. Here the two are swapped.
+different equation. The solution swaps them back.
 
 Now it prints `4.0`, and at 4 thousand people both servers take 20 ms.
 A coefficient list puts the constant first, and $ax + b$ puts it last,
-so almost everyone makes this swap once. Comparing the two servers'
+so this swap is easy to make. Comparing the two servers'
 times showed it.
 ```
 

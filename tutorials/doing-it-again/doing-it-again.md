@@ -625,7 +625,7 @@ total(range(1, 101))                  # Gauss's sum
 total([])
 product([2, 3, 4])
 round(product([0.8, 0.8, 0.8, 0.8, 0.8]), 4)
-product([])                           # nothing multiplied changes nothing
+product([])                           # no values: the product is 1
 ```
 
 ```solution

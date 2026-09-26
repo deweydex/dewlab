@@ -308,7 +308,7 @@ def wave(amplitude, frequency, time):
     return amplitude * math.sin(2 * math.pi * frequency * time)
 ```
 
-Run the toolkit cell. Then how does your `wave` compare with one way to
+Run the toolkit cell. How does your `wave` compare with one way to
 write it? The table below runs the same calls on your function and on
 a solution, side by side. Until `wave` has its `return` line, it
 returns `None`, and your column shows `None`. The last two rows show

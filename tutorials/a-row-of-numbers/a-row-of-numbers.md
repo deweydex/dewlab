@@ -503,7 +503,7 @@ def is_cold(celsius):
     return celsius < 10
 ```
 
-Now the toolkit cell.
+Now run the toolkit cell.
 
 ```python exec
 id: row-toolkit

@@ -220,7 +220,7 @@ def value_of(coefficients, x):
 The loop started at power 1, so it never added the constant term, at
 index 0. Starting at 0 adds it.
 
-The first polynomial gave 0 even so, because its constant term is 0.
+The first polynomial gave 0 in both versions, because its constant term is 0.
 The second one showed the gap. A polynomial with no constant could
 never show it.
 ```
@@ -346,8 +346,8 @@ for chosen in range(5):
 
 </details>
 
-**13. Fix.** This version of `expand_brackets` gives a different list
-from the tutorial's for $(x + 3)(x + 5)$. Can you find the line that
+**13. Fix.** This version, `expand_quickly`, gives a different list
+from the tutorial's `expand_brackets` for $(x + 3)(x + 5)$. Can you find the line that
 causes it?
 
 ```python exec

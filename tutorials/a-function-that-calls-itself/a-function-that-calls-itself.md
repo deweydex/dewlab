@@ -200,8 +200,8 @@ for n in [0, 1, 5, 10, 20]:
     print(n, factorial_again(n), factorial(n))
 ```
 
-Where the two columns differ, one of the two functions has a line to look
-at again.
+Where the last two numbers on a line differ, look again at one of the
+two functions.
 
 ### Your turn
 

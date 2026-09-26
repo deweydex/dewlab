@@ -308,14 +308,9 @@ Which row is different? Try printing `travel_time(60, 20)` on its own.
 60 km at 20 km/h takes 3 hours. What does your version give now?
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. In `travel_time`, the `...` becomes
-`return distance / speed`. In `distance_travelled`, it becomes
-`return speed * time`. If you have not written them yet, put these in
-the stub now, so that later cells on this page can use them.
-
-</details>
+Later cells on this page use `travel_time` and `distance_travelled`. If
+you have not written them yet, open the solution under the table, copy
+it into the stub, and run it.
 
 ## Undoing, in reverse order
 
@@ -474,14 +469,6 @@ print(fahrenheit_to_celsius(celsius_to_fahrenheit(37)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(-40)))
 print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 ```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. In `fahrenheit_to_celsius`, the `...` becomes
-`return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
-happen first.
-
-</details>
 
 Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
 −40. It is the one temperature where both scales agree.

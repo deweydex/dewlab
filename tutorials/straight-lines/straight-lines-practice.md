@@ -162,7 +162,7 @@ def slope_again(p, q):
 Schlomo's function divides the run by the rise. That is the slope
 formula upside down.
 
-The line at 45 degrees gave 1 even so, because it has the same rise
+The line at 45 degrees gave 1 in both versions, because it has the same rise
 and run, and $\frac{1}{1}$ upside down is still 1. A 45-degree line
 is a natural first check, but it cannot show a swap like this. A line
 where the rise and the run differ shows it.

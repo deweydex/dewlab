@@ -582,24 +582,6 @@ def compose(outer, inner):
     return both
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may use other names inside and do the
-same job.
-
-```python
-def compose(outer, inner):
-    """Return a new function that runs inner on its input, then outer on the result.
-
-    compose(outer, inner)(x) gives the same answer as outer(inner(x)).
-    """
-    def both(x):
-        return outer(inner(x))
-    return both
-```
-
-</details>
-
 The fourth row joins `sensor_celsius` to its own inverse, and 0.75
 comes straight back out. That is one way to say what an inverse is:
 $f^{-1}(f(x)) = x$ for every $x$ in the domain. The last row is the

@@ -393,7 +393,8 @@ chord subtract, and what does it divide by?
 ```
 
 The hailstone's speed at 3 seconds is 11.01498 metres a second. The
-other rows are close to 1.5, 6 and 0, but not exactly equal. The next
+first two rows are close to 1.5 and 6, but not exactly equal. The ball's
+row is 0. The next
 section says why.
 
 ## Why the step cannot be 0, or too small

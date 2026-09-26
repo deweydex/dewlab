@@ -169,7 +169,7 @@ places shows the sizes.
 </details>
 
 **7. Fix.** Schlomo, who is learning Python too, wrote his own
-`solve_simultaneous`. It has every line it needs. For the server log
+version, `solve_pair`. It has every line it needs. For the server log
 it gives (130, 100). For $3x + 2y = 80$ and $6x + 4y = 150$, there
 is no single answer. There the function stops with an error, and does
 not return `None`.

@@ -386,7 +386,7 @@ halvings take a million below 1.
 
 **14. Fix.** Schlomi wants the tens digit of a number. Her idea is to
 take the last digit, then divide it by 10. For 2026 her function gives
-0, but the tens digit is 2. Can you find the flaw in the idea, and fix
+0, but the tens digit is 2. Can you find the mistake in the idea, and fix
 it?
 
 ```python exec
