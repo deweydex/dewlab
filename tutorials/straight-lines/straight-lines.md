@@ -1,7 +1,7 @@
 ---
 title: "Straight lines: slope and gradient"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   how-steep-is-a-ramp:
     covers: [MIT-4.2]
@@ -258,29 +258,48 @@ def slope(p, q):
     return (y2 - y1) / (x2 - x1)
 ```
 
-Run your cell, then the tests. Until `slope` has its `return` line, it
-returns `None`, and the first test stops with a `TypeError`. Guess the
-answer to the third test first. Does it matter which point comes first?
+Run your cell. Then how does your `slope` compare with one way to
+write it? The table below runs the same calls on your function and on
+a solution, side by side. Until `slope` has its `return` line, it
+returns `None`, and its column shows `None`. Guess the third row
+first. Does it matter which point comes first?
 
-```python exec
-id: straight-toolkit-slope-tests
-assert close_enough(slope((1, 2), (5, 4)), 0.5)
-assert close_enough(slope((0, 6), (3, 0)), -2), "downhill is negative"
-assert close_enough(slope((5, 4), (1, 2)), slope((1, 2), (5, 4))), "either order"
-assert slope((0, 3), (7, 3)) == 0, "flat ground"
-assert close_enough(slope((0, 0), (3, 0.3)), ramp_slope), "the hall's ramp"
-print("slope keeps its promise.")
+```inputs
+for: straight-toolkit-slope
+slope((1, 2), (5, 4))
+slope((0, 6), (3, 0))      # downhill is negative
+slope((5, 4), (1, 2))      # either order: the same as the first row?
+slope((0, 3), (7, 3))      # flat ground
+slope((0, 0), (3, 0.3))    # the hall's ramp...
+ramp_slope                 # ...and its slope from the first cell
+```
+
+```solution
+for: straight-toolkit-slope
+def slope(p, q):
+    """Return the slope of the straight line through the points p and q.
+
+    p and q are (x, y) pairs with different x values.
+    slope((1, 2), (5, 4)) is 0.5, and slope((0, 6), (3, 0)) is -2.
+    """
+    x1, y1 = p
+    x2, y2 = q
+    return (y2 - y1) / (x2 - x1)
 ```
 
 ```hint
+for: straight-toolkit-slope
+after: 3 runs
 Try `print(slope((1, 2), (5, 4)))` on its own. What came back? Which two
 differences does the formula divide?
 ```
 
 The order does not matter. If we swap the points, we get
-$\frac{-2}{-4}$, which is still $0.5$. The tests use `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough), since a float can
-differ by a tiny amount.
+$\frac{-2}{-4}$, which is still $0.5$. A float can differ by a tiny
+amount, so two floats that should be equal can differ in the last
+digit. `close_enough` from
+[Does it work?](tutorial:does-it-work#close-enough) compares floats
+like these.
 
 ## A wall has no slope
 
@@ -383,27 +402,42 @@ def line_through(p, q):
     return (m, c)
 ```
 
-The tests check the answer the way Unit 7 checks every answer: put it
-back in. Both points must land on the line that comes out. The second
-test finds the TMP36 chip's rule from two readings: 0.5 volts at 0 °C,
-and 0.75 volts at 25 °C.
+How does your `line_through` compare with a solution? The first row
+of the table below is server A. The second row finds the TMP36 chip's
+rule from two readings: 0.5 volts at 0 °C, and 0.75 volts at 25 °C.
+Where a row is different, try that call on its own.
 
-```python exec
-id: straight-toolkit-line-tests
-m, c = line_through((0, 8), (10, 28))
-assert close_enough(m, 2) and close_enough(c, 8), "server A"
-m, c = line_through((0.5, 0), (0.75, 25))
-assert close_enough(m, 100) and close_enough(c, -50), "the TMP36 chip"
-
-for p, q in [((1, 2), (5, 4)), ((0, 6), (3, 0)), ((-3, 7), (2, -1.5))]:
-    m, c = line_through(p, q)
-    for x, y in [p, q]:
-        assert close_enough(m * x + c, y), (p, q)
-print("line_through keeps its promise:", line_through((1, 2), (5, 4)))
+```inputs
+for: straight-toolkit-line
+line_through((0, 8), (10, 28))       # server A
+line_through((0.5, 0), (0.75, 25))   # the TMP36 chip
+line_through((1, 2), (5, 4))
+line_through((0, 6), (3, 0))
+line_through((-3, 7), (2, -1.5))
 ```
 
+```solution
+for: straight-toolkit-line
+def line_through(p, q):
+    """Return (m, c) for the line y = mx + c through the points p and q.
+
+    p and q are (x, y) pairs with different x values.
+    line_through((0, 8), (10, 28)) is (2.0, 8.0), server A's line.
+    """
+    m = slope(p, q)
+    x1, y1 = p
+    c = y1 - m * x1
+    return (m, c)
+```
+
+Unit 7 checks every answer the same way: put it back in. Both points
+must land on the line that comes out. Can you check one of the last
+three rows like that? For $(1, 2)$ and $(5, 4)$, is $m \times 1 + c$
+equal to 2, and $m \times 5 + c$ equal to 4?
+
 ```hint
-after: 8 errors
+for: straight-toolkit-line
+after: 3 runs
 title: some steps
 1. Find `m` with your toolkit's `slope(p, q)`.
 2. Give the two values of `p` a name each: `x1, y1 = p`.

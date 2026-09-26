@@ -414,10 +414,10 @@ def power_set(values):
 for n in range(7):
     assert len(power_set(set(range(n)))) == 2 ** n, n
 print(power_set([]))
-print("power_set keeps its promise.")
 ```
 
-It prints `[set()]` and the promise line. The empty set has one subset:
+It prints `[set()]`. Each `assert` prints nothing when its promise
+holds. The empty set has one subset:
 itself. That matches $2^0 = 1$, and it is why the loop starts from
 `[set()]`, not from an empty list.
 

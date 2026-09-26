@@ -2,7 +2,7 @@
 title: "Running a formula backwards: rearranging and inverses — Practice"
 practice_for: running-a-formula-backwards
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 ---
 
 # Running a formula backwards: rearranging and inverses — Practice
@@ -171,38 +171,34 @@ test find different problems.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, writes a health app
-that turns a temperature taken in Fahrenheit into Celsius. A fever of 100.4 °F should be 38 °C, but the app says about
-82.6. Run the tests, find the line that does not do what Schlomi meant,
-and change it.
+that turns a temperature taken in Fahrenheit into Celsius. A fever of
+100.4 °F is 38 °C, but the app says about 82.6. Can you find the line
+that does not do what Schlomi meant?
 
 ```python exec
 id: running-a-practice-fix-fever
 def to_celsius(fahrenheit):
     """Return a temperature in degrees Celsius, given it in degrees Fahrenheit."""
     return fahrenheit - 32 * 5 / 9
-
-assert round(to_celsius(32), 9) == 0
-assert round(to_celsius(100.4), 9) == 38
-print("All tests pass.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+round(to_celsius(32), 9)       # freezing
+round(to_celsius(100.4), 9)    # a fever
+```
 
-The first test fails with an `AssertionError`. Python multiplies before
-it subtracts, so `fahrenheit - 32 * 5 / 9` takes away $\frac{160}{9}$,
-about 17.8, and never subtracts 32 at all. Brackets make the subtraction
-happen first:
-
-```python
+```solution
 def to_celsius(fahrenheit):
     """Return a temperature in degrees Celsius, given it in degrees Fahrenheit."""
     return (fahrenheit - 32) * 5 / 9
+---
+Python multiplies before it subtracts, so `fahrenheit - 32 * 5 / 9`
+takes away $\frac{160}{9}$, about 17.8, and never subtracts 32 at all.
+Brackets make the subtraction happen first.
+
+The formula $C = \frac{5}{9}(F - 32)$ has the brackets too, for the
+same reason.
 ```
-
-Now both tests pass. The formula $C = \frac{5}{9}(F - 32)$ has the
-brackets too, for the same reason.
-
-</details>
 
 **7. Make.** A music producer knows that a track's length in seconds is
 $\text{seconds} = \frac{\text{beats} \times 60}{\text{bpm}}$, where bpm
@@ -338,22 +334,31 @@ number. For "double", $2C = \frac{9}{5}C + 32$ gives $C = 160$.
 **11. Fix.** Schlomo, who is learning Python too, times a drone that
 flies $d$ km up a valley at 40 km/h, taking $\frac{d}{40}$ hours, and
 back at 60 km/h, taking $\frac{d}{60}$ hours. He writes the total as
-one fraction by adding the tops and adding the bottoms. Run the test,
-then fix the function.
+one fraction by adding the tops and adding the bottoms. Is his short
+form the same as the long form, $\frac{d}{40} + \frac{d}{60}$? Can you
+find the line that does not do what Schlomo meant?
 
 ```python exec
 id: running-a-practice-fix-valley
 def valley_flight_hours(distance):
     """Return the hours to fly distance km up the valley at 40 km/h and back at 60 km/h."""
     return 2 * distance / 100
-
-for distance in [3, 6, 12]:
-    assert round(valley_flight_hours(distance), 9) == round(distance / 40 + distance / 60, 9)
-print("The flight time is right.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+round(valley_flight_hours(3), 9)     # the short form...
+round(3 / 40 + 3 / 60, 9)            # ...and the long form
+round(valley_flight_hours(6), 9)
+round(6 / 40 + 6 / 60, 9)
+round(valley_flight_hours(12), 9)
+round(12 / 40 + 12 / 60, 9)
+```
 
+```solution
+def valley_flight_hours(distance):
+    """Return the hours to fly distance km up the valley at 40 km/h and back at 60 km/h."""
+    return distance / 24
+---
 Adding the tops and the bottoms, $\frac{d + d}{40 + 60}$, is not how
 fractions add. It is a reasonable guess, since it is how we might add
 two scores out of 40 and 60, but fractions of an hour add differently.
@@ -361,18 +366,11 @@ Give them a common denominator, 120, first:
 
 $$\frac{d}{40} + \frac{d}{60} = \frac{3d}{120} + \frac{2d}{120} = \frac{5d}{120} = \frac{d}{24}$$
 
-```python
-def valley_flight_hours(distance):
-    """Return the hours to fly distance km up the valley at 40 km/h and back at 60 km/h."""
-    return distance / 24
+For a 12 km valley, Schlomo's version gave 0.24 hours, and the long
+form gives half an hour. The table compares the short form with the
+long form at three distances, which is a quick way to check any
+simplifying.
 ```
-
-Now the test prints `The flight time is right.` For a 12 km valley,
-Schlomo's version gave 0.24 hours, and the long form gives half an hour.
-The test compared the short form against the long form at three
-distances, which is a quick way to check any simplifying.
-
-</details>
 
 **12. Make.** On a disk of $x$ GB, one program uses a third of the
 space, and another uses a sixth. Write $\frac{x}{3} + \frac{x}{6}$ as

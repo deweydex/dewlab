@@ -7,7 +7,7 @@ practice_across:
   - does-it-work
   - what-a-function-can-see
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 ---
 
 # Mixed problems: making your own tools
@@ -235,9 +235,9 @@ tiny distance from home, as `fahrenheit_to_celsius` showed on
 
 **7. Fix.** NASA's Perseverance rover, on Mars since 2021, has a mass
 of 1,025 kg, and American pages give it in pounds. One pound is exactly
-0.45359237 kg. This cell tests the two weight functions both ways, and
-stops with an `AssertionError`. Find the line that does not do what its
-writer meant, and change it.
+0.45359237 kg. The table under this cell sends some weights to pounds
+and back again. A weight of 1 kg does not arrive back as 1 kg. Can you
+find the line that does not do what its writer meant?
 
 ```python exec
 id: mixed-tools-fix-weight
@@ -254,29 +254,36 @@ def pounds_to_kg(pounds):
     return pounds / KG_PER_POUND
 
 
-for weight in [0, 1, 23, 1025]:
-    assert close_enough(pounds_to_kg(kg_to_pounds(weight)), weight)
-print("The weight functions work both ways.")
 print(kg_to_pounds(1025))
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+close_enough(pounds_to_kg(kg_to_pounds(0)), 0)
+close_enough(pounds_to_kg(kg_to_pounds(1)), 1)
+close_enough(pounds_to_kg(kg_to_pounds(23)), 23)
+close_enough(pounds_to_kg(kg_to_pounds(1025)), 1025)
+```
 
-`pounds_to_kg` divides, when it should multiply. The test passes at 0
-and fails at 1. A walkthrough of 1 kg shows why: `kg_to_pounds(1)` is
-about 2.2 pounds, and `pounds_to_kg` then divides 2.2 by 0.45 again,
-giving about 4.9 kg, not 1.
+```solution
+KG_PER_POUND = 0.45359237
 
-```python
+
+def kg_to_pounds(kg):
+    """Give back a weight in pounds, given it in kg."""
+    return kg / KG_PER_POUND
+
+
 def pounds_to_kg(pounds):
     """Give back a weight in kg, given it in pounds."""
     return pounds * KG_PER_POUND
+---
+`pounds_to_kg` divides, when it should multiply. The round trip
+arrives back at 0, but not at 1. A walkthrough of 1 kg shows why: `kg_to_pounds(1)` is
+about 2.2 pounds, and `pounds_to_kg` then divides 2.2 by 0.45 again,
+giving about 4.9 kg, not 1.
+
+The rover is about 2,259.7 pounds. NASA's pages round it to 2,260.
 ```
-
-Now the test passes, and the rover is about 2,259.7 pounds. NASA's pages
-round it to 2,260.
-
-</details>
 
 **8. Explain.** Schlomo, who is learning Python too, writes
 `miles_to_km` with 1.6 in place of 1.609344, and `km_to_miles` with 1.6

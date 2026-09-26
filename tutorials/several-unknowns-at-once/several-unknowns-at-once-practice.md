@@ -2,7 +2,7 @@
 title: "Several unknowns at once: simultaneous equations — Practice"
 practice_for: several-unknowns-at-once
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Several unknowns at once: simultaneous equations — Practice
@@ -169,9 +169,11 @@ places shows the sizes.
 </details>
 
 **7. Fix.** Schlomo, who is learning Python too, wrote his own
-`solve_simultaneous`. It has every line it needs. The first test
-passes, and the second stops with an error. Run it, read the error,
-and change the function so that both pass.
+`solve_simultaneous`. It has every line it needs. For the server log
+it gives (130, 100). For $3x + 2y = 80$ and $6x + 4y = 150$, there
+is no single answer. There the function stops with an error, and does
+not return `None`.
+Can you find what to change?
 
 ```python exec
 id: several-unknowns-practice-fix
@@ -183,15 +185,17 @@ def solve_pair(a1, b1, c1, a2, b2, c2):
     if determinant == 0:
         return None
     return (x, y)
+```
 
-assert solve_pair(1, 1, 230, 12, 5, 2060) == (130, 100)
-assert solve_pair(3, 2, 80, 6, 4, 150) is None
-print("solve_pair keeps its promise.")
+```inputs
+solve_pair(1, 1, 230, 12, 5, 2060)    # the server log
+solve_pair(3, 2, 80, 6, 4, 150)       # no single answer
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Read the last line of the error. Which operation failed?
+1. Run `solve_pair(3, 2, 80, 6, 4, 150)` on its own, and read the last
+   line of the error. Which operation failed?
 2. Which line of `solve_pair` does that operation, and what is
    `determinant` when it runs?
 3. The check for 0 is there. When does Python reach it?
@@ -201,15 +205,7 @@ come first?
 
 </details>
 
-<details class="dl-answer"><summary>answer</summary>
-
-The error is `ZeroDivisionError: division by zero`, on the line that
-calculates `x`. For the two backup readings the determinant is 0, and
-the function divides by it before it checks. Schlomo wrote the check
-the function needs, but it comes too late. Move it up, straight after the
-determinant:
-
-```python
+```solution
 def solve_pair(a1, b1, c1, a2, b2, c2):
     """Return (x, y) where a1x + b1y = c1 and a2x + b2y = c2, or None if there is no single answer."""
     determinant = a1 * b2 - a2 * b1
@@ -218,16 +214,17 @@ def solve_pair(a1, b1, c1, a2, b2, c2):
     x = (c1 * b2 - c2 * b1) / determinant
     y = (a1 * c2 - a2 * c1) / determinant
     return (x, y)
+---
+The error is `ZeroDivisionError: division by zero`, on the line that
+calculates `x`. For $3x + 2y = 80$ and $6x + 4y = 150$ the determinant
+is 0, and
+the function divides by it before it checks. Schlomo wrote the check
+the function needs, but it comes too late. Here it moves up, straight
+after the determinant.
 
-assert solve_pair(1, 1, 230, 12, 5, 2060) == (130, 100)
-assert solve_pair(3, 2, 80, 6, 4, 150) is None
-print("solve_pair keeps its promise.")
+The same lines, in a different order, keep the promise. The order of
+the steps matters here.
 ```
-
-Now both tests pass. The same lines, in a different order, keep the
-promise. The order of the steps matters here.
-
-</details>
 
 **8. Predict.** Before you run this, what will the picture show, and
 what will the last line print?

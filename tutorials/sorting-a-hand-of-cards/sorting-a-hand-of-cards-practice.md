@@ -494,7 +494,6 @@ for test_number in range(200):
     for count in range(random.randint(0, 20)):
         numbers.append(random.randint(0, 100))
     assert bubble_sort(numbers) == sorted(numbers), numbers
-print("bubble_sort agrees with sorted() every time.")
 ```
 
 This version compares every pair on every pass, so it makes

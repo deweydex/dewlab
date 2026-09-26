@@ -134,7 +134,6 @@ def game_score(enemies, coins, points_per_enemy=3):
 
 assert game_score(10, 4) == 34
 assert game_score(10, 4, points_per_enemy=2) == 24
-print("game_score keeps its promise.")
 ```
 
 A harder level of the game could give a different number of points for
