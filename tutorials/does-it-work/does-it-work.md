@@ -595,7 +595,7 @@ the values, while a hand trace asks you to predict them.
 ## Where to read more
 
 The dewlab page
-[Debugging a wrong answer: from symptom to cause](tutorial:finding-where-it-went-wrong)
+[Debugging: from a report to the line that caused it](tutorial:finding-where-it-went-wrong)
 follows a harder bug from the wrong answer back to its cause.
 
 PEP 8, Python's style guide, is at
