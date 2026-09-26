@@ -2,17 +2,19 @@
 title: "Matrices: adding, scaling and transposing a grid of numbers — Practice"
 practice_for: grid-of-numbers
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
+worlds:
+  pixel-art: Pictures made of small squares, the way a screen draws them.
+  photos: Photographs, and the filters that change them.
+datasets: [grace-hopper]
 ---
 
 # Matrices: adding, scaling and transposing a grid of numbers — Practice
 
-The answers are hidden in folds. Work each problem out by hand first,
-even the arithmetic ones. Then use the cells to check your work.
-
-Some cells on this page use list comprehensions, such as
-`[row[2] for row in A]`. You met these in
-[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
+Problems on reading, adding, scaling and transposing matrices, and three
+from earlier pages. Work each one out by hand first, even the arithmetic
+ones, then check it in a cell. Your own `add`, `scale`, `transpose` and
+`show` from the tutorial are already loaded on this page.
 
 ## Reading a matrix
 
@@ -22,37 +24,24 @@ A = [[4, 7, -2], [1, 0, 6], [-3, 5, 8]]
 print(A)
 ```
 
-**1.** What are the dimensions of `A`?
+**1.** What are the dimensions of `A`? And what are $a_{12}$, $a_{23}$
+and $a_{32}$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`A` is 3×3. It has three rows and three columns.
+`A` is 3×3. $a_{12} = 7$, $a_{23} = 6$ and $a_{32} = 5$, which in Python
+are `A[0][1]`, `A[1][2]` and `A[2][1]`. Maths counts from 1 and Python
+from 0; mixing the two is the commonest mistake here.
 
 </details>
 
-**2.** Find $a_{12}$, $a_{23}$ and $a_{32}$.
+**2.** Write the second row of `A` as a list, and then the third column.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$a_{12} = 7$ (row 1, column 2). $a_{23} = 6$ (row 2, column 3). $a_{32} = 5$
-(row 3, column 2).
-
-In Python these are `A[0][1]`, `A[1][2]` and `A[2][1]`. Maths notation
-counts rows and columns from 1, and Python counts from 0. Mixing the two
-up is the most common mistake in this section.
-
-</details>
-
-**3.** Write the second row of `A` as a list. Then write the third column
-as a list.
-
-<details class="dl-answer"><summary>answer</summary>
-
-The second row is `[1, 0, 6]`. That is `A[1]`.
-
-The third column is `[-2, 6, 8]`. A plain list of lists has no shortcut
-for a whole column, so we collect it one row at a time:
-`[row[2] for row in A]`.
+The second row is `A[1]`, `[1, 0, 6]`. The third column is `[-2, 6, 8]`:
+a list of lists has no shortcut for a column, so we collect it one row at
+a time, `[row[2] for row in A]`.
 
 </details>
 
@@ -60,275 +49,334 @@ for a whole column, so we collect it one row at a time:
 
 ```python exec
 id: adding-1
-def add(a, b):
-    if not (len(a) == len(b) and len(a[0]) == len(b[0])):
-        raise ValueError("shapes do not match")
-    return [[a[i][j] + b[i][j] for j in range(len(a[0]))] for i in range(len(a))]
-
-
-def scale(k, m):
-    return [[k * v for v in row] for row in m]
-
-
 X = [[2, 0, -1], [3, 1, 4]]
 Y = [[-1, 2, 0], [1, -3, 2]]
-print("X =", X)
-print("Y =", Y)
+print(add(X, Y))
 ```
 
-**4.** Work out $X + Y$ by hand. Then check it.
+**3.** Work out $2X - Y$ by hand, then $X - 2Y$. Are they the same?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\begin{bmatrix} 1 & 2 & -1 \\ 4 & -2 & 6 \end{bmatrix}$
+$2X - Y = \begin{bmatrix} 5 & -2 & -2 \\ 5 & 5 & 6 \end{bmatrix}$ and
+$X - 2Y = \begin{bmatrix} 4 & -4 & -1 \\ 1 & 7 & 0 \end{bmatrix}$. There
+is no reason for them to agree, any more than $2(3) - 5$ and $3 - 2(5)$
+do.
 
 </details>
 
-**5.** Work out $2X - Y$.
+**4.** Can you write `subtract(a, b)` with no loop at all, using only
+`add` and `scale`?
+
+```python exec
+id: grid-subtract
+def subtract(a, b):
+    """A new matrix: b taken away from a, position by position."""
+    ...
+
+
+print(subtract(X, Y))
+```
+
+```inputs
+subtract(X, Y)
+subtract([[5]], [[5]])
+subtract([[1, 2]], [[3, 5]])
+```
+
+```hint
+Taking away `b` is adding minus `b`. Which scalar turns `b` into minus
+`b`?
+```
+
+```solution
+def subtract(a, b):
+    """A new matrix: b taken away from a, position by position."""
+    return add(a, scale(-1, b))
+
+
+print(subtract(X, Y))
+---
+One line, built from two operations you already trust, and it inherits
+`add`'s shape check for free.
+```
+
+**5.** A layer of a neural network updates its weights with
+$W_{\text{new}} = W_{\text{old}} - \alpha G$, where $\alpha = 0.1$. With
+$W_{\text{old}} = \begin{bmatrix} 0.5 & -0.3 \\ 1.2 & 0.8 \end{bmatrix}$
+and $G = \begin{bmatrix} 0.4 & -0.2 \\ 0.6 & 1.0 \end{bmatrix}$, what is
+$W_{\text{new}}$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\begin{bmatrix} 5 & -2 & -2 \\ 5 & 5 & 6 \end{bmatrix}$
-
-First scale: $2X = \begin{bmatrix} 4 & 0 & -2 \\ 6 & 2 & 8 \end{bmatrix}$.
-Then subtract $Y$ from that. The result is the answer above.
-
-</details>
-
-**6.** Work out $X - 2Y$. Is it the same as $2X - Y$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\begin{bmatrix} 4 & -4 & -1 \\ 1 & 7 & 0 \end{bmatrix}$. This is not the
-same as the answer to problem 5.
-
-There is no reason for $X - 2Y$ and $2X - Y$ to be equal. With plain
-numbers, $3 - 2(5) = -7$ and $2(3) - 5 = 1$ are not equal either.
-Addition does not care about order, but that does not mean you can move
-the scalar from one matrix to the other.
+$\alpha G = \begin{bmatrix} 0.04 & -0.02 \\ 0.06 & 0.10 \end{bmatrix}$, so
+$W_{\text{new}} = \begin{bmatrix} 0.46 & -0.28 \\ 1.14 & 0.70
+\end{bmatrix}$. Each weight moves a small step against its entry in $G$:
+one `scale` and one subtraction, repeated millions of times, is how a
+network is trained.
 
 </details>
 
-**7.** A layer of a neural network updates its weights with this rule,
-where $\alpha = 0.1$:
-
-$$W_{\text{new}} = W_{\text{old}} - \alpha G$$
-
-$$W_{\text{old}} = \begin{bmatrix} 0.5 & -0.3 \\ 1.2 & 0.8 \end{bmatrix}, \quad
-G = \begin{bmatrix} 0.4 & -0.2 \\ 0.6 & 1.0 \end{bmatrix}$$
-
-Work out $W_{\text{new}}$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$\begin{bmatrix} 0.46 & -0.28 \\ 1.14 & 0.70 \end{bmatrix}$
-
-First work out $\alpha G = \begin{bmatrix} 0.04 & -0.02 \\ 0.06 & 0.10 \end{bmatrix}$.
-Then subtract that from $W_{\text{old}}$.
-
-Each weight moves a small step in the opposite direction to its entry
-in $G$. This is the basic step in training a neural network: one `scale`
-and one subtraction, repeated millions of times.
-
-</details>
-
-## The shape rule
+## The shape rule and the transpose
 
 ```python exec
 id: shape-1
 P = [[1, 2], [3, 4], [5, 6]]
 Q = [[1, 2, 3], [4, 5, 6]]
-print("P is", len(P), "by", len(P[0]))
-print("Q is", len(Q), "by", len(Q[0]))
+print("P is", len(P), "by", len(P[0]), "and Q is", len(Q), "by", len(Q[0]))
+print(transpose(Q) == P)
 ```
 
-**8.** Can we work out `P + Q`? If not, what shape would `Q` need to be?
+```predict
+Will `transpose(Q)` be the same as `P`?
+
+- True
+  - Q has the shape of P turned sideways.
+- False
+  - The shape is right, but the numbers are in different places.
+```
+
+**6.** Can `P + Q` be worked out? If not, what shape would `Q` need to be?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. `P` is 3×2 and `Q` is 2×3. Addition needs the same shape. `Q` has
-the shape of `P` turned sideways, and that is not enough.
-
-For `P + Q` to work, `Q` would also need to be 3×2. It needs the same
-number of rows and the same number of columns as `P`. Having the same
-total number of entries is not enough.
+No: `P` is 3×2 and `Q` is 2×3, and addition needs the same shape. The
+same number of entries is not enough. And `transpose(Q)` is 3×2, but
+it is `[[1, 4], [2, 5], [3, 6]]`, not `P`: the right shape with the
+numbers in other places.
 
 </details>
 
-**9.** Suppose your `add` from the tutorial checks the shapes before it
-loops. What does `add(P, Q)` raise, and what does the message say?
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Look back at the shape check you wrote: `len(a) == len(b) and len(a[0]) == len(b[0])`.
-2. Work out `len(P)` and `len(Q)`. Are they equal?
-3. The check fails. Which branch of the `if` runs?
-4. That branch is a `raise`, not a `return`. So the function stops
-   there, before any loop starts.
-
-**Think about:** what would happen without the check. How far into the
-nested loop would Python get before something broke?
-
-**Try this next:** call `add` on two matrices with the same number of
-rows but a different number of columns. Does the same check catch that
-case too?
-
-</details>
+**7.** If $M$ is 4×7, what shape is $M^T$? And what does the transpose of
+an *upper-triangular* matrix look like, one with zeros everywhere below
+the diagonal?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It raises `ValueError: shapes do not match`, or whatever message your own
-check used.
-
-`len(P)` is 3 and `len(Q)` is 2. So the first half of the `and` is
-already false, and Python does not look at the columns at all. The
-function raises the error straight away, before the loop runs even once.
+7×4: the transpose swaps the two dimensions. The zeros below the
+diagonal move above it, so the transpose is *lower-triangular*. The
+diagonal itself never moves.
 
 </details>
 
-## The transpose
+**8.** Can you write `is_symmetric(m)`, which says whether a matrix is its
+own transpose?
 
 ```python exec
-id: transpose-1
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
+id: grid-is-symmetric
+def is_symmetric(m):
+    """True when m is the same as its own transpose."""
+    ...
 
 
-N = [[1, 2, 3], [0, 4, 5], [0, 0, 6]]
-print(transpose(N))
+print(is_symmetric([[2, -3], [-3, 5]]))
 ```
 
-**10.** If $M$ is 4×7, what is the shape of $M^T$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$M^T$ is 7×4. The transpose always swaps the two dimensions. So a square
-matrix stays square, and a matrix that is not square changes shape.
-
-</details>
-
-**11.** Is $\begin{bmatrix} 2 & -3 \\ -3 & 5 \end{bmatrix}$ symmetric?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Yes. When we swap the rows and the columns, every entry lands back in
-the same place. The two entries off the diagonal are both $-3$. The
-diagonal never moves in a transpose.
-
-A matrix is symmetric when this mirroring works for every pair of
-positions, not only the one pair you checked. Here there is only one
-pair, so one check is enough.
-
-</details>
-
-**12.** `N` above is *upper-triangular*: all the entries below its
-diagonal are zero. What does `transpose(N)` look like? What would you
-call the result?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`[[1, 0, 0], [2, 4, 0], [3, 5, 6]]`. This is *lower-triangular*: all the
-entries above its diagonal are zero. The zeros that were below the
-diagonal have moved above it. The diagonal itself (1, 4, 6) does not
-move.
-
-</details>
-
-## Writing them
-
-**13.** Write `add(a, b)` with a shape check, from the beginning.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def add(a, b):
-    if not (len(a) == len(b) and len(a[0]) == len(b[0])):
-        raise ValueError("shapes do not match")
-    rows, cols = len(a), len(a[0])
-    return [[a[i][j] + b[i][j] for j in range(cols)] for i in range(rows)]
+```inputs
+is_symmetric([[2, -3], [-3, 5]])
+is_symmetric([[1, 2], [3, 4]])
+is_symmetric([[1, 2, 3]])
+is_symmetric([[7]])
 ```
 
-The check goes before the loop, not inside it. A check inside the loop
-would work, but the function might then fail at entry 50 of 100, not
-straight away. That error is harder to track down.
+```solution
+def is_symmetric(m):
+    """True when m is the same as its own transpose."""
+    return transpose(m) == m
 
-</details>
 
-**14.** Write `transpose(m)` from the beginning.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def transpose(m):
-    rows, cols = len(m), len(m[0])
-    return [[m[r][c] for r in range(rows)] for c in range(cols)]
+print(is_symmetric([[2, -3], [-3, 5]]))
+---
+A 1×3 matrix is never symmetric: its transpose is 3×1, a different
+shape, so `==` is `False` at once. Only a square matrix can be.
 ```
 
-The outer loop runs over `cols`, not `rows`. This is the detail to check
-twice. The result has `cols` rows and `rows` columns, the opposite of
-`m`.
-
-</details>
-
-## Thinking about it
-
-**15.** Does the order matter? Is scaling a matrix and then transposing
-it the same as transposing it and then scaling it?
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Pick a small matrix and a scalar. Try both orders in a cell.
-2. Compare the two results entry by entry. Do not only glance at them.
-3. Think about what each operation does. Scaling multiplies every entry
-   by the same number. Transposing moves each entry to a mirrored
-   position, but it never combines two entries.
-4. Can moving an entry and multiplying it ever get in each other's way?
-
-**Think about:** which of the four operations in this tutorial (add,
-scale, the shape check, transpose) combine two different numbers into
-one. Which ones only move or multiply single numbers on their own?
-
-**Try this next:** does the same reasoning work for
-`add(scale(k, a), scale(k, b))` compared with `scale(k, add(a, b))`?
-
-</details>
+**9.** Is scaling and then transposing the same as transposing and then
+scaling?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No, the order does not matter. Scaling multiplies each entry on its own.
-Transposing only moves entries to a mirrored position. Neither operation
-looks at more than one entry at a time. So in either order, the same
-entries get the same multiplication.
-
-This changes when an operation combines two different entries. Matrix
-multiplication, on the next page,
-[Matrix multiplication: rows times columns](tutorial:multiplying-grids),
-does exactly that. Remember this question when you get there.
+Yes. Scaling multiplies each entry on its own, and transposing only
+moves entries; neither combines two entries into one, so the order
+cannot matter. Matrix multiplication, which does combine entries, is
+where order starts to matter: two pages on.
 
 </details>
 
-**16.** An image classifier sorts pictures into Cat, Dog and Bird. Its
-*confusion matrix* counts its answers. The rows are the true label and
-the columns are the label the classifier chose, in the order Cat, Dog,
-Bird:
-
-$$C = \begin{bmatrix} 850 & 30 & 20 \\ 15 & 920 & 25 \\ 10 & 20 & 970 \end{bmatrix}$$
-
-1. How many dogs did the classifier label as birds?
-2. What is its overall accuracy? Accuracy is the sum of the diagonal,
-   divided by the sum of every entry.
+**10.** An image classifier sorts pictures into Cat, Dog and Bird. Its
+*confusion matrix* has the true label as rows and the classifier's
+answer as columns, in that order:
+$C = \begin{bmatrix} 850 & 30 & 20 \\ 15 & 920 & 25 \\ 10 & 20 & 970
+\end{bmatrix}$. How many dogs were called birds, and what share of all
+the answers were right?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. 25 dogs were labelled as birds. That entry is in row 2 (Dog), column 3
-   (Bird).
-2. The diagonal adds up to $850 + 920 + 970 = 2740$. All the entries add
-   up to $2860$. So the accuracy is $2740 / 2860 \approx 95.8\%$.
+25, in row 2 (Dog), column 3 (Bird). The diagonal holds the right
+answers: $\frac{850 + 920 + 970}{2860} = \frac{2740}{2860} \approx
+95.8\%$. A matrix can store data without ever being added or multiplied.
 
-The diagonal holds every example the classifier got right. Every entry
-off the diagonal is a mistake, and its position says what kind of
-mistake it was. Here the matrix is used to store data. We do not add or
-multiply it.
+</details>
+
+## Your world
+
+**11.** A new operation from the three you have.
+
+<div class="dl-world" data-world="pixel-art">
+
+`mirror(m)` reverses each row, a mirror left to right. Transposing and
+mirroring are both flips. What do you get if you transpose the F and then
+mirror it? And mirror it, then transpose?
+
+```python exec
+id: grid-world--pixel-art
+flag = [
+    [9, 9, 9, 9],
+    [9, 0, 0, 0],
+    [9, 9, 9, 0],
+    [9, 0, 0, 0],
+    [9, 0, 0, 0],
+]
+
+
+def mirror(m):
+    """A new matrix: each row of m reversed, a mirror left to right."""
+    return [row[::-1] for row in m]
+
+
+show(mirror(transpose(flag)))
+```
+
+```predict
+What does transposing and then mirroring do to the F?
+
+- A quarter turn clockwise
+  - Two flips across lines that meet at an angle make a turn.
+- A half turn
+  - Two flips, twice as far.
+- A mirror image of the F
+  - Two flips are still a flip.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A quarter turn clockwise; and mirroring first, then transposing, turns
+it a quarter anticlockwise. Two flips across lines that meet at 45°
+make a turn of 90°. The order decides which way it turns: the first sign
+that doing one thing then another depends on the order, which the page
+after next makes precise.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="photos">
+
+A photographic *negative* swaps light and dark: 0 becomes 255, and 255
+becomes 0. Can you make the negative of the portrait with `add` and
+`scale`, and no loop of your own?
+
+```python exec
+id: grid-world--photos
+import matplotlib.pyplot as plt
+
+text = await load_text("grace-hopper.csv")
+photo = [[int(value) for value in line.split(",")] for line in text.splitlines()]
+white = [[255] * 60 for i in range(70)]
+
+
+def negative(picture):
+    """A new picture: every value v becomes 255 - v."""
+    ...
+```
+
+```inputs
+negative([[0, 255, 100]])
+negative(photo)[0][:3]
+```
+
+```hint
+255 − v is the white picture plus minus the photo: `add(white, scale(-1,
+picture))`. For a picture of another size, `white` would need to match
+it.
+```
+
+```solution
+import matplotlib.pyplot as plt
+
+text = await load_text("grace-hopper.csv")
+photo = [[int(value) for value in line.split(",")] for line in text.splitlines()]
+white = [[255] * 60 for i in range(70)]
+
+
+def negative(picture):
+    """A new picture: every value v becomes 255 - v."""
+    white = [[255] * len(picture[0]) for row in picture]
+    return add(white, scale(-1, picture))
+
+
+plt.imshow(negative(photo), cmap="gray", vmin=0, vmax=255)
+plt.axis("off")
+---
+The white picture has to be the same shape as the one it is added to,
+so the solution builds one to fit. `[[255] * 60 for i in range(70)]`
+makes 70 separate rows; `[[255] * 60] * 70` would make one row shared 70
+times, the aliasing trap, which does no harm here only because `add`
+never changes its inputs.
+```
+
+</div>
+
+## From earlier
+
+**12.** From *Comprehensions, grids and aliasing*. What does this print?
+
+```python exec
+id: grid-from-earlier-aliasing
+grid = [[0] * 3] * 3
+grid[0][0] = 5
+print(grid)
+```
+
+```predict
+What will it print?
+
+- [[5, 0, 0], [0, 0, 0], [0, 0, 0]]
+  - Only the first row's first number was changed.
+- [[5, 0, 0], [5, 0, 0], [5, 0, 0]]
+  - The three rows are one row, three times.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`[[5, 0, 0], [5, 0, 0], [5, 0, 0]]`. `* 3` copies the reference to one
+list three times, so there is one row with three names. This is why the
+tutorial's functions build a new list for every row.
+
+</details>
+
+**13.** From *Reading an error message*. Drawing `scale(2, pixels)` with
+the ten-character `ramp` raised `IndexError: string index out of
+range`. Which line would the traceback point to, and why is the error
+true but not the whole story?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The line `ramp[value]`, where 18 is past the last character. It is
+true: there is no `ramp[18]`. But the cause is earlier, in `scale`,
+which made the numbers larger than the picture can draw. A traceback
+points where the program noticed, which is not always where it went
+wrong.
+
+</details>
+
+**14.** From *Repeating steps with loops*. How many times does the
+inner line run when `add` adds two 70×60 pictures?
+
+<details class="dl-answer"><summary>answer</summary>
+
+$70 \times 60 = 4{,}200$ times: once for every position. A photo a
+thousand pixels square is a million additions, which is why the NumPy
+page at the end of the series matters.
 
 </details>
