@@ -132,6 +132,11 @@ print(17 % 5)      # remainder: what is left over
 | `%` | remainder, also called modulo | `17 % 5` | `2` |
 | `**` | power | `2 ** 3` | `8` |
 
+Two of these hold surprises: `**` is not the only sign people use for a
+power, and `//` does something unexpected with negative numbers. The
+closer looks at [powers](tutorial:powers-in-python) and at
+[dividing](tutorial:dividing-in-python) test both.
+
 The last two work as a pair. Five goes into 17 three times, with 2 left
 over. `17 // 5` counts the whole fives, and `17 % 5` gives what is left.
 The remainder appears more often than you might expect. A number is even

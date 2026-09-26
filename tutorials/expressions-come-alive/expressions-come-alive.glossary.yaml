@@ -55,3 +55,15 @@ entries:
       A representation is the way we choose to store something as data.
       Storing a polynomial as a coefficient list turns adding polynomials
       into adding list items.
+  - term: identity
+    kind: concept
+    definition: >
+      An identity is an equation that is true for every value of x, such
+      as (x + 1)^2 = x^2 + 2x + 1. A correct expansion is always an
+      identity. An equation such as 3x + 7 = 22 is true for only one x.
+  - term: "(a + b)^2"
+    kind: formula
+    definition: >
+      (a + b)^2 = a^2 + 2ab + b^2. It is not a^2 + b^2: the middle term
+      2ab comes from multiplying a by b twice, once each way.
+    example: "(3 + 4) ** 2  # 49, and 3 ** 2 + 4 ** 2 is only 25"

@@ -1,70 +1,70 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# First tutorial of the Problem Solving series. Checked against every
-# other glossary file in computational-methods (python-fundamentals,
-# matrices, simulation, algorithms) -- no overlap. "binary search" is
-# reused, already taught in mit-pdp-maths-prog-integration's
-# finding-things.glossary.yaml, so it is used in prose here without
-# emphasis and not glossaried again. "bug", "debugging" and "logical
-# error" are taught in when-it-goes-wrong and reading-an-error-message.
+# The Problem Solving series has one tutorial. Checked against every other
+# glossary file in computational-methods. "index", ".split()", "max()",
+# "aliasing", "seed", "random.seed()" and "random.randint()" are taught
+# earlier in the course and are used here without a new entry. The five
+# habits (initiative and the rest) are the syllabus's names for CMPS-LO12,
+# named on the page after the reader has used each one.
 entries:
-  - term: pipeline
+  - term: log
     kind: concept
     definition: >
-      A pipeline is a program made of stages, where each stage passes its
-      result on to the next one.
+      A log is a written record of how you look for a bug. For each idea
+      it has three lines: your guess about the cause, the test you ran,
+      and what happened.
 
   - term: symptom, cause
     kind: concept
     definition: >
-      A symptom is what you can see going wrong, such as a wrong final
-      answer. The cause is the mistake in the code that produced it. The
-      cause is often in a different place from the symptom.
+      A symptom is what you can see going wrong, such as a crash or a
+      wrong answer. The cause is the mistake in the code that makes it
+      happen. A fix for the symptom can hide the cause, and the cause
+      stays in the code.
 
-  - term: pragmatic problem-solving
+  - term: bisection
     kind: concept
     definition: >
-      Pragmatic problem-solving treats the symptom directly, without
-      asking why it appeared. It can make one failing case pass while the
-      real fault stays in place, ready to show up somewhere else.
+      Bisection finds a bug by checking the middle of a program first.
+      You keep the half that still goes wrong, and check the middle of
+      that half. Each check cuts the search in two.
 
-  - term: semantic analysis
+  - term: minimal reproduction
     kind: concept
     definition: >
-      Semantic analysis traces a wrong result back to the step that
-      produced it. It answers why something went wrong, and not only
-      where the problem became visible.
+      A minimal reproduction is the smallest program, or the smallest
+      input, that still shows a bug. You find it by making the example
+      shorter for as long as the bug is still there.
 
-  - term: initiative
+  - term: pragmatic problem-solving, semantic analysis
     kind: concept
     definition: >
-      Initiative is starting a check that nobody asked for, such as
-      testing against a known answer before anything has visibly gone
-      wrong.
+      These are the course description's names for two ways to respond to
+      a bug. Pragmatic problem-solving treats the symptom. Semantic
+      analysis finds the cause.
 
-  - term: methodical approach
+  - term: initiative, a methodical approach, logical reasoning, persistence, lateral thinking
     kind: concept
     definition: >
-      A methodical approach asks the same kind of question at each stage
-      of a problem, in order, instead of jumping straight to a guess.
+      These are five habits that help to find a bug. Initiative starts a
+      test nobody asked for. A methodical approach asks the same questions
+      each time, in order. Logical reasoning uses what one check showed to
+      choose the next. Persistence continues after the symptom has gone.
+      Lateral thinking chooses a test that nothing in the problem
+      suggested.
 
-  - term: logical reasoning
-    kind: concept
+  - term: "repr()"
+    kind: function
+    python: repr
     definition: >
-      Logical reasoning is using what one check has ruled out to decide
-      what to check next, so that each step narrows down where a fault
-      can be.
+      Returns a value written the way it looks in code. Text keeps its
+      quotes, so empty text shows as '' and does not disappear.
+    example: "print(repr(''))"
 
-  - term: persistence
-    kind: concept
+  - term: "round()"
+    kind: function
+    python: round
     definition: >
-      Persistence is going on past the point where a quick fix already
-      looks finished, until the real cause is found.
-
-  - term: lateral thinking
-    kind: concept
-    definition: >
-      Lateral thinking is choosing a test or an approach that nothing in
-      the problem suggested. Testing a temperature program at freezing
-      and boiling point is an example: it is not the obvious first choice,
-      but it is the test that catches the bug.
+      Returns a number rounded to the number of decimal places you give.
+      With no places given, it rounds to a whole number.
+    example: "round(2.500000000000001, 1)"

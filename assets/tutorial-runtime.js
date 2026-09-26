@@ -4779,7 +4779,7 @@ function announceCellRun(cell) {
   }, 0);
 }
 
-/* Sliders (#329, 7.261). `slider()` renders its markup into the output like
+/* Sliders (#329, 7.264). `slider()` renders its markup into the output like
  * any widget, but a slider that re-runs its own cell cannot live there: the
  * run clears the output, and the thumb would vanish from under the reader's
  * pointer halfway through a drag. So after each run, reconcileSliders()

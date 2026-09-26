@@ -2,7 +2,12 @@
 title: "Functions and their graphs — Practice"
 practice_for: drawing-functions
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  rockets: Rockets, launches and the arcs they fly. The numbers are made up.
+  electronics: Batteries, resistors and the power between them. The numbers are made up.
+  music: Notes, octaves and the frequencies that make them.
+  fantasy-maps: A made-up kingdom, with its roads drawn on a grid.
 ---
 
 # Functions and their graphs — Practice
@@ -127,17 +132,18 @@ $y = 4$ is a flat line at height 4. It never reaches the origin.
 **6.** Plot $y = 2x + 1$ and $y = -x + 7$ on one pair of axes.
 
 1. Find the point where they cross on the plot.
-2. Check your answer by solving the equation.
+2. Check your answer by putting its $x$ into both lines.
 
 <details class="dl-answer"><summary>answer</summary>
 
 They cross at $(2, 5)$.
 
-By algebra: $2x + 1 = -x + 7$, so $3x = 6$ and $x = 2$. Then
-$y = 2(2) + 1 = 5$.
-
-The two methods agree, so we can trust the picture. That means we can
-use it where the algebra is harder.
+At $x = 2$, the first line gives $2(2) + 1 = 5$ and the second gives
+$-2 + 7 = 5$. Both give 5, so $(2, 5)$ is on both lines.
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+finds the same point with algebra. Once the picture and the check agree
+on a question like this, we can use the picture where the algebra is
+harder.
 
 </details>
 
@@ -204,21 +210,57 @@ to bottom right.
 
 </details>
 
+**11.** Before you plot: where is the lowest point of $(x + 3)^2$? And
+of $(x + 3)^2 - 4$?
+
+```python exec
+id: where-is-the-bottom
+ax = draw(lambda x: (x + 3) ** 2, low=-8, high=2, label="(x + 3)^2")
+ax.set_ylim(-5, 20)
+draw(lambda x: (x + 3) ** 2 - 4, low=-8, high=2, label="(x + 3)^2 - 4", ax=ax)
+```
+
+```predict
+type: choice
+
+Where is the lowest point of $(x + 3)^2$?
+
+- At $x = 3$
+  - The bracket has $+3$ in it, so the curve should move 3 along.
+- At $x = -3$
+- At $x = 0$, 3 higher
+  - Adding 3 lifted $x^2 + 3$ by 3 in the tutorial.
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$(x + 3)^2$ has its lowest point at $(-3, 0)$, and $(x + 3)^2 - 4$ at
+$(-3, -4)$.
+
+The bracket is zero at $x = -3$, so that is where the square is
+smallest. A $+3$ inside the bracket moves the curve 3 to the *left*,
+the opposite way to its sign. The $-4$ outside moves it 4 down, the
+same way as its sign.
+
+</details>
+
 ## Reading answers off the picture
 
-**11.** Plot $y = x^2 - 3x - 4$ and read its roots from the plot. Then check them
-with the quadratic formula.
+**12.** Plot $y = x^2 - 3x - 4$ and read its roots from the plot. Then check
+each one by putting it back into the expression.
 
 <details class="dl-answer"><summary>answer</summary>
 
 The curve crosses at $-1$ and 4.
 
-With the formula: the discriminant is $9 + 16 = 25$, so the roots are
-$\dfrac{3 \pm 5}{2}$, which gives 4 and $-1$.
+At $x = -1$: $1 + 3 - 4 = 0$. At $x = 4$: $16 - 12 - 4 = 0$. Both give
+0, so both are roots. The quadratic formula in
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+finds the same two numbers.
 
 </details>
 
-**12.** Solve $x^3 - 2x = 1$ from a picture, to one decimal place.
+**13.** Solve $x^3 - 2x = 1$ from a picture, to one decimal place.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -232,19 +274,20 @@ The picture needs no trick, so it is often the easier way.
 
 </details>
 
-**13.** Where do $y = x^2$ and $y = x + 2$ cross? Read it from the
+**14.** Where do $y = x^2$ and $y = x + 2$ cross? Read it from the
 picture, then check.
 
 <details class="dl-answer"><summary>answer</summary>
 
 At $(-1, 1)$ and $(2, 4)$.
 
-To check, set them equal: $x^2 = x + 2$, so $x^2 - x - 2 = 0$. This
-factorises as $(x - 2)(x + 1) = 0$, so $x = 2$ or $x = -1$.
+To check, put each $x$ into both. At $x = -1$, $x^2 = 1$ and
+$x + 2 = 1$. At $x = 2$, $x^2 = 4$ and $x + 2 = 4$. The curves meet
+exactly where the two values agree.
 
 </details>
 
-**14.** A ball is thrown upwards. Its height in metres after $t$ seconds
+**15.** A ball is thrown upwards. Its height in metres after $t$ seconds
 is $h = 20t - 4.9t^2$. Plot it, then answer:
 
 1. When does the ball land?
@@ -252,9 +295,11 @@ is $h = 20t - 4.9t^2$. Plot it, then answer:
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. It lands when the height comes back to zero, at about $t = 4.08$
-   seconds. To see this with algebra, set $20t - 4.9t^2 = 0$. That gives
-   $t(20 - 4.9t) = 0$, so $t = 0$ or $t = 20/4.9$.
+1. It lands when the height is zero again, at about $t = 4.08$
+   seconds. Check it: $20 \times 4.08 - 4.9 \times 4.08^2$ is about
+   0.03. [Solving equations: linear, quadratic and
+   simultaneous](tutorial:cracking-equations) finds the exact time,
+   $\frac{20}{4.9}$.
 2. The highest point is halfway between the two roots, at
    $t \approx 2.04$. There the height is about 20.4 m.
 
@@ -265,7 +310,7 @@ between the roots.
 
 ## Inverses
 
-**15.** What is the inverse of each function?
+**16.** What is the inverse of each function?
 
 - (a) $f(x) = x + 7$
 - (b) $f(x) = 5x$
@@ -282,16 +327,19 @@ between the roots.
 
 (d) The cube root, $\sqrt[3]{x}$, which is $x^{1/3}$.
 
-Each inverse undoes the steps in reverse order. We did the same in
-[Rearranging formulae: changing the subject](tutorial:rearranging-formulae).
+Each inverse undoes the steps in reverse order.
+[Rearranging formulae: changing the subject](tutorial:rearranging-formulae)
+does the same with formulas.
 
 A warning for (d) in Python: `x ** (1/3)` works for positive `x`, but
-for a negative `x` it gives a complex number. Try `(-8) ** (1/3)` to
-see.
+for a negative `x` it does not give $-2$. Try `(-8) ** (1/3)` to see a
+strange-looking answer with a `j` in it.
+[Complex numbers: roots that are not real](tutorial:complex-roots)
+explains what that is.
 
 </details>
 
-**16.** Check one of your answers with a round trip: send several values
+**17.** Check one of your answers with a round trip: send several values
 through the function and then through its inverse.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -307,7 +355,7 @@ also give `x` again.
 
 </details>
 
-**17.** Why does $x^2$ have no inverse over all the numbers, when $x^3$
+**18.** Why does $x^2$ have no inverse over all the numbers, when $x^3$
 does?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -315,7 +363,7 @@ does?
 Both 3 and $-3$ square to 9. So the inverse of 9 has two possible
 answers, and a function may give only one.
 
-Cubing never sends two numbers to the same place. The sign stays: the
+Cubing never sends two numbers to the same place. The sign stays, so the
 cube of a negative number is negative. No two different numbers have the
 same cube, so the cube root is a function for every number.
 
@@ -324,7 +372,7 @@ or more. `math.sqrt` does this. It gives only the positive root.
 
 </details>
 
-**18.** Plot $y = 2x + 1$, its inverse, and $y = x$ on one pair of axes.
+**19.** Plot $y = 2x + 1$, its inverse, and $y = x$ on one pair of axes.
 What do you notice?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -339,7 +387,7 @@ inverse is the graph of the function, reflected across the diagonal.
 
 ## One longer problem
 
-**19.** A shop's profit, in euro, from selling $n$ items is
+**20.** A shop's profit, in euro, from selling $n$ items is
 $P(n) = -0.5n^2 + 30n - 200$.
 
 1. Plot it for $n$ from 0 to 60.
@@ -360,8 +408,168 @@ $P(n) = -0.5n^2 + 30n - 200$.
    falls forever, but a real business would not keep making items at a
    loss.
 
-**A model works over the range of data it was built from. Outside that
-range, it may not.** Think about this before you use any model past its
-data.
+</details>
+
+## Your world
+
+**21.** A problem from the world you chose.
+
+<div class="dl-world" data-world="rockets">
+
+A rocket's height is $2 + 15t - 4.9t^2$ metres. Plot it. When does it
+land, and how high does it go? Read both from the picture, then check
+the landing time by putting it back in.
+
+```python exec
+id: your-world--rockets
+def height(t):
+    return 2 + 15 * t - 4.9 * t ** 2
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It lands at about 3.19 s, and its highest point is about 13.5 m, near
+$t = 1.5$.
+
+```python
+ax = draw(height, low=0, high=3.5, label="height")
+print(height(3.18), height(3.19))
+```
+
+`height(3.18)` is about 0.15 and `height(3.19)` about $-0.01$, so it
+lands between them, very close to 3.19 s. The top is halfway between the launch and the
+moment the rocket would fall back to its 2 m platform, at
+$t = 15 / 9.8 \approx 1.53$ s.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="electronics">
+
+The 12 V supply with 2 ohms inside gives $V = 12 - 2I$ volts at a
+current of $I$ amps. A 4 ohm resistor needs $V = 4I$. When the resistor
+is connected to the supply, both must be true at once. Plot both lines,
+and read the current and the voltage where they cross.
+
+```python exec
+id: your-world--electronics
+fig, ax = plt.subplots()
+ax.grid(alpha=0.3)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+They cross at $I = 2$ A and $V = 8$ V.
+
+```python
+draw(lambda current: 12 - 2 * current, low=0, high=6, label="supply", ax=ax)
+draw(lambda current: 4 * current, low=0, high=6, label="4 ohm resistor", ax=ax)
+```
+
+Check it: $12 - 2 \times 2 = 8$ and $4 \times 2 = 8$. With a 2 ohm
+resistor in its place, the lines cross at 3 A and 6 V. Engineers call
+the crossing the *operating point*.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="music">
+
+The frequency $n$ semitones above 440 Hz is $440 \times 2^{n/12}$.
+Plot it for $n$ from 0 to 24. Is it a straight line? What is the
+frequency at $n = 12$ and at $n = 24$?
+
+```python exec
+id: your-world--music
+def frequency(n):
+    return 440 * 2 ** (n / 12)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It is not straight. It bends upwards. At $n = 12$ it is 880 Hz, and at
+$n = 24$ it is 1760 Hz.
+
+```python
+draw(frequency, low=0, high=24, label="frequency")
+print(frequency(12), frequency(24))
+```
+
+The first octave adds 440 Hz and the second adds 880 Hz, although each
+is 12 semitones. Each octave doubles the frequency, so the curve climbs
+faster and faster. It is a power, $2^{n/12}$, not a line.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A straight road runs from the village at $(-4, 1)$ to the castle at
+$(4, 5)$. Can you find its equation, $y = mx + c$, and draw it with
+the two places marked?
+
+```python exec
+id: your-world--fantasy-maps
+fig, ax = plt.subplots()
+ax.grid(alpha=0.3)
+ax.set_aspect("equal")
+ax.plot([-4, 4], [1, 5], "o")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$y = 0.5x + 3$.
+
+The road rises $5 - 1 = 4$ km while it goes $4 - (-4) = 8$ km east, so
+the slope is $\frac{4}{8} = 0.5$. At the village, $1 = 0.5 \times (-4) + c$,
+so $c = 3$.
+
+```python
+draw(lambda x: 0.5 * x + 3, low=-5, high=5, label="road", ax=ax)
+```
+
+The line passes through both marked points.
+
+</details>
+
+</div>
+
+## From earlier
+
+**22.** In
+[Dictionaries: looking things up by name](tutorial:looking-things-up-by-name)
+we stored values under keys. Is a dictionary a function in the
+mathematical sense? What are its domain and its range?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Yes. Each key has exactly one value, and looking up the same key
+always gives the same value, until you change the dictionary. The
+domain is the set of keys, and the range is the set of values.
+
+Two keys can have the same value, as $x^2$ gives the same output for 3
+and $-3$. Then the dictionary has no inverse. From the value alone, you
+cannot tell which key it came from.
+
+</details>
+
+**23.** In [Number types, powers and logarithms](tutorial:numbers-and-their-families)
+we found that ten doublings take 1 past 1000. Plot $2^x$ for $x$ from
+0 to 12, with the flat line at 1000, and read where they cross.
+
+<details class="dl-answer"><summary>answer</summary>
+
+They cross a little before $x = 10$, at about 9.97.
+
+```python
+ax = draw(lambda x: 2 ** x, low=0, high=12, label="2^x")
+draw(lambda x: 1000, low=0, high=12, label="1000", ax=ax)
+```
+
+The exact answer is $\log_2 1000 \approx 9.97$. The logarithm and the
+crossing are the same question, answered in two ways.
 
 </details>

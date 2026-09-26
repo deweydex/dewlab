@@ -1,7 +1,7 @@
 ---
 title: "Parabolas: completing the square"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   every-quadratic-is-the-same-curve:
     covers: [MIT-3.4]
@@ -11,6 +11,10 @@ covers:
     covers: [MIT-3.4]
   roots-from-the-same-form:
     covers: [MIT-3.4]
+worlds:
+  rockets: Rockets, launches and the arcs they fly. The numbers are made up.
+  electronics: Batteries, resistors and the power between them. The numbers are made up.
+  fantasy-maps: A made-up kingdom, its castle and its catapult. The numbers are made up.
 ---
 
 # Parabolas: completing the square
@@ -18,29 +22,16 @@ covers:
 A quadratic makes a curve with one turn in it. A *parabola* is the curve
 that a quadratic makes.
 
-In [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
-we solved quadratics with the formula. In
-[Functions and their graphs](tutorial:drawing-functions) we drew them.
-On this page we do a third thing with a quadratic. We rewrite it in a
-form that shows where the curve turns, so that we can read it straight
-from the expression.
+In [Functions and their graphs](tutorial:drawing-functions) we drew
+quadratics. In
+[Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations)
+we solved them with the formula. On this page we do a third thing with
+a quadratic. We rewrite it in a form that shows where the curve turns,
+so that we can read it straight from the expression.
 
 This rewriting is called completing the square. Many people learn it as
 a trick, without being told what it is for. Its purpose is the best
 reason to learn it, so we start there.
-
-On this page we:
-
-- see that many different quadratics are one curve, moved around
-- rewrite a quadratic so that its turning point shows
-- learn the steps for doing that rewriting
-- find the roots from the same form, and see where the quadratic formula
-  comes from
-
-Every quadratic on this page starts with $x^2$, so the number in front
-of $x^2$ is 1. If it is another number, we first take that number out as
-a factor, for example $2x^2 + 8x + 6 = 2(x^2 + 4x + 3)$. Then we work on
-the part inside the bracket.
 
 ## Every quadratic is the same curve
 
@@ -51,6 +42,7 @@ id: every-quadratic-is-the-same-curve-1
 import matplotlib.pyplot as plt
 
 def draw(f, low=-6, high=6, steps=300, label=None, ax=None):
+    """Plot any function of one number, from low to high."""
     xs = [low + (high - low) * i / steps for i in range(steps + 1)]
     if ax is None:
         fig, ax = plt.subplots()
@@ -109,8 +101,19 @@ Everything else follows from those.
 
 ## The form that tells you where the bottom is
 
-Here is the same function written in two ways. Do the two columns
-agree?
+The turning point of a parabola is called its *vertex*. It is the
+lowest point when the parabola opens upwards, and the highest point
+when it opens downwards.
+
+Every quadratic can be written in this form:
+
+$$a(x - h)^2 + k$$
+
+Here $a$ is the same number that was in front of $x^2$, and the vertex
+is at $(h, k)$. We call it the *vertex form*. For example,
+$x^2 + 6x + 5$ is the same function as $(x + 3)^2 - 4$. In vertex form
+that is $1(x - (-3))^2 + (-4)$, so $a = 1$, $h = -3$ and $k = -4$. Do
+the two columns agree?
 
 ```python exec
 id: the-form-that-tells-you-where-the-bottom-is-1
@@ -118,312 +121,443 @@ def standard(x):
     return x ** 2 + 6 * x + 5
 
 
-def completed(x):
+def vertex_form(x):
     return (x + 3) ** 2 - 4
 
 
 for value in [-6, -3, 0, 2, 7]:
-    print(f"x = {value:>3}    standard: {standard(value):>4}    completed: {completed(value):>4}")
+    print(f"x = {value:>3}    standard: {standard(value):>4}    vertex form: {vertex_form(value):>4}")
 ```
 
 The two columns are the same every time, because they are the same
-function.
-
-Now we plot the second form. Can you find its two numbers, 3 and $-4$,
-in the picture?
+function. Now we plot the vertex form, with its vertex marked.
 
 ```python exec
 id: the-form-that-tells-you-where-the-bottom-is-2
-ax = draw(completed, low=-9, high=3, label="(x + 3)^2 - 4")
-ax.plot([-3], [-4], "o", markersize=9)
-ax.annotate("(-3, -4)", (-3, -4), textcoords="offset points", xytext=(12, -14))
+ax = draw(vertex_form, low=-9, high=3, label="(x + 3)^2 - 4")
 ax.set_ylim(-6, 20)
-ax.set_title("The turning point is written in the expression")
+ax.plot([-3], [-4], "o", markersize=9)
 ```
 
-The turning point is at $(-3, -4)$, and the expression is
-$(x + 3)^2 - 4$.
+```predict
+type: choice
 
-**The two numbers in the completed form give the two coordinates of the
-turning point.** Watch the first one. Its sign flips. The bracket
-$(x + 3)^2$ puts the turning point at $x = -3$, because $x = -3$ is the
-value that makes the bracket zero.
+Before you run it: where will the marked lowest point of $(x + 3)^2 - 4$
+be?
 
-That flip catches almost everybody at least once. So exam papers, and
-most books, write the completed form with a minus sign in the bracket:
+- At $(3, -4)$
+  - The bracket has $+3$ in it, and the $-4$ is the height. There is
+    [a closer look at this](tutorial:the-vertex-sign).
+- At $(-3, -4)$
+- At $(3, 4)$
+  - The two numbers in the expression are 3 and 4.
+```
 
-$$a(x - h)^2 + k$$
-
-Then the vertex is $(h, k)$, and there is nothing to flip. Our example
-is $(x - (-3))^2 + (-4)$, so $h = -3$ and $k = -4$. Every quadratic on
-this page has $a = 1$, so from here on we write $(x - h)^2 + k$.
+The vertex is at $(-3, -4)$. The second number is the height, and it
+keeps its sign. The first number flips. The bracket $(x + 3)^2$ is
+zero at $x = -3$, and a square is never less than zero, so that is
+where the curve is lowest. The vertex form hides the flip inside
+$x - h$: with $h = -3$, $x - h$ is $x + 3$.
 
 Why is this point the bottom of the curve? Because a square is never
 negative. $(x + 3)^2$ is zero at $x = -3$ and positive everywhere else.
-So $-4$ is the smallest value this function ever gives.
+So $-4$ is the smallest value this function ever gives. When $a$ is
+negative, the same reasoning makes $k$ the largest value instead.
 
 That is the whole idea. Completing the square is worth doing because it
-makes the answer visible. It works because a squared number cannot be
+makes the vertex visible. It works because a squared number cannot be
 negative.
-
-The *vertex* of a parabola is its turning point. It is the lowest point
-when the parabola opens upwards, and the highest point when it opens
-downwards.
 
 ## Doing the rearrangement
 
-Let's do the steps once, slowly.
+How do we get from $ax^2 + bx + c$ to $a(x - h)^2 + k$? Multiply out
+the vertex form, and compare the two:
 
-We start with $x^2 + 6x + 5$. The goal is a squared bracket plus a
-number.
+$$a(x - h)^2 + k = ax^2 - 2ahx + ah^2 + k$$
 
-First, which bracket would give us the $x^2$ and the $6x$? Multiplying
-out $(x - h)^2$ gives
+The $x^2$ terms match already. For the $x$ terms to match, $-2ah$ must
+be $b$, so
 
-$$(x - h)^2 = x^2 - 2hx + h^2$$
+$$h = -\frac{b}{2a}$$
 
-The middle term is $-2h$ times $x$. So **half of the middle number, with
-its sign changed, is $h$.** Half of 6 is 3, so $h = -3$, and the bracket
-is $(x - (-3))$, which is $(x + 3)$.
+For the numbers on their own to match, $ah^2 + k$ must be $c$, so
 
-What does $(x + 3)^2$ multiply out to? The cell compares it with
+$$k = c - ah^2$$
+
+So the whole method is: halve $b$, divide by $a$ and change the sign
+to get $h$. Then subtract $ah^2$ from $c$ to get $k$. The halving is
+there because $(x - h)^2$ has $2h$ in the middle.
+
+Let's check it on $x^2 + 6x + 5$, where $a = 1$. Then
+$h = -\frac{6}{2} = -3$, and $k = 5 - 1 \times 9 = -4$. That is
+$(x + 3)^2 - 4$, as before. The cell checks $(x + 3)^2$ against
 $x^2 + 6x + 9$ for a few values of $x$.
 
 ```python exec
 id: doing-the-rearrangement-1
 h = -3
-print("(x + 3)^2 expands to:")
 for x in [0, 1, 2, 5]:
-    print(f"   x={x}:  {(x - h) ** 2}   and   x^2 + 6x + 9 = {x**2 + 6*x + 9}")
+    print(f"x = {x}:  (x + 3)^2 = {(x - h) ** 2}   and   x^2 + 6x + 9 = {x**2 + 6*x + 9}")
 ```
 
-So $(x + 3)^2 = x^2 + 6x + 9$. This is close to what we want. It has the
-right $x^2$ and the right $6x$, but it has a 9 where we want a 5.
+$(x + 3)^2$ is $x^2 + 6x + 9$. It has the right $x^2$ and the right
+$6x$, but a 9 where we want a 5. So we subtract the 9 and add the 5,
+and that is where $k = 5 - 9 = -4$ comes from.
 
-So we take away the 9 and add the 5:
+### Your turn
 
-$$x^2 + 6x + 5 = (x + 3)^2 - 9 + 5 = (x + 3)^2 - 4$$
-
-Here are the steps for $x^2 + bx + c$:
-
-1. Halve the middle number $b$, and change its sign. Call the result
-   $h$. This gives the bracket $(x - h)^2$.
-2. Square $h$, and take $h^2$ away, because the bracket added it.
-3. Add the number $c$ that was there at the start.
-
-In the example, $h = -3$, so we take away $(-3)^2 = 9$ and add 5. The
-number at the end is $k = c - h^2 = 5 - 9 = -4$.
-
-The next cell does the same steps in code. Every quadratic on this page
-starts with $x^2$, so $a = 1$, and `complete_the_square` takes only $b$
-and $c$, in the same order as `solve(a, b, c)` on the complex numbers
-page. The small function `signed`
-only makes the output easier to read. It writes a number with its sign
-in front, so that the cell prints `- 4` and not `+ -4`.
+Can you write `complete_the_square(a, b, c)`? It returns the three
+numbers $a$, $h$ and $k$ of the vertex form, in that order.
 
 ```python exec
 id: doing-the-rearrangement-2
-def complete_the_square(b, c):
-    """Rewrite x^2 + bx + c as (x - h)^2 + k, and return h and k."""
-    h = -b / 2
-    k = c - h ** 2
-    return h, k
-
-
-def signed(number):
-    """Write a number with its sign in front, as ' + 3' or ' - 4'."""
-    if number < 0:
-        return f" - {-number:g}"
-    return f" + {number:g}"
-
-
-for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
-    h, k = complete_the_square(b, c)
-    print(f"x^2{signed(b)}x{signed(c)}  =  (x{signed(-h)})^2{signed(k)}     vertex at ({h:g}, {k:g})")
+def complete_the_square(a, b, c):
+    """Rewrite ax^2 + bx + c as a(x - h)^2 + k, and return a, h and k."""
+    # Your code here.
 ```
 
-Do the two forms really agree for every $x$? This cell tries 200 random
-values of $x$ for each quadratic.
+```hint
+Which of $h$ and $k$ can you find first? The formula for $k$ uses $h$.
+```
+
+```inputs
+guess: yes
+complete_the_square(1, 6, 5)
+complete_the_square(1, -4, 1)
+complete_the_square(2, 12, 5)
+complete_the_square(-1, 4, 0)     # a negative a: the curve opens downwards
+```
+
+```solution
+def complete_the_square(a, b, c):
+    """Rewrite ax^2 + bx + c as a(x - h)^2 + k, and return a, h and k."""
+    h = -b / (2 * a)
+    k = c - a * h ** 2
+    return a, h, k
+---
+`complete_the_square(2, 12, 5)` returns `(2, -3.0, -13.0)`, so
+$2x^2 + 12x + 5 = 2(x + 3)^2 - 13$. With $a = -1$, the vertex $(2, 4)$
+is the highest point, not the lowest.
+```
+
+Do the two forms agree for every $x$? This cell tries 200 random values
+of $x$ for each quadratic, using your function. Then it draws both
+forms of one of them, on top of each other, with the vertex marked.
 
 ```python exec
 id: doing-the-rearrangement-3
-# And a check: do the two forms agree everywhere?
 import random
 
-def agree(b, c, tries=200):
-    h, k = complete_the_square(b, c)
+def agree(a, b, c, tries=200):
+    a, h, k = complete_the_square(a, b, c)
     for _ in range(tries):
         x = random.uniform(-50, 50)
-        if abs((x ** 2 + b * x + c) - ((x - h) ** 2 + k)) > 1e-9:
+        if abs((a * x ** 2 + b * x + c) - (a * (x - h) ** 2 + k)) > 1e-6:
             return False
     return True
 
 
-print(all(agree(b, c) for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21), (0, 0)]))
+print(all(agree(a, b, c) for a, b, c in [(1, 6, 5), (1, -4, 1), (2, 12, 5), (-1, 4, 0), (3, 0, 0)]))
+
+a, h, k = complete_the_square(2, 12, 5)
+ax = draw(quadratic(2, 12, 5), low=-7, high=1, label="2x^2 + 12x + 5")
+ax.plot([h], [k], "o", markersize=9)
+draw(lambda x: a * (x - h) ** 2 + k, low=-7, high=1, label="vertex form", ax=ax)
 ```
 
-### Your turn
+The two curves lie on top of each other, and the marked vertex sits on
+the curve, at its lowest point. The algebra predicted the vertex, and
+the picture shows it there.
 
-Here are four quadratics:
+### Your turn, on paper
+
+Here are five quadratics. Can you complete the square on each by hand?
+Write your answers as comments. Then check each with your
+`complete_the_square`.
 
 - $x^2 + 8x + 3$
 - $x^2 - 2x + 6$
 - $x^2 + 5x$
+- $3x^2 - 12x + 7$
 - $x^2 - 12x + 36$
 
-1. Complete the square on each one by hand. Write your answers as
-   comments in the cell.
-2. Check each answer with `complete_the_square`.
-
-Look at the last one before you start. What do you notice about
-it?
+Look at the last one before you start. What do you notice about it?
 
 ```python exec
 id: your-turn-1
 # Your answers as comments, then:
-# print(complete_the_square(8, 3))
+# print(complete_the_square(1, 8, 3))
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+- $x^2 + 8x + 3 = (x + 4)^2 - 13$, vertex $(-4, -13)$.
+- $x^2 - 2x + 6 = (x - 1)^2 + 5$, vertex $(1, 5)$.
+- $x^2 + 5x = (x + 2.5)^2 - 6.25$, vertex $(-2.5, -6.25)$.
+- $3x^2 - 12x + 7 = 3(x - 2)^2 - 5$, vertex $(2, -5)$. Here
+  $h = \frac{12}{6} = 2$ and $k = 7 - 3 \times 4 = -5$.
+- $x^2 - 12x + 36 = (x - 6)^2$, vertex $(6, 0)$. There is nothing left
+  over, because 36 is already the square of half of 12. The vertex sits
+  on the axis.
+
+</details>
 
 ## Roots from the same form
 
-The completed form also gives us the roots. Many people find the roots
-easier to see this way than with the formula.
-
-A root is a value of $x$ where the function is zero. So we set the
-completed form equal to zero and undo it one step at a time:
+The vertex form also gives us the roots. A root is a value of $x$ where
+the function is zero. So we set the vertex form equal to zero and undo
+it one step at a time, from the outside in:
 
 $$
 \begin{aligned}
-(x + 3)^2 - 4 &= 0 \\
-(x + 3)^2 &= 4 \\
-x + 3 &= \pm 2 \\
-x &= -3 \pm 2
+a(x - h)^2 + k &= 0 \\
+(x - h)^2 &= -\frac{k}{a} \\
+x - h &= \pm\sqrt{-\frac{k}{a}} \\
+x &= h \pm \sqrt{-\frac{k}{a}}
 \end{aligned}
 $$
 
-That gives $x = -1$ and $x = -5$.
+For $(x + 3)^2 - 4$, $h = -3$ and $-\frac{k}{a} = 4$, so
+$x = -3 \pm 2$. That gives $x = -1$ and $x = -5$.
+
+The $\pm$ is there because both $2^2$ and $(-2)^2$ are 4. That step is
+why a quadratic can have two roots.
 
 The next cell finds roots in two ways: by completing the square, and by
-the formula. Do you expect the two methods to agree?
+the formula. It uses your `complete_the_square`, so run it after you
+have written that function. Do you expect the two methods to agree?
 
 ```python exec
 id: roots-from-the-same-form-1
 import math
 
-def roots_by_completing(b, c):
-    h, k = complete_the_square(b, c)
-    if k > 0:
-        return "No real roots — the vertex is above the axis."
-    root = math.sqrt(-k)
+def roots_by_completing(a, b, c):
+    a, h, k = complete_the_square(a, b, c)
+    if -k / a < 0:
+        return "No real roots."
+    root = math.sqrt(-k / a)
     return (h + root, h - root)
 
 
-def roots_by_formula(b, c):
-    d = b ** 2 - 4 * c
+def roots_by_formula(a, b, c):
+    d = b ** 2 - 4 * a * c
     if d < 0:
         return "No real roots."
-    return ((-b + math.sqrt(d)) / 2, (-b - math.sqrt(d)) / 2)
+    return ((-b + math.sqrt(d)) / (2 * a), (-b - math.sqrt(d)) / (2 * a))
 
 
-for b, c in [(6, 5), (-4, 1), (2, 7), (-10, 21)]:
-    print(f"x^2{signed(b)}x{signed(c)}")
-    print("   completing the square:", roots_by_completing(b, c))
-    print("   the formula:          ", roots_by_formula(b, c))
+for a, b, c in [(1, 6, 5), (1, -4, 1), (2, 12, 5), (1, 2, 7)]:
+    print(f"a = {a}, b = {b}, c = {c}")
+    print("   completing the square:", roots_by_completing(a, b, c))
+    print("   the formula:          ", roots_by_formula(a, b, c))
 ```
 
 Both methods give the same answers.
 
 Why? **The quadratic formula is completing the square, done once with
-letters so that nobody has to do it again.** Somebody did the
-steps above with $a$, $b$ and $c$ in place of numbers. The result was
-the formula we have been using.
+letters.** Put $h = -\frac{b}{2a}$ and $k = c - ah^2$ into
+$h \pm \sqrt{-\frac{k}{a}}$, and simplify. What comes out is
 
-If you have seen a formula built, you can build it again when you
-forget it.
-
-### The ± matters
-
-Look at the step $(x + 3)^2 = 4$. The next line is $x + 3 = \pm 2$,
-because $2^2 = 4$ and $(-2)^2 = 4$ as well.
-
-This step gives the two roots, so a quadratic can have two of them. The $\pm$ in the quadratic formula is the same $\pm$,
-carried through.
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
 ## When there is nothing to find
 
 Where is the vertex of $x^2 + 2x + 7$? Does the curve reach the
-horizontal axis?
+horizontal axis? The cell marks the vertex with your
+`complete_the_square`.
 
 ```python exec
 id: when-there-is-nothing-to-find-1
 ax = draw(quadratic(1, 2, 7), low=-7, high=5, label="x^2 + 2x + 7")
-h, k = complete_the_square(2, 7)
-ax.plot([h], [k], "o", markersize=9)
-ax.annotate(f"vertex at ({h:g}, {k:g})", (h, k), textcoords="offset points", xytext=(12, -6))
 ax.set_ylim(-2, 30)
-ax.set_title("A parabola with no roots")
+a, h, k = complete_the_square(1, 2, 7)
+ax.plot([h], [k], "o", markersize=9)
 ```
 
 The vertex is at $(-1, 6)$, above the axis, and the curve opens
 upwards. So the curve never comes down to zero, and there are no real
 roots.
 
-We can see this from the completed form, $(x + 1)^2 + 6$, without
+We can see this from the vertex form, $(x + 1)^2 + 6$, without
 calculating anything. The square $(x + 1)^2$ is never negative, so the
-whole expression is always at least 6.
+whole expression is always at least 6. In the roots formula above,
+$-\frac{k}{a} = -6$, and a negative number has no real square root.
 
 The formula tells us the same thing with a negative discriminant. The
-completed form says it in a way we can picture.
+vertex form says it in a way we can picture. The next page,
+[Complex numbers: roots that are not real](tutorial:complex-roots),
+shows where those roots have gone. They exist, but not on this line.
 
-And [Complex numbers: roots that are not real](tutorial:complex-roots)
-showed where those roots have gone. They exist, but they are not on
-this line.
+## The vertex in your world
 
-### Your turn
+<div class="dl-world" data-world="rockets">
 
-Here are three quadratics:
-
-- a: $x^2 - 6x + 5$
-- b: $x^2 + 4x + 9$
-- c: $x^2 - 2x + 1$
-
-1. Without plotting, use the completed form to decide which of them
-   have real roots. Write your answers as comments.
-2. Check with `complete_the_square`.
+The rocket's height is $-4.9t^2 + 15t + 2$ metres after $t$ seconds.
+Its vertex is the top of its flight. Can you use `complete_the_square`
+to find when the rocket is highest and how high it goes? Keep them as
+`h` and `k`. Then use the roots to find when it lands, and keep that as
+`landing`.
 
 ```python exec
-id: your-turn-2
-# a: x^2 - 6x + 5
-# b: x^2 + 4x + 9
-# c: x^2 - 2x + 1
-
-# Your answers as comments, then check with complete_the_square.
+id: the-vertex-in-your-world-1--rockets
+rocket = (-4.9, 15, 2)    # a, b and c
 ```
 
-## Reflection
+```hint
+Which of $h$ and $k$ is a time, and which is a height? A root is a time
+when the height is zero. Which of the two roots makes sense here?
+```
 
-There is one curve, moved around. One rearrangement tells us where it
-has been moved to.
+```inputs
+h    # the time of the highest point
+k    # the highest point
+landing
+```
 
-Here are four ideas to take with you.
+```solution
+import math
 
-**Completing the square rewrites a quadratic. It does not solve it.** $x^2 + 6x + 5$ and
-$(x + 3)^2 - 4$ are the same function. The second one has the turning
-point written on the outside.
 
-**The halving step has a reason.** $(x - h)^2$ has $-2h$ in the middle,
-so halving the middle number, and changing its sign, finds $h$. Multiply
-out the bracket once, and the step stops being a rule to remember.
+def complete_the_square(a, b, c):
+    h = -b / (2 * a)
+    return a, h, c - a * h ** 2
 
-**The quadratic formula is completing the square, done with letters.**
-If you ever forget the formula, you can build it again.
 
-**You can see "no real roots" in the picture.** The vertex is above the
-axis and the curve opens upwards, so the curve never crosses. No amount
-of algebra will give a real answer.
+a, h, k = complete_the_square(*rocket)
+root = math.sqrt(-k / a)
+print("highest at", h, "s, at", k, "m")
+print("roots:", h - root, h + root)
+landing = h + root
+---
+`complete_the_square` is your function from earlier on the page.
+`*rocket` hands it the three numbers one by one. The rocket is highest
+at about 1.53 s, at about 13.48 m. The roots are about $-0.13$ s and
+3.19 s, and it lands at 3.19 s. The negative root is a time before the
+launch, which is not part of this flight.
+```
 
-Think about $x^2 - 6x + 5$. Which of the two forms would you prefer to
-be given, and for which question? Write a few sentences.
+</div>
+
+<div class="dl-world" data-world="electronics">
+
+The 12 V supply from
+[Polynomials: representing and combining them in Python](tutorial:expressions-come-alive)
+delivers $-2I^2 + 12I$ watts at a current of $I$ amps. Its vertex is
+the most power it can deliver. Can you use `complete_the_square` to
+find the best current and the most power, as `h` and `k`? Then find the
+resistance that draws that current, as `resistance`. The voltage it
+gets is $12 - 2I$, and the resistance is voltage divided by current.
+
+```python exec
+id: the-vertex-in-your-world-1--electronics
+supply = (-2, 12, 0)    # a, b and c
+```
+
+```hint
+Which of $h$ and $k$ is a current, and which is a power? Once you have
+the current, what voltage is left for the resistor?
+```
+
+```inputs
+h    # the best current
+k    # the most power
+resistance
+```
+
+```solution
+def complete_the_square(a, b, c):
+    h = -b / (2 * a)
+    return a, h, c - a * h ** 2
+
+
+a, h, k = complete_the_square(*supply)
+voltage = 12 - 2 * h
+resistance = voltage / h
+print("best current:", h, "A, giving", k, "W")
+print("resistance:", resistance, "ohms")
+---
+`complete_the_square` is your function from earlier on the page. The
+most power is 18 W, at 3 A. The resistor then gets 6 V, so it is
+$\frac{6}{3} = 2$ ohms, the same as the resistance inside the supply.
+This is true for any supply. It delivers the most power to a resistor
+that matches its own inside resistance.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A catapult on the castle wall throws a stone. When the stone is $x$
+metres out from the wall, its height is $-0.02x^2 + 0.8x + 6$ metres.
+Can you use `complete_the_square` to find how far out the stone is at
+its highest, and how high it goes, as `h` and `k`? Then use the roots to
+find where it lands, as `landing`.
+
+```python exec
+id: the-vertex-in-your-world-1--fantasy-maps
+stone = (-0.02, 0.8, 6)    # a, b and c
+```
+
+```hint
+Which of $h$ and $k$ is a distance out from the wall, and which is a
+height? Which of the two roots is in front of the wall?
+```
+
+```inputs
+h    # how far out the highest point is
+k    # the highest point
+landing
+```
+
+```solution
+import math
+
+
+def complete_the_square(a, b, c):
+    h = -b / (2 * a)
+    return a, h, c - a * h ** 2
+
+
+a, h, k = complete_the_square(*stone)
+root = math.sqrt(-k / a)
+print("highest", h, "m out, at", k, "m")
+print("roots:", h - root, h + root)
+landing = h + root
+---
+`complete_the_square` is your function from earlier on the page. The
+stone is highest 20 m out, at 14 m. The roots are about $-6.5$ m and
+46.5 m. The stone lands about 46.5 m from the wall. The negative root
+is behind the wall, where the stone never was.
+```
+
+</div>
+
+## Looking back
+
+There is one curve, moved around, and the vertex form says where it has
+been moved to. Think about $x^2 - 6x + 5$ and $(x - 3)^2 - 4$. Which
+of the two would you prefer to be given to find the vertex, and which
+to find where the curve crosses the vertical axis? Why?
+
+A challenge: can you draw the vertex of $x^2 + bx$ for every whole
+number $b$ from $-4$ to 4? In
+[Functions and their graphs](tutorial:drawing-functions) those vertices
+seemed to lie on $y = -x^2$. With `complete_the_square`, can you show
+why?
+
+```python challenge
+import matplotlib.pyplot as plt
+
+def complete_the_square(a, b, c):
+    h = -b / (2 * a)
+    return a, h, c - a * h ** 2
+
+
+fig, ax = plt.subplots()
+for b in range(-4, 5):
+    a, h, k = complete_the_square(1, b, 0)
+    ax.plot([h], [k], "o")
+```
 
 ## Where to read more
 

@@ -36,3 +36,24 @@ entries:
       opposite imaginary part: the conjugate of 2 + 3i is 2 - 3i. A
       quadratic with real coefficients has its complex roots in a
       conjugate pair.
+  - term: complex plane
+    kind: concept
+    definition: >
+      The complex plane draws each complex number as a point: the real
+      part along the bottom and the imaginary part up the side. 3 + 2i is
+      the point (3, 2).
+  - term: multiplying by i
+    kind: concept
+    definition: >
+      Multiplying a complex number by i turns its point a quarter turn
+      anticlockwise about the origin, and keeps its distance from the
+      origin. Four quarter turns bring it back, because i^4 = 1.
+    example: "(3 + 1j) * 1j  # (-1+3j)"
+  - term: "abs() of a complex number"
+    python: abs
+    kind: function
+    definition: >
+      Returns the distance of a complex number from the origin of the
+      complex plane: the square root of the real part squared plus the
+      imaginary part squared.
+    example: "abs(3 + 4j)  # 5.0"

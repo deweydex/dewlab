@@ -217,7 +217,10 @@ door is left for him to open. When the host has only one door he can
 open, the door he opens tells us where the car is.
 
 Now count the bottom row. Switching wins in two of the three cases. That
-is two out of three, the same as the simulation kept telling us.
+is two out of three, the same as the simulation kept telling us. Two
+methods that agree are good evidence, but they can still share a mistake.
+[Checking: a closer look at two methods that agree](tutorial:when-two-methods-agree)
+shows how.
 
 The picture fixed your pick at door 1. This cell counts every pair of
 where the car is and which door you pick: 9 pairs, all equally likely.
