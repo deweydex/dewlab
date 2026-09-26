@@ -337,7 +337,8 @@ print(0.1 + 0.2 == 0.3)
 What will the last line print?
 
 - True
-  - 0.1 and 0.2 do make 0.3.
+  - 0.1 and 0.2 do make 0.3. There is
+    [a closer look at this](tutorial:dividing-in-python).
 - False
   - A computer cannot store 0.1 exactly.
 ```

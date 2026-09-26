@@ -119,43 +119,50 @@ possibly not pulling its weight where it is.
 ```mermaid
 graph TD
   T1["1. Algorithms, pseudocode and your first Python"]
-  T2["2. Variables, data types and text"]
-  T3["3. Making decisions with if, elif and else"]
-  T4["4. Reading an error message"]
-  T5["5. Repeating steps with loops"]
-  T6["6. Writing your own functions"]
-  T7["7. Lists and looping over them"]
-  T8["8. Comprehensions, grids and aliasing"]
-  T9["9. Dictionaries: looking things up by name"]
-  T10["10. A program of your own"]
-  T11["11. Searching a list: linear and binary search"]
-  T12["12. Sorting a list: bubble, insertion and selection sort"]
-  T13["13. Designing and testing good functions"]
-  T14["14. Finding bugs in bigger programs"]
-  T15["15. How programming languages came to be"]
-  T16["16. Sets: building them from sorted lists"]
-  T17["17. Venn diagrams: drawing sets and their overlaps"]
-  T18["18. Logic: truth tables, XOR and De Morgan's laws"]
-  T19["19. Counting: factorials, permutations and combinations"]
-  T20["20. Probability: simple, compound and conditional"]
-  T21["21. The Monty Hall problem: three doors and a simulation"]
-  T22["22. Statistics: averages, spread and frequency"]
-  T23["23. Charts: choosing the right chart for your data"]
-  T24["24. Make it: a chart that tells the truth, and one that lies"]
-  T25["25. Number types, powers and logarithms"]
-  T26["26. Polynomials: representing and combining them in Python"]
-  T27["27. Rearranging formulae: changing the subject"]
-  T28["28. Solving equations: linear, quadratic and simultaneous"]
-  T29["29. Complex numbers: roots that are not real"]
-  T30["30. Functions and their graphs"]
-  T31["31. Parabolas: completing the square"]
-  T32["32. Straight lines: slope, midpoint and distance"]
-  T33["33. The unit circle: sine, cosine and tangent"]
-  T34["34. Sine and cosine waves: amplitude, period and shift"]
-  T35["35. Solving triangles: the sine rule and the cosine rule"]
-  T36["36. Limits: getting closer without arriving"]
-  T37["37. Derivatives: the rate of change of a curve"]
-  T38["38. Review problems: polynomials, equations and sets"]
+  T2["2. Powers: a closer look at ** and ^"]
+  T3["3. Variables, data types and text"]
+  T4["4. Dividing: a closer look at //, / and 0.1"]
+  T5["5. Making decisions with if, elif and else"]
+  T6["6. The equals sign: a closer look at =, == and maths"]
+  T7["7. Reading an error message"]
+  T8["8. Repeating steps with loops"]
+  T9["9. Starting a total: a closer look at total = 0"]
+  T10["10. Writing your own functions"]
+  T11["11. Lists and looping over them"]
+  T12["12. Comprehensions, grids and aliasing"]
+  T13["13. Two names, one list: a closer look at copying"]
+  T14["14. Dictionaries: looking things up by name"]
+  T15["15. A program of your own"]
+  T16["16. Searching a list: linear and binary search"]
+  T17["17. Sorting a list: bubble, insertion and selection sort"]
+  T18["18. Designing and testing good functions"]
+  T19["19. Finding bugs in bigger programs"]
+  T20["20. How programming languages came to be"]
+  T21["21. Sets: building them from sorted lists"]
+  T22["22. Venn diagrams: drawing sets and their overlaps"]
+  T23["23. Logic: truth tables, XOR and De Morgan's laws"]
+  T24["24. Counting: factorials, permutations and combinations"]
+  T25["25. Probability: simple, compound and conditional"]
+  T26["26. Chance: a closer look at small samples"]
+  T27["27. The Monty Hall problem: three doors and a simulation"]
+  T28["28. Checking: a closer look at two methods that agree"]
+  T29["29. Statistics: averages, spread and frequency"]
+  T30["30. Charts: choosing the right chart for your data"]
+  T31["31. Make it: a chart that tells the truth, and one that lies"]
+  T32["32. Number types, powers and logarithms"]
+  T33["33. Polynomials: representing and combining them in Python"]
+  T34["34. Rearranging formulae: changing the subject"]
+  T35["35. Solving equations: linear, quadratic and simultaneous"]
+  T36["36. Complex numbers: roots that are not real"]
+  T37["37. Functions and their graphs"]
+  T38["38. Parabolas: completing the square"]
+  T39["39. Straight lines: slope, midpoint and distance"]
+  T40["40. The unit circle: sine, cosine and tangent"]
+  T41["41. Sine and cosine waves: amplitude, period and shift"]
+  T42["42. Solving triangles: the sine rule and the cosine rule"]
+  T43["43. Limits: getting closer without arriving"]
+  T44["44. Derivatives: the rate of change of a curve"]
+  T45["45. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -194,57 +201,68 @@ graph TD
   T35 --> T36
   T36 --> T37
   T37 --> T38
+  T38 --> T39
+  T39 --> T40
+  T40 --> T41
+  T41 --> T42
+  T42 --> T43
+  T43 --> T44
+  T44 --> T45
 
-  T5 -.->|builds on| T2
-  T7 -.->|builds on| T2
-  T7 -.->|builds on| T5
-  T8 -.->|builds on| T5
-  T8 -.->|builds on| T6
-  T9 -.->|builds on| T3
-  T9 -.->|builds on| T5
-  T9 -.->|builds on| T7
-  T10 -.->|builds on| T1
-  T10 -.->|builds on| T6
+  T3 -.->|builds on| T1
+  T4 -.->|builds on| T1
+  T8 -.->|builds on| T3
+  T10 -.->|builds on| T8
+  T11 -.->|builds on| T3
+  T11 -.->|builds on| T8
   T12 -.->|builds on| T8
-  T13 -.->|builds on| T6
-  T13 -.->|builds on| T9
-  T14 -.->|builds on| T4
+  T12 -.->|builds on| T10
+  T14 -.->|builds on| T5
   T14 -.->|builds on| T8
-  T19 -.->|builds on| T5
-  T25 -.->|builds on| T3
-  T25 -.->|builds on| T11
-  T25 -.->|builds on| T12
-  T25 -.->|builds on| T16
-  T26 -.->|builds on| T5
-  T27 -.->|builds on| T2
-  T28 -.->|builds on| T26
-  T29 -.->|builds on| T25
-  T30 -.->|builds on| T6
-  T30 -.->|builds on| T22
-  T30 -.->|builds on| T23
-  T30 -.->|builds on| T26
-  T30 -.->|builds on| T28
-  T31 -.->|builds on| T28
-  T31 -.->|builds on| T29
-  T32 -.->|builds on| T22
-  T32 -.->|builds on| T23
-  T32 -.->|builds on| T30
-  T34 -.->|builds on| T30
-  T34 -.->|builds on| T31
-  T34 -.->|builds on| T32
-  T35 -.->|builds on| T30
-  T35 -.->|builds on| T32
+  T14 -.->|builds on| T11
+  T15 -.->|builds on| T1
+  T15 -.->|builds on| T10
+  T17 -.->|builds on| T12
+  T18 -.->|builds on| T10
+  T18 -.->|builds on| T14
+  T19 -.->|builds on| T7
+  T19 -.->|builds on| T12
+  T24 -.->|builds on| T8
+  T27 -.->|builds on| T25
+  T32 -.->|builds on| T5
+  T32 -.->|builds on| T16
+  T32 -.->|builds on| T17
+  T32 -.->|builds on| T21
+  T33 -.->|builds on| T8
+  T34 -.->|builds on| T3
   T35 -.->|builds on| T33
-  T36 -.->|builds on| T2
   T36 -.->|builds on| T32
-  T36 -.->|builds on| T33
-  T37 -.->|builds on| T31
-  T37 -.->|builds on| T32
+  T37 -.->|builds on| T10
+  T37 -.->|builds on| T29
+  T37 -.->|builds on| T30
   T37 -.->|builds on| T33
-  T38 -.->|builds on| T1
-  T38 -.->|builds on| T16
-  T38 -.->|builds on| T26
-  T38 -.->|builds on| T28
+  T37 -.->|builds on| T35
+  T38 -.->|builds on| T35
+  T38 -.->|builds on| T36
+  T39 -.->|builds on| T29
+  T39 -.->|builds on| T30
+  T39 -.->|builds on| T37
+  T41 -.->|builds on| T37
+  T41 -.->|builds on| T38
+  T41 -.->|builds on| T39
+  T42 -.->|builds on| T37
+  T42 -.->|builds on| T39
+  T42 -.->|builds on| T40
+  T43 -.->|builds on| T3
+  T43 -.->|builds on| T39
+  T43 -.->|builds on| T40
+  T44 -.->|builds on| T38
+  T44 -.->|builds on| T39
+  T44 -.->|builds on| T40
+  T45 -.->|builds on| T1
+  T45 -.->|builds on| T21
+  T45 -.->|builds on| T33
+  T45 -.->|builds on| T35
 ```
 
 ## What is missing, and where it would go
@@ -256,43 +274,50 @@ Dashed boxes are proposed. Placement is argued in
 ```mermaid
 graph TD
   T1["1. Algorithms, pseudocode and your first Python"]
-  T2["2. Variables, data types and text"]
-  T3["3. Making decisions with if, elif and else"]
-  T4["4. Reading an error message"]
-  T5["5. Repeating steps with loops"]
-  T6["6. Writing your own functions"]
-  T7["7. Lists and looping over them"]
-  T8["8. Comprehensions, grids and aliasing"]
-  T9["9. Dictionaries: looking things up by name"]
-  T10["10. A program of your own"]
-  T11["11. Searching a list: linear and binary search"]
-  T12["12. Sorting a list: bubble, insertion and selection sort"]
-  T13["13. Designing and testing good functions"]
-  T14["14. Finding bugs in bigger programs"]
-  T15["15. How programming languages came to be"]
-  T16["16. Sets: building them from sorted lists"]
-  T17["17. Venn diagrams: drawing sets and their overlaps"]
-  T18["18. Logic: truth tables, XOR and De Morgan's laws"]
-  T19["19. Counting: factorials, permutations and combinations"]
-  T20["20. Probability: simple, compound and conditional"]
-  T21["21. The Monty Hall problem: three doors and a simulation"]
-  T22["22. Statistics: averages, spread and frequency"]
-  T23["23. Charts: choosing the right chart for your data"]
-  T24["24. Make it: a chart that tells the truth, and one that lies"]
-  T25["25. Number types, powers and logarithms"]
-  T26["26. Polynomials: representing and combining them in Python"]
-  T27["27. Rearranging formulae: changing the subject"]
-  T28["28. Solving equations: linear, quadratic and simultaneous"]
-  T29["29. Complex numbers: roots that are not real"]
-  T30["30. Functions and their graphs"]
-  T31["31. Parabolas: completing the square"]
-  T32["32. Straight lines: slope, midpoint and distance"]
-  T33["33. The unit circle: sine, cosine and tangent"]
-  T34["34. Sine and cosine waves: amplitude, period and shift"]
-  T35["35. Solving triangles: the sine rule and the cosine rule"]
-  T36["36. Limits: getting closer without arriving"]
-  T37["37. Derivatives: the rate of change of a curve"]
-  T38["38. Review problems: polynomials, equations and sets"]
+  T2["2. Powers: a closer look at ** and ^"]
+  T3["3. Variables, data types and text"]
+  T4["4. Dividing: a closer look at //, / and 0.1"]
+  T5["5. Making decisions with if, elif and else"]
+  T6["6. The equals sign: a closer look at =, == and maths"]
+  T7["7. Reading an error message"]
+  T8["8. Repeating steps with loops"]
+  T9["9. Starting a total: a closer look at total = 0"]
+  T10["10. Writing your own functions"]
+  T11["11. Lists and looping over them"]
+  T12["12. Comprehensions, grids and aliasing"]
+  T13["13. Two names, one list: a closer look at copying"]
+  T14["14. Dictionaries: looking things up by name"]
+  T15["15. A program of your own"]
+  T16["16. Searching a list: linear and binary search"]
+  T17["17. Sorting a list: bubble, insertion and selection sort"]
+  T18["18. Designing and testing good functions"]
+  T19["19. Finding bugs in bigger programs"]
+  T20["20. How programming languages came to be"]
+  T21["21. Sets: building them from sorted lists"]
+  T22["22. Venn diagrams: drawing sets and their overlaps"]
+  T23["23. Logic: truth tables, XOR and De Morgan's laws"]
+  T24["24. Counting: factorials, permutations and combinations"]
+  T25["25. Probability: simple, compound and conditional"]
+  T26["26. Chance: a closer look at small samples"]
+  T27["27. The Monty Hall problem: three doors and a simulation"]
+  T28["28. Checking: a closer look at two methods that agree"]
+  T29["29. Statistics: averages, spread and frequency"]
+  T30["30. Charts: choosing the right chart for your data"]
+  T31["31. Make it: a chart that tells the truth, and one that lies"]
+  T32["32. Number types, powers and logarithms"]
+  T33["33. Polynomials: representing and combining them in Python"]
+  T34["34. Rearranging formulae: changing the subject"]
+  T35["35. Solving equations: linear, quadratic and simultaneous"]
+  T36["36. Complex numbers: roots that are not real"]
+  T37["37. Functions and their graphs"]
+  T38["38. Parabolas: completing the square"]
+  T39["39. Straight lines: slope, midpoint and distance"]
+  T40["40. The unit circle: sine, cosine and tangent"]
+  T41["41. Sine and cosine waves: amplitude, period and shift"]
+  T42["42. Solving triangles: the sine rule and the cosine rule"]
+  T43["43. Limits: getting closer without arriving"]
+  T44["44. Derivatives: the rate of change of a curve"]
+  T45["45. Review problems: polynomials, equations and sets"]
 
   T1 --> T2
   T2 --> T3
@@ -331,6 +356,13 @@ graph TD
   T35 --> T36
   T36 --> T37
   T37 --> T38
+  T38 --> T39
+  T39 --> T40
+  T40 --> T41
+  T41 --> T42
+  T42 --> T43
+  T43 --> T44
+  T44 --> T45
 
 
   classDef new fill:#fdf6ec,stroke:#b5651d,color:#7a4310,stroke-dasharray:4 3;
@@ -525,15 +557,15 @@ The same word presented as new in two places. Either it is being introduced twic
 
 | Term | Introduced in tutorials |
 |---|---|
-| *function* | 1, 6 |
-| *how* | 14, 15, 36 |
-| *index* | 5, 7, 25 |
-| *pride and prejudice* | 16, 19, 23 |
-| *range* | 13, 22, 30 |
-| *see* | 17, 36 |
-| *solve* | 26, 28 |
-| *what* | 14, 15 |
-| *zahlen* | 2, 25 |
+| *function* | 1, 10 |
+| *how* | 19, 20, 43 |
+| *index* | 8, 11, 32 |
+| *pride and prejudice* | 21, 24, 30 |
+| *range* | 18, 29, 37 |
+| *see* | 22, 43 |
+| *solve* | 33, 35 |
+| *what* | 19, 20 |
+| *zahlen* | 3, 32 |
 
 ### Used before it was introduced
 
@@ -541,78 +573,79 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 
 | Term | First appears in | Introduced in |
 |---|---:|---:|
-| *after* | 1 | 4 |
-| *aliasing* | 7 | 8 |
-| *all* | 1 | 38 |
-| *amplitude* | 33 | 34 |
-| *any* | 4 | 38 |
-| *at* | 1 | 7 |
-| *average* | 4 | 36 |
-| *base* | 15 | 25 |
-| *before* | 1 | 15 |
-| *between* | 1 | 35 |
-| *binary* | 5 | 15 |
-| *binary search* | 5 | 11 |
-| *binomial* | 22 | 28 |
-| *bug* | 13 | 14 |
-| *call* | 2 | 6 |
-| *changing the subject* | 26 | 27 |
-| *closed* | 4 | 25 |
-| *combination* | 18 | 19 |
-| *cosine* | 32 | 33 |
-| *cosine rule* | 32 | 35 |
-| *derivative* | 26 | 37 |
-| *difference* | 3 | 16 |
-| *element* | 5 | 7 |
-| *equal* | 2 | 16 |
-| *expression* | 5 | 26 |
-| *factorise* | 26 | 28 |
-| *graph* | 8 | 30 |
-| *how* | 1 | 14 |
-| *indices* | 7 | 25 |
-| *inside* | 1 | 35 |
-| *key* | 1 | 9 |
-| *know* | 1 | 36 |
-| *large* | 5 | 36 |
-| *limit* | 23 | 36 |
-| *linear* | 5 | 26 |
-| *list* | 1 | 7 |
-| *local* | 6 | 37 |
-| *look* | 3 | 37 |
-| *mean* | 2 | 22 |
-| *median* | 14 | 22 |
-| *merge* | 12 | 16 |
-| *midpoint* | 30 | 32 |
-| *opposite* | 2 | 35 |
-| *outcome* | 16 | 20 |
-| *parabola* | 28 | 31 |
-| *parallel* | 27 | 32 |
-| *period* | 17 | 34 |
-| *perpendicular* | 30 | 32 |
-| *power* | 1 | 25 |
-| *probability* | 16 | 20 |
-| *range* | 11 | 13 |
-| *reaches* | 3 | 36 |
-| *real* | 2 | 29 |
-| *root* | 6 | 28 |
-| *scaling* | 8 | 26 |
-| *see* | 1 | 17 |
-| *selection sort* | 5 | 12 |
-| *sequence* | 3 | 8 |
-| *set* | 1 | 16 |
-| *sine* | 32 | 33 |
-| *sine rule* | 32 | 35 |
-| *solution* | 6 | 28 |
-| *solve* | 6 | 26 |
-| *statistics* | 13 | 22 |
-| *subject* | 5 | 27 |
-| *symmetric* | 16 | 22 |
-| *tangent* | 32 | 33 |
-| *test* | 6 | 13 |
-| *transposing* | 8 | 27 |
-| *unit circle* | 32 | 33 |
-| *value* | 2 | 9 |
-| *what* | 1 | 14 |
+| *after* | 1 | 7 |
+| *aliasing* | 11 | 12 |
+| *all* | 1 | 45 |
+| *amplitude* | 40 | 41 |
+| *any* | 2 | 45 |
+| *argument* | 9 | 10 |
+| *at* | 1 | 11 |
+| *average* | 7 | 43 |
+| *base* | 20 | 32 |
+| *before* | 1 | 20 |
+| *between* | 1 | 42 |
+| *binary* | 4 | 20 |
+| *binary search* | 8 | 16 |
+| *binomial* | 29 | 35 |
+| *bug* | 18 | 19 |
+| *call* | 3 | 10 |
+| *changing the subject* | 33 | 34 |
+| *closed* | 7 | 32 |
+| *combination* | 23 | 24 |
+| *cosine* | 39 | 40 |
+| *cosine rule* | 39 | 42 |
+| *derivative* | 33 | 44 |
+| *difference* | 4 | 21 |
+| *element* | 8 | 11 |
+| *equal* | 3 | 21 |
+| *expression* | 8 | 33 |
+| *factorise* | 33 | 35 |
+| *graph* | 12 | 37 |
+| *how* | 1 | 19 |
+| *indices* | 11 | 32 |
+| *inside* | 1 | 42 |
+| *key* | 1 | 14 |
+| *know* | 1 | 43 |
+| *large* | 8 | 43 |
+| *limit* | 30 | 43 |
+| *linear* | 8 | 33 |
+| *list* | 1 | 11 |
+| *local* | 10 | 44 |
+| *look* | 2 | 44 |
+| *mean* | 3 | 29 |
+| *median* | 19 | 29 |
+| *merge* | 17 | 21 |
+| *midpoint* | 37 | 39 |
+| *opposite* | 3 | 42 |
+| *outcome* | 21 | 25 |
+| *parabola* | 35 | 38 |
+| *parallel* | 34 | 39 |
+| *period* | 22 | 41 |
+| *perpendicular* | 37 | 39 |
+| *power* | 1 | 32 |
+| *probability* | 21 | 25 |
+| *range* | 16 | 18 |
+| *reaches* | 5 | 43 |
+| *real* | 3 | 36 |
+| *root* | 10 | 35 |
+| *scaling* | 12 | 33 |
+| *see* | 1 | 22 |
+| *selection sort* | 8 | 17 |
+| *sequence* | 5 | 12 |
+| *set* | 1 | 21 |
+| *sine* | 39 | 40 |
+| *sine rule* | 39 | 42 |
+| *solution* | 10 | 35 |
+| *solve* | 10 | 33 |
+| *statistics* | 18 | 29 |
+| *subject* | 8 | 34 |
+| *symmetric* | 21 | 29 |
+| *tangent* | 39 | 40 |
+| *test* | 1 | 18 |
+| *transposing* | 12 | 34 |
+| *unit circle* | 39 | 40 |
+| *value* | 3 | 14 |
+| *what* | 1 | 19 |
 
 ## Scope questions, settled
 

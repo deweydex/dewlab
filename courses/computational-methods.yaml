@@ -25,13 +25,18 @@ contents:
 - title: Python fundamentals
   tutorials:
   - first-steps-cm
+  - powers-in-python
   - storing-and-computing
+  - dividing-in-python
   - making-decisions
+  - equals-three-ways
   - reading-an-error-message
   - repeating-yourself
+  - a-total-that-starts-again
   - writing-your-own-functions
   - lists-and-sequences
   - comprehensions-and-grids
+  - two-names-one-list
   - looking-things-up-by-name
 - title: Matrices
   tutorials:
