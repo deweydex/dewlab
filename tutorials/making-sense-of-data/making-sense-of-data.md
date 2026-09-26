@@ -245,11 +245,13 @@ Which of the three will be largest?
 ```
 
 The mean is 5.88 Earth radii, the median 2.87, and the mode 12.8. Three
-"typical" sizes, and none of them agrees with another. The mode comes
-from rounding: radii are given to two decimal places, and 59 planets
-happen to share 12.8. For measured data, the most repeated rounded value
-says little. The histogram, further down, shows why the mean and median
-disagree.
+"typical" sizes, and none of them agrees with another. 59 planets share
+the mode, and 48 of those were found by the wobble of their star, which
+measures a planet's mass but not its size. For them, the archive
+estimated the radius from the mass, and the estimates for heavy planets
+come out close together. So the mode here says more about how the
+numbers were made than about the planets. The histogram, further down,
+shows why the mean and median disagree.
 
 ## When the mean misleads
 
@@ -462,7 +464,9 @@ the red line, falls in the valley between them, where fewer than one
 planet in twenty sits. It is a size hardly any planet has. A histogram
 with one peak is *unimodal*; with two, *bimodal*. Two humps usually mean
 two kinds of thing mixed together. Here they are small planets, rocky or
-gassy, and giants like Jupiter.
+gassy, and giants like Jupiter. About half the planets in the second
+hump were found by the wobble, so their sizes are estimates made from
+their mass: one more reason to ask where each number came from.
 
 A histogram is *symmetric* when its two halves are mirror images, and
 skewed when one side has a long tail. When you look at one, ask: one
