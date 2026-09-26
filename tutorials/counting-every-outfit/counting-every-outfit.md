@@ -326,7 +326,7 @@ that the answer we want?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through. Yours may differ and still keep the promise.
+Here is one answer. Yours may be different and still do the same job.
 
 ```python
 def all_pairs(first, second):

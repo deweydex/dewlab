@@ -326,8 +326,7 @@ with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things.
+There is more than one good answer. Here are some things to weigh.
 
 - **What your friend needs them for.** An exam question usually gives
   totals, so starting there practises the thing that will be asked. A
@@ -421,7 +420,7 @@ two". What changes, and what stays the same?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def exactly(groups, everyone, k):

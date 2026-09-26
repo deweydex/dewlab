@@ -211,7 +211,7 @@ like this? Look at the quadratic formula.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 In $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$, the only part that can
 make an $i$ is the square root of a negative discriminant. Everything
@@ -348,7 +348,7 @@ eight dots, and draw them.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 eighth = cmath.sqrt(1j)

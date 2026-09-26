@@ -110,7 +110,7 @@ photo lives in.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 The equation has two roots, 3000 and −3000, because
 $(-3000)^2 = 9\,000\,000$ as well. `solve_quadratic(1, 0, -9000000)`
@@ -392,7 +392,7 @@ says how long that takes.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 $\frac{4.9}{343}u^2 + u - 3 = 0$.
 

@@ -286,7 +286,7 @@ print("evaluate keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may use other names and keep the same promise.
+Here is one answer. Yours may use other names and still do the same job.
 
 ```python
 def evaluate(coefficients, x):

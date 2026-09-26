@@ -244,7 +244,7 @@ to 1,000.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def km_to_miles(km):
@@ -476,7 +476,7 @@ How could you make a one-input function from each, for a fixed speed?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def works_both_ways(forwards, backwards, values):
@@ -598,8 +598,7 @@ would skip the hand trace altogether?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things.
+There is more than one good answer. Here are some things to weigh.
 
 - **By hand first.** You have to predict each value before you see it,
   and a prediction that misses shows you exactly where your picture of

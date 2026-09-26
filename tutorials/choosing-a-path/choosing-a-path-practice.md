@@ -469,7 +469,7 @@ fit, so give back 15 for every place, and the display shows FFFF.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def score_digit(score, place):
@@ -497,7 +497,7 @@ with `low` 1 and `high` 6.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def between_again(value, low, high):
@@ -547,7 +547,7 @@ billion?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def bytes_needed(count):

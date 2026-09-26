@@ -403,7 +403,7 @@ much more tax do they pay?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def tax(income):
@@ -442,7 +442,7 @@ $x \to 0^+$. Does the limit agree with the value Python chose?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def approach_from_right(rule, a, rows=10):

@@ -124,7 +124,7 @@ substitute back.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 oats, yoghurt = solve_simultaneous(1, 1, 250, 0.13, 0.10, 29.5)
@@ -291,7 +291,7 @@ would you tell her? Would its line on a graph change?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 Any pair that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
 because both sides were multiplied by the same number. It works the
@@ -459,7 +459,7 @@ places across?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through, in code:
+Here is one answer, in code:
 
 ```python
 pixels = [(234, 0), (270, -8), (344, 0)]

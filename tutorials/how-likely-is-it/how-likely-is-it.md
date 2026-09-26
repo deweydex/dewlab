@@ -332,7 +332,7 @@ function has no `return` yet. If it shows 50, check what you divide by.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through. Yours may differ and still keep the promise.
+Here is one answer. Yours may be different and still do the same job.
 
 ```python
 def simulate(trial, times):

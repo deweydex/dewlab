@@ -240,7 +240,7 @@ with `assert`, checking its whole result column.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def point_counts(team_a, team_b):
@@ -342,7 +342,7 @@ this need? Is there a shorter way to count the True votes?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def majority(computer_1, computer_2, computer_3):

@@ -304,7 +304,7 @@ middle index?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def median_by_trimming(values):
@@ -338,7 +338,7 @@ routes = ["46A", "15", "46A", "39A", "15", "46A",
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 routes = ["46A", "15", "46A", "39A", "15", "46A",
@@ -360,8 +360,7 @@ friend, which way would you choose, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things:
+There is more than one good answer. Here are some things to weigh:
 
 - **Time and exams.** The formula first is quicker, and an exam or a
   calculator often wants only the number.

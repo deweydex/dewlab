@@ -150,7 +150,7 @@ radar show?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through. Schlomo's idea holds this far: distance divided by time, at one instant, is
+Here is one answer. Schlomo's idea holds this far: distance divided by time, at one instant, is
 $\frac{0}{0}$, which has no value. But a rule can have a limit where it
 has no value, as $\frac{x^2 - 4}{x - 2}$ did at 2 on
 [Getting closer](tutorial:getting-closer#a-rule-with-a-hole-in-it). The
@@ -197,7 +197,7 @@ inputs. Why can it see it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def best_point(rule, low, high):
@@ -284,7 +284,7 @@ cost among them.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def trip_cost(speed_kmh):
@@ -380,7 +380,7 @@ write the slope by hand, and find where it is 0.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def in_blood(hours):
@@ -607,7 +607,7 @@ line at 0.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 import matplotlib.pyplot as plt

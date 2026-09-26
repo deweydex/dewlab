@@ -360,7 +360,7 @@ does `math.log2(1000000)` say?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1. That is 10 halvings, so
 $\log_2 1024 = 10$.
@@ -490,7 +490,7 @@ width of 3 to a width of 2? Is that a column a screen can have?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def scale(position, from_width, to_width):

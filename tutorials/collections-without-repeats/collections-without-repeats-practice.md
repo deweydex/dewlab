@@ -334,7 +334,7 @@ second_computer = {"numpy", "requests", "flask"}
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def can_run(needed, installed):
@@ -385,7 +385,7 @@ does the empty set have?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def power_set(values):
@@ -471,7 +471,7 @@ you.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def shared_birthday():

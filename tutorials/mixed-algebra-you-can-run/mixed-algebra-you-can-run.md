@@ -253,7 +253,7 @@ $-3g + y = 8$ and $-1.25g + y = 15$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def subtract_polynomials(first, second):
@@ -364,7 +364,7 @@ pair.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def fastest_server(servers, thousands):

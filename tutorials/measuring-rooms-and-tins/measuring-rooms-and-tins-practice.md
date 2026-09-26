@@ -409,7 +409,7 @@ places stop changing.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 import random
@@ -460,8 +460,7 @@ matter that a sphere is a shape people meet every day?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through is to weigh
-a few things.
+There is more than one good answer. Here are some things to weigh.
 
 - **Leave it out until it can be explained.** Every formula then comes
   with its reason, and a reader never has to take one on trust. The cost:

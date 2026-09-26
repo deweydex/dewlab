@@ -369,8 +369,7 @@ practise using it. Which way would you have taught it, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs
-things like these:
+There is more than one good answer. Here are some things to weigh:
 
 - A table lets a reader find the pattern for themselves, before being
   told it. A found rule is often easier to remember.
@@ -416,7 +415,7 @@ Check with a fine comb over $x$ from 0 to 15.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def box_volume(cut):

@@ -340,7 +340,7 @@ id: four-q-practice-another-1
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 print(7 + 7 + 7 + 7)

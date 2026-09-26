@@ -128,7 +128,7 @@ through by index.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def over_ten_thousand(count):
@@ -267,7 +267,7 @@ trusted. (The readings are made up.)
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 sensor_a = [98, 95, 91, 88, 86]
@@ -401,7 +401,7 @@ first pass Ireland?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 years_ahead = []
@@ -429,7 +429,7 @@ rain so far this year. Check that its last value equals `total(rain)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 rain = [110, 80, 95, 60, 70, 75]
@@ -488,7 +488,7 @@ with `//`. What colour list do you get?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 orange = [255, 136, 0]

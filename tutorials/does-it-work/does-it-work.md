@@ -213,7 +213,7 @@ want to compare with the tolerance?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: the `...` becomes `return abs(a - b) <= tolerance`. If
+Here is one answer. The `...` becomes `return abs(a - b) <= tolerance`. If
 you have not written it yet, put it in now: the rest of this page uses
 it.
 

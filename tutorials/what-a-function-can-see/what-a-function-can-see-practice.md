@@ -115,7 +115,7 @@ print(game_score(10, 4))
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def game_score(enemies, coins, points_per_enemy=3):
@@ -270,7 +270,7 @@ id: what-function-practice-thunder
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def thunder_km(seconds, celsius=20):
@@ -337,7 +337,7 @@ second?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def with_reading(readings, value):
@@ -470,7 +470,7 @@ stays 0.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def brightener(factor):
@@ -516,7 +516,7 @@ def fall_time(height, gravity=9.81):
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def fall_timer(gravity):
@@ -583,7 +583,7 @@ trial itself?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 import random

@@ -251,7 +251,7 @@ meet one.
 Below is a *cell*. A cell is a small box of Python code inside this page.
 You can run it, and the result appears underneath. You can change it and
 run it again. Nothing you do in a cell can break the page or your
-computer, and every cell has a **reset** button that brings back the code
+computer. Every cell has a **Clear** button (↻) that puts back the code
 it started with.
 
 To run a cell, press its **Run** button, or hold Ctrl and press Enter.

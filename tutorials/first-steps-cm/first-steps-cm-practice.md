@@ -98,15 +98,16 @@ what [Monte Carlo simulation](tutorial:counting-darts) works out.
 
 </details>
 
-## 5. Reset is not undo
+## 5. Clear is not undo
 
-Run a cell, change it, then press reset. What comes back?
+Run a cell, change it, then press **Clear** (↻). What comes back?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The code the page started with, not the version you had a minute ago.
-Reset is not undo. If you want to keep something, copy it somewhere else
-before you press reset.
+You get the code the page started with. The version you had a minute
+ago is gone. If you want to keep something, copy it somewhere else
+before you press Clear. **Reset** (↺) is different. It clears the
+output and leaves your code alone.
 
 </details>
 

@@ -93,7 +93,7 @@ number. How could she know?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
+Here is one answer. Complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
 never negative, so $(x - 1)^2$ is 0 or more, and the whole rule is 4 or
 more. It can never come down to 0. The discriminant from
 [Solving for x](tutorial:solving-for-x#how-many-answers-the-discriminant)

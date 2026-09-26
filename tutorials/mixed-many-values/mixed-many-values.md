@@ -231,7 +231,7 @@ almost nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def whole_years(values):
@@ -371,7 +371,7 @@ the lowest bin up.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def five_year_bins(values):
@@ -436,7 +436,7 @@ agrees with the union.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 ireland_high = set()
@@ -555,7 +555,7 @@ told, in the report's own words, to trust the numbers?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def report(name, values, first_year):
@@ -618,7 +618,7 @@ up all 74 rounded values?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 table = frequency_table(whole_years(ireland))

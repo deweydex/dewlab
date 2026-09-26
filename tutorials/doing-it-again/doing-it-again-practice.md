@@ -267,7 +267,7 @@ tidy ways.)
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 users = 5000
@@ -405,7 +405,7 @@ then 5 more. What shape do the dots make each time?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 for n in range(1, 8):
@@ -430,7 +430,7 @@ Use a `while` loop. Then compare with `math.log2(1000)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 import math

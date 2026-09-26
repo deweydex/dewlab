@@ -297,7 +297,7 @@ only the parity bit flipped?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def looks_right(received):

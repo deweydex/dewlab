@@ -427,7 +427,7 @@ print(fahrenheit_to_celsius(celsius_to_fahrenheit(1)))
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: in `fahrenheit_to_celsius`, the `...` becomes
+Here is one answer. In `fahrenheit_to_celsius`, the `...` becomes
 `return (fahrenheit - 32) * 5 / 9`. The brackets make the subtraction
 happen first.
 

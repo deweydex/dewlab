@@ -175,7 +175,7 @@ does the check catch it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 $3(2x + 1) - 2(x - 4) = 6x + 3 - 2x + 8 = 4x + 11$.
 
@@ -410,7 +410,7 @@ polynomial of degree 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def evaluate_nested(coefficients, x):

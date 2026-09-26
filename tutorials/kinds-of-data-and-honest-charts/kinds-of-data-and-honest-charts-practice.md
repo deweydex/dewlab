@@ -231,7 +231,7 @@ the histogram agrees.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 bins = []
@@ -324,7 +324,7 @@ journeys = ["bus", "car", "walk", "bus", "bike", "car", "bus", "train",
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def by_bus(way):
@@ -458,7 +458,7 @@ as stem 3 in `[12, 15, 41]`. Is an empty row useful?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def stem_and_leaf(values):
@@ -504,7 +504,7 @@ different about it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 travel = frequency_table(journeys)
@@ -532,8 +532,7 @@ you have chosen, for a class like yours, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things.
+There is more than one good answer. Here are some things to weigh.
 
 Names first gives a reader words to think with before the pictures
 arrive, and a clear table of which moves each kind allows. That suits a

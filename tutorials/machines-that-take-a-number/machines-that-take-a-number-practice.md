@@ -154,7 +154,7 @@ with a clear error. Try it with 230 days, then with 400.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def rain_percent(rainy_days):
@@ -290,7 +290,7 @@ the two algorithms are the same function for every $n$ from 0 to 200.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def evens_by_loop(n):
@@ -406,7 +406,7 @@ id: machines-practice-colour
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def to_byte(level):
@@ -456,7 +456,7 @@ to 10 computers. Those are the range, and the domain of
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def computers_for(cables):

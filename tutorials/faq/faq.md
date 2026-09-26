@@ -85,14 +85,15 @@ few: a single downloadable HTML file, a printable version, or your cells
 as a Jupyter notebook. The contents page also offers a whole series as a
 zip of separate files.
 
-## What does Reset do?
+## What do Reset and Clear do?
 
-**Reset** restores one cell or one site editor to the code the tutorial
-started with, and clears its own result. Only that one thing changes —
-everything else on the page stays as it was. It does not clear a table
+**Reset** (↺) clears one cell's result and leaves its code alone.
+**Clear** (↻) puts back the code the tutorial started with, and clears
+the result too. Only that one cell changes. Everything else on the page
+stays as it was. It does not clear a table
 you built with an earlier SQL cell, or a variable an earlier Python cell
 set: those live in the page's shared connection or its shared Python,
-not in the cell you reset. If you need a completely fresh start, reload
+not in the cell you clear. If you need a completely fresh start, reload
 the page.
 
 ## What happens when the course ends?

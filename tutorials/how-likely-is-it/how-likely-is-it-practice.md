@@ -397,7 +397,7 @@ hold.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: a spinner with 11 equal sections, marked 2 to 12. A
+Here is one answer. Use a spinner with 11 equal sections, marked 2 to 12. A
 program that picks a total with `random.randint(2, 12)` works too. There, each total is
 one equally likely outcome, and $P(7) = \frac{1}{11}$ holds.
 

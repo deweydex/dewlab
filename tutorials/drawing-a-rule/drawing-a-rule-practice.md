@@ -197,7 +197,7 @@ How could you get the second decimal place?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def basketball_height(seconds):
@@ -265,7 +265,7 @@ What do you get from the table that the picture did not give you?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 before = evaluate([-4, 0, 1], -3)

@@ -141,7 +141,7 @@ better first test than a round trip.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def megabits_to_megabytes(megabits):
@@ -469,7 +469,7 @@ composing the two inverses. In which order do they go?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def celsius_to_kelvin(celsius):
@@ -579,8 +579,8 @@ print((fahrenheit - 32) * 5 / 9)
 
 It shows `20.0`.
 
-Which to teach has more than one answer worth giving. One way through
-weighs a few things. The short rule is quick, and many people use it well. But it does
+There is more than one good answer to which one to teach. Here are some
+things to weigh. The short rule is quick, and many people use it well. But it does
 not say which part moves first. A common slip is to move the
 $\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which turns −76 °F into about −74.2 °C, not −60. The balance is slower, and
 it explains itself: each step is a move you can say out loud. One

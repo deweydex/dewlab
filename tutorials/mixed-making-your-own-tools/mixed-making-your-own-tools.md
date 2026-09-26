@@ -148,7 +148,7 @@ miles.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 KM_PER_MILE = 1.609344
@@ -206,7 +206,7 @@ that `works_both_ways` says `False`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def works_both_ways(there, back, values):
@@ -353,7 +353,7 @@ if it is 1.52 AU.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def scaler(factor):
@@ -390,7 +390,7 @@ How big does a new 1 TB drive look to a computer that counts in 1,024s?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def tb_to_bytes(tb):
@@ -553,7 +553,7 @@ problem 10.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def convert(value, from_unit, to_unit):
@@ -621,7 +621,7 @@ to the test. How many lines did the test need to grow by?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def converter_for(from_unit, to_unit):
