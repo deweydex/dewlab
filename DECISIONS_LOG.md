@@ -4911,3 +4911,13 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **`Polynomial` moves to a project page of its own.** In `one-class-many-methods` it was the one class outside banking, and the one most likely to make a reader anxious about the mathematics rather than the code; a `Planet` with the minutes light takes to reach it teaches the same idea. But a polynomial class, built a method at a time, makes a good project for a class, so it has its own page, `a-polynomial-class`, straight after, and the page before says a reader may go on to inheritance instead. It follows a thrown ball, and its stages are `evaluate`, `degree` (where the trailing zero in `[1, 2, 0]` is the trap), an `__init__` that keeps two rules (no zero at the top; a copy of the caller's list, since the caller's list is another name for the same one), a `__str__` that writes `-5x^2 + 20x + 1.5`, `add`, which returns a new polynomial that keeps the same rules, and, for readers who have met the power rule, `derivative`, which finds that the ball is highest at 2 seconds. The stages include the class as it stands from `setup/polynomial/`, so each starter is the stage before's answer. It has no worlds: it is the one page in the course set in mathematics, by design.
 
 *Cost to change: `the-tools-around-your-code` now sits third in `courses/fundamentals-of-oop.yaml`, `topic-groups.yaml` and the mixed page's list; moving it again means all three. The `setup/oop/` files are read by two pages each.*
+
+---
+
+**7.240 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
+
+- **`data/exoplanets.csv`** stays. The NASA Exoplanet Archive states no licence and asks for an acknowledgment, which `data/exoplanets.yaml` carries; the site uses the data for teaching.
+- **Length.** The 1,800–2,600-word range the unit rewrites were briefed to is dropped. A page is as long as it needs to be to read well. Several Dewey Track tutorials run to 3,000–3,600 words and stay that way.
+- **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
+
+*Cost to change: none for the data and length; the sweep is page prose.*
