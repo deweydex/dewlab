@@ -59,13 +59,16 @@ and the second from
 ```question
 id: code-other-warm-up-1
 type: multiple-choice
-correct: 3
+answer: 3
 
 After `hand = [7, 2, 9]` and `answer = hand.sort()`, what is `answer`?
 
 - `[2, 7, 9]`
+  - This is the sorted list, which `hand` now holds; `sort()` gives back nothing.
 - `[7, 2, 9]`
+  - This is `hand` before sorting.
 - `None`
+  - `sort()` sorts the list in place and gives back `None`.
 ```
 
 ```question
@@ -163,13 +166,16 @@ already", and save a whole rewrite.
 ```question
 id: code-other-checklist-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which review comment gives the writer the most to work with?
 
 - "This function is badly written."
+  - This says how the reviewer feels, and gives the writer nothing to change.
 - "`total` is changed inside the loop and again after it. Could the second change go?"
+  - This names a line, says what it does, and asks a question the writer can act on.
 - "I would have done this differently."
+  - This says the reviewer is different, not what to look at.
 ```
 
 ## Changing the code, keeping the promise

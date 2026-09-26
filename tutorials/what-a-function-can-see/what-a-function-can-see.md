@@ -69,14 +69,17 @@ type: fill-in-the-blank
 ```question
 id: what-function-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 `0.1 + 0.2 == 0.3` is `False` in Python. What does
 `close_enough(0.1 + 0.2, 0.3)` give?
 
 - `True`, because the two differ by far less than the tolerance
+  - `close_enough` asks whether the difference is smaller than a tolerance, and it is.
 - `False`, because the two are not exactly equal
+  - This is what `==` gives; `close_enough` was made for this case.
 - An error, because floats cannot be compared
+  - Floats can be compared; the trouble is only that two of them can differ in their last digits.
 ```
 
 ## Names made inside a function
@@ -485,13 +488,16 @@ the list it was handed.
 ```question
 id: what-function-procedure-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 After `today = add_reading(today, 15.6)`, what does `today` point at?
 
 - The log, with the new reading at the end
+  - The log has the new reading, but `today` no longer names it: `=` gave `today` the function's result.
 - The log, without the new reading
+  - `add_reading` did add the reading; the list changed before `today` was given a new value.
 - `None`, because `add_reading` gives back nothing
+  - `add_reading` changes the list and gives back nothing, `None`, and `=` makes `today` name that.
 ```
 
 ## A function made inside a function

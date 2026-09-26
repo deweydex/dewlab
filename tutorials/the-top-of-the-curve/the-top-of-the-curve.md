@@ -69,15 +69,19 @@ type: fill-in-the-blank
 ```question
 id: the-top-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 What does `solve_quadratic(1, -5, 6)` give back? It solves
 $x^2 - 5x + 6 = 0$.
 
 - `[5, 6]`
+  - These are numbers from the equation, not the values of x that make it 0.
 - `[-3, -2]`
+  - These have the signs turned over: (x − 2)(x − 3) is 0 at 2 and 3.
 - `[2.0, 3.0]`
+  - (x − 2)(x − 3) is 0 at x = 2 and x = 3, given as floats, smallest first.
 - `[]`
+  - An empty list is for an equation with no real roots; this curve crosses the x-axis twice.
 ```
 
 ## A letter that sits below the line
@@ -222,14 +226,17 @@ cubic ones, with two control points.
 ```question
 id: the-top-curve-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 The height of a sliotar, in metres, $t$ seconds after it is struck, is
 $1.5 + 12t - 4.9t^2$. Does the height have a maximum or a minimum?
 
 - a minimum, because 1.5 is positive
+  - 1.5 is the height at the start, when t = 0; the t² part decides the shape.
 - a maximum, because $-4.9$ is negative
+  - A negative number with t² makes the curve open downward, so it has a highest point.
 - neither, because $t$ is time
+  - t is time, but the height still rises and then falls, so it has a highest point.
 ```
 
 ## Halfway between the roots

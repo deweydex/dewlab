@@ -872,27 +872,9 @@ p code, li code {
 .dl-table-caption { color: var(--dl-muted); font-size: 0.76rem; margin-bottom: 0.25rem; }
 .dl-table-note { color: var(--dl-muted); font-size: 0.76rem; margin-top: 0.2rem; }
 
-/* check() verdicts. Formative feedback, deliberately not scored-looking. */
-.dl-check {
-  display: flex;
-  gap: 0.5rem;
-  align-items: baseline;
-  padding: 0.45rem 0.7rem;
-  border-radius: 3px;
-  margin: 0.2rem 0 0.5rem;
-  font-family: var(--dl-font-family);
-  font-size: 0.88rem;
-}
-.dl-check-pass { background: var(--dl-pass-bg); color: var(--dl-pass-fg); }
-.dl-check-fail { background: var(--dl-error-bg); color: var(--dl-error-fg); }
-.dl-check-mark { font-family: var(--dl-mono); font-weight: 700; }
-.dl-check-detail { font-family: var(--dl-mono); font-size: 0.78rem; opacity: 0.85; }
-
-/* A ```question fence (planning/QUESTION_BLOCKS.md). Reuses .dl-check's
- * own pass/fail styling for its feedback rather than inventing a second
- * one — the same "That's right."/"Not quite yet." voice check() already
- * has, so a question does not read as a different feature from the one
- * a reader has already met in a cell.
+/* A ```question fence. Since #314 it gives no verdict: asked, it marks
+ * the page's own answer beside the reader's choice, with the note for
+ * that choice, in the same quiet colours as the rest of the page.
  */
 .dl-question {
   margin: 0.6rem 0 1.1rem;
@@ -947,14 +929,19 @@ p code, li code {
   outline: 2px solid var(--dl-orange);
   outline-offset: -1px;
 }
-/* Set once Check has been pressed (buildQuestions(), tutorial-runtime.js)
- * — a border colour rather than a background, so the gap's own text
- * stays as legible as it was before checking. */
-.dl-question-gap-select.is-correct, .dl-question-gap-input.is-correct { border-color: var(--dl-pass-fg); }
-.dl-question-gap-select.is-incorrect, .dl-question-gap-input.is-incorrect { border-color: var(--dl-error-fg); }
+/* The page's answer, once asked for: a label on its option, and the
+ * page's word after each gap. Muted text, never a pass or fail colour. */
+.dl-question-page-label {
+  display: block;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+}
+.dl-question-option.is-page-answer { border-style: dashed; }
+.dl-question-page-word { color: var(--dl-muted); font-size: 0.86rem; }
 
 .dl-question-check { margin: 0; }
-.dl-question-feedback .dl-check { margin: 0.6rem 0 0; }
+.dl-question-feedback > p, .dl-question-note { margin: 0.6rem 0 0; font-size: 0.92rem; }
 
 .dl-site-editor { margin: 1.25rem 0; }
 

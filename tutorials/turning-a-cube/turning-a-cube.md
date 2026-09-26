@@ -1,7 +1,7 @@
 ---
 title: "The rotation matrix: turning a cube in 3D"
 year: "2026-2027"
-version: 2026.09.21.1
+version: 2026.09.26.1
 covers:
   eight-corners-twelve-edges:
     covers: [CMPS-LO4]
@@ -242,13 +242,29 @@ hint: The first row and first column are [1, 0, 0]. The 2D rotation matrix fills
 # Your rotate_x(angle)
 ```
 
+```inputs
+rotate_x(0)                                              # no turn at all
+multiply(rotate_x(math.radians(90)), [[0], [1], [0]])    # the top, a quarter turn
+```
+
+```solution
+def rotate_x(angle):
+    c, s = math.cos(angle), math.sin(angle)
+    return [[1, 0, 0],
+            [0, c, -s],
+            [0, s, c]]
+```
+
 A quarter turn about $x$ should send the top of the cube, $(0, 1, 0)$,
 to the back, $(0, 0, 1)$:
 
 ```python exec
 id: a-matrix-that-turns-5
-check(multiply(rotate_x(math.radians(90)), [[0], [1], [0]]), [[0.0], [0.0], [1.0]])
+print(multiply(rotate_x(math.radians(90)), [[0], [1], [0]]))
 ```
+
+The middle number is about $6 \times 10^{-17}$. That is 0, give or take
+the rounding in `math.cos`.
 
 ## A Flip-Book
 

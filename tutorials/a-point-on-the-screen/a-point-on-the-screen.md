@@ -164,13 +164,16 @@ of this series.
 ```question
 id: why-dividing-works-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 A post 2 units tall stands at depth 8. How tall is it on the screen?
 
 - 2 units
+  - This keeps the post's own height, as if depth made no difference on the screen.
 - 0.25 units
+  - Height divided by depth: 2 divided by 8.
 - 4 units
+  - This divides the depth by the height, the other way round.
 ```
 
 ## Reflection

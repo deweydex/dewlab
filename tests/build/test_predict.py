@@ -25,10 +25,10 @@ CHOICE = """```predict
 What will the last line print?
 
 - 12
-  The total starts once, before the loop, and every day adds to it.
+  - The total starts once, before the loop, and every day adds to it.
 - 5
-  This is what you would see if the total started again each time round.
-  [A closer look](https://example.org/closer)
+  - This is what you would see if the total started again each time round.
+    [A closer look](https://example.org/closer)
 - Something else
 ```
 """
@@ -124,10 +124,15 @@ class TestMistakes:
         (CELL + "```predict\ntolerance: 1\n\nWhich?\n\n- a\n- b\n```\n", "only a `type: number`"),
         (CELL + "```predict\ntype: number\ntolerance: lots\n\nHow many?\n```\n", "write a number"),
         (CELL + "```predict\nWhich?\n\n- a\n- b\nstray words\n```\n", "neither an option"),
+        (CELL + "```predict\nWhich?\n\n- a long option\n  that wraps\n- b\n```\n", None),
         (CELL + "```predict\n- a\n- b\n```\n", "asks no question"),
         (CELL + CHOICE + CHOICE, "two predict blocks"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, match):
         write(repo, body)
+        if match is None:  # a wrapped option is not a mistake: it builds
+            b.build()
+            assert "a long option that wraps</span>" in built(repo)
+            return
         with pytest.raises(b.BuildError, match=match):
             b.build()

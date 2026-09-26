@@ -1,7 +1,7 @@
 ---
 title: "A table in Python, with pandas"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
 covers:
   keeping-only-some-rows:
     touches: [DBM-LO5]
@@ -25,7 +25,7 @@ On this page we:
 
 - build a small DataFrame, and look at it
 - ask it a question, the way `WHERE` does in SQL
-- check an answer with `check()`
+- guess the mean of a column, then work it out
 
 ## A Python cell
 
@@ -125,19 +125,23 @@ hint: Start from the filter-evening cell. Change the column name, the comparison
 # Your filter here
 ```
 
-## Checking your own answer
-
-Some cells can tell you whether you have found the right value. You met
-`check()` in the quizzes earlier in this course. Here too, nothing is
-recorded or graded: the answer is for you, and nobody else sees it.
+## A guess, then the mean
 
 `readings["morning"].mean()` works out the mean, or average, of the
-`morning` column. Is it 10.85? Run the cell to check.
+`morning` column. Before you run it, look at the four morning readings.
+What do you think their mean is?
 
 ```python exec
 id: check-mean
 hint: The mean of a column is readings["morning"].mean().
-check(readings["morning"].mean(), 10.85)
+readings["morning"].mean()
+```
+
+```predict
+type: number
+tolerance: 0.5
+
+Roughly, what is the mean of the morning readings?
 ```
 
 ## What you have now

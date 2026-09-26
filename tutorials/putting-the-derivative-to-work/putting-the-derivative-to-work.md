@@ -1,7 +1,7 @@
 ---
 title: "Putting the derivative to work: choose a project"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [life-expectancy]
 covers:
   one-idea-four-jobs:
@@ -32,7 +32,7 @@ On this page we:
 - choose one or more projects: the bottom of a letter, an edge in a
   picture, the best line through real Irish data, or walking downhill
   to the bottom of a curve
-- finish each project with a check of its own
+- finish each project by comparing what we found with what we expected
 
 > **The space we're in.** Everything from this unit is in your toolkit:
 > `derivative_at`, `bisect_root` and `newton`, with `vertex`,
@@ -52,13 +52,16 @@ and the second from
 ```question
 id: putting-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 At the lowest point of a smooth curve, the tangent line is:
 
 - as steep as it gets
+  - The curve is steepest somewhere on its way down or up, not at the bottom.
 - flat, with a slope of 0
+  - Just before the lowest point the curve goes down, and just after it goes up: at the bottom it goes neither way.
 - straight up and down
+  - A tangent is straight up and down only where the curve itself is; at a smooth lowest point it runs across.
 ```
 
 ```question
@@ -97,8 +100,8 @@ and the bottom of the wave. It is largest, near 1 or $-1$, at 0, 3.2
 and 6.0, where the wave crosses the middle. Flat means "turning here".
 Steep means "changing fast here".
 
-Here are the projects. Each takes a few cells, and each ends with a
-`check()` that says whether you got there.
+Here are the projects. Each takes a few cells, and each ends with a cell
+that sets what we found beside what we expected.
 
 | Project | The question | What it uses |
 |---|---|---|
@@ -168,15 +171,14 @@ plt.gca().set_aspect("equal")
 
 The bowl is lowest at $t \approx 0.507$, about 11.3 units below the
 baseline. No formula from Unit 7 could have found that, and the slope
-found it in one line. Is the dip the right size? Designers aim for
-about 1% to 3% of the letter's height, and this letter is 500 units
-tall.
+found it in one line. How big is the dip? Designers aim for about 1%
+to 3% of the letter's height, and this letter is 500 units tall.
 
 ```python exec
 id: putting-letter-check
 overshoot_percent = -lowest_height / 500 * 100
 print(round(overshoot_percent, 2), "% of the letter's height")
-check(1 <= overshoot_percent <= 3, True, label="the dip is 1% to 3% of the height")
+print("designers aim for 1% to 3%")
 ```
 
 **Try this next:** change the two control heights, $-60$ and $-50$, and
@@ -235,7 +237,6 @@ for i in range(len(differences)):
     if abs(differences[i]) > 100:
         big_steps.append(i)
 print(big_steps)
-check(big_steps, [5, 14], label="both edges of the stroke")
 ```
 
 Now a whole picture. This cell draws a letter "o" as a grid of 40 by
@@ -368,7 +369,6 @@ id: putting-line-check
 by_rule = sum(x * y for x, y in zip(year_gaps, lifespan_gaps)) / sum(x * x for x in year_gaps)
 by_numpy = np.polyfit(years, lifespans, 1)[0]
 print(best_m, by_rule, by_numpy)
-check(best_m, by_numpy, tolerance=1e-6, label="your slope matches numpy's")
 ```
 
 **Try this next:** the file goes back to 1950. Fit a line to 1950 to
@@ -438,7 +438,7 @@ left_path = walk_downhill(-2, 0.05, 30)
 right_path = walk_downhill(2, 0.05, 30)
 print(round(left_path[-1], 4), round(valley_rule(left_path[-1]), 4))
 print(round(right_path[-1], 4), round(valley_rule(right_path[-1]), 4))
-check(abs(derivative_at(valley_rule, left_path[-1])) < 1e-6, True, label="the walk ended where the curve is flat")
+print("slope where the left walk ended:", round(derivative_at(valley_rule, left_path[-1]), 6))
 ```
 
 From $-2$ the walk ends at about $-1.301$, and that valley is lower,
@@ -476,7 +476,7 @@ other three are still here.
 | The question | On this page |
 |---|---|
 | What is named here? | a cubic Bézier curve's four points; a row and a grid of pixels; the total squared error; the step size $r$ |
-| What is promised? | a slope of 0 promises a place where a curve turns; a large difference promises an edge; `check()` says whether each project got there |
+| What is promised? | a slope of 0 promises a place where a curve turns; a large difference promises an edge; each project ends by setting what it found beside what we expected |
 | What happens when? | gradient descent repeats one move, step against the slope, and the steps shrink as the curve flattens |
 | What does this space let us do? | pixels have no step smaller than one, so an edge is a difference, not a limit; walking downhill only sees the ground under it, so it can stop in a valley that is not the lowest |
 

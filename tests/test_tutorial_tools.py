@@ -41,94 +41,6 @@ def cell():
         tt.reset_page_state()
 
 
-class TestCompare:
-    """`check`'s comparison rules, which are where its behaviour actually is."""
-
-    @pytest.mark.parametrize(
-        ("actual", "expected"),
-        [
-            (6, 6),
-            ("hello", "hello"),
-            ([1, 2, 3], [1, 2, 3]),
-            ((1, 2), (1, 2)),
-            ({"a": 1}, {"a": 1}),
-            (0.1 + 0.2, 0.3),  # the classic float trap: must pass
-            (1 / 3, 0.3333333333333333),
-        ],
-    )
-    def test_equal_values_pass(self, actual, expected):
-        passed, detail = tt._compare(actual, expected, None)
-        assert passed, detail
-
-    @pytest.mark.parametrize(
-        ("actual", "expected"),
-        [
-            (4, 5),
-            ("hello", "Hello"),
-            ([1, 2, 3], [1, 2, 4]),
-            ([1, 2], [1, 2, 3]),
-            (0.5, 0.6),
-        ],
-    )
-    def test_different_values_fail(self, actual, expected):
-        passed, detail = tt._compare(actual, expected, None)
-        assert not passed
-        assert detail, "a failure must say something about why"
-
-    def test_true_is_not_one(self):
-        """`True == 1` in Python, but it is not the answer a student meant."""
-        assert not tt._compare(True, 1, None)[0]
-        assert not tt._compare(1, True, None)[0]
-        assert tt._compare(True, True, None)[0]
-
-    def test_explicit_tolerance(self):
-        assert tt._compare(9.81, 9.8, 0.05)[0]
-        assert not tt._compare(9.81, 9.8, 0.001)[0]
-
-    def test_list_failure_names_the_position(self):
-        passed, detail = tt._compare([1, 2, 3], [1, 5, 3], None)
-        assert not passed
-        assert "item 1" in detail
-
-    def test_length_mismatch_is_reported_as_length(self):
-        passed, detail = tt._compare([1, 2], [1, 2, 3], None)
-        assert not passed
-        assert "2 items" in detail and "3" in detail
-
-    def test_uncomparable_types_fail_rather_than_raise(self):
-        class Awkward:
-            def __eq__(self, other):
-                raise TypeError("no")
-
-        passed, _ = tt._compare(Awkward(), 1, None)
-        assert not passed
-
-    def test_long_values_are_truncated_in_the_message(self):
-        _, detail = tt._compare("x" * 500, "y", None)
-        assert "..." in detail
-        assert len(detail) < 300
-
-
-class TestCheckRendering:
-    def test_pass_renders_a_pass_indicator(self, cell):
-        assert tt.check(6, 6) is True
-        assert "dl-check-pass" in cell.html
-        assert "✓" in cell.html
-
-    def test_fail_renders_a_fail_indicator_with_a_reason(self, cell):
-        assert tt.check(4, 5) is False
-        assert "dl-check-fail" in cell.html
-        assert "expected 5" in cell.html
-
-    def test_custom_label_is_used_and_escaped(self, cell):
-        tt.check(1, 1, label="Is the total right?")
-        assert "Is the total right?" in cell.html
-
-        tt.check(1, 2, label="<script>bad()</script>")
-        assert "<script>bad()</script>" not in cell.html
-        assert "&lt;script&gt;" in cell.html
-
-
 class TestStreamedOutput:
     def test_print_lands_in_the_output_area_and_escapes_markup(self, cell):
         with streaming():
@@ -153,7 +65,7 @@ class TestStreamedOutput:
     def test_a_widget_between_prints_breaks_the_block(self, cell):
         with streaming():
             print("before")
-            tt.check(1, 1)
+            tt.show("between")
             print("after")
         cell.close_stream()
         assert cell.html.count("dl-stdout") == 2
@@ -212,19 +124,7 @@ class TestAnimations:
 
 
 class TestSuppressedReprs:
-    def test_a_cell_ending_in_check_does_not_repeat_the_bool(self, cell):
-        result = tt.check(2, 2)
-        tt._render_value(result)
-        assert "dl-check-pass" in cell.html
-        assert "dl-repr" not in cell.html
-
-    def test_a_bool_that_is_not_the_last_check_still_renders(self, cell):
-        tt.check(2, 2)
-        tt.show("something else")
-        tt._render_value(True)
-        assert "dl-repr" in cell.html
-
-    def test_an_unrelated_bool_renders(self, cell):
+    def test_a_bool_renders(self, cell):
         tt._render_value(False)
         assert "dl-repr" in cell.html
 
@@ -235,7 +135,7 @@ class TestOutsideACell:
         with pytest.raises(RuntimeError, match="running cell"):
             tt.show(1)
         with pytest.raises(RuntimeError, match="running cell"):
-            tt.check(1, 1)
+            tt.show_table([1])
 
 
 try:
@@ -281,16 +181,12 @@ class TestTables:
         tt.show_table(nasty)
         assert "<script>alert(1)</script>" not in cell.html
 
-    def test_dataframes_compare_elementwise_not_ambiguously(self, frame):
-        assert tt._compare(frame, frame.copy(), None)[0]
+    def test_dataframes_read_as_the_same_elementwise_not_ambiguously(self, frame):
+        assert tt._same(frame, frame.copy())
         other = frame.copy()
         other.loc[0, "value"] = 99
-        assert not tt._compare(frame, other, None)[0]
-
-    def test_dataframe_against_a_non_frame_reports_the_type(self, frame):
-        passed, detail = tt._compare(frame, [1, 2, 3], None)
-        assert not passed
-        assert "DataFrame" in detail
+        assert not tt._same(frame, other)
+        assert not tt._same(frame, [1, 2, 3])
 
 
 @needs_pandas
@@ -581,12 +477,10 @@ class TestArrays:
             actual, expected = np.array([0.1 + 0.2]), np.array([0.3])
         else:
             actual, expected = np.array([1, 2, 3]), np.array([1, 2, 4])
-        assert tt._compare(actual, expected, None)[0] is should_pass
+        assert tt._same(actual, expected) is should_pass
 
-    def test_shape_mismatch_reports_shape(self):
-        passed, detail = tt._compare(np.zeros((2, 2)), np.zeros((3, 3)), None)
-        assert not passed
-        assert "shape" in detail
+    def test_a_different_shape_is_different(self):
+        assert not tt._same(np.zeros((2, 2)), np.zeros((3, 3)))
 
 
 class TestWidgetIds:
@@ -937,11 +831,9 @@ class TestRunReport:
     """What `run_cell_report()` tells the page about one run — the plain
     values `tutorial-runtime.js` counts attempts from."""
 
-    def test_a_clean_run_with_no_checks_and_no_expect(self, cell):
+    def test_a_clean_run_with_no_expect(self, cell):
         report = tt._report(True, tt._current, None)
-        assert report == {
-            "ok": True, "error": None, "check": None, "empty": None, "reached": None,
-        }
+        assert report == {"ok": True, "error": None, "empty": None, "reached": None}
 
     def test_an_error_is_its_type_and_first_line(self, cell):
         try:
@@ -951,18 +843,6 @@ class TestRunReport:
         report = tt._report(False, tt._current, None)
         assert report["ok"] is False
         assert report["error"] == {"type": "ValueError", "message": "first line"}
-
-    def test_checks_report_the_first_failure_or_the_last_passing_label(self, cell):
-        tt.check(1, 1, label="q1")
-        tt.check(2, 3, label="q2")
-        tt.check(4, 5, label="q3")
-        report = tt._report(True, tt._current, None)
-        assert report["check"] == {"passed": False, "label": "q2"}
-
-        tt._begin("test-cell-2", cell)
-        tt.check(1, 1, label="q1")
-        tt.check(2, 2)
-        assert tt._report(True, tt._current, None)["check"] == {"passed": True, "label": None}
 
     def test_expect_is_evaluated_in_the_page_namespace(self, cell):
         tt._page_globals["total"] = 6

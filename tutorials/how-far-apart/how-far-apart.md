@@ -64,15 +64,19 @@ type: fill-in-the-blank
 ```question
 id: how-far-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 A triangle has a square corner. The two sides that meet at that corner
 are 3 m and 4 m long. What is its area?
 
 - 6 m²
+  - Half of 3 × 4: the triangle is half of a 3 m by 4 m rectangle.
 - 7 m²
+  - This adds the two sides, 3 + 4, which gives a length, not an area.
 - 12 m²
+  - This is the whole 3 m by 4 m rectangle, and the triangle is half of it.
 - 5 m²
+  - 5 m is the third side, the long one across from the square corner.
 ```
 
 ## Straight across and straight up

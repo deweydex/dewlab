@@ -62,14 +62,17 @@ and the second from [Doing it again](tutorial:doing-it-again).
 ```question
 id: measuring-rooms-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 `square(x)` gives `x * x`. What does `compose(math.sqrt, square)(-5)`
 give?
 
 - `-5`
+  - This is what you would get if the square root undid the square for every number; it does so only for 0 and above.
 - `5.0`
+  - `square` runs first and gives 25, and `math.sqrt(25)` is 5.0, a float.
 - `ValueError: math domain error`
+  - This runs the two the other way round: `math.sqrt(-5)` first, which raises this error.
 ```
 
 ```question

@@ -68,14 +68,18 @@ BASIC was made at Dartmouth College in 1964 so that
 ```question
 id: many-lang-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 What is the mean of 2, 4 and 9?
 
 - 4
+  - 4 is the middle value, the median, not the mean.
 - 5
+  - 2 + 4 + 9 is 15, and 15 shared among 3 is 5.
 - 9
+  - 9 is the largest value.
 - 15
+  - 15 is the total, before dividing by how many values there are.
 ```
 
 ## One job in Python
@@ -332,16 +336,20 @@ the page, but it runs in much the same step-by-step way.
 ```question
 id: many-lang-characteristics
 type: multiple-choice
-correct: 3
+answer: 3
 
 A friend says, "BASIC is an interpreted language." What is the most
 careful reply?
 
 - Yes, every BASIC is interpreted.
+  - Most people met BASIC on home computers, where it was interpreted, so this is a common belief.
 - No, BASIC is always compiled.
+  - Some BASICs were compiled, but the home-computer ones were not.
 - The home-computer BASICs were interpreted, but the first one at
   Dartmouth was compiled: it depends on the tool.
+  - Compiled or interpreted belongs to a tool, not to a language, and BASIC has had both.
 - BASIC is not a real programming language.
+  - BASIC has names, loops and choices, like any other language; this is about its reputation, not what it can do.
 ```
 
 ## What stays the same: the four questions

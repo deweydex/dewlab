@@ -45,7 +45,7 @@ class TestTheDownloadableCopy:
         assert '<script type="module"' not in copy
         # The Python tools travel inside it.
         assert "toolsSource" in copy
-        assert "def check(" in copy
+        assert "def show(" in copy
         # A tutorial without maths does not carry the maths fonts.
         assert ".katex-html" not in copy
         assert "data:font/woff2;base64," in copy  # the accessible fonts still do

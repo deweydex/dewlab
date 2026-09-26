@@ -69,7 +69,6 @@
     "sys.getrecursionlimit": "sys.getrecursionlimit()",
     "time.perf_counter": "time.perf_counter()",
     "tuple": "tuple(iterable=(), /)",
-    "tutorial_tools.check": "check(actual, expected, tolerance=None, label=None)",
     "tutorial_tools.load_csv": "load_csv(name, **read_csv_kwargs)",
     "tutorial_tools.load_text": "load_text(name)",
     "zip": "zip(*iterables, strict=False)"

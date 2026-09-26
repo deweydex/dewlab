@@ -7,16 +7,17 @@ This is the module a student's cell code sees. It does two jobs:
     into that cell's own output area, in the order the code produced it;
 
   * it provides the small bridge a cell uses to put something on the page and
-    read something back: `text_input`, `dropdown`, `button`, `show`,
-    `show_table`, and `check` — plus `load_csv` and `run_query` for pulling
-    in data, the latter usable wherever sqlite3 is loaded (dewmini today).
+    read something back: `text_input`, `dropdown`, `button`, `show` and
+    `show_table`, plus `load_csv`, `load_text` and `run_query` for pulling
+    in data, the last usable wherever sqlite3 is loaded.
 
-How each of the six behaves was designed rather than looked up, and every
-such choice is written down in DECISIONS_LOG.md rather than left implicit
-here.
+How each behaves was designed rather than looked up, and every such choice
+is written down in DECISIONS_LOG.md rather than left implicit here.
 
 Nothing about this is assessment-shaped: no scoring, no submission, no record
-kept anywhere. `check` tells a student whether they got it, and that is all.
+kept anywhere, and no verdict. `compare()` (the comparison view, #312) shows
+what a reader's code gives beside what a solution gives, when they ask; it
+never says which is right. `check()`, which did, was retired in #314.
 
 The module imports and works under plain CPython, with the DOM replaced by a
 recording stub. That is what lets the rendering rules be unit-tested without a
@@ -53,7 +54,6 @@ __all__ = [
     "image_input",
     "show",
     "show_table",
-    "check",
     "load_csv",
     "load_text",
     "run_query",
@@ -77,7 +77,7 @@ share no common base class, but each one defines the same four methods
 Anything that calls `cell.sink.stream(...)` doesn't need to check which
 kind of sink it has — as long as it quacks like a sink (has those
 methods), it works. That's what lets the exact same rendering code
-further down this file (`_render_value`, `show`, `check`, and so on) work
+further down this file (`_render_value`, `show`, `show_table`, and so on) work
 identically whether the cell is running in a browser tab, inside a Web
 Worker, or in a plain Python test with no browser at all."""
 
@@ -217,10 +217,6 @@ class _CellContext:
         self.widget_seq = 0
         self.figures_rendered: set[int] = set()
         self.filename = cell_filename(cell_id, label)
-        # (emission count, value) of the most recent check(), so a cell ending
-        # in a check does not print a bare True/False under its own verdict.
-        self.last_check: tuple[int, bool] | None = None
-        self.checks: list[tuple[str | None, bool]] = []
         self.last_error: tuple[str, str] | None = None
         # Whether this run's SQL query came back with zero rows — a `sql
         # exec` cell's own "did it raise", set by `_run_sql_cell()`. None
@@ -471,15 +467,6 @@ def _render_value(value) -> None:
         return
 
     cell = _require_cell()
-
-    # A cell ending in `check(...)` shows the verdict, not a bare True or False
-    # repeated underneath it.
-    if (
-        isinstance(value, bool)
-        and cell.last_check is not None
-        and cell.last_check == (cell.sink.count, value)
-    ):
-        return
 
     if _is_dataframe(value):
         cell.sink.append_html(_table_html(value))
@@ -821,21 +808,15 @@ def holds(expression: str) -> bool:
 
 def _report(ok: bool, cell: "_CellContext", expect: str | None) -> dict:
     """What one run amounted to, for the page's attempt counters: whether it
-    raised and which error, whether its checks passed and which one did not,
-    whether a SQL query came back empty, and whether `expect:` holds. All
-    plain values, so it can cross the Worker's postMessage boundary as
-    JSON."""
-    check = None
-    if cell.checks:
-        failed = [label for label, passed in cell.checks if not passed]
-        check = {"passed": not failed, "label": failed[0] if failed else cell.checks[-1][0]}
+    raised and which error, whether a SQL query came back empty, and whether
+    `expect:` holds. All plain values, so it can cross the Worker's
+    postMessage boundary as JSON."""
     error = None
     if cell.last_error:
         error = {"type": cell.last_error[0], "message": cell.last_error[1]}
     return {
         "ok": ok,
         "error": error,
-        "check": check,
         "empty": cell.last_result_empty,
         "reached": holds(expect) if expect else None,
     }
@@ -1258,113 +1239,6 @@ def show_table(frame, max_rows: int = 20, caption: str | None = None) -> None:
     """Render a DataFrame or Series as a table, truncated to `max_rows`."""
     cell = _require_cell()
     cell.sink.append_html(_table_html(frame, max_rows=max_rows, caption=caption))
-
-
-def _compare(actual, expected, tolerance: float | None) -> tuple[bool, str]:
-    """Compare two answers the way a person would mean it.
-
-    Pure, and the reason `check` is worth unit-testing: floats compare within a
-    tolerance rather than exactly, numpy arrays and pandas objects compare
-    elementwise instead of raising "truth value is ambiguous", and everything
-    else falls back to `==`.
-
-    Returns (passed, detail) where detail is a short human-readable reason,
-    empty when it passed.
-    """
-    np = _numpy()
-    pd = _pandas()
-
-    def describe(value) -> str:
-        text = repr(value)
-        return text if len(text) <= 120 else text[:117] + "..."
-
-    mismatch = f"got {describe(actual)}, expected {describe(expected)}"
-
-    # pandas first: a DataFrame is also array-like, and .equals is the right
-    # comparison for one.
-    if pd is not None and isinstance(actual, (pd.DataFrame, pd.Series)):
-        if not isinstance(expected, type(actual)):
-            return False, f"got a {type(actual).__name__}, expected a {type(expected).__name__}"
-        if tolerance is not None and np is not None:
-            try:
-                same = actual.shape == expected.shape and bool(
-                    np.allclose(actual.to_numpy(), expected.to_numpy(), atol=tolerance, rtol=0)
-                )
-            except (TypeError, ValueError):
-                same = bool(actual.equals(expected))
-        else:
-            same = bool(actual.equals(expected))
-        return same, "" if same else "the values differ"
-
-    if np is not None and isinstance(actual, np.ndarray):
-        expected_array = np.asarray(expected)
-        if actual.shape != expected_array.shape:
-            return False, f"got shape {actual.shape}, expected shape {expected_array.shape}"
-        if np.issubdtype(actual.dtype, np.floating) or tolerance is not None:
-            same = bool(np.allclose(actual, expected_array, atol=tolerance or 1e-9, rtol=1e-9))
-        else:
-            same = bool(np.array_equal(actual, expected_array))
-        return same, "" if same else "the values differ"
-
-    # bool before int: True == 1 is true in Python, and it is not the answer a
-    # student meant to give.
-    if isinstance(actual, bool) or isinstance(expected, bool):
-        same = actual is expected
-        return same, "" if same else mismatch
-
-    if isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
-        if tolerance is not None:
-            same = abs(actual - expected) <= tolerance
-        elif isinstance(actual, float) or isinstance(expected, float):
-            same = math.isclose(actual, expected, rel_tol=1e-9, abs_tol=1e-12)
-        else:
-            same = actual == expected
-        return same, "" if same else mismatch
-
-    if isinstance(actual, (list, tuple)) and isinstance(expected, (list, tuple)):
-        if len(actual) != len(expected):
-            return False, f"got {len(actual)} items, expected {len(expected)}"
-        for index, (a, e) in enumerate(zip(actual, expected)):
-            same, _ = _compare(a, e, tolerance)
-            if not same:
-                return False, f"item {index} differs: got {describe(a)}, expected {describe(e)}"
-        return True, ""
-
-    try:
-        same = bool(actual == expected)
-    except (TypeError, ValueError):
-        same = False
-    return same, "" if same else mismatch
-
-
-def _check_html(passed: bool, label: str | None, detail: str) -> str:
-    css = "dl-check-pass" if passed else "dl-check-fail"
-    mark = "✓" if passed else "✗"
-    heading = label or ("That's right." if passed else "Not quite yet.")
-    parts = [
-        f'<div class="dl-check {css}">',
-        f'<span class="dl-check-mark">{mark}</span>',
-        f"<span>{html.escape(str(heading))}",
-    ]
-    if detail and not passed:
-        parts.append(f' <span class="dl-check-detail">({html.escape(detail)})</span>')
-    parts.append("</span></div>")
-    return "".join(parts)
-
-
-def check(actual, expected, tolerance: float | None = None, label: str | None = None) -> bool:
-    """Compare a student's answer with the expected one and say how it went.
-
-    Formative feedback only. Nothing is scored, nothing is recorded, and the
-    result has no connection to any institutional grade. Returns the boolean
-    too, so a cell can branch on it.
-    """
-    cell = _require_cell()
-    passed, detail = _compare(actual, expected, tolerance)
-    cell.sink.append_html(_check_html(passed, label, detail))
-    cell.last_check = (cell.sink.count, passed)
-    cell.checks.append((label, passed))
-    return passed
 
 
 def _widget_id(explicit: str | None, label: str) -> str:

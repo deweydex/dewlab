@@ -352,15 +352,18 @@ sequence, run in reverse.
 ```question
 id: running-a-reverse-3
 type: multiple-choice
-correct: 3
+answer: 3
 
 An image editor scales a picture to 150% of its width, then crops 20
 pixels off. The result is 1,180 pixels wide. How do we find the width
 of the original?
 
 - Multiply 1,180 by 1.5, then subtract 20.
+  - This does the forward steps again, instead of undoing them.
 - Divide 1,180 by 1.5, then add 20.
+  - Each step is undone, but in the order they were done; the last step done is the first to undo.
 - Add 20 to 1,180, then divide by 1.5.
+  - Undo the last step first: put back the 20 pixels, then undo the scaling.
 ```
 
 ## The promise run backwards
@@ -545,14 +548,17 @@ circle.
 ```question
 id: running-a-way-back-3
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which rearranged formula has a smaller domain than the formula it came
 from?
 
 - $d = s \times t$, rearranged from $t = \frac{d}{s}$
+  - Rearranging this way removes a division, so s = 0 is allowed again: the domain grows.
 - $t = \frac{d}{s}$, rearranged from $d = s \times t$
+  - Dividing by s rules out s = 0, which d = s × t allowed.
 - $F = \frac{9}{5}C + 32$, rearranged from $C = \frac{5}{9}(F - 32)$
+  - Both formulas accept every temperature, so neither domain is smaller.
 ```
 
 ## Fractions with letters in them

@@ -79,15 +79,19 @@ the frequency of `"tea"` is {3}.
 ```question
 id: collections-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A game offers 3 characters, each in 2 colours. How many pairs does
 `all_pairs(characters, colours)` give?
 
 - 2
+  - This counts the colours only.
 - 5
+  - This adds the characters and the colours, rather than pairing them.
 - 6
+  - Each of 3 characters comes in each of 2 colours: 3 × 2.
 - 9
+  - This is 3 × 3, as if there were three colours.
 ```
 
 ## Two playlists
@@ -439,14 +443,18 @@ An infinite one needs a rule, and a function is a rule we can run.
 ```question
 id: collections-infinite-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which of these sets is infinite?
 
 - the songs in every playlist on your phone
+  - Huge, but a phone holds a finite number of songs.
 - the even numbers
+  - There is always a next even number: add 2.
 - the people who have ever lived
+  - An enormous number of people, but a finite one.
 - the grains of sand on every beach in Ireland
+  - More grains than anyone could count, but still a finite number.
 ```
 
 ## Every pair, and every smaller set

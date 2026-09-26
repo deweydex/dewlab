@@ -72,15 +72,19 @@ possible encores.
 ```question
 id: likely-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 You roll a red die and a blue die. How many different outcomes are
 there, if red 2 and blue 5 is different from red 5 and blue 2?
 
 - 12
+  - This adds the faces, 6 + 6, where each red face pairs with each blue one.
 - 21
+  - 21 is the count when red 2 and blue 5 is the same outcome as red 5 and blue 2.
 - 36
+  - Each of red's 6 faces pairs with each of blue's 6: 6 × 6.
 - 66
+  - This writes the two sixes side by side, as a number, instead of multiplying them.
 ```
 
 ## A scale from 0 to 1
@@ -111,14 +115,18 @@ of 1.3, or −0.2, something has gone wrong, in the same way a count of
 ```question
 id: likely-scale-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 You roll an ordinary die once. Which of these has probability 0?
 
 - You roll a number less than 7.
+  - Every face is less than 7, so this always happens: probability 1.
 - You roll a 7.
+  - No face shows a 7, so this can never happen.
 - You roll an even number.
+  - Three faces of the six are even, so this happens half the time.
 - You roll a 6.
+  - One face of the six is a 6: probability one sixth.
 ```
 
 ## Counting equally likely outcomes

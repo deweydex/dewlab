@@ -22,11 +22,6 @@ entries:
       readings[...], it keeps only the rows where the answer is True, like
       WHERE in SQL.
     example: 'readings[readings["evening"] > 14]'
-  - term: "check()"
-    python: tutorial_tools.check
-    kind: function
-    definition: Tells you whether a value matches the one expected. Nothing is graded or recorded.
-    example: "check(readings[\"morning\"].mean(), 10.85)"
   - term: "mean()"
     python: pandas.Series.mean
     kind: function

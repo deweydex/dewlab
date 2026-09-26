@@ -230,14 +230,10 @@ root.querySelector("#reader-list").innerHTML = rows.map((r) => `<li>${r.name}</l
 ## Checking your own answer
 
 ```python exec
-id: tools-show-check
-hint: check() is feedback, not a mark. Nothing is recorded.
+id: tools-show
+hint: show() puts something on the page mid-cell; show_table() a table.
 show("show() renders anything, mid-cell.")
 show_table(df, max_rows=3, caption="First three rows")
-
-check(sum([1, 2, 3]), 6, label="Does the total come out right?")
-check(0.1 + 0.2, 0.3)          # floats compare within a tolerance
-check(2 + 2, 5)                # and a wrong answer says so
 ```
 
 ## Widgets

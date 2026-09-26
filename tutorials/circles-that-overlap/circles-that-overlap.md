@@ -72,15 +72,18 @@ values in both sets, so it has {2} values in it.
 ```question
 id: circles-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 On one roll of a die, "even" has chance $\frac{3}{6}$ and "more than 4"
 has chance $\frac{2}{6}$. The chance of "even or more than 4" is not
 $\frac{5}{6}$. Why not?
 
 - A die cannot be even and more than 4 at the same time.
+  - A 6 is both even and more than 4, so the two can happen together.
 - Chances are multiplied, not added.
+  - Multiplying is for both happening; 'or' needs adding, with care for the overlap.
 - The 6 is in both events, so adding counts it twice.
+  - 6 is even and more than 4, so it sits in both events and is counted twice.
 ```
 
 ## Two circles in a box
@@ -369,15 +372,19 @@ different units turn out to be one idea.
 ```question
 id: circles-regions-four
 type: multiple-choice
-correct: 3
+answer: 3
 
 A fourth check, "Is the disk encrypted?", would need a fourth set. How many
 regions would a diagram of four sets need?
 
 - 9
+  - This is three circles' 8 regions, plus one.
 - 12
+  - This adds 4 more regions to 8, rather than doubling.
 - 16
+  - Each new set splits every region in two: 2 × 2 × 2 × 2.
 - 32
+  - This doubles once more than there are sets.
 ```
 
 Sixteen, because $2^4 = 16$. Four round circles cannot make all sixteen

@@ -65,13 +65,16 @@ To undo "multiply by 9/5, then add 32", the first step is to
 ```question
 id: does-it-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 What happens when Python runs `assert 2 + 2 == 4`?
 
 - It shows `True`.
+  - An `assert` does not print its result.
 - Nothing at all.
+  - When the condition is True, `assert` does nothing and the cell carries on.
 - It stops with an `AssertionError`.
+  - `assert` stops only when its condition is False.
 ```
 
 ## Code that runs and code that works
@@ -478,14 +481,17 @@ a reader will believe it.
 ```question
 id: does-it-names-3
 type: multiple-choice
-correct: 3
+answer: 3
 
 A line in a phone's settings code is
 `brightness = brightness * 0.9`. Which comment is the most useful?
 
 - `# multiply brightness by 0.9`
+  - This says what the line already says.
 - `# change the brightness`
+  - Closer, but it does not say why, or when.
 - `# dim a little for each idle minute, to save battery`
+  - This says why the line is there, which the code alone cannot say.
 ```
 
 ## Your toolkit, reviewed

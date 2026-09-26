@@ -333,7 +333,8 @@ Can you write a function `test_multiply(a, b)` that does this check for
 you?
 
 1. Evaluate both sides at $x$ = 0, 1, 2, −1 and 10.
-2. Print PASS or FAIL for each value of $x$.
+2. Print both sides for each value of $x$. Where, if anywhere, do they
+   differ?
 3. Try it on several pairs of polynomials in the second cell.
 
 ```python exec

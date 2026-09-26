@@ -249,8 +249,9 @@ For a diagram, though, generated beats collected. A Python cell reads `PRAGMA ta
 and `PRAGMA foreign_key_list` off the student's own database and draws the ER
 diagram their `CREATE TABLE` statements actually describe — not the one they
 meant. A missing arrow is a missing foreign key, seen as a gap rather than
-reported as a message. The schema stays the single source of truth, `check()`
-still gives the pass, and the picture is theirs.
+reported as a message. The schema stays the single source of truth, the
+checker cell says what it found (since #314 it gives no pass), and the
+picture is theirs.
 
 **This needs foreign keys declared.** `PRAGMA foreign_key_list` reports only
 what was written. With enforcement off, a table created with

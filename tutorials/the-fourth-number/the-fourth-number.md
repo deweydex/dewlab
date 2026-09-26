@@ -1,7 +1,7 @@
 ---
 title: "Homogeneous coordinates and the projection matrix"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-move-no-matrix-can-make:
     covers: [CMPS-LO4]
@@ -73,13 +73,16 @@ a chain of different kinds of step cannot be combined into one.
 ```question
 id: a-move-no-matrix-can-make-3
 type: multiple-choice
-correct: 1
+answer: 1
 
 Which of these can a 3×3 matrix do to a cube centred on the origin?
 
 - Turn it about its centre
+  - A matrix turns points about the origin, and the cube's centre is at the origin.
 - Slide it two units to the right
+  - A matrix times the origin is always the origin, so the centre cannot move two units.
 - Both of those
+  - The turn is possible; the slide would move the origin, which a matrix never does.
 ```
 
 ## One More Row
@@ -150,9 +153,20 @@ hint: Take each row of rotate_y(angle) and add a 0 on the end, then add the row 
 # Your rotation_y(angle), a 4x4 matrix
 ```
 
+```inputs
+rotation_y(0)
+rotation_y(math.radians(90))     # 6e-17 is 0, give or take rounding
+```
+
+```solution
+def rotation_y(angle):
+    rows = [row + [0] for row in rotate_y(angle)]
+    return rows + [[0, 0, 0, 1]]
+```
+
 ```python exec
 id: one-more-row-4
-check(multiply(rotation_y(0), cube4), cube4)
+print(multiply(rotation_y(0), cube4) == cube4)
 ```
 
 ## Everything in One Matrix
@@ -232,7 +246,8 @@ def divide_by_w(points):
     return [[x / w for x, w in zip(xs, ws)], [y / w for y, w in zip(ys, ws)]]
 
 on_screen = divide_by_w(multiply(simple_projection, shifted))
-check(on_screen, project(shifted[:3]))
+print(on_screen)
+print(project(shifted[:3]))
 ```
 
 The two agree, and the whole process now fits in one line:

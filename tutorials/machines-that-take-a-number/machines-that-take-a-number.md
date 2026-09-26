@@ -68,15 +68,19 @@ to `total` each time round. When the loop ends, `total` is {21}.
 ```question
 id: machines-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Your toolkit's `factorial` promises the number of orders of `n`
 different things. What does `factorial(4)` give back?
 
 - 4
+  - 4 is how many things there are, not how many orders they can go in.
 - 10
+  - This is 4 + 3 + 2 + 1: adding, where factorial multiplies.
 - 24
+  - 4 × 3 × 2 × 1: four choices for the first place, three for the next, and so on.
 - 16
+  - This is 4 × 4, which lets one thing appear twice in the same order.
 ```
 
 ## A machine with one slot
@@ -240,14 +244,17 @@ often you, a few weeks later.
 ```question
 id: machines-range-round
 type: multiple-choice
-correct: 2
+answer: 2
 
 `round(x)` accepts any real number $x$ and rounds it to the nearest
 whole number. What is its range?
 
 - every real number
+  - This is the domain, what may go in; what comes out is always whole.
 - the whole numbers, the integers
+  - Whatever goes in, a whole number comes out, and every whole number can come out.
 - the numbers from 0 to 9
+  - These are the digits; `round(123.4)` gives 123, which is outside 0 to 9.
 ```
 
 ## An algorithm is a function too
@@ -440,13 +447,16 @@ smaller.
 ```question
 id: machines-inverse-round
 type: multiple-choice
-correct: 3
+answer: 3
 
 Does `round` have an inverse?
 
 - Yes: add 0.5 to the answer.
+  - Adding 0.5 to 2 gives 2.5, but 2.4 and 1.6 both went in to give that 2.
 - Yes: `round` is its own inverse.
+  - `round(round(2.4))` is 2, not 2.4: rounding again does not bring back what went in.
 - No: `round(2.4)` and `round(1.6)` both give 2, so 2 cannot say which went in.
+  - An inverse has to say which input gave each output, and 2 came from more than one.
 ```
 
 ## Machines in a row: composition

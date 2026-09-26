@@ -55,15 +55,19 @@ On this page we:
 ```question
 id: untangling-warm-up-1
 type: multiple-choice
-correct: 1
+answer: 1
 
 From [Choosing a path](tutorial:choosing-a-path): which condition is True
 for exactly the temperatures that are *not* "80 and over"?
 
 - `temperature < 80`
+  - Everything below 80; 80 itself is "80 and over".
 - `temperature <= 80`
+  - This includes 80, which is "80 and over".
 - `temperature > 80`
+  - These are the temperatures over 80, not under.
 - `temperature != 80`
+  - This is True for 85, which is "80 and over".
 ```
 
 ```question
@@ -94,15 +98,19 @@ an order only when it is open and it has stock.
 ```question
 id: untangling-grey-out-rows
 type: multiple-choice
-correct: 3
+answer: 3
 
 There are four possible rows: open or closed, with stock or without. In how
 many of the four rows should the button be greyed out?
 
 - 1
+  - One row leaves the button available: open and with stock.
 - 2
+  - Either reason, closed or no stock, is enough on its own to grey the button out.
 - 3
+  - The button works only when open and with stock; the other three rows grey it out.
 - 4
+  - The row that is open and with stock leaves the button available.
 ```
 
 Now let's print both truth tables with `truth_table` from your toolkit. It

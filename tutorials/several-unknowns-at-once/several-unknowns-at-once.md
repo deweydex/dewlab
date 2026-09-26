@@ -68,15 +68,19 @@ type: fill-in-the-blank
 ```question
 id: several-unknowns-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 The parabola $y = x^2 - 8x + 3$ has its vertex at $x = -\frac{b}{2a}$.
 Where is that?
 
 - $x = 4$
+  - b is −8, so −b is 8, and 2a is 2: 8 ÷ 2 is 4.
 - $x = -4$
+  - This takes b as 8, leaving out its minus sign; b is −8, so −b is 8.
 - $x = 8$
+  - This is −b, before dividing by 2a.
 - $x = 3$
+  - 3 is the height of the curve at x = 0, not a place on the x-axis.
 ```
 
 ## Two facts, two unknowns
@@ -399,13 +403,16 @@ determinant tells us which kind we have before we draw anything.
 ```question
 id: several-unknowns-none-3
 type: multiple-choice
-correct: 3
+answer: 3
 
 Which pair of equations has no single solution?
 
 - $x + y = 4$ and $x - y = 2$
+  - Adding the two gives 2x = 6, so x = 3 and y = 1.
 - $2x + y = 7$ and $x + 2y = 8$
+  - These two lines cross once, at x = 2 and y = 3.
 - $x + 3y = 5$ and $2x + 6y = 9$
+  - Doubling the first gives 2x + 6y = 10, and the second says 2x + 6y = 9: both cannot hold.
 ```
 
 ## Three unknowns

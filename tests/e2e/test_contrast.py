@@ -180,8 +180,9 @@ def _assert_aa(scheme: str, label: str, fg: str, bg: str) -> None:
 
 @pytest.mark.parametrize("scheme", ["light", "dark"])
 class TestProseAndCellColours:
-    """Pairings present on every build with no cell run required, plus the
-    two that need one run each (check()'s pass/fail text)."""
+    """Pairings present on every build with no cell run required. The two
+    that needed a run, check()'s pass and fail colours, went with check()
+    (#314); nothing on a page is coloured as right or wrong now."""
 
     def test_the_link_colour(self, site_url, browser, scheme):
         page = browser.new_page(color_scheme=scheme)
@@ -230,54 +231,6 @@ class TestProseAndCellColours:
             measured = _measured_color(page, selector)
             background = _page_background(page)
             _assert_aa(scheme, f"{cell_type} pill", measured["color"], background)
-        finally:
-            page.close()
-
-    def test_a_passing_check(self, base_url, browser, scheme):
-        # Against the shared fixture tutorial, not this file's own tiny
-        # one: it's the one place already set up to point Pyodide at the
-        # self-hosted copy rather than a CDN this environment can't reach,
-        # and it already has a cell (tools-show-check) whose check() calls
-        # produce both a pass and a fail in one run.
-        page = browser.new_page(color_scheme=scheme)
-        try:
-            page.goto(f"{base_url}/{PAGE}")
-            page.wait_for_function("() => !!globalThis.dewlab")
-            page.wait_for_function(
-                "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
-                timeout=240_000,
-            )
-            # tools-show-check reads `df`, defined by pandas-table -- cells
-            # share one namespace built up by what has actually run, not by
-            # what merely sits earlier on the page.
-            page.evaluate('dewlab.runCell("pandas-table")')
-            page.wait_for_function(
-                "document.querySelector(\"[data-cell-id='pandas-table'] .dl-output\").children.length > 0"
-            )
-            page.evaluate('dewlab.runCell("tools-show-check")')
-            page.wait_for_selector(".dl-check-pass")
-            measured = _measured_color(page, ".dl-check-pass")
-            _assert_aa(scheme, "passing check", measured["color"], measured["background"])
-        finally:
-            page.close()
-
-    def test_a_failing_check(self, base_url, browser, scheme):
-        page = browser.new_page(color_scheme=scheme)
-        try:
-            page.goto(f"{base_url}/{PAGE}")
-            page.wait_for_function("() => !!globalThis.dewlab")
-            page.wait_for_function(
-                "document.querySelectorAll('.dl-btn-run:not([disabled])').length > 0",
-                timeout=240_000,
-            )
-            page.evaluate('dewlab.runCell("pandas-table")')
-            page.wait_for_function(
-                "document.querySelector(\"[data-cell-id='pandas-table'] .dl-output\").children.length > 0"
-            )
-            page.evaluate('dewlab.runCell("tools-show-check")')
-            page.wait_for_selector(".dl-check-fail")
-            measured = _measured_color(page, ".dl-check-fail")
-            _assert_aa(scheme, "failing check", measured["color"], measured["background"])
         finally:
             page.close()
 

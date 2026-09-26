@@ -179,12 +179,14 @@ for root in roots:
 
 ### Your turn
 
-Can you write a function `verify_roots(a, b, c, roots)` that checks
-each root for you?
+Can you write a function `verify_roots(a, b, c, roots)` that
+substitutes each root back for you?
 
 1. Evaluate the polynomial at each root.
-2. Print PASS if the value is close to zero, and FAIL if it is not. Use a
-   small tolerance, like 0.0001, in place of an exact test for zero.
+2. Print each root beside the value it gives. How close to zero is close
+   enough? A value like `2.2e-16` is zero, give or take rounding, so
+   compare with a small tolerance, like 0.0001, rather than with an exact
+   zero.
 3. Test it on several quadratics in the second cell.
 
 ```python exec

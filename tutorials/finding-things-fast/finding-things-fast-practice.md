@@ -344,7 +344,7 @@ list, when the numbers only mostly go up?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not quite. Schlomi's idea works on a list that is in order all the way
+Not on this list. Schlomi's idea works on a list that is in order all the way
 along, and this list is not: that page found ten years where life
 expectancy fell. It
 passed 70 in 1960, at 70.23, and fell back to 69.69 in 1961. A binary

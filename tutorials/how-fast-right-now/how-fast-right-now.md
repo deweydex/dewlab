@@ -76,15 +76,18 @@ A line goes through $(1, 3)$ and $(3, 7)$. Its slope,
 ```question
 id: how-fast-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Across the edge of a black square on a white screen, the brightness is
 0 up to the edge and 255 after it. It has a value at the edge. Why does
 it have no limit there?
 
 - Because a brightness is not a real number.
+  - A brightness from 0 to 255 is a real number; the trouble is at the edge, not in the numbers.
 - Because the rule has a hole at the edge.
+  - A hole is a missing value, and this rule has a value at the edge.
 - Because the left side heads for 0 and the right side heads for 255.
+  - A limit needs both sides to head for the same number, and these two head for 0 and 255.
 ```
 
 ## Distance at every second

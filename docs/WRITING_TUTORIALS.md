@@ -300,7 +300,6 @@ own:
   | `3 identical errors` | three runs in a row have ended in the same error |
   | `2 unchanged runs` | the reader has run the very same code twice more |
   | `8 runs` | the cell has run eight times |
-  | `3 failed checks` | a `check()` in the cell has failed on three runs in a row |
   | `2 empty results` | a `sql exec` cell's query has come back with no rows, two runs in a row |
   | `2 minutes` | two minutes have passed since the first run |
   | `unsure` | the reader has said "I'm not sure yet" in the cell's predict block |
@@ -331,8 +330,7 @@ It is evaluated after every run of that cell, in the page's own
 namespace. Once it holds, no further hint appears for the cell. Anything
 that goes wrong evaluating it counts as "not yet", so a name the reader
 has not defined is fine. The reader never sees the expression, and it
-never affects the run itself. A `check()` in the cell does the same job
-for the `failed checks` signal.
+never affects the run itself.
 
 A cell may also carry a `name:` line, a short label shown beside its
 identity pill — a handle a reader can point at ("the `filter-evening`
@@ -482,16 +480,18 @@ type: choice
 Before you run it: do the four planets reach round the Earth?
 
 - Yes, easily
-  Four whole planets sounds like a lot of planet.
+  - Four whole planets sounds like a lot of planet.
 - Nearly, but not quite
 - Not even halfway
 ```
 ````
 
 `type:` is `choice`, `number` or `text`. For a choice, the list is the
-options, and an indented line under an option is its note: one line naming
-the thinking that leads to it, with a link to a closer-look page if there is
-one. No option is marked right. For a number, `tolerance:` says how close
+options, each a bullet at the left margin. An indented bullet under an
+option is its note: one line naming the thinking that leads to it, with a
+link to a closer-look page if there is one. An indented plain line carries
+on the option (or note) above it, so a long one can wrap. No option is
+marked right. For a number, `tolerance:` says how close
 counts as the same, for an estimate. The prose before the list, or the
 whole body for `number` and `text`, is the question.
 
@@ -646,43 +646,25 @@ alone, and `\$99` is an escaped literal.
 
 ---
 
-## Checking an answer
-
-`check()` compares what a student produced against what you expected and shows a
-pass or a not-yet:
-
-```python
-check(readings["morning"].mean(), 10.85)
-```
-
-It is forgiving in the ways that matter for beginners. Floats compare with a
-tolerance, so `check(0.1 + 0.2, 0.3)` passes — a student meeting floating point
-for the first time should not be told their correct answer is wrong. Arrays and
-DataFrames compare element by element instead of raising. Lists report which
-position differs. And `True` is not equal to `1`, whatever Python thinks,
-because it is not the answer they meant.
-
-Nothing is scored, recorded or sent anywhere. `check` exists so that a student
-working alone at eleven at night gets an answer to "did I get that right?".
-
----
-
 ## Questions
 
-A quick check a student answers without writing any code — multiple choice, or a
+A question a student answers without writing any code: multiple choice, or a
 sentence with a word or two missing. Write it as a ```` ```question ```` fence:
 
 ````markdown
 ```question
-id: right-angle
+id: which-angle
 type: multiple-choice
-correct: 2
+answer: 2
 
-Which of these is a right angle?
+Which of these is a square corner?
 
 - 45 degrees
+  - Half a square corner: the diagonal of a square meets its side at 45°.
 - 90 degrees
+  - A quarter of a whole turn, like the corner of a page.
 - 180 degrees
+  - A half turn: the two sides point opposite ways, in one straight line.
 ```
 ````
 
@@ -692,14 +674,24 @@ way renaming a cell's id would. `type:` is `multiple-choice` or
 `fill-in-the-blank`, spelled out in full rather than abbreviated, so a question
 is readable without a reference card. Everything after the header lines is
 ordinary markdown, LaTeX included: for a multiple-choice question, the prose
-before the list is the prompt and the list is the options, in the order a
-student sees them.
-`correct:` names the right one by its position in that list, starting at 1 —
-that line, and only that line, is what a student's browser could read if they
-opened the page's source, which is the trade this format makes: right for a
-quick check, wrong for anything that has to keep its answer secret.
+before the list is the prompt and the list is the options.
 
-A fill-in-the-blank question has no `correct:` line. Write the sentence with
+The options follow the same rule as a predict block's. An option is a bullet at
+the left margin. A bullet indented under it is that option's note: one line
+naming the thinking that leads to it, written for every option, the page's own
+included. An indented line that is not a bullet carries on the option or note
+above it, so a long option can wrap.
+
+`answer:` names the page's own answer by its position in the list, starting at
+1. (`correct:`, its older spelling, still builds.) The runtime shuffles the
+options. Once a student has picked one, **Show the page's answer** marks the
+page's, shows the note for the option they chose, and, if the two are the same,
+says so. Nothing on it says right or wrong. The student can pick again, and the
+note follows their choice. The answer is in the page's source, which is the
+trade this format makes: fine for a question to think with, no use for one that
+has to keep its answer secret.
+
+A fill-in-the-blank question has no `answer:` line. Write the sentence with
 each missing word in curly brackets:
 
 ````markdown
@@ -712,8 +704,7 @@ A cell's own {id} is the key its saved code is stored under.
 ````
 
 That word becomes a typing box. Offer a short list instead, separated by `|`,
-and it becomes a dropdown — the first item is the one a student is being
-checked against:
+and it becomes a dropdown — the first item is the page's word:
 
 ````markdown
 ```question
@@ -724,16 +715,18 @@ An angle of 90 degrees is a {right angle|straight angle|acute angle}.
 ```
 ````
 
-A question with several gaps checks them all together, with one Check button
-for the whole sentence.
+A question with several gaps has one **Show the page's words** button for the
+whole sentence. Each gap then shows the page's word beside it, and what the
+student wrote stays as they wrote it.
 
-Like `check()`, a question is formative: right or not-yet, no score, nothing
-sent anywhere. Unlike a cell, it needs no Python and downloads nothing extra —
-a page whose only interactive content is a question never loads Pyodide.
+Like a predict block, a question is there to think with: no score, no verdict,
+nothing sent anywhere. Unlike a cell, it needs no Python and downloads nothing
+extra — a page whose only interactive content is a question never loads
+Pyodide.
 
-If a check calls for a picture in place of an option, or a graded, secret
-answer, this is not that: see "Checking an answer" above for the first, and
-dewmark (a separate program, for exams) for the second.
+A question whose answer a run would show belongs in a predict block instead,
+above the cell that shows it. A graded, secret answer is not this format's job
+at all: that is dewmark, a separate program, for exams.
 
 ---
 
@@ -1231,7 +1224,6 @@ Beyond ordinary Python, a cell can use:
 |---|---|
 | `show(*values, label=None)` | Render something mid-cell, rather than only at the end. |
 | `show_table(frame, max_rows=20, caption=None)` | Render a DataFrame as a table. Long frames are truncated, and say so. |
-| `check(actual, expected, tolerance=None, label=None)` | Pass or not-yet feedback, as above. |
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |

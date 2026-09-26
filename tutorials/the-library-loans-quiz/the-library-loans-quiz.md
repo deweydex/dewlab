@@ -1,7 +1,7 @@
 ---
 title: "The library loans quiz: books, authors and loans"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   task-1-authors-and-books:
     touches: [DBM-LO2]
@@ -68,6 +68,7 @@ every table on the earlier pages in this module was built.
 
 ```python exec
 id: check-authors-and-books-tables
+expect: bool(author_columns and book_columns) and not missing
 author_columns = {row[1] for row in db.execute("PRAGMA table_info(author_tbl)")}
 book_columns = {row[1] for row in db.execute("PRAGMA table_info(book_tbl)")}
 missing = set()
@@ -81,7 +82,8 @@ else:
     missing |= {"book_tbl." + column for column in {"book_id", "title", "publication_year"} - book_columns}
 if missing:
     print("Missing:", ", ".join(sorted(missing)) + ".")
-check(bool(author_columns and book_columns) and not missing, True, label="author_tbl and book_tbl both exist, with the columns this task asks for")
+if bool(author_columns and book_columns) and not missing:
+    print("Found author_tbl and book_tbl, with every column this task names.")
 ```
 
 ## Task 2: a book can have more than one author
@@ -132,6 +134,7 @@ two designs once both are fresh in your mind.
 
 ```python exec
 id: check-book-authors-table
+expect: not missing and pk_columns == required
 columns = {row[1] for row in db.execute("PRAGMA table_info(book_author_tbl)")}
 required = {"book_id", "author_id"}
 missing = required - columns
@@ -142,7 +145,8 @@ elif missing:
     print("book_author_tbl is missing:", ", ".join(sorted(missing)) + ".")
 elif pk_columns != required:
     print("book_id and author_id both need to be part of the primary key, together.")
-check(not missing and pk_columns == required, True, label="book_author_tbl exists, with book_id and author_id together as its primary key")
+if not missing and pk_columns == required:
+    print("Found book_author_tbl, with book_id and author_id together as its primary key.")
 ```
 
 ## Task 3: members and loans
@@ -175,6 +179,7 @@ directly under `loan_id`, before the dates.
 
 ```python exec
 id: check-members-and-loans-tables
+expect: bool(member_columns and loan_columns) and not missing
 member_columns = {row[1] for row in db.execute("PRAGMA table_info(member_tbl)")}
 loan_columns = {row[1] for row in db.execute("PRAGMA table_info(loan_tbl)")}
 missing = set()
@@ -189,7 +194,8 @@ else:
     missing |= {"loan_tbl." + column for column in required_loan_columns - loan_columns}
 if missing:
     print("Missing:", ", ".join(sorted(missing)) + ".")
-check(bool(member_columns and loan_columns) and not missing, True, label="member_tbl and loan_tbl both exist, with the columns this task asks for")
+if bool(member_columns and loan_columns) and not missing:
+    print("Found member_tbl and loan_tbl, with every column this task names.")
 ```
 
 ## Task 4: add authors, books, and authorships
@@ -211,6 +217,7 @@ each of them against the same book's `book_id`.
 
 ```python exec
 id: check-authors-books-authorships
+expect: author_count >= 4 and book_count >= 5 and shared_book >= 1 and shared_author >= 1
 authors_exist = bool(list(db.execute("PRAGMA table_info(author_tbl)")))
 books_exist = bool(list(db.execute("PRAGMA table_info(book_tbl)")))
 book_authors_exist = bool(list(db.execute("PRAGMA table_info(book_author_tbl)")))
@@ -231,16 +238,13 @@ else:
         print("No book in book_author_tbl has two or more authors yet.")
     if not shared_author:
         print("No author in book_author_tbl has written two or more books yet.")
-check(
-    author_count >= 4 and book_count >= 5 and shared_book >= 1 and shared_author >= 1,
-    True,
-    label="at least four authors, five books, a book with two authors, and an author with two books",
-)
+if author_count >= 4 and book_count >= 5 and shared_book >= 1 and shared_author >= 1:
+    print("Found at least four authors, five books, a book with two authors, and an author with two books.")
 ```
 
 ```hint
 for: check-authors-books-authorships
-after: 2 failed checks
+after: 2 runs
 
 Read what the check printed: how many authors and books it counted, and
 whether it found a shared book or a shared author yet.
@@ -271,6 +275,7 @@ returned_date) VALUES (1, 1, '2026-08-01', '2026-08-15', NULL)` leaves
 
 ```python exec
 id: check-members-and-loans-rows
+expect: member_count >= 3 and loan_count >= 4 and returned_before_cutoff >= 1 and overdue_now >= 1
 members_exist = bool(list(db.execute("PRAGMA table_info(member_tbl)")))
 loans_exist = bool(list(db.execute("PRAGMA table_info(loan_tbl)")))
 if not (members_exist and loans_exist):
@@ -290,11 +295,8 @@ else:
         print("No loan has a returned_date before 2026-09-01 yet.")
     if not overdue_now:
         print("No loan is overdue yet — returned_date IS NULL with a due_date before 2026-09-01.")
-check(
-    member_count >= 3 and loan_count >= 4 and returned_before_cutoff >= 1 and overdue_now >= 1,
-    True,
-    label="at least three members, four loans, one already returned, and one overdue",
-)
+if member_count >= 3 and loan_count >= 4 and returned_before_cutoff >= 1 and overdue_now >= 1:
+    print("Found at least three members, four loans, one loan already returned, and one overdue.")
 ```
 
 ## Task 6: two questions for your database
@@ -323,6 +325,7 @@ the queries themselves. There is more than one correct way to write a
 
 ```python exec
 id: check-quiz-queries
+expect: bool(book_with_two_authors) and overdue_count > 0
 book_authors_exist = bool(list(db.execute("PRAGMA table_info(book_author_tbl)")))
 loans_exist = bool(list(db.execute("PRAGMA table_info(loan_tbl)")))
 if not (book_authors_exist and loans_exist):
@@ -340,7 +343,8 @@ else:
         print("Task 4's book with two authors needs to exist before the first query means anything.")
     if not overdue_count:
         print("Task 5's overdue loan needs to exist before the second query means anything.")
-check(bool(book_with_two_authors) and overdue_count > 0, True, label="your data can answer both queries")
+if bool(book_with_two_authors) and overdue_count > 0:
+    print("Your data has a book with two authors and an overdue loan, so both queries have something to find.")
 ```
 
 ## One way to do it

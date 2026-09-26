@@ -2,7 +2,7 @@
 
 This is the Python file every dewlab cell actually runs against — not
 just dewmini's cells, but every tutorial page's too. When a student's
-cell calls `show(...)`, `check(...)`, or `text_input(...)`, this is where
+cell calls `show(...)`, `show_table(...)`, or `text_input(...)`, this is where
 those functions live. It also does something a student never calls
 directly: it's what actually *runs* a cell's code and turns whatever
 happened — printed text, a returned value, an error — into what appears
@@ -27,7 +27,7 @@ writes it **once** and hides the difference behind three small classes —
 `_DomSink`, `_MessageSink`, and `_RecordingSink` — that all offer the
 same four methods: `stream()`, `close_stream()`, `append_html()`, and
 `clear()`. Every rendering function in this file (`_render_value`,
-`show`, `check`, the widgets) calls `cell.sink.append_html(...)` or
+`show`, `show_table`, the widgets) calls `cell.sink.append_html(...)` or
 similar without ever checking which kind of sink it has. This pattern —
 several unrelated classes sharing the same method names so calling code
 doesn't need to know which one it has — is called "duck typing" in
@@ -58,8 +58,10 @@ sense.
    everything above together into "run this code and render what it
    did."
 8. **Public output functions** — `show`, `show_table`.
-9. **`check()`** — `_compare` (the actual comparison logic) and
-   `_check_html` (turning the result into markup).
+9. **Comparing** — `compare()` and the helpers above it
+   (`_copy_namespace`, `_same`, `_statements`): what **Compare with a
+   solution** runs (#312). It took the place of `check()`, which told a
+   reader right or not yet and was retired in #314.
 10. **Widgets** — `text_input`, `dropdown`, `button`, `image_input`, and
     the shared machinery behind them (`_widget_id`, `_Widget`,
     `_mount_widget`, `_require_dom_sink`).
@@ -126,10 +128,10 @@ more detail; it's worth reading once, since the same shape shows up in
   its traceback. A tutorial page passes its author-given `name:`, when a
   cell has one; dewmini passes a reader's own name or a plain `Cell N`
   fallback either way.
-- **"Why does `check()` need its own comparison function instead of
-  `==`?"** — `_compare`, and its own docstring: floats need a tolerance,
+- **"Why does the comparison need its own test for sameness instead of
+  `==`?"** — `_same()`, and its own docstring: floats need a tolerance,
   numpy arrays and DataFrames raise on a bare `==`, and `True == 1` in
-  Python would let a boolean answer through disguised as a numeric one.
+  Python would let a boolean result through disguised as a numeric one.
 - **"How does Compare with a solution work, and why can't it change my
   code's state?"** — `compare()`, after `reset_page_state()` (#312). The
   page runs the reader's cell first, then calls this. It takes two
@@ -150,9 +152,9 @@ more detail; it's worth reading once, since the same shape shows up in
 - **"What does the page learn about a run beyond its output?"** —
   `run_cell_report()` and `_report()`: the same run as `run_cell()`, plus a
   JSON report of whether it raised (`_describe_error()`: type and first
-  line), whether its `check()` calls passed and which did not, and whether
-  the cell's `expect:` expression `holds()` in the page namespace. The
-  tutorial page counts attempts for staged hints from this;
+  line) and whether the cell's `expect:` expression `holds()` in the
+  page namespace. The tutorial page counts attempts for staged hints
+  from this;
   `run_cell()` keeps its boolean for dewmini.
 - **"Why is `image_input()`'s value `None` at first?"** — reading a
   picked file's bytes is asynchronous; see the comment on `on_change`

@@ -816,7 +816,7 @@ class TestStagedHints:
               + "```hint\ntitle: some steps\n1. Look at `a[0]`.\n2. Then $x_i$.\n```\n\n"
               + "```hint\nafter: 3 identical errors and 2 minutes\nA.\n```\n\n"
               + "```hint\nafter: same-errors:3, minutes:2\nB.\n```\n\n"
-              + "```hint\nafter: 2 unchanged runs, 8 runs & 1 failed check\nC.\n```\n\n"
+              + "```hint\nafter: 2 unchanged runs, 8 runs & unsure\nC.\n```\n\n"
               + "```hint\nafter: 2 empty results\nA.\n```\n\n"
               + "```hint\nafter: empty-result:3\nB.\n```\n\n"
               + "```hint\nA.\n```\n\n```hint\nafter: 12 errors\nB.\n```\n\n"
@@ -836,7 +836,7 @@ class TestStagedHints:
         assert "dl-math" in page
         # Both trigger grammars canonicalise the same way.
         assert page.count('data-after="same-errors:3 minutes:2"') == 2
-        assert 'data-after="unchanged:2 runs:8 check-fails:1"' in page
+        assert 'data-after="unchanged:2 runs:8 unsure:1"' in page
         # Empty results reads both grammars.
         assert 'data-after="empty-results:2"' in page
         assert 'data-after="empty-results:3"' in page
@@ -850,6 +850,8 @@ class TestStagedHints:
         (CELL + "```hint\nfor: nope\nX.\n```\n", "does not have: 'nope'"),
         (CELL + "```hint\nafter: soon\nX.\n```\n", "cannot read"),
         (CELL + "```hint\nafter: 5 bananas\nX.\n```\n", "does not track"),
+        # check() and its signal were retired in #314.
+        (CELL + "```hint\nafter: 3 failed checks\nX.\n```\n", "does not track"),
         (CELL + "```hint\nafter: 5 errors\n```\n", "no text"),
     ])
     def test_hint_faults_fail_the_build(self, repo, markdown, match):

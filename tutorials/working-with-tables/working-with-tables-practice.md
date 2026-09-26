@@ -2,7 +2,7 @@
 title: "A table in Python, with pandas — Practice"
 practice_for: working-with-tables
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 ---
 
 # A table in Python, with pandas — Practice
@@ -223,19 +223,22 @@ you how many values went into it.
 
 </details>
 
-## Checking Yourself
+## Comparing Numbers
 
 ```python exec
 id: checking-yourself-1
-check(readings["evening"].mean(), 13.875)
+readings["evening"].mean()
 ```
 
-**13.** Use `check` to confirm the mean rise across all four sites.
+**13.** What is the mean rise across all four sites? Can you work it out
+in Python, and then compare it with the difference between the two
+means?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-check((readings["evening"] - readings["morning"]).mean(), 3.025)
+rise = (readings["evening"] - readings["morning"]).mean()
+print(rise)
 ```
 
 The rises are 3.4, 3.5, 2.3 and 2.9, and their mean is 3.025.
@@ -246,41 +249,32 @@ differences is always the difference of the means.
 
 </details>
 
-**14.** `check` allows a small difference, a *tolerance*, when it
-compares numbers. It does not need them to be exactly equal. Why does
-that matter here?
+**14.** Python prints the mean rise as `3.0250000000000004`, and
+`rise == 3.025` gives `False`. Why? How could you compare two numbers
+like these?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Computers store decimals in binary, so arithmetic on decimals does not
-always land exactly where it should.
+always land exactly where it should. The evening mean, on the other
+hand, is exactly 13.875. Some results come out clean and some do not,
+and there is no way to tell which in advance.
 
-The mean rise in the last problem is a real example. Python works it
-out as `3.0250000000000004`. So `== 3.025` gives `False`, and a correct
-answer would be marked wrong. The evening mean, on the other hand, is
-exactly 13.875. Some results come out clean and some do not, and there
-is no way to tell which in advance.
-
-That is why a check on anything measured should use a tolerance, not an
-exact `==`.
+So compare within a small difference, a *tolerance*, rather than with an
+exact `==`. After `import math`, `math.isclose(rise, 3.025)` allows a
+tiny difference, and so does `round(rise, 3) == 3.025`.
 
 </details>
 
-**15.** Can you write a check that would pass for a wrong answer? Why is
+**15.** How close is close enough? What does
+`math.isclose(readings["morning"].mean(), 11, abs_tol=1)` say, and why is
 that a problem?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Give it a tolerance wide enough to hide the mistake:
-
-```python
-check(readings["morning"].mean(), 11, tolerance=1)
-```
-
-10.85 passes, and so would 11.9.
-
-A check with a loose tolerance is worse than no check, because it
-reports success. Keep the tolerance as small as the arithmetic allows:
-big enough for the tiny errors in decimals, and no bigger.
+It gives `True`: 10.85 is within 1 of 11. So would 11.9. A tolerance
+wide enough to hide a real difference says two numbers are the same when
+they are not. Keep the tolerance as small as the arithmetic needs: big
+enough for the tiny errors in decimals, and no bigger.
 
 </details>
