@@ -1,7 +1,7 @@
 ---
 title: "The unit circle: sine, cosine and tangent"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   going-round-in-circles:
     covers: [MIT-4.6]
@@ -13,54 +13,114 @@ covers:
     covers: [MIT-4.7]
   tangent-which-is-a-slope:
     covers: [MIT-4.6]
+  the-circle-in-your-world:
+    covers: [MIT-4.6, MIT-4.5]
+worlds:
+  sea-and-sky: A ship leaving harbour on a straight course. The numbers are made up.
+  planets-and-moons: The Moon going round the Earth, with its orbit drawn as a circle.
+  fantasy-maps: A windmill beside the castle, and the tips of its sails. The numbers are made up.
 ---
 
 # The unit circle: sine, cosine and tangent
 
-This whole page is about one drawing. The *unit circle* is a circle with
-radius 1, with its centre at the origin, $(0, 0)$.
+At the end of
+[Distance and Pythagoras: how far apart two points are](tutorial:distance-and-pythagoras)
+we drew a circle with radius 1 and its centre at $(0, 0)$. Every point on
+it is 1 away from the centre. This circle is called the *unit circle*,
+and this whole page is about it.
 
-You have met this circle before. At the end of
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
-you drew it, and you checked that every point on it is at distance 1 from
-the centre. That one rule is all we need here.
+Think of a clock hand 1 unit long, pinned at the centre. It starts
+pointing right, at $(1, 0)$, and turns anticlockwise. Where is its tip
+after an eighth of a turn? After a quarter? After a half?
 
-Sine, cosine, radians and the exact values are often taught as four
-separate things to learn. In fact they are one drawing, described in four
-ways. On this page we:
-
-- walk a point around the circle and write down where it is
-- give the two coordinates of that point their names, sine and cosine
-- measure angles in a new way, called radians
-- find some points on the circle exactly, with Pythagoras
-- meet a third name, tangent, and see that it is a slope
+A quarter and a half are easy. After a quarter turn the tip points
+straight up, at $(0, 1)$. After a half turn it points left, at
+$(-1, 0)$. An eighth of a turn is harder. On this page we find it, and
+every other place on the circle, and then we give the two coordinates
+their names.
 
 ## Going round in circles
 
-Let's start at the right-hand side of the circle, walk a point around it,
-and write down where the point is after each eighth of a turn.
+Here is a way to move the tip round the circle, using only things we
+already have. We move it in many tiny steps. Each step goes at right
+angles to the hand, because the tip of a turning hand always moves at
+right angles to the hand. In
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines)
+we turned a direction a quarter turn by swapping its two numbers and
+changing one sign, so $(x, y)$ becomes $(-y, x)$. After each step, the
+tip is a tiny bit too far from the centre, so we pull it back to
+distance 1.
+
+The distance all the way round a circle is $2\pi r$. Here the radius
+$r$ is 1, so the distance round is $2\pi$, about 6.28. An eighth of a
+turn is an eighth of that distance.
 
 ```python exec
 id: going-round-in-circles-1
 import math
 import matplotlib.pyplot as plt
 
-def unit_point(turns):
-    """Where you are after going `turns` of the way round, starting at the right."""
-    angle = turns * 2 * math.pi
-    return (math.cos(angle), math.sin(angle))
+def walk(distance_round, steps=10000):
+    """Walk the tip from (1, 0), anticlockwise, this far round the circle."""
+    x, y = 1.0, 0.0
+    step = distance_round / steps
+    for _ in range(steps):
+        x, y = x - step * y, y + step * x    # a tiny step at right angles to the hand
+        size = math.sqrt(x ** 2 + y ** 2)
+        x, y = x / size, y / size            # back to distance 1 from the centre
+    return x, y
 
 
+print(walk(2 * math.pi / 4))
+print(walk(2 * math.pi / 8))
+```
+
+```predict
+type: number
+tolerance: 0.01
+
+The first line is a quarter turn, and prints about $(0, 1)$. The second
+line is an eighth of a turn. How far up is the tip then, to two decimal
+places?
+```
+
+The first line prints a tiny number, about `1.3e-08`, for the across
+value. That is 0.000000013. The walk is very close, but not exact, so
+read it as 0. After an eighth of a turn the tip is about 0.71 up, not
+0.5. Why is it
+more than halfway up, after half of a quarter turn?
+
+At an eighth of a turn the hand points diagonally, so the tip has gone
+as far across as it has gone up: $x = y$. The tip is also 1 from the
+centre, so Pythagoras says $x^2 + y^2 = 1$. Put $x$ in place of $y$ and
+solve:
+
+$$
+\begin{aligned}
+x^2 + x^2 &= 1 \\
+2x^2 &= 1 \\
+x^2 &= \tfrac{1}{2} \\
+x &= \tfrac{1}{\sqrt{2}} = \tfrac{\sqrt{2}}{2} \approx 0.7071
+\end{aligned}
+$$
+
+The walk and the algebra agree. The tip climbs fast at first, when the
+hand is flat, and slowly near the top, when the hand is almost upright.
+
+Now let's walk to every eighth of a turn and write down where the tip
+is.
+
+```python exec
+id: going-round-in-circles-2
 print(" fraction of a turn      across      up")
 for step in range(9):
     turns = step / 8
-    x, y = unit_point(turns)
+    x, y = walk(turns * 2 * math.pi)
     print(f"      {turns:>5.3f}           {x:>7.3f}   {y:>7.3f}")
 ```
 
-We get two columns of numbers: how far across the point is, and how far
-up. There is no new vocabulary yet, and we do not need any. The table is a
-record of where the point went.
+We get two columns of numbers: how far across the tip is, and how far
+up. The table is a record of where the tip went.
 
 You may notice a `-0.000` in the table. That is a very small negative
 number, which rounds to zero when we show three decimal places. You can
@@ -69,13 +129,13 @@ read it as 0.
 Here are the same eight places, drawn on the circle:
 
 ```python exec
-id: going-round-in-circles-2
+id: going-round-in-circles-3
 fig, ax = plt.subplots(figsize=(5.5, 5.5))
-circle = [unit_point(t / 200) for t in range(201)]
+circle = [walk(2 * math.pi * t / 100, steps=200) for t in range(101)]
 ax.plot([p[0] for p in circle], [p[1] for p in circle], linewidth=2)
 
 for step in range(8):
-    x, y = unit_point(step / 8)
+    x, y = walk(2 * math.pi * step / 8)
     ax.plot([0, x], [0, y], color="tab:orange", linewidth=1)
     ax.plot([x], [y], "o", color="tab:orange")
 
@@ -86,30 +146,16 @@ ax.grid(alpha=0.3)
 ax.set_title("Eight places on the circle")
 ```
 
-Are all the orange lines the same length? We can check with the
-`distance` function from
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
-What do you expect it to print?
-
-```python exec
-id: going-round-in-circles-3
-def distance(p, q):
-    (x1, y1), (x2, y2) = p, q
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-
-for step in range(8):
-    p = unit_point(step / 8)
-    print(f"({p[0]:>7.3f}, {p[1]:>7.3f})   distance from centre: {distance((0, 0), p):.10f}")
-```
-
-The distance is exactly 1, every time. That is the key fact. Everything
-on the rest of this page follows from it. The two columns come from a
-point that always stays at distance 1 from the middle.
+Every point on the circle has $x^2 + y^2 = 1$. So in the top half of the
+circle, $y = \sqrt{1 - x^2}$, and in the bottom half, $y = -\sqrt{1 - x^2}$.
+That is a second way to find a point on the circle, from its across
+value alone.
 
 ## The names for those two columns
 
-The across column is called *cosine*. The up column is called *sine*.
+The across value of the tip is called the *cosine*. The up value is
+called the *sine*. Each one belongs to the angle the hand has turned
+through.
 
 So, for a point on the unit circle:
 
@@ -118,25 +164,46 @@ So, for a point on the unit circle:
 - the sine of the angle is the point's up value, its $y$ coordinate
 
 That is all the two words mean. Each one is a coordinate of a point on a
-circle of radius 1. We do not need a triangle or a formula to say what
+circle of radius 1. We did not need a triangle or a formula to say what
 they are.
 
-Python calls them `math.cos` and `math.sin`. Do the columns match?
+Python has them, as `math.cos` and `math.sin`. They take the distance
+walked round the circle, as `walk` does. Do their answers match the
+walk?
 
 ```python exec
 id: the-names-for-those-two-columns-1
-print("  turns        x        cos       y        sin")
-for step in range(5):
-    turns = step / 8
-    angle = turns * 2 * math.pi
-    x, y = unit_point(turns)
-    print(f"  {turns:>5.3f}  {x:>8.4f} {math.cos(angle):>10.4f}"
-          f" {y:>8.4f} {math.sin(angle):>9.4f}")
+print(" distance     walk: across     cos        walk: up        sin")
+for distance_round in [0.5, 1, 2, 3]:
+    x, y = walk(distance_round)
+    print(f"   {distance_round:<5}    {x:>10.6f} {math.cos(distance_round):>10.6f}"
+          f"    {y:>10.6f} {math.sin(distance_round):>10.6f}")
 ```
 
-The columns match, because we built `unit_point` out of `cos` and `sin`
-in the first place. The order of the ideas matters. The
-coordinates came first, and cosine and sine are the names we gave them.
+The columns agree to six decimal places. Our walk and Python's `cos`
+and `sin` find the same points. Python finds them in one step, far more
+exactly, so from now on we use `math.cos` and `math.sin`.
+
+Move the slider to walk the tip round the circle yourself. The number
+on the slider is the distance walked, which is what `math.cos` and
+`math.sin` take. Where is the across value negative? Where are the two
+values equal?
+
+```python exec
+id: the-names-for-those-two-columns-3
+walked = slider("distance round the circle", 0.0, 6.28, value=0.79)
+angle = walked.value
+
+fig, ax = plt.subplots(figsize=(4.5, 4.5))
+rim = [2 * math.pi * k / 100 for k in range(101)]
+ax.plot([math.cos(t) for t in rim], [math.sin(t) for t in rim], color="lightgrey")
+ax.plot([0, math.cos(angle)], [0, math.sin(angle)], "o-", color="tab:orange")
+ax.set_xlim(-1.2, 1.2)
+ax.set_ylim(-1.2, 1.2)
+ax.set_aspect("equal")
+ax.grid(alpha=0.3)
+print("across (cos):", round(math.cos(angle), 3), "   up (sin):", round(math.sin(angle), 3))
+```
 
 ### The identity, discovered
 
@@ -149,13 +216,9 @@ $$\sin^2\theta + \cos^2\theta = 1$$
 The small 2 means "squared": $\sin^2\theta$ is $(\sin\theta)^2$.
 
 Can you see why this is true, using what you already know? Every point on
-the circle is at distance 1 from the centre. The distance formula comes
-from Pythagoras, so every point on this circle has $x^2 + y^2 = 1$. Now
-put in the names: $x$ is $\cos\theta$ and $y$ is $\sin\theta$. That gives
-the identity.
-
-For example, at an eighth of a turn both coordinates are about $0.7071$,
-and $0.7071^2 + 0.7071^2 \approx 0.5 + 0.5 = 1$.
+the circle has $x^2 + y^2 = 1$. Now put in the names: $x$ is
+$\cos\theta$ and $y$ is $\sin\theta$. That gives the identity. It is
+Pythagoras, with new names for the coordinates.
 
 ```python exec
 id: the-names-for-those-two-columns-2
@@ -165,62 +228,82 @@ for step in range(9):
     print(f"sin^2 + cos^2 = {s ** 2 + c ** 2:.12f}")
 ```
 
-We did not need anything new for this. It is the distance formula from
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances),
-used on a circle of radius 1, with new names for the coordinates.
-
 ### Your turn
 
 The circle has four quarters. In each quarter, is the across value
-positive or negative? What about the up value?
-
-1. Write your prediction for each quarter in the comments below.
-2. Check each one with `unit_point` at 0.1, 0.35, 0.6 and 0.85 of a turn.
+positive or negative? What about the up value? Write your guesses in the
+comments first. Then check each one with `math.cos` and `math.sin`, at
+0.1, 0.35, 0.6 and 0.85 of a turn.
 
 ```python exec
 id: your-turn-1
-# Quarter 1: top right   — across is ____, up is ____
-# Quarter 2: top left    — across is ____, up is ____
-# Quarter 3: bottom left — across is ____, up is ____
-# Quarter 4: bottom right— across is ____, up is ____
+# Quarter 1: top right    across is ____, up is ____
+# Quarter 2: top left     across is ____, up is ____
+# Quarter 3: bottom left  across is ____, up is ____
+# Quarter 4: bottom right across is ____, up is ____
 
-# Check with unit_point at 0.1, 0.35, 0.6, 0.85 of a turn.
+# Check at 0.1, 0.35, 0.6 and 0.85 of a turn.
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
+
+```python
+for turns in [0.1, 0.35, 0.6, 0.85]:
+    angle = turns * 2 * math.pi
+    print(turns, math.cos(angle), math.sin(angle))
+```
+
+In the top right both are positive. In the top left the across value is
+negative and the up value is positive. In the bottom left both are
+negative. In the bottom right the across value is positive and the up
+value is negative.
+
+</details>
 
 ## Measuring the walk
 
-So far we have measured angles as fractions of a turn. That is accurate,
-but people do not usually write angles that way. There are two standard
-ways, and one of them will look strange at first.
-
-We start with something strange, because it is the reason the second way
-exists. A quarter turn is 90 degrees, and at a quarter turn the up value
-is exactly 1. So what do you think `math.sin(90)` gives?
+So far we have measured angles as fractions of a turn, or as a distance
+walked round the circle. People usually write angles in degrees, and a
+quarter turn is 90 degrees. At a quarter turn the up value is exactly 1.
 
 ```python exec
 id: measuring-the-walk-1
 print("math.sin(90) =", math.sin(90))
 ```
 
-Python says about 0.894, not 1. It is answering a different question, because `math.sin` does not take degrees. It takes
-radians.
+```predict
+type: choice
+
+What will the cell print?
+
+- math.sin(90) = 1.0
+  - A quarter turn is 90 degrees, and the up value there is 1. There is
+    [a closer look at this](tutorial:degrees-and-radians).
+- Some other number between −1 and 1
+- An error
+  - `math.sin` may not accept a number as big as 90.
+```
+
+Python says about 0.894, not 1. `math.sin` does not take degrees. It
+takes the distance walked round the unit circle, and 90 is a very long
+walk: more than fourteen times round.
 
 ### What a radian is
 
-A *radian* is a way to measure an angle by a distance walked around the
-edge of the circle.
-
-Take the circle of radius 1 and walk along its edge. When you have walked
-a distance of 1, the same as the radius, you have turned through one
-radian.
+A *radian* is a way to measure an angle by a distance walked round the
+edge of the unit circle. When you have walked a distance of 1, the same
+as the radius, you have turned through one radian.
 
 ```python exec
 id: measuring-the-walk-2
 fig, ax = plt.subplots(figsize=(5.5, 5.5))
-circle = [unit_point(t / 200) for t in range(201)]
+circle = [(math.cos(t / 100 * 2 * math.pi), math.sin(t / 100 * 2 * math.pi))
+          for t in range(101)]
 ax.plot([p[0] for p in circle], [p[1] for p in circle], color="lightgrey", linewidth=2)
 
-# One radian of arc: from angle 0 to angle 1, in radians.
+# One radian of arc: a walk of length 1 round the edge.
 arc = [(math.cos(t / 100), math.sin(t / 100)) for t in range(101)]
 ax.plot([p[0] for p in arc], [p[1] for p in arc], color="tab:orange", linewidth=4)
 ax.plot([0, 1], [0, 0], color="tab:blue", linewidth=3)
@@ -236,10 +319,10 @@ ax.set_title("One radian: the angle where the arc equals the radius")
 The orange arc and the blue radius have the same length. The angle
 between the two blue lines is one radian.
 
-How many radians are there in a full turn? The distance all the way round
-a circle is $2\pi r$, so for a circle of radius 1 it is $2\pi$. So a
-full turn is $2\pi$ radians, which is about
-$6.28$.
+A full turn is a walk of $2\pi$, so a full turn is $2\pi$ radians,
+about 6.28. The $2\pi$ here is the distance round the circle. Because
+the circle has radius 1, that distance is also the number of radians in
+a turn.
 
 ```python exec
 id: measuring-the-walk-3
@@ -251,11 +334,6 @@ print("sin of a quarter turn:", math.sin(math.pi / 2))
 ```
 
 There is the 1 that was missing.
-
-The $2\pi$ here is the distance round the circle. It is not a mysterious
-number from trigonometry. Because the
-circle has radius 1, that distance is also the number of radians in a
-turn.
 
 ### Converting
 
@@ -293,57 +371,38 @@ that scale, you have probably multiplied where you should have divided.
 
 ### Your turn
 
-How would you convert these without using `math.radians`? Find each one
-first, then check it in the cell.
+How would you convert these without `math.radians`? Find each one on
+paper first, then check it in the cell.
 
-1. Convert 270 degrees to radians.
-2. Convert 135 degrees to radians.
-3. Convert $\pi/6$ radians to degrees.
-4. Convert 2 radians to degrees.
+1. 270 degrees to radians
+2. 135 degrees to radians
+3. $\pi/6$ radians to degrees
+4. 2 radians to degrees
 
 ```python exec
 id: your-turn-2
 # Your answers here.
 ```
 
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
+
+1. $270 \times \frac{\pi}{180} = \frac{3\pi}{2} \approx 4.712$
+2. $135 \times \frac{\pi}{180} = \frac{3\pi}{4} \approx 2.356$
+3. $\frac{\pi}{6} \times \frac{180}{\pi} = 30$ degrees
+4. $2 \times \frac{180}{\pi} \approx 114.6$ degrees
+
+</details>
+
 ## The landmark points
 
-At some angles, we can find the coordinates exactly, with no
-calculator and no decimals. We use Pythagoras again.
+At some angles, we can find the coordinates exactly, with no calculator
+and no decimals. We found one at the top of the page: at 45 degrees,
+both coordinates are $\frac{\sqrt{2}}{2}$. Pythagoras finds two more.
 
 Why do we want exact values? A decimal is an approximation, and
 sometimes the difference matters. We will see an example below.
-
-### Forty-five degrees
-
-At 45 degrees the point moves diagonally. It has gone as far across as it
-has gone up, so $x = y$.
-
-We also know that $x^2 + y^2 = 1$, because that is true for every point
-on this circle. So we have two facts and one unknown. Put $x$ in place of
-$y$ and solve:
-
-$$
-\begin{aligned}
-x^2 + x^2 &= 1 \\
-2x^2 &= 1 \\
-x^2 &= \tfrac{1}{2} \\
-x &= \tfrac{1}{\sqrt{2}} = \tfrac{\sqrt{2}}{2}
-\end{aligned}
-$$
-
-Is that the same as the point `unit_point` finds? Run the cell to check.
-
-```python exec
-id: the-landmark-points-1
-exact = math.sqrt(2) / 2
-point = unit_point(45 / 360)
-
-print("Worked out by hand: ", exact)
-print("From the circle:    ", point[0], point[1])
-print()
-print("Do they agree?", abs(exact - point[0]) < 1e-12)
-```
 
 ### Thirty and sixty degrees
 
@@ -368,8 +427,8 @@ print("which is sqrt(3)/2 = ", math.sqrt(3) / 2)
 print()
 
 for degrees in [30, 45, 60]:
-    x, y = unit_point(degrees / 360)
-    print(f"{degrees} degrees:  across {x:.6f}   up {y:.6f}")
+    angle = math.radians(degrees)
+    print(f"{degrees} degrees:  across {math.cos(angle):.6f}   up {math.sin(angle):.6f}")
 ```
 
 Here is the whole table for the first quarter of the circle:
@@ -417,17 +476,15 @@ about 16 digits, so its square misses a half by a very tiny amount.
 
 Only the exact form $\frac{\sqrt{2}}{2}$ squares to exactly $\frac{1}{2}$.
 That is why we use *surd form*. A *surd* is a root such as $\sqrt{2}$
-that we leave as a root, without turning it into a decimal. It is more than a
-tidier way to write the decimal. The decimal is wrong by a small amount,
-and in some calculations small amounts add up.
+that we leave as a root, without turning it into a decimal. The decimal
+differs from it by a small amount, and in some calculations small amounts add
+up.
 
 ### Your turn
 
-What are the exact values for 120°, 135° and 150°?
-
-1. Use the first-quarter table above.
-2. Use the signs you found for each quarter earlier.
-3. Fill in the comments, then run the check.
+What are the exact values for 120°, 135° and 150°? Can you find them
+from the first-quarter table, and the signs you found for each quarter?
+Write your answers in the comments, then run the check.
 
 ```python exec
 id: your-turn-3
@@ -437,8 +494,23 @@ id: your-turn-3
 
 # Then check:
 # for d in [120, 135, 150]:
-#     print(d, unit_point(d / 360))
+#     print(d, math.cos(math.radians(d)), math.sin(math.radians(d)))
 ```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
+
+Each of these is in the top-left quarter, so the across value is
+negative and the up value is positive. 120° is 60° short of a half
+turn, so it uses the 60° row. 135° uses the 45° row, and 150° uses the
+30° row.
+
+- 120°: across $-\frac{1}{2}$, up $\frac{\sqrt{3}}{2}$
+- 135°: across $-\frac{\sqrt{2}}{2}$, up $\frac{\sqrt{2}}{2}$
+- 150°: across $-\frac{\sqrt{3}}{2}$, up $\frac{1}{2}$
+
+</details>
 
 ## Tangent, which is a slope
 
@@ -451,7 +523,7 @@ $$\tan\theta = \frac{\sin\theta}{\cos\theta} = \frac{y}{x}$$
 
 Now think about the line from the origin out to the point. Its rise is
 $y$ and its run is $x$. In
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines)
 we called rise divided by run the slope. So the tangent is the slope of
 the line from the origin to the point.
 
@@ -463,8 +535,9 @@ $\tan 60^\circ = \frac{\sqrt{3}}{2} \div \frac{1}{2} = \sqrt{3} \approx 1.732$.
 id: tangent-which-is-a-slope-1
 print(" degrees      up/across        math.tan")
 for d in [0, 30, 45, 60, 80, 89]:
-    x, y = unit_point(d / 360)
-    print(f"   {d:>3}      {y / x:>10.5f}    {math.tan(to_radians(d)):>12.5f}")
+    angle = to_radians(d)
+    x, y = math.cos(angle), math.sin(angle)
+    print(f"   {d:>3}      {y / x:>10.5f}    {math.tan(angle):>12.5f}")
 ```
 
 At 45 degrees the tangent is 1. That is the slope of the line $y = x$,
@@ -473,8 +546,8 @@ line?
 
 ### The place it breaks
 
-What happens to the tangent as the angle gets close to 90 degrees? Make a
-guess, then run the cell.
+What happens to the tangent as the angle gets close to 90 degrees? Write
+your guess in a comment first. Then run the cell.
 
 ```python exec
 id: tangent-which-is-a-slope-2
@@ -489,10 +562,10 @@ You have met this before. At 90 degrees the point is at $(0, 1)$, so the
 across value is zero, and $\frac{1}{0}$ is not a number. The line from
 the origin is vertical, and a vertical line has no slope. It is the same
 line that would not fit $y = mx + c$ in
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines).
 
 If you try `math.tan(math.pi / 2)` yourself, Python gives a huge number
-instead of an error. That is because `math.pi / 2` is a decimal, a tiny
+in place of an error. That is because `math.pi / 2` is a decimal, a tiny
 bit away from the exact quarter turn.
 
 ```python exec
@@ -508,34 +581,158 @@ ax.legend()
 ax.set_title("Tangent, and the angle where it has no value")
 ```
 
-## Reflection
+## The circle in your world
 
-We looked at one circle, and everything else was a description of it.
+A circle of radius $r$ is the unit circle made $r$ times bigger. So the
+point at angle $\theta$ on it is $(r\cos\theta, r\sin\theta)$.
 
-**Cosine and sine are coordinates.** They are the across and up values of
-a point on a circle of radius 1. Later, triangles use them too, but the
-circle comes first.
+<div class="dl-world" data-world="sea-and-sky">
 
-**$\sin^2\theta + \cos^2\theta = 1$ is Pythagoras.** Every point on the
-circle is at distance 1 from the centre. The distance formula tells us
-what that means for the coordinates.
+A ship leaves the harbour at $(0, 0)$ and sails 12 km in a straight line,
+at 35 degrees anticlockwise from east. Where is it on the chart? Can you
+write `position(km, degrees)` for any distance and angle?
 
-**A radian is a distance walked.** A full turn is $2\pi$ radians,
-because $2\pi$ is the distance round a circle of radius 1.
+```python exec
+id: the-circle-in-your-world-1--sea-and-sky
+harbour = (0, 0)
+```
 
-**The exact values are places on the circle.** You do not need to
-memorise them. $\frac{\sqrt{2}}{2}$ is where the 45° line crosses the
-circle, and one line of Pythagoras shows why.
+```hint
+The ship is on a circle of radius 12 round the harbour. `math.cos` and
+`math.sin` take radians.
+```
 
-**Tangent is a slope.** It has no value at 90 degrees, for the same
-reason that a vertical line has no slope.
+```inputs
+position(12, 35)
+position(12, 90)
+position(5, 180)
+```
 
-Next, [Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves)
+```solution
+def position(km, degrees):
+    angle = math.radians(degrees)
+    return km * math.cos(angle), km * math.sin(angle)
+
+
+print(position(12, 35))
+---
+The ship is at about $(9.83, 6.88)$: 9.83 km east of the harbour and
+6.88 km north. At 90 degrees it would be due north, at about $(0, 12)$.
+A tiny number such as `7.3e-16` in place of 0 is a rounding effect.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+The Moon goes round the Earth once in about 27.3 days, about 384,400 km
+away. Its path is not quite a circle, but a circle is close. Put the
+Earth at $(0, 0)$ and the Moon at $(384400, 0)$ on day 0, going
+anticlockwise. Can you write `moon_position(days)`? Where is the Moon
+after 5 days?
+
+```python exec
+id: the-circle-in-your-world-1--planets-and-moons
+orbit_km = 384400
+orbit_days = 27.3
+```
+
+```hint
+What fraction of a turn does the Moon make in 5 days? A full turn is
+$2\pi$ radians.
+```
+
+```inputs
+moon_position(5)
+moon_position(orbit_days / 4)
+moon_position(orbit_days)
+```
+
+```solution
+def moon_position(days):
+    angle = days / orbit_days * 2 * math.pi
+    return orbit_km * math.cos(angle), orbit_km * math.sin(angle)
+
+
+print(moon_position(5))
+---
+After 5 days the Moon has turned through about 66 degrees, and it is at
+about $(156754, 350987)$. After a quarter of 27.3 days it is at the top
+of the circle, and after 27.3 days it is back where it started.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The windmill beside the castle has sails 6 m long, turning round a hub
+10 m above the ground. How high is the tip of a sail when it has turned
+50 degrees anticlockwise from pointing right? Can you write
+`tip_height(degrees)`? What are the highest and lowest the tip goes?
+
+```python exec
+id: the-circle-in-your-world-1--fantasy-maps
+hub_height = 10    # metres
+sail = 6           # metres
+```
+
+```hint
+The tip is on a circle of radius 6 round the hub. Its height is the hub's
+height, plus the up value on that circle.
+```
+
+```inputs
+tip_height(50)
+tip_height(90)
+tip_height(270)
+```
+
+```solution
+def tip_height(degrees):
+    return hub_height + sail * math.sin(math.radians(degrees))
+
+
+print(tip_height(50))
+---
+At 50 degrees the tip is about 14.6 m up. It is highest at 90 degrees,
+16 m, and lowest at 270 degrees, 4 m.
+```
+
+</div>
+
+## Looking back
+
+We walked a point round one circle, and wrote down where it went. The
+across value is the cosine, the up value is the sine, and the tangent
+is the slope of the hand. A radian is a distance walked round the
+circle.
+
+Before this page, what did you think sine and cosine were? Has your idea
+changed? If it has, where on the page did it change?
+
+A challenge: can you draw a clock face, with its hour hand and minute
+hand, for any time? A clock measures clockwise from 12 o'clock, and the
+unit circle measures anticlockwise from 3 o'clock. How do you change one
+into the other?
+
+```python challenge
+import math
+import matplotlib.pyplot as plt
+
+
+def draw_clock(hours, minutes):
+    """Draw a clock face showing this time."""
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.set_aspect("equal")
+    # Your code here.
+
+
+draw_clock(3, 0)
+draw_clock(10, 10)
+```
+
+[Sine and cosine waves: amplitude, period and shift](tutorial:sine-and-cosine-waves)
 takes this circle and unrolls it flat.
-
-Before this page, what did you think sine and cosine were? Write a few
-sentences. Has your idea changed? If it has, where on the page did it
-change?
 
 ## Where to read more
 
@@ -548,7 +745,6 @@ Khan Academy. *Introduction to Radians.*
 way to see why a full turn is `2π` radians.
 
 SimonDev (2023). *So how does your computer ACTUALLY compute sine?*
-<https://www.youtube.com/watch?v=kkMt4lrJzs8>. This video starts with
-sine and cosine on the unit circle. Then it asks a question this page
-does not answer. How does a computer find the sine of an angle at all?
-It is about eight minutes long.
+<https://www.youtube.com/watch?v=kkMt4lrJzs8>. Our `walk` found sine and
+cosine in ten thousand small steps. This video shows how a computer
+finds them much faster. It is about eight minutes long.

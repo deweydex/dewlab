@@ -2,7 +2,11 @@
 title: "The unit circle: sine, cosine and tangent — Practice"
 practice_for: the-unit-circle
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  sea-and-sky: A lighthouse beam, turning. The numbers are made up.
+  planets-and-moons: The International Space Station going round the Earth.
+  fantasy-maps: A catapult's arm, swinging up. The numbers are made up.
 ---
 
 # The unit circle: sine, cosine and tangent — Practice
@@ -259,28 +263,61 @@ and 60° use the same triangle, seen from its other corner.
 
 </details>
 
-**13.** In which quarter of the circle is the across value negative and
-the up value positive?
+**13.** The cell prints the across value at 120°, rounded to four
+places.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: the-circle-itself-2
+print(round(math.cos(math.radians(120)), 4))
+```
 
-The second quarter: top left, between 90° and 180°. There you are above
-the horizontal axis, so up is positive. You are also to the left of the
-vertical axis, so across is negative.
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints $-0.5$. 120° is in the top-left quarter, where the across
+value is negative. It is 60° short of a half turn, so it is the 60°
+point reflected in the vertical axis, and the 60° point is
+$\left(rac{1}{2}, rac{\sqrt{3}}{2}ight)$.
 
 </details>
 
-**14.** Give the exact coordinates at 120°, 135° and 150°.
+**14.** The tutorial's `walk` took 10,000 tiny steps. What happens with
+far fewer? Here is `walk` again. Can you try a quarter turn with 10
+steps, then 100, then 4? Where does the tip stop, and why is it short of
+the top?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: the-circle-itself-3
+def walk(distance_round, steps=10000):
+    """Walk the tip from (1, 0), anticlockwise, this far round the circle."""
+    x, y = 1.0, 0.0
+    step = distance_round / steps
+    for _ in range(steps):
+        x, y = x - step * y, y + step * x
+        size = math.sqrt(x ** 2 + y ** 2)
+        x, y = x / size, y / size
+    return x, y
 
-120°: $\left(-\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$.
-135°: $\left(-\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2}\right)$.
-150°: $\left(-\frac{\sqrt{3}}{2}, \frac{1}{2}\right)$.
 
-Each one is a mirror image of a first-quarter point: the point at 180°
-minus the angle, with the across value made negative. So 120° mirrors
-60°, 135° mirrors 45°, and 150° mirrors 30°.
+print(walk(2 * math.pi / 4, steps=10))
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+With 10 steps the tip stops at about $(0.0127, 0.9999)$, a little short
+of $(0, 1)$. With 100 steps it is at about $(0.0001, 1.0)$, and with 4
+steps at about $(0.074, 0.997)$.
+
+Each step goes in a straight line, at right angles to the hand, and then
+the tip is pulled back to the circle. Pulling it back loses a little of
+the turn. A straight step of length 0.157 turns the hand by only about
+0.156. The smaller the steps, the less each one loses, so more steps
+come closer to the top.
 
 </details>
 
@@ -391,7 +428,7 @@ zero, and tangent is up divided by across.
 We can also see it in the picture. Tangent is the slope of the line from
 the origin to the point, and at 90° that line is vertical. A vertical line
 has no slope. It is the same fact that $y = mx + c$ could not express in
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines).
 
 </details>
 
@@ -468,6 +505,150 @@ because of how $\pi$ is defined. So a full turn is $2\pi$ radians.
 
 It is a measurement of the circle. It is not a conversion factor that
 somebody chose.
+
+</details>
+
+## Your world
+
+**26.** A problem from the world you chose.
+
+<div class="dl-world" data-world="sea-and-sky">
+
+A lighthouse beam turns anticlockwise once every 10 seconds, and it
+lights the sea up to 20 km away. At 0 seconds it points east. Where on
+the chart is the far end of the beam after 3 seconds? Can you write
+`beam_end(seconds)`?
+
+```python exec
+id: your-world-1--sea-and-sky
+turn_seconds = 10
+reach = 20    # km
+```
+
+```hint
+What fraction of a turn is 3 seconds? The far end is on a circle of
+radius 20 round the lighthouse.
+```
+
+```inputs
+beam_end(3)
+beam_end(2.5)
+beam_end(10)
+```
+
+```solution
+def beam_end(seconds):
+    angle = seconds / turn_seconds * 2 * math.pi
+    return reach * math.cos(angle), reach * math.sin(angle)
+---
+After 3 seconds the beam has turned 108 degrees, and its far end is at
+about $(-6.18, 19.02)$: a little west of the lighthouse, and far to the
+north. After 2.5 seconds, a quarter turn, it points due north.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+The International Space Station goes round the Earth about once every
+92 minutes, about 6,780 km from the Earth's centre. How far along its
+circle does it travel in 10 minutes? A walk round a circle of radius
+$r$, through an angle of $\theta$ radians, is $r\theta$ long. Can you
+write `travelled(minutes)`?
+
+```python exec
+id: your-world-1--planets-and-moons
+orbit_minutes = 92
+orbit_km = 6780
+```
+
+```hint
+First find the angle, in radians, for 10 minutes. A full turn is
+$2\pi$ radians.
+```
+
+```inputs
+travelled(10)
+travelled(92)
+travelled(10) / (10 * 60)
+```
+
+```solution
+def travelled(minutes):
+    angle = minutes / orbit_minutes * 2 * math.pi
+    return orbit_km * angle
+---
+In 10 minutes the station turns through about 0.68 radians and travels
+about 4,630 km. The last line divides by the 600 seconds in 10 minutes:
+the station moves about 7.7 km every second.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A catapult's arm is 4 m long, with its pivot 1.5 m above the ground. The
+arm starts flat and swings up. At 70 degrees it lets the stone go. How
+high is the stone then, and how far in front of the pivot? Can you
+write `stone_at(degrees)`?
+
+```python exec
+id: your-world-1--fantasy-maps
+arm = 4           # metres
+pivot_height = 1.5
+```
+
+```hint
+The end of the arm is on a circle of radius 4 round the pivot. The
+height adds the pivot's own height.
+```
+
+```inputs
+stone_at(70)
+stone_at(0)
+stone_at(90)
+```
+
+```solution
+def stone_at(degrees):
+    angle = math.radians(degrees)
+    return arm * math.cos(angle), pivot_height + arm * math.sin(angle)
+---
+At 70 degrees the stone is about 1.37 m in front of the pivot and about
+5.26 m above the ground.
+```
+
+</div>
+
+## From earlier
+
+**27.** From
+[Distance and Pythagoras: how far apart two points are](tutorial:distance-and-pythagoras).
+Is the point $(0.6, 0.8)$ on the unit circle? What about $(0.5, 0.5)$?
+
+<details class="dl-answer"><summary>answer</summary>
+
+A point is on the unit circle when its distance from $(0, 0)$ is 1.
+$\sqrt{0.36 + 0.64} = 1$, so $(0.6, 0.8)$ is on it. It is the 3-4-5
+triangle again, made smaller. $\sqrt{0.25 + 0.25} \approx 0.707$, so
+$(0.5, 0.5)$ is inside the circle.
+
+</details>
+
+**28.** From [Complex numbers: roots that are not real](tutorial:complex-roots).
+What will `(0.6 + 0.8j) * 1j` print? Where is that point on the unit
+circle?
+
+```python exec
+id: from-earlier-1
+print((0.6 + 0.8j) * 1j)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It prints `(-0.8+0.6j)`, the point $(-0.8, 0.6)$. Multiplying by $i$ is
+a quarter turn, so the point has moved a quarter of the way round the
+circle, anticlockwise. It is still 1 from the centre.
 
 </details>
 

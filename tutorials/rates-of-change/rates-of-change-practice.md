@@ -2,359 +2,283 @@
 title: "Derivatives: the rate of change of a curve — Practice"
 practice_for: rates-of-change
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  sea-and-sky: A kite surfer, jumping off a wave. The numbers are made up.
+  planets-and-moons: A lander coming down to the ground. The numbers are made up.
+  fantasy-maps: A dragon, swooping up and down. The numbers are made up.
 ---
 
 # Derivatives: the rate of change of a curve — Practice
 
-Each answer is hidden in a fold under its question. For each question:
-
-1. Differentiate by hand first.
-2. Then check your answer with numbers, using the tools below.
-
-The check shows whether your derivative matches the numbers.
+Each answer is hidden until you open it. Write something down first,
+even a guess, and then open the answer to compare. The rules for
+derivatives come on the next page, so these problems use numbers.
 
 ## Tools
 
-The cell below defines two helpers:
-
-- `derivative_at(f, x)` computes the slope of `f` at `x` with numbers.
-- `compare_slopes(f, df)` puts your hand-worked derivative `df` beside
-  the numerical one, at four points.
-
-The last line shows how to use `compare_slopes`, with $x^2$ and its derivative
-$2x$. Where the two columns match, your derivative agrees with the slope
-the numbers give.
-
 ```python exec
 id: tools-1
+def slope_between(f, x, gap):
+    """The slope of the straight line joining two nearby points on f."""
+    return (f(x + gap) - f(x)) / gap
+
+
 def derivative_at(f, x, gap=1e-6):
-    """The slope of f at x, computed numerically."""
+    """The derivative, computed numerically."""
     return (f(x + gap) - f(x - gap)) / (2 * gap)
 
 
-def compare_slopes(f, df, points=(-2, -0.5, 1, 3)):
-    """Compare a hand-computed derivative against the numerical one."""
-    for x in points:
-        print(f"  x = {x:>5}:  yours {df(x):>12.5f}   numerical {derivative_at(f, x):>12.5f}")
+def turning_points(f, low, high, steps=1000):
+    """Where the slope of f changes sign, between low and high."""
+    found = []
+    width = (high - low) / steps
+    for i in range(steps):
+        left = derivative_at(f, low + i * width)
+        right = derivative_at(f, low + (i + 1) * width)
+        if left < 0 <= right or left > 0 >= right:
+            found.append(round(low + (i + 0.5) * width, 1))
+    return found
 
 
-compare_slopes(lambda x: x ** 2, lambda x: 2 * x)
+print(derivative_at(lambda x: x ** 2, 3))
 ```
 
-## The power rule
+## Chords and slopes
 
-**1.** What is the derivative of each of these?
+**1.** The cell finds the slope of two chords on $x^2$, both starting
+at $x = 3$.
 
-- (a) $x^5$
-- (b) $x$
-- (c) $x^{-2}$
-- (d) $\sqrt{x}$, which is $x^{1/2}$
+```python exec
+id: chords-and-slopes-1
+square = lambda x: x ** 2
+print(slope_between(square, 3, 0.5))
+print(slope_between(square, 3, 0.25))
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```predict
+type: number
+tolerance: 0.001
 
-(a) $5x^4$.
+The first line prints 6.5. What will the second line print?
+```
 
-(b) $1$.
+<details class="dl-answer"><summary>why</summary>
 
-(c) $-2x^{-3}$.
-
-(d) $\frac{1}{2}x^{-1/2}$, which is $\dfrac{1}{2\sqrt{x}}$.
-
-The rule works the same way when the power is negative or a fraction:
-bring the power down, and reduce it by one.
-
-</details>
-
-**2.** What is the derivative of a constant, such as $7$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Zero. A constant does not change, so its rate of change is zero.
-
-The power rule agrees. $7$ is $7x^0$. If we bring the 0 down, we get
-$0 \times 7x^{-1}$, which is 0.
+It prints 6.25. For $x^2$ at 3, the chord's slope is always
+$6 + \text{gap}$. Can you see why in problem 2?
 
 </details>
 
-**3.** Differentiate $3x^4 - 2x + 7$.
+**2.** Why is the slope of the chord on $x^2$, from 3 to $3 + h$, always
+$6 + h$?
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+$\dfrac{(3 + h)^2 - 9}{h} = \dfrac{9 + 6h + h^2 - 9}{h} = \dfrac{6h + h^2}{h} = 6 + h$.
+As $h$ shrinks, $6 + h$ moves towards 6, the slope at 3.
+
+</details>
+
+**3.** The absolute value, `abs(x)`, makes a V shape with a sharp corner
+at 0. What does `derivative_at` say its slope is at 0?
+
+```python exec
+id: chords-and-slopes-2
+print(derivative_at(abs, 0))
+print(slope_between(abs, 0, 0.001), slope_between(abs, 0, -0.001))
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-$12x^3 - 2$.
-
-Use the sum rule and go term by term: $3x^4$ gives $12x^3$, $-2x$ gives
-$-2$, and the 7 gives 0.
-
-</details>
-
-**4.** Differentiate $x^3 - 6x^2 + 9x - 4$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$3x^2 - 12x + 9$.
+`derivative_at` prints 0.0. But the chords say otherwise: from the right
+their slope is 1, and from the left it is $-1$. The two sides do not
+agree, so there is no limit, and `abs` has no derivative at 0.
+`derivative_at` averages the two sides, and hides the corner. A number
+from a computer needs the same care as a limit: look from both sides.
 
 </details>
+
+**4.** A runner's distance from the start is measured every second, in
+metres. Can you write `speeds(distances)`, which returns her speed over
+each second? When was she speeding up?
+
+```python exec
+id: chords-and-slopes-3
+distances = [0, 2, 6, 12, 20, 30, 40, 50]
+
+
+def speeds(distances):
+    """The speed over each second, from distances measured every second."""
+    # Your code here.
+```
+
+```hint
+Her speed over one second is how far she went in that second. Which two
+numbers in the list tell you that?
+```
+
+```inputs
+speeds(distances)
+speeds([0, 5, 10, 15])
+```
+
+```solution
+def speeds(distances):
+    """The speed over each second, from distances measured every second."""
+    return [distances[i + 1] - distances[i] for i in range(len(distances) - 1)]
+---
+Her speeds are 2, 4, 6, 8 and 10 m/s for the first five seconds, then
+10, 10: she sped up for five seconds, then kept a steady 10 m/s. Each
+speed is a chord's slope, with a gap of one second.
+```
 
 ## Turning points
 
-**5.** Where are the turning points of $x^3 - 3x$?
+**5.** Where does $x^3 - 3x$ turn? Is each turning point a top or a
+bottom?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The derivative is $3x^2 - 3$. It is zero when $x^2 = 1$, so at $x = -1$
-and $x = 1$.
-
-The heights there are 2 and −2. The first is a local maximum, and the
-second is a local minimum.
+`turning_points(lambda x: x ** 3 - 3 * x, -3, 3)` gives `[-1.0, 1.0]`.
+At $-1$ the slope goes from positive to negative, so it is a top, with
+height 2. At 1 it goes from negative to positive, so it is a bottom,
+with height $-2$.
 
 </details>
 
-**6.** Find the turning point of $x^2 + 6x + 5$ in two ways: by
-completing the square, and by the derivative.
+**6.** Where does $x^4 - 8x^2$ turn? Draw it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Completing the square gives $(x + 3)^2 - 4$, so the vertex is at
-$(-3, -4)$.
-
-The derivative is $2x + 6$. It is zero at $x = -3$, and the height there
-is $9 - 18 + 5 = -4$.
-
-Two different methods give one answer. When two methods agree, you can
-trust the answer.
+It turns at $-2$, 0 and 2. `turning_points` may print the middle one as
+`-0.0`, which is 0. The curve is a W: two bottoms, at a height of $-16$,
+with a top at 0 between them.
 
 </details>
 
-**7.** Find the turning points of $x^4 - 8x^2$.
+**7.** A curve has a slope of zero at some point. Must that point be a
+top or a bottom?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The derivative is $4x^3 - 16x = 4x(x^2 - 4)$. It is zero at $x = 0$,
-$x = -2$ and $x = 2$.
-
-The height is 0 at the middle point, and −16 at both outer points. The
-curve is a W shape, with two equal minimums and a local maximum between
-them.
-
-</details>
-
-**8.** A curve has derivative zero at some point. Must that point be a
-maximum or a minimum?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. $x^3$ has derivative $3x^2$, which is zero at $x = 0$. But the curve
-keeps going upwards through that point, without turning.
-
-It is flat for an instant, and then it continues. A point like that is
-called a point of inflection. This is why "the derivative is zero" gives
-you *candidates* for turning points. You still need to check each one.
+No. $x^3$ has a slope of zero at $x = 0$, but the curve keeps going up
+through that point without turning. It is flat for an instant, and then
+it continues. A point like that is called a *point of inflection*. So a
+zero slope tells you where to look, and you still need to check which
+sign the slope has on each side.
 
 </details>
 
-## The product rule
-
-**9.** Differentiate $(x + 1)(x^2 - 3)$ in two ways: by expanding the
-brackets first, and by the product rule.
-
-<details class="dl-answer"><summary>answer</summary>
-
-Expanded, it is $x^3 + x^2 - 3x - 3$. Its derivative is
-$3x^2 + 2x - 3$.
-
-By the product rule:
-
-$$1 \times (x^2 - 3) + (x + 1) \times 2x = x^2 - 3 + 2x^2 + 2x = 3x^2 + 2x - 3$$
-
-The two answers are the same. The rule is useful for the cases that you
-cannot expand.
-
-</details>
-
-**10.** Differentiate $x^2(x + 5)$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$$2x(x + 5) + x^2(1) = 2x^2 + 10x + x^2 = 3x^2 + 10x$$
-
-To check: expanded, it is $x^3 + 5x^2$, and its derivative is
-$3x^2 + 10x$.
-
-</details>
-
-**11.** A student says that the derivative of $x^2 \cdot x^3$ is
-$2x \cdot 3x^2 = 6x^3$. What went wrong?
-
-<details class="dl-answer"><summary>answer</summary>
-
-They multiplied the derivatives, and that is not the rule.
-
-$x^2 \cdot x^3$ is $x^5$, and its derivative is $5x^4$. The product rule
-gives $2x \cdot x^3 + x^2 \cdot 3x^2 = 2x^4 + 3x^4 = 5x^4$, which
-agrees.
-
-$6x^3$ does not even have the right power. That is a quick way to spot
-the mistake.
-
-</details>
-
-## The chain rule
-
-**12.** Differentiate $(3x + 2)^5$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$$5(3x + 2)^4 \times 3 = 15(3x + 2)^4$$
-
-First, differentiate the outside and leave the inside alone. Then
-multiply by the derivative of the inside, which is 3.
-
-</details>
-
-**13.** Differentiate $(x^2 + 1)^3$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-$$3(x^2 + 1)^2 \times 2x = 6x(x^2 + 1)^2$$
-
-</details>
-
-**14.** Differentiate $\sqrt{4x + 1}$.
-
-<details class="dl-answer"><summary>answer</summary>
-
-Write it as $(4x + 1)^{1/2}$. Then:
-
-$$\frac{1}{2}(4x + 1)^{-1/2} \times 4 = \frac{2}{\sqrt{4x + 1}}$$
-
-</details>
-
-**15.** Can you explain the chain rule in terms of rates, with no
-algebra?
-
-<details class="dl-answer"><summary>answer</summary>
-
-Suppose $u$ changes three times as fast as $x$, and $y$ changes twice as
-fast as $u$. Then $y$ changes six times as fast as $x$.
-
-Rates multiply along a chain. That is the whole idea, and it gives the
-rule its name.
-
-</details>
-
-## Rates in the world
-
-**16.** A tank holds $V(t) = 100 - 2t^2$ litres after $t$ minutes. How
-fast is it emptying at $t = 3$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$V'(t) = -4t$. So at $t = 3$, the rate is $-4 \times 3 = -12$ litres per
-minute. The tank is emptying at 12 litres a minute.
-
-The minus sign tells you that the volume is going down.
-
-</details>
-
-**17.** For that tank, when is it empty? How fast is it emptying at that
-moment?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It is empty when $100 - 2t^2 = 0$. So $t^2 = 50$, and
-$t \approx 7.07$ minutes.
-
-At that moment the rate is $-4 \times 7.07 \approx -28.3$ litres per
-minute. It empties faster and faster the whole time, because of the
-squared term.
-
-</details>
-
-**18.** A company's revenue from selling $n$ items is
-$R(n) = 50n - 0.1n^2$ euro. They are already selling 100 items. About
-how much extra revenue does one more item bring?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$R'(n) = 50 - 0.2n$. So at $n = 100$, it is $50 - 20 = 30$: about €30.
-
-(The exact extra revenue from the 101st item is
-$R(101) - R(100)$, which is €29.90. The derivative gives a very close estimate.)
-
-Economists call this marginal revenue. It is the derivative under a
-different name.
-
-Notice that it falls as $n$ rises. At $n = 250$, $R'(n) = 0$. One more
-item adds almost nothing. After that, each extra sale makes the
-total revenue go down.
-
-</details>
-
-**19.** A population is $P(t) = 500 + 40t + t^2$ after $t$ years. What is
-its growth rate at $t = 0$, and at $t = 10$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-$P'(t) = 40 + 2t$. So the growth rate is 40 per year at the start, and
-$40 + 20 = 60$ per year after ten years.
-
-The growth is getting faster, because of the $t^2$ term.
-
-</details>
-
-**20.** Distance is measured in metres, and time in seconds. What are the
-units of the derivative of distance? And what are the units of the
-derivative of *that*?
+**8.** Distance is in metres and time in seconds. What are the units of
+the derivative of distance? What are the units of the derivative of
+*that*?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Metres per second, which is speed. Then metres per second per second,
-which is acceleration.
-
-The calculation itself gives the units. A derivative divides a
-change in the output by a change in the input, so its units are output
-units per input unit. Units are a useful check that you have
-differentiated the thing you meant to.
+which is acceleration. A derivative divides a change in the output by a
+change in the input, so its units are output units per input unit.
 
 </details>
 
-## One longer one
+## Your world
 
-**21.** We make an open box from a square sheet, 20 cm by 20 cm. We cut a
-square of side $x$ from each corner, then fold up the sides.
+**9.** A problem from the world you chose.
 
-1. Write the volume as a function of $x$.
-2. What range of $x$ makes sense?
-3. Find the $x$ that gives the largest volume.
-4. What is that volume?
+<div class="dl-world" data-world="sea-and-sky">
+
+A kite surfer jumps off a wave. Her height is $3t - t^2$ metres, $t$
+seconds after she leaves the water. When is she highest, and how high?
+How fast is she rising as she leaves the water?
+
+```python exec
+id: your-world-1--sea-and-sky
+def height(t):
+    return 3 * t - t ** 2
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. The base is a square with side $20 - 2x$, and the height is $x$. So
-   $V(x) = x(20 - 2x)^2$.
+`turning_points(height, 0, 3)` gives `[1.5]`, and `height(1.5)` is 2.25.
+She is highest after 1.5 seconds, at 2.25 m.
+`derivative_at(height, 0)` is about 3: she leaves the water rising at
+3 m/s.
 
-2. Between 0 and 10. At 0 there is no height. At 10 there is no base
-   left.
+</details>
 
-3. Expand the brackets: $V(x) = 4x^3 - 80x^2 + 400x$. So
-   $V'(x) = 12x^2 - 160x + 400$. Set that to zero, and divide by 4:
-   $3x^2 - 40x + 100 = 0$. The quadratic formula gives
-   $$x = \frac{40 \pm \sqrt{1600 - 1200}}{6} = \frac{40 \pm 20}{6},$$
-   so $x = 10$ or $x = \dfrac{10}{3}$.
-   $x = 10$ is the end of the range, where there is no box. So the
-   answer is $x = \dfrac{10}{3} \approx 3.33$ cm.
+</div>
 
-4. $V\left(\dfrac{10}{3}\right) = \dfrac{10}{3}\left(20 - \dfrac{20}{3}\right)^2 = \dfrac{16000}{27} \approx 592.6$ cm³.
+<div class="dl-world" data-world="planets-and-moons">
 
-Two things are worth noticing here. First, the derivative gave two
-candidates, and one of them did not make sense for the box. Second, this is the
-usual shape of an optimisation problem, a problem that asks for the
-best (largest or smallest) value:
+A lander's height above the ground is $100 - 20t + t^2$ metres, $t$
+seconds after its engine starts. How fast is it coming down at the
+start? What is its speed when it reaches the ground, at $t = 10$?
 
-1. Write the quantity as a function.
-2. Differentiate it.
-3. Set the derivative to zero and solve.
-4. Think about which answer makes sense.
+```python exec
+id: your-world-1--planets-and-moons
+def height(t):
+    return 100 - 20 * t + t ** 2
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+`derivative_at(height, 0)` is about $-20$: it starts coming down at
+20 m/s. `height(10)` is 0 and `derivative_at(height, 10)` is about 0.
+The lander reaches the ground at the very moment its speed reaches 0:
+the ground is the bottom of its curve, a soft landing.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+A dragon's height is $30 + 8x - x^2$ metres, $x$ km from its cave. Where
+is it highest, and how high? How steeply is it climbing as it leaves
+the cave?
+
+```python exec
+id: your-world-1--fantasy-maps
+def height(x):
+    return 30 + 8 * x - x ** 2
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+`turning_points(height, 0, 8)` gives `[4.0]`, and `height(4)` is 46. The
+dragon is highest 4 km from its cave, at 46 m. It leaves the cave
+climbing 8 m for each kilometre.
+
+</details>
+
+</div>
+
+## From earlier
+
+**10.** From [Parabolas: completing the square](tutorial:parabolas).
+The rocket's height was $-4.9t^2 + 15t + 2$. Completing the square put
+its highest point at $t = \frac{15}{9.8} \approx 1.53$ seconds. Does
+`turning_points` agree?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`turning_points(lambda t: -4.9 * t ** 2 + 15 * t + 2, 0, 3)` gives
+`[1.5]`, to one decimal place. Two different methods agree.
+
+</details>
+
+**11.** From [Limits: getting closer without arriving](tutorial:approaching-a-limit).
+Why does `derivative_at` use a gap of `1e-6`, and not the smallest gap
+it can, such as `1e-16`? What does `derivative_at(square, 3, gap=1e-16)`
+print?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It prints 0.0. `3 + 1e-16` is stored as 3, so both points are the same,
+and the top of the fraction is 0. The limits page drew the error
+against the gap as a V: too big a gap gives a chord that is not the
+tangent, and too small a gap runs out of digits. `1e-6` is near the
+bottom of that V for this way of measuring.
 
 </details>

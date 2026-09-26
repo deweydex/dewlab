@@ -120,7 +120,8 @@ The pipeline, in order:
    one `.dl-module-grid` wrapper automatically; and a `[[name]]` marker for
    infrastructure a page can point at but never author directly
    (`GENERATED_BLOCKS`): `[[search-box]]`, the live search, and
-   `[[course-cards]]`, one tile per course from the course files.
+   `[[course-cards]]`, one tile per course from the course files, in a
+   `.dl-course-list` column rather than a grid.
    A `<div class="dl-hero">`/`<div class="dl-audience">`/`<div
    class="dl-attribution">`/`<ul class="dl-feature-list">` section or list
    wrapper gets `markdown="1"` added to it before conversion

@@ -293,7 +293,10 @@ class TestAllTutorialsPage:
         index.write_text("cards:\n  - zz-later-module\n"
                          "order:\n  - computational-methods\n  - zz-later-module\n")
         b.build()
-        tiles = re.findall(r'href="([^"]+)\.html"', b.render_course_cards())
+        cards = b.render_course_cards()
+        # One column of its own, not a grid: a course's text is too long for two.
+        assert cards.startswith('<div class="dl-course-list">') and cards.endswith("</div>")
+        tiles = re.findall(r'href="([^"]+)\.html"', cards)
         assert tiles == ["zz-later-module", "computational-methods"]
         assert self.course_headings(repo) == ["Computational Methods", "Later Module"]
         page = built(repo)

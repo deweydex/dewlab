@@ -622,7 +622,7 @@ The practice page is next. Then
 ## Where to read more
 
 The dewlab page
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances)
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines)
 meets slope as a rate, and the one line $y = mx + c$ cannot write, from
 another direction.
 

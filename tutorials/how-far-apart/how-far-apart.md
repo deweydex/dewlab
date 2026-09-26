@@ -537,7 +537,7 @@ The practice page is next.
 ## Where to read more
 
 The dewlab page
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances#how-far-apart-and-the-theorem-that-answers-it)
+[Distance and Pythagoras: how far apart two points are](tutorial:distance-and-pythagoras#how-far-apart)
 reaches the same theorem from a different direction.
 
 Sebastian Lague (2017). *Gamedev Maths: distance from point to line.*

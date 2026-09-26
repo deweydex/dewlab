@@ -88,8 +88,8 @@ tutorials/mit-pdp-maths-prog-integration/first-steps.html: tutorials/first-steps
 tutorials/mit-pdp-maths-prog-integration/first-steps/v2026.08.23.1.html: tutorials/first-steps/v2026.08.23.1.html
 tutorials/mit-pdp-maths-prog-integration/how-we-got-here-practice.html: tutorials/how-we-got-here-practice.html
 tutorials/mit-pdp-maths-prog-integration/how-we-got-here.html: tutorials/how-we-got-here.html
-tutorials/mit-pdp-maths-prog-integration/lines-and-distances-practice.html: tutorials/lines-and-distances-practice.html
-tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html: tutorials/lines-and-distances.html
+tutorials/mit-pdp-maths-prog-integration/lines-and-distances-practice.html: tutorials/slope-and-lines-practice.html
+tutorials/mit-pdp-maths-prog-integration/lines-and-distances.html: tutorials/slope-and-lines.html
 tutorials/mit-pdp-maths-prog-integration/lists-and-sequences-practice.html: tutorials/lists-and-sequences-practice.html
 tutorials/mit-pdp-maths-prog-integration/lists-and-sequences.html: tutorials/lists-and-sequences.html
 tutorials/mit-pdp-maths-prog-integration/logic-and-truth-practice.html: tutorials/logic-and-truth-practice.html
@@ -180,3 +180,5 @@ tutorials/web-authoring/troubleshooting.html: tutorials/troubleshooting.html
 tutorials/web-authoring/variables-and-colour.html: tutorials/variables-and-colour.html
 tutorials/web-authoring/your-copy-of-the-starter.html: tutorials/your-copy-of-the-starter.html
 plot-twist.html: dewey-track.html
+tutorials/lines-and-distances-practice.html: tutorials/slope-and-lines-practice.html
+tutorials/lines-and-distances.html: tutorials/slope-and-lines.html

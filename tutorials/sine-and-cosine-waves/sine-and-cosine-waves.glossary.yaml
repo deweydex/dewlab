@@ -15,8 +15,26 @@ entries:
     definition: >
       y = A sin(B(x - C)) + D has four numbers, and each has its own
       separate effect. The amplitude A is how far the wave swings from its
-      middle line, not top to bottom. B sets the period, which is 2*pi/B
-      when x is in radians. The phase C slides the wave sideways, and the
-      lift D slides it up or down. You can read all four off real periodic
-      data by eye.
+      midline, not top to bottom. B sets the period, which is 2*pi/B when
+      x is in radians. The phase C slides the wave sideways, and the lift
+      D slides it up or down. You can read all four from real periodic
+      data.
     example: "y = amplitude * sin((x - phase) / period * 2*pi) + lift"
+  - term: midline, vertical shift
+    kind: concept
+    definition: >
+      The midline is the line y = D that a wave swings about, halfway
+      between its top and its bottom. Moving it up or down is a vertical
+      shift, which is what the lift D does.
+  - term: frequency, hertz (Hz)
+    kind: concept
+    definition: >
+      The frequency is the number of waves in each second, measured in
+      hertz. It is 1 divided by the period in seconds, so a note of 440 Hz
+      has a period of 1/440 of a second.
+  - term: gap between a curve and data
+    kind: concept
+    definition: >
+      A measurement of how close a fitted wave is to some measured points:
+      the average distance between the curve and each point. It is 0 only
+      when the curve goes through every point.
