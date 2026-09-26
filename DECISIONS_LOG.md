@@ -4968,7 +4968,15 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.248 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to the fix for the first three pages of "A table of your own" (pull request #379). Numbered 7.248 because 7.246 is taken on `main` and #379, which also claimed 7.246, will need 7.247 when it merges.
+**7.247 — A SQL cell's result table leaves out pandas' row numbers.** `_run_sql_cell()` builds a DataFrame from the cursor and rendered it through `_table_html()`, which called `to_html()` with the index shown, so every `sql exec` result had an unlabelled 0, 1, 2 … column on its left. On `changing-what-is-in-it` that column sat beside `dinosaur_id` values 1, 2, 3, 4, 6, where the prose asks the reader to look at the ids and see the gap a `DELETE` left: two columns of numbers, one with a gap and one without, and nothing to say which is the table's.
+
+`_table_html()` gained `index=True`, and `_run_sql_cell()` passes `False`. A SQL result has no index of its own; the numbers were pandas', added on the way to HTML. A Python cell that shows a DataFrame keeps them, since the pandas pages teach the index and a reader there needs to see it. `run_query()`, the public one-statement version called from a Python cell, still shows the index; no tutorial calls it, and whether it should follow the SQL cell is left until one does.
+
+*Cost to change: trivial. One argument in one call, and one test in `TestRunSqlCell`.*
+
+---
+
+**7.248 — The rest of Database Methods gets `DROP TABLE IF EXISTS` wherever a page asks for a create box to run again.** A follow-up to the fix for the first three pages of "A table of your own" (pull request #379).
 
 **The same bug, in more places than the first three pages.** A page's sqlite database lasts for as long as the page is open, so a `CREATE TABLE` that has already run stops the next run with `table X already exists`. Neither per-cell button changes that. Reset (↺) clears the output, and Clear (↻) puts back the starter code; neither touches the database. A sweep of every page in `courses/database-methods.yaml` found four more pages that ask for a create box to run a second time:
 
