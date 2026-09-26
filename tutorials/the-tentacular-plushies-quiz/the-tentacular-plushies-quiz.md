@@ -1,7 +1,7 @@
 ---
 title: "The Tentacular Plushies quiz: products and transactions"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   task-1-a-products-table:
     covers: [DBM-LO10, DBM-LO11]
@@ -27,8 +27,20 @@ Write your SQL in this box as you go. Your code is saved on this
 device, the same as every cell on this site. After a reload, run this
 box again to rebuild your tables. Use the hints if you need them.
 
+The box starts with two `DROP TABLE IF EXISTS` lines. The page keeps its
+database for as long as it is open, so each run finds the tables from
+the run before. These lines delete those tables first. Without them, the
+second run stops at your first `CREATE TABLE` with the error `table
+product_tbl already exists`. `transaction_tbl` is deleted first, because
+its rows will point at rows in `product_tbl`.
+
 ```sql exec
 id: quiz-workspace
+-- These delete the tables from the last run, so this box can build
+-- them again. Keep them at the top.
+DROP TABLE IF EXISTS transaction_tbl;
+DROP TABLE IF EXISTS product_tbl;
+
 -- Build the database here, one task at a time. Run this box after
 -- every change, then use each task's check cell below.
 ```
@@ -273,6 +285,9 @@ own to see a full example.
 ![Two tables. The line runs from product_id in product_tbl to product_id in transaction_tbl. One transaction_tbl row names exactly one product_tbl row, and one product can be named by many transactions, so the line ends in three prongs at the transaction_tbl side.](plushies-erd.svg)
 
 ```sql
+DROP TABLE IF EXISTS transaction_tbl;
+DROP TABLE IF EXISTS product_tbl;
+
 CREATE TABLE product_tbl (
     product_id INTEGER PRIMARY KEY,
     product_name TEXT NOT NULL,

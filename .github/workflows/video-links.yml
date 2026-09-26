@@ -1,7 +1,7 @@
 # Weekly: asks YouTube about every video linked from a page students read,
 # and opens, updates or closes one `video-link` issue listing any that have
 # gone or gone private. See dev/check_video_links.py for what each answer
-# means, and DECISIONS_LOG.md 7.247 for why it runs on a schedule rather
+# means, and DECISIONS_LOG.md 7.250 for why it runs on a schedule rather
 # than in the tests.
 name: video-links
 

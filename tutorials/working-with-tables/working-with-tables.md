@@ -31,7 +31,8 @@ On this page we:
 
 This page uses Python cells, not SQL boxes. A Python cell works in the
 same way: press **Run**, or hold Ctrl and press Enter, and the result
-appears under it. Reset brings back the code the page started with.
+appears under it. Clear (↻) puts back the code the page started with.
+Reset (↺) only clears the result under the cell.
 
 A Python cell shows two things under it: anything the code prints, and
 the value of its last line.
