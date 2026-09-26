@@ -8,8 +8,8 @@ version: 2026.09.25.1
 # Everything is ones and zeros — Practice
 
 Each problem says what kind it is: **Predict** (say what a cell will
-print, then run it), **Make** (build something small), **Fix** (repair
-one mistake), **Explain** (answer in words) or **Another way** (reach the
+print, then run it), **Make** (build something small), **Fix** (find
+why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route). Answers are in the folds. Working by hand
 first, then checking in Python, teaches more than either one alone. It
 is slower, and that is fine: binary is a new way of seeing numbers you
@@ -80,8 +80,8 @@ base 10 there is no single digit for ten, for the same reason.
 </details>
 
 **4. Another way.** Schlomo, who is learning Python too, writes
-$10 + 10 = 100$ and says it is right. In ordinary counting it is wrong.
-In which space is he right? Check it in Python.
+$10 + 10 = 100$ and says it is true. In ordinary counting it is not.
+In which space does his sum hold? Check it in Python.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -98,7 +98,7 @@ In which space is he right? Check it in Python.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is right in binary. $10_2$ is 2, and $2 + 2 = 4$, which is $100_2$.
+It holds in binary. $10_2$ is 2, and $2 + 2 = 4$, which is $100_2$.
 
 ```python
 print(0b10 + 0b10)
@@ -183,8 +183,8 @@ brightest, with a little blue, which gives a slightly cool green.
 </details>
 
 **8. Fix.** This cell should build the colour code for red 255, green
-136 and blue 0, which is `#FF8800`. Run it. What comes out, and what is
-wrong?
+136 and blue 0, which is `#FF8800`. Run it. What comes out, and how is
+it different from `#FF8800`?
 
 ```python exec
 id: everything-is-practice-fix-colour
@@ -294,8 +294,8 @@ bottom. Compare the 8, `0x6996996`: the only change is the middle row,
 
 **11. Explain.** Schlomi, who is also learning Python, wants a wider
 font, 5 pixels wide and 7 tall, like many real small screens. She says
-each digit will still be 7 hex digits, one per row. Is she right? What
-would each row need?
+each digit will still be 7 hex digits, one per row. Does that work?
+What would each row need?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -407,7 +407,7 @@ one gives exactly 50 cents?
 <details class="dl-answer"><summary>answer</summary>
 
 `print(1.10 + 2.20)` shows `3.3000000000000003`. Counting in whole cents
-avoids that:
+avoids that. Here is one way through; yours may differ and work as well:
 
 ```python
 first_cents = 110
@@ -501,6 +501,8 @@ compare them, the way the tutorial page did.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 import matplotlib.pyplot as plt

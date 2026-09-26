@@ -321,12 +321,12 @@ title: some steps
 4. After both loops, and not inside them, `return pairs`.
 
 **Think about:** why does the last test give an empty list, and why is
-that the right answer?
+that the answer we want?
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good way to write it. Yours may differ and still keep the promise.
+One way through. Yours may differ and still keep the promise.
 
 ```python
 def all_pairs(first, second):

@@ -398,7 +398,7 @@ print(result)
 
 Schlomo, who is learning Python too, has a quicker idea. "Each bounce
 loses 20% of the height. So after five bounces the ball has lost 100%,
-and it stops." Is he right? Decide before you read on.
+and it stops." Does his idea work? Decide before you read on.
 
 After five bounces the height has been multiplied by 0.8 five times. We
 need a running product: a number that is multiplied, not added, each

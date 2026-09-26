@@ -8,8 +8,9 @@ version: 2026.09.25.1
 # Solving by computing: bisection and Newton's method — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -90,7 +91,7 @@ comes back to 50.
 **4. Explain.** Schlomi, who is learning Python too, runs
 `bisect_root(nine_gap, -5, 5)`, and it stops with a `ValueError`. She
 says: "So $x^2 - 9$ has no root between $-5$ and 5." But it has two.
-What went wrong with her reading of the error?
+Where does her reading of the error stop working?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -102,8 +103,8 @@ change says "at least one root here". No sign change does not mean "no
 root". Try `bisect_root(nine_gap, 0, 5)`: now there is a sign change,
 and it finds 3.
 
-That is one good way to say it. Yours may use other words, or a
-picture, and be as good.
+That is one way through. Yours may use other words, or a picture, and
+say the same thing.
 
 </details>
 
@@ -139,7 +140,8 @@ Both give 1.0594630943592953. One semitone above A at 440 Hz is about
 
 **6. Fix.** Schlomo, who is learning Python too, wrote his own
 bisection. It runs without an error, but the answer is far from
-$\sqrt{2}$. Find the one mistake, and fix it.
+$\sqrt{2}$. Find the line that does not do what Schlomo meant, and
+change it.
 
 ```python exec
 id: solving-by-practice-fix

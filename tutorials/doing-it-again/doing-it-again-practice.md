@@ -10,8 +10,8 @@ version: 2026.09.25.1
 Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
 anything. The problems get harder as they go, on purpose. If one of the
-stretch problems feels like hard work, that is the right feeling, and
-you can skip it and come back.
+stretch problems feels like hard work, open its hint if it has one, or
+skip it and come back.
 
 Your toolkit is loaded on this page, so `total` and `product` are ready
 to use, and so are `digit_at`, `between` and the rest.
@@ -83,12 +83,12 @@ shared out equally over the seven days.
 </details>
 
 **4. Explain.** Schlomi, who is learning Python too, reads
-`count = count + 1` and says it can never be right: in maths, $c = c + 1$
-is never true. Is she right? In which space?
+`count = count + 1` and says it can never be true: in maths, $c = c + 1$
+is never true. Where does her idea work, and where does it stop working?
 
 <details class="dl-answer"><summary>answer</summary>
 
-She is right about maths, where $=$ says two sides are equal, and no
+Her idea works in maths, where $=$ says two sides are equal, and no
 number is one more than itself. In Python, `=` is an instruction, not a
 claim that two sides are equal.
 It happens in two steps. First Python works out the right-hand side,
@@ -132,7 +132,7 @@ had 1,418 mm.
 
 **6. Fix.** Schlomo, who is learning Python too, wants the size of a
 folder: the sizes of its four files, in megabytes (MB), added up. His
-code prints the wrong answer. Find the one mistake, and fix it.
+code prints a different number. Find why, and change it.
 
 ```python exec
 id: doing-it-practice-fix-soup
@@ -161,8 +161,9 @@ print("The folder holds", folder, "MB")    # should be 5.05
 
 `folder = 0` is inside the loop, so the running total goes back to 0
 every time round. At the end it holds only the last size, 0.60.
-Schlomo's two lines are both right. Only the place of the first one is
-wrong: it must come before the loop, so that it runs only once.
+Schlomo's two lines both do their jobs. Only the first one is in a place
+where it runs every time: it must come before the loop, so that it runs
+only once.
 
 ```python
 file_sizes = [1.20, 0.85, 2.40, 0.60]
@@ -179,8 +180,8 @@ print("The folder holds", round(folder, 2), "MB")    # 5.05
 </details>
 
 **7. Fix.** A savings jar gets 1 cent on day 1, 2 cents on day 2, and so
-on. After 10 days it should hold 55 cents. This code says 45. Find the
-mistake.
+on. After 10 days it should hold 55 cents. This code says 45. Find
+why.
 
 ```python exec
 id: doing-it-practice-fix-jar
@@ -266,6 +267,8 @@ tidy ways.)
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 users = 5000
 weeks = 0
@@ -322,7 +325,7 @@ $$30 \times 19 + \frac{30 \times 31}{2} = 570 + 465 = 1035$$
 print(30 * 19 + 30 * 31 // 2)    # 1035
 ```
 
-Both routes give 1,035 pixels. This is one good way to split it. You
+Both routes give 1,035 pixels. This is one way through. You
 might have found another, such as pairing the top row with the bottom
 row, as Gauss did.
 
@@ -402,6 +405,8 @@ then 5 more. What shape do the dots make each time?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 for n in range(1, 8):
     print(n, total(range(1, 2 * n, 2)))
@@ -424,6 +429,8 @@ and so on. How many halvings until a copy is less than 1 pixel wide?
 Use a `while` loop. Then compare with `math.log2(1000)`.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 import math

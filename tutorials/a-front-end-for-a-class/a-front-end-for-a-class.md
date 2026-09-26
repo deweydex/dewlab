@@ -1,355 +1,452 @@
 ---
-title: "A front end: a text menu for a class"
+title: "A front end: letting someone use your classes"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 covers:
   a-program-only-its-author-can-use:
     covers: [FOOP-LO11]
-  a-menu-loop:
+  deciding-kept-apart-from-asking:
     covers: [FOOP-LO11]
-  leaving-the-loop-cleanly:
+  a-loop-that-asks:
+    covers: [FOOP-LO11]
+  a-menu-to-choose-from:
     covers: [FOOP-LO11]
 ---
 
-# A front end: a text menu for a class
+# A front end: letting someone use your classes
 
-So far, we have used every `Bank` and `BankAccount` in the same way. We
-wrote Python calls in a cell, as the author of the code. How could
-someone who does not know Python use our bank?
+Here are the game world's classes, as they stood at the end of
+[Documenting a class](tutorial:documenting-a-class). Run the cell. It
+makes the classes, and prints nothing.
 
-A *front end* is the part of a program that lets somebody use it without
-reading or writing any of its code. On this page we build the simplest
-kind of front end, a text menu. We:
-
-- see why a class on its own is hard for other people to use
-- write a function that turns a menu choice into a method call
-- put that function inside a loop that ends cleanly
+```python exec
+id: the-game-so-far
+{{include: setup/oop/game-7.py}}
+```
 
 ## A program only its author can use
 
-Here is a `Bank` again. What does the cell print?
+To play this game now, you would write Python: `grog.take_damage(3)`,
+then `print(grog)`, then `ada.heal(2)`. A friend who has never written
+Python could not play it at all. The classes work. The problem is that
+using them means writing code.
+
+A *front end* is the part of a program that lets somebody use it without
+reading or writing any of its code. It asks them a plain question, turns
+the answer into a method call, and shows what happened. On this page we
+build two, for the same classes.
+
+## Deciding, kept apart from asking
+
+The front end has two jobs: asking what the player wants, and deciding
+what that means. We write the deciding part first, as a function,
+`run_choice`. It takes the command as text, and it never asks for it. So
+we can try it with a list of commands, before anybody types anything.
+What will the third line print?
 
 ```python exec
-id: a-program-only-its-author-can-use-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, owner, balance):
-        self.accounts.append(BankAccount(owner, balance))
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-bank = Bank("First Local")
-bank.open_account("Alice", 300.0)
-bank.open_account("Ben", 150.0)
-print(bank.total_balance())
-```
-
-It prints `450.0`.
-
-This `Bank` is a little different from the one in [Composition: objects
-inside other objects](tutorial:objects-inside-objects). Here,
-`open_account()` takes an owner and a balance, and creates the
-`BankAccount` object itself. A person at a menu can type a name and a
-number, but cannot type an object.
-
-To open an account here, you have to call `bank.open_account(...)` by
-hand, with the right arguments in the right order. Someone who has never
-written Python cannot use this `Bank` at all. The program works. The
-problem is that using it means editing its source code.
-
-## A menu loop
-
-A front end sits between the person using the program and the class. It
-asks a plain question. Then it calls the method that the answer asks for.
-
-We can write and test the part that chooses the method first, before any
-real person types anything. In the cell below, `run_choice()` does that
-job. The loop at the end hands it three choices, one at a time: `"2"`,
-then `"1"`, then `"9"`. What do you think it prints for each one? Run it
-to check.
-
-```python exec
-id: a-menu-loop-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, owner, balance):
-        self.accounts.append(BankAccount(owner, balance))
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-def show_menu():
-    print("1: Show total balance")
-    print("2: Open a test account")
-    print("9: Quit")
-
-
-def run_choice(bank, choice):
-    """Runs one menu choice. Returns False when the menu should stop."""
-    if choice == "1":
-        print("Total balance:", bank.total_balance())
-    elif choice == "2":
-        bank.open_account("New Customer", 100.0)
-        print("Opened an account for New Customer.")
-    elif choice == "9":
+id: deciding-kept-apart-from-asking-1
+def run_choice(hero, monster, choice):
+    """Run one command. Return False when the game should stop."""
+    if choice == "look":
+        print(hero)
+        print(monster)
+    elif choice == "attack":
+        monster.take_damage(3)
+        if not monster.is_down():
+            hero.take_damage(2)
+        print(hero, "|", monster)
+    elif choice == "rest":
+        hero.heal(2)
+        print(hero)
+    elif choice == "quit":
         return False
     else:
-        print("Not a menu option:", choice)
+        print("Not a command:", choice)
     return True
 
-
-bank = Bank("First Local")
-for choice in ["2", "1", "9"]:
-    still_running = run_choice(bank, choice)
-    print("still running:", still_running)
+ada = Character("Ada", 10)
+grog = Character("Grog", 8)
+for choice in ["look", "attack", "attack", "rest", "dance", "quit"]:
+    still_playing = run_choice(ada, grog, choice)
+print("still playing:", still_playing)
 ```
 
-For `"2"`, it opens an account. For `"1"`, it shows the total,
-`100.0`. For `"9"`, it returns `False`, which means "stop". Every other
-choice returns `True`, which means "keep going".
+```predict
+What will the third line print?
 
-`run_choice()` never calls `input()` itself. It acts on whatever `choice`
-it receives, the same way a method acts on the arguments it receives.
-That is why we can test the cell without a person typing. The loop over
-`["2", "1", "9"]` stands in for someone who types those three choices,
-one after another.
+- Ada (health 8) | Grog (health 5)
+  - Grog takes 3, and hits back for 2.
+- Ada (health 10) | Grog (health 5)
+  - Only Grog is hurt by an attack.
+- Grog (health 8)
+  - The third line is still part of `look`.
+```
 
-### Your turn
+It prints `Ada (health 8) | Grog (health 5)`. Each command in the list
+runs one call: two attacks, a rest, and `dance`, which is not a command,
+so `run_choice` says so and carries on. `quit` returns `False`: the one
+answer that means "stop".
 
-1. Add a third option to `run_choice()`: `"3"` should deposit `50.0` into
-   the first account in `bank.accounts`.
-2. After the deposit, print the new total.
-3. The list of choices at the end already has `"3"` after `"2"`. Run the
-   cell to test your new option.
+`run_choice` never calls `input()`. It acts on whatever `choice` it is
+given, as a method acts on its arguments. That is what lets us test it
+with a list, and it is what lets us give it a second front end later with
+no change at all.
+
+## A loop that asks
+
+A real front end asks, in a loop, until the player quits. On a computer,
+it would look like this:
+
+```python
+still_playing = True
+while still_playing:
+    choice = input("What now? ")
+    still_playing = run_choice(ada, grog, choice)
+print("Goodbye.")
+```
+
+A cell on this page cannot wait for someone to type, so here the typing
+is written in advance, in a list, and a small `ask` stands in for
+`input`, as on
+[From cells to a program](tutorial:from-cells-to-a-program). On a
+computer, `ask = input` is the only change.
 
 ```python exec
-id: a-menu-loop-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: a-loop-that-asks-1
+typed = ["look", "attack", "fly", "quit"]
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
+def ask(prompt):
+    answer = typed.pop(0)
+    print(prompt + answer)
+    return answer
 
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, owner, balance):
-        self.accounts.append(BankAccount(owner, balance))
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-def show_menu():
-    print("1: Show total balance")
-    print("2: Open a test account")
-    print("3: Deposit 50.0 into the first account")
-    print("9: Quit")
-
-
-def run_choice(bank, choice):
-    if choice == "1":
-        print("Total balance:", bank.total_balance())
-    elif choice == "2":
-        bank.open_account("New Customer", 100.0)
-        print("Opened an account for New Customer.")
-    # Add the "3" case here
-    elif choice == "9":
-        return False
-    else:
-        print("Not a menu option:", choice)
-    return True
-
-
-bank = Bank("First Local")
-for choice in ["2", "3", "1", "9"]:
-    still_running = run_choice(bank, choice)
+ada = Character("Ada", 10)
+grog = Character("Grog", 8)
+still_playing = True
+while still_playing:
+    choice = ask("What now? ")
+    still_playing = run_choice(ada, grog, choice)
+print("Goodbye.")
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+A player will type things nobody planned for: `fly`, `Attack` with a
+capital, an empty line. A front end has to expect that, because the
+player has never seen `run_choice` and cannot fix it. Checking what a
+person typed, before the program uses it, is called *input validation*.
+Here the `else` does it: anything unknown is answered, and the loop goes
+on. Try adding `"Attack"` to `typed`. What happens, and should it?
 
-1. `bank.accounts[0]` is the first account opened. This is the same
-   indexing that any list uses.
-2. Call `.deposit(50.0)` on it: `bank.accounts[0].deposit(50.0)`.
-3. Then print `bank.total_balance()`, the same way choice `"1"` already
-   does.
+## A menu to choose from
 
-</details>
-
-## Leaving the loop cleanly
-
-When `run_choice()` returns `False`, a real loop knows it is time to
-stop. The cell below puts `run_choice()` together with a real `input()`
-call, and that is the whole front end.
-
-The last lines are comments, because a cell on this site cannot wait for
-someone to type. Try it if you like: remove the `#` marks and run the
-cell. Python stops at the `input()` line with an `OSError`. The menu
-loop is fine; this page is the wrong place to run it. Copy the cell into
-Python on your own computer, such as IDLE or a terminal, and it runs as
-a real menu. The practice page runs the same loop here, with a list of
-answers standing in for the typing.
+A player may never see a prompt at all. This page has its own
+*widgets*, the pieces a web page is built from: `dropdown` makes a menu
+to choose from, and `text_input` a box to type in. Here is a second front
+end for the same `run_choice`. The first cell starts a new game. The
+second shows a menu: choose a command, then run the cell, and it plays
+one turn. Choose again and run it again for the next.
 
 ```python exec
-id: leaving-the-loop-cleanly-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-
-class Bank:
-    def __init__(self, name):
-        self.name = name
-        self.accounts = []
-
-    def open_account(self, owner, balance):
-        self.accounts.append(BankAccount(owner, balance))
-
-    def total_balance(self):
-        total = 0
-        for account in self.accounts:
-            total = total + account.balance
-        return total
-
-
-def show_menu():
-    print("1: Show total balance")
-    print("2: Open a test account")
-    print("9: Quit")
-
-
-def run_choice(bank, choice):
-    if choice == "1":
-        print("Total balance:", bank.total_balance())
-    elif choice == "2":
-        bank.open_account("New Customer", 100.0)
-        print("Opened an account for New Customer.")
-    elif choice == "9":
-        return False
-    else:
-        print("Not a menu option:", choice)
-    return True
-
-
-# The real menu. It needs Python on your own computer, where input() can wait for typing.
-# bank = Bank("First Local")
-# running = True
-# while running:
-#     show_menu()
-#     choice = input("Choose: ")
-#     running = run_choice(bank, choice)
-# print("Goodbye.")
+id: a-menu-to-choose-from-1
+ada = Character("Ada", 10)
+grog = Character("Grog", 8)
+print("A new game: Ada against Grog.")
 ```
 
-The loop keeps running while `running` is `True`. When someone types
-`9`, `run_choice()` returns `False`, the loop ends, and the program says
-`Goodbye.`
+```python exec
+id: a-menu-to-choose-from-2
+command = dropdown("What now?", ["look", "attack", "rest", "quit"])
+still_playing = run_choice(ada, grog, command.value)
+```
 
-What if someone types something that is not `1`, `2` or `9`? The loop does
-not crash. The `else` in `run_choice()` prints `Not a menu option` and
-returns `True`, so the menu shows again. One wrong key does not stop the
-whole program.
+This front end took two lines, because the deciding was already written,
+and tested. Two front ends, one set of classes: the classes never knew
+which one was asking.
 
-A front end has to expect mistakes like this. The people who use it have
-never seen the code of `run_choice()`, and they cannot fix it. Checking
-what a person typed, before the program uses it, is called *input
-validation*. The practice page has more of it, including amounts of money
-typed as text.
+A menu also changes what input validation has to do. Nobody can choose
+`fly` from it, so that mistake cannot happen at all. A front end that
+makes a mistake impossible is often kinder than one that catches it
+afterwards, and `run_choice` still keeps its `else`, for the front ends
+that let people type.
 
-### Your turn
+On a page like this one, the cell's own Run is the Go button. Python here
+runs in the background, away from the page, so a button on the page
+cannot call Python the moment it is pressed. A program running on your
+own computer can have a button that does.
 
-Suppose the first thing someone types is `abc`. What does the loop print?
-Predict it, then remove the `#` marks and try it yourself.
+### Your turn: your class, eighth version
 
-<details class="dl-answer"><summary>answer</summary>
+This is the eighth version of your world: a `run_choice` for your
+classes, tested with a list of commands, and a menu for someone to play
+with. Run the first cell in your world, which holds your
+classes as they stood at the end of
+[Documenting a class](tutorial:documenting-a-class).
 
-It prints `Not a menu option: abc`. Then the menu shows again straight
-away. Nothing about `bank` changes, and the loop keeps running.
+<div class="dl-world" data-world="game">
 
-</details>
+```python exec
+id: your-class-8-so-far--game
+{{include: setup/oop/game-7.py}}
+```
 
-## Wrapping up
+The party has a healer now. Can you write a `run_choice(hero, healer,
+monster, choice)` with the commands `look`, `attack`, `heal` and `quit`,
+where `heal` has the healer heal the hero by 2? Test it with the list,
+then give it a menu.
 
-On this page:
+```python exec
+id: your-class-8--game
+# Your run_choice here
 
-- A *front end* lets somebody use a finished program without reading or
-  writing its code. A text menu is the simplest kind.
-- We kept two jobs apart. `run_choice()` decides what a choice means.
-  `input()` asks for the choice. Because they are apart, we can test
-  `run_choice()` on its own, with a list of choices standing in for a
-  person.
-- A front end has to handle input that nobody expected, without
-  crashing. The person using it has never seen the code behind the menu.
-  Checking what they typed is called *input validation*.
+ada = Character("Ada", 10)
+mira = Healer("Mira", 10)
+grog = Character("Grog", 8)
+for choice in ["look", "attack", "heal", "sing", "quit"]:
+    still_playing = run_choice(ada, mira, grog, choice)
+print("still playing:", still_playing)
+```
 
-### Reflection
+```hint
+Start from this page's `run_choice`. What does the `heal` command need
+that `rest` did not? Which of the healer's methods does it call?
+```
 
-Write a few sentences about this page, whenever you are ready. Try the
-real menu loop on your own computer, or the practice page's version
-here. If you were going to give this program to somebody else, what
-would you add to it next?
+```solution
+def run_choice(hero, healer, monster, choice):
+    """Run one command in the cave. Return False when the game should stop."""
+    if choice == "look":
+        print(hero, "|", healer, "|", monster)
+    elif choice == "attack":
+        monster.take_damage(3)
+        if not monster.is_down():
+            hero.take_damage(2)
+        print(hero, "|", monster)
+    elif choice == "heal":
+        healer.heal_other(hero, 2)
+        print(hero)
+    elif choice == "quit":
+        return False
+    else:
+        print("Not a command:", choice)
+    return True
 
-You could write your thoughts in **Your notes**, in the **Notes** panel at
-the top right of the page.
+ada = Character("Ada", 10)
+mira = Healer("Mira", 10)
+grog = Character("Grog", 8)
+for choice in ["look", "attack", "heal", "sing", "quit"]:
+    still_playing = run_choice(ada, mira, grog, choice)
+print("still playing:", still_playing)
+---
+The list prints a look, an attack, Ada healed back to 10, and `Not a
+command: sing`, then `still playing: False`. The menu is the same two
+lines as on this page, in a cell of its own, with Mira added:
 
-## Where to Read More
+    command = dropdown("What now?", ["look", "attack", "heal", "quit"])
+    still_playing = run_choice(ada, mira, grog, command.value)
+```
 
-Python Software Foundation. *Built-in Functions: `input()`*.
-<https://docs.python.org/3/library/functions.html#input>. Everything
-`input()` does, in a few lines: it shows the prompt, reads one line, and
-always gives back a string.
+</div>
 
-Python Software Foundation. *The Python Tutorial*, section 7.1: Fancier
-Output Formatting. <https://docs.python.org/3/tutorial/inputoutput.html>.
-Neater columns and numbers, for when a plain `print()` menu is not
-enough.
+<div class="dl-world" data-world="ocean">
 
-Real Python. *Build a Command-Line To-Do App With Python and Typer*.
-<https://realpython.com/python-typer-cli/>. A longer look at a proper
-command-line front end, using a library rather than a hand-written
-`while` loop.
+```python exec
+id: your-class-8-so-far--ocean
+{{include: setup/oop/ocean-7.py}}
+```
+
+Can you write a `run_choice(submarine, choice)` with the commands `dive`
+and `rise` (50 m at a time), `depth` and `quit`? Test it with the list,
+then give it a menu.
+
+```python exec
+id: your-class-8--ocean
+# Your run_choice here
+
+trieste = Bathyscaphe("Trieste")
+for choice in ["dive", "dive", "depth", "rise", "swim", "quit"]:
+    still_diving = run_choice(trieste, choice)
+print("still diving:", still_diving)
+```
+
+```hint
+Each command is one `elif`, and each calls one of the submarine's
+methods. What should `run_choice` return for `quit`, and for everything
+else?
+```
+
+```solution
+def run_choice(submarine, choice):
+    """Run one command for the submarine. Return False when the dive is over."""
+    if choice == "dive":
+        submarine.dive(50)
+        print(submarine)
+    elif choice == "rise":
+        submarine.rise(50)
+        print(submarine)
+    elif choice == "depth":
+        print(submarine, "with", submarine.room_below(), "m to spare")
+    elif choice == "quit":
+        return False
+    else:
+        print("Not a command:", choice)
+    return True
+
+trieste = Bathyscaphe("Trieste")
+for choice in ["dive", "dive", "depth", "rise", "swim", "quit"]:
+    still_diving = run_choice(trieste, choice)
+print("still diving:", still_diving)
+---
+`Trieste at 50 m`, `at 100 m`, `with 10900 m to spare`, back to 50 m,
+`Not a command: swim`, and `still diving: False`. The menu, in a cell of
+its own:
+
+    command = dropdown("Command", ["dive", "rise", "depth", "quit"])
+    still_diving = run_choice(trieste, command.value)
+
+The hull limit is kept by `dive`, not by the front end: choose `dive` and
+run the cell enough times, and the bathyscaphe's own rule refuses.
+```
+
+</div>
+
+<div class="dl-world" data-world="solar-system">
+
+```python exec
+id: your-class-8-so-far--solar-system
+{{include: setup/oop/solar-system-7.py}}
+```
+
+Can you write a `run_choice(probe, choice)` with the commands `burn` (10
+kg), `refuel` (20 kg), `status` and `quit`? Test it with the list, then
+give it a menu.
+
+```python exec
+id: your-class-8--solar-system
+# Your run_choice here
+
+philae = Lander("Philae", 40)
+for choice in ["burn", "status", "refuel", "orbit", "quit"]:
+    still_flying = run_choice(philae, choice)
+print("still flying:", still_flying)
+```
+
+```hint
+Each command is one `elif`, and each calls one of the probe's methods.
+What should `status` show, so that a player knows whether the next burn
+will work?
+```
+
+```solution
+def run_choice(probe, choice):
+    """Run one command for the probe. Return False when the mission is over."""
+    if choice == "burn":
+        probe.burn(10)
+        print(probe)
+    elif choice == "refuel":
+        probe.refuel(20)
+        print(probe)
+    elif choice == "status":
+        print(probe, "| can burn 10 kg:", probe.can_burn(10))
+    elif choice == "quit":
+        return False
+    else:
+        print("Not a command:", choice)
+    return True
+
+philae = Lander("Philae", 40)
+for choice in ["burn", "status", "refuel", "orbit", "quit"]:
+    still_flying = run_choice(philae, choice)
+print("still flying:", still_flying)
+---
+`Philae (fuel 30 kg)`, the status with `True`, 50 kg after refuelling,
+`Not a command: orbit`, and `still flying: False`. The menu, in a cell of
+its own:
+
+    command = dropdown("Command", ["burn", "refuel", "status", "quit"])
+    still_flying = run_choice(philae, command.value)
+
+`status` asks `can_burn`, so after `philae.land()` it says `False`, and
+the front end never needed to know about landers.
+```
+
+</div>
+
+<div class="dl-world" data-world="your-own">
+
+Copy your classes from [Documenting a class](tutorial:documenting-a-class)
+into the first cell. Then write a `run_choice` for your world: three or
+four commands, and `quit`. Test it with a list of commands, including one
+that is not a command. Then give it a menu, in a cell of its own.
+
+```python exec
+id: your-class-8-so-far--your-own
+# My classes so far
+```
+
+```python exec
+id: your-class-8--your-own
+# My run_choice, its test, and its menu
+```
+
+</div>
+
+## Looking back
+
+`run_choice` never asked for anything, so it could be tested with a list
+and given a second front end with no change. Which other method in your
+classes would be easier to test if it did one job fewer?
+
+A challenge: players type `Attack`, ` attack ` and `ATTACK`, and mean
+the same thing. Can you make the front end accept all three, without
+changing `run_choice`? (Text has a method `.strip()`, which removes
+spaces at the ends, and `.lower()`, which makes every letter small.)
+
+```python challenge
+def run_choice(choice):
+    if choice == "attack":
+        print("You swing at the troll.")
+    elif choice == "look":
+        print("A cave, and a troll.")
+    elif choice == "quit":
+        return False
+    else:
+        print("Not a command:", choice)
+    return True
+
+typed = ["Attack", " look ", "QUIT"]
+
+def ask(prompt):
+    answer = typed.pop(0)
+    print(prompt + answer)
+    return answer
+
+still_playing = True
+while still_playing:
+    choice = ask("What now? ")
+    still_playing = run_choice(choice)
+print("Goodbye.")
+```
+
+Next, [Your world, playable](tutorial:your-world-playable) puts every
+version of your class together, with its tests passing, for someone else
+to play or explore.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
+Sweigart, A. (2019). *Automate the Boring Stuff with Python* (2nd ed.).
+No Starch Press. Free at <https://automatetheboringstuff.com/>. Chapter 8,
+"Input Validation", on checking what a person types before a program
+trusts it.
+
+Python Software Foundation. *The Python Tutorial*, section 7.1, "Fancier
+Output Formatting".
+<https://docs.python.org/3/tutorial/inputoutput.html>. How a front end
+can lay out what it shows, once plain `print()` is not enough.

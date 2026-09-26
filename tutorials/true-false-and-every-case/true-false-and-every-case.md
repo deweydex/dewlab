@@ -28,7 +28,7 @@ covers:
 A bike-share app unlocks a bike only when your account is paid up and
 the dock is working. Before the app goes live, somebody has to be sure
 it does the right thing in every situation. "Every situation" sounds
-endless, and a little frightening: how could anyone test them all?
+endless: how could anyone test them all?
 
 Here is the surprise of this page. For a rule like this one, "every
 situation" is a short list, and Python can write all of it.
@@ -491,7 +491,7 @@ id: true-false-your-segment
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good answer. There are many others, and yours may read
+Here is one way through. There are many others, and yours may read
 better.
 
 ```python
@@ -519,7 +519,7 @@ some draw 6 without its top bar.
 
 ## Brackets change the rule
 
-Here is a question that many programmers get wrong. The login rule had
+Here is a question that catches many programmers. The login rule had
 brackets: `password_ok and (at_office or code_ok)`. What if someone
 writes the brackets in a different place?
 `(password_ok and at_office) or code_ok` uses the same words, in the

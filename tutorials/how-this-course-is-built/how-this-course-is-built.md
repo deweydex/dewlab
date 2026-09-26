@@ -116,10 +116,6 @@ when you are curious. Some practice pages ask how *you* would have
 taught something. Your own experience of learning counts as evidence
 there.
 
-One promise is not kept everywhere yet. Some question boxes still tell
-you whether your answer matched theirs. We are taking those out: the
-site should show you what happened, not mark you.
-
 If the way this course teaches is not working for you, please say so.
 Tell your teacher, or use the link at the bottom of any page: open
 "Something wrong on this page? Tell us." and choose "The page is wrong,

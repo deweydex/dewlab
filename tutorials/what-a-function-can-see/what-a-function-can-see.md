@@ -108,7 +108,8 @@ NameError: name 'megabytes_per_second' is not defined
 
 That is the error from
 [When Python says no](tutorial:when-python-says-no#the-last-line-first):
-a name that points at nothing. But this time there is no typing mistake.
+a name that points at nothing. But this time the name is spelled the
+same everywhere.
 The name was made, inside the function, and it is gone.
 
 Here is what happened, in order.
@@ -178,7 +179,7 @@ also what makes a function a promise we can test: the same inputs give
 the same result every time. A later section on this page fixes the
 counter.
 
-Fresh spaces have a second good side. Two functions can use the same
+Fresh spaces help in a second way. Two functions can use the same
 name for different things, and they never get in each other's way. What
 do you think this cell prints?
 
@@ -267,7 +268,7 @@ as the rule above says they should. NASA keeps a film of it online.
 
 </aside>
 
-Is that good? The same call, `fall_time(20)`, gave two different
+Is that what we want? The same call, `fall_time(20)`, gave two different
 answers, and nothing in the call or the docstring says why. The pull of
 gravity is a *hidden input*: something the function needs that is not
 among its parameters. The fix is to make it a parameter, with a default
@@ -548,7 +549,7 @@ problems at the end of this unit use this idea to build a unit converter.
 Here is a download timer, as someone first wrote it. It says a
 download takes 2 seconds to start, then the time the data needs at the
 connection's speed. (A byte is 8 bits, and speeds are given in megabits
-a second.) It runs, and it prints the right time. Let's ask three
+a second.) It runs, and it prints the time we expect. Let's ask three
 questions of it: what does it need, where does it get it, and what does
 it give back?
 

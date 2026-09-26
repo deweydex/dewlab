@@ -25,8 +25,8 @@ Imagine you have a robot in your kitchen. It is strong, it is careful,
 and it will do anything you tell it. You ask it to make you a cup of tea,
 and it stands there, doing nothing. It does not know what "make" means.
 
-How would you teach a robot to make tea? It sounds like a silly question,
-and it is a little funny. It is also the question every programmer
+How would you teach a robot to make tea? The question is a little
+funny. It is also the question every programmer
 answers, every day. A computer is that robot. If you have ever given
 someone directions and watched them go the wrong way, you already know
 the hard part: the gap between what you said and what you meant.
@@ -265,7 +265,7 @@ REPEAT for each of the seven bars:
 WAIT one minute
 ```
 
-Yours may be quite different and still be right. A good test: could
+Yours may be quite different and still work. One test: could
 someone who has never seen a clock follow your plan? This one still
 assumes something: how does the clock know which bars make a 4? The
 next two pages answer that, with numbers.

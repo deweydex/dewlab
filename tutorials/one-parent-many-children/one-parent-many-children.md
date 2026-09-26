@@ -1,11 +1,18 @@
 ---
 title: "Inheritance: one class built on another"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  game: A game world, with characters, the things they carry, and rooms.
+  ocean: An ocean expedition, with a submarine, its crew, and what they find.
+  solar-system: A solar system, with planets, moons and the probes sent to them.
+  your-own: A world of your own, with a class you design and grow page by page.
 covers:
   a-class-built-on-another-class:
     covers: [FOOP-LO3, FOOP-LO6]
-  another-kind-of-account:
+  a-limit-of-its-own:
+    covers: [FOOP-LO3]
+  another-kind-of-creature:
     covers: [FOOP-LO6]
   many-kinds-one-loop:
     covers: [FOOP-LO6, FOOP-LO7]
@@ -13,457 +20,428 @@ covers:
 
 # Inheritance: one class built on another
 
-A real bank offers more than one kind of account. A savings account earns
-interest. A current account lets you spend a little more than you have.
-Both are still bank accounts: money goes in, and money comes out.
+In a game, heroes and monsters share most of what they know: a name,
+health, and a way to take damage. A troll is a character too, with a
+thicker hide: it takes half damage. Do we have to copy the whole
+`Character` class to write a `Troll`?
 
-Do we have to write each kind of account from scratch? On this page we:
+Here is `Character` as it stood at the end of
+[A class with many methods](tutorial:one-class-many-methods), in the game
+world. Run it first. The cells below build on it.
 
-- build a new class on top of `BankAccount`, keeping everything it
-  already does
-- give the new class its own version of a method
-- write one loop that works with every kind of account
+```python exec
+id: character-so-far
+{{include: setup/oop/game-3.py}}
+```
 
 ## A class built on another class
 
-Here is a question to start with. A savings account is a bank account
-that also earns interest. How much of `BankAccount` would you have to
-copy to write a `SavingsAccount` class?
-
-Copying would mean writing `__init__`, `deposit()` and `withdraw()` all
-over again. Then every change to one copy would need the same change in
-the other, by hand. Python gives us a better way.
-
-Read the cell below before you run it. `SavingsAccount` never defines
-`deposit()`. Do you think `savings.deposit(200.0)` will work? Run it to
-check.
+`Troll` below never defines `__init__`, `__str__` or `heal`. Will
+`Troll("Grog", 10)` work? What will the first line print?
 
 ```python exec
 id: a-class-built-on-another-class-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+class Troll(Character):
+    def take_damage(self, amount):
+        super().take_damage(amount // 2)
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-
-savings = SavingsAccount("Alice", 1000.0, 0.05)
-savings.deposit(200.0)   # inherited from BankAccount, not rewritten
-savings.add_interest()   # new: only SavingsAccount has this
-print(savings.balance)
+grog = Troll("Grog", 10)
+grog.take_damage(7)
+print(grog)
+grog.heal(2)
+print(grog)
 ```
 
-It works. The cell prints `1260.0`: first `1000 + 200 = 1200`, then 5%
-interest on `1200` adds `60`.
+```predict
+What will the first line print?
 
-The first line, `class SavingsAccount(BankAccount):`, says "a savings
-account is a bank account, plus something extra." This is *inheritance*.
-Inheritance is a way to build a new class on an existing one. The new
-class keeps everything the existing class does, and adds only what is
-different.
+- Grog (health 7)
+  - Half of 7 is 3, as a whole number, and 10 take away 3 is 7.
+- Grog (health 3)
+  - The troll takes the full 7.
+- An error
+  - `Troll` has no `__init__` or `__str__` of its own.
+```
+
+It prints `Grog (health 7)`, then `Grog (health 9)`. The first line,
+`class Troll(Character):`, says "a troll is a character, plus something
+different". This is *inheritance*: building a new class on an existing
+one. The new class keeps everything the existing class does, and changes
+or adds only what is different.
 
 Two names help us talk about it:
 
-- The *parent class* is the existing class. Here it is `BankAccount`. It
-  gives `deposit()` and `withdraw()` to the new class for free.
-- The *child class* is the new class. Here it is `SavingsAccount`. It
-  adds a field, `interest_rate`, and a method, `add_interest()`.
+- The *parent class* is the existing class, here `Character`. It gives
+  `__init__`, `__str__`, `heal` and the rest to the new class, for free.
+- The *child class* is the new class, here `Troll`. It changes one
+  method, `take_damage`.
 
-What does `super().__init__(owner, balance)` do? `super()` is a way to
-reach the parent class. This line runs `BankAccount`'s own constructor,
-which sets `self.owner` and `self.balance`. The child does not repeat that
-work. Then it sets the one field that is new.
+<details class="dl-answer"><summary>What each line does</summary>
 
-When you call `savings.deposit(200.0)`, Python looks for `deposit()` in
-`SavingsAccount` first. It does not find one there, so it uses the one in
-`BankAccount`.
-
-Inheritance saves copying when the new class really is a special kind
-of the old one. The next page shows a case where it looks tempting and
-is wrong.
-
-### Your turn
-
-Right now, `withdraw()` on a `SavingsAccount` works exactly as it does on
-a plain `BankAccount`. Suppose the bank charges a fee of `2.0` on every
-withdrawal from a savings account.
-
-1. Write a new `withdraw()` method inside `SavingsAccount`.
-2. Inside it, call the parent's `withdraw()` with the amount plus the fee,
-   using `super().withdraw(...)`.
-3. Run the cell. If the fee works, the balance is `898.0`.
-
-```python exec
-id: a-class-built-on-another-class-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-    # Write a new withdraw() here: charge a 2.0 fee on top of the amount
-
-savings = SavingsAccount("Alice", 1000.0, 0.05)
-savings.withdraw(100.0)
-print(savings.balance)   # 1000 - 100 - 2 = 898.0 if the fee applied
-```
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. A method in `SavingsAccount` with the same name as one in
-   `BankAccount` replaces it, for `SavingsAccount` objects.
-2. The new method still needs `self` and `amount` as parameters, the same
-   as any other method.
-3. Inside it, call `super().withdraw(amount + 2.0)`. Do not change
-   `self.balance` yourself. That way, the parent's "not enough balance"
-   check still runs, on the amount with the fee added.
-
-**Think about:** why call `super().withdraw()`, when you could write
-`self.balance = self.balance - amount - 2.0` directly?
-
-**Try this next:** what happens if you try to withdraw an amount the
-balance can only cover without the fee? Try it, and see which check
-catches it.
+- `class Troll(Character):` makes a class whose parent is `Character`.
+- `def take_damage(self, amount):` gives trolls their own version of
+  `take_damage`.
+- `super()` reaches the parent class. `super().take_damage(amount // 2)`
+  runs `Character`'s own `take_damage`, with half the amount. `//` divides
+  and keeps the whole number, so 7 becomes 3.
+- `Troll("Grog", 10)` looks for `__init__` in `Troll`, finds none, and
+  uses the one in `Character`. `grog.heal(2)` does the same.
 
 </details>
 
-## Another kind of account
+Why go through `super()`, and not write `self._health = ...` again? Because
+`Character.take_damage` already keeps two rules: a negative hit is
+refused, and health stops at 0. Going through it keeps both, for trolls
+too, without writing either again. Try `grog.take_damage(-8)`.
 
-Your new `withdraw()` has the same name as the parent's, and it replaces
-the parent's version for `SavingsAccount` objects. This is called
-*overriding*. To override a method is to write a method in the child
-class with the same name as one in the parent class.
+## A limit of its own
 
-Now for a second child class. A current account allows an *overdraft*.
-An overdraft lets the balance go below zero, up to a set limit. A plain
-`BankAccount` refuses every withdrawal that is bigger than the balance.
-How much would we need to change to allow an overdraft? One new field,
-and one overridden method.
-
-What do you think Ben's balance will be after he withdraws `250.0` from
-`200.0`, with an overdraft limit of `100.0`? Run the cell to check.
+A troll can also be tougher: up to 20 health, where a person has 10. A
+class attribute in the child gives it a value of its own. Grog has 18
+health, and heals 5. What will it print?
 
 ```python exec
-id: another-kind-of-account-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: a-limit-of-its-own-1
+class Troll(Character):
+    max_health = 20
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
+    def take_damage(self, amount):
+        super().take_damage(amount // 2)
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
-
-    def withdraw(self, amount):
-        if amount > self.balance + self.overdraft_limit:
-            print("Refused: over the overdraft limit.")
-            return
-        self.balance = self.balance - amount
-
-
-current = CurrentAccount("Ben", 200.0, 100.0)
-current.withdraw(250.0)
-print(current.balance)   # 200 - 250 = -50, allowed: within the 100 limit
+grog = Troll("Grog", 18)
+grog.heal(5)
+print(grog)
 ```
 
-The balance is `-50.0`. That is below zero, but inside the limit of
-`100.0`.
+```predict
+What will it print?
 
-Notice that `CurrentAccount.withdraw()` does not call
-`super().withdraw()`, as your fee version did. Why not?
+- Grog (health 20)
+  - 18 and 5 is 23, and a troll stops at its own 20.
+- Grog (health 23)
+  - Nothing stops a troll at 20.
+- Grog (health 10)
+  - `heal` reads a limit that is not the troll's.
+```
 
-- In the fee example, the parent's check was still the right check:
-  "is the amount more than `self.balance`?" Only the amount changed, so
-  the fee version could pass a bigger number to the parent.
-- Here the check itself is different. A current account compares the
-  amount with `self.balance + self.overdraft_limit`, not with
-  `self.balance` alone. The parent's check would refuse Ben's withdrawal.
-  So `CurrentAccount` writes its own check.
+It prints `Grog (health 10)`: healing took Grog *down* from 18 to 10. Look
+at the last line of `heal`, in the cell at the top of the page:
 
-`deposit()` needs no override at all. Money comes in the same way for
-every kind of account, so `CurrentAccount` keeps the `deposit()` that
-`BankAccount` already has.
+```python
+        self._health = min(Character.max_health, self._health + amount)
+```
 
-A parent class can have more than one child. `SavingsAccount` and
-`CurrentAccount` both build on `BankAccount`. Each adds something
-different, and neither one changes the other.
-
-### Your turn
-
-1. Add an `in_overdraft()` method to `CurrentAccount`. It should return
-   `True` when `self.balance` is below zero, and `False` otherwise.
-2. Call it on `current` at the end of the cell. The withdrawal has
-   already made the balance negative, so what should it print?
+`Character.max_health` asks the `Character` class, by name, and its answer
+is always 10. The troll's own 20 is never asked for. Reading it through
+`self` fixes that. Python looks for `self.max_health` on the object first,
+then on the object's class, `Troll`, and only then on the parent. Here is
+`Character` with that one line changed, and the same `Troll` under it.
+Where does Grog stop now?
 
 ```python exec
-id: another-kind-of-account-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
+id: a-limit-of-its-own-2
+{{include: setup/oop/game-4.py}}
 
 
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
+class Troll(Character):
+    max_health = 20
 
-    def withdraw(self, amount):
-        if amount > self.balance + self.overdraft_limit:
-            print("Refused: over the overdraft limit.")
-            return
-        self.balance = self.balance - amount
+    def take_damage(self, amount):
+        super().take_damage(amount // 2)
 
-    # Add an in_overdraft method here
-
-current = CurrentAccount("Ben", 200.0, 100.0)
-current.withdraw(250.0)
-# Call in_overdraft() on current here
+grog = Troll("Grog", 18)
+grog.heal(5)
+print(grog)
 ```
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+It prints `Grog (health 20)`.
 
-1. `in_overdraft()` needs no parameter except `self`. It has the same
-   shape as `deposit()` and `withdraw()` above it.
-2. The body is one comparison: `return self.balance < 0`.
-3. Call it the same way `withdraw()` is already called on `current`:
-   `print(current.in_overdraft())`.
+So a method that reads a class attribute should read it through `self`,
+if a child class might have its own. Changing the value is still done
+through the class, as on
+[A class with many methods](tutorial:one-class-many-methods#class-attributes-and-instance-attributes).
 
-</details>
+## Another kind of creature
+
+A child's method with the same name as the parent's replaces it, for the
+child. This is called *overriding*. `Troll` overrides `take_damage`, and
+still calls the parent's version through `super()`.
+
+A phoenix is different. When a phoenix is down, it can still heal: it
+rises from its own ashes. `Character.heal` refuses anyone who is down, so
+a phoenix cannot go through it. What will the last line print?
+
+```python exec
+id: another-kind-of-creature-1
+class Phoenix(Character):
+    def heal(self, amount):
+        self._health = min(self.max_health, self._health + amount)
+
+ember = Phoenix("Ember", 10)
+ember.take_damage(15)
+print(ember, ember.is_down())
+ember.heal(5)
+print(ember)
+```
+
+```predict
+What will the last line print?
+
+- Ember (health 5)
+  - The phoenix's own `heal` has no check for being down.
+- Ember (health 0)
+  - Nobody who is down can be healed.
+```
+
+It prints `Ember (health 5)`. The two overrides are two different
+decisions:
+
+- `Troll.take_damage` goes through `super()`, because the parent's rules
+  are still the right rules. Only the amount changes.
+- `Phoenix.heal` does not, because the parent's rule is the one thing a
+  phoenix breaks. It writes its own line instead, and keeps the rule that
+  still applies: never above `max_health`.
+
+`take_damage` is not overridden at all in `Phoenix`. A phoenix is hurt
+like anyone else, so it keeps its parent's version. A parent can have
+many children, each changing something different, and none of them
+changes the others.
 
 ## Many kinds, one loop
 
-`BankAccount`, `SavingsAccount` and `CurrentAccount` all have
-`deposit()` and `withdraw()` methods. Each child either inherits them
-unchanged or has its own version. So can one loop call `withdraw()` on
-every kind of account, without asking first which kind it has?
-
-The loop below withdraws `250.0` from three accounts:
-
-- Alice has a `SavingsAccount` with `500.0`.
-- Ben has a `CurrentAccount` with `200.0` and an overdraft limit of
-  `100.0`.
-- Cara has a plain `BankAccount` with `50.0`.
-
-Predict each person's balance after the loop. Then run it to check.
+A person, a troll and a phoenix are all characters, so one loop can treat
+them alike. Each takes a hit of 12, then heals 4. What will each line
+print?
 
 ```python exec
 id: many-kinds-one-loop-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
-
-    def withdraw(self, amount):
-        if amount > self.balance + self.overdraft_limit:
-            print("Refused: over the overdraft limit.")
-            return
-        self.balance = self.balance - amount
-
-
-savings = SavingsAccount("Alice", 500.0, 0.05)
-current = CurrentAccount("Ben", 200.0, 100.0)
-plain = BankAccount("Cara", 50.0)
-
-for account in [savings, current, plain]:
-    account.withdraw(250.0)
-    print(account.owner, account.balance)
+party = [Character("Ada", 10), Troll("Grog", 20), Phoenix("Ember", 10)]
+for member in party:
+    member.take_damage(12)
+    member.heal(4)
+    print(member)
 ```
 
-The same line, `account.withdraw(250.0)`, did three different things:
+It prints the refusal for Ada, then `Ada (health 0)`, `Grog (health 18)`
+and `Ember (health 4)`. The same two lines did three different things:
 
-- Alice lost the full `250.0`, leaving `250.0`.
-- Ben went `50.0` into his overdraft, leaving `-50.0`.
-- Cara's withdrawal was refused. A plain `BankAccount` allows no
-  overdraft, so only Cara's call failed.
+- Ada took all 12, went down, and could not be healed.
+- Grog took 6, from 20 to 14, and healed to 18.
+- Ember went down too, and healed anyway.
 
-The loop never asked which kind of account it had. Each object already
-knows how to withdraw for its own kind. `account.withdraw()` runs the
-version that belongs to the object it is called on.
+The loop never asked which kind of character it had. Each object runs the
+version of the method that belongs to its own class. This is
+*polymorphism*: one method name working across several classes, each
+object running its own version.
 
-This is *polymorphism*. Polymorphism is one method name working across
-several classes, where each object runs the version that fits its own
-class.
+### Your turn: your class, fourth version
 
-### Your turn
+This is the fourth version of your class. It gets at most one child class,
+and one sentence, as a comment, that says why the child is a kind of the
+parent. A class with no child is a fair answer too, if you can say why.
+Is there a class attribute that a child might want its own value for?
 
-1. Create a second `BankAccount` and a second `SavingsAccount` of your
-   own.
-2. Put all five accounts in one list: the three above and your two new
-   ones.
-3. Write a loop that deposits `20.0` into every account.
-4. In the same loop, print each owner's name and their new balance.
+<div class="dl-world" data-world="game">
+
+A healer is a character who can also heal someone else. Can you write
+`Healer(Character)`, with a `heal_other(other, amount)` method? A healer
+who is down cannot heal anyone. The `Character` here is the one with
+`self.max_health`.
 
 ```python exec
-id: many-kinds-one-loop-2
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: your-class-4--game
+{{include: setup/oop/game-4.py}}
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
+# Your Healer here
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
-            return
-        self.balance = self.balance - amount
-
-
-class SavingsAccount(BankAccount):
-    def __init__(self, owner, balance, interest_rate):
-        super().__init__(owner, balance)
-        self.interest_rate = interest_rate
-
-    def add_interest(self):
-        self.balance = self.balance + self.balance * self.interest_rate
-
-
-class CurrentAccount(BankAccount):
-    def __init__(self, owner, balance, overdraft_limit):
-        super().__init__(owner, balance)
-        self.overdraft_limit = overdraft_limit
-
-    def withdraw(self, amount):
-        if amount > self.balance + self.overdraft_limit:
-            print("Refused: over the overdraft limit.")
-            return
-        self.balance = self.balance - amount
-
-
-savings = SavingsAccount("Alice", 500.0, 0.05)
-current = CurrentAccount("Ben", 200.0, 100.0)
-plain = BankAccount("Cara", 50.0)
-
-# Create your own BankAccount and SavingsAccount here
-
-# Build a list of all five accounts and loop over it here
+ada = Character("Ada", 4)
+mira = Healer("Mira", 10)
+mira.heal_other(ada, 5)
+print(ada)
 ```
 
-## Wrapping up
+```inputs
+str(ada)
+str(mira)
+```
 
-On this page:
+```hint
+Which of `Character`'s methods already does the healing, and keeps its
+rules? How does one object ask another to do something?
+```
 
-- *Inheritance* builds a child class on a parent class. The child keeps
-  everything the parent does, and adds only what is different.
-  `super().__init__(...)` lets the child reuse the parent's constructor.
-- A parent class can have more than one child. `SavingsAccount` and
-  `CurrentAccount` both build on `BankAccount`, each adding something
-  different, and neither one changes the other.
-- *Overriding* replaces a parent's method with a child's own version. The
-  child can still call the parent's version with `super()`, as the fee
-  did, or write a new check, as the overdraft did.
-- *Polymorphism* lets the same method call run a different version,
-  depending on the object's class. `account.withdraw(amount)` needs no
-  check first to know which version is right.
+```solution
+{{include: setup/oop/game-4.py}}
 
-Inheritance is one way to build a class from another. The next page,
-[Composition: objects inside other objects](tutorial:objects-inside-objects),
-looks at a second way: a `Bank` that holds its accounts.
+{{include: setup/oop/game-4-kind.py}}
 
-### Reflection
+ada = Character("Ada", 4)
+mira = Healer("Mira", 10)
+mira.heal_other(ada, 5)
+print(ada)
+---
+`Ada (health 9)`. `heal_other` does not change Ada's health itself: it
+asks Ada to `heal`, so Ada's own rules decide, down or not, and her own
+`max_health`. A healer is still a character: it can take damage, and be
+healed, with nothing new written.
+```
 
-Write a few sentences about this page, whenever you are ready.
-`SavingsAccount` added a method that `BankAccount` does not have.
-`CurrentAccount` replaced a method that `BankAccount` already had. Can
-you think of another kind of account a bank might offer? Which of these
-two things would its class need to do?
+</div>
 
-You could write your thoughts in **Your notes**, in the **Notes** panel at
-the top right of the page.
+<div class="dl-world" data-world="ocean">
 
-## Where to Read More
+A bathyscaphe is a submarine built for the deepest trenches: the real
+Trieste reached 10,916 m in 1960. Can you write
+`Bathyscaphe(Submarine)`, with a hull safe to 11,000 m? Watch what
+happens to the limit, and remember this page's troll.
+
+```python exec
+id: your-class-4--ocean
+{{include: setup/oop/ocean-3.py}}
+
+# Your Bathyscaphe here
+
+trieste = Bathyscaphe("Trieste")
+trieste.dive(5000)
+print(trieste)
+```
+
+```inputs
+str(trieste)
+trieste.room_below()
+str(Submarine("Nautilus"))
+```
+
+```hint
+A class attribute in the child gives it its own limit. If the dive is
+still refused at 400 m, which lines of `Submarine` ask for the limit, and
+whose limit do they ask for?
+```
+
+```solution
+{{include: setup/oop/ocean-4.py}}
+
+{{include: setup/oop/ocean-4-kind.py}}
+
+trieste = Bathyscaphe("Trieste")
+trieste.dive(5000)
+print(trieste)
+---
+`Trieste at 5000 m`. The child is one line, `hull_limit = 11000`. The
+work is in the parent: `room_below` and the refusal both read
+`self.hull_limit`, not `Submarine.hull_limit`, so a bathyscaphe's own
+limit is the one they find.
+```
+
+</div>
+
+<div class="dl-world" data-world="solar-system">
+
+A lander is a probe that can land, and once it is down, it burns no more
+fuel. Can you write `Lander(Probe)`, with a `land()` method? Which one
+method would you override, so that `burn` refuses after landing without
+being written again?
+
+```python exec
+id: your-class-4--solar-system
+{{include: setup/oop/solar-system-3.py}}
+
+# Your Lander here
+
+philae = Lander("Philae", 40)
+philae.burn(10)
+philae.land()
+philae.burn(5)
+print(philae)
+```
+
+```inputs
+str(philae)
+philae.can_burn(5)
+Lander("Rosetta", 40).can_burn(5)
+```
+
+```hint
+`Probe.burn` asks `self.can_burn(kg)` before it burns. For a lander,
+`self` is the lander. What should a lander that has landed answer?
+```
+
+```solution
+{{include: setup/oop/solar-system-4.py}}
+
+{{include: setup/oop/solar-system-4-kind.py}}
+
+philae = Lander("Philae", 40)
+philae.burn(10)
+philae.land()
+philae.burn(5)
+print(philae)
+---
+A refusal, then `Philae (fuel 30 kg)`. `Lander` overrides `can_burn`
+only. `Probe.burn` asks `self.can_burn(kg)`, and for a lander that runs
+`Lander`'s version: the parent's method calls the child's. The refusal
+now says "cannot burn 5 kg now", since "not enough fuel" is no longer the
+only reason. `refuel` reads `self.tank_size` too, ready for a child with a
+bigger tank.
+```
+
+</div>
+
+<div class="dl-world" data-world="your-own">
+
+Is there a kind of your thing that is a special case: it does one thing
+differently, or one thing more? Write at most one child class, with a
+comment of one sentence that says why it is a kind of your class. If no
+kind fits your world, write that sentence instead: it is a design decision
+too.
+
+```python exec
+id: your-class-4--your-own
+# My class, fourth version: at most one child class, and why.
+```
+
+</div>
+
+## Looking back
+
+`Troll.take_damage` went through `super()`, and `Phoenix.heal` did not.
+What did each one keep of its parent, and what did each one give up?
+
+A challenge: a zombie is a character that gets up once. The first time a
+hit knocks it down, it stands up again with 5 health. Can you write
+`Zombie(Character)`, and keep every rule `take_damage` already has?
+
+```python challenge
+# Paste Character from the top of the page here, with self.max_health.
+
+class Zombie(Character):
+    def __init__(self, name, health):
+        super().__init__(name, health)
+        self._risen = False
+
+mort = Zombie("Mort", 10)
+mort.take_damage(12)
+print(mort)
+mort.take_damage(12)
+print(mort)
+```
+
+Next, [Composition: objects inside other objects](tutorial:objects-inside-objects)
+builds a class that holds other objects, which is a second way to build
+one class from another.
+
+## Where to read more
+
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer
-Scientist* (2nd ed.). Green Tea Press. Chapter 18 covers inheritance
-between several classes at once, continuing from chapter 15's first look.
-Free at <https://greenteapress.com/wp/think-python-2e/>.
+Scientist* (2nd ed.). Green Tea Press. Free at
+<https://greenteapress.com/wp/think-python-2e/>. Chapter 18,
+"Inheritance", builds a deck of cards and a hand from it, one class on
+another.
 
-Python Software Foundation. *The Python Tutorial*, section 9.5: Inheritance.
-<https://docs.python.org/3/tutorial/classes.html#inheritance>. The official
-reference on building one class from another, including cases with more
-than one parent that this tutorial did not need.
-
-Real Python. *Inheritance and Composition: A Python OOP Guide*.
-<https://realpython.com/inheritance-composition-python/>. A longer look at
-inheritance, and at the choice between inheritance and composition that
-the next page makes.
+Python Software Foundation. *The Python Tutorial*, section 9.5,
+"Inheritance". <https://docs.python.org/3/tutorial/classes.html#inheritance>.
+The official reference, including how Python finds a method, and classes
+with more than one parent, which this page does not need.

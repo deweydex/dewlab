@@ -22,13 +22,14 @@ In the middle of the page, you build the unit's project: a digit
 display, like the clock on a microwave, drawn in text. Stage 1 is a
 seven-segment display, in problems 7 to 11. Stage 2, a small pixel
 font, is in the Stretch section, for when you want more. It may feel
-like a lot of pieces at first. Every piece is one you have already met.
+like a lot of pieces at first. Every piece is one you have already met,
+so when one stops you, ask the four questions of it, or open its hint.
 
 Each problem says what kind it is: **Predict** (say what a cell will
-print, then run it), **Make** (build something small), **Fix** (repair
-one mistake), **Explain** (answer in words) or **Another way** (reach the
+print, then run it), **Make** (build something small), **Fix** (find
+why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route, or find the space where a "wrong" answer
-is right). Answers are in the folds, and each is one good answer, not
+is right). Answers are in the folds, and each is one way through, not
 the only one.
 
 ## Your toolkit
@@ -108,7 +109,7 @@ bits become 3 hex digits, since each hex digit stands for four bits.
 
 **4. Fix.** A robot pen draws on paper. This cell should print the
 pen's two steps and then `Done.`. It prints only `Done.`, with no error.
-Find the mistake and fix it.
+Find why, and change it.
 
 ```python exec
 id: mixed-instructions-pen
@@ -146,7 +147,7 @@ better one.
 
 "Clean" has no single meaning, and the robot cannot see dirt the way a
 person does. Two robots could stop at different times, and one might
-never stop at all. A good step has one meaning, and a repeated step
+never stop at all. A step a robot can follow has one meaning, and a repeated step
 needs a clear end.
 
 A better version: "Drive over every part of the floor once. If the dust
@@ -201,11 +202,12 @@ digits: its logarithm, base 10, rounded down, plus 1.
 
 **8. Explain.** Schlomo, who is learning Python too, says: "Seven
 segments make 128 patterns, so a seven-segment display can show 128
-different digits." Is he right?
+different digits." Where does his idea work, and where does it stop
+working?
 
 <details class="dl-answer"><summary>answer</summary>
 
-He is right about the patterns and wrong about the digits. Each segment
+His idea works for the patterns and stops working for the digits. Each segment
 is on or off, so there are $2^7 = 128$ patterns. But only ten of them
 are the digits 0 to 9. Most of the others do not look like anything we
 would read.
@@ -213,7 +215,7 @@ would read.
 Some of them are useful all the same. Many seven-segment displays show
 all sixteen hex digits, with A, b, C, d, E and F for the letters, some
 of them lower case so that they do not look like 8 or 0. So Schlomo's
-counting was right. What a pattern *means* is a question for the people
+count of patterns holds. What a pattern *means* is a question for the people
 who read it.
 
 </details>
@@ -529,8 +531,8 @@ whole bar. The pixel font needs one line for every row of pixels.
 "The segment table held ten bytes in one number. Python's whole numbers
 never run out, so the whole pixel font can be one number too, one glyph
 of 7 hex digits after another." Here is her number, with 9 on the left
-and 0 on the right. Is she right? Use `digit_at` to get the glyph for 2
-out of it.
+and 0 on the right. Does her idea work? Use `digit_at` to get the glyph
+for 2 out of it.
 
 ```python exec
 id: mixed-instructions-font-number
@@ -551,7 +553,7 @@ font = 0x69971166996996F122444688E996F8E11961359F116916196691248F26222276999996
 
 <details class="dl-answer"><summary>answer</summary>
 
-She is right. Each glyph is 7 hex digits, so in base $16^7$ each glyph
+It works. Each glyph is 7 hex digits, so in base $16^7$ each glyph
 is one digit, and `digit_at` can pick out any of them:
 
 ```python
@@ -591,7 +593,7 @@ of floats, the question to ask is "close enough?", for example
 
 **17. Fix.** A game controller sends the state of four buttons as four
 bits. This function should turn them back into a number, so `1, 1, 0, 1`
-should give 13. The test fails. Find the mistake and fix it.
+should give 13. The test fails. Find why, and change it.
 
 ```python exec
 id: mixed-instructions-bits
@@ -614,7 +616,7 @@ assert from_bits(1, 1, 0, 1) == 13
 code keep that promise?
 
 **Try this next:** add a test that uses only the last bit,
-`from_bits(0, 0, 0, 1)`. Would it have caught the mistake alone?
+`from_bits(0, 0, 0, 1)`. Would it have caught the problem alone?
 
 </details>
 

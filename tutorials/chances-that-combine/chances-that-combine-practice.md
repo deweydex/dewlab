@@ -8,11 +8,11 @@ version: 2026.09.25.1
 # Chances that combine: and, or, and the birthday problem — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one good way: yours may
-be different, and as good.
+folded away until you open them, and each shows one way through: yours
+may be different, and work as well.
 
 Your toolkit is loaded on this page, `at_least_one` included, along with
 `all_pairs`, `product`, `combinations` and `simulate` from earlier in
@@ -187,14 +187,14 @@ groups. So
 
 $$\frac{13}{52} + \frac{4}{52} - \frac{1}{52} = \frac{16}{52}$$
 
-If you predicted $\frac{17}{52}$, you counted the king of hearts twice.
-That is the mistake the overlap rule is there to catch.
+If you predicted $\frac{17}{52}$, the king of hearts was counted twice.
+The overlap rule is there to catch that.
 
 </details>
 
 **7. Fix.** A weather app works out the chance of at least one wet day in
 a week, when each day has a 30% chance of rain. It says 0.9998, which
-seems far too sure. Find the mistake and fix it.
+seems far too sure. Find why, and change it.
 
 ```python exec
 id: chances-practice-fix-rain
@@ -366,19 +366,19 @@ $20 \times 19 = 380$ possible draws, which is `permutations(20, 2)`.
 
 **11. Explain.** For part b of problem 10, Schlomi, who is learning
 Python too, uses `at_least_one(3 / 20, 2)` and gets about 0.2775, not
-0.284. Who is right, and why do the two answers differ?
+0.284. Which answer fits this raffle, and why do the two differ?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The listing is right: about 0.284.
+The listing fits this raffle: about 0.284.
 
-`at_least_one` promises the right answer only when the tries are
+`at_least_one` keeps its promise only when the tries are
 independent. The raffle draws are not. A ticket that has been drawn is
 not put back, so the first draw changes the second. If the first draw
 is not yours, one of the 17 tickets that are not yours has gone, and
 your chance on the second draw goes up to $\frac{3}{19}$.
 
-Schlomi's answer would be right for a raffle where each drawn ticket
+Schlomi's answer would fit a raffle where each drawn ticket
 goes back in the drum before the next draw. Her move is fine; it
 belongs to a different space.
 
@@ -473,7 +473,7 @@ fast way is the only way.
 
 **14. Fix.** Schlomo, who is learning Python too, wrote this version of
 `shared_birthday`. It says that even 2 people share a birthday every
-single time. Run it, find the mistake, and fix it.
+single time. Run it, find why, and change it.
 
 ```python exec
 id: chances-practice-fix-birthday
@@ -501,7 +501,7 @@ print(simulate(room_of_2, 1000))
 2. After `seen.append(day)`, is `day in seen` True or False?
 3. What order should the two steps be in?
 
-**Think about:** which of the four questions this mistake is about.
+**Think about:** which of the four questions this is about.
 
 </details>
 
@@ -527,8 +527,8 @@ print(simulate(room_of_2, 100000))
 ```
 
 Now it prints a number near $\frac{1}{365} \approx 0.0027$. The
-mistake was about sequence: what happens when. Both lines were right,
-and only their order was wrong.
+problem was about sequence: what happens when. Both lines did their
+jobs, and only their order had to change.
 
 </details>
 
@@ -556,27 +556,27 @@ step is to notice that.
 </details>
 
 **16. Explain.** This page opened with the birthday problem, a
-question most people get wrong. Picture teaching a friend who is sure they
-are "bad at maths". Would you open with a question they will probably get
-wrong, or one they will probably get right? What could go wrong with each
-choice?
+question where most people's guess misses. Picture teaching a friend who
+is sure they are "bad at maths". Would you open with a question where
+their guess will probably miss, or one where it will probably land? What
+could go wrong with each choice?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+Here is one way through. It weighs a few things.
 
-- **A question they will get wrong.** The surprise makes people want to
-  know why, and it shows that a feeling about chance can be checked. What
-  can go wrong: to someone who expects to fail, a wrong answer can look
-  like more proof. It helps to say that most people guess the same way,
+- **A question where the guess misses.** The surprise makes people want
+  to know why, and it shows that a feeling about chance can be checked.
+  What can go wrong: to someone who expects to fail, a missed guess can
+  look like more proof. It helps to say that most people guess the same way,
   and that the guess is not marked.
-- **A question they will get right.** It builds confidence, and it gives
+- **A question where the guess lands.** It builds confidence, and it gives
   the friend a first success. What can go wrong: if the point of the
   lesson is a surprise, starting safely can make the surprise feel like
   a trick later.
 
-What makes a wrong guess safe is how it is treated: nobody marks it, and
-the answer is used to find out which way the guess leaned. A strong answer
-says what you would do to make it safe, whichever question you chose.
+What makes a missed guess safe is how it is treated: nobody marks it, and
+the answer is used to find out which way the guess leaned. Whichever
+question you chose, say what you would do to make it safe.
 
 </details>

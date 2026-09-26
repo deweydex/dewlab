@@ -8,8 +8,9 @@ version: 2026.09.25.1
 # Getting closer: limits — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -161,8 +162,8 @@ the same value on each side.
 </details>
 
 **6. Fix.** Schlomo, who is learning Python too, wrote his own
-`approach`. Run it. The table never gets any closer to 6. Find the one
-mistake.
+`approach`. Run it. The table never gets any closer to 6. Find the line
+that does not do what Schlomo meant.
 
 ```python exec
 id: getting-closer-practice-fix
@@ -191,7 +192,8 @@ The step is 1 on every row. The fix is to indent it:
         step = step / 2
 ```
 
-The order of the lines was right. Their place was not: indentation
+The lines came in the order Schlomo meant. Their place did not:
+indentation
 says which lines are inside the loop, and so which lines happen again.
 
 </details>
@@ -319,8 +321,8 @@ id: getting-closer-practice-stretch
 **12. Explain.** Schlomi, who is learning Python too, made this table
 for $\sin\left(\frac{\pi}{x}\right)$ near 0. Every value is tiny, so
 she says the limit is 0. It is a reasonable reading of the table. Then
-the second loop tries a few other points near 0. What went wrong, and
-does the rule have a limit at 0?
+the second loop tries a few other points near 0. Where does her reading
+work, and where does it stop working? Does the rule have a limit at 0?
 
 ```python
 def sine_of_pi_over_x(x):
@@ -345,8 +347,8 @@ between $-1$ and 1 over and over, however close we get. The values
 never settle, so there is no limit. A table is evidence, not proof,
 and a table that only looks at special points can be fooled.
 
-That is one good way to say it. Yours may use other words, or a
-picture, and be as good.
+That is one way through. Yours may use other words, or a picture, and
+say the same thing.
 
 </details>
 
@@ -401,6 +403,8 @@ much more tax do they pay?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def tax(income):
     if income <= 44000:
@@ -438,6 +442,8 @@ $x \to 0^+$. Does the limit agree with the value Python chose?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def approach_from_right(rule, a, rows=10):
     """Print rule just right of a, halving the step on each row."""
@@ -458,7 +464,7 @@ print(x_to_the_x(1e-6))
 right, the values are 1, 0.707, 0.707, 0.771, 0.841, and then they
 climb: 0.988 after ten rows, and 0.99999 at $x = 10^{-6}$. So
 $\lim_{x \to 0^+} x^x = 1$, and it agrees with the `1.0` Python chose.
-Here the choice and the limit match, which is one good reason for the
+Here the choice and the limit match, which is one reason for the
 choice. The values first go down and then come back up. A limit only
 cares where they end up, not the path they take.
 

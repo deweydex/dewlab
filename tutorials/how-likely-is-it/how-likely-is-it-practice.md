@@ -8,13 +8,13 @@ version: 2026.09.25.1
 # How likely is it? Probability and simulation — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one good way: yours may
-be different, and as good. Several problems ask you to guess
-first. Guesses about chance are often wrong, for everybody, and a wrong
-guess is the most useful kind here.
+folded away until you open them, and each shows one way through: yours
+may be different, and work as well. Several problems ask you to guess
+first. Guesses about chance often miss, for everybody, and a guess that
+misses is the most useful kind here.
 
 Your toolkit is loaded on this page: `simulate` from the tutorial, and
 `combinations`, `all_pairs`, `total` and the rest from earlier pages.
@@ -130,8 +130,7 @@ faces let you out.
 packet is one small piece of a message.) So each packet arrives with
 chance 0.7, and `random.random() < 0.7` acts that out: it is True about
 70% of the time. This cell should count the packets that arrive, out of
-1,000. It gives an answer near 0 instead. Run it, then find the
-mistake.
+1,000. It gives an answer near 0 instead. Run it, then find why.
 
 ```python exec
 id: likely-practice-fix-packets
@@ -245,7 +244,7 @@ there are far too many outcomes to count.
 </details>
 
 **10. Fix.** This trial should roll a fair die and give True for a 6.
-The simulation says a 6 never comes up. Run it, then find the mistake.
+The simulation says a 6 never comes up. Run it, then find why.
 
 ```python exec
 id: likely-practice-fix-die
@@ -261,7 +260,7 @@ print(simulate(rolled_six, 10000))
 `random.randint(1, 5)` gives 1 to 5, so `+ 1` gives 2 to 6, which can
 never be 7. Whoever wrote it was thinking of `range()`, which leaves
 out its last number, and tried to make up for it. `randint` includes
-both ends, so the plain version is right:
+both ends, so the plain version works:
 
 ```python
 def rolled_six():
@@ -392,15 +391,15 @@ is your toolkit's `product` from
 
 **14. Another way.** Schlomi, who is learning Python too, says: "Two dice
 can add up to 11 different totals, 2 to 12, so each total has
-probability $\frac{1}{11}$." For two dice that is wrong. Describe a
-different experiment, a different space, in which her answer would be
-right.
+probability $\frac{1}{11}$." For two dice that does not hold. Describe a
+different experiment, a different space, in which her answer would
+hold.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good answer: a spinner with 11 equal sections, marked 2 to 12. A
+One way through: a spinner with 11 equal sections, marked 2 to 12. A
 program that picks a total with `random.randint(2, 12)` works too. There, each total is
-one equally likely outcome, and $P(7) = \frac{1}{11}$ is right.
+one equally likely outcome, and $P(7) = \frac{1}{11}$ holds.
 
 With two dice, the equally likely outcomes are the 36 pairs, not the 11
 totals. A total of 7 has six pairs behind it, and 12 has only one. The
@@ -477,7 +476,7 @@ bring them in?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+Here is one way through. It weighs a few things.
 
 - **Why give the names.** They are the words used in news reports, in
   research, and in later courses. A reader who has them can search for
@@ -491,7 +490,7 @@ There is no one right answer. A good answer weighs a few things.
   reader may not recognise the same idea when they meet it under its
   name.
 
-A strong answer might put the names after the answer, in one or two
+One answer might put the names after the answer, in one or two
 sentences, so they label the idea without taking its place.
 
 </details>

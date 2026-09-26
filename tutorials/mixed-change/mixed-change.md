@@ -144,12 +144,13 @@ a counter added.
 **4. Explain.** A weather radar says a hailstone is falling at 11 metres
 a second. Schlomo, who is learning Python too, says: "In a single
 instant the stone moves 0 metres, and 0 metres in 0 seconds is not a
-speed. So the radar is showing something that does not exist." What is
-right in what Schlomo says, and what does the radar show?
+speed. So the radar is showing something that does not exist." Where does
+Schlomo's idea work, where does it stop working, and what does the
+radar show?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good answer: Schlomo is right that distance divided by time, at one instant, is
+One way through. Schlomo's idea holds this far: distance divided by time, at one instant, is
 $\frac{0}{0}$, which has no value. But a rule can have a limit where it
 has no value, as $\frac{x^2 - 4}{x - 2}$ did at 2 on
 [Getting closer](tutorial:getting-closer#a-rule-with-a-hole-in-it). The
@@ -196,6 +197,8 @@ inputs. Why can it see it?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def best_point(rule, low, high):
     """Return (x, rule(x)) where the slope of rule is 0, for x between low and high.
@@ -231,7 +234,7 @@ on
 **6. Fix.** Schlomi, who is learning Python too, wrote a first
 `best_point`. On the bowl it stops with a `ValueError`: "rule(low) and
 rule(high) have the same sign". But the bowl's slope does change sign
-between 0 and 1. Find the mistake.
+between 0 and 1. Find the line that does not do what Schlomi meant.
 
 ```python exec
 id: mixed-change-fix-best
@@ -252,7 +255,7 @@ It looks for a root of the rule, not of its slope. A root of the
 height is a $t$ where the letter crosses the baseline. At 0 and at 1
 the height is 112 and 72, both above the line, so `bisect_root` finds
 no sign change and says so. The error message was telling the truth
-about the wrong rule. The fix is to hand `bisect_root` the slope:
+about a different rule from the one Schlomi meant. The fix is to hand `bisect_root` the slope:
 
 ```python
 def first_best_point(rule, low, high):
@@ -280,6 +283,8 @@ every speed from 40 to 120 in steps of 0.01 km/h, and the smallest
 cost among them.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def trip_cost(speed_kmh):
@@ -375,6 +380,8 @@ write the slope by hand, and find where it is 0.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def in_blood(hours):
     """Return the medicine in the blood, in mg per litre, this many hours after the dose."""
@@ -408,7 +415,7 @@ positive at both ends. With no sign change, `bisect_root` raises a
 `ValueError`, as its
 [promise](tutorial:solving-by-computing#a-tool-that-halves) says.
 
-The move is fine; the space is wrong. In that window there is no flat
+The move is fine; it needs a different space. In that window there is no flat
 tangent, and the highest amount is at the edge, at 1 hour:
 `in_blood(1)` is about 18.2 mg per litre. The end of
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb)
@@ -600,6 +607,8 @@ line at 0.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 import matplotlib.pyplot as plt
 
@@ -649,7 +658,8 @@ finds a peak two ways.
 so he gives `derivative_at` a much smaller step. It is a reasonable
 thought: a smaller step is closer to the limit. But the finder now
 says the bowl is lowest at about $t = 0.514$, and the height there is
-higher than at 0.55. Find the mistake. Which page warned about it?
+higher than at 0.55. Find the line that does not do what Schlomo meant.
+Which page warned about it?
 
 ```python exec
 id: mixed-change-fix-step
@@ -669,9 +679,9 @@ for t in [0.2, 0.5, 0.6]:
 
 The step of $10^{-15}$ is too small. The two heights the chord
 subtracts are nearly equal, and each is a float a tiny way off, so the
-"slope" is mostly float error: $-28.4$ at 0.5 when it should be
-$-40$, and $14.2$ at 0.6 when it should be 40. With slopes that wrong,
-the sign change lands in the wrong place. The fix is to leave the step
+"slope" is mostly float error: $-28.4$ at 0.5 beside the true
+$-40$, and $14.2$ at 0.6 beside the true 40. With slopes that far off,
+the sign change lands somewhere else. The fix is to leave the step
 at its default:
 
 ```python

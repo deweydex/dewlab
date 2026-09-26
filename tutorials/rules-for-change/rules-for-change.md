@@ -51,7 +51,7 @@ On this page we:
 > [Does it work?](tutorial:does-it-work#close-enough). One thing
 > usually goes unsaid: a rule for slopes is a promise about every $x$,
 > and checking 40 points does not prove it. It does catch almost every
-> mistake.
+> rule that does not hold.
 
 ## Warm-up
 
@@ -334,8 +334,8 @@ window grows by 2.4 square cm each tenth of a second. After one second,
 ten tenths, it is shrinking by 1.6: the lost height now costs more
 than the new width brings in.
 
-Is multiplying slopes a foolish move, then? Do not throw it away yet. It is
-the right move in a different space, two sections from here.
+Is multiplying slopes a foolish move, then? Keep it for now. It is
+the move that works in a different space, two sections from here.
 
 ## Dividing rules: the quotient rule
 
@@ -437,7 +437,7 @@ print(chain_rule_slope(6), 3 * math.pi)
 About 9.42 square metres a second, which is $3\pi$. The chain rule
 agrees at every second.
 
-Here is the space where multiplying slopes is right. For a product,
+Here is the space where multiplying slopes works. For a product,
 two rules sit side by side, and multiplying their slopes fails. For a
 rule inside a rule, one rule's output is the other's input, and the
 slopes multiply.
@@ -559,7 +559,7 @@ certainty. For proofs from limits, see the page linked at the end.
 | What is named here? | $f'(x)$, the derivative of $f(x)$; the inside and outside rules of a composition; a polynomial's slope as a new list |
 | What is promised? | each rule promises a slope at every $x$; `slopes_agree` promises only that 61 points agree, which checks the promise but does not prove it |
 | What happens when? | the chain rule works out the inside rule first, then the outside rule's slope at that value; a slope of 0 is found before the top |
-| What does this space let us do? | the quotient rule needs a bottom that is not 0; multiplying slopes fails for a product and is right for a rule inside a rule |
+| What does this space let us do? | the quotient rule needs a bottom that is not 0; multiplying slopes fails for a product and works for a rule inside a rule |
 
 ## What we have now
 

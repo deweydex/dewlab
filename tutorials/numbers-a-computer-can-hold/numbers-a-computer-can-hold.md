@@ -25,8 +25,8 @@ of light. Inside, the computer keeps one number, and every time the
 display changes, it takes that number apart to know which bars to light.
 
 Here is the first surprise. Ask Python to divide 7 by 2, and it can give
-you three answers: `3.5`, `3` and `1`. If division at school had one
-answer, that may feel wrong. It is not. Each answer belongs to a
+you three answers: `3.5`, `3` and `1`. Division at school had one
+answer, and here there are three. Each answer belongs to a
 different question, and the last two are the tools a display needs.
 
 On this page we:
@@ -155,8 +155,8 @@ squares to make 2, written $\sqrt{2}$, is one; so is $\pi$.
 
 Each family sits inside the next, like boxes inside boxes:
 $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$.
-So when someone says "you can't take 5 from 3", they are right, in
-$\mathbb{N}$. The move is not foolish. It needs a bigger space.
+So when someone says "you can't take 5 from 3", that is true in
+$\mathbb{N}$. The move needs a bigger space.
 
 ```question
 id: numbers-families-1
@@ -215,12 +215,12 @@ print(123456789 * 987654321 * 123456789)
 print(0.1 + 0.2)
 ```
 
-The first answer has 26 digits, and every one of them is right. Python's
+The first answer has 26 digits, and every one of them is exact. Python's
 ints never run out of room. Many other languages have a largest whole
 number, but Python does not.
 
-The second answer is `0.30000000000000004`. That is not your mistake,
-and not really Python's. A float keeps about 16 digits, and some
+The second answer is `0.30000000000000004`. Your line did not cause
+it, and neither, really, did Python. A float keeps about 16 digits, and some
 decimals, like 0.1, cannot be stored exactly. A later page in this unit
 shows why. For now: ints are exact, and floats are very close.
 
@@ -228,7 +228,7 @@ shows why. For now: ints are exact, and floats are very close.
 
 The pixel sum also runs the other way. On the grid 4 pixels wide, which
 pixel is in row 6, column 1? Six full rows of 4 come before it, then 1
-more. Which of these give the right pixel? Predict all three, then run.
+more. Which of these find that pixel? Predict all three, then run.
 
 ```python exec
 id: numbers-order-1

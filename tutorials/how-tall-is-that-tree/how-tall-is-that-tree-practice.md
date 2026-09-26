@@ -11,7 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them.
+route. The answers are folded away until you open them, and each is one
+way through: yours may go another way.
 
 Your toolkit is loaded on this page, including `angle_between` from the
 tutorial, `distance` from
@@ -254,7 +255,7 @@ line should be
 The first test passed because $\cos 90^\circ = 0$, so the correction is
 0 whether it is added or taken away. Schlomi started from the triangle
 she knew best, the 3, 4, 5, and a test at a right angle alone can never
-find this slip. For 60°, her version gives about 7.81, and the rule
+tell the two versions apart. For 60°, her version gives about 7.81, and the rule
 gives $\sqrt{21} \approx 4.58$.
 
 </details>
@@ -333,7 +334,7 @@ sine rule gives you a sine and you go back to an angle, both 30° and
 
 `math.asin` is a function, and a function gives one answer for each
 input. So it always picks the angle from −90° to 90°. The other answer,
-$180^\circ$ minus that, is yours to check. A good test: add up the
+$180^\circ$ minus that, is yours to check. One test: add up the
 angles, and see if both choices stay under 180°.
 
 </details>
@@ -400,7 +401,7 @@ up. These numbers are made up. How high is the hub?
    `walked * sin(first_angle) / sin(angle at the top)`.
 4. SOH from the nearer spot gives the height above your eyes.
 
-**Think about:** what goes wrong if `second_angle` is not bigger than
+**Think about:** what happens if `second_angle` is not bigger than
 `first_angle`?
 
 </details>

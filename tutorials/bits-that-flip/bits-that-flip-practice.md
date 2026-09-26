@@ -123,7 +123,7 @@ A mask of all 1s flips every bit. So `1010` becomes `0101`.
 
 **7. Fix.** Schlomi, who is learning Python too, wrote her own parity
 function, to be sure she understood it. It passes the first test, but not
-the second. Find the one mistake, and fix it.
+the second. Find why, and change it.
 
 ```python exec
 id: bits-practice-fix-parity
@@ -175,8 +175,8 @@ print(parity_draft("1110"))    # 1
 </details>
 
 **8. Fix.** This function is meant to flip every bit of a colour, the way
-`#FF8800` became `#0077FF` on the tutorial page. It gives the wrong colour.
-Find the mistake.
+`#FF8800` became `#0077FF` on the tutorial page. It gives a different colour.
+Find why.
 
 ```python exec
 id: bits-practice-fix-colour
@@ -245,7 +245,7 @@ is enough to notice a mistake, but not enough to find it.
 
 **11. Another way.** In ordinary counting, $1 + 1 = 2$. Show that
 `(a + b) % 2` gives the same answer as `a ^ b` for every pair of bits. In
-which space is $1 + 1 = 0$ a right answer?
+which space is $1 + 1 = 0$ true?
 
 ```python exec
 id: bits-practice-add-mod-2
@@ -262,9 +262,9 @@ for a in [0, 1]:
 
 The last two columns match on all four rows. So XOR is addition, in a space
 where we keep only the remainder after dividing by 2. In that space there
-are only two numbers, 0 and 1, and $1 + 1 = 0$ is correct. It is like a
+are only two numbers, 0 and 1, and $1 + 1 = 0$ is true. It is like a
 clock with only two hours: go forward two, and you are back where you
-started. The answer $1 + 1 = 0$ is wrong in ℕ, and right in the space of
+started. The sum $1 + 1 = 0$ is false in ℕ, and true in the space of
 bits.
 
 </details>
@@ -296,6 +296,8 @@ only the parity bit flipped?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def looks_right(received):
@@ -393,8 +395,8 @@ two keys behave exactly like one key, and a thief who finds that one key
 has undone both.
 
 It was a reasonable idea: doing something twice often does make a lock
-stronger. With XOR, the second lock joins the first. This is one good
-answer; yours might also say what *would* help, such as a longer key.
+stronger. With XOR, the second lock joins the first. This is one way
+through; yours might also say what *would* help, such as a longer key.
 
 </details>
 
@@ -405,7 +407,8 @@ as `a ^ b`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-XOR means "at least one, but not both":
+Here is one way through; yours may differ and work as well. XOR means
+"at least one, but not both":
 
 ```python
 def xor_from_and_or(a, b):

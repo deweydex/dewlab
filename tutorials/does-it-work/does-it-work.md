@@ -27,8 +27,8 @@ newton-seconds. Every program ran, and not one of them showed an error.
 The Mars Climate Orbiter came far too close to the planet, and was
 never heard from again.
 
-Code that runs can still be wrong. So when you write a function, how do
-you know it is right, before it matters?
+Code that runs can still break its promise. So when you write a
+function, how do you know it keeps its promise, before it matters?
 
 On this page we:
 
@@ -97,8 +97,8 @@ It prints about 194.2, with no error. By this converter, water boils at
 then subtracted. The code runs. It does not
 work, because it breaks its promise.
 
-A mistake in code that makes it break its promise is called a *bug*.
-Python cannot find this kind of mistake for us, because Python does not
+A part of the code that makes it break its promise is called a *bug*.
+Python cannot find this kind of problem for us, because Python does not
 know what we meant. So we check. *Testing* is running code on inputs
 where we already know what the promise says it should give, and
 comparing. One input with its expected output is a *test case*.
@@ -120,7 +120,7 @@ Where do the expected answers come from? There are three good places.
    the function.
 2. **A second route.** A function and its inverse should undo each
    other. Going there and back should change nothing.
-3. **The edges of the promise.** Mistakes often hide at the smallest
+3. **The edges of the promise.** Bugs often hide at the smallest
    and largest inputs the promise allows, and at zero and negative
    numbers.
 
@@ -151,7 +151,8 @@ where it broke.
 ## Close enough
 
 The last page found that going there and back with the temperature tools
-gives back `0.9999999999999984` for 1 °C. The functions are right. The
+gives back `0.9999999999999984` for 1 °C. Nothing is broken in the
+functions. The
 float is very close to 1, but not equal to it, so `==` says `False`. The
 last page rounded to 9 places before comparing. That works, but it hides
 the question we are really asking: how far apart are these two numbers?
@@ -212,7 +213,7 @@ want to compare with the tolerance?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good way: the `...` becomes `return abs(a - b) <= tolerance`. If
+One way through: the `...` becomes `return abs(a - b) <= tolerance`. If
 you have not written it yet, put it in now: the rest of this page uses
 it.
 
@@ -239,11 +240,11 @@ print(count, "round trips, all close enough.")
 ```
 
 The message after the comma is `celsius` itself, so a failure would name
-the temperature that went wrong.
+the temperature where the round trip missed.
 
 ## A walkthrough by hand
 
-Tests tell us that something is wrong. They do not always tell us why.
+Tests tell us that a promise is broken. They do not always tell us why.
 Here is a function for a weather app. It finds the warmest temperature
 in a list of readings, and it passes a test with summer readings. Before
 you run it, what should it give for three January nights in Mullingar:
@@ -263,7 +264,8 @@ print(warmest([12, 15, 9]))
 print(warmest([-3, -1, -4]))
 ```
 
-The summer test gives 15, which is right. The January test gives 0, but
+The summer test gives 15, the warmest of the three. The January test
+gives 0, but
 none of the nights was 0 degrees. The warmest was −1.
 
 To find out why, let's be the computer. A *walkthrough*, or *trace*, is
@@ -298,7 +300,7 @@ promises at least one reading, so there always is a first one.
 A walkthrough also has a second meaning, in a team. A *structured
 walkthrough* is a meeting where the person who wrote some code talks a
 small group through it, line by line. The others follow along, ask
-questions, and look for mistakes. Explaining code out loud to another
+questions, and look for bugs. Explaining code out loud to another
 person finds bugs surprisingly often, sometimes before anyone has
 asked a single question.
 
@@ -403,7 +405,7 @@ It gives back −1.
 
 A trace by hand and a debugger show the same thing. The hand trace makes
 you predict each value before you see it, which is where you learn. The
-debugger is faster, and it cannot make a mistake copying a value. Most
+debugger is faster, and it copies every value exactly. Most
 programmers use both.
 
 ### Your turn
@@ -575,14 +577,14 @@ the values, while a hand trace asks you to predict them.
 | What is named here? | names that say what they hold, like `warmest_so_far`; renaming changes nothing for Python and everything for a reader |
 | What is promised? | a docstring states the promise, and a test case checks it; `close_enough` promises "equal, within a tolerance" |
 | What happens when? | a trace table and a debugger show each line in the order it runs, with each name's value at that moment |
-| What does this space let us do? | Python runs any valid code, right or wrong; floats need "close enough", not `==`; a start of 0 belongs to a space with no negative numbers |
+| What does this space let us do? | Python runs any valid code, whether it keeps its promise or not; floats need "close enough", not `==`; a start of 0 belongs to a space with no negative numbers |
 
 ## What we have now
 
 | Term | What it means |
 |---|---|
-| bug | a mistake that makes code break its promise |
-| testing, test case | running code where we know the right answer; one input with its expected output |
+| bug | a part of the code that makes it break its promise |
+| testing, test case | running code on inputs where we already know what it should give; one input with its expected output |
 | three sources of test cases | facts from outside, a second route, the edges of the promise |
 | tolerance, `1e-9` | the largest difference still counted as equal; $1 \times 10^{-9}$ |
 | `close_enough(a, b, tolerance=1e-9)` | your toolkit's test for floats |

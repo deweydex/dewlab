@@ -1,24 +1,43 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Last tutorial of the series (Programming with objects). Checked every
-# earlier glossary in the series as the cumulative list — no overlap.
-# "front end" is new to the whole curriculum (checked term_findings()
-# against every tutorial). "input validation" was added on 2026.09.22,
-# when the tutorial named it and its new practice page practised it.
-# input() itself is reused from storing-and-computing, without a repeat
-# entry.
+# Front-end page of the series (Programming with objects), before the
+# series-end making task since 2026.09.26. Checked every earlier glossary
+# in the series as the cumulative list: no overlap. input() itself is
+# reused from storing-and-computing, without a repeat entry. widget,
+# text_input() and dropdown() are new here: the page builds its second
+# front end from them.
 entries:
   - term: front end
     kind: concept
     definition: >
       A front end is the part of a program that lets somebody use it
-      without reading or writing its code. A text menu, driven by input()
-      and print(), is the simplest kind.
+      without reading or writing its code. A text menu is the simplest
+      kind; a menu on a page is another.
 
   - term: input validation
     kind: concept
     definition: >
       Input validation is checking that what a person typed makes sense,
-      before the program uses it. A menu that refuses "abc" as an amount
-      of money is doing input validation.
+      before the program uses it. A front end that answers "fly" with "Not
+      a command" is doing input validation.
     example: "if not text.isdigit(): return None"
+
+  - term: widget
+    kind: concept
+    definition: >
+      A widget is one of the pieces a page is built from, such as a box to
+      type in or a menu to choose from.
+
+  - term: "text_input()"
+    kind: function
+    definition: >
+      Makes a box to type in, on this site's pages. What is in the box is
+      read with .value.
+    example: "command = text_input(\"What now?\", \"look\")"
+
+  - term: "dropdown()"
+    kind: function
+    definition: >
+      Makes a menu, on this site's pages. The option chosen is read with
+      .value, and the page remembers the choice between runs.
+    example: "command = dropdown(\"What now?\", [\"look\", \"attack\"])"
