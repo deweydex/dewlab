@@ -2244,7 +2244,7 @@ def practice_pairs(
 
     A practice page also declares no coverage. It sets problems on what its
     tutorial taught, and counting it would report the same outcome as taught
-    twice — see `planning/EXERCISES.md`.
+    twice — see `docs/WRITING_TUTORIALS.md`, "Practice pages".
     """
     pairs: dict[str, Tutorial] = {}
     for page in tutorials:
