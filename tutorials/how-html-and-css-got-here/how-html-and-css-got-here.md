@@ -191,3 +191,10 @@ versions followed each other, and why some old tags still work.
 | *module* | One separate part of CSS, released on its own schedule | Flexbox, grid |
 | *deprecated* | Still understood by browsers, but no longer recommended, usually because CSS replaced it | `<center>`, `<font>` |
 | *browser compatibility* | Whether a feature works the same way in every browser a site's visitors use | checking Grid on caniuse.com |
+
+## Where to read more
+
+CrashCourse (2017). *The World Wide Web: Crash Course Computer Science
+#30.* <https://www.youtube.com/watch?v=guvsH5OFizE>. How Tim Berners-Lee's
+web of linked pages began, from the first browser to search engines. About
+eleven minutes.

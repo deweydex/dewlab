@@ -212,3 +212,10 @@ Python Software Foundation. *os.walk().*
 <https://docs.python.org/3/library/os.html#os.walk>. The standard library
 function that walks a real folder tree on disk, the same shape this page
 built by hand with a plain dictionary.
+
+Reducible (2020). *Depth First Search (DFS) Explained: Algorithm,
+Examples, and Code.* <https://www.youtube.com/watch?v=PMMc4VsIacU>.
+Walking a folder tree is one kind of depth-first search: go as deep as you
+can, then return and try the next branch. Reducible shows it on other
+shapes too, with a recursive version and a loop version, as this page
+does. About twenty-one minutes.

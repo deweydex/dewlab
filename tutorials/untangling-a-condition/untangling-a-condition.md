@@ -546,3 +546,11 @@ that limit starts to matter.
 For more on the same ideas, there is a longer page on the programming and
 maths course: [Logic: truth tables, XOR and De Morgan's
 laws](tutorial:logic-and-truth).
+
+## Where to read more
+
+Stand-up Maths (2016). *Leap Years: we can do better.*
+<https://www.youtube.com/watch?v=qkt_wmRKYNQ>. The rule for a leap year is
+a condition with a "not" inside it: divides by 4, but not by 100, unless
+by 400. Matt Parker explains where it comes from. Can you write it as one
+line of Python? Twelve minutes.

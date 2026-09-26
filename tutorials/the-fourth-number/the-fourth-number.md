@@ -401,3 +401,9 @@ Chapter 4: Matrix Multiplication as Composition.*
 <https://www.youtube.com/watch?v=XkY2DOUCWMU>. Why a chain of matrices
 is one matrix, which is the whole reason a graphics card wants moving
 to be a multiplication.
+
+Josh's Channel (2022). *In Video Games, The Player Never Moves.*
+<https://www.youtube.com/watch?v=wiYTxjJjfxs>. Why a game moves the whole
+world instead of the camera, and why moving things needs the extra number
+this page adds. The video ends with homogeneous coordinates. About
+nineteen minutes.

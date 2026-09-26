@@ -217,3 +217,12 @@ and draw it as lines on a canvas.
 | *dot product* | Multiply two lists of numbers item by item, and add up the results | `a * x + b * y + c * z` in `turn` |
 | `moveTo()` and `lineTo()` | Put the pen down at a point, then describe a line from there to another point | `pen.moveTo(10, 10); pen.lineTo(50, 50);` |
 | `stroke()` | Draws the line just described | `pen.stroke();` |
+
+## Where to read more
+
+Branch Education (2023). *How do Video Game Graphics Work?*
+<https://www.youtube.com/watch?v=C8YtdC8mxTU>. A game draws its world the
+way this page draws a cube: first the corners, then the shapes between
+them, turned and then flattened onto the screen. This animated video
+follows millions of those shapes through a graphics card. About twenty
+minutes.

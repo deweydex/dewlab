@@ -600,3 +600,10 @@ builds it.
 
 For another route through these equations, the integrated course has
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
+
+## Where to read more
+
+Welch Labs (2015). *Imaginary Numbers Are Real [Part 3: Cardan's
+Problem].* <https://www.youtube.com/watch?v=N9QOLrfcKNc>. The quadratic
+formula has an older cousin for cubic equations. This short video tells
+how people found it, and the strange square roots it needed. Five minutes.

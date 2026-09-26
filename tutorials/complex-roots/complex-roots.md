@@ -360,3 +360,8 @@ Stephen Welch (Welch Labs) (2015). *Imaginary Numbers Are Real
 [Part 1: Introduction].* <https://www.youtube.com/watch?v=T647CGsuOVU>.
 The same story this page tells — number systems extended one refusal at a
 time — as a ten-part series, starting here.
+
+Veritasium (2021). *How Imaginary Numbers Were Invented.*
+<https://www.youtube.com/watch?v=cUzklzVXJwo>. The first people to need
+square roots of negative numbers were solving cubic equations, not
+quadratics. Veritasium tells that story. About twenty-three minutes.

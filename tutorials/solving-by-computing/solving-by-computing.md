@@ -612,3 +612,11 @@ The practice page is next. Then
 [Putting the derivative to work](tutorial:putting-the-derivative-to-work)
 lets you choose a project that uses everything in this unit, before the
 mixed problems.
+
+## Where to read more
+
+3Blue1Brown (2021). *Newton's fractal (which Newton knew nothing about).*
+<https://www.youtube.com/watch?v=-RdOwhmqP5s>. What happens when Newton's
+method starts from every point on a plane? Grant Sanderson colours each
+start by the root it reaches, and finds a fractal. About twenty-six
+minutes, and the second half is harder.

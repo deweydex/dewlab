@@ -254,3 +254,10 @@ invent a new move, even one that would make the sentence sound more
 natural.
 
 </details>
+
+## Where to read more
+
+Spanning Tree (2020). *How Google's PageRank Algorithm Works.*
+<https://www.youtube.com/watch?v=meonLcN7LD4>. The random surfer from the
+ranking problems, and the damping factor that stops it being trapped on
+one page. About five minutes.

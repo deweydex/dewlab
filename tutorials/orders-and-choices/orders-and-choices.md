@@ -599,3 +599,10 @@ the rest of the page keeps it.
 
 For another route through the same counts, the integrated course has
 [Counting: factorials, permutations and combinations](tutorial:counting-carefully).
+
+## Where to read more
+
+Stand-up Maths (2015). *Matt Explains: The Lottery.*
+<https://www.youtube.com/watch?v=lP58mP8Wchc>. How many different tickets
+can a lottery sell? Matt Parker uses the count from this page, where order
+does not matter, to find the chance of winning. About seventeen minutes.

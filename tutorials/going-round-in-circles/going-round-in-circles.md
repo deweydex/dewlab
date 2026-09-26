@@ -623,3 +623,9 @@ angle, and the triangle ratios come out of it too.
 The dewlab page
 [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle)
 walks round the same circle more slowly, with more about the tangent.
+
+Veritasium (2023). *The SAT Question Everyone Got Wrong.*
+<https://www.youtube.com/watch?v=FUHkTs-Ipfg>. One coin rolls around
+another coin three times its size. How many times does it turn? The people
+who wrote a famous test got it wrong. Veritasium explains the answer,
+which is about radius and turning, like this page. About eighteen minutes.

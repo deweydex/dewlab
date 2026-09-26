@@ -584,3 +584,11 @@ polynomials kept as lists.
 The practice page is next. On the next page,
 [Drawing a rule](tutorial:drawing-a-rule), we draw $(x - 2)(x + 2)$ as a
 picture.
+
+## Where to read more
+
+Ben Syversen (2026). *Why Did It Take 1,877 Years to Invent x²?*
+<https://www.youtube.com/watch?v=uIQzkLTI2MU>. People wrote rules with
+letters in them long before they had a short way to write powers. Ben
+Syversen tells how the notation we use today came to be. About
+twenty-seven minutes.

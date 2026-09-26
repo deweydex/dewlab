@@ -4956,7 +4956,19 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.246 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
+**7.246 — 99 videos from the video library added to "Where to read more" on 89 tutorials and 10 practice pages.** Josh asked for a video or two at the bottom of the pages, and then narrowed it: only videos from the channels on the list behind `planning/video-library/` (7.243).
+
+**One video per page, two where each does a different job.** Most pages got one: the video that sits closest to what the page teaches, at a length a reader might watch the same evening. A second goes in only when it adds something the first does not, such as the 100 prisoners puzzle and its solution, or a short lesson next to a long story. Pages that already had a read-more section keep everything in it; the video goes at the end, before any line that points to the practice page. Pages without one get a `## Where to read more` heading, in the style guide's sentence case.
+
+**Practice pages get a problem, not a repeat.** A practice page gets a video only when it poses something more to try, such as a puzzle, a coupon-collector run to simulate, or a sine pattern to check, and the entry asks the reader to try before watching. The other practice pages are unchanged, as are all the web, SQL and OOP pages the channel list has nothing for.
+
+**Checked before writing, not watched.** Each video's title, date, description and chapter list were read, and captions where they could be fetched. That caught three picks that were wrong for their page (a "perspective" video about physics, a card puzzle that was not the Wason task, and a "gibberish generator" about fake handwriting). One strong fit, a Tantacrul interface critique for `critique-and-reflection`, was left out because its language could not be checked. Each entry is cited in the form the pages already use, and gives the video's length so a reader knows what they are starting.
+
+*Cost to change: low. Each entry is one paragraph at the end of a page, with no cell or id involved, so it can be removed or replaced by hand. A dead link is the likely failure over time, since the build does not check outside links.*
+
+---
+
+**7.247 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously".
 
 **The bold terms had never reached this course.** 7.207 brought bold-italic key terms to six graphics pages and left the rest for later; the glossary file for `a-table-is-a-list-of-rows` already noted that the whole series had no marked terms at all. The three pages now mark theirs as 7.207 did (`***term***`), so the Reference panel links back to where each is introduced. Page one gains the terms it used without defining: *database*, *query* (which every later page in the course leans on), *cell*, *record*, *attribute*, *header*, *comment*, *data type* and *primary key*. Page two gains *condition* and the six comparison operators. *Cell* is the table's own word here, which is why these pages call the code editor a *box* throughout.
 

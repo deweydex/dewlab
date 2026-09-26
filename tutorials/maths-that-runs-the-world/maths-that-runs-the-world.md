@@ -237,3 +237,9 @@ Hamming, R. W. (1950). Error detecting and error correcting codes.
 *Bell System Technical Journal*, 29(2). The paper that started the
 subject. Its opening pages explain the idea in words, before the maths
 begins.
+
+PurpleMind (2025). *This Coding Mistake Cost $370 Million.*
+<https://www.youtube.com/watch?v=Qehl4h5MDsg>. In 1996, a new rocket
+exploded less than a minute after launch, because a number grew too big
+for the space the program kept for it. This video tells the story. Twenty
+minutes.

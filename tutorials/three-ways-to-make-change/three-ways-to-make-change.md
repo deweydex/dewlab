@@ -305,3 +305,9 @@ greedy choice is provably safe.
 Computerphile (2017). *Dynamic Programming.*
 <https://www.youtube.com/watch?v=nJ2CjRmr9uw>. The same "remember what you
 already worked out" idea, applied to a different problem.
+
+Spanning Tree (2020). *How to Count Dice Rolls: An Introduction to Dynamic
+Programming.* <https://www.youtube.com/watch?v=oifN-YVlrq8>. Counting the
+ways dice can add to a total, first by trying everything, then by
+remembering answers in a table: the same two steps this page takes with
+coins. About nine minutes.

@@ -203,3 +203,10 @@ The next tutorial, [Writing style: comparing two writers with Markov
 chains](tutorial:whose-voice-is-this), asks how far that can go. Does a
 chain trained on one writer sound different from a chain trained on
 another?
+
+## Where to read more
+
+3Blue1Brown (2024). *Large Language Models explained briefly.*
+<https://www.youtube.com/watch?v=LPZh9BOjkQs>. A chatbot also chooses each
+next word from the words before it, but it looks back much further than
+two or three words. Grant Sanderson shows how, in eight minutes.

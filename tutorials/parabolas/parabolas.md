@@ -432,3 +432,8 @@ be given, and for which question? Write a few sentences.
 Khan Academy. *Example 3: Completing the Square.*
 <https://www.youtube.com/watch?v=TV5kDqiJ1Os>. The same halve-square-
 subtract steps this page walks through, worked on a different quadratic.
+
+Stand-up Maths (2016). *There is only One True Parabola.*
+<https://www.youtube.com/watch?v=hoh4TmPzu1w>. Every parabola is the same
+curve, made bigger or smaller and moved. Matt Parker shows why. Completing
+the square finds how much it was moved. About nine minutes.

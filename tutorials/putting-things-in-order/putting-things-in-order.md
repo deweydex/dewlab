@@ -517,3 +517,8 @@ comparison section.
 Python Software Foundation. *Sorting Techniques*.
 <https://docs.python.org/3/howto/sorting.html>. How `sorted()` and `key=`
 work, including why Python's sort is stable, and when that matters.
+
+Polylog (2022). *The Simplest Sorting Algorithm (You've Never Heard Of).*
+<https://www.youtube.com/watch?v=_W0yUJlscRA>. Two loops and one swap. It
+looks wrong, but it sorts. Polylog shows why it works. Four minutes.
+Compare it with the three sorts on this page: which one is it closest to?

@@ -180,3 +180,10 @@ content.
 | *viewport meta tag* | A line in the `<head>` that tells a phone to lay the page out at its own width | `<meta name="viewport" content="width=device-width, initial-scale=1">` |
 | *desktop-first* | Ordinary rules for a wide screen, then `max-width` media queries for narrower ones | your starter's `styles.css` |
 | *mobile-first* | Ordinary rules for a phone, then `min-width` media queries that add to them for wider screens | `@media (min-width: 400px) { ... }` |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Aspect Ratio.*
+<https://www.youtube.com/watch?v=g5ZgUIobSj0>. Captain Disillusion
+explains aspect ratio, the shape of a screen or a picture, and what
+happens when the two do not match. Three minutes.
