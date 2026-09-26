@@ -83,10 +83,15 @@ contents:
   - slope-and-lines
   - distance-and-pythagoras
   - the-unit-circle
+  - degrees-and-radians
   - sine-and-cosine-waves
+  - why-we-have-seasons
   - solving-triangles
   - approaching-a-limit
   - rates-of-change
+  - derivative-rules
+  - the-slope-of-a-wave
+  - a-model-of-your-own
 - title: Review Problems
   tutorials:
   - bringing-it-all-together
@@ -100,3 +105,4 @@ mixed:
 - mixed-data
 - mixed-programming
 - mixed-trigonometry
+- mixed-calculus

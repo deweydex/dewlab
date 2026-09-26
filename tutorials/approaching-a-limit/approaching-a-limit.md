@@ -13,8 +13,6 @@ covers:
     covers: [MIT-3.5]
   limits-in-your-world:
     covers: [MIT-3.5]
-  how-small-should-the-gap-be:
-    covers: [MIT-3.5]
 worlds:
   sea-and-sky: A harbour lock, draining. The numbers are made up.
   planets-and-moons: A ball dropped on the Moon, where things fall more slowly.
@@ -533,10 +531,11 @@ stops.
 
 A big gap gives a chord that is not the tangent. A tiny gap runs out of
 digits. So there must be a best gap somewhere between. The next cell
-measures the *error*, how far each answer is from 29.4, for every gap
-from 1 down to $10^{-16}$, and draws them. Both axes are drawn with a
-*log scale*, where each step of the grid is ten times the one before,
-so that tiny numbers and big ones fit on one picture.
+measures the error, how far each answer is from 29.4, for every gap
+from 1 down to $10^{-16}$, and draws them. Both axes use a log scale, as
+in [Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers):
+each step of the grid is ten times the one before, so that tiny numbers
+and big ones fit on one picture.
 
 ```python exec
 id: how-small-should-the-gap-be-1

@@ -26,6 +26,8 @@ A lighthouse stands at $(1, 2)$ on a ship's chart, and a boat is at
 $(5, 5)$. Each square of the chart is one kilometre. How far apart are
 they?
 
+## How far apart
+
 The easy part first. The gap across and the gap up are each one
 subtraction.
 

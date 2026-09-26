@@ -3,8 +3,6 @@ title: "Straight lines: slope, and the line that breaks the formula"
 year: "2026-2027"
 version: 2026.09.26.1
 covers:
-  a-line-you-have-already-written:
-    covers: [MIT-4.1]
   slope-as-how-fast-something-changes:
     covers: [MIT-4.2]
   slope-in-your-world:

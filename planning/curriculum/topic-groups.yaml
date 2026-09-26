@@ -85,6 +85,7 @@ groups:
       - solving-triangles
       - sine-and-cosine-waves
       - mixed-trigonometry
+      - a-model-of-your-own
 
   - key: rates-of-change
     name: Rates of change and limits
@@ -95,6 +96,9 @@ groups:
     tutorials:
       - rates-of-change
       - approaching-a-limit
+      - derivative-rules
+      - the-slope-of-a-wave
+      - mixed-calculus
 
   - key: counting-and-chance
     name: Counting, probability, and chance

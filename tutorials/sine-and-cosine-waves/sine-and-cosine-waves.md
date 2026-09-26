@@ -4,8 +4,6 @@ year: "2026-2027"
 version: 2026.09.26.1
 datasets: [daylight, dublin-tides]
 covers:
-  unrolling-the-circle:
-    covers: [MIT-3.3]
   why-it-repeats:
     covers: [MIT-3.3]
   the-four-numbers:

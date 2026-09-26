@@ -7,7 +7,7 @@ practice_across:
   - sine-and-cosine-waves
   - solving-triangles
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: trigonometry and geometry
@@ -508,3 +508,105 @@ The three angles must add up to 180°, so you get an extra test with no
 extra work. Use an `assert` for it, instead of checking by eye.
 
 </details>
+
+## Joining the pieces
+
+**19.** A ship leaves the harbour and sails 5 km on a bearing of 030°.
+Then it turns and sails 5 km on a bearing of 150°. Where is it on the
+chart, with north up and the harbour at $(0, 0)$? How far is it from
+the harbour?
+
+<details class="dl-hint"><summary>hint</summary>
+
+A bearing of $b$ points in the direction $(\sin b, \cos b)$, because
+bearings go clockwise from north. Add the two legs.
+
+</details>
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+The first leg is $(5\sin 30^\circ, 5\cos 30^\circ) \approx (2.5, 4.33)$.
+The second is $(5\sin 150^\circ, 5\cos 150^\circ) \approx (2.5, -4.33)$.
+Together they reach $(5, 0)$, 5 km due east of the harbour. The turn
+was 120°, so the angle inside the triangle is 60°. Two sides of 5 with
+60° between them make an equilateral triangle, so the third side is 5
+too.
+
+</details>
+
+**20.** The line from the origin to the point at 40° on the unit circle
+has slope $\tan 40^\circ$. The line that touches the circle at that
+point is at right angles to it. What is its equation, $y = mx + c$?
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+Its slope is $-\frac{1}{\tan 40^\circ} \approx -1.192$. It passes
+through $(\cos 40^\circ, \sin 40^\circ) \approx (0.766, 0.643)$, so
+$c = 0.643 + 1.192 \times 0.766 \approx 1.556$. That is
+$\frac{1}{\sin 40^\circ}$: the line crosses the vertical axis at 1
+divided by the sine of the angle.
+
+</details>
+
+**21.** The exact value of $\sin 30^\circ$ is $\frac{1}{2}$.
+
+```python exec
+id: joining-the-pieces-1
+print(math.sin(math.radians(30)) == 0.5)
+```
+
+```predict
+type: choice
+
+What will the cell print?
+
+- True
+  - The sine of 30° is exactly a half.
+- False
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints `False`. `math.radians(30)` is a float a tiny bit away from
+$\frac{\pi}{6}$, so its sine is `0.49999999999999994`. The exact
+value is a half. The float is not. Compare floats with a small
+tolerance, such as `abs(a - b) < 1e-9`.
+
+</details>
+
+**22.** Dublin's daylight fitted a wave with an amplitude of 4.55 hours,
+a period of 365 days, a shift of day 79.75 and a lift of 12.26. On which
+two days does the wave say the daylight is exactly 12 hours?
+
+<details class="dl-hint"><summary>hint</summary>
+
+Set the wave equal to 12 and get the sine on its own. `math.asin` gives
+one angle. Which other angle has the same sine?
+
+</details>
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+$4.55\sin(\ldots) + 12.26 = 12$ gives $\sin(\ldots) = -\frac{0.26}{4.55}
+\approx -0.0571$. `math.asin` gives about $-0.0572$ radians, and the
+other angle with the same sine is $\pi + 0.0572$. Turning each back
+into a day: about day 76, around 18 March, and about day 266, around
+23 September. The day with 12 hours of daylight comes a few days before
+the spring equinox, and just after the autumn one, because the midline
+is a little above 12.
+
+</details>
+
+**23.** A clock's hour hand is 3 cm long and its minute hand is 4.5 cm.
+How far apart are the tips of the two hands at 2:20?
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+At 2:20 the minute hand is at $20 \times 6 = 120^\circ$ clockwise from
+12. The hour hand is at $2 \times 30 + 20 \times 0.5 = 70^\circ$. The
+angle between them is 50°. By the cosine rule, the tips are
+$\sqrt{3^2 + 4.5^2 - 2 \times 3 \times 4.5 \cos 50^\circ} \approx 3.45$
+cm apart.
+
+</details>
+
