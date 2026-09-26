@@ -3660,6 +3660,98 @@ p code, li code {
 .dl-why[open] { border-left-color: var(--dl-orange); }
 .dl-why > :not(summary) { font-size: 0.95rem; }
 
+/* A solution (#312): one way to do a cell's task, closed until the
+   reader asks for it. Quiet like an answer fold. */
+.dl-solution {
+  max-width: var(--dl-line-width);
+  margin: 0.5rem 0 1.2rem;
+  border-left: 2px solid var(--dl-cell-border);
+  padding-left: 0.8rem;
+}
+.dl-solution > summary {
+  cursor: pointer;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  list-style: none;
+}
+.dl-solution > summary::-webkit-details-marker { display: none; }
+.dl-solution > summary::before { content: "▸ "; }
+.dl-solution[open] > summary::before { content: "▾ "; }
+.dl-solution > summary:hover { color: var(--dl-fg); }
+.dl-solution[open] { border-left-color: var(--dl-navy); }
+.dl-solution > :not(summary) { font-size: 0.95rem; }
+
+/* The comparison table (#312). No colour means right or wrong here: a row
+   where the two sides differ gets the cell background and the word
+   "different", nothing red and nothing green. */
+.dl-compare {
+  margin: 0.5rem 0 1.4rem;
+  overflow-x: auto;
+}
+.dl-compare-table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 60%;
+}
+.dl-compare-table caption {
+  text-align: left;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  padding-bottom: 0.3rem;
+}
+.dl-compare-table th,
+.dl-compare-table td {
+  border-bottom: 1px solid var(--dl-rule);
+  padding: 0.3rem 0.8rem 0.3rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+.dl-compare-table th { font-weight: 600; color: var(--dl-heading); }
+.dl-compare-table td.dl-compare-yours,
+.dl-compare-table td.dl-compare-theirs {
+  font-family: var(--dl-mono);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+.dl-compare-label {
+  display: block;
+  color: var(--dl-muted);
+  font-size: 0.75rem;
+}
+.dl-compare-guess input {
+  font: inherit;
+  font-family: var(--dl-mono);
+  width: 9rem;
+  max-width: 100%;
+}
+.dl-compare-error { color: var(--dl-muted); font-style: italic; }
+.dl-compare-table tr.dl-compare-differ td { background: var(--dl-cell-bg); }
+.dl-compare-diff {
+  display: block;
+  color: var(--dl-muted);
+  font-family: var(--dl-mono);
+  font-size: 0.7rem;
+  font-style: normal;
+}
+.dl-compare-section th {
+  font-family: var(--dl-mono);
+  font-size: 0.72rem;
+  font-weight: normal;
+  color: var(--dl-muted);
+  padding-top: 0.8rem;
+}
+.dl-compare-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+.dl-compare-status { color: var(--dl-muted); font-size: 0.8rem; }
+
 .dl-hint-staged[hidden] { display: none; }
 .dl-hint-arrived { animation: dl-hint-arrive 0.5s ease-out; }
 @keyframes dl-hint-arrive {
