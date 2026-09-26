@@ -164,6 +164,14 @@ class TestMultipleChoice:
 
 
 class TestFillInTheBlank:
+    def test_a_dropdown_starts_on_a_blank_choice_not_the_pages_word(self, page):
+        # The shuffle used to leave the page's word selected wherever it
+        # landed, so every dropdown showed its own answer (DECISIONS_LOG 7.255).
+        shown = page.eval_on_selector(
+            f"{FIB} .dl-question-gap-select",
+            "el => [el.value, el.selectedOptions[0].textContent, el.selectedOptions[0].disabled]")
+        assert shown == ["", "choose", True]
+
     def test_asking_shows_the_pages_word_after_each_gap_and_marks_nothing(self, page):
         assert page.inner_text(f"{FIB} .dl-question-check") == "Show the page’s words"
         page.select_option(f"{FIB} .dl-question-gap-select", label="straight angle")

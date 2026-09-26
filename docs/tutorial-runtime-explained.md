@@ -581,7 +581,10 @@ steps the way the base feature was:
 - **"What happens when a reader answers a question?"** — `buildQuestions()`
   shuffles a multiple-choice question's options (each carries its own
   `data-answer`, so nothing records where the page's answer moved to) and
-  enables the button once one is picked. `showPageAnswer()` calls
+  enables the button once one is picked. A dropdown gap's choices are
+  shuffled the same way, all but the blank "choose" that `build.py` puts
+  first, which stays selected until the reader picks (7.255).
+  `showPageAnswer()` calls
   `revealAnswer()`, which labels the page's option, shows only the note
   for the reader's choice, and shows "You chose the same as the page."
   when they match; a fill-in-the-blank question gets the page's word
