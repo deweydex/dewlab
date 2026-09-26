@@ -163,8 +163,8 @@ means anything?
 <details class="dl-answer"><summary>answer</summary>
 
 The function takes the middle position of the list as it was given,
-which is 78 seconds, the slowest download. Schlomi's idea had the right
-picture, the middle one of a line, and one step missing: the line must
+which is 78 seconds, the slowest download. Schlomi's idea had a
+picture that works, the middle one of a line, and one step missing: the line must
 be *in order*, so the values must be sorted first:
 
 ```python
@@ -176,7 +176,7 @@ def middle_time(values):
 print(middle_time(download_seconds))    # 29
 ```
 
-A mistake like this is hard to spot, because the code runs, and gives a
+A bug like this is hard to spot, because the code runs, and gives a
 real time from the list. A test with a list that is not already in
 order catches it. Your toolkit's `median` does the same job, and works
 for an even count too.
@@ -187,7 +187,7 @@ for an even count too.
 report how much mobile data his phone used each day for five days, in
 megabytes (MB). He calls the number `mean`, because that is what it
 is. The function stops with an error. Read the last line of the error,
-then find the mistake.
+then find the line that does not do what Schlomo meant.
 
 ```python exec
 id: typical-practice-fix-name
@@ -220,7 +220,7 @@ the function. That makes `mean` a local name for the whole function.
 So when the right-hand side calls `mean(...)`, Python looks in the
 call's own space, finds a local `mean` with no value yet, and stops
 with an `UnboundLocalError`. Schlomo's name said exactly what the number
-was, which is a good habit; here it collides with a tool. Give the
+was; here it collides with a tool. Give the
 number its own name:
 
 ```python
@@ -279,8 +279,8 @@ With a formula: the deviations add up to
 $\sum x_i - n\bar{x}$, and $n\bar{x}$ is the total, so the answer is
 the total minus the total, which is 0.
 
-That is one good way to say it. Yours may use a picture, such as a
-see-saw that balances at the mean, and be as good.
+That is one way through. Yours may use a picture, such as a see-saw
+that balances at the mean, and say the same thing.
 
 </details>
 
@@ -303,6 +303,8 @@ middle index?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def median_by_trimming(values):
@@ -336,6 +338,8 @@ routes = ["46A", "15", "46A", "39A", "15", "46A",
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 routes = ["46A", "15", "46A", "39A", "15", "46A",
           "145", "46A", "15", "39A", "46A", "145"]
@@ -356,7 +360,8 @@ friend, which way would you choose, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one good answer. A good answer weighs a few things:
+There is more than one answer worth giving. One way through weighs a
+few things:
 
 - **Time and exams.** The formula first is quicker, and an exam or a
   calculator often wants only the number.
@@ -366,8 +371,8 @@ There is more than one good answer. A good answer weighs a few things:
 - **Who the friend is.** Someone who has met the formula before might
   only need the steps named. Someone who is nervous of formulas might
   need the question first.
-- **What goes wrong.** With the formula first, a common mistake is to
-  forget the square root, or square the wrong thing. With the steps
+- **What slips.** With the formula first, people often forget the
+  square root, or square something else. With the steps
   first, a common problem is a lesson that runs long.
 
 Whichever you choose, say what it costs. That is the question the

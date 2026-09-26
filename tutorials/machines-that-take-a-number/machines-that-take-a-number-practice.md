@@ -8,8 +8,9 @@ version: 2026.09.25.2
 # Machines that take a number: functions in maths and code — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -71,8 +72,8 @@ print(storm_km(3))
 ```
 
 This prints `1.029`. That is where the old rule "three seconds for
-every kilometre" comes from. Your function may have other names and
-still be a good one.
+every kilometre" comes from. This is one way through. Your function may
+have other names and do the same job.
 
 </details>
 
@@ -152,6 +153,8 @@ with a clear error. Try it with 230 days, then with 400.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def rain_percent(rainy_days):
@@ -239,7 +242,8 @@ answer mean nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomo had the right two steps, undone in the wrong order.
+Schlomo had the two steps that undo `charge_after`, but in the same
+order as `charge_after` does them.
 `charge_after` multiplies by 1.5 and then adds 20, so the inverse must
 take away 20 first, and then divide by 1.5:
 
@@ -285,6 +289,8 @@ algorithm counts them with a loop and `%`. Another says the answer is
 the two algorithms are the same function for every $n$ from 0 to 200.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def evens_by_loop(n):
@@ -350,7 +356,8 @@ def scaled_width(width):
 ```
 
 Now the cell prints `The row is 2080.0 pixels wide`. The two numbers the
-old version printed, 800.0 and 1280.0, were right. Only the handing back
+old version printed, 800.0 and 1280.0, were already the widths we
+wanted. Only the handing back
 was missing.
 
 </details>
@@ -398,6 +405,8 @@ id: machines-practice-colour
 ```
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def to_byte(level):
@@ -447,6 +456,8 @@ to 10 computers. Those are the range, and the domain of
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def computers_for(cables):
     """Return how many computers a network has, if every pair has a cable.
@@ -478,12 +489,13 @@ an inverse at all. It is also why real networks rarely wire every pair:
 **14. Another way.** A clock shows the hours 0 to 11. The function
 `later(hour)` gives the time 4 hours on: `(hour + 4) % 12`. Schlomi,
 who is learning Python too, says its inverse is "take away 4", and
-tries it on 2 o'clock: $2 - 4$ is $-2$. Is she wrong? Find the space where "take away 4" is right,
-and check the inverse with `compose` for every hour.
+tries it on 2 o'clock: $2 - 4$ is $-2$. Where does her idea work, and where does it stop
+working? Find the space where "take away 4" undoes `later`, and check the inverse with `compose` for every hour.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomi has the right move. She tried it in the wrong space. On a clock, the
+Schlomi's move is the one that undoes `later`. She tried it on the
+number line, not on the clock. On a clock, the
 numbers go round, so "take away 4" also has to go round. Python's `%`
 does that for us, even with a negative number:
 

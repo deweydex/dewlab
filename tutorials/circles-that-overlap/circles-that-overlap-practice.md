@@ -8,8 +8,9 @@ version: 2026.09.25.1
 # Circles that overlap: Venn diagrams — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -223,7 +224,7 @@ for three sets. What does it say about a laptop in all three circles?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomi was right that the middle must go. But each pair's total
+Schlomi's idea works this far: the middle must go. But each pair's total
 includes the middle. There are three pairs, so the middle is counted
 three times, and it must be taken away three times:
 
@@ -325,27 +326,28 @@ with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one good answer. A good answer weighs a few things.
+There is more than one answer worth giving. One way through weighs a
+few things.
 
 - **What your friend needs them for.** An exam question usually gives
   totals, so starting there practises the thing that will be asked. A
   person reading survey results also meets totals, not names.
 - **What makes a region make sense.** With names, a region is a set of
   real laptops, and every number in it can be checked by counting. With
-  totals alone, a region is a number worked out by rules, and a mistake
+  totals alone, a region is a number worked out by rules, and a miscount
   is harder to see.
 - **Your friend.** Someone who likes puzzles may enjoy the totals first.
   Someone who has been lost by rules before may want something to point
   at first.
 
-A strong answer says which friend you are thinking of, and what would
+One answer says which friend you are thinking of, and what would
 tell you that your choice was not working for them.
 
 </details>
 
 **10. Explain.** A newspaper reports a survey of 100 people: "60 read
 the news online, 50 read a paper, and 5 do both." Without any code, how
-can you tell that at least one of these numbers is wrong? What is the
+can you tell that these three numbers cannot all be true? What is the
 smallest number that "both" could be?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -353,7 +355,7 @@ smallest number that "both" could be?
 By inclusion–exclusion, the people who read at least one are
 $60 + 50 - 5 = 105$. That is more than the 100 people who were asked,
 and a region inside the box cannot hold more people than the box. So
-something is wrong.
+the three numbers cannot all be true.
 
 The union can be at most 100, so $110 - \text{both} \le 100$, which
 means "both" is at least 10. With exactly 10, everyone reads the news
@@ -418,6 +420,8 @@ two". What changes, and what stays the same?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def exactly(groups, everyone, k):

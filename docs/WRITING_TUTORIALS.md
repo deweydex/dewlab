@@ -1374,8 +1374,8 @@ Beyond ordinary Python, a cell can use:
 | `show_table(frame, max_rows=20, caption=None)` | Render a DataFrame as a table. Long frames are truncated, and say so. |
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
-| `button(label, on_click)` | A button that calls your function, appending output below itself. |
-| `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. |
+| `button(label, on_click)` | A button that calls your function, appending output below itself. Only in a downloaded copy of a page: see below. |
+| `image_input(label="Choose an image", id=None)` | A picker limited to image files. `.value` is a Pillow `Image`, or the raw bytes where Pillow is not loaded. Only in a downloaded copy of a page: see below. |
 | `await load_csv(name)` | Load a CSV into a DataFrame: a dataset from `data/` (live where it can be, see [Datasets](#datasets)), or a full URL. |
 | `await load_text(name)` | Fetch a plain-text file — from `data/`, or a full URL — and return its contents as a string. |
 | `run_query(conn_or_path, sql, params=None, max_rows=20, caption=None)` | Run a SQL query and render the result as a table. Takes an open `sqlite3` connection or a path to pass to `sqlite3.connect()`. |
@@ -1383,6 +1383,14 @@ Beyond ordinary Python, a cell can use:
 These are already in the page's namespace before the first cell runs. Do not
 write `from tutorial_tools import check`: it works, and it teaches an import
 that is not part of how the page works.
+
+`button()` and `image_input()` need Python on the page's own thread. On the
+site, a page runs Python in a background Worker (`DECISIONS_LOG.md` 7.77), so
+both raise a `RuntimeError` that says so; only a downloaded copy, which runs
+Python on the page's thread, can use them. `text_input()` and `dropdown()`
+work everywhere: their values reach the Worker as messages. A page that wants
+a reader to act and see the result uses a box or a menu, and the cell's own
+Run button in place of a Go button, as `a-front-end-for-a-class` does.
 
 Widgets keep their values when a cell is re-run, so a student can type an answer,
 press Run, and still see what they typed.

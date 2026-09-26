@@ -4923,3 +4923,33 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Nebula by channel and by title.** Twenty channels appear in Nebula's public channel list; for six of them, videos were matched to YouTube titles one to one, which gave 90 Nebula links among the picks.
 
 *Cost to change: low. Plain data with no reader in `build.py` or the tests; a row can be added or removed by hand. If a page ever embeds or lists videos, it should read `picks.csv` rather than copy from it.*
+
+---
+
+**7.244 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
+
+- **`data/exoplanets.csv`** stays. The NASA Exoplanet Archive states no licence and asks for an acknowledgment, which `data/exoplanets.yaml` carries; the site uses the data for teaching.
+- **Length.** The 1,800–2,600-word range the unit rewrites were briefed to is dropped. A page is as long as it needs to be to read well. Several Dewey Track tutorials run to 3,000–3,600 words and stay that way.
+- **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
+
+*Cost to change: none for the data and length; the sweep is page prose.*
+
+---
+
+**7.245 — The second half of the OOP course keeps growing the reader's class, to a world someone else can play.** The OOP rebuild, part 2 (#323), part of #306.
+
+**One project from the first page to the last.** The milestones of 7.242 go on, one version a page, each in `setup/oop/<world>-<n>.py`: a child class with one sentence that says why (`Healer`, `Bathyscaphe`, `Lander`); a container that holds the reader's objects (`Room`, `Expedition`, `Mission`); five tests, and the open door from 7.242 closed; docstrings, with examples doctest can run; a `run_choice` front end. A new page at the end, `your-world-playable`, runs each world's eighth version with its five tests passing and a menu to play from, then asks the reader to add one rule the way the series did: test first, then the rule, the docstring, the command. Where a page's task changes a class, its starter includes the version before and its solution the version after; where it adds a new class, a cell of its own holds the classes so far, so the task cell shows only what is new.
+
+**A new design page, `from-a-description-to-classes`, before inheritance.** A paragraph about the expedition becomes CRC cards, then a skeleton that runs. Three designs are shown and weighed, not ranked; the reader does the same with a paragraph about their own world. The cave paragraph gives heroes and monsters that share most of what they know, which is the next page's question.
+
+**Inheritance shows the class-attribute trap.** Part 1's classes read their limits as `Character.max_health`, `Submarine.hull_limit` and `Probe.tank_size`. A child with its own limit is then ignored: a troll with a limit of 20 heals *down* to 10. The page predicts it, then reads the limit through `self`, and every world's fourth version makes the same change. The contrast the issue asked to keep is a troll that goes through `super()`, because the parent's rules still hold, and a phoenix that cannot, because the parent's rule is the one it breaks.
+
+**Composition adds four cases that are not clear-cut:** a dictionary or a class; a child class or a flag (Pluto, which changed kind in 2006, against a new kind being named); `Square(Rectangle)`, where doubling the width quadruples the area; and an astronaut who is two things at once. None is given a single answer.
+
+**Testing is a hunt.** Five versions of the submarine, four with one bug each, and a `check` the reader grows until one is left standing; three of the bugs sit at a boundary. Then a ten-line runner over `globals()`, the same idea as pytest; a test written before the fix, for the open door; and a test that is wrong, because `0.1` is stored nearly. The old `expect: callable(...)`, which only checked that a function existed, is gone. The reader's own tests go in a `tests:` cell, so the comparison runs them against their class and against the next version.
+
+**The second front end is a menu, not a button.** The issue asked for one built from `text_input` and `button`. `button()` raises on a tutorial page: the page runs Python in a Worker (7.77), and a click has no way to call Python there. `text_input()` and `dropdown()` do work, since their values reach the Worker as messages, so the second front end is a `dropdown` of commands, and the cell's own Run is the Go button. The page says so, and turns the limit into a design point: a menu makes a mistyped command impossible. `docs/WRITING_TUTORIALS.md` listed `button()` among what any cell can call; it now says which widgets need a downloaded copy. Making `button()` work in the Worker is runtime work, left for its own issue.
+
+**The mixed set** covers every page of the series in the worlds, with one problem that adds a method to the reader's own container.
+
+*Cost to change: the `setup/oop/` files are a chain, each read by the page that makes it and the page that builds on it, and the last by `your-world-playable` and the mixed set; a change to one version belongs in every later one too. `from-a-description-to-classes` and `your-world-playable` are new ids.*

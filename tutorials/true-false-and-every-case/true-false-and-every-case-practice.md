@@ -8,12 +8,12 @@ version: 2026.09.25.1
 # True, false and every case: truth tables — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Guess before you open anything. A guess that turns out wrong is the most
+Guess before you open anything. A guess that misses is the most
 useful kind: it shows you exactly which row you had not pictured.
 
 ## Warm-up
@@ -194,7 +194,7 @@ failed only, and both. In each of them, `alerts_on` is True.
 
 **7. Fix.** This loop should print the four rows of "wasting heat": the
 heating is on and a window is open. It prints only two rows. Run it,
-then find the mistake.
+then find why.
 
 ```python exec
 id: true-false-practice-fix-rows
@@ -239,6 +239,8 @@ the two teams buzzes. Write `point_counts(team_a, team_b)` and test it
 with `assert`, checking its whole result column.
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def point_counts(team_a, team_b):
@@ -312,7 +314,7 @@ print(first == second)
 The last line prints `True`: both columns are `[False, True, True,
 False]`. Schlomo's way follows the English, and a reader can check it
 against the sentence. The `!=` way is shorter, and it only works because
-True and False are the only values here. Both are good answers.
+True and False are the only values here. Both ways work.
 
 </details>
 
@@ -339,6 +341,8 @@ this need? Is there a shorter way to count the True votes?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def majority(computer_1, computer_2, computer_3):
@@ -411,7 +415,7 @@ print(rows_40, "rows:", rows_40 / 1000000 / 60 / 60 / 24, "days")
 20 inputs give 1,048,576 rows: about one second. 40 inputs give
 1,099,511,627,776 rows: about 12.7 days. Twenty more inputs make the
 work about a million times bigger, because $2^{20}$ is about a million.
-Checking every case is a great method, until the number of cases grows
+Checking every case works well, until the number of cases grows
 this fast.
 
 </details>
@@ -425,8 +429,8 @@ column matches `password_ok and (at_office or code_ok)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one good answer. Your path may ask its questions in another
-order and still be right.
+Here is one way through. Your path may ask its questions in another
+order and work as well.
 
 ```python
 def log_in_by_path(password_ok, at_office, code_ok):

@@ -389,7 +389,7 @@ for step in range(1, 7):
 ```
 
 The errors go 0.09, 0.002, 0.000002, 0.0000000000016, and then 0.
-After four steps the guess is right to 11 decimal places, and after
+After four steps the guess matches $\sqrt{2}$ to 11 decimal places, and after
 five it is the float `math.sqrt` gives. The sixth step moves it by one
 float's width, about $2 \times 10^{-16}$. The number of correct digits
 roughly doubles at every step, once the guess is close. I find that
@@ -527,7 +527,7 @@ the parabola is at its lowest point, its vertex, as on
 The tangent there is flat, with slope 0. A flat line never meets zero,
 so "follow the tangent down" has nowhere to go.
 
-Is Newton's method wrong, then? No. Its move needs a space where the
+Is Newton's method broken, then? No. Its move needs a space where the
 slope is not 0, and 0 is outside that space. Start a little to the
 side, at 0.01, and the tangent is nearly flat. What do you expect?
 

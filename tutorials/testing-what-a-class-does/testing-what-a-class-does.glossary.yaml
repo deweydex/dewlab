@@ -2,21 +2,36 @@
 #
 # Tutorial of the series (Programming with objects) after the inheritance
 # and composition pages. Checked every earlier glossary in the series as
-# the cumulative list — none overlap. "test function" is already defined
-# in building-reusable-tools, which the page now links to; the page says
-# "test" in plain text and adds no entry for it.
-# dev/curriculum_map.py's terms_of() found only this tutorial's own section
-# heading and the other tutorials' titles, in italics as cross-references;
-# neither is a term. "assert" itself is never emphasised in the prose (it
-# is a keyword, referenced in code style throughout, the same convention
-# other keyword entries in the curriculum follow), so the mechanical pass
-# does not surface it — added from a manual read instead, since the whole
-# tutorial teaches it and no earlier PDP or FOOP tutorial defines it
-# (checked term_findings() for "assert" and "traceback" against the whole
-# curriculum; "traceback" is already taught in reading-an-error-message,
-# in the Programming Foundations series and a FOOP-LO10 prerequisite, so
-# it is used here without a repeat entry).
+# the cumulative list: none overlap. traceback is in
+# the-tools-around-your-code's glossary, earlier in this series, so it is
+# used here without a repeat entry. "assert" is never emphasised in the
+# prose (it is a keyword, in code style throughout), so it is added from a
+# manual read: the page teaches it and no earlier page in this series
+# defines it. Since 2026.09.26 the page names test, boundary and pytest,
+# and globals() is added from a manual read, since the runner depends on it.
 entries:
+  - term: test
+    kind: concept
+    definition: >
+      A test is code that uses a class or function and checks what it did,
+      usually with assert. A test builds its own objects, so one test
+      cannot spoil the next.
+    example: "def test_a_dive_goes_down():"
+
+  - term: boundary
+    kind: concept
+    definition: >
+      A boundary is the edge of what a method allows: exactly at a limit,
+      one step past it, zero, or empty. Bugs gather at boundaries, so tests
+      belong there.
+
+  - term: pytest
+    kind: concept
+    definition: >
+      pytest is the tool most Python projects use to run their tests. It
+      finds every function whose name starts with test_, runs it, and
+      reports what failed.
+
   - term: assert
     python: assert
     kind: keyword
@@ -24,4 +39,12 @@ entries:
       Checks a claim, and stops the program with an AssertionError the
       moment that claim is false. An optional message after a comma names
       what the claim was checking.
-    example: "assert account.balance == 0.0, \"withdrawing the full balance should leave 0.0\""
+    example: "assert sub.get_depth() == 400, \"a dive to exactly 400 m is allowed\""
+
+  - term: "globals()"
+    python: globals
+    kind: function
+    definition: >
+      Returns a dictionary of every name the program has made so far, with
+      its value.
+    example: "for name in list(globals()):"

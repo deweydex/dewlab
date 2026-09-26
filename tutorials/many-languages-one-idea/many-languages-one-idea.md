@@ -257,9 +257,9 @@ where `+` met a string and an int. Python will not guess whether you
 meant a number or a piece of text.
 JavaScript guesses, and it chooses text. Neither is foolish. They are
 two spaces with different rules. JavaScript's rule lets a page join
-text and numbers with no extra step, but it can hide a slip: you may
-have wanted 6. Python's rule costs an extra step, `int("5") + 1`, and
-it stops on the line where the slip happens.
+text and numbers with no extra step, but if you wanted 6, nothing
+tells you. Python's rule costs an extra step, `int("5") + 1`, and
+it stops on the line where text meets a number.
 
 ## The same job in BASIC
 

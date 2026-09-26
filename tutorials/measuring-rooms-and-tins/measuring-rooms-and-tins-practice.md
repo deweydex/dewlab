@@ -8,8 +8,9 @@ version: 2026.09.25.2
 # Measuring rooms and tins: area, perimeter and volume — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -152,7 +153,7 @@ millimetres, and means nothing.
 round face, so a bigger face catches more. Dishes are sold by their
 diameter. Schlomo, who is learning Python too, writes a function to
 give a dish's area from its diameter, but the test fails. Run it, then
-find and fix the mistake.
+find the line that does not do what Schlomo meant, and change it.
 
 ```python exec
 id: measuring-practice-fix-dish
@@ -281,7 +282,7 @@ one more card. That is rounding up.
 **11. Fix.** Someone wrote their own function for the volume of a ball.
 The test uses Archimedes' rule from the tutorial: a sphere fills two
 thirds of the cylinder that fits round it. The test fails. Run it, then
-find and fix the mistake.
+find the line that does not do what its writer meant, and change it.
 
 ```python exec
 id: measuring-practice-fix-ball
@@ -302,7 +303,7 @@ print("ball_volume keeps its promise.")
 2. What unit would `radius ** 2` give, if the radius is in cm?
 3. Is a volume in cm² or cm³?
 
-**Think about:** how checking the units finds this mistake before any
+**Think about:** how checking the units finds this line before any
 test runs.
 
 </details>
@@ -317,7 +318,7 @@ def ball_volume(radius):
     return 4 / 3 * math.pi * radius ** 3
 ```
 
-Now the test passes. The wrong version gave about 37.7 cm³ in place of
+Now the test passes. The first version gave about 37.7 cm³ in place of
 113.1 cm³. A units check finds it too: $r^2$ is an area, and no number
 times an area is a volume.
 
@@ -408,6 +409,8 @@ places stop changing.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 import random
 
@@ -457,7 +460,8 @@ matter that a sphere is a shape people meet every day?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things.
+There is more than one answer worth giving. One way through is to weigh
+a few things.
 
 - **Leave it out until it can be explained.** Every formula then comes
   with its reason, and a reader never has to take one on trust. The cost:

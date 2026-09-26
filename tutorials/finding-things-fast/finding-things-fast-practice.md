@@ -426,7 +426,7 @@ for port in ports:
 ```
 
 Now every port is found. A test that searches for every item, as the
-tutorial's toolkit tests do, catches a slip like this one.
+tutorial's toolkit tests do, finds a line like this one.
 
 </details>
 

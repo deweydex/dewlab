@@ -8,8 +8,9 @@ version: 2026.09.25.1
 # Collections without repeats: sets — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -133,7 +134,8 @@ inside each ingredient, too.)
 learning Python too, wants the routes that stop at both, so that he
 could wait at either one. In English, "in both" is "A *and* B", so he
 writes `and`. The cell prints four routes, and some of them do not stop
-at the first stop. Run it, then find what went wrong.
+at the first stop. Run it, then find the line that does not do what
+Schlomo meant.
 
 ```python exec
 id: collections-practice-fix-buses
@@ -285,7 +287,8 @@ such as `1 <= number <= 1_000_000_000 and number == int(number)` answers
 **11. Fix.** Schlomi, who is learning Python too, wants the different
 words in a line of a song. Maths writes a set with curly brackets, so
 she starts an empty set with `{}`. The cell stops with an error. Run
-it, read the last line of the error, then find the mistake.
+it, read the last line of the error, then find the line that does not
+do what Schlomi meant.
 
 ```python exec
 id: collections-practice-fix-words
@@ -330,6 +333,8 @@ second_computer = {"numpy", "requests", "flask"}
 ```
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def can_run(needed, installed):
@@ -379,6 +384,8 @@ does the empty set have?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def power_set(values):
@@ -463,6 +470,8 @@ you.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def shared_birthday():

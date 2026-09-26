@@ -14,8 +14,10 @@ url: https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=E
 
 license: >
   The archive states no licence. It asks that anyone who uses its data
-  include the acknowledgment above. The values are measurements of
-  planets, collected by the archive from published papers.
+  include the acknowledgment above, which this file carries. The values
+  are measurements of planets, collected by the archive from published
+  papers. dewlab uses them for teaching, with the acknowledgment, and
+  Josh judged that enough (DECISIONS_LOG 7.244).
 
 snapshot: 2026-09-25
 

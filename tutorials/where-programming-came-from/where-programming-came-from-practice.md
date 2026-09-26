@@ -440,8 +440,8 @@ It can matter for two reasons. People who are left out of a story can be
 left out of a subject: the six ENIAC programmers were not invited to its
 dedication in 1946. And a program is more than its formulas. Turning a
 formula into an exact order of operations, with names for every stored
-number, is the programming part, whoever did it. So Schlomi and Schlomo can both
-be partly right: the formulas and the program are two different
+number, is the programming part, whoever did it. So Schlomi and Schlomo can each
+be describing a real part: the formulas and the program are two different
 things.
 
 </details>

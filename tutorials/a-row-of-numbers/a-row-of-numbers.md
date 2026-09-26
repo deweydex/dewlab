@@ -59,8 +59,8 @@ On this page we:
 > We met lists on [Doing it again](tutorial:doing-it-again) as "a row of
 > values", and used `len`, `append` and `[0]` in passing. This page is
 > where we learn them properly. One thing usually goes unsaid: Python
-> counts positions from 0, and maths usually counts from 1. Each way is
-> a good one, in its own space. Your toolkit is loaded, from `digit_at`
+> counts positions from 0, and maths usually counts from 1. Each way
+> works, in its own space. Your toolkit is loaded, from `digit_at`
 > to `close_enough`.
 
 ## Warm-up
@@ -181,7 +181,7 @@ print(week[7])
 The last line says `IndexError: list index out of range`. An
 *IndexError* means we asked for a position the list does not have. A
 list of 7 values has indexes 0 to 6, so 7 is one past the end. It is
-the same mistake as the `range` warm-up, seen from the other side.
+the same edge as the `range` warm-up, seen from the other side.
 
 ## Counting from the end
 
@@ -583,7 +583,7 @@ brackets, when the test was handed over as `is_cold`, without them?
 ```
 
 A list with one value is the edge of the promise, "at least one
-number". Mistakes like to hide at the edges. If the stubs are slow to
+number". Bugs like to hide at the edges. If the stubs are slow to
 come, copy `largest` and change one thing at a time. After a few tries,
 a fold under the tests offers the steps, and you can come back to
 `count_if` after the next section.
@@ -676,11 +676,12 @@ id: row-real-your-turn
 This page said a name is a label on a string, tied to a value. Many
 courses picture a name as a box instead, with the value kept inside it.
 
-The box is a good picture for numbers. It is simple, and for `x = 5`
-it never gives a wrong answer. Many teachers start with it for that
+The box works well as a picture for numbers. It is simple, and for
+`x = 5` it always matches what Python does. Many teachers start with it for that
 reason.
 
-We used the label because the box gives the wrong answer for lists.
+We used the label because the box does not match what Python does
+with lists.
 If `forecast` were a box, `forecast = week` would copy the week into
 it, and changing the forecast could never change the week. Python
 does not work that way. With labels, one list with two names is
