@@ -169,3 +169,8 @@ a plan, a first version, and a better one.
 Singh, S. (1999). *The Code Book: The Secret History of Codes and
 Codebreaking*. Fourth Estate. Chapters 1 and 2 are full of ciphers a
 cipher tool could grow into, including the keyword cipher above.
+
+DevDuck (2020). *When is it Time to Move On from a Personal Project?*
+<https://www.youtube.com/watch?v=4f3Ss5n7SRQ>. A developer on losing the
+will to work on a project he started: creative blocks, burnout, and what
+to do about them. About seven minutes.

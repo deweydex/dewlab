@@ -544,3 +544,9 @@ Martin Fowler's article
 [Continuous Integration](https://martinfowler.com/articles/continuousIntegration.html)
 is how professional teams put everyone's work together many times a
 day.
+
+Tantacrul (2022). *How We Made MuseScore 4: Music App Design is
+Challenging!* <https://www.youtube.com/watch?v=Qct6LKbneKQ>. Martin Keary
+tells how a team rebuilt a large open-source program: forming the team,
+making design decisions together, and the rush at the end. About
+forty-seven minutes.

@@ -142,3 +142,10 @@ at it.
 | *staging area* | The list of changes that will go into the next commit. `git add` puts a change there. | `git add about.html` |
 | *history* | The line of commits in a repository, each pointing to the one before | the list behind the commits link on GitHub |
 | *branch* | A name for a line of commits, which points at the newest one | `main` |
+
+## Where to read more
+
+DevDuck (2019). *Using Git with Unity Tutorial [2019].*
+<https://www.youtube.com/watch?v=BlUldSuOgDc>. A game developer shows how
+to put a real project into Git, with tips for using it as the work grows.
+About four minutes.

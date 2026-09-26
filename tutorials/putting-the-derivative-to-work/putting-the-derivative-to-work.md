@@ -493,3 +493,16 @@ other three are still here.
 
 The mixed problems for this unit are next:
 [Mixed problems: change](tutorial:mixed-change).
+
+## Where to read more
+
+Welch Labs (2014). *Neural Networks Demystified [Part 3: Gradient
+Descent].* <https://www.youtube.com/watch?v=5u0jaA3qAGk>. Project 4's walk
+downhill is how a neural network learns. This short video shows it, with
+Python. Seven minutes.
+
+Artem Kirsanov (2025). *What Textbooks Don't Tell You About Curve
+Fitting.* <https://www.youtube.com/watch?v=q7seckj1hwM>. Project 3 finds
+the best line through data. This goes further: why "best" means the
+smallest squared distances, and what else it could mean. About eighteen
+minutes.

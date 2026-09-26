@@ -185,3 +185,10 @@ browser works out for a 3D transform.
 | `perspective-origin` | Sets where our eye is, across the element that has the `perspective`. By default, it is in the middle. | `perspective-origin: left;` |
 | `perspective()` | Gives one element its own eye, inside its `transform` | `transform: perspective(400px) rotateY(40deg);` |
 | `matrix3d()` | The one grid of sixteen numbers that a browser makes from a list of transforms | shown in the **Computed** tab |
+
+## Where to read more
+
+This Place (2017). *The Dolly Zoom.*
+<https://www.youtube.com/watch?v=tod2qZnKZEQ>. A camera trick from films
+that changes how far away the eye is while keeping the subject the same
+size, the same trade that CSS's `perspective` makes. About nine minutes.

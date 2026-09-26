@@ -202,3 +202,8 @@ Fowler, M. (2006). *Continuous Integration*.
 professional version of "release early, release small": merging and
 testing everyone's work together all the time, rather than once at the
 end.
+
+Tantacrul (2025). *How We Designed Audacity 4.*
+<https://www.youtube.com/watch?v=QYM3TWf_G38>. How a team changed a
+program millions of people already use, a little at a time, and then
+released a new version. About fifty-three minutes.

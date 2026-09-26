@@ -524,7 +524,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **282 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **283 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -610,7 +610,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *sine* | 31 | 32 |
 | *sine rule* | 31 | 34 |
 | *solution* | 6 | 27 |
-| *solve* | 6 | 25 |
+| *solve* | 5 | 25 |
 | *statistics* | 13 | 19 |
 | *subject* | 5 | 26 |
 | *tangent* | 31 | 32 |

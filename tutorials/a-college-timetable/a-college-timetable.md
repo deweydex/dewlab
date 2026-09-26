@@ -401,3 +401,11 @@ it.
 - **`s1.session_id < s2.session_id`.** The line that keeps a self-join
   from matching a row with itself, and from reporting the same pair
   twice.
+
+## Where to read more
+
+Stand-up Maths (2018). *How many calendars are there?*
+<https://www.youtube.com/watch?v=mrgN-tvg53I>. Every year's calendar is
+one of only a few possible layouts, set by the day of the week it starts
+on and whether it is a leap year. Matt Parker counts them. About eleven
+minutes.

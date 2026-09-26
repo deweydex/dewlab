@@ -655,3 +655,11 @@ function.
 | one-to-one | each output comes from exactly one input; only these have inverses |
 | composition, $g \circ f$ | $g(f(x))$: the output of $f$ goes into $g$ |
 | `compose(outer, inner)` | your toolkit function that joins two machines into one |
+
+## Where to read more
+
+CrashCourse (2017). *Programming Basics: Statements & Functions: Crash
+Course Computer Science #12.*
+<https://www.youtube.com/watch?v=l26oaHV7D40>. Functions in code, built up
+for a small game: a name, what goes in, and the value that comes back.
+About eleven minutes.

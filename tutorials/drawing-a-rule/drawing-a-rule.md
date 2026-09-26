@@ -561,3 +561,11 @@ course, draws more curves and reads answers off them.
 The practice page is next. On the next page,
 [Solving for x](tutorial:solving-for-x), we find where the servers'
 lines meet with no picture at all.
+
+## Where to read more
+
+SimonDev (2022). *An In-Depth look at Lerp, Smoothstep, and Shaping
+Functions.* <https://www.youtube.com/watch?v=YJB1QnEmlTs>. Game developers
+draw small rules as graphs to shape movement: a straight line from one
+value to another, or a curve that starts and ends slowly. About eight
+minutes.

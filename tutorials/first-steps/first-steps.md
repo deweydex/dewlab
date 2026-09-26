@@ -390,3 +390,8 @@ for the arithmetic operators, including the exact behaviour of `//` and `%`.
 Khan Academy. *Intro to algorithms*.
 <https://www.khanacademy.org/computing/computer-science/algorithms>. Worked
 through slowly, with exercises, if the pace here was too quick.
+
+CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. What makes a set of
+steps an algorithm, with sorting and finding a route as examples. About
+eleven minutes.
