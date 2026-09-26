@@ -76,6 +76,10 @@ class TestStagedHints:
         assert "spelled the same way" in fold(page, 0).text_content()
 
         fold(page, 0).locator("summary").click()
+        # The runtime clears the marker in the fold's `toggle` handler, and a
+        # browser fires `toggle` in a task after the click, not during it.
+        # Checking at once passed on an idle machine and failed on a busy one.
+        marker(page).wait_for(state="hidden", timeout=5_000)
         assert marker(page).is_hidden(), "opening the fold clears the marker"
 
         run(page)
