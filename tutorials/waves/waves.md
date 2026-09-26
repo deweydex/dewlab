@@ -1,7 +1,7 @@
 ---
 title: "Waves: sine, cosine and sound"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   a-point-going-round-drawn-against-time:
     covers: [MIT-3.3, MIT-4.6]
@@ -308,24 +308,39 @@ def wave(amplitude, frequency, time):
     return amplitude * math.sin(2 * math.pi * frequency * time)
 ```
 
-Run the toolkit cell, then the tests. Until `wave` has its `return`
-line, it returns `None`, and the first test stops with a
-`TypeError`. The last test checks the main promise of a wave. One
-period later, it is back at the same height.
+Run the toolkit cell. Then how does your `wave` compare with one way to
+write it? The table below runs the same calls on your function and on
+a solution, side by side. Until `wave` has its `return` line, it
+returns `None`, and your column shows `None`. The last two rows show
+the main promise of a wave. One period later, it is back at the same
+height.
 
-```python exec
-id: waves-toolkit-tests
-assert close_enough(wave(1, 1, 0.25), 1), "the top, a quarter through"
-assert close_enough(wave(1, 1, 0.75), -1), "the bottom, three quarters through"
-assert close_enough(wave(3, 2, 0.125), 3), "amplitude 3, 2 Hz"
-assert close_enough(wave(5, 440, 0), 0), "every wave starts at 0"
-for step in range(100):
-    time = step / 1000
-    assert close_enough(wave(2, 440, time + 1 / 440), wave(2, 440, time)), time
-print("wave keeps its promise.")
+```inputs
+for: waves-toolkit
+wave(1, 1, 0.25)               # the top, a quarter through
+wave(1, 1, 0.75)               # the bottom, three quarters through
+wave(3, 2, 0.125)              # amplitude 3, 2 Hz
+wave(5, 440, 0)                # every wave starts at 0
+wave(2, 440, 0.003)            # a time...
+wave(2, 440, 0.003 + 1 / 440)  # ...and one period later: the same height
+```
+
+```solution
+for: waves-toolkit
+import math
+
+def wave(amplitude, frequency, time):
+    """Return the height of a sine wave at a time in seconds.
+
+    The wave starts at 0, goes up first, and repeats frequency times a second.
+    wave(1, 1, 0.25) is 1: a quarter of the way through its first repeat.
+    """
+    return amplitude * math.sin(2 * math.pi * frequency * time)
 ```
 
 ```hint
+for: waves-toolkit
+after: 3 runs
 Try `print(wave(1, 1, 0.25))` on its own. What came back? The formula is
 $A \sin(2\pi f t)$: which name is $A$, which is $f$, and which is $t$?
 ```

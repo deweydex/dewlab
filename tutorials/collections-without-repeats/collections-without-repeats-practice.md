@@ -416,8 +416,8 @@ for n in range(7):
 print(power_set([]))
 ```
 
-It prints `[set()]`. Each `assert` prints nothing when its promise
-holds. The empty set has one subset:
+It prints `[set()]`. An `assert` prints nothing when its condition is
+True. The empty set has one subset:
 itself. That matches $2^0 = 1$, and it is why the loop starts from
 `[set()]`, not from an empty list.
 

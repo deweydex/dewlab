@@ -188,7 +188,8 @@ not make it safe. Cooling it quickly and keeping it in the fridge does.
 
 **7. Fix.** Here is another version of `halvings`. For 8 it gives 3,
 as `halvings` does. For 1,000 it gives 10, and `halvings(1000)` is 9.
-Can you find the line that does not keep the promise to round down?
+Its docstring says it rounds down. Can you find the line that does
+not?
 
 ```python exec
 id: doubling-practice-fix-halve
@@ -221,7 +222,7 @@ def halvings_again(n):
 `halvings_again(1000)` gave 10. The function halves with `/`, which
 keeps the fraction, so 125 becomes 62.5, then 31.25, and so on, down to
 1.953125. That is still more than 1, so the loop halves once more, to
-about 0.98. The promise says "rounding down", which is `//`.
+about 0.98. The docstring says "rounding down", which is `//`.
 
 The first row was the same for both versions because 8 is a power of
 2, and halving it never leaves a remainder. A check on a power of 2

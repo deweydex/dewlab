@@ -382,8 +382,9 @@ How does your `shell_sort` compare with one way to write it? The table
 below runs the same calls on your tool and on a solution, side by side.
 Most rows are the ones the last page used for your other two sorts.
 `numbers` is the last random list from the race above, 1,000 values
-long. One row shows its first eight values after `shell_sort`. The
-promise says that they do not change. The last two rows give the same
+long. One row shows its first eight values after `shell_sort`.
+`shell_sort` is meant to return a new list, and leave `numbers` as it
+was. The last two rows give the same
 list to your other two sorts, so you can see whether all three agree.
 Where a row is different, try that call on its own.
 

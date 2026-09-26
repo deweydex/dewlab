@@ -269,6 +269,22 @@ passed a rule to `truth_table` without brackets after its name. We do
 the same here. `simulate(heads, 1000)` passes the trial `heads`
 itself, so that `simulate` can call it 1,000 times.
 
+Two trials with fixed answers will help us compare `simulate` later.
+`always` gives True every time, and `never` gives False every time. Run
+this cell to make them.
+
+```python exec
+id: likely-fixed-trials
+def always():
+    """A trial that always gives True."""
+    return True
+
+
+def never():
+    """A trial that always gives False."""
+    return False
+```
+
 A *simulation* is a program that acts out an experiment many times, to
 see what usually happens. Here is the promise of `simulate`, as a
 docstring. Write its body. It needs a loop that calls `trial()` `times`
@@ -303,23 +319,9 @@ def simulate(trial, times):
     return successes / times
 ```
 
-How does your `simulate` compare with one way to write it? We must be
-careful when we compare something random, because two runs almost never
-give the exact same fraction. So the first two rows below use trials
-whose answers are fixed. Run this cell to make them.
-
-```python exec
-id: likely-fixed-trials
-def always():
-    """A trial that always gives True."""
-    return True
-
-
-def never():
-    """A trial that always gives False."""
-    return False
-```
-
+How does your `simulate` compare with one way to write it? Two runs of
+something random almost never give the exact same fraction, so the first
+two rows below use `always` and `never`, whose answers are fixed.
 The last row asks whether 10,000 fair tosses give heads between 45% and
 55% of the time, with `between` from
 [Choosing a path](tutorial:choosing-a-path). A fair coin lands outside
@@ -357,24 +359,9 @@ What does `print(simulate(always, 50))` show? If it shows `None`, the
 function has no `return` yet. If it shows 50, check what you divide by.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and still do the same job.
-
-```python
-def simulate(trial, times):
-    successes = 0
-    for run in range(times):
-        if trial():
-            successes = successes + 1
-    return successes / times
-```
-
-</details>
-
 The cells from here on use `simulate`. Until you write it, they show
-`None` or stop with a `TypeError`, so if you have not written it yet,
-copy the answer above into the stub and run it.
+`None` or stop with a `TypeError`. If you have not written it yet, open
+the solution under the table, copy it into the stub, and run it.
 
 ## Rain on a grid
 

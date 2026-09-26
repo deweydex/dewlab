@@ -611,7 +611,7 @@ def binary_search(sorted_values, target):
 
 How do your two searches compare with one way to write them? The table
 below runs the same calls on your tools and on a solution, side by side.
-The rows try the edges of each promise: the first item, the last item,
+The rows try the edges: the first item, the last item,
 an empty list, and a target that is not there. The last three rows use
 a list of 50 even numbers, from 0 to 98. They search for its first and
 last items, and for an odd number, which is never in it. Where a row is

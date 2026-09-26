@@ -519,10 +519,10 @@ def insertion_sort(values):
 
 How do your two sorts compare with one way to write them? The table
 below runs the same calls on your tools and on a solution, side by side.
-The rows try each promise at its edges: an empty list, one item, items
+The rows try each sort at its edges: an empty list, one item, items
 that repeat, words, and negative numbers. Two rows show `hands[0]`, the
-first hand from the counting cell, after a sort. The promise says that
-its order does not change. Where a row is different, try that call on
+first hand from the counting cell, after a sort. Each sort is meant to
+return a new list, and leave `hands[0]` in its old order. Where a row is different, try that call on
 its own.
 
 ```inputs

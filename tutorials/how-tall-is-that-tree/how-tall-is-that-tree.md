@@ -1,7 +1,7 @@
 ---
 title: "Solving triangles: how tall is that tree?"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 covers:
   naming-the-sides-from-one-angle:
     covers: [MIT-4.9]
@@ -498,32 +498,53 @@ def angle_between(p, q, r):
     return math.degrees(math.acos(cos_q))
 ```
 
-Run the toolkit cell, then the tests. Until `angle_between` is written,
-the first test stops with a `TypeError`, because `...` returns `None`.
+Run the toolkit cell. Then how does your `angle_between` compare with
+one way to write it? The table below runs the same calls on your
+function and on a solution, side by side. Until `angle_between` is
+written, your column shows `None`, because `...` returns `None`. Where
+a row is different, try that call on its own.
 
-```python exec
-id: how-tall-toolkit-tests
-assert close_enough(angle_between((1, 0), (0, 0), (0, 1)), 90), "a square corner"
-assert close_enough(angle_between((4, 0), (0, 0), (4, 3)), math.degrees(math.atan(3 / 4)))
-assert close_enough(angle_between(near_end, you, far_end), 70), "the lake"
-assert close_enough(angle_between((-1, 0), (0, 0), (1, 0)), 180), "a straight line"
-assert close_enough(angle_between((0.1, 0.1), (0.2, 0.1), (0.4, 0.1)), 180), "a straight line, with rounding"
+```inputs
+for: how-tall-toolkit
+angle_between((1, 0), (0, 0), (0, 1))            # a square corner
+angle_between((4, 0), (0, 0), (4, 3))
+math.degrees(math.atan(3 / 4))                   # ...the same angle, from atan
+angle_between(near_end, you, far_end)            # the lake
+angle_between((-1, 0), (0, 0), (1, 0))           # a straight line
+angle_between((0.1, 0.1), (0.2, 0.1), (0.4, 0.1))    # a straight line, with rounding
+angle_between((2, 5), (0, 0), (7, 1)) + angle_between((0, 0), (7, 1), (2, 5)) + angle_between((7, 1), (2, 5), (0, 0))   # the three angles of a flat triangle, added
+```
 
-corners = [(0, 0), (7, 1), (2, 5)]
-angle_sum = (angle_between(corners[2], corners[0], corners[1])
-             + angle_between(corners[0], corners[1], corners[2])
-             + angle_between(corners[1], corners[2], corners[0]))
-assert close_enough(angle_sum, 180), "the angles of a flat triangle"
-print("angle_between keeps its promise.")
+```solution
+for: how-tall-toolkit
+import math
+
+
+def angle_between(p, q, r):
+    """Return the angle at corner q, in degrees, between the line to p and the line to r.
+
+    p, q and r are (x, y) points, and neither p nor r is the same point as q.
+    The answer is from 0 to 180. angle_between((1, 0), (0, 0), (0, 1)) is 90.
+    """
+    side_to_p = distance(q, p)
+    side_to_r = distance(q, r)
+    across = distance(p, r)
+    cos_q = (side_to_p ** 2 + side_to_r ** 2 - across ** 2) / (2 * side_to_p * side_to_r)
+    # Rounding can push a cosine a hair past 1 or -1, where acos has no answer.
+    cos_q = max(-1, min(1, cos_q))
+    return math.degrees(math.acos(cos_q))
 ```
 
 ```hint
+for: how-tall-toolkit
+after: 3 runs
 Try `print(angle_between((1, 0), (0, 0), (0, 1)))` on its own. What came
 back? If it is `None`, which line should give the answer back?
 ```
 
 ```hint
-after: 10 errors
+for: how-tall-toolkit
+after: 8 runs
 title: some steps
 1. `side_to_p = distance(q, p)` and `side_to_r = distance(q, r)` are the
    two sides that meet at `q`.
@@ -535,13 +556,13 @@ title: some steps
 **Think about:** why is `across` the side that is taken away?
 ```
 
-Step 3 is there because of the fifth test. Three points on a straight line
+Step 3 is there because of the sixth row. Three points on a straight line
 make an angle of 180°, whose cosine is −1. But 0.1 and 0.2 are not exact
 in binary, so the sum comes out a tiny bit below −1, such as
 −1.0000000000000002. That is outside the domain of `math.acos`, which
 stops with `ValueError: math domain error`. The `max` and `min` line
-moves it back to −1. The last test is about the space we are in. It
-checks that the angles of a flat triangle add up to 180°.
+moves it back to −1. The last row is about the space we are in. It
+adds the three angles of a flat triangle, and they make 180°.
 
 ## The sine rule: when you cannot reach the tree
 
