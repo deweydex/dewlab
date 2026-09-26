@@ -21,7 +21,10 @@ PAGE = "tutorials/comparing.html"
 
 
 def _open(browser, url, route=None):
-    context = browser.new_context()
+    # No service worker: the page's cross-origin-isolation shim reloads it
+    # through one, and a page a service worker serves never reaches the
+    # route below. The comparison needs no isolation (that is for Stop).
+    context = browser.new_context(service_workers="block")
     tab = context.new_page()
     problems: list[str] = []
     tab.on("pageerror", lambda err: problems.append(f"pageerror: {err}"))
