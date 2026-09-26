@@ -2,7 +2,7 @@
 title: "The rotation matrix: turning a cube in 3D — Practice"
 practice_for: turning-a-cube
 year: "2026-2027"
-version: 2026.09.21.1
+version: 2026.09.26.1
 ---
 
 # The rotation matrix: turning a cube in 3D — Practice
@@ -166,5 +166,111 @@ whole turntable towards you. The second tips the cube first, and then
 spins the tipped cube about the vertical axis of the room, so its own
 axis moves round in a circle. Matrix multiplication is not commutative,
 and here the difference is something you can see.
+
+</details>
+
+## Shapes
+
+**6.** `rotate_y(angle)` is 3×3, and the cube is 3 rows of 8. What
+shape is `multiply(rotate_y(angle), cube)`?
+
+```python exec
+id: shapes-1
+{{include: setup/cube.py}}
+
+turned = multiply(rotate_y(math.radians(30)), cube)
+print(len(turned), "rows of", len(turned[0]))
+```
+
+```predict
+What will the cell print?
+
+- 3 rows of 3
+  - The rotation is 3×3.
+- 3 rows of 8
+  - The cube has 8 corners.
+- 8 rows of 3
+  - There are 8 points of 3 numbers each.
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+3 rows of 8. A 3×3 times a 3×8 is a 3×8: the inner 3s match, and the
+outer numbers give the shape. It has to be, because the answer is still
+8 corners, each with an $x$, a $y$ and a $z$.
+
+</details>
+
+## A wireframe of your own
+
+**7.** A house is a box with a roof. Make the box 2 wide, 1.5 tall and 2
+deep, from $y = -1$ to $y = 0.5$, and put the ridge of the roof along
+the middle, at $y = 1.25$. Can you write its corners and edges, and
+draw it turned 30° and moved 7 units out?
+
+```python exec
+id: wireframe-1
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Draw it on paper first, and number the corners: 0 to 3 round the
+   bottom, 4 to 7 round the top of the box, and 8 and 9 for the two
+   ends of the ridge.
+2. The box has 12 edges, like the cube. The roof adds 5: two lines up
+   to each end of the ridge, and the ridge itself.
+3. `draw_edges` uses the cube's `edges`, so write a `draw_shape` that
+   takes its own list of edges.
+
+**Think about:** how many corners and edges does your own shape have?
+Can you count them before you write them?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too. The house has
+10 corners and 17 edges.
+
+```python
+house = [
+    [-1, 1, 1, -1, -1, 1, 1, -1, 0, 0],
+    [-1, -1, -1, -1, 0.5, 0.5, 0.5, 0.5, 1.25, 1.25],
+    [-1, -1, 1, 1, -1, -1, 1, 1, -1, 1],
+]
+house_edges = [(0, 1), (1, 2), (2, 3), (3, 0), (4, 5), (5, 6), (6, 7), (7, 4),
+               (0, 4), (1, 5), (2, 6), (3, 7),
+               (4, 8), (5, 8), (7, 9), (6, 9), (8, 9)]
+
+
+def draw_shape(points, shape_edges):
+    screen_xs, screen_ys = project(points)
+    for start, end in shape_edges:
+        plt.plot([screen_xs[start], screen_xs[end]],
+                 [screen_ys[start], screen_ys[end]], color="C0")
+    plt.gca().set_aspect("equal")
+
+
+draw_shape(move(multiply(rotate_y(math.radians(30)), house), 0, 0, 7), house_edges)
+```
+
+Corners 8 and 9 are the ends of the ridge, at the front and the back.
+Each joins the two top corners at its own end.
+
+</details>
+
+## From earlier
+
+**8.** From *Inverse matrices: undoing a transformation*. What undoes
+`rotate_y(angle)`? Check your answer with `multiply`.
+
+<details class="dl-answer"><summary>answer</summary>
+
+`rotate_y(-angle)`, the same turn the other way. It is also the
+transpose of `rotate_y(angle)`: swapping rows and columns changes the
+signs of the two sines and leaves the cosines alone. So
+`multiply(rotate_y(-0.7), rotate_y(0.7))` is the identity, apart from
+rounding, as in problem 3. A turn has determinant 1, so it never
+flattens anything, and it can always be undone.
 
 </details>

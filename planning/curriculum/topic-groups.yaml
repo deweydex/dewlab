@@ -161,6 +161,7 @@ groups:
       - a-ball-in-orbit
       - turning-a-cube
       - the-fourth-number
+      - your-own-scene
       - an-orbit-in-css
       - a-cube-in-css
       - a-ball-that-faces-you
