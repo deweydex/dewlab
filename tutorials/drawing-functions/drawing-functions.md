@@ -463,8 +463,9 @@ for value in [1, 5, -3, 0]:
     print(f"{value} -> double -> {double(value)} -> halve -> {halve(double(value))}")
 ```
 
-Every value ends where it started. This round trip is what "inverse"
-means. It is also a test we can run for ourselves.
+Every value ends where it started. An inverse always brings a value
+back where it started. This round trip is also a test we can run for
+ourselves.
 
 The picture of an inverse is a mirror image. The inverse swaps inputs
 and outputs, so it swaps the two axes. The graph flips across the

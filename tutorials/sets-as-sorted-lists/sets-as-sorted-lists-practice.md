@@ -392,8 +392,8 @@ def words(text):
 only_in_first = words(one) - words(two)
 ```
 
-It matters more than it looks to remove the punctuation before we compare.
-Without it, `cat` and `cat.` count as different words, and the answer
+We remove the punctuation before we compare, and this matters more than it looks.
+Without that step, `cat` and `cat.` count as different words, and the answer
 fills up with noise.
 
 </details>
