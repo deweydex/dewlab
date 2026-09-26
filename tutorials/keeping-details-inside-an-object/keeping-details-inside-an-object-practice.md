@@ -2,110 +2,119 @@
 title: "Encapsulation: keeping an object's data behind its methods — Practice"
 practice_for: keeping-details-inside-an-object
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
 ---
 
 # Encapsulation: keeping an object's data behind its methods — Practice
 
-The answers are hidden in folds under each problem. Several problems ask
-you to predict what a piece of code prints. Try to answer before you
-run anything. Being wrong and finding out why teaches you more than
-being right by luck.
+Problems on keeping rules inside a class, and three from earlier pages.
+Try each problem before you open anything under it, and run the cells to
+test your guesses.
 
-## One place for the rules
+## 1. Around the rule
 
 ```python exec
-id: keeping-details-to-itself-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+id: around-the-rule-1
+class Probe:
+    def __init__(self, name, fuel):
+        self.name = name
+        self._fuel = fuel
 
-    def deposit(self, amount):
-        self.balance = self.balance + amount
+    def get_fuel(self):
+        return self._fuel
 
-    def withdraw(self, amount):
-        if amount > self.balance:
-            print("Refused: not enough balance.")
+    def burn(self, kg):
+        if kg > self._fuel:
+            print("Refused: not enough fuel for that burn.")
             return
-        self.balance = self.balance - amount
+        self._fuel = self._fuel - kg
 
-
-account = BankAccount("Priya", 100.0)
-account.withdraw(150.0)
-print(account.balance)
+voyager = Probe("Voyager", 70)
+voyager.burn(80)
+voyager._fuel = voyager._fuel - 80
+print(voyager.get_fuel())
 ```
 
-**1.** Predict what the cell prints before you run it. Then change
-`150.0` to `50.0`, and predict again before you run it.
+```predict
+What will the last line print?
 
-<details class="dl-answer"><summary>answer</summary>
-
-With `150.0`: `Refused: not enough balance.`, then `100.0`. The
-withdrawal is refused, so the balance never moves.
-
-With `50.0`: `withdraw()` prints nothing itself, then the last line
-prints `50.0`. The balance drops from 100.0 to 50.0.
-
-</details>
-
-**2.** A teammate suggests removing `withdraw()`. Instead, wherever the
-program makes a withdrawal, they would write
-`account.balance = account.balance - 150`. What is lost if we do that?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The refusal check is lost. Every one of those lines would need its own
-copy of `if amount > self.balance`. If one place forgets it, the
-balance can go below zero there.
-
-This is what encapsulation gives us. The rule about changing `balance`
-lives in exactly one method. Every caller gets the rule without having
-to remember it.
-
-</details>
-
-**3.** `deposit()` above has no check against a negative `amount`. Add
-one, so a negative deposit is refused in the same way as a withdrawal
-that is too large.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def deposit(self, amount):
-    if amount < 0:
-        print("Refused: cannot deposit a negative amount.")
-        return
-    self.balance = self.balance + amount
+- -10
+  - The line that reaches in to `_fuel` goes around the rule.
+- 70
+  - The rule in `burn` keeps the fuel safe.
+- 0
+  - Fuel cannot go below empty.
 ```
 
-The shape matches the check in `withdraw()`. First check. If the check
-fails, refuse and return early. Otherwise, make the change.
+<details class="dl-answer"><summary>why</summary>
+
+The refusal, then `-10`. `burn` refused the first burn. The next line
+reached in to `_fuel` and took 80 away directly, and nothing checked it.
+The underscore asked it not to. It could not stop it.
 
 </details>
 
-**4.** In your own words, what is the difference between encapsulation
-and abstraction?
+## 2. Room for four
 
-<details class="dl-answer"><summary>answer</summary>
-
-Encapsulation is keeping an object's data behind its own methods, so
-code outside the class asks the methods to change it. Abstraction is
-what a caller sees from outside: `account.withdraw(50)`, with no need to
-know about the comparison and the subtraction inside.
-
-The two usually come together. Keeping the data behind methods
-(encapsulation) is what lets a caller see only a method's name and what
-it does (abstraction). They still answer different questions.
-Encapsulation is about where the code and the rules live. Abstraction
-is about what a caller has to know.
-
-</details>
-
-## Reaching in from outside
+The Nautilus has room for 4 crew. Can you make `board` refuse anyone
+once there are already 4 on board?
 
 ```python exec
-id: keeping-details-inside-an-object-practice-thermostat-1
+id: room-for-four-1
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self._crew = []
+
+    def get_crew(self):
+        return self._crew
+
+    def board(self, person):
+        self._crew.append(person)
+
+nautilus = Submarine("Nautilus")
+for person in ["Ada", "Grace", "Alan", "Katherine", "Mary"]:
+    nautilus.board(person)
+print(nautilus.get_crew())
+```
+
+```inputs
+nautilus.get_crew()
+```
+
+```hint
+`len()` gives the number of items in a list. How many are on board when
+`board` should say no?
+```
+
+```solution
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self._crew = []
+
+    def get_crew(self):
+        return self._crew
+
+    def board(self, person):
+        if len(self._crew) >= 4:
+            print("Refused: the Nautilus has room for 4.")
+            return
+        self._crew.append(person)
+
+nautilus = Submarine("Nautilus")
+for person in ["Ada", "Grace", "Alan", "Katherine", "Mary"]:
+    nautilus.board(person)
+print(nautilus.get_crew())
+---
+One refusal, for Mary, then `['Ada', 'Grace', 'Alan', 'Katherine']`.
+`>= 4` refuses the fifth: with 4 on board, there is no room left.
+```
+
+## 3. The heating
+
+```python exec
+id: the-heating-1
 class Thermostat:
     def __init__(self, temperature):
         self._temperature = temperature
@@ -119,7 +128,6 @@ class Thermostat:
             return
         self._temperature = new_temperature
 
-
 heating = Thermostat(20)
 heating.set_temperature(35)
 heating.set_temperature(22)
@@ -128,101 +136,221 @@ heating._temperature = 50
 print(heating.get_temperature())
 ```
 
-**5.** Predict all the output before you run the cell. Does the
-underscore stop the line `heating._temperature = 50`?
+Before you run it: what are the three lines of output? And why write
+`heating.set_temperature(22)` rather than `heating._temperature = 22`,
+when both give the same result here?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`Refused: choose 5 to 30 degrees.`, then `22`, then `50`.
+`Refused: choose 5 to 30 degrees.`, then `22`, then `50`. The underscore
+did not stop `heating._temperature = 50`.
 
-The underscore does not stop it. In Python, a name that starts with an
-underscore is a convention: it tells people the field is private, but
-Python still lets code change it. The line skips the check in
-`set_temperature()`, and the heating is now set to 50 degrees.
-
-</details>
-
-**6.** Why write `heating.set_temperature(22)` rather than
-`heating._temperature = 22`, when both give the same result here?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The method checks the value, and the direct change does not. `22` is a
-safe value, so today both give the same result. But the next value
-might not be safe. Calling the method means the check always runs.
-
-The underscore is also a message from whoever wrote the class: "use the
-methods". Code that reaches in breaks that agreement, and it may stop
-working if the class changes how it stores the temperature.
+`22` is a safe value, so today both lines give the same result. But the
+next value might not be safe, and only the method checks it. Calling the
+method means the check always runs.
 
 </details>
 
-**7.** Which of these names, written inside a class, does the class's
-writer mean to be private?
+## 4. Which are private?
+
+Which of these names, written inside a class, does the class's writer
+mean to be private?
 
 - `self.name`
-- `self._pin_code`
-- `self.get_pin_code`
-- `self._attempts`
+- `self._oxygen`
+- `self.get_oxygen`
+- `self._alarms`
 
 <details class="dl-answer"><summary>answer</summary>
 
-`self._pin_code` and `self._attempts`. Both start with one underscore.
-
-`self.name` has no underscore, so other code may use it.
-`get_pin_code` has no underscore either. If it exists, it is a method
-the writer means other code to call.
+`self._oxygen` and `self._alarms`: both start with one underscore.
+`self.name` has none, so other code may use it. `get_oxygen` has none
+either. If it exists, it is a method the writer means other code to call.
 
 </details>
 
-## What a caller needs to know
+## 5. Enough for the trip
 
 ```python exec
-id: keeping-details-inside-an-object-practice-cents-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self._cents = round(balance * 100)
+id: enough-for-the-trip-1
+class OxygenTank:
+    def __init__(self, litres):
+        self._millilitres = round(litres * 1000)
 
-    def get_balance(self):
-        return self._cents / 100
+    def has_enough(self, litres):
+        return round(litres * 1000) <= self._millilitres
 
-    def can_afford(self, amount):
-        return round(amount * 100) <= self._cents
-
-
-account = BankAccount("Alice", 100.0)
-print(account.can_afford(99.99))
-print(account.can_afford(100.01))
-print(account.can_afford(100.0))
+spare = OxygenTank(1.0)
+print(spare.has_enough(0.999))
+print(spare.has_enough(1.001))
+print(spare.has_enough(1.0))
 ```
 
-**8.** Predict the three lines before you run the cell. Does
-`can_afford(100.0)` give `True` or `False`?
+```predict
+What will the last line print?
 
-<details class="dl-answer"><summary>answer</summary>
+- True
+  - Exactly 1 litre is 1000 ml, and `<=` allows equal.
+- False
+  - Using all of the oxygen leaves nothing, so it is not enough.
+```
 
-`True`, `False`, `True`.
+<details class="dl-answer"><summary>why</summary>
 
-The account holds 10000 cents. `99.99` is 9999 cents, which is less, so
-`True`. `100.01` is 10001 cents, which is more, so `False`. `100.0` is
-exactly 10000 cents, and `<=` allows equal, so `True`.
+`True`, `False`, `True`. The tank holds 1000 ml. 0.999 litres is 999 ml,
+so `True`. 1.001 litres is 1001 ml, so `False`. 1.0 litres is exactly
+1000 ml, and `<=` allows equal, so `True`.
 
 </details>
 
-**9.** A caller writes `print(account.get_balance())` for this class,
-and later the class goes back to storing a float in `_balance`. Does
-the caller's line need to change? What if the caller had written
-`print(account._cents / 100)` instead?
+## 6. A change the callers never see
+
+A caller writes `print(spare.get_litres())` for the tank on the tutorial
+page. Later, the class goes back to storing litres, in `_litres`. Does the
+caller's line need to change? What if the caller had written
+`print(spare._millilitres / 1000)` instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`print(account.get_balance())` does not need to change. The class's
-writer updates `get_balance()` to return `self._balance`, and every
-caller gets the new version.
+`print(spare.get_litres())` does not need to change. The class's writer
+changes `get_litres()` to return `self._litres`, and every caller gets
+the new version.
 
-`print(account._cents / 100)` breaks. After the change, the object has
-no `_cents` field, so Python stops with an `AttributeError`. Callers
-that used only the methods are safe. Callers that reached in are not.
+`print(spare._millilitres / 1000)` stops with an `AttributeError`,
+because the object has no `_millilitres` field any more. Callers that
+used only the methods are safe. Callers that reached in are not.
+
+</details>
+
+## 7. Two ideas, one class
+
+Encapsulation and abstraction usually come together. Are they two names
+for one idea, or two ideas?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+Two ideas, seen from two sides. Encapsulation is about where the data and
+its rules live: behind the class's own methods. Abstraction is about what
+a caller has to know: what `dive(250)` does, not the `if` inside it.
+Keeping the data behind methods is what lets a caller see only the
+methods.
+
+</details>
+
+## 8. From earlier: a rule that forgot self
+
+From *Your development environment: finding a bug inside a class*.
+
+```python exec
+id: from-earlier-a-rule-that-forgot-self-1
+class Character:
+    def __init__(self, name, health):
+        self.name = name
+        self._health = health
+
+    def heal(self, amount):
+        if _health + amount > 10:
+            print("Refused: health cannot go above 10.")
+            return
+        self._health = self._health + amount
+
+ada = Character("Ada", 4)
+ada.heal(3)
+```
+
+Run it, and read the traceback from the bottom. Which line do you change,
+and to what?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Line 7, the check: `_health` should be `self._health`. The last line of
+the error says so, and suggests it: `name '_health' is not defined. Did
+you mean: 'self._health'?` A field is always reached through `self`, even
+a private one.
+
+</details>
+
+## 9. From earlier: printed, not returned
+
+From *Classes and objects*.
+
+```python exec
+id: from-earlier-printed-not-returned-2
+class Character:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        print(self.name)
+
+ada = Character("Ada")
+print(ada)
+```
+
+```question
+id: from-earlier-printed-not-returned-q2
+type: multiple-choice
+answer: 3
+
+What happens when it runs?
+
+- It prints `Ada`.
+  - `__str__` shows the name.
+- It prints `Ada` twice.
+  - `__str__` prints once, and `print()` prints again.
+- It prints `Ada`, then stops with an error.
+  - `__str__` has to return text, and this one returns nothing.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`Ada`, from the `print()` inside `__str__`, then a `TypeError`:
+`__str__ returned non-string (type NoneType)`. `print(ada)` asks
+`__str__` for text to show. This one prints the name itself and returns
+nothing. Write `return self.name`, and let `print()` do the printing.
+
+</details>
+
+## 10. From earlier: storing on self
+
+From *Sequence, selection and iteration inside a class*. This submarine
+should count the refusals from its hull limit. What will the last line
+print?
+
+```python exec
+id: from-earlier-storing-on-self-1
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self._depth = 0
+        self._refusals = 0
+
+    def dive(self, metres):
+        if self._depth + metres > 400:
+            refusals = self._refusals + 1
+            return
+        self._depth = self._depth + metres
+
+nautilus = Submarine("Nautilus")
+nautilus.dive(500)
+nautilus.dive(600)
+print(nautilus._refusals)
+```
+
+```predict
+What will the last line print?
+
+- 0
+  - `refusals` is a plain name, so `self._refusals` never changes.
+- 2
+  - Both dives were refused, and each one counted.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`0`. The count was stored in a plain name, which vanished when `dive`
+ended. It should be `self._refusals = self._refusals + 1`. (And the last
+line reaches in to a private field. A getter, `get_refusals()`, would be
+the polite way to ask.)
 
 </details>

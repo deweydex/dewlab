@@ -1,44 +1,45 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Fourth tutorial of the series (Programming with objects), after
-# objects-and-classes, the-moves-you-already-know and
-# keeping-details-inside-an-object. Checked their glossaries as the
-# cumulative list: none of these terms overlap. polynomial and coefficient
-# are also in expressions-come-alive's glossary, but that page belongs to
-# the maths course, not this series, so they are defined here as well.
+# Fifth tutorial of the series (Programming with objects) since
+# 2026.09.26, after objects-and-classes, the-moves-you-already-know,
+# the-tools-around-your-code and keeping-details-inside-an-object.
+# Checked their glossaries as the cumulative list: none of these terms
+# overlap. polynomial, coefficient, degree and leading coefficient went
+# with the Polynomial class; attribute, instance, instance attribute and
+# class attribute came here from objects-and-classes, with the section
+# that teaches them.
 entries:
-  - term: polynomial
-    kind: concept
-    definition: >
-      A polynomial is a sum of terms, where each term is a number times a
-      power of x. In code we store it as a list of its coefficients.
-    example: "[-2, 5, 3]  # 3x^2 + 5x - 2"
-
-  - term: coefficient
-    kind: concept
-    definition: >
-      A coefficient is the number in front of a power of x in a
-      polynomial. In 3x^2 + 5x - 2, the coefficients are 3, 5 and -2.
-
-  - term: degree
-    kind: concept
-    definition: >
-      A polynomial's degree is the highest power of x that has a
-      coefficient other than zero. A quadratic has degree two; a cubic has
-      degree three.
-    example: "Polynomial([1, 0, -3, 2]).degree()  # 3"
-
-  - term: leading coefficient
-    kind: concept
-    definition: >
-      A polynomial's leading coefficient is the coefficient attached to
-      its highest power of x. It is the last entry in the coefficient
-      list, unless the list ends in zeros.
-    example: "Polynomial([1, 0, -3, 2]).leading_coefficient()  # 2"
-
   - term: reusable
     kind: concept
     definition: >
       A reusable method is written once and works on every object of its
       class, using the data that object already carries.
-    example: "cubic.degree()"
+    example: "mars.describe()"
+
+  - term: attribute
+    kind: concept
+    definition: >
+      An attribute is any name reached with a dot after an object, such
+      as a field or a method.
+    example: "mars.distance"
+
+  - term: instance
+    kind: concept
+    definition: >
+      An instance is another word for an object built from a class. mars
+      is an instance of Planet.
+
+  - term: instance attribute
+    kind: concept
+    definition: >
+      An instance attribute is a value that belongs to one object. It is
+      usually set on self in the constructor, and each object has its own.
+    example: "self.distance = distance"
+
+  - term: class attribute
+    kind: concept
+    definition: >
+      A class attribute is a value that belongs to the class itself. Every
+      object of that class shares the one value. Change it through the
+      class, not through an object.
+    example: "star = \"the Sun\""

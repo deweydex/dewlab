@@ -2,267 +2,312 @@
 title: "Classes and objects: keeping data and actions together — Practice"
 practice_for: objects-and-classes
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
 ---
 
 # Classes and objects: keeping data and actions together — Practice
 
-The answers are hidden in folds under each problem. Several problems ask
-you to predict what a piece of code prints. Try to answer before you
-run anything. Being wrong and finding out why teaches you more than
-being right by luck.
+Problems on classes, objects and printing them, and three from earlier
+pages. Try each problem before you open anything under it, and run the
+cells to test your guesses.
 
-## One thing, many parts
+## 1. Two characters
 
 ```python exec
 id: one-thing-many-parts-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def deposit(self, amount):
-        self.balance = self.balance + amount
-
-
-account = BankAccount("Priya", 200.0)
-account.deposit(50.0)
-print(account.balance)
-```
-
-**1.** In the cell above, create two separate `BankAccount` objects,
-called `account_a` and `account_b`. Deposit money into `account_a` only.
-Does `account_b`'s balance change too? Predict first, then run it to
-check.
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. `account_b.balance` stays at whatever it started with.
-
-Each object has its own `self`. Inside `deposit()`, `self.balance` means
-"the balance of the object this call was made on". So
-`account_a.deposit(...)` never touches `account_b`.
-
-</details>
-
-**2.** Here is a `Dog` class with a broken constructor. What is missing?
-
-```python
-class Dog:
-    def __init__(name, breed):
+class Character:
+    def __init__(self, name, health):
         self.name = name
-        self.breed = breed
+        self.health = health
+
+    def take_damage(self, amount):
+        self.health = max(0, self.health - amount)
+
+ada = Character("Ada", 10)
+grace = Character("Grace", 10)
+ada.take_damage(4)
+print(grace.health)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```predict
+type: number
 
-`self` is missing as the first parameter. The line should read
-`def __init__(self, name, breed):`.
-
-Without it, Python still passes the new object in as the first
-argument. So `name` receives the object, and the real name has nowhere
-to go. `Dog("Rex", "Collie")` fails with a `TypeError`: it says
-`__init__` takes 2 arguments but 3 were given.
-
-</details>
-
-**3.** Write a `Book` class with a constructor that stores `title` and
-`author`. Create one `Book` object and print its `title`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-class Book:
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-
-
-book = Book("Dune", "Frank Herbert")
-print(book.title)
+What will it print?
 ```
 
-The shape is the same as `BankAccount`'s constructor, with different
-field names. Every class's `__init__` follows this pattern: first
-`self`, then whatever the object needs to start with.
+<details class="dl-answer"><summary>why</summary>
+
+`10`. Only Ada was hit. Inside `take_damage`, `self` is the object the
+call was made on, so `ada.take_damage(4)` changes `ada.health` and never
+touches Grace's.
 
 </details>
 
-**4.** What does a method need in its parameter list that a plain
-function does not? What is it for?
+## 2. A constructor without self
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: a-constructor-without-self-1
+class Moon:
+    def __init__(name, width):
+        self.name = name
+        self.width = width
 
-A method needs `self`, always first. `self` is how the method knows
-which object's fields to read and change.
+io = Moon("Io", 3643)
+```
 
-A plain function has no object attached to it, so there is nothing for
-`self` to refer to. We call a method through an object, as in
-`account.deposit(...)`. `self` is Python's way of handing that object
-to the method's body.
+```question
+id: a-constructor-without-self-q1
+type: multiple-choice
+answer: 2
+
+Before you run it: what will the error say?
+
+- `name 'self' is not defined`
+  - `self` is used inside `__init__`, but never made.
+- `Moon.__init__() takes 2 positional arguments but 3 were given`
+  - Python passes the new object in first, and there is no parameter for it.
+- Nothing: it makes the moon.
+  - `__init__` has a parameter for the name and one for the width.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `TypeError`: `Moon.__init__() takes 2 positional arguments but 3 were
+given`. Python passes the new object in as the first argument, then
+`"Io"` and `3643`: three in all, for two parameters. The line should read
+`def __init__(self, name, width):`.
 
 </details>
 
-## Printing an object
+## 3. A class of your own making
+
+Can you write a `Specimen` class for things an ocean expedition finds? It
+stores a name and the depth it was found at, in metres. Build a specimen
+called `"anglerfish"`, found at 1500 m.
+
+```python exec
+id: a-class-of-your-own-making-1
+# Your Specimen class here
+
+fish = Specimen("anglerfish", 1500)
+print(fish.name, fish.depth)
+```
+
+```inputs
+fish.name
+fish.depth
+Specimen("sea cucumber", 4000).depth
+```
+
+```solution
+class Specimen:
+    def __init__(self, name, depth):
+        self.name = name
+        self.depth = depth
+
+fish = Specimen("anglerfish", 1500)
+print(fish.name, fish.depth)
+---
+`anglerfish 1500`. Every `__init__` has this shape: `self` first, then
+what the object needs to start with, each stored on `self`.
+```
+
+## 4. What self is for
+
+What does a method have in its parameters that a plain function does
+not? What is it for?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+`self`, always first. A method is called through an object, as in
+`grace.take_damage(5)`, and `self` is how Python hands that object to the
+method. It is how the method knows whose fields to read and change. A
+plain function is not called through an object, so it has no `self`.
+
+</details>
+
+## 5. A submarine in a list
 
 ```python exec
 id: objects-and-classes-practice-printing-1
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-
-    def __str__(self):
-        return f"{self.owner} has {self.balance}"
-
-
-account = BankAccount("Priya", 200.0)
-print(account)
-print([account])
-```
-
-**5.** Predict both lines of output before you run the cell. Which line
-uses `__str__`, and which does not?
-
-<details class="dl-answer"><summary>answer</summary>
-
-The first line is `Priya has 200.0`. `print(account)` uses `__str__`.
-
-The second line is something like
-`[<__main__.BankAccount object at 0x7f...>]`. The number at the end
-will be different on your screen. An object inside a list is shown with
-`__repr__`, and this class does not define one yet.
-
-</details>
-
-**6.** Add a `__repr__` method to the class above, so the second line
-prints `[BankAccount('Priya', 200.0)]`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-    def __repr__(self):
-        return f"BankAccount('{self.owner}', {self.balance})"
-```
-
-It sits inside the class, next to `__str__`, with the same indent.
-Now the list shows the text `__repr__` returns. `print(account)` still
-uses `__str__`, so the first line does not change.
-
-</details>
-
-**7.** This `Pet` class has a `__str__` method, but `print(pet)` fails.
-What is wrong with it?
-
-```python
-class Pet:
+class Submarine:
     def __init__(self, name):
         self.name = name
+        self.depth = 0
 
     def __str__(self):
-        print("Pet called " + self.name)
+        return f"{self.name} at {self.depth} m"
 
-
-pet = Pet("Rex")
-print(pet)
+nautilus = Submarine("Nautilus")
+print(nautilus)
+print([nautilus])
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```question
+id: a-submarine-in-a-list-q1
+type: multiple-choice
+answer: 2
 
-`__str__` prints the text instead of returning it. It does print
-`Pet called Rex` first. Then it returns nothing, which in Python is
-`None`. `print()` needs a string from `__str__`, so it stops with
-`TypeError: __str__ returned non-string (type NoneType)`.
+What will the second line show?
 
-The fix is to change `print(...)` to `return ...` inside `__str__`.
+- `[Nautilus at 0 m]`
+  - `__str__` gives the text for an object wherever it appears.
+- Something like `[<__dewlab__.Submarine object at 0x...>]`
+  - An object inside a list is shown with `__repr__`, not `__str__`.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`Nautilus at 0 m`, from `__str__`, then the long memory form. The number
+at the end is different each time. An object inside a list is shown with
+`__repr__`, and this class does not have one yet.
 
 </details>
 
-## Class attributes and instance attributes
+## 6. Code that builds it again
+
+Can you give `Submarine` a `__repr__`, so that the list shows
+`[Submarine('Nautilus')]`?
 
 ```python exec
-id: objects-and-classes-practice-attributes-1
-class BankAccount:
-    bank_name = "Dew Bank"
+id: code-that-builds-it-again-1
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self.depth = 0
 
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
+    def __str__(self):
+        return f"{self.name} at {self.depth} m"
 
-
-alice = BankAccount("Alice", 100.0)
-bob = BankAccount("Bob", 250.0)
-
-alice.bank_name = "Alice's Bank"
-print(alice.bank_name)
-print(bob.bank_name)
-print(BankAccount.bank_name)
+nautilus = Submarine("Nautilus")
+print([nautilus])
 ```
 
-**8.** Predict all three lines before you run the cell. Did the class
-attribute change?
-
-<details class="dl-answer"><summary>answer</summary>
-
-`Alice's Bank`, then `Dew Bank`, then `Dew Bank`.
-
-The class attribute did not change. `alice.bank_name = ...` made a new
-instance attribute on `alice` alone. From then on, `alice.bank_name`
-finds her own value first. `bob` has no instance attribute of that
-name, so `bob.bank_name` still reaches the class's value.
-
-</details>
-
-**9.** Someone writes the account counter like this, with `self`
-instead of `BankAccount`:
-
-```python
-class BankAccount:
-    accounts_opened = 0
-
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.balance = balance
-        self.accounts_opened = self.accounts_opened + 1
-
-
-alice = BankAccount("Alice", 100.0)
-bob = BankAccount("Bob", 250.0)
-print(alice.accounts_opened)
-print(bob.accounts_opened)
-print(BankAccount.accounts_opened)
+```inputs
+repr(nautilus)
+repr(Submarine("Alvin"))
+str(nautilus)
 ```
 
-What do the three lines print? Why is the count wrong?
+```solution
+class Submarine:
+    def __init__(self, name):
+        self.name = name
+        self.depth = 0
 
-<details class="dl-answer"><summary>answer</summary>
+    def __str__(self):
+        return f"{self.name} at {self.depth} m"
 
-`1`, `1`, then `0`.
+    def __repr__(self):
+        return f"Submarine('{self.name}')"
 
-`self.accounts_opened + 1` reads the class's value, `0`, and adds one.
-But `self.accounts_opened = ...` stores the result as a new instance
-attribute on this one object. Each account ends up with its own count
-of `1`, and the class's count stays at `0`. Writing
-`BankAccount.accounts_opened` on both sides fixes it.
+nautilus = Submarine("Nautilus")
+print([nautilus])
+---
+`[Submarine('Nautilus')]`: the code that would build it again. The depth
+is left out, because `Submarine(...)` takes only a name. `print(nautilus)`
+still uses `__str__`.
+```
+
+## 7. A dictionary or a class?
+
+A game keeps 30 characters, each with a name and a health, and one rule:
+health never goes below 0. The same game keeps a list of 30 place names,
+with nothing to check. Which would you keep as a class, and which as a
+plain list or dictionary?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+The characters as a class: there is a rule to keep, and a method is one
+place to keep it. The place names as a plain list: a name has no rule
+and no actions, so a class would add code and give nothing back. There
+is room to disagree here. A place might grow a description, or exits to
+other places, and then a class starts to pay for itself.
 
 </details>
 
-**10.** A `Student` class is used for every student at one college.
-Which of these should be class attributes, and which should be instance
-attributes?
+## 8. From earlier: a name that is not there
 
-- the student's name
-- the college's name
-- the student's grade
-- the highest grade anyone can get, which is 100
+From *Dictionaries: looking things up by name*.
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: from-earlier-a-name-that-is-not-there-1
+health = {"Ada": 10, "Grace": 8}
+print(health.get("Alan", 0))
+```
 
-Instance attributes: the student's name and the student's grade. Each
-student has their own.
+```predict
+What will it print?
 
-Class attributes: the college's name and the highest grade. They are
-the same for every student, so one shared value is enough. If the
-college changes its name, we change it in one place.
+- 0
+  - `.get()` gives the default when the key is missing.
+- An error
+  - There is no key `"Alan"`.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`0`. `health["Alan"]` would stop with a `KeyError`, but `.get()` returns
+its second value, the default, when the key is missing.
 
 </details>
+
+## 9. From earlier: one list, two names
+
+From *Comprehensions, grids and aliasing*.
+
+```python exec
+id: from-earlier-one-list-two-names-1
+def add_hit(hits, amount):
+    hits.append(amount)
+    return len(hits)
+
+ada_hits = [3]
+count = add_hit(ada_hits, 5)
+print(ada_hits)
+```
+
+```predict
+What will it print?
+
+- [3, 5]
+  - `hits` and `ada_hits` are two names for one list.
+- [3]
+  - The function changed its own copy.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`[3, 5]`. The function gets the list itself, not a copy, so `append`
+changes the one list both names point to. An object passed to a method
+works the same way.
+
+</details>
+
+## 10. From earlier: counting with a condition
+
+From *Repeating steps with loops*. How many of these depths are deeper
+than 1000 m? Can you write a loop that counts them?
+
+```python exec
+id: from-earlier-counting-with-a-condition-1
+depths = [120, 1500, 800, 4000, 1000]
+deep = 0
+
+print(deep)
+```
+
+```inputs
+deep
+```
+
+```solution
+depths = [120, 1500, 800, 4000, 1000]
+deep = 0
+for depth in depths:
+    if depth > 1000:
+        deep = deep + 1
+print(deep)
+---
+2: 1500 and 4000. 1000 is not deeper than 1000, so `>` leaves it out.
+```

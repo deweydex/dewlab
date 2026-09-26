@@ -1,17 +1,34 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# Fifth tutorial of the Programming with objects series, after
-# objects-and-classes, the-moves-you-already-know,
-# keeping-details-inside-an-object and one-class-many-methods. Checked
-# against their glossaries: no overlap. "docstring" is explained in one
-# plain sentence here but left to documenting-a-class, which teaches it.
+# Third tutorial of the Programming with objects series since 2026.09.26,
+# after objects-and-classes and the-moves-you-already-know. Checked
+# against their glossaries: no overlap. traceback and debugging are
+# emphasised in the Programming Foundations pages too (reading-an-error-message,
+# when-it-goes-wrong), but that is another series, so they are named here
+# as this series' own terms. "docstring" is explained in one plain
+# sentence here but left to documenting-a-class, which teaches it.
 entries:
+  - term: traceback
+    kind: concept
+    definition: >
+      A traceback is Python's list of the calls that were running when an
+      error stopped the program. Read it from the bottom: the last line
+      names the error, and the lines above it lead back to the call you
+      made.
+
+  - term: debugging
+    kind: concept
+    definition: >
+      Debugging is finding the mistake that makes a program go wrong, and
+      fixing it. When nothing fails, a print() inside a method can show
+      what its fields hold as it runs.
+
   - term: development environment
     kind: concept
     definition: >
-      A development environment is the set of tools sitting around your
-      code: an editor to write it in, a way to run it and see what
-      happened, and help finding out why it broke.
+      A development environment is the set of tools around your code: an
+      editor to write it in, a way to run it and see what happened, and
+      help finding out why it broke.
 
   - term: autocomplete
     kind: concept

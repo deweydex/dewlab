@@ -83,8 +83,8 @@ Look at what `Bank` does and does not do:
 - `total_balance()` loops over that list and asks each account for its
   own `balance`.
 
-This is like the `Polynomial` class in [A class with many methods: building a polynomial class](tutorial:one-class-many-methods). It stored one list of
-coefficients, and did not need five separate numbers. `Bank` stores one
+This is like the `Planet` class in [A class with many methods: giving one class more to do](tutorial:one-class-many-methods#data-that-belongs-together). It stored one list of
+moons, and did not need a separate name for each moon. `Bank` stores one
 list of accounts, however many there are.
 
 Building a class out of objects of another class like this is called
