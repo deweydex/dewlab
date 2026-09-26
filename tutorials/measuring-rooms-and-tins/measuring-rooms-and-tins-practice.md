@@ -2,7 +2,7 @@
 title: "Measuring rooms and tins: area, perimeter and volume — Practice"
 practice_for: measuring-rooms-and-tins
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 ---
 
 # Measuring rooms and tins: area, perimeter and volume — Practice
@@ -152,18 +152,31 @@ millimetres, and means nothing.
 **6. Fix.** A satellite dish catches radio signals over its whole
 round face, so a bigger face catches more. Dishes are sold by their
 diameter. Schlomo, who is learning Python too, writes a function to
-give a dish's area from its diameter, but the test fails. Run it, then
-find the line that does not do what Schlomo meant, and change it.
+give a dish's area from its diameter. Its answer for a 60 cm dish is not
+the 2,827 cm² the shop gives. Can you find the line that does not do
+what Schlomo meant?
 
 ```python exec
 id: measuring-practice-fix-dish
 def dish_area(diameter):
     """Return the area in cm² of a round dish, given its diameter in cm."""
     return circle_area(diameter)
+```
 
+```inputs
+round(dish_area(60))
+```
 
-assert round(dish_area(60)) == 2827
-print("dish_area keeps its promise.")
+```solution
+def dish_area(diameter):
+    """Return the area in cm² of a round dish, given its diameter in cm."""
+    return circle_area(diameter / 2)
+---
+`circle_area` wants the radius, and it was given the diameter. The
+radius is half the diameter.
+
+Schlomo's version gave 11,310 cm², four times too much. When the radius
+doubles, the area doubles twice, because the radius is squared.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -174,23 +187,6 @@ print("dish_area keeps its promise.")
    measurement does it want?
 
 **Think about:** why the answer is four times too big, not twice.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-`circle_area` wants the radius, and it was given the diameter. The
-radius is half the diameter:
-
-```python
-def dish_area(diameter):
-    """Return the area in cm² of a round dish, given its diameter in cm."""
-    return circle_area(diameter / 2)
-```
-
-Now the test passes. Schlomo's version gave 11,310 cm², four times too
-much. When the radius doubles, the area doubles twice, because the radius
-is squared.
 
 </details>
 
@@ -280,9 +276,10 @@ one more card. That is rounding up.
 </details>
 
 **11. Fix.** Someone wrote their own function for the volume of a ball.
-The test uses Archimedes' rule from the tutorial: a sphere fills two
-thirds of the cylinder that fits round it. The test fails. Run it, then
-find the line that does not do what its writer meant, and change it.
+Archimedes' rule from the tutorial says that a sphere fills two thirds
+of the cylinder that fits round it. For a ball of radius 3, this
+function's answer is not two thirds of that cylinder. Can you find the
+line that does not do what its writer meant?
 
 ```python exec
 id: measuring-practice-fix-ball
@@ -292,8 +289,26 @@ def ball_volume(radius):
 
 
 fits_round = cylinder_volume(3, 6)   # radius 3, height 6: the ball fits exactly inside
-assert round(ball_volume(3), 6) == round(2 / 3 * fits_round, 6)
-print("ball_volume keeps its promise.")
+```
+
+```inputs
+round(ball_volume(3), 6)          # the ball...
+round(2 / 3 * fits_round, 6)      # ...and two thirds of the cylinder round it
+```
+
+```solution
+def ball_volume(radius):
+    """Return the volume of a ball of this radius."""
+    return 4 / 3 * math.pi * radius ** 3
+
+
+fits_round = cylinder_volume(3, 6)   # radius 3, height 6: the ball fits exactly inside
+---
+The radius is squared, but a volume needs it cubed.
+
+The first version gave about 37.7 cm³ in place of 113.1 cm³. A units
+check finds it too: $r^2$ is an area, and no number times an area is a
+volume.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -303,24 +318,8 @@ print("ball_volume keeps its promise.")
 2. What unit would `radius ** 2` give, if the radius is in cm?
 3. Is a volume in cm² or cm³?
 
-**Think about:** how you can find this line by checking the units, before any
-test runs.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-The radius is squared, but a volume needs it cubed:
-
-```python
-def ball_volume(radius):
-    """Return the volume of a ball of this radius."""
-    return 4 / 3 * math.pi * radius ** 3
-```
-
-Now the test passes. The first version gave about 37.7 cm³ in place of
-113.1 cm³. A units check finds it too: $r^2$ is an area, and no number
-times an area is a volume.
+**Think about:** how you can find this line by checking the units, before you
+run anything.
 
 </details>
 
@@ -482,7 +481,7 @@ There is more than one answer. Here are some things to think about.
 
 Whichever you choose, it helps to say out loud which formulas are taken on
 trust, so a reader does not think they were meant to see why. An
-answer might also say that the tests can check a formula agrees with other
+answer might also say that a comparison can show a formula agrees with other
 facts, as Archimedes' two thirds did, even when they cannot say why it is
 true.
 
