@@ -1586,7 +1586,11 @@ def render_question(question: Question) -> str:
         def gap_widget(raw: str) -> str:
             choices = [c.strip() for c in raw.split("|")] if "|" in raw else None
             if choices is not None:
-                option_tags = "".join(
+                # The gap starts on a blank "choose", which cannot be chosen
+                # back. Without it the browser shows the first option, the
+                # page's own word, and the runtime's shuffle leaves it
+                # selected wherever it lands (DECISIONS_LOG 7.255).
+                option_tags = '<option value="" selected disabled>choose</option>' + "".join(
                     (f'<option data-answer="true">{html.escape(choice)}</option>' if i == 0
                      else f"<option>{html.escape(choice)}</option>")
                     for i, choice in enumerate(choices)
