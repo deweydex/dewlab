@@ -125,8 +125,8 @@ groups:
       of one at a time.
     tutorials:
       - grid-of-numbers
-      - multiplying-grids
       - what-a-matrix-does-to-a-picture
+      - multiplying-grids
       - undoing-it
       - solving-systems
       - where-chains-lead
