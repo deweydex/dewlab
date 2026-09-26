@@ -66,6 +66,15 @@ any Ferris wheel.
 
 </details>
 
+<aside class="dl-note" id="going-round-practice-note-ferris">
+
+**The first Ferris wheel.** George Ferris built the first Ferris wheel
+for the World's Fair in Chicago in 1893. It was about 80 m high, and
+each of its 36 cars could hold 60 people. It was moved twice, to other
+places, and destroyed in 1906.
+
+</aside>
+
 **3. Make.** A pie chart shows 8 groups of the same size. What angle is
 each slice at the centre, in degrees and in radians? And for 6 groups?
 

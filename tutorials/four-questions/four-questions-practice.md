@@ -102,6 +102,16 @@ which does everyone assume without saying?
 
 </details>
 
+<aside class="dl-note" id="four-q-practice-note-oxo">
+
+**Noughts and crosses on a screen.** In 1952, Sandy Douglas wrote a
+noughts and crosses program for EDSAC, a computer at the University of
+Cambridge. The game is called OXO, and it is one of the first games
+ever played on a computer screen. The screen was a grid of 35 by 15
+dots, and a player chose a square with a telephone dial.
+
+</aside>
+
 **4. Make.** A photo on a phone takes up about 3 MB (megabytes) of
 space. Write one line of Python that shows the space taken by 4 photos.
 

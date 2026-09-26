@@ -383,6 +383,15 @@ scores and 35 points.
 
 </details>
 
+<aside class="dl-note" id="several-unknowns-practice-note-try">
+
+**Why it is called a try.** In early rugby, touching the ball down over
+the line scored nothing. It gave your team a try at goal: a kick that
+could score. In 1886 a try became worth 1 point. It was worth 4 points
+from 1971, and 5 from 1992.
+
+</aside>
+
 **13. Another way.** Check your rugby answer with `np.linalg.solve`.
 Write each fact with all three unknowns in it, in the same order, $t$,
 $c$, $p$, using 0 where an unknown is missing.

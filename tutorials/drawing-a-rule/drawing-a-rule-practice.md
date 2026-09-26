@@ -178,6 +178,16 @@ all, which is harder to notice.
 
 </details>
 
+<aside class="dl-note" id="drawing-a-practice-note-caret">
+
+**An arrow that became a hat.** ASCII is the code computers use for
+letters and signs. In its first version, from 1963, the place where
+`^` sits now held an arrow pointing up, ↑. The language ALGOL wrote a
+power with that arrow. In 1967, ASCII put the accent `^` in its place,
+and spreadsheets and some languages still use it for powers.
+
+</aside>
+
 **7. Make.** A basketball leaves a player's hands 2 m above the floor.
 In a simple model, its height after $t$ seconds is $2 + 8t - 5t^2$
 metres. If nobody catches it, when does it hit the floor? Draw the rule,

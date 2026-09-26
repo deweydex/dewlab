@@ -129,6 +129,16 @@ than land.
 
 </details>
 
+<aside class="dl-note" id="typical-practice-note-extremes">
+
+**Ireland's range.** The highest temperature Met Éireann lists for
+Ireland is 33.3 °C, at Kilkenny Castle in June 1887. Met Éireann marks
+it as a historical record, less certain than modern readings. The
+lowest is −19.1 °C, at Markree Castle in County Sligo, in January 1881.
+That is a range of 52.4 degrees.
+
+</aside>
+
 **6. Fix.** Schlomi, who is learning Python too, times five downloads
 of the same file, in seconds, and wants the median. She has a
 quick idea. The median is in the middle, so she takes the value in the

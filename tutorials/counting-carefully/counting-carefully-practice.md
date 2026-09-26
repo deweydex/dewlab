@@ -215,15 +215,15 @@ when we expand $(x+1)^5$.
 
 </details>
 
-**8.** The Irish Lotto asks for 6 numbers from 47. How many different
+**8.** The Irish Lotto asks for 6 numbers from 45. How many different
 tickets are there? And how many if the order of the numbers mattered?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$C(47, 6) = 10{,}737{,}573$. With one ticket a week, a win would come
-about once in 206,000 years.
+$C(45, 6) = 8{,}145{,}060$. With one ticket a week, a win would come
+about once in 157,000 years.
 
-If the order mattered, it would be $P(47, 6)$, about 7,700,000,000. That
+If the order mattered, it would be $P(45, 6)$, about 5,900,000,000. That
 is 720 times more, since each ticket's six numbers come in $6! = 720$
 orders.
 
@@ -408,7 +408,7 @@ hard problem, and counting cannot answer it.
 
 ## One longer one
 
-**14.** Choose six numbers from 47, where a number may be chosen more
+**14.** Choose six numbers from 45, where a number may be chosen more
 than once and the order does not matter. How many choices are there? The
 count for $r$ choices from $n$ with repeats is $C(n + r - 1, r)$. Can
 you check the formula on small numbers first, with
@@ -437,10 +437,10 @@ n = 5
 r = 3
 listed = len(list(itertools.combinations_with_replacement(range(n), r)))
 print(listed, math.comb(n + r - 1, r))
-print(math.comb(47 + 6 - 1, 6))
+print(math.comb(45 + 6 - 1, 6))
 ---
 Both ways give 35 for 3 from 5. The lottery with repeats has
-$C(52, 6) = 20{,}358{,}520$, about twice the real one. Here is why the
+$C(50, 6) = 15{,}890{,}700$, about twice the real one. Here is why the
 formula works. Picture $r$ dots and $n - 1$ bars in one row, $n + r - 1$
 places in all. The bars split the row into $n$ groups, one for each
 number, and the dots in a group say how many times that number was

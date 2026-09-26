@@ -38,6 +38,15 @@ suggests `pixel_count`.
 
 </details>
 
+<aside class="dl-note" id="when-python-practice-note-did-you-mean">
+
+**A newer kind of help.** Python has not always suggested a name. The
+"Did you mean" line arrived with Python 3.10, in October 2021. When a
+name points at nothing, Python searches the names that do exist for one
+spelled nearly the same.
+
+</aside>
+
 **2. Explain.** A traceback can be many lines long. Why do we start
 reading it at the last line?
 

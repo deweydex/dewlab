@@ -250,6 +250,15 @@ message can reach a whole country in a day.
 
 </details>
 
+<aside class="dl-note" id="numbers-practice-note-census">
+
+**Five million again.** The 2022 census counted more than five million
+people. The last census to count that many in the same area was in
+1851. After 1851 the number fell for more than a hundred years. It was
+lowest in 1961, at 2,818,341.
+
+</aside>
+
 **10. Explain.** Predict what this cell shows, then run it. Why is the
 answer what it is, and why might it matter in a program that handles
 money?
