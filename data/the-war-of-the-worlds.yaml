@@ -4,12 +4,23 @@
 
 source: >
   Project Gutenberg EBook of The War of the Worlds, by H. G. Wells
-  (EBook #36). https://www.gutenberg.org/ebooks/36
+  (EBook #36).
+
+url: https://www.gutenberg.org/ebooks/36
 
 license: >
   Public domain in the United States. Project Gutenberg's own licence terms
   apply to redistribution — see the file itself, which carries them in full.
   https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-20
+
+trimmed: >
+  Nothing. The file is Project Gutenberg's own plain-text edition as it
+  stood when it was saved (released July 1992, last updated 5 June 2018,
+  as its header says), header and licence footer included. It has no live
+  source: the text does not change, and Project Gutenberg does not let
+  pages on other websites read its files.
 
 description: >
   The complete novel, first published in 1898, exactly as Project Gutenberg

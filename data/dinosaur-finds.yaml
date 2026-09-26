@@ -1,0 +1,44 @@
+# Attribution for data/dinosaur-finds.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  The Paleobiology Database (PBDB), its data service's list of fossil
+  occurrences within Dinosauria and outside its group Aves, each
+  identified at least to its genus.
+
+url: https://paleobiodb.org
+
+license: >
+  CC0, a public-domain dedication, as the PBDB data service states for
+  this data. It asks for nothing in return; this site credits it anyway.
+  https://creativecommons.org/publicdomain/zero/1.0/
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Body fossils only, only finds from rock at least 66 million years old
+  (so none from after the dinosaurs died out), and six of the service's
+  columns, renamed, with latitude and longitude rounded to 2 decimal
+  places. Fetched live when a page runs, shaped the same way.
+
+description: >
+  Dinosaur fossil finds, one row each: name, the genus or species it was
+  identified as; oldest_mya and youngest_mya, the age range of the rock
+  it was found in, in millions of years ago; lat and lng, where it was
+  found; country_code, the country, as a two-letter code (UK for the
+  United Kingdom). Namibia's code is NA, which pandas reads as a missing
+  value unless load_csv() is given keep_default_na=False. Where finds
+  are, and are not, says as much about where people have looked as about
+  where dinosaurs lived.
+
+recipe:
+  source: the Paleobiology Database
+  url: https://paleobiodb.org/data1.2/occs/list.csv?base_name=Dinosauria%5EAves&pres=regular&show=loc,coords&idreso=genus
+  rename: {accepted_name: name, max_ma: oldest_mya, min_ma: youngest_mya,
+           cc: country_code}
+  at_least: {youngest_mya: 66}
+  columns: [name, oldest_mya, youngest_mya, lat, lng, country_code]
+  round: {lat: 2, lng: 2}
+
+live: true

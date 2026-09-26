@@ -11,8 +11,8 @@
   {
     "id": "life-expectancy",
     "title": "Life expectancy",
-    "description": "Life expectancy at birth, in years, by country and year from 1950 to 2016. Three columns, so it is an easy first dataset to reason about.",
-    "source": "Our World in Data, compiling Gapminder, the UN World Population Prospects and IHME",
+    "description": "Life expectancy at birth, in years, by country and year from 1950. Three columns, so it is an easy first dataset to reason about. Fetched live from Our World in Data when it runs, with a saved copy as the backup.",
+    "source": "Our World in Data, compiling Riley, Zijdeman et al., the Human Mortality Database and the UN World Population Prospects",
     "license": "CC BY 4.0",
     "remote": false,
     "code": "df = await load_csv(\"life-expectancy.csv\")\nshow_table(df.head())"
@@ -24,7 +24,61 @@
     "source": "Project Gutenberg",
     "license": "Public domain",
     "remote": false,
-    "code": "from pyodide.http import pyfetch\n\nresponse = await pyfetch(\"../data/pride-and-prejudice.txt\")\ntext = await response.string()\nprint(f\"{len(text.split()):,} words\")"
+    "code": "text = await load_text(\"pride-and-prejudice.txt\")\nprint(f\"{len(text.split()):,} words\")"
+  },
+  {
+    "id": "dinosaur-genera",
+    "title": "Dinosaur genera",
+    "description": "Every dinosaur genus from before 66 million years ago that the Paleobiology Database lists: who named it and when, how old its fossils are, and how many have been found.",
+    "source": "The Paleobiology Database",
+    "license": "CC0",
+    "remote": false,
+    "code": "df = await load_csv(\"dinosaur-genera.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "dinosaur-finds",
+    "title": "Dinosaur fossil finds",
+    "description": "One row for each dinosaur fossil find, with where it was found and how old the rock is: a good dataset for asking who has been looking, and where.",
+    "source": "The Paleobiology Database",
+    "license": "CC0",
+    "remote": false,
+    "code": "df = await load_csv(\"dinosaur-finds.csv\", keep_default_na=False)\nshow_table(df.head())"
+  },
+  {
+    "id": "dublin-tides",
+    "title": "Tides at Dublin Port",
+    "description": "The height of the sea at Dublin Port, every hour through March 2026: two tides a day, and a bigger rhythm across the month.",
+    "source": "Marine Institute, Irish National Tide Gauge Network",
+    "license": "CC BY 4.0",
+    "remote": false,
+    "code": "df = await load_csv(\"dublin-tides.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "dublin-weather",
+    "title": "Dublin's weather, day by day",
+    "description": "Temperature and sunlight in Dublin every day from 2023 to 2025. A year of it rises and falls like a wave.",
+    "source": "NASA POWER",
+    "license": "Free to use (NASA)",
+    "remote": false,
+    "code": "df = await load_csv(\"dublin-weather.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "daylight",
+    "title": "Sunrise, sunset and daylight",
+    "description": "When the Sun rose and set on every day of 2026 in Reykjavik, Dublin, Accra and Cape Town, and how many hours of daylight each place had.",
+    "source": "NASA/JPL Horizons",
+    "license": "Facts about the sky, credited to NASA/JPL",
+    "remote": false,
+    "code": "df = await load_csv(\"daylight.csv\")\nshow_table(df.head())"
+  },
+  {
+    "id": "book-characters",
+    "title": "Characters in six novels",
+    "description": "How often each main character is named in each chapter of six novels, from Pride and Prejudice to The War of the Worlds. The chapters' word counts are in book-chapters.csv.",
+    "source": "Counted from Project Gutenberg texts",
+    "license": "Public domain",
+    "remote": false,
+    "code": "df = await load_csv(\"book-characters.csv\")\nshow_table(df.head())"
   },
   {
     "id": "owid-co2-per-capita",

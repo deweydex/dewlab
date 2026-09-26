@@ -289,8 +289,11 @@ you choose, and why?
 ## Project 3: The best line through data
 
 In the course's Our World in Data file, Ireland's life expectancy at
-birth rose every single year from 1990 to 2016. Is there one straight
-line that fits it best, and how fast does it climb?
+birth rose in all but three of the years from 1990 to 2019, the last
+year before the COVID-19 pandemic. Is there one straight line that fits
+it best, and how fast does it climb? The numbers below come from the
+copy of the file saved on {{snapshot: life-expectancy}}; the line under
+the cell says whether yours did too.
 
 ```python exec
 id: putting-line-1
@@ -298,14 +301,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 frame = await load_csv("life-expectancy.csv")
-ireland = frame[(frame.country == "Ireland") & (frame.year >= 1990)]
+ireland = frame[(frame.country == "Ireland") & (frame.year >= 1990) & (frame.year <= 2019)]
 years = ireland["year"].tolist()
 lifespans = ireland["life_expectancy"].tolist()
 print(len(years), "years, from", years[0], "to", years[-1])
 print(lifespans[0], lifespans[-1])
 ```
 
-Twenty-seven years, from 74.84 to 81.14. "Best" needs a meaning. Here
+Thirty years, from 74.84 to 82.41. "Best" needs a meaning. Here
 is the usual one. For each year, measure how far the line misses the
 data, square the miss, and add up the squares. The best line makes
 that total as small as it can be. This is called *least squares*. A
@@ -354,9 +357,9 @@ plt.xlabel("year")
 plt.ylabel("life expectancy at birth, years")
 ```
 
-About 0.278 years of life expectancy for every year that passes:
-roughly three months and a bit more, every year, for 27 years. The
-line runs straight through the dots.
+About 0.288 years of life expectancy for every year that passes:
+roughly three and a half months, every year, for 30 years. The line
+runs straight through the dots.
 
 With the rules from
 [Rules for change](tutorial:rules-for-change), the slope of the error
@@ -371,9 +374,10 @@ by_numpy = np.polyfit(years, lifespans, 1)[0]
 print(best_m, by_rule, by_numpy)
 ```
 
-**Try this next:** the file goes back to 1950. Fit a line to 1950 to
-2016. Is one straight line still a good fit? What does the picture
-say that the slope alone does not?
+**Try this next:** the file goes back to 1950, and on to 2023. Fit a
+line to 1950 to 2023. Is one straight line still a good fit? What do
+2020 and 2021 do to it? What does the picture say that the slope alone
+does not?
 
 ## Project 4: Walking downhill
 

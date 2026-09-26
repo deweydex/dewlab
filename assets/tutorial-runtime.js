@@ -810,7 +810,23 @@ function renderReference(manifest) {
       dt.textContent = dataset.name;
       const dd = document.createElement("dd");
       dd.append(document.createTextNode(
-        `${dataset.description} — ${dataset.source} (${dataset.license})`));
+        `${dataset.description} — ${dataset.source} (${dataset.license}) `));
+      if (dataset.url) {
+        const link = document.createElement("a");
+        link.href = dataset.url;
+        link.textContent = "Source";
+        link.rel = "noopener";
+        link.target = "_blank";
+        dd.append(link);
+      }
+      /* Which copy the page's numbers come from, since a live dataset can
+       * give a reader different ones (build.py dataset_attribution()). */
+      const saved = document.createElement("p");
+      saved.className = "dl-dataset-saved";
+      saved.textContent = dataset.live
+        ? `Fetched from ${dataset.live} when a cell loads it. The numbers on this page come from the copy saved on ${dataset.saved}, which is used when the live copy cannot be.`
+        : `The copy saved on ${dataset.saved}.`;
+      dd.append(saved);
       dl.append(dt, dd);
     }
     section.append(dl);
@@ -3654,7 +3670,14 @@ async function bootMainThread(manifest) {
   toolsMT = pyodideMT.pyimport("tutorial_tools");
   inspectModuleMT = pyodideMT.pyimport("inspect");
   builtinsModuleMT = pyodideMT.pyimport("builtins");
-  toolsMT.configure(manifest.dataBase);
+  /* A downloaded page cannot fetch data/index.json or the snapshots from
+   * disk, so write_standalone() put the ones this page declares in its
+   * manifest. A hosted page has neither, and fetches them. */
+  toolsMT.configure(
+    manifest.dataBase,
+    manifest.dataIndex ? JSON.stringify(manifest.dataIndex) : null,
+    manifest.dataFiles ? JSON.stringify(manifest.dataFiles) : null,
+  );
 
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
   if (manifest.needsSqlite) await pyodideMT.runPythonAsync(SEED_SQL_DB_SOURCE);
@@ -4418,6 +4441,18 @@ function guessMatches(p, guess, output) {
   return said === normaliseText(output) || said === normaliseText(lines[lines.length - 1] || "");
 }
 
+/* What the cell itself put in its output, for comparing with a guess.
+ * The note load_csv() adds about which copy of a dataset was used carries
+ * a date, and a date's numbers are not the reader's output, so it is left
+ * out (tutorial_tools.data_note()). */
+function printedText(outputEl) {
+  return Array.from(outputEl.children)
+    .filter((el) => !el.classList.contains("dl-data-note"))
+    .map((el) => el.innerText)
+    .join("\n")
+    .trim();
+}
+
 function notePrediction(cell, report) {
   const p = cell.predict;
   if (!p) return;
@@ -4425,7 +4460,7 @@ function notePrediction(cell, report) {
   if (!guess && p.sure !== "unsure") {
     p.outcome = null;
   } else {
-    const output = cell.outputEl.innerText.trim();
+    const output = printedText(cell.outputEl);
     const match = guess ? guessMatches(p, guess, output) : false;
     p.outcome = {
       guess: guess ? guess.text : null,

@@ -68,7 +68,23 @@ sense.
 11. **Shared data** — `load_csv`, `load_text`, and `run_query`; `load_text`
     sits right after `load_csv` and fetches the same way (the shared
     `/data/` folder, or a full URL), returning the file's contents as a
-    plain string instead of a parsed DataFrame. Right after `run_query`
+    plain string instead of a parsed DataFrame. Both go through `_load()`
+    (#324): a dataset from `data/` goes to `_load_bundled()`, which tries
+    the live source a `live: true` dataset has, shapes it with
+    `shape_live()` into the snapshot's own columns, and uses the snapshot
+    for any failure at all (no answer within `LIVE_SECONDS`, offline, or a
+    source whose columns have changed). A web address that a dataset
+    marked `address: true` was saved from goes the same way; any other
+    address goes to `_fetch_remote()`, which explains a CORS refusal
+    rather than blaming the reader's code. What a page knows about each
+    dataset is the index the build writes beside the data
+    (`site/data/index.json`), fetched
+    once by `_dataset_index()`; a
+    downloaded page is handed its entries and its snapshots by
+    `configure()` instead, since it cannot fetch from disk. `data_note()`
+    writes the one line under the cell that says which copy was used, and
+    `_data_note()` puts it there as HTML, never as printed output, so a
+    prediction or a comparison never sees it. Right after `run_query`
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
     counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118)

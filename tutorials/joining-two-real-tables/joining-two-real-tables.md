@@ -7,6 +7,7 @@ covers:
     touches: [DBM-LO9]
   the-join-that-loses-a-row:
     covers: [DBM-LO5]
+datasets: [income-share-top-1]
 ---
 
 # Joining real tables: the rows a JOIN drops

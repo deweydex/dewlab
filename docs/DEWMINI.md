@@ -138,7 +138,7 @@ copied:
 | `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
 | `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed. **See the note below.** |
 | `image_input(label="Choose an image", id=None)` | A file picker for an image — read the picked file with `.value`. **See the note below.** |
-| `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there |
+| `await load_csv(name, **read_csv_kwargs)` | Load a CSV from dewlab's shared data folder, if one is there: live from its source where the dataset has one, with the saved copy as the backup, and a line under the cell saying which |
 
 **The four widgets do not work here at the moment, and say so when you
 call one.** A widget attaches a listener to a live element on the page.

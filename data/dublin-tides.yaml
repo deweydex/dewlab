@@ -1,0 +1,39 @@
+# Attribution for data/dublin-tides.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Marine Institute, Irish National Tide Gauge Network, the tide gauge at
+  Dublin Port.
+
+url: https://erddap.marine.ie/erddap/tabledap/IrishNationalTideGaugeNetwork.html
+
+license: >
+  CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+snapshot: 2026-09-26
+
+trimmed: >
+  One month, March 2026, one reading an hour (the gauge reads every five
+  minutes), and two of the service's columns, renamed. Every reading in
+  the snapshot carries the quality flag 0; the service does not say what
+  its flags mean, so a live copy is not filtered on them. Fetched live
+  when a page runs, shaped the same way.
+
+description: >
+  The height of the sea at Dublin Port, every hour through March 2026.
+  time, in Coordinated Universal Time, which is Irish winter time; and
+  level_m, the height in metres above Lowest Astronomical Tide, the
+  lowest the tide is expected to fall. Two high tides a day, a little
+  under 12 and a half hours apart, and a fortnight's rhythm from larger
+  tides to smaller ones and back.
+
+recipe:
+  source: the Marine Institute
+  url: https://erddap.marine.ie/erddap/tabledap/IrishNationalTideGaugeNetwork.csvp?time,Water_Level_LAT,QC_Flag&station_id=%22Dublin%20Port%22&time%3E=2026-03-01T00:00:00Z&time%3C2026-04-01T00:00:00Z&orderByClosest(%22time/1hour%22)
+  rename: {"time (UTC)": time, "Water_Level_LAT (metres)": level_m}
+  missing: [-9999]
+  drop_empty: [level_m]
+  columns: [time, level_m]
+
+live: true

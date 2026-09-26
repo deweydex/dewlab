@@ -5,6 +5,7 @@ version: 2026.09.23.1
 covers:
   saving-it-as-a-file:
     covers: [DBM-LO7]
+datasets: [income-share-top-1]
 ---
 
 # Exporting a query's result to a CSV file

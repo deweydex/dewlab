@@ -1,0 +1,43 @@
+# Attribution for data/dinosaur-genera.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  The Paleobiology Database (PBDB), its data service's list of valid
+  genera within Dinosauria and outside its group Aves.
+
+url: https://paleobiodb.org
+
+license: >
+  CC0, a public-domain dedication, as the PBDB data service states for
+  this data. It asks for nothing in return; this site credits it anyway.
+  https://creativecommons.org/publicdomain/zero/1.0/
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Body fossils only (no footprints or eggs), the genera whose fossils are
+  all older than 66 million years, and seven of the service's columns,
+  renamed. The PBDB's Aves is narrow, so some early birds, Archaeopteryx
+  among them, are rows here. Fetched live when a page runs, shaped the
+  same way; new genera are named every year.
+
+description: >
+  Dinosaur genera from before 66 million years ago, one row each. genus;
+  named_by, who named it and when ("Osborn 1905"); first_mya and last_mya,
+  the widest time its fossils could span, in millions of years ago (the
+  oldest bound of its oldest find and the youngest bound of its youngest);
+  first_stage and last_stage, the geological ages of those finds, with
+  last_stage empty when they all come from one age; and finds, how many
+  fossil finds the PBDB records for it.
+
+recipe:
+  source: the Paleobiology Database
+  url: https://paleobiodb.org/data1.2/taxa/list.csv?base_name=Dinosauria%5EAves&rank=genus&show=app,attr&taxon_status=valid&pres=regular
+  rename: {taxon_name: genus, taxon_attr: named_by, firstapp_max_ma: first_mya,
+           lastapp_min_ma: last_mya, early_interval: first_stage,
+           late_interval: last_stage, n_occs: finds}
+  at_least: {last_mya: 66}
+  columns: [genus, named_by, first_mya, last_mya, first_stage, last_stage, finds]
+
+live: true

@@ -1,0 +1,36 @@
+# Attribution for data/income-share-top-1.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Our World in Data, "Income share of the richest 1% (before tax)": World
+  Inequality Database (WID.world) (2026), with major processing by Our
+  World in Data.
+
+url: https://ourworldindata.org/grapher/income-share-top-1-before-tax-wid-extrapolations
+
+license: >
+  CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Nothing. The file is the one Our World in Data serves at the address in
+  the recipe below, which the Database Methods pages load by that address.
+  When the address cannot be reached, load_csv() uses this copy instead.
+  Our World in Data plans its next update for 18 June 2027.
+
+description: >
+  The share of a country's income, before taxes and benefits, that goes to
+  its richest 1%, by country and year. Five columns: Entity, Code, Year, a
+  measured share, and a share the World Inequality Database projects where
+  it has no measurement.
+
+recipe:
+  source: Our World in Data
+  url: https://ourworldindata.org/grapher/income-share-top-1-before-tax-wid-extrapolations.csv
+  columns: [Entity, Code, Year, "Share (top 1%, before tax)",
+            "Share (top 1%, before tax) (Projected)"]
+
+live: true
+address: true

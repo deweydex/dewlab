@@ -5013,7 +5013,25 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.250 — A weekly check that every linked video is still there.** Josh, after 7.246 put 99 videos on the pages: "lets do a link check". `dev/check_video_links.py` asks YouTube's oEmbed endpoint about every video linked from a tutorial, a practice page (frozen releases included) or a site page, and `.github/workflows/video-links.yml` runs it every Monday, keeping one `video-link` issue open while anything has gone.
+**7.250 — Datasets are fetched live, with a saved copy as the backup, and every copy says where it came from and when.** The datasets issue (#324), part of #306. Josh's decision in the issue: live from the source, with a dated snapshot in `data/` as the backup.
+
+**One loader, three outcomes.** `load_csv` and `load_text` fetch a `live: true` dataset from its source, shape it with its recipe into the snapshot's own columns (`tutorial_tools.shape_live()`), and use the snapshot on any failure: no answer in 10 seconds, a page offline, or a source whose columns no longer fit. A dataset that is not live comes from its snapshot. Either way one quiet line under the cell says which copy it got and when that copy was saved. The line is HTML, not printed output, so a prediction or a comparison never reads its date as the cell's answer. The same recipe makes the snapshot (`dev/datasets.py --refresh`), so on the day a snapshot is saved the live copy and the saved one are the same table.
+
+**Live only where a browser may read the source.** A page can only fetch from a website that says other pages may (`Access-Control-Allow-Origin`). Our World in Data, the Paleobiology Database, the Marine Institute and NASA POWER do; the NASA Exoplanet Archive, JPL Horizons and Project Gutenberg do not, so those datasets are snapshots only, and their yaml says why. CO₂ is snapshot only by choice: its source file is 14 MB, too much to fetch on every run.
+
+**Provenance is checked, not hoped for.** Every file in `data/`, declared by a page or not, needs a yaml with its source, url, licence, snapshot date, what was trimmed, and a description; the build fails without them. Tracing the old files found two gaps: `the-montessori-method.txt` is Project Gutenberg #39863 with its header removed, and `democracy-and-education.txt` is the Internet Archive's OCR of a Google scan; neither yaml said so. The Paleobiology Database's own service states CC0, not the CC BY this work assumed until it asked.
+
+**The page's numbers name their copy.** `{{snapshot: life-expectancy}}` in prose becomes the date in the yaml, so a refresh cannot leave a page naming the old date. `life-expectancy.csv` was refreshed to Our World in Data's current release (1950 to 2023, and renamed and revised countries), and every page that quotes it was run against both copies and corrected: 17 cells' output changed with the data, and the answers in folds with them. Two pages changed more than a number: Nigeria's spread is no longer the widest of three, and the derivative page fits its line to 1990–2019, the thirty years before the pandemic, with 2020 and 2021 left as the next question. `kinds-of-data-and-honest-charts` moved to 2023, and its histogram's last edge to 95: `range(50, 90, 5)` had been quietly leaving out every place above 85.
+
+**A page carries its datasets.** A page's download now holds the datasets it declares, gzipped, so it works offline. A page must declare every file from `data/` it loads, or the build fails. The four Database Methods pages load an Our World in Data address, as they teach; `data/` keeps a copy of that exact file (`address: true`), which stands in when the address cannot be reached.
+
+**New datasets for the worlds.** Dinosaur genera and finds (Paleobiology Database, older than 66 million years, so early birds such as Archaeopteryx are in: a sets question of its own), tides at Dublin Port for March 2026 (Marine Institute), Dublin's daily weather for 2023–2025 (NASA POWER), sunrise and sunset in four places through 2026 (NASA/JPL Horizons, `dev/daylight.py`), and chapters and character names in six novels (`dev/book_counts.py`). Planetary data is `planet-orbits.csv`, already here. A transit network, a star catalogue and handwritten digits wait for the issues that need them.
+
+*Cost to change: moderate. The note's wording and the recipe steps are small; the pages that quote life expectancy name their copy by token, so a refresh moves their dates for free, and their numbers still need a run each time.*
+
+---
+
+**7.251 — A weekly check that every linked video is still there.** Josh, after 7.246 put 99 videos on the pages: "lets do a link check". `dev/check_video_links.py` asks YouTube's oEmbed endpoint about every video linked from a tutorial, a practice page (frozen releases included) or a site page, and `.github/workflows/video-links.yml` runs it every Monday, keeping one `video-link` issue open while anything has gone.
 
 **On a schedule, not in the tests.** A video disappears on YouTube's timetable, not on a commit's, so checking in `tests.yml` would turn an unrelated pull request red the week a video went, and a YouTube outage would turn every pull request red. A weekly issue reaches the same people without blocking anyone. For the same reason the check never counts a timeout or a 5xx as a dead link: those are retried, and if more than a quarter of the checks fail that way the run changes no issue at all.
 
@@ -5025,7 +5043,7 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.251 — 39 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
+**7.252 — 39 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
 
 Two kinds of fit. Some pages have a twin in another course (`repeating-yourself` and `doing-it-again`, `making-decisions` and `choosing-a-path`, `sorting-a-hand-of-cards` and `putting-things-in-order`), and take the same video, since a reader only meets one of the pair. The rest get a video aimed at one section: Cramer's rule for "One formula for every pair", gradient descent and curve fitting for the two derivative projects, point-to-line distance for "Did the ball hit the player?", Russell's paradox for "Where the picture stops helping". The Tantacrul critique 7.246 left out now goes on `critique-and-reflection`.
 
@@ -5035,7 +5053,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.252 — A fifth Simulation tutorial: a ball stepped forward in time.** Josh, after the video library: "I like the stepping forward in time", with MinuteLabs and Sebastian Lague as the models rather than Primer. `stepping-forward-in-time` drops a ball from Liberty Hall with Euler's method, checks it against the physics formula, shrinks the time step, and then makes the ball bounce. It goes last in the Simulation series, after the queue, which already moves in steps of time.
+**7.253 — A fifth Simulation tutorial: a ball stepped forward in time.** Josh, after the video library: "I like the stepping forward in time", with MinuteLabs and Sebastian Lague as the models rather than Primer. `stepping-forward-in-time` drops a ball from Liberty Hall with Euler's method, checks it against the physics formula, shrinks the time step, and then makes the ball bounce. It goes last in the Simulation series, after the queue, which already moves in steps of time.
 
 **Nothing on the page is random.** The four pages before it all use chance. This one shows the other half of simulation, a rule run forward from where the last step finished, and its practice page asks whether a seed would change anything (it would not).
 
