@@ -5269,3 +5269,9 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not done.** The issue offered re-running "the cell, or a named function". Only the cell: a named function would need a second output area inside the cell and a callback path into the Worker, for a gain a short cell already gives. In the Notebook a slider draws but does not run its cell yet, and its guide says so.
 
 *Cost to change: small. The markup is `.dl-slider` inside `.dl-widget`; the page's half is six functions beside `runCell()`; the saved record's `sliders_html` is optional, so older saves load unchanged.*
+
+---
+
+**7.265 — The Dewey Track's letter is signed "dewlab".** Josh, 26 September 2026, closing #351: "dewlab should sign it not me". 7.228 left the letter unsigned until he had read it. The letter's "I" is now the site's voice, not a person's, which also keeps the style guide's rule that a page never invents the writer's history.
+
+*Cost to change: one line at the end of `how-this-course-is-built`.*
