@@ -1,7 +1,7 @@
 ---
 title: "A college timetable: five tables and finding clashes"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   five-tables-for-one-timetable:
     covers: [DBM-LO9]
@@ -92,6 +92,12 @@ that mentions them.
 
 ```sql exec
 id: create-timetable-tables
+DROP TABLE IF EXISTS session_tbl;
+DROP TABLE IF EXISTS module_tbl;
+DROP TABLE IF EXISTS room_tbl;
+DROP TABLE IF EXISTS teacher_tbl;
+DROP TABLE IF EXISTS programme_tbl;
+
 CREATE TABLE programme_tbl (
     programme_id INTEGER PRIMARY KEY,
     name TEXT
@@ -181,6 +187,13 @@ as text, written the same way a clock shows them — `'09:00'`, `'13:00'`
 that, ordinary text comparison already puts them in the right order:
 `'09:00' < '11:00'` is true, the same way it would be for numbers. That
 is what the rest of this page relies on.
+
+The five `DROP TABLE IF EXISTS` lines at the top delete any tables an
+earlier run left behind, so the box builds the whole database from
+nothing each time you run it. They go in the opposite order to the
+`CREATE TABLE`s. `session_tbl` goes first, because its rows point into
+three of the other tables, and `programme_tbl` goes last. Some databases
+will not delete a table while another table still points into it.
 
 The line for `Liam O''Sullivan` is worth a second look: two single
 quotes in a row, inside a name that already has one. SQL uses a doubled
