@@ -451,3 +451,10 @@ and `or` can say the same rule. This path asks about the password first,
 because without it nothing else matters.
 
 </details>
+
+## Where to read more
+
+Steve Mould (2013). *Can you solve this 4 card puzzle?*
+<https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. A famous puzzle about an
+"if" rule. Most people get it wrong the first time. Write your answer down
+before the end. Three minutes.

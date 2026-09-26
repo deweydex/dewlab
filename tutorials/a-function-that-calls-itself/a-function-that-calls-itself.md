@@ -604,3 +604,9 @@ walks through real folders on a computer, with and without recursion.
 [Making change: brute force, memoization and greedy algorithms](tutorial:three-ways-to-make-change)
 shows a recursion that repeats the same work, and a way to remember
 what it already worked out.
+
+Reducible (2019). *5 Simple Steps for Solving Any Recursive Problem.*
+<https://www.youtube.com/watch?v=ngCos392W4w>. Reducible solves three
+recursive problems, each harder than the last, by asking the question this
+page asks: if a smaller case were already solved, how would we use it?
+About twenty-one minutes.

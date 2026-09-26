@@ -201,3 +201,8 @@ Scratchapixel. *Computing the Pixel Coordinates of a 3D Point.*
 The same similar-triangles picture drawn out carefully, and then the
 extra steps that turn a point on the glass into a pixel on a real
 screen.
+
+CrashCourse (2017). *3D Graphics: Crash Course Computer Science #27.*
+<https://www.youtube.com/watch?v=TEAtmCYYKZA>. How a 3D scene becomes a
+flat picture: projecting points onto the screen, colouring the triangles,
+and deciding which ones are in front. Twelve minutes.

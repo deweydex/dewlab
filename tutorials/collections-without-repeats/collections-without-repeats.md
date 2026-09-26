@@ -624,3 +624,11 @@ meaning.
 The practice page is next. After it,
 [Circles that overlap](tutorial:circles-that-overlap) draws two and
 three sets as circles, and counts a union without making it.
+
+## Where to read more
+
+Stand-up Maths (2021). *How does Dobble (Spot It) work?*
+<https://www.youtube.com/watch?v=VTDKqW_GLkw>. In the card game Dobble,
+any two cards share exactly one symbol: the intersection of their two sets
+always has one member. Matt Parker shows how such a deck can be built.
+About half an hour.

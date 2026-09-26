@@ -723,3 +723,10 @@ that this page showed only one law of logarithms, and a logarithm like
 
 The practice page is next, and then the mixed problems for this unit,
 where a phone book of 100,000 names is searched three ways.
+
+## Where to read more
+
+3Blue1Brown (2017). *How secure is 256 bit security?*
+<https://www.youtube.com/watch?v=S9JGmA5_unY>. How big is 2 to the power
+256? Grant Sanderson builds a feel for it, one set of doublings at a time.
+Five minutes.

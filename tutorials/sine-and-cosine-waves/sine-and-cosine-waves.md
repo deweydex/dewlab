@@ -455,3 +455,9 @@ Khan Academy. *Midline, Amplitude and Period of a Function.*
 <https://www.youtube.com/watch?v=s4cLM0l1gd4>. The same four numbers this
 page changes one at a time, read the other way round — off a graph rather
 than off a function.
+
+engineerguy (2014). *Intro/History: Introducing a 100-year-old mechanical
+computer.* <https://www.youtube.com/watch?v=NAsM30MAHLg>. Bill Hammack
+shows a machine of gears and springs, built about 100 years ago, that adds
+sine waves together to draw new curves. This is the first of four short
+videos; the second shows the adding in action.

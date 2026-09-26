@@ -791,3 +791,10 @@ on its side.
 Sanderson, G. (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 9:
 Dot Products and Duality*. <https://www.youtube.com/watch?v=LyGKycYT2v0>.
 The dot product this page meets as arithmetic, seen as geometry instead.
+
+argonaut (2022). *Cellular Automata: Life from Simple Rules.*
+<https://www.youtube.com/watch?v=wbPgoZ2d0Nw>. A grid of cells, where each
+cell looks at its neighbours to decide what it will be next. The rules of
+Conway's Game of Life can be held in a list of lists like the ones on this
+page. Seven minutes; the second half is about making it run fast in a game
+engine.

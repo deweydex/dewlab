@@ -137,3 +137,10 @@ We can now define a value once and read it from several rules.
 | `:root` | The selector that matches `<html>`. A page's variables usually live there. | `:root { ... }` |
 | `var()` | Reads a variable's value back into a declaration | `background: var(--brand-color);` |
 | *hex colour* | A colour written as `#` and three pairs of characters, for red, green and blue | `#2c3e50` |
+
+## Where to read more
+
+Captain Disillusion (2020). *CD / Color.*
+<https://www.youtube.com/watch?v=FTKP0Y9MVus>. Captain Disillusion
+explains how a screen makes every colour from red, green and blue light.
+Seven minutes.

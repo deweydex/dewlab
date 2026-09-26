@@ -493,3 +493,10 @@ inside those limits.
 The practice page is next. After it, the unit ends with
 [Mixed problems: decisions and logic](tutorial:mixed-decisions-and-logic),
 which draws on all four pages of Unit 2.
+
+## Where to read more
+
+Spanning Tree (2020). *Hamming Codes: How Data Corrects Itself.*
+<https://www.youtube.com/watch?v=NQ4gLJYspdA>. This page catches one
+flipped bit with one parity bit. Brian Yu shows how a few more parity bits
+can also find which bit flipped, so it can be flipped back. Seven minutes.

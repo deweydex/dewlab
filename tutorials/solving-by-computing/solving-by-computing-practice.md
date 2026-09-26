@@ -460,3 +460,10 @@ $\frac{2}{3}$ stays on the right side. So a chip that divides this way
 needs a first guess close enough, which it gets from a small table.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2018). *How to find a square root.*
+<https://www.youtube.com/watch?v=Bwt5EZEb1Ns>. Matt Parker finds a square
+root by hand, the way people did before calculators. Which of this page's
+two methods is his closest to? About six minutes.

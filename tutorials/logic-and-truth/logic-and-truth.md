@@ -339,3 +339,13 @@ Khan Academy. *Equivalent Compound Booleans.*
 <https://www.khanacademy.org/computing/ap-computer-science-principles/programming-101/x2d2f703b37b450a3:logical-equivalence/a/equivalent-compound-booleans>.
 De Morgan's Laws from the programming side, with the same two rules this
 page proves by looping over four rows.
+
+Steve Mould (2013). *Can you solve this 4 card puzzle?*
+<https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. A famous puzzle that most
+people get wrong the first time, because an "if" does not mean what we
+expect. Three minutes. Write your answer down before the end.
+
+CrashCourse (2017). *Boolean Logic & Logic Gates: Crash Course Computer
+Science #3.* <https://www.youtube.com/watch?v=gI-qXk7XojA>. AND, OR, NOT
+and XOR as switches inside a computer, each with its truth table. About
+ten minutes.

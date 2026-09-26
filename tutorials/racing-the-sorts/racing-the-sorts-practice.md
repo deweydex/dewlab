@@ -526,3 +526,11 @@ Sorting once and then searching many times is how a phone keeps its
 contacts quick to find.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2022). *Someone improved my code by 40,832,277,770%.*
+<https://www.youtube.com/watch?v=c33AZBnRHks>. Matt Parker wrote a program
+that took about a month to run. Viewers made the same job run in a tiny
+fraction of a second, by choosing better ways to do it. About twenty-nine
+minutes.

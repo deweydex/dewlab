@@ -266,3 +266,9 @@ Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
 Wellesley-Cambridge Press. Chapter 2 covers Gaussian elimination as the
 central algorithm of the whole subject, which by the end of this series is a
 fair description of why it is here.
+
+Random Noise (2026). *Solving Lights Out Puzzles: Light Chasing vs Linear
+Algebra.* <https://www.youtube.com/watch?v=rQtRK-AJOGg>. In the game
+Lights Out, pressing a light switches it and its neighbours. This video
+solves it two ways, and one of them is a system of equations. About ten
+minutes.

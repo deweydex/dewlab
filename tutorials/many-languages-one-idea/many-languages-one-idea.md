@@ -422,3 +422,8 @@ The Database Methods course teaches SQL properly. Its first SQL page is
 [How programming languages came to be](tutorial:how-we-got-here#the-same-problem-four-ways)
 has another comparison, of a different kind: one job done four ways in
 Python, each in a different style of programming.
+
+Ben Eater (2015). *Comparing C to machine language.*
+<https://www.youtube.com/watch?v=yOyaJXpAYZQ>. Ben Eater writes a small
+program in C, and then reads the machine code the computer runs for it,
+line by line. Ten minutes.

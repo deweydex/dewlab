@@ -600,3 +600,13 @@ converter to build.
 Petzold, C. (2022). *Code: The Hidden Language of Computer Hardware and
 Software* (2nd ed.). Microsoft Press. Starts from torches and switches
 and builds a whole computer out of them, one bit at a time.
+
+3Blue1Brown (2015). *How to count to 1000 on two hands.*
+<https://www.youtube.com/watch?v=1SMmc9gQmHQ>. Each finger is one bit: up
+or down. Grant Sanderson counts in binary on his fingers. Under three
+minutes.
+
+CrashCourse (2017). *Representing Numbers and Letters with Binary: Crash
+Course Computer Science #4.*
+<https://www.youtube.com/watch?v=1GSjbWt0c9M>. How the same ones and zeros
+can stand for numbers and for letters. About eleven minutes.

@@ -495,3 +495,12 @@ A strong answer might put the names after the answer, in one or two
 sentences, so they label the idea without taking its place.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2022). *The Coupon Collector's Problem (with Geoff
+Marshall).* <https://www.youtube.com/watch?v=BstloCx8KDk>. How many times
+must you do something random before you have seen every possible result?
+Matt Parker and Geoff Marshall try it on a weekly run. Can you simulate it
+with the tools from this page before they show the formula? About sixteen
+minutes.

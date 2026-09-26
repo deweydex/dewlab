@@ -668,3 +668,16 @@ draws these lists as pictures, and asks when a picture tells the truth.
 
 For another route through the same ideas, the integrated course has
 [Statistics: averages, spread and frequency](tutorial:making-sense-of-data).
+
+## Where to read more
+
+Stand-up Maths (2020). *Does The Average Person Exist?*
+<https://www.youtube.com/watch?v=NbiveCNBOxk>. If you are average in one
+way, how likely are you to be average in many ways at once? Matt Parker
+asks what a mean can and cannot tell us. About thirteen minutes.
+
+CrashCourse (2018). *Mean, Median, and Mode: Measures of Central Tendency:
+Crash Course Statistics #3.*
+<https://www.youtube.com/watch?v=kn83BA7cRNM>. The three averages from
+this page, and when each one gives the fairest picture. About eleven
+minutes.

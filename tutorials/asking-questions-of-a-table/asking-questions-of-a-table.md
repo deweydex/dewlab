@@ -148,3 +148,11 @@ same table back again on the next page.
   name is true.
 - **ORDER BY** sorts a result by one of its columns, `ASC` (the
   default) for smallest first, `DESC` for largest first.
+
+## Where to read more
+
+Spanning Tree (2024). *Understanding B-Trees: The Data Structure Behind
+Modern Databases.* <https://www.youtube.com/watch?v=K1a2Bk8NrYQ>. A
+database can find the rows a WHERE asks for without reading every row,
+because it keeps them in order in a B-tree. Brian Yu shows how that works.
+About thirteen minutes.

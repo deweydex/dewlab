@@ -118,3 +118,10 @@ working contact link.
 | *same-site link* | A link with a filename in `href`, pointing at another page of your own site | `href="about.html"` |
 | *external link* | A link with a full web address in `href`, pointing at another site | `href="https://developer.mozilla.org"` |
 | *mailto: link* | A link that opens an email program, not a page | `href="mailto:hello@example.com"` |
+
+## Where to read more
+
+CrashCourse (2017). *The World Wide Web: Crash Course Computer Science
+#30.* <https://www.youtube.com/watch?v=guvsH5OFizE>. The web was built on
+one idea: a page that links to other pages. This video tells how it began,
+and what a web address is for. About eleven minutes.

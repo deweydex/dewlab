@@ -124,3 +124,10 @@ We can now make an image fit its container at any width, on any screen.
 | `max-width: 100%` | Sets the widest an image may be: the width of its container | `img { max-width: 100%; }` |
 | `height: auto` | Works out the height from the width, so the image keeps its shape as it shrinks | `img { height: auto; }` |
 | *aspect ratio* | The link between an element's width and its height | 500 by 300 |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Resolution.*
+<https://www.youtube.com/watch?v=1unkluyh2Ks>. Captain Disillusion
+explains resolution, the number of pixels in a picture, and asks how many
+pixels a screen really needs. Six minutes.

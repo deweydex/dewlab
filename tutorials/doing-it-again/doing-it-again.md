@@ -694,3 +694,12 @@ inside another, and uses them to count.
 
 For more on loops, the integrated course has
 [Repeating steps with loops](tutorial:repeating-yourself).
+
+## Where to read more
+
+Veritasium (2021). *The Simplest Math Problem No One Can Solve: Collatz
+Conjecture.* <https://www.youtube.com/watch?v=094y1Z2wpJg>. Take a number.
+If it is even, halve it. If it is odd, multiply it by 3 and add 1. Do it
+again, and again. Every number anyone has tried reaches 1, but nobody has
+proved that every number will. It is a `while` loop you can write in four
+lines. About twenty-two minutes.

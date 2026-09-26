@@ -585,3 +585,8 @@ The dewlab page
 [Derivatives: the rate of change of a curve](tutorial:rates-of-change)
 meets the same rules from another direction, with a first look at why
 they hold.
+
+3Blue1Brown (2017). *Visualizing the chain rule and product rule: Chapter
+4, Essence of calculus.* <https://www.youtube.com/watch?v=YG15m2VwSjA>.
+Grant Sanderson draws the sum, product and chain rules as pictures, and
+shows why each one is true. About fifteen minutes.

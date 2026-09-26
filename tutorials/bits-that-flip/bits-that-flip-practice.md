@@ -442,3 +442,11 @@ is enough. When the radio is noisy, and two flips in 128 bits are likely,
 a bit per byte is worth the extra cost.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2020). *The almost impossible chessboard puzzle.*
+<https://www.youtube.com/watch?v=as7Gkm7Y7h4>. A coin on every square of a
+chessboard, a key hidden under one square, and one coin flip to pass a
+message. The answer is built from parity. Think about it for a while
+before you watch. About thirty-two minutes.

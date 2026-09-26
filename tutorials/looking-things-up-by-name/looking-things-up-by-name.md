@@ -697,3 +697,8 @@ Singh, S. (1999). *The Code Book: The Secret History of Codes and
 Codebreaking*. Fourth Estate. Chapter 1 tells how Arab scholars in the
 ninth century cracked substitution ciphers by counting letters, which is
 the challenge above, done by hand.
+
+SimonDev (2021). *Hash Tables, Associative Arrays, and Dictionaries.*
+<https://www.youtube.com/watch?v=S5NY1fqisSY>. How a dictionary finds a
+value from its key without looking through everything, and what happens
+when two keys land in the same place. About twelve minutes.

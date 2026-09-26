@@ -609,3 +609,10 @@ unit before loops are taught.
 
 For another route through the same ideas, the integrated course has
 [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
+
+## Where to read more
+
+Spanning Tree (2020). *Understanding Logic Gates.*
+<https://www.youtube.com/watch?v=INEtYZqtjTo>. NOT, AND, OR and XOR as
+small circuits, each with the truth table from this page. Brian Yu shows
+how computers are built from them. Seven minutes.

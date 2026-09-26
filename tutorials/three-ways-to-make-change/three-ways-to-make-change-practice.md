@@ -159,3 +159,10 @@ the choice that goes wrong with `TOKENS = [1, 3, 4]` at `amount=6`.
 Taking the `4` first closes off the two-token answer, `3 + 3`, for good.
 
 </details>
+
+## Where to read more
+
+SimonDev (2021). *What can "The Simpsons" teach us about Dynamic
+Programming?* <https://www.youtube.com/watch?v=6z4ePR7YYa8>. SimonDev
+steps through a few problems that repeat the same work, and shows how
+remembering answers saves it. About fifteen minutes.

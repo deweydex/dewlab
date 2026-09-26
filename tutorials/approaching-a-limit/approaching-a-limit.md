@@ -449,3 +449,8 @@ Limits, L'Hôpital's Rule, and Epsilon Delta Definitions.*
 <https://www.youtube.com/watch?v=kfF40MiS7zA>. The formal definition
 behind the "getting closer without arriving" this page does by trying
 numbers.
+
+Up and Atom (2020). *3 Paradoxes That Gave Us Calculus.*
+<https://www.youtube.com/watch?v=EbHqtENNnSY>. Jade Tan-Holmes tells three
+old puzzles about the infinitely small, and shows how trying to answer
+them led to the limit. About fourteen minutes.

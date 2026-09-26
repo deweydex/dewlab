@@ -471,3 +471,11 @@ It is a measurement of the circle. It is not a conversion factor that
 somebody chose.
 
 </details>
+
+## Where to read more
+
+Stand-up Maths (2022). *What is wrong with this sine memorisation
+pattern?* <https://www.youtube.com/watch?v=PDLQadz1KCc>. A popular pattern
+for remembering the sines of the landmark angles. Check it against your
+own values first. Then watch Matt Parker ask what is wrong with it. About
+twelve minutes.

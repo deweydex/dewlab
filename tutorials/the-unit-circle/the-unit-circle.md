@@ -549,3 +549,8 @@ coordinates this page builds, introduced from SOH CAH TOA instead.
 Khan Academy. *Introduction to Radians.*
 <https://www.youtube.com/watch?v=EnwWxMZVBeg>. Why a full turn is `2π`
 radians, covered a second way.
+
+SimonDev (2023). *So how does your computer ACTUALLY compute sine?*
+<https://www.youtube.com/watch?v=kkMt4lrJzs8>. Sine and cosine on the unit
+circle, and then the question this page leaves open: how does a computer
+find the sine of an angle at all? About eight minutes.

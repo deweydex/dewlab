@@ -552,3 +552,9 @@ The dewlab page
 [Derivatives: the rate of change of a curve](tutorial:rates-of-change),
 from another course, meets the derivative as a slope and a speed, and
 goes on to the rules.
+
+3Blue1Brown (2017). *The paradox of the derivative: Chapter 2, Essence of
+calculus.* <https://www.youtube.com/watch?v=9vKqVkMQHKk>. What can "speed
+at one moment" mean, when speed needs two moments to measure? Grant
+Sanderson answers with a step that shrinks, the idea this page uses. About
+seventeen minutes.

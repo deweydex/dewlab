@@ -477,3 +477,8 @@ The dewlab page
 [Limits: getting closer without arriving](tutorial:approaching-a-limit),
 from another course, meets the same holes and uses a limit to find the
 speed of a falling ball.
+
+Up and Atom (2020). *3 Paradoxes That Gave Us Calculus.*
+<https://www.youtube.com/watch?v=EbHqtENNnSY>. Jade Tan-Holmes starts
+where this page starts, going halfway and then halfway again, and follows
+two more old puzzles to the limit. About fourteen minutes.
