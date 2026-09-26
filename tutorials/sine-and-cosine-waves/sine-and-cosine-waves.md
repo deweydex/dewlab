@@ -1,7 +1,8 @@
 ---
 title: "Sine and cosine waves: amplitude, period and shift"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+datasets: [daylight, dublin-tides]
 covers:
   unrolling-the-circle:
     covers: [MIT-3.3]
@@ -11,86 +12,77 @@ covers:
     covers: [MIT-3.3]
   where-a-wave-comes-from:
     covers: [MIT-3.3]
+  waves-in-your-world:
+    covers: [MIT-3.3]
+worlds:
+  sea-and-sky: Daylight in Dublin, and the tide at Dublin Port, both measured.
+  sound: The notes of a guitar, and the waves they make in the air.
+  planets-and-moons: Daylight in Cape Town, on the other side of the equator, measured.
+  fantasy-maps: The windmill beside the castle, and the height of a sail's tip. The numbers are made up.
 ---
 
 # Sine and cosine waves: amplitude, period and shift
 
 In [The unit circle: sine, cosine and tangent](tutorial:the-unit-circle)
-we defined sine and cosine. On this page we look at what they look like
-when we draw them, and at what we can do to that shape.
-
-These are two different kinds of work. The circle page was a careful
-argument about coordinates. This page is more like an experiment: change
-a number, look at what happened, then change it back. Each kind of work
-needs room, and that is why there are two pages.
-
-On this page we:
-
-- unroll the circle into a wave
-- see why the wave repeats
-- change four numbers that control the wave's shape
-- fit a wave to some real data
-- look at tangent, and see why it is not a wave
-
-## Unrolling the circle
-
-Take the point going round the circle again. This time, instead of
-drawing where the point is, we draw how high it is against how far round
-it has gone.
+a point went round a circle, and we wrote down how far across and how
+far up it was. What happens if we draw how high the point is against how
+far round it has gone? Watch the point on the left, and the curve on the
+right.
 
 ```python exec
 id: unrolling-the-circle-1
 import math
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
-def unit_point(turns):
-    angle = turns * 2 * math.pi
-    return (math.cos(angle), math.sin(angle))
+frames = 24
+angles = [2 * math.pi * k / frames for k in range(frames + 1)]
 
-
-fig, (left, right) = plt.subplots(1, 2, figsize=(10, 4.5))
-
-# On the left: the circle, with a few points marked.
-circle = [unit_point(t / 300) for t in range(301)]
-left.plot([p[0] for p in circle], [p[1] for p in circle], color="lightgrey", linewidth=2)
-marks = [0.05, 0.15, 0.30, 0.45, 0.60, 0.80]
-for t in marks:
-    x, y = unit_point(t)
-    left.plot([0, x], [0, y], color="tab:orange", linewidth=1)
-    left.plot([x], [y], "o", color="tab:orange")
+figure, (left, right) = plt.subplots(1, 2, figsize=(5.5, 2.4),
+                                     gridspec_kw={"width_ratios": [1, 2]})
+rim = [2 * math.pi * k / 100 for k in range(101)]
+left.plot([math.cos(a) for a in rim], [math.sin(a) for a in rim], color="lightgrey")
 left.set_aspect("equal")
-left.axhline(0, color="black", linewidth=0.6)
-left.axvline(0, color="black", linewidth=0.6)
-left.set_title("Where the point is")
-
-# On the right: how high it is, against how far round.
-turns = [t / 300 for t in range(301)]
-right.plot(turns, [unit_point(t)[1] for t in turns], linewidth=2)
-for t in marks:
-    right.plot([t], [unit_point(t)[1]], "o", color="tab:orange")
+left.set_xlim(-1.2, 1.2)
+left.set_ylim(-1.2, 1.2)
+right.set_xlim(0, 2 * math.pi)
+right.set_ylim(-1.2, 1.2)
 right.axhline(0, color="black", linewidth=0.6)
-right.grid(alpha=0.3)
-right.set_xlabel("turns")
-right.set_title("How high it is")
+right.set_xlabel("distance round (radians)")
+
+hand, = left.plot([], [], color="tab:orange")
+curve, = right.plot([], [], color="tab:blue")
+dot, = right.plot([], [], "o", color="tab:orange")
+
+
+def draw_step(k):
+    a = angles[k]
+    hand.set_data([0, math.cos(a)], [0, math.sin(a)])
+    curve.set_data(angles[:k + 1], [math.sin(b) for b in angles[:k + 1]])
+    dot.set_data([a], [math.sin(a)])
+
+
+FuncAnimation(figure, draw_step, frames=frames, interval=120)
 ```
 
-The orange dots show the same six moments in both pictures. On the left
-they go round the circle. On the right, their heights are laid out side
-by side.
+The orange dot on the right is always as high as the tip of the hand on
+the left. As the hand goes round, the dot moves along, and the curve it
+leaves behind is the sine. Nothing new has been defined. The curve is
+the up column of the table on the circle page, with the angle along the
+bottom.
 
-We have not defined anything new. The right-hand curve is the up column
-(the sine) from the table on the circle page. The only difference is that
-the angle now runs along the bottom, instead of sitting in a column
-beside it.
+Can you change `frames = 24` to 12, and see the separate steps? What
+happens if `draw_step` uses `math.cos` in place of `math.sin` for the
+curve and the dot?
 
-What do you think we get if we do the same with the across column?
+What do you think we get if we draw the across column as well?
 
 ```python exec
 id: unrolling-the-circle-2
 fig, ax = plt.subplots(figsize=(8, 4))
 turns = [t / 300 for t in range(301)]
-ax.plot(turns, [unit_point(t)[1] for t in turns], linewidth=2, label="up (sine)")
-ax.plot(turns, [unit_point(t)[0] for t in turns], linewidth=2, label="across (cosine)")
+ax.plot(turns, [math.sin(t * 2 * math.pi) for t in turns], linewidth=2, label="up (sine)")
+ax.plot(turns, [math.cos(t * 2 * math.pi) for t in turns], linewidth=2, label="across (cosine)")
 ax.axhline(0, color="black", linewidth=0.8)
 ax.grid(alpha=0.3)
 ax.legend()
@@ -98,7 +90,7 @@ ax.set_xlabel("turns")
 ax.set_title("Both columns, unrolled")
 ```
 
-We get the other curve, the cosine. The two curves have the same shape,
+We get a second curve, the cosine. The two curves have the same shape,
 moved along by a quarter of a turn. Why does that make sense? The point
 is furthest across at the start, and it reaches its highest point a
 quarter turn later.
@@ -120,38 +112,59 @@ ax.set_xlabel("turns")
 ax.set_title("Three turns forward, one turn back")
 ```
 
-The curve repeats exactly, every turn, forever, in both directions.
+The curve repeats exactly, every turn, in both directions.
 
-This is not an accident. It happens because the point goes round a
-circle. After a full turn you are back
-at the same point, so you must be at the same height. So the curve must
-do the same thing again.
+This happens because the point goes round a circle. After a full turn
+you are back at the same point, so you must be at the same height, and
+the curve must do the same thing again.
 
 A curve that repeats exactly like this is *periodic*. The length of one
 repeat is its *period*. For sine and cosine as we have drawn them, the
 period is one turn. That is $2\pi$ radians, or 360 degrees, depending on
 which unit you count in.
 
+So what is $\sin(10\pi)$? $10\pi$ is five whole turns.
+
+```python exec
+id: why-it-repeats-2
+print(math.sin(10 * math.pi))
+```
+
+```predict
+type: number
+tolerance: 0.000001
+
+What will the cell print?
+```
+
+Python prints `-1.2246467991473533e-15`. The `e-15` means "times
+$10^{-15}$", so this is $-0.0000000000000012$. Five whole turns bring the
+point back to $(1, 0)$, where the up value is 0. Python's `math.pi` is a
+decimal, a tiny bit away from the real $\pi$, so the answer is a tiny
+bit away from 0.
+
 ### Your turn
 
-What is $\sin(10\pi)$? What is $\cos(4\pi)$? Can you answer without
-plotting anything?
-
-1. Write your reasoning as a comment in the cell.
-2. Then remove the `#` from the two `print` lines and run the cell to
-   check.
+What is $\cos(4\pi)$? What about $\sin(2.5\pi)$? Can you answer without
+plotting anything? Write your reasoning as a comment first. Then
+remove the `#` from the two `print` lines, and run the cell.
 
 ```python exec
 id: your-turn-1
 # Your reasoning as a comment.
-# print(math.sin(10 * math.pi))
 # print(math.cos(4 * math.pi))
+# print(math.sin(2.5 * math.pi))
 ```
 
-If Python prints a tiny number such as `-1.2246467991473533e-15`, read it
-as 0. The `e-15` means "times $10^{-15}$". Python's `math.pi` is a
-decimal, a tiny bit away from the real $\pi$, so the answer differs from
-0 by a very tiny amount.
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
+
+$4\pi$ is two whole turns, so the point is back at $(1, 0)$, and the
+cosine is 1. $2.5\pi$ is one whole turn and a quarter more, so the point
+is at the top of the circle, $(0, 1)$, and the sine is 1.
+
+</details>
 
 ## The four numbers
 
@@ -168,15 +181,14 @@ $\frac{2\pi}{B}$. For example, $B = 2$ gives a period of
 $\frac{2\pi}{2} = \pi$, which is half a turn. So a bigger $B$ means a
 shorter repeat.
 
-Instead of learning what each letter does from a list, let's build the
-function and change the numbers one at a time. Our `wave` function takes
-the period directly, measured in turns, because that is easier to read
-from a picture.
+Let's build the function and change the numbers one at a time. Our
+`wave` function takes the period itself, in the same units as $x$,
+because that is easier to read from a picture.
 
 ```python exec
 id: the-four-numbers-1
 def wave(amplitude=1, period=1, shift=0, lift=0):
-    """A sine wave with the four numbers as arguments, in turns."""
+    """A sine wave with the four numbers as arguments."""
     def f(x):
         return amplitude * math.sin((x - shift) / period * 2 * math.pi) + lift
     return f
@@ -227,8 +239,8 @@ draw(wave(lift=-1), label="lift -1", ax=ax)
 ax.set_title("Lift: sliding it up and down")
 ```
 
-Did you notice? There are four numbers, and each one has its own separate
-effect. None of them changes what the others do.
+Each of the four numbers has its own separate effect. None of them
+changes what the others do.
 
 | Number | In the formula | What it does |
 |---|---|---|
@@ -237,41 +249,45 @@ effect. None of them changes what the others do.
 | shift | $C$ | slides the wave left or right |
 | lift | $D$ | slides the wave up or down |
 
-You have seen this pattern before: one number, one visible change. It
-happened with lines in [Functions and their graphs](tutorial:drawing-functions),
-and with quadratics in [Parabolas: completing the square](tutorial:parabolas).
-This is the third time. Families of curves are usually built this way,
-so the pattern appears often in mathematics.
+The same pattern, one number and one visible change, happened with lines
+in [Functions and their graphs](tutorial:drawing-functions), and with
+quadratics in [Parabolas: completing the square](tutorial:parabolas).
 
-A note on the names. The *amplitude* is how far the wave swings from its
-middle line. It is not the height from top to bottom, so a wave of
-amplitude 2 is 4 tall in total. What we call `shift` here usually has the
-name *phase*.
+A note on the names. The wave swings up and down about a middle line,
+$y = D$. That line is called the *midline*, and moving it is called a
+*vertical shift*. So `lift` is the vertical shift. The *amplitude* is
+how far the wave swings from its midline. It is not the height from top
+to bottom, so a wave of amplitude 2 is 4 tall in total. What we call
+`shift` is a sideways shift, and it usually has the name *phase*.
 
-One more fact is useful later. A sine wave crosses its middle line going
-up at $x = C$, and it reaches its peak a quarter of a period after that.
+Here is a wave with an amplitude of 1.5 and a lift of 0.5. The cell
+finds the highest value it reaches.
 
 ```python exec
 id: the-four-numbers-5
-# All four at once.
-mystery = wave(amplitude=1.5, period=0.8, shift=0.2, lift=0.5)
-ax = draw(mystery, label="all four changed")
-ax.set_title("A wave with all four numbers set")
+tallest = wave(amplitude=1.5, lift=0.5)
+print(max(tallest(x / 100) for x in range(100)))
 ```
+
+```predict
+type: number
+tolerance: 0.01
+
+What is the highest value the wave reaches?
+```
+
+The wave swings 1.5 above its midline, and the midline is at 0.5, so the
+top is at 2.0. The bottom is at $0.5 - 1.5 = -1$.
+
+One more fact is useful later. A sine wave crosses its midline going up
+at $x = C$, and it reaches its peak a quarter of a period after that.
 
 ### Your turn
 
-The cell below draws four waves, without showing their numbers. How
-might you find the four numbers for each one, by reading the picture?
-
-1. Run the cell to see the four waves.
-2. For each wave, read the amplitude, period, shift and lift from the
-   picture.
-3. In the next cell, make your own wave with those numbers.
-4. Draw it over the original, for example with
-   `draw(mine, ax=axes[0, 0])` for the top-left wave, and put `fig` on
-   the last line to show the pictures again. Does your wave land on top
-   of the original?
+The cell below draws four waves, without showing their numbers. It also
+defines `gap_to_data`, which measures how far a curve is from some
+points, on average. How might you find the four numbers for each wave,
+by reading the picture?
 
 ```python exec
 id: your-turn-2
@@ -289,47 +305,101 @@ for _ in range(4):
     answers.append((amplitude, period, shift, lift))
     targets.append(wave(amplitude, period, shift, lift))
 
+xs = [i / 200 for i in range(-100, 501)]
+
+
+def gap_to_data(curve, xs, ys):
+    """The average distance between a curve and some measured points."""
+    total = 0
+    for i in range(len(xs)):
+        total += abs(curve(xs[i]) - ys[i])
+    return total / len(xs)
+
+
 fig, axes = plt.subplots(2, 2, figsize=(10, 6))
-for target, cell in zip(targets, axes.flat):
+for i in range(4):
+    cell = axes.flat[i]
     cell.axhline(0, color="black", linewidth=0.8)
     cell.grid(alpha=0.3)
-    xs = [i / 200 for i in range(-100, 501)]
-    cell.plot(xs, [target(x) for x in xs])
+    cell.plot(xs, [targets[i](x) for x in xs])
     cell.set_ylim(-4.5, 4.5)
+    cell.set_title(f"wave {i}")
 fig
 ```
 
+Read the four numbers of a wave from its picture. Then move the four
+sliders to make your own wave with them. The cell draws your wave over
+the target and measures the gap between them. The gap is 0 when your
+wave lies exactly on the target. When it is not 0, which part of your
+wave is furthest away? The last slider chooses which of the four waves
+to aim at.
+
 ```python exec
 id: your-turn-3
-# Your guesses. Plot each over its target and see whether it lands.
-# mine = wave(amplitude=?, period=?, shift=?, lift=?)
+amplitude = slider("amplitude", 0.0, 3.0, step=0.1, value=1.0)
+period = slider("period", 0.25, 2.5, step=0.05, value=1.0)
+shift = slider("shift", -1.0, 1.0, step=0.05, value=0.0)
+lift = slider("lift", -2.0, 2.0, step=0.1, value=0.0)
+which = slider("which wave", 0, 3)
 
-# When you have tried all four, print(answers) shows the numbers the
-# cell chose. Yours can be different and still land on top. How?
+mine = wave(amplitude.value, period.value, shift.value, lift.value)
+target = targets[which.value]
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(xs, [target(x) for x in xs], linewidth=4, alpha=0.4, label=f"wave {which.value}")
+ax.plot(xs, [mine(x) for x in xs], label="mine")
+ax.set_ylim(-4.5, 4.5)
+ax.grid(alpha=0.3)
+ax.legend(fontsize=8)
+print("gap:", round(gap_to_data(mine, xs, [target(x) for x in xs]), 3))
+```
+
+When you have tried all four, `print(answers)` in a new cell shows the
+numbers the page chose. Yours can be different and still give a gap of
+0. How?
+
+```hint
+Start with the midline. Where is the middle of the wave, halfway
+between its top and its bottom? That is the lift. How far is the top
+above the midline?
+```
+
+```hint
+after: 2 minutes
+title: Reading the other two
+
+The period is the distance from one peak to the next. For the shift,
+find a place where the wave crosses its midline going up. Any one of
+them works, and that is why two different shifts can both give a gap
+of 0.
 ```
 
 ## Where a wave comes from
 
-Why would anybody want this?
+Why would anybody want this? When we draw anything that goes round and
+comes back, with time along the bottom, we get a wave. Daylight through
+the year, the tides, a spinning motor, a sound and an alternating
+current all make waves.
 
-When we draw anything that goes round and comes back, with time along the bottom, we
-get a wave. Each of these is something going round in a circle, drawn
-flat: daylight through the year, the tides, a spinning motor, a sound,
-an alternating current.
+Here is a year of daylight in Dublin: the hours from sunrise to sunset,
+on every day of 2026. The numbers come from the copy of the file saved
+on {{snapshot: daylight}}.
 
 ```python exec
 id: where-a-wave-comes-from-1
-# Hours of daylight in Dublin, roughly, by month.
-daylight = [7.8, 9.5, 11.6, 13.8, 15.8, 16.9, 16.4, 14.7, 12.6, 10.5, 8.6, 7.4]
-months = list(range(12))
+table = await load_csv("daylight.csv")
+hours = table[table.place == "Dublin"]["daylight_hours"].tolist()
+days = list(range(len(hours)))    # day 0 is 1 January
 
 fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(months, daylight, "o-", markersize=7, label="daylight hours")
+ax.plot(days, hours, ".", markersize=3, label="daylight in Dublin")
 ax.grid(alpha=0.3)
-ax.set_xlabel("month (0 = January)")
+ax.set_xlabel("day of 2026 (0 = 1 January)")
 ax.set_ylabel("hours")
 ax.legend()
 ax.set_title("A year of daylight in Dublin")
+print("longest:", max(hours), "hours, on day", hours.index(max(hours)))
+print("shortest:", min(hours), "hours, on day", hours.index(min(hours)))
 ```
 
 Does that shape look familiar?
@@ -338,62 +408,267 @@ The Earth goes round the Sun once a year, and its axis is tilted. The
 tilt always points the same way in space. So for half the year, our
 half of the Earth leans towards the Sun, and the days are long. For the
 other half, it leans away, and the days are short. The lean changes
-smoothly and comes back every year, so we expect a wave. Fitting a wave
-means finding its four numbers. The comments in
-the next cell read each number from the data.
+smoothly and comes back every year, so we expect a wave. There is
+[a closer look at the seasons](tutorial:why-we-have-seasons) that tests
+this against another idea many people hold.
+
+Fitting a wave means finding its four numbers. We can read each one from
+the data:
+
+- The midline is halfway between the longest day, 17.02 hours, and the
+  shortest, 7.5 hours. That is 12.26, so the lift is 12.26.
+- The amplitude is how far the longest day is above the midline:
+  $17.02 - 12.26 = 4.76$.
+- The wave repeats once a year, so the period is 365 days.
+- The longest day is day 171, which is 21 June. A sine wave peaks a
+  quarter of a period after its shift, and a quarter of 365 is 91.25.
+  So the shift is $171 - 91.25 = 79.75$.
 
 ```python exec
 id: where-a-wave-comes-from-2
-def fitted(amplitude, period, shift, lift):
-    def f(month):
-        return amplitude * math.sin((month - shift) / period * 2 * math.pi) + lift
-    return f
-
-
-# A first attempt. The four numbers are readable off the data:
-#   the highest is about 17 and the lowest about 7, so the middle is 12
-#   and it swings about 5 either way;
-#   it repeats once a year, so the period is 12 months;
-#   it peaks in June, which is month 5 here (0 = January). A sine wave
-#   peaks a quarter of a period after its shift, and a quarter of 12
-#   months is 3, so the shift is 5 - 3 = 2.
-guess = fitted(amplitude=5, period=12, shift=2, lift=12)
+guess = wave(amplitude=4.76, period=365, shift=79.75, lift=12.26)
 
 fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(months, daylight, "o", markersize=7, label="real")
-fine = [m / 10 for m in range(121)]
-ax.plot(fine, [guess(m) for m in fine], label="a wave with four numbers in it")
+ax.plot(days, hours, ".", markersize=3, label="measured")
+ax.plot(days, [guess(d) for d in days], label="a wave with four numbers in it")
+ax.axhline(12.26, color="grey", linestyle=":", label="the midline")
 ax.grid(alpha=0.3)
-ax.legend()
-ax.set_xlabel("month")
+ax.legend(fontsize=8)
+ax.set_xlabel("day of 2026")
 ax.set_title("Fitting a wave to data")
+
+print("gap:", round(gap_to_data(guess, days, hours) * 60, 1), "minutes")
 ```
 
-It is not perfect, but it is close enough to be useful. We did not
-compute any of the four numbers. We read each one from the data: the
-middle, the swing, the repeat, and where the peak is.
+The wave is close. On an average day it is about 10 minutes away from
+the measured daylight. We did not compute any of the four numbers. We
+read each one from the data.
+
+Look at the shift, day 79.75. The wave crosses its midline going up on
+about 21 March. That is close to the spring *equinox*, on 20 March in
+2026, when the Sun is straight above the equator. Its name comes from
+the Latin for "equal night".
 
 ### Your turn
 
-Can you change the four numbers until the curve sits better on the
-points? There is no formula for this. Look at where the curve is wrong,
-and change the number that controls that part.
+Can you move the sliders until the gap is smaller? The period stays at
+365 days, and the sliders change the other three numbers. There is no
+formula for this. Look at where the curve is furthest from the points,
+and change the number that controls that part. How small can you make
+the gap? Why can it never be 0?
 
 ```python exec
 id: your-turn-4
-# better = fitted(amplitude=?, period=?, shift=?, lift=?)
-#
-# fig, ax = plt.subplots(figsize=(8, 4))
-# ax.plot(months, daylight, "o", markersize=7, label="real")
-# fine = [m / 10 for m in range(121)]
-# ax.plot(fine, [better(m) for m in fine], label="mine")
-# ax.legend()
-# ax.grid(alpha=0.3)
+amplitude = slider("amplitude", 3.0, 6.0, step=0.02, value=4.76)
+shift = slider("shift", 60.0, 100.0, step=0.25, value=79.75)
+lift = slider("lift", 11.0, 13.5, step=0.01, value=12.26)
+
+better = wave(amplitude.value, 365, shift.value, lift.value)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(days, hours, ".", markersize=3, label="measured")
+ax.plot(days, [better(d) for d in days], label="mine")
+ax.set_ylim(6, 18)
+ax.legend()
+ax.grid(alpha=0.3)
+print("gap:", round(gap_to_data(better, days, hours) * 60, 1), "minutes")
 ```
 
-When you fit by eye, you do by hand what a fitting algorithm does
-automatically. It is worth doing once by hand, so that the automatic
-version is not a mystery.
+<details class="dl-answer"><summary>one way to think about it</summary>
+
+Here is one answer. Yours may be different and work too.
+
+Near the longest and shortest days, the measured points are flatter than
+the wave: they stay near the top and bottom for longer. A smaller
+amplitude, about 4.5, brings the wave closer there, and the gap falls to
+about 7 minutes. It cannot reach 0, because daylight through a year is
+not exactly a sine wave. The wave is a model of the data, and the gap
+says how close the model is.
+
+</details>
+
+## Waves in your world
+
+<div class="dl-world" data-world="sea-and-sky">
+
+The tide rises and falls at Dublin Port about twice a day. The cell
+loads two days of it, 1 and 2 March 2026, one reading an hour. The
+numbers come from the copy of the file saved on
+{{snapshot: dublin-tides}}. Can you read the four numbers from the
+picture, and make `tide`, a wave with a small gap? Keep the gap, in
+metres, as `tide_gap`.
+
+```python exec
+id: waves-in-your-world-1--sea-and-sky
+tides = await load_csv("dublin-tides.csv")
+levels = tides["level_m"].tolist()[:48]    # the first two days
+hours_since = list(range(48))
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(hours_since, levels, "o-", markersize=3)
+ax.grid(alpha=0.3)
+ax.set_xlabel("hours since midnight on 1 March")
+ax.set_ylabel("metres")
+```
+
+```hint
+How many high tides are there in two days? The period is the time from
+one high tide to the next. It is not a whole number of hours.
+```
+
+```inputs
+round(tide(0), 2)
+round(tide(10), 2)
+round(tide_gap, 2)
+```
+
+```solution
+tide = wave(amplitude=1.5, period=12.42, shift=6.75, lift=2.75)
+tide_gap = gap_to_data(tide, hours_since, levels)
+print("gap:", tide_gap, "metres")
+---
+Here is one set of numbers, found by trying: an amplitude of 1.5 m, a
+period of 12.42 hours, a shift of 6.75 hours and a lift of 2.75 m. The
+gap is about 0.16 m. Numbers read from the picture, with a period of
+about 12.4 hours, give a gap of about 0.26 m. One high tide is higher
+than the next, which no single wave can match. The period of 12.42
+hours, 12 hours and 25 minutes, comes from the Moon.
+```
+
+</div>
+
+<div class="dl-world" data-world="sound">
+
+A sound is a wave in the air. The air's pressure rises and falls very
+fast, hundreds of times a second. The number of waves each second is
+the *frequency*, measured in hertz (Hz). The cell draws a note from a
+guitar for one hundredth of a second. Can you read its period from the
+picture, in milliseconds? Then write `frequency_from_period(ms)`. Which
+note is it: A at 440 Hz, E at 330 Hz, or D at 294 Hz?
+
+```python exec
+id: waves-in-your-world-1--sound
+mystery = wave(amplitude=1, period=1 / 330)
+seconds = [i / 100000 for i in range(1001)]
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot([s * 1000 for s in seconds], [mystery(s) for s in seconds])
+ax.grid(alpha=0.3)
+ax.set_xlabel("milliseconds")
+```
+
+```hint
+How many whole waves fit in the 10 milliseconds? The period is 10 ms
+divided by that. A frequency is waves each second, and a second is 1000
+milliseconds.
+```
+
+```inputs
+frequency_from_period(3.03)
+frequency_from_period(2.27)
+frequency_from_period(1000)
+```
+
+```solution
+def frequency_from_period(ms):
+    return 1000 / ms
+---
+About 3.3 waves fit in 10 ms, so the period is about 3.03 ms, and the
+frequency is $1000 \div 3.03 \approx 330$ Hz. The note is E. A at 440 Hz
+has a period of about 2.27 ms.
+```
+
+</div>
+
+<div class="dl-world" data-world="planets-and-moons">
+
+Cape Town is far south of the equator. The cell loads its daylight for
+2026, from the same file as Dublin's. Can you read the four numbers
+from the picture, and make `cape`, a wave with a small gap? Keep the
+gap, in minutes, as `cape_gap`. What is different about the shift, and
+why?
+
+```python exec
+id: waves-in-your-world-1--planets-and-moons
+cape_hours = table[table.place == "Cape Town"]["daylight_hours"].tolist()
+
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(days, cape_hours, ".", markersize=3)
+ax.grid(alpha=0.3)
+ax.set_xlabel("day of 2026 (0 = 1 January)")
+print("longest:", max(cape_hours), "on day", cape_hours.index(max(cape_hours)))
+print("shortest:", min(cape_hours), "on day", cape_hours.index(min(cape_hours)))
+```
+
+```hint
+Read the numbers as we did for Dublin: the midline, the amplitude, the
+period, and the day of the longest day. The shift is a quarter of a
+year before the longest day.
+```
+
+```inputs
+round(cape(0), 2)
+round(cape(172), 2)
+round(cape_gap, 1)
+```
+
+```solution
+cape = wave(amplitude=2.27, period=365, shift=257.75, lift=12.15)
+cape_gap = gap_to_data(cape, days, cape_hours) * 60
+print("gap:", cape_gap, "minutes")
+---
+The longest day is 14.42 hours, on day 349 in mid-December, and the
+shortest is 9.88 hours, in June. So the midline is 12.15, the amplitude
+is 2.27, and the shift is $349 - 91.25 = 257.75$, in mid-September. The
+gap is about 7.3 minutes. The shift is half a year from Dublin's,
+because when the north leans towards the Sun, the south leans away. The
+amplitude is smaller, because Cape Town is closer to the equator than
+Dublin is.
+```
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The windmill beside the castle has sails 6 m long, turning round a hub
+10 m above the ground, once every 8 seconds. At 0 seconds a sail points
+straight out to the right, and it turns anticlockwise. The height of
+its tip is a wave. What are its four numbers? Can you write
+`tip_height(seconds)` with `wave`, and draw 16 seconds of it?
+
+```python exec
+id: waves-in-your-world-1--fantasy-maps
+hub_height = 10    # metres
+sail = 6           # metres
+turn_seconds = 8
+```
+
+```hint
+Which of the four numbers is the hub's height? Which is the sail's
+length? The tip starts on the midline, going up.
+```
+
+```inputs
+round(tip_height(0), 2)
+round(tip_height(2), 2)
+round(tip_height(6), 2)
+```
+
+```solution
+tip_height = wave(amplitude=sail, period=turn_seconds, shift=0, lift=hub_height)
+
+seconds = [i / 10 for i in range(161)]
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot(seconds, [tip_height(s) for s in seconds])
+ax.grid(alpha=0.3)
+---
+The amplitude is the sail, 6 m. The period is 8 seconds. The shift is
+0, because the tip starts on the midline going up. The lift is the
+hub's height, 10 m, which is the midline. The tip is 16 m up after 2
+seconds and 4 m up after 6.
+```
+
+</div>
 
 ## Tangent, briefly
 
@@ -422,33 +697,77 @@ limit, and then it comes back from the other side. The red lines are a
 quarter turn, three quarters of a turn, and so on, half a turn apart.
 
 At those red lines, the point on the circle is straight up or straight
-down. So the across value is zero, and a slope of "up divided by nothing"
-has no value. It is the same fact as the vertical line in
-[Straight lines: slope, midpoint and distance](tutorial:lines-and-distances).
-This is the third time we meet it.
+down. So the across value is zero, and a slope of "up divided by
+nothing" has no value. It is the vertical line from
+[Straight lines: slope, and the line that breaks the formula](tutorial:slope-and-lines)
+again.
 
-## Reflection
+## Two waves at once
 
-On this page we laid the circle out flat.
+Here is something to try if you have time. What happens when we add two
+waves together? A guitar chord is several notes at once, and each note
+is a wave. The cell adds an A, at 440 Hz, to an E above it, at 660 Hz.
 
-**A wave is a circle drawn against time.** That is why it repeats. After
-a full turn you are back where you started, so the picture must do the
-same thing again.
+```python exec
+id: two-waves-at-once-1
+a_note = wave(period=1 / 440)
+e_note = wave(period=1 / 660)
+seconds = [i / 200000 for i in range(2001)]    # one hundredth of a second
 
-**Four numbers have four separate effects.** Amplitude, period, phase and
-lift each do their own job, and none of them changes the others. We saw
-the same pattern with lines and quadratics, so this is the third time.
+fig, ax = plt.subplots(figsize=(8, 3.5))
+ax.plot([s * 1000 for s in seconds], [a_note(s) + e_note(s) for s in seconds])
+ax.grid(alpha=0.3)
+ax.set_xlabel("milliseconds")
+ax.set_title("Two notes at once")
+```
 
-**Real periodic data is a wave with four numbers in it.** You can read
-all four from the data by looking: the middle, the swing, the repeat, and
-where the peak is.
+The sum is not a sine wave, but it still repeats. How long is one
+repeat? It is about 4.5 milliseconds, which is $\frac{1}{220}$ of a
+second: two waves of the A, and three of the E. Notes whose frequencies
+make a simple fraction, such as $\frac{660}{440} = \frac{3}{2}$, add up
+to a wave that repeats quickly, and many people hear them as sounding
+well together.
 
-**Tangent is not one of these.** It repeats without swinging. It has no
-value where a vertical line has no slope.
+What happens if you change 660 to 444, so the two notes are very close?
+Try a whole second, `range(200001)`, in place of a hundredth. The two
+waves go in and out of step four times a second. Musicians hear this
+as *beats*, and use it to tune one string to another.
+
+## Looking back
+
+A wave is a circle drawn against time, so it repeats. Its four numbers
+each have their own job: the amplitude, the period, the shift, and the
+lift, which moves the midline. Measured data, such as daylight, is close
+to a wave, and the gap says how close.
 
 Think of something in your own life that repeats. Would it make a wave if
-you plotted it? If not, how would its shape be different? Write a few
-sentences.
+you plotted it? If not, how would its shape be different?
+
+A challenge: the file has daylight for four places, Reykjavik, Dublin,
+Accra and Cape Town. Can you fit a wave to each, and put all four on one
+picture? Which of the four numbers changes most from place to place, and
+why?
+
+```python challenge
+import math
+import matplotlib.pyplot as plt
+
+table = await load_csv("daylight.csv")
+places = ["Reykjavik", "Dublin", "Accra", "Cape Town"]
+
+
+def wave(amplitude=1, period=1, shift=0, lift=0):
+    def f(x):
+        return amplitude * math.sin((x - shift) / period * 2 * math.pi) + lift
+    return f
+
+
+fig, ax = plt.subplots(figsize=(8, 4))
+for place in places:
+    hours = table[table.place == place]["daylight_hours"].tolist()
+    ax.plot(range(len(hours)), hours, ".", markersize=2, label=place)
+ax.legend()
+```
 
 ## Where to read more
 
