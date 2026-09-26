@@ -640,3 +640,69 @@ the first version: only the test noticed. Without the test, 14 would have
 looked like a fine answer. That is what a test is for.
 
 </details>
+
+**18. Make.** A Gaelic football or hurling score has two parts, goals
+and points, and a goal is worth 3 points. So a scoreboard showing
+`2-11` means two goals and eleven points: 17 points in all. Write
+`gaa_total(goals, points)`. Then use it on a match where the board
+shows `1-15` against `3-08`. Before you run it, which team do you think
+is ahead?
+
+```python exec
+id: mixed-instructions-gaa
+def gaa_total(goals, points):
+    """Give a GAA score as one number of points: a goal is worth 3."""
+    ...
+
+
+print(gaa_total(1, 15), gaa_total(3, 8))
+```
+
+Then draw `2-11` on the display from problem 11. The dash is a
+"digit" with only segment g lit.
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. The total is three for every goal, plus the points.
+2. For the display, the goals take one digit and the points take two.
+   Name them with `digit_at`, as in problem 11.
+3. The dash has no pattern in `segment_table`. Its three rows are
+   `"   "`, `" _ "` and `"   "`.
+
+**Think about:** the team with more goals is behind. How many points
+would the team with three goals need to catch up?
+
+</details>
+
+<details class="dl-answer"><summary>one way through</summary>
+
+```python
+def gaa_total(goals, points):
+    """Give a GAA score as one number of points: a goal is worth 3."""
+    return 3 * goals + points
+
+
+print(gaa_total(1, 15), gaa_total(3, 8))
+
+goals, points = 2, 11
+tens = digit_at(points, 1)
+ones = digit_at(points, 0)
+print(top_row(goals) + " " + "   " + " " + top_row(tens) + " " + top_row(ones))
+print(middle_row(goals) + " " + " _ " + " " + middle_row(tens) + " " + middle_row(ones))
+print(bottom_row(goals) + " " + "   " + " " + bottom_row(tens) + " " + bottom_row(ones))
+```
+
+The first line prints `18 17`. The team with one goal is ahead by a
+point: fifteen points beat eight, even with two goals' help. The
+display shows:
+
+```text
+ _             
+ _|  _    |   |
+|_        |   |
+```
+
+A score in two parts works like minutes and seconds on the microwave
+timer: to compare two of them, turn both into the smaller unit first.
+
+</details>

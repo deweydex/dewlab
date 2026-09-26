@@ -1,7 +1,8 @@
 ---
 title: "Going round in circles: angles, radians and the unit circle"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
+datasets: [planet-orbits]
 covers:
   a-turn-in-360-pieces:
     covers: [MIT-4.5]
@@ -16,6 +17,9 @@ covers:
     touches: [PDP-LO10]
   drawing-the-clock:
     covers: [MIT-4.6]
+  planets-going-round:
+    covers: [MIT-4.6]
+    touches: [MIT-4.5, PDP-LO10]
   exact-values-with-pythagoras:
     covers: [MIT-4.7, MIT-4.6]
     touches: [MIT-4.3, MIT-4.1]
@@ -27,6 +31,9 @@ The clock on your phone knows the time: 10:10, say. To draw it, the app
 has to draw two lines from the middle of the face. Each line ends at a
 point on a circle. How does the app know where that point is?
 
+Asked of the sky, the same question is: where are the planets? One
+short tool of yours answers both.
+
 On this page we:
 
 - measure how far a clock hand has turned, in degrees
@@ -34,6 +41,7 @@ On this page we:
   cosine and sine
 - find out why `math.cos(90)` is not 0, and meet radians
 - add `point_on_circle` to the toolkit, and draw a clock with it
+- send four planets round the Sun with it, on NASA's numbers
 - find some points exactly, with Pythagoras
 - draw a triangle on a ball whose angles add up to 270°
 
@@ -78,10 +86,7 @@ $\sqrt{0.6^2 + 0.8^2}$.
 
 A whole turn is split into 360 equal pieces, called *degrees*, and
 written $360^\circ$. A quarter turn is $90^\circ$, a right angle. Half a
-turn is $180^\circ$. (On
-[Rules with letters in them](tutorial:rules-with-letters-in-them), a
-polynomial's degree was its highest power. Here the same word means a
-piece of a turn.)
+turn is $180^\circ$.
 
 In one hour, a clock's minute hand makes a whole turn: 360 degrees in 60
 minutes. So each minute moves it $360 \div 60 = 6$ degrees. The hour
@@ -120,12 +125,10 @@ turns 12 o'clock into 0, since a hand at 12 has not turned at all.
 ## A circle of radius 1
 
 The app knows two angles. To draw a hand, it needs the point where the
-hand ends, as $(x, y)$.
-
-Let's make the question small. Take a circle with its
-centre at $(0, 0)$ and a radius of 1. This is the *unit circle*.
-Start at $(1, 0)$, on the
-right, and turn anticlockwise. That is the way maths measures angles.
+hand ends, as $(x, y)$. Let's make the question small. Take a circle
+with its centre at $(0, 0)$ and a radius of 1. This is the *unit
+circle*. Start at $(1, 0)$, on the right, and turn anticlockwise, the
+way maths measures angles.
 
 Some points we can find with no code at all. A quarter turn takes us to
 the top, $(0, 1)$. Where does half a turn take us?
@@ -153,9 +156,8 @@ maths often uses for an angle):
 - the *sine* of $\theta$, written $\sin\theta$, is the point's $y$, how
   far up it is.
 
-So the point is $(\cos\theta, \sin\theta)$. From the quarter turns we
-know that $\cos 0^\circ = 1$, $\sin 90^\circ = 1$ and
-$\cos 90^\circ = 0$. Sine and cosine are functions, as on
+So the point is $(\cos\theta, \sin\theta)$, and from the quarter
+turns, $\cos 90^\circ = 0$. Sine and cosine are functions, as on
 [Machines that take a number](tutorial:machines-that-take-a-number): an
 angle goes in, and a number between −1 and 1 comes out.
 
@@ -163,7 +165,7 @@ Every point is 1 from the centre. With
 [Pythagoras](tutorial:how-far-apart#squares-on-the-sides-pythagoras),
 that says
 $\cos^2\theta + \sin^2\theta = 1$ for every angle. ($\cos^2\theta$
-means $(\cos\theta)^2$.) We will check it in code shortly.
+means $(\cos\theta)^2$.)
 
 ## Python measures angles another way
 
@@ -179,9 +181,9 @@ print(math.sin(90))
 ```
 
 Python prints `-0.4480736161291701` and `0.8939966636005579`. The point
-$(-0.448, 0.894)$ is up and to the left, not at the top. Python did not
-make a mistake, and neither did you. The answer is right in a different
-space: Python measures angles in a different unit.
+$(-0.448, 0.894)$ is up and to the left, not at the top. Nothing broke.
+The answer belongs to a different space: Python measures angles in a
+different unit.
 
 Picture the point walking round the edge of the unit circle. Instead of
 counting degrees, we could measure how far it has walked along the
@@ -214,10 +216,10 @@ print(math.degrees(1))
 `math.radians(90)` is 1.5707963267948966, which is $\frac{\pi}{2}$, and
 now the sine is `1.0`. One radian is about $57.3^\circ$.
 
-The cosine is `6.123233995736766e-17`. That is $6.1 \times 10^{-17}$, a
-number so small it is 0 for any clock. $\frac{\pi}{2}$ has endless
-digits, and a float keeps only about 16 of them, so the angle is a tiny
-bit off, and so is its cosine. The context page
+The cosine is `6.123233995736766e-17`, a number so small it is 0 for
+any clock. $\frac{\pi}{2}$ has endless digits, and a float keeps only
+about 16 of them, so the angle is a tiny bit off, and so is its cosine.
+The context page
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16)
 has the whole story. This is why we compare with `close_enough`, never
 with `==`.
@@ -227,6 +229,16 @@ Why choose radians? An angle in radians is a distance walked, with no
 write that way. CSS lets you choose, too:
 `rotate(90deg)`, `rotate(1.5708rad)` and `rotate(0.25turn)` all make
 the same quarter turn.
+
+<aside class="dl-note" id="going-round-note-radian">
+
+**A word from Belfast.** The word *radian* first appeared in print in
+1873, in exam questions set by James Thomson at Queen's College,
+Belfast. He was the brother of the physicist Lord Kelvin. Mathematicians
+had measured angles this way for more than a century before anyone
+gave the unit a name.
+
+</aside>
 
 ### Your turn
 
@@ -274,10 +286,9 @@ def point_on_circle(radius, angle_degrees):
 ```
 
 Run the toolkit cell, then the tests. Until the body is written, the
-first test stops with a `TypeError`, because `...` gives back `None`,
-and `None` has no parts to take out. The last test walks all the way
-round a circle of radius 5, a degree at a time, and uses your
-`distance` to check that every point is 5 from the centre.
+first test stops with a `TypeError`, because `...` gives back `None`.
+The last test walks round a circle of radius 5, a degree at a time, and
+uses your `distance` to check that every point is 5 from the centre.
 
 ```python exec
 id: going-round-toolkit-tests
@@ -310,10 +321,10 @@ Which test would catch it?
 
 ## Drawing the clock
 
-Now the clock. The cells in this section use your `point_on_circle`,
-so write it first. There is one problem left, and it is a question of
-space. A clock measures from 12, clockwise. `point_on_circle` measures
-from 3 o'clock, anticlockwise. How do we turn one into the other?
+The cells from here on use your `point_on_circle`, so write it first.
+One problem is left, and it is a question of space. A clock measures
+from 12, clockwise. `point_on_circle` measures from 3 o'clock,
+anticlockwise. How do we turn one into the other?
 
 12 o'clock is $90^\circ$ in maths. Each clockwise degree takes one away
 from that. So a hand that has turned $a$ degrees clockwise from 12 is at
@@ -321,9 +332,8 @@ $90 - a$ degrees in maths. For 3 o'clock, $a = 90$, and $90 - 90 = 0$:
 the right-hand side, as it should be.
 
 First the face. A drawing needs two lists, the $x$ values and the $y$
-values, so here is a small helper that turns a row of angles into those
-two lists. Then the rim is 181 points joined up, and the hours are 12
-dots. Where will the dot for 3 o'clock be?
+values, so a small helper turns a row of angles into those two lists.
+Where will the dot for 3 o'clock be?
 
 ```python exec
 id: going-round-clock-2
@@ -372,23 +382,82 @@ draw_clock(10, 10)
 
 The short hand points just past the 10, and the long hand at the 2.
 
-The same two formulas place moving things on other pages too. On
-[3D animation: a camera and a ball in orbit](tutorial:a-ball-in-orbit),
-a ball goes round with $r\cos\theta$ and $r\sin\theta$. In
-[A 3D cube in CSS](tutorial:a-cube-in-css), the browser works out a
-sine and a cosine for every `rotateY(90deg)`.
-
 ### Your turn
 
 1. Draw the clock at a time that matters to you: your bus, your
    lunch, the end of this page.
 2. Add a seconds hand at 45 seconds. It turns 6 degrees a second.
 
+## Planets going round
+
+A clock hand turns at a steady speed round a circle. So, very nearly,
+does a planet. Its path round the Sun is an *orbit*. Real orbits are
+slightly stretched circles, Mercury's the most. We draw them as
+circles: a model, and a close one.
+
+The file `planet-orbits.csv` holds NASA's numbers for each planet: its
+average distance from the Sun, in millions of kilometres, and how many
+Earth days its year lasts. A planet turns $360^\circ$ in one year, so
+after `day` days it has turned $360 \times \frac{\text{day}}{\text{year}}$
+degrees, and `point_on_circle` does the rest.
+
+The cell sends the four planets nearest the Sun round for one year on
+Mars, 687 days. We start them all in a line on the right, which they
+are not today. Before you run it: while Mars goes round once, how many
+times does Mercury go round? Afterwards, try `days_shown = 365`.
+
+```python exec
+id: going-round-planets-1
+from matplotlib.animation import FuncAnimation
+
+days_shown = 687     # one year on Mars: change it, then run the cell again
+
+planets = await load_csv("planet-orbits.csv")
+names = planets["planet"].tolist()[:4]
+distances_km = planets["distance_million_km"].tolist()[:4]
+year_days = planets["orbit_days"].tolist()[:4]
+for name, year in zip(names, year_days):
+    print(name, round(days_shown / year, 1), "turns")
+
+figure, axes = plt.subplots(figsize=(2.8, 2.8))
+axes.plot([0], [0], "*", color="goldenrod", markersize=14)   # the Sun
+dots = []
+for name, radius in zip(names, distances_km):
+    rim_x, rim_y = circle_points(radius, range(0, 361, 5))
+    axes.plot(rim_x, rim_y, color="lightgrey", antialiased=False)   # sharp edges keep the film small
+    dot, = axes.plot([radius], [0], "o", label=name)
+    dots.append(dot)
+axes.set_aspect("equal")
+axes.axis("off")
+axes.legend(fontsize=7, loc="upper right")
+
+
+def draw_frame(frame):
+    day = frame * days_shown / 24
+    for dot, radius, year in zip(dots, distances_km, year_days):
+        x, y = point_on_circle(radius, 360 * day / year)
+        dot.set_data([x], [y])
+
+
+FuncAnimation(figure, draw_frame, frames=25, interval=250)
+```
+
+Mercury goes round 7.8 times while Mars goes round once, Venus 3.1
+times and the Earth 1.9 times. The closer a planet is, the shorter its
+path and the faster it moves along it, both at once. Kepler's rule
+$T^2 = a^3$, on
+[Mixed problems: algebra you can run](tutorial:mixed-algebra-you-can-run),
+tied these numbers together. Here they move.
+
+A Web Authoring page,
+[3D animation: a camera and a ball in orbit](tutorial:a-ball-in-orbit),
+moves a ball with the same $r\cos\theta$ and $r\sin\theta$, and
+[A 3D cube in CSS](tutorial:a-cube-in-css) turns a cube with them.
+
 ## Exact values, with Pythagoras
 
 `math.cos(math.radians(45))` gives `0.7071067811865476`. Where does
-that number come from? For three angles, a picture gives the exact
-answer.
+that come from? For three angles, a picture gives the exact answer.
 
 **45 degrees.** Halfway between $0^\circ$ and $90^\circ$, the point is
 as far across as it is up. Call both $a$. The point is 1 from the
@@ -425,8 +494,8 @@ print((math.sqrt(2) / 2) ** 2)
 ```
 
 All six agree. The last line should be exactly $\frac{1}{2}$, and
-Python prints `0.5000000000000001`. The surd squares to exactly one half
-on paper. The float was rounded before it was squared.
+Python prints `0.5000000000000001`: the float was rounded before it was
+squared, and the surd was not.
 
 | angle | $0^\circ$ | $30^\circ$ | $45^\circ$ | $60^\circ$ | $90^\circ$ |
 |---|---|---|---|---|---|
@@ -454,7 +523,7 @@ measure a tree.
 
 On flat paper, the three angles of any triangle add up to $180^\circ$.
 Tear the three corners off a paper triangle and set them side by side,
-and they make a straight line, half a turn.
+and they make a straight line.
 
 The Earth is not flat paper. Start at the North Pole and walk south
 along a line of longitude to the equator. Turn left, a right angle, and
@@ -478,23 +547,22 @@ ax.set_axis_off()
 ```
 
 The orange triangle has three corners, and each is a right angle:
-$90^\circ + 90^\circ + 90^\circ = 270^\circ$. Each side is a quarter of
-a circle, drawn by `point_on_circle`, on a ball of radius 1.
+$90^\circ + 90^\circ + 90^\circ = 270^\circ$. I think that is a
+wonderful number to see on a page about angles. Each side is a quarter
+of a circle, drawn by `point_on_circle`.
 
-Nothing went wrong. The rule "180 degrees" belongs to the flat plane,
-and it rests on one move the plane allows: drawing
+The rule "180 degrees" belongs to the flat plane, and it rests on one
+move the plane allows: drawing
 [parallel lines](tutorial:straight-lines#parallel-and-perpendicular),
-which never meet. On the plane, two lines that both cross a third line
-at right angles are parallel. On a ball, the straightest paths are the
-*great circles*, the circles as big as the ball itself, like the
-equator and the lines of longitude. Any two great circles meet. Our
-two lines of longitude both cross the equator at right angles, and
-still they meet at the Pole. The ball has no parallel lines.
+which never meet. On a ball, the straightest paths are the *great
+circles*, the circles as big as the ball itself, like the equator and
+the lines of longitude. Any two great circles meet. Our two lines of
+longitude both cross the equator at right angles, and still they meet
+at the Pole. The ball has no parallel lines.
 
 A small triangle on a ball is almost flat, and its angles add up to
-just over $180^\circ$. That is why a triangle on a football pitch
-seems to keep the flat rule, while a pilot crossing an ocean uses the
-rules of the ball.
+just over $180^\circ$. That is why a football pitch seems to keep the
+flat rule, while a pilot crossing an ocean uses the rules of the ball.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
@@ -539,6 +607,7 @@ angle, and the triangle ratios come out of it too.
 | `point_on_circle(radius, angle_degrees)` | your toolkit tool: $(r\cos\theta, r\sin\theta)$ |
 | surd, surd form | a root left as a root, such as $\frac{\sqrt{3}}{2}$, which is exact |
 | $\tan\theta$ | $\frac{\sin\theta}{\cos\theta}$: the slope of the line out to the point |
+| orbit | a planet's path round the Sun; very nearly a circle for the eight planets |
 | great circle | a straightest path on a ball; any two meet, so a ball has no parallel lines |
 
 ## Where to read more

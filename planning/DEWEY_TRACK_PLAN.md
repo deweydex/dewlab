@@ -391,13 +391,38 @@ and `solve_simultaneous`.
 |---|---|---|---|
 | 8.1 | Straight lines | Is this wheelchair ramp too steep? | MIT-4.1, MIT-4.2 |
 | 8.2 | How far apart? | Did the ball hit the player? (collision detection) | MIT-4.3, MIT-4.4 |
-| 8.3 | Going round in circles | How does a clock app draw the hands? | MIT-4.5, MIT-4.6, MIT-4.7 |
+| 8.3 | Going round in circles | How does a clock app draw the hands, and where are the planets? | MIT-4.5, MIT-4.6, MIT-4.7 |
 | 8.4 | Waves | What makes one note higher than another? | MIT-3.3, MIT-4.6 |
 | 8.5 | Solving triangles | How tall is that tree, from where you stand? | MIT-4.8, MIT-4.9, MIT-4.10 |
 
-8.3 links out to the CSS orbit and cube pages in Web Authoring, which use the
-same sine and cosine. Toolkit gains `distance`, `midpoint`, `slope`,
-`angle_between`.
+Contexts: a community hall's ramp checked against Ireland's Technical
+Guidance Document M, then Unit 7's server A ($y = 2x + 8$) and the TMP36
+temperature chip as lines $y = mx + c$ (8.1); a 2D game's ball and
+player as circles, an animation where a fast ball tunnels through the
+player, and a camera pointed at the midpoint of two players (8.2); a
+clock app's hands, then the four inner planets animated on
+`point_on_circle` from NASA's numbers (`data/planet-orbits.csv`), and a
+triangle of three right angles on a ball (8.3); a guitar's strings, a
+point going round animated into a sine wave, Irish mains electricity
+(230 V, 50 Hz, a peak of about 325 V) as alternating current, piano
+octaves and noise-cancelling (8.4); a beech tree, the Spire, bearings
+in Wicklow, a triangle of phone masts, and Snell's law for light
+entering water, with a ray diagram the reader turns past the critical
+angle into total internal reflection, the way optical fibres carry data
+(8.5). Practice pages give Fix and Explain problems to Schlomo and
+Schlomi. No page uses money. 8.3 links out to the CSS orbit and cube
+pages in Web Authoring, which use the same sine and cosine. Toolkit
+gains `slope`, `line_through`, `distance`, `midpoint`,
+`point_on_circle`, `wave` and `angle_between`.
+
+Unit product (on `mixed-shapes-angles-and-waves`): a collision checker
+for a 2D game (circles that touch, a slanted wall and its nearest
+point, a bearing and distance to the goal), which then runs a small
+real-time game in a full-stack app cell. A Python cell sets the level
+and works out the ball's path with the reader's tools, saving it to the
+page's `db`; a JavaScript engine plays it on a canvas with the arrow
+keys or on-screen buttons. Unit 10's team project starts its game from
+it.
 
 ### Unit 9 — Change
 
@@ -440,15 +465,35 @@ changes fastest, then does the same for Ireland's CO₂ emissions.
 
 | # | Tutorial | Question | Outcomes |
 |---|---|---|---|
-| 10.1 | Where programming came from | What did Ada Lovelace's program do, and what would it look like today? | PDP-LO1, PDP-LO3 |
-| 10.2 | Many languages, one idea | The same task in Python, JavaScript, SQL and BASIC | PDP-LO3 |
-| 10.3 | Code other people can read | Would a stranger understand your toolkit? | PDP-LO7, PDP-LO11 |
-| 10.4 | The team project | Design, build, release and review a program together | PDP-LO12, PDP-LO7, PDP-LO10 |
+| 10.1 | Where programming came from | The first program was published in 1843, a century before a computer could run it, and it had a bug. What did it do? | PDP-LO1, PDP-LO3 |
+| 10.2 | Many languages, one idea | Can you read four languages you have never written? One week of rain in Python, SQL, JavaScript and BASIC | PDP-LO3 |
+| 10.3 | Code other people can read | Would a stranger understand your toolkit? (The stranger is usually you, six months later.) | PDP-LO7, PDP-LO11 |
+| 10.4 | The team project | What happens when your small tested functions join into something bigger? | PDP-LO12, PDP-LO7, PDP-LO10 |
 
-The team project asks teams of three to five to build something that uses
-their toolkits and at least four units: a fitness tracker with statistics and
-charts, a small game with collision and probability, a trip planner with
-distances and bearings. It replaces a separate capstone page.
+Contexts: Babbage, Lovelace's Note G retold in Python with exact
+fractions, and Bernoulli's sum of tenth powers checked by a loop; the
+six ENIAC programmers, with Kay McNulty from Creeslough; Hopper, the
+first compilers, BASIC, the web, JavaScript and Python; notes on Percy
+Ludgate's 1909 analytical machine and on George Boole in Cork (10.1). A
+week of rainfall done four ways, with a note on why SEQUEL became SQL
+(10.2). A TMP36 windowsill log whose order of hours a side effect
+destroys, `sensor_celsius`'s docstring left over from the LM35 and
+caught by `doctest`, the Zen of Python, and `quick_review` run over the
+reader's digit, pixel, converter and statistics tools (10.3). No page
+uses money. Schlomo and Schlomi appear in each practice page.
+
+Unit product: the team project (10.4), which replaces a separate
+capstone page. It has a team version (three to five people, toolkit
+functions from at least four units, three releases) and an individual
+version (at least three units, two releases, reviewed by a partner or
+by the reader a few days later). The reader chooses one of four worlds,
+each with a starter cell: a weather station or home-energy dashboard
+(statistics and a chart), a small game with collision and probability
+(starting from Unit 8's collision checker), a planet tracker on NASA's
+exoplanet list, and a digit display in Schlomi's pixel font from Unit
+1. The digit display is the worked example for design, releases and
+tests. The page ends with reflection questions for everyone, for a
+team and for one person, in place of a rubric.
 
 ### Context pages
 
@@ -529,7 +574,8 @@ Made by Josh on 25 September 2026 (7.228):
 6. **Schlomo and Schlomi** are the track's two characters (§4).
 7. **Headings and ids may change.** No reader has used the track yet, so
    headings, cell ids and toolkit names can change freely until it
-   leaves beta. `waves` is also in the MIT–PDP course, so its headings
-   and cell ids stay.
+   leaves beta. `waves` kept its headings and cell ids in the rewrite,
+   because it was thought to be in the MIT–PDP course; that course in
+   fact lists `sine-and-cosine-waves`, so `waves` is as free as the rest.
 8. **Choose your project** where one idea has several good uses (§4).
 9. **The tagline** says "maths".

@@ -27,7 +27,11 @@ Three people you might meet write code at work. One builds web pages in
 JavaScript. One asks a company's database questions in SQL. One
 remembers typing BASIC into a home computer in the 1980s. Are they
 doing the same thing you do in Python, or something quite different?
-Let's give all four languages the same small job, and find out.
+
+There are thousands of programming languages. That sounds like a lot to
+learn. So let's give four of them the same small job, a week of rain,
+and watch what changes. My guess is that you can already read more of
+them than you expect.
 
 On this page we:
 
@@ -124,6 +128,16 @@ at IBM in 1974. A database keeps its data in tables, so first we make a
 table, with one row for each day. Run this cell. It reports how many
 rows it added.
 
+<aside class="dl-note" id="many-lang-note-sequel">
+
+**Why some people say "sequel".** The IBM language was first called
+SEQUEL, for Structured English Query Language. The name had to change,
+because a British aircraft company already owned SEQUEL as a trade
+mark, so the letters became SQL. Half a century later, people still
+argue about whether to say "sequel" or "S, Q, L". Both are in use.
+
+</aside>
+
 ```sql exec
 id: many-lang-sql-table
 DROP TABLE IF EXISTS rain_tbl;
@@ -150,8 +164,10 @@ id: many-lang-sql-average
 SELECT AVG(rainfall_mm) FROM rain_tbl;
 ```
 
-One line, and no loop. `AVG` is a function that SQL gives us, the way
-Python gives us `len`. Now the second part: the days above the average.
+One line, and no loop. Five lines of Python became one line of SQL,
+and I think that is the biggest surprise on this page. `AVG` is a
+function that SQL gives us, the way Python gives us `len`. Now the
+second part: the days above the average.
 
 ```sql exec
 id: many-lang-sql-above
@@ -232,13 +248,14 @@ print("5" + 1)
 ```
 
 Python stops with a `TypeError`, as on
-[When Python says no](tutorial:when-python-says-no#the-last-line-first).
-It will not guess whether you meant a number or a piece of text.
+[When Python says no](tutorial:when-python-says-no#a-move-from-another-space),
+where `+` met a string and an int. Python will not guess whether you
+meant a number or a piece of text.
 JavaScript guesses, and it chooses text. Neither is foolish. They are
 two spaces with different rules. JavaScript's rule lets a page join
-text and numbers with no extra step, but it can hide a mistake: you may
+text and numbers with no extra step, but it can hide a slip: you may
 have wanted 6. Python's rule costs an extra step, `int("5") + 1`, and
-it catches the mistake on the line where it happens.
+it stops on the line where the slip happens.
 
 ## The same job in BASIC
 
@@ -348,7 +365,7 @@ read a language they have never seen before.
 
 1. Look back at the JavaScript. Find one line whose job is naming, one
    whose job is a promise, and one where the order matters.
-2. In the BASIC program, what would go wrong if line 80 came before line
+2. In the BASIC program, what would happen if line 80 came before line
    40? Which question is that?
 
 <details class="dl-why"><summary>Why this way?</summary>

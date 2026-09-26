@@ -2,16 +2,16 @@
 title: "Waves: sine, cosine and sound — Practice"
 practice_for: waves
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # Waves: sine, cosine and sound — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them.
 
 Your toolkit is loaded on this page, including `wave` from the tutorial
 and `point_on_circle` from
@@ -46,9 +46,9 @@ $2.4 \times 10^{-16}$ is a float's rounding error.
 
 </details>
 
-**2. Make.** The electricity in an Irish socket swings at 50 Hz, and the
-A that bands tune to is 440 Hz. How long is one period of each, in
-milliseconds?
+**2. Make.** The alternating current in an Irish socket swings at 50
+Hz, and the A that bands tune to is 440 Hz. How long is one period of
+each, in milliseconds?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -150,8 +150,9 @@ shape of the coast change it, but this is a fair first model.
 
 </details>
 
-**6. Fix.** Someone wrote their own wave function. The first test
-fails. Find the mistake.
+**6. Fix.** Schlomi, who is learning Python too, wrote her own wave
+function. The test fails. What does her function do with a quarter of a
+second, and what needs to change?
 
 ```python exec
 id: waves-practice-fix-degrees
@@ -167,7 +168,7 @@ print("sound_wave keeps its promise.")
 
 <details class="dl-answer"><summary>answer</summary>
 
-A whole turn is $360^\circ$, which is the right idea in degrees. But
+A whole turn is $360^\circ$, and in degrees Schlomi's idea holds. But
 `math.sin` takes radians, and a whole turn in radians is $2\pi$:
 
 ```python
@@ -427,8 +428,9 @@ some high sounds in the ordinary way.
 
 **16. Fix.** A piano has 88 keys. Key 49 is the 440 Hz A, and each key
 is one semitone from the next, so key number `key` has frequency
-$440 \times 2^{(\text{key} - 49)/12}$. This function gives the wrong
-answer for middle C, key 40. Find the mistake.
+$440 \times 2^{(\text{key} - 49)/12}$. Schlomo, who is learning Python
+too, wrote this function, and for middle C, key 40, it gives 220. What
+is it doing, and what needs to change?
 
 ```python exec
 id: waves-practice-fix-piano
@@ -454,6 +456,7 @@ below it. The power needs the fraction, which is `/`:
 
 Now middle C gives 261.6255653005986, and the test passes. The test at
 key 49 alone would never have found this, because $0 // 12$ and
-$0 / 12$ are both 0.
+$0 / 12$ are both 0. Schlomo's `//` is the division he has used most,
+for pixels and digits, and here it quietly rounds the power down.
 
 </details>

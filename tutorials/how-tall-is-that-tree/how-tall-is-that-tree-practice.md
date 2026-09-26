@@ -2,16 +2,16 @@
 title: "Solving triangles: how tall is that tree? — Practice"
 practice_for: how-tall-is-that-tree
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # Solving triangles: how tall is that tree? — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them.
 
 Your toolkit is loaded on this page, including `angle_between` from the
 tutorial, `distance` from
@@ -115,7 +115,7 @@ A cell for the core problems.
 ```python exec
 id: how-tall-practice-core
 import math
-# Your working for problems 5 to 12
+# Your working for problems 5 to 13
 ```
 
 **5. Make.** You fly a kite on Dollymount Strand. All 50 m of its string
@@ -176,9 +176,10 @@ gives −90.
 
 </details>
 
-**7. Fix.** This cell is meant to find the tree's height from the
-tutorial: 20 m away, 35° up, eyes at 1.6 m. It prints about 11.1, not
-15.6. Find the mistake.
+**7. Fix.** Schlomo, who is learning Python too, checked the tree's
+height from the tutorial: 20 m away, 35° up, eyes at 1.6 m. His cell
+prints about 11.1, not 15.6. What is it doing with the 35, and what
+needs to change?
 
 ```python exec
 id: how-tall-practice-fix-radians
@@ -200,9 +201,10 @@ tangent is about 0.47, where the tangent of 35° is about 0.70. The fix:
 tree_height = distance_to_trunk * math.tan(math.radians(angle_up)) + 1.6
 ```
 
-Python gave no error, because 35 radians is a real angle. It was the
-wrong space for the number, and only a check against an answer we knew
-caught it.
+Python gave no error, because 35 radians is a real angle. The number
+was in a different space from the one Schlomo meant, and only his check
+against an answer he already knew caught it. That check was the
+useful habit here.
 
 </details>
 
@@ -223,8 +225,9 @@ because $\sin 90^\circ = 1$ is the biggest a sine can be.
 
 </details>
 
-**9. Fix.** Here is someone's cosine rule, with two tests. The first
-test passes and the second fails. Find the mistake.
+**9. Fix.** Schlomi, who is learning Python too, wrote her own cosine
+rule, with two tests. The first test passes and the second fails. What
+is different about the second test, and what needs to change?
 
 ```python exec
 id: how-tall-practice-fix-cosine
@@ -249,9 +252,10 @@ line should be
 ```
 
 The first test passed because $\cos 90^\circ = 0$, so the correction is
-0 whether it is added or taken away. A test at a right angle alone could
-never have found this mistake. For 60°, the wrong version gives about
-7.81, and the right one gives $\sqrt{21} \approx 4.58$.
+0 whether it is added or taken away. Schlomi started from the triangle
+she knew best, the 3, 4, 5, and a test at a right angle alone can never
+find this slip. For 60°, her version gives about 7.81, and the rule
+gives $\sqrt{21} \approx 4.58$.
 
 </details>
 
@@ -334,6 +338,41 @@ angles, and see if both choices stay under 180°.
 
 </details>
 
+**13. Make.** Light from the sky meets a glass window at 30° from the
+normal. The glass has a refractive index of about 1.5, and air about
+1.00. At what angle does the light travel inside the glass? It leaves
+through the other side of the pane, which is parallel to the first.
+Before you work it out: at what angle does it come out into the room?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. Snell's law: $1.00 \sin 30^\circ = 1.5 \sin\theta_2$.
+2. Make $\sin\theta_2$ the subject, then use `math.asin` and
+   `math.degrees`.
+3. At the second side, the light meets the surface at the angle it had
+   inside the glass, and goes from index 1.5 back to 1.00.
+
+**Think about:** what does the second step undo?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+inside = math.degrees(math.asin(1.00 * math.sin(math.radians(30)) / 1.5))
+print(round(inside, 2))
+out_again = math.degrees(math.asin(1.5 * math.sin(math.radians(inside)) / 1.00))
+print(round(out_again, 2))
+```
+
+Inside the glass the light travels at about 19.47° from the normal.
+It comes out at 30° again: the second surface runs Snell's law
+backwards, so the ray leaves parallel to how it came in, only moved a
+little to one side. That is why a window does not bend the view behind
+it, while a curved lens does.
+
+</details>
+
 ## Stretch
 
 A cell for the stretch problems.
@@ -341,10 +380,10 @@ A cell for the stretch problems.
 ```python exec
 id: how-tall-practice-stretch
 import math
-# Your working for problems 13 to 16
+# Your working for problems 14 to 18
 ```
 
-**13. Make.** Write `height_from_two_angles(walked, first_angle,
+**14. Make.** Write `height_from_two_angles(walked, first_angle,
 second_angle, eye_height)`. It takes the two angles of elevation from
 two spots, `walked` metres apart on a line towards something tall, and
 gives back its height, using the sine rule as the tutorial did. Test it
@@ -392,7 +431,7 @@ never meet, and there is no triangle.
 
 </details>
 
-**14. Make.** In a football game on a screen, a player at `player` is
+**15. Make.** In a football game on a screen, a player at `player` is
 facing towards the point `facing`. The player can see the ball if the
 angle between where they face and where the ball is, measured at the
 player, is 60° or less. Write `can_see(player, facing, ball)`, and test
@@ -417,32 +456,33 @@ is the player, so `player` goes in the middle of `angle_between`.
 
 </details>
 
-**15. Another way.** The allotment from the tutorial has corners at
-$(0, 0)$, $(30, 0)$ and `point_on_circle(25, 70)`. Find its area two
-ways from the corners alone: with `angle_between`, `distance` and
-$\frac{1}{2}ab\sin C$, and with `triangle_area(base, height)`, where the
-height is the top corner's y. Do both give about 352.4?
+**16. Another way.** The three phone masts from the tutorial stand at
+$(0, 0)$, $(3.0, 0)$ and `point_on_circle(2.5, 70)`, in kilometres.
+Find the area of their triangle two ways from the corners alone: with
+`angle_between`, `distance` and $\frac{1}{2}ab\sin C$, and with
+`triangle_area(base, height)`, where the height is the top corner's y.
+Do both give about 3.52 square kilometres?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-gate = (0, 0)
-far_corner = (30, 0)
-top_corner = point_on_circle(25, 70)
+first_mast = (0, 0)
+second_mast = (3.0, 0)
+third_mast = point_on_circle(2.5, 70)
 
-side_a = distance(gate, far_corner)
-side_b = distance(gate, top_corner)
-angle_c = angle_between(far_corner, gate, top_corner)
-print(round(0.5 * side_a * side_b * math.sin(math.radians(angle_c)), 1))
-print(round(triangle_area(30, top_corner[1]), 1))
+side_a = distance(first_mast, second_mast)
+side_b = distance(first_mast, third_mast)
+angle_c = angle_between(second_mast, first_mast, third_mast)
+print(round(0.5 * side_a * side_b * math.sin(math.radians(angle_c)), 2))
+print(round(triangle_area(3.0, third_mast[1]), 2))
 ```
 
-Both print 352.4. The base lies along the x-axis, so the height is the
+Both print 3.52. The base lies along the x-axis, so the height is the
 top corner's y. The first route never needed the height at all.
 
 </details>
 
-**16. Explain.** The tutorial found the tree's height from an angle
+**17. Explain.** The tutorial found the tree's height from an angle
 and the tangent. There is an older way, with no angles at all. On a
 sunny day, stand a 1 m stick upright and measure its shadow, then
 measure the tree's shadow. The stick and the tree make two triangles of
@@ -452,7 +492,7 @@ which way would you start with, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things:
+There is no single answer. An answer might weigh a few things:
 
 - **What it needs.** Shadows need sun, a tape and a stick, and no
   sines or tangents. Angles need a way to measure an angle, but work
@@ -464,7 +504,49 @@ There is no one right answer. A good answer weighs a few things:
   trust a shadow they can see. Someone who needs bearings for a map, or
   angles for a game, needs the tangent sooner or later.
 
-A strong answer says who the friend is and what they will use it for,
-and chooses from that.
+It helps to say who the friend is and what they will use it for, and
+to choose from that.
+
+</details>
+
+**18. Make.** An optical fibre has a core of glass with a refractive
+index of about 1.47, inside a layer of glass, the cladding, of about
+1.46. (These are typical values, rounded.) Find the critical angle
+where the core meets the cladding. Then: light travels down the fibre
+at 5° to its middle line, and meets the side. The side runs along the
+middle line, so the normal is at a right angle to it. Does the light
+stay in? And at 10°?
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. At the critical angle, the light would leave at 90°, where the sine
+   is 1. So $1.47 \sin\theta_c = 1.46 \times 1$.
+2. A ray at 5° to the middle line meets the side at $90 - 5 = 85$
+   degrees from the normal.
+3. The light stays in when that angle is bigger than the critical
+   angle.
+
+**Think about:** why does the cladding's index have to be lower than
+the core's?
+
+</details>
+
+<details class="dl-answer"><summary>answer</summary>
+
+```python
+critical = math.degrees(math.asin(1.46 / 1.47))
+print(round(critical, 1))
+for angle_to_middle in [5, 10]:
+    from_normal = 90 - angle_to_middle
+    print(angle_to_middle, from_normal, from_normal > critical)
+```
+
+The critical angle is about 83.3°. A ray at 5° to the middle line meets
+the side at 85° from the normal, past the critical angle, so it
+reflects and stays in. A ray at 10° meets the side at 80°, and some of
+it escapes. So a fibre only carries light that travels almost straight
+along it, within about 6.7° of its middle line. If the cladding's
+index were higher than the core's, there would be no critical angle at
+all: $\sin\theta_c$ would have to be more than 1.
 
 </details>

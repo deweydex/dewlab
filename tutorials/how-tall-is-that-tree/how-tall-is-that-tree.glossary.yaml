@@ -67,3 +67,39 @@ entries:
       three points, in degrees, from 0 to 180. It is your own tool, not
       part of Python.
     example: "angle_between((1, 0), (0, 0), (0, 1))   # 90.0"
+  - term: triangulation
+    kind: concept
+    definition: >
+      Triangulation finds a position from the angles and sides of a
+      triangle whose corners are known, such as three phone masts.
+  - term: "refraction, refractive index"
+    kind: concept
+    definition: >
+      Refraction is light changing direction as it passes into a new
+      material. A material's refractive index, n, says how many times more
+      slowly light travels in it than in empty space: about 1.00 for air,
+      1.33 for water and 1.5 for glass.
+  - term: normal (to a surface)
+    kind: concept
+    definition: >
+      The normal is a line at right angles to a surface. Angles of light
+      meeting a surface are measured from it.
+  - term: "Snell's law, n₁ sin θ₁ = n₂ sin θ₂"
+    kind: formula
+    definition: >
+      Snell's law says the refractive index times the sine of the angle
+      from the normal is the same on both sides of a surface. Rearranged,
+      math.asin gives the angle on the far side.
+    example: "math.degrees(math.asin(1.00 * math.sin(math.radians(40)) / 1.33))   # 28.9"
+  - term: "total internal reflection, critical angle"
+    kind: concept
+    definition: >
+      When light meets a surface into a material with a lower index, past
+      the critical angle, none of it gets out: all of it reflects back. The
+      critical angle has sin θ = n₂ / n₁, about 48.8° for water into air.
+  - term: optical fibre
+    kind: concept
+    definition: >
+      An optical fibre is a thin thread of glass that carries light. The
+      light meets its sides past the critical angle, so it reflects all the
+      way along, even round gentle bends.

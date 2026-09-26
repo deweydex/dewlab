@@ -29,10 +29,10 @@ def to_binary(n):
 """
 
 WHOLE = """```python exec
-id: toolkit-bill
+id: toolkit-split
 toolkit: yes
-def split_bill(total, people):
-    return total / people
+def split_evenly(total, parts):
+    return total / parts
 ```
 """
 
@@ -90,15 +90,15 @@ class TestWhatALaterPageGets:
 
         assert "toolkit" not in manifest(built(repo, "one"))
         assert names(built(repo, "two")) == [("one", "toolkit-binary")]
-        assert names(built(repo, "three")) == [("one", "toolkit-binary"), ("two", "toolkit-bill")]
+        assert names(built(repo, "three")) == [("one", "toolkit-binary"), ("two", "toolkit-split")]
 
-        entry, bill = manifest(built(repo, "three"))["toolkit"]
+        entry, split = manifest(built(repo, "three"))["toolkit"]
         assert entry == {
             "tutorial": "one", "title": "A Title", "cell": "toolkit-binary",
             "reference": "def to_binary(n):\n    return bin(n)[2:]",
         }
         # No reference fence: the cell's own code is the reference.
-        assert bill["reference"] == "def split_bill(total, people):\n    return total / people"
+        assert split["reference"] == "def split_evenly(total, parts):\n    return total / parts"
 
     def test_the_order_is_the_course_files_across_series(self, repo):
         write(repo, "One.\n", slug="later")
@@ -121,7 +121,7 @@ class TestWhatALaterPageGets:
         set_order(repo, COURSE, SERIES, ["shared", "one"])
         course(repo, "zz-other", {"Start": ["bills", "shared"]})
         b.build()
-        assert names(built(repo, "shared")) == [("bills", "toolkit-bill")]
+        assert names(built(repo, "shared")) == [("bills", "toolkit-split")]
 
     def test_a_practice_page_loads_its_tutorials_toolkit_and_everything_before(self, repo):
         write(repo, STUB, slug="one")
@@ -130,7 +130,7 @@ class TestWhatALaterPageGets:
         practice(repo, "two")
         b.build()
         assert names(built(repo, "two-practice")) == [
-            ("one", "toolkit-binary"), ("two", "toolkit-bill")]
+            ("one", "toolkit-binary"), ("two", "toolkit-split")]
 
     def test_a_mixed_page_loads_every_listed_tutorials_toolkit_and_everything_before_the_latest(self, repo):
         def toolkit_cell(name: str) -> str:

@@ -2,16 +2,16 @@
 title: "Going round in circles: angles, radians and the unit circle — Practice"
 practice_for: going-round-in-circles
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # Going round in circles: angles, radians and the unit circle — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them.
 
 Your toolkit is loaded on this page, including `point_on_circle` from
 the tutorial, `distance` from
@@ -65,33 +65,36 @@ any Ferris wheel.
 
 </details>
 
-**3. Make.** A pizza is cut into 8 equal slices. What angle is each
-slice at the centre, in degrees and in radians? And for 6 slices?
+**3. Make.** A pie chart shows 8 groups of the same size. What angle is
+each slice at the centre, in degrees and in radians? And for 6 groups?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-for slices in [8, 6]:
-    slice_angle = 360 / slices
-    print(slices, slice_angle, math.radians(slice_angle))
+for groups in [8, 6]:
+    slice_angle = 360 / groups
+    print(groups, slice_angle, math.radians(slice_angle))
 ```
 
 8 slices are $45^\circ$ each, which is $\frac{\pi}{4} \approx 0.785$
 radians. 6 slices are $60^\circ$ each, $\frac{\pi}{3} \approx 1.047$
 radians. A whole turn shared out equally: $360^\circ$ or $2\pi$
-radians, divided by the number of slices.
+radians, divided by the number of slices. A charting library such as
+matplotlib works out each slice's angle this way, from its share of
+the total.
 
 </details>
 
-**4. Explain.** A friend knows that $\sin 30^\circ = \frac{1}{2}$. They
-type `math.sin(30)` and Python gives `-0.9880316240928618`. What
-happened, and what should they type?
+**4. Explain.** Schlomi, who is learning Python too, knows that
+$\sin 30^\circ = \frac{1}{2}$. She types `math.sin(30)` and Python
+gives `-0.9880316240928618`. What happened, and what could she type
+instead?
 
 <details class="dl-answer"><summary>answer</summary>
 
 `math.sin` takes an angle in radians, so it read 30 as 30 radians:
 almost 5 whole turns, and then a bit, which ends up low on the circle.
-Their idea was right in the space of degrees. They need to move the
+Schlomi's idea holds in the space of degrees. She needs to move the
 angle into radians first:
 
 ```python
@@ -159,9 +162,10 @@ the tutorial, so its third side is 5 too.
 
 </details>
 
-**6. Fix.** A game places players round a campfire. The function is
-meant to measure angles the maths way, but the test at $90^\circ$ fails.
-Find the mistake.
+**6. Fix.** Schlomo, who is learning Python too, is writing a game that
+seats players round a campfire. His function is meant to measure angles
+the maths way, but the test at $90^\circ$ fails. What does it do
+instead, and what needs to change?
 
 ```python exec
 id: going-round-practice-fix-seat
@@ -186,9 +190,10 @@ cosine, how far across, and the $y$ is the sine, how far up:
     return (radius * math.cos(angle), radius * math.sin(angle))
 ```
 
-The swapped version is not nonsense. It starts at the top and goes
+Schlomo's version is not nonsense. It starts at the top and goes
 clockwise, which is how a clock measures. It keeps a different promise
-from the one in its docstring.
+from the one in its docstring, and for a clock it would be the one to
+use.
 
 </details>
 
@@ -262,11 +267,11 @@ walks the whole circumference.
 up of a point going round a circle. Many courses start with a
 right-angled triangle instead, and define the sine as one side divided
 by another. Which way would you have wanted to learn it first, and why?
-There is no one right answer.
+There is no single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer weighs a few things, and can land on either side.
+An answer might weigh a few things, and can land on either side.
 
 - **What it is for.** Heights and distances, such as a tree or a roof,
   come with a right-angled triangle already in them. Clocks, wheels and
@@ -430,7 +435,7 @@ shape, but nothing about its size.
 
 **15. Fix.** A loading spinner on a web page should show 12 dots in a
 ring, like the hours on a clock. This version shows far too many.
-Find the mistake.
+How many does it show, and what needs to change?
 
 ```python exec
 id: going-round-practice-fix-spinner

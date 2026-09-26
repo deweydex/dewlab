@@ -2,16 +2,16 @@
 title: "How far apart? Distance, midpoint and Pythagoras — Practice"
 practice_for: how-far-apart
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # How far apart? Distance, midpoint and Pythagoras — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them.
 
 Your toolkit is loaded on this page, including `distance` and
 `midpoint` from the tutorial and `slope` from
@@ -149,8 +149,8 @@ putting it back in: the diagonal comes out as `55.0`.
 
 </details>
 
-**6. Fix.** Here is someone's version of `distance`. Run it, see which
-test fails, and fix it.
+**6. Fix.** Schlomo, who is learning Python too, wrote his own
+`distance`. Run it, see which test fails, and change it so both pass.
 
 ```python exec
 id: how-far-practice-fix-distance
@@ -176,7 +176,9 @@ function stops at $c^2$ and never takes the square root. The fix:
 
 with `import math` at the top of the cell. The first test passed
 because $1^2 = 1$ and $\sqrt{1} = 1$: a distance of 1 is the one
-length where forgetting the square root changes nothing.
+length where leaving out the square root changes nothing. Schlomo
+chose the smallest test he could think of, which is a sensible start,
+and it happened to be that one length.
 
 </details>
 
@@ -224,22 +226,24 @@ gutter, so a person has something to hold on to.
 
 </details>
 
-**9. Predict.** You walk from home to school, but stop at a shop on
-the way. What do these two lines print? Which is bigger?
+**9. Predict.** A delivery drone flies from its base to a drop point,
+but stops at a charging pad on the way. The map is in kilometres. What
+do these two lines print? Which is bigger?
 
 ```python
-home, shop, school = (0, 0), (6, 8), (12, 0)
-print(distance(home, school))
-print(distance(home, shop) + distance(shop, school))
+base, charger, drop_point = (0, 0), (6, 8), (12, 0)
+print(distance(base, drop_point))
+print(distance(base, charger) + distance(charger, drop_point))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 `12.0` and `20.0`.
 
-Going by the shop is two 6, 8, 10 triangles, 10 m each. A trip that
-stops somewhere off the straight line is always longer than the straight
-line. It can only be as short when the shop is on the line itself.
+Going by the charger is two 6, 8, 10 triangles, 10 km each. A trip
+that stops somewhere off the straight line is always longer than the
+straight line. It can only be as short when the charger is on the line
+itself.
 
 </details>
 
@@ -257,28 +261,29 @@ to get the size of a number: `math.sqrt((-7) ** 2)` is `7.0`.
 
 </details>
 
-**11. Make.** A music festival map is marked in metres. The main stage
-is at $(100, 40)$ and the second stage is at $(340, 220)$. The first-aid
-tent goes halfway between them. Where is it, and how far is it from
-each stage?
+**11. Make.** A campus map is marked in metres. The library's Wi-Fi
+router is at $(100, 40)$ and the sports hall's is at $(340, 220)$. A
+relay antenna goes halfway between them, to pass the signal along.
+Where is it, and how far is it from each router?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-main_stage = (100, 40)
-second_stage = (340, 220)
-tent = midpoint(main_stage, second_stage)
-print(tent, distance(tent, main_stage), distance(tent, second_stage))
+library_router = (100, 40)
+hall_router = (340, 220)
+relay = midpoint(library_router, hall_router)
+print(relay, distance(relay, library_router), distance(relay, hall_router))
 ```
 
-The tent is at $(220, 130)$, 150 m from each stage. The stages are 240
-m across and 180 m up from each other, which is the 3, 4, 5 triangle
-made 60 times bigger, so they are 300 m apart.
+The relay goes at $(220, 130)$, 150 m from each router. The routers
+are 240 m across and 180 m up from each other, which is the 3, 4, 5
+triangle made 60 times bigger, so they are 300 m apart.
 
 </details>
 
 **12. Fix.** This version of `midpoint` passes its first test and fails
-its second. Find the mistake.
+its second. What does it do with the second pair of points, and what
+needs to change?
 
 ```python exec
 id: how-far-practice-fix-midpoint
@@ -289,7 +294,7 @@ def midpoint_again(p, q):
     return (x1 + x2 / 2, y1 + y2 / 2)
 
 assert midpoint_again((0, 0), (4, 4)) == (2, 2), "from the origin"
-assert midpoint_again((2, 1), (10, 7)) == (6, 4), "the two friends"
+assert midpoint_again((2, 1), (10, 7)) == (6, 4), "the two players"
 print("midpoint_again keeps its promise.")
 ```
 
@@ -307,7 +312,7 @@ first:
 
 The first test passed because its first point is $(0, 0)$, and adding
 0 before or after halving gives the same answer. Tests that start at
-the origin miss many mistakes like this one.
+the origin miss many slips like this one.
 
 </details>
 
@@ -402,10 +407,12 @@ could be negative, since $-6 < 5$ but $36 > 25$.
 
 </details>
 
-**15. Explain.** A player shoots a very fast ball straight through the
-middle of another player. The ball has a radius of 10, the player 25,
-and the player's centre is at $(0, 0)$. Run this, then explain what went
-wrong, and suggest one way a game could fix it.
+**15. Explain.** Schlomi, who is learning Python too, is making a game.
+Her players can shoot very fast, and she tests a ball fired straight
+through the middle of another player. The ball has a radius of 10, the
+player 25, and the player's centre is at $(0, 0)$. Run this. What did
+the game miss, and how could it stop missing it? The tutorial's last
+animation showed the same thing.
 
 ```python
 for frame in range(3):
@@ -419,13 +426,16 @@ It prints `False` three times. In frame 0 the ball is 60 pixels away,
 too far to touch. In frame 1 it is 40 pixels away on the other side,
 still too far. Between the two frames it passed right through the
 player, but the game only checks where the ball is at each frame, not
-where it went in between. Game makers call this tunnelling. In frame 2 the ball has gone.
+where it went in between. This is tunnelling. In frame 2 the ball has
+gone. Schlomi's test was a useful one: it found the case her checker
+misses.
 
 One fix is to move a fast ball in smaller steps, and check after each
 one. Another is to check the whole straight path between the two
 frames: here, the path from $(-60, 0)$ to $(40, 0)$ passes through
 $(0, 0)$, so it must hit. The first is simple and costs time; the
-second is exact and needs more maths.
+second is exact and needs more maths. These are two ways, and yours
+may be a third.
 
 </details>
 
@@ -433,11 +443,11 @@ second is exact and needs more maths.
 picture of four triangles in a frame, before any code used it. Many
 courses only state the theorem, check it on a few triangles, and move
 on to using it. Which way would you have wanted, and why? There is no
-one right answer.
+single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer weighs a few things, and can land on either side.
+An answer might weigh a few things, and can land on either side.
 
 - **Time.** Stating and checking is quicker, and leaves more time to
   use the theorem.

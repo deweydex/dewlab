@@ -257,7 +257,10 @@ fileInput.addEventListener("change", async () => {
   for (const file of fileInput.files) {
     const ext = file.name.split(".").pop().toLowerCase();
     const lang = ext === "js" ? "js" : ext === "css" ? "css" : ext === "html" ? "html" : null;
-    if (lang) s[lang] = await file.text();
+    if (lang) {
+      const text = await file.text();
+      s[lang] = lang === "html" ? bodyOf(text) : text;
+    }
   }
   fileInput.value = "";
   for (const lang of ["html", "css", "js"]) panes[lang].setValue(s[lang]);
@@ -278,10 +281,44 @@ function triggerDownload(filename, content) {
   a.remove();
   URL.revokeObjectURL(url);
 }
+/* The HTML pane holds only what goes inside <body>; the preview adds the
+ * rest (assets/site-relay.js). A downloaded page has to stand on its own,
+ * so it gets the same frame, with a <link> and a <script src> pointing at
+ * the two files saved beside it (issue #350). Without them the page opened
+ * unstyled and nothing ran. */
+function pageFile(html, base, title) {
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(title)}</title>
+  <link rel="stylesheet" href="${base}.css">
+</head>
+<body>
+${html.trim()}
+<script src="${base}.js"></script>
+</body>
+</html>
+`;
+}
+
+/* The reverse of pageFile(), so a downloaded page loads back into the
+ * panes as it left them: only what is inside <body>, without the <script>
+ * line pageFile() added. A fragment with no <body> comes back unchanged. */
+function bodyOf(html) {
+  const match = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  if (!match) return html;
+  return match[1]
+    .replace(/\n?<script src="[^"]*\.js"><\/script>\s*$/, "")
+    .trim() + "\n";
+}
+
 downloadButton.addEventListener("click", () => {
   const s = activeSite();
   const base = fileBase(s.name);
-  triggerDownload(`${base}.html`, s.html);
+  triggerDownload(`${base}.html`, pageFile(s.html, base, s.name));
   triggerDownload(`${base}.css`, s.css);
   triggerDownload(`${base}.js`, s.js);
 });

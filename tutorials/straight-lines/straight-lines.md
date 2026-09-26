@@ -1,7 +1,7 @@
 ---
 title: "Straight lines: slope and gradient"
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 covers:
   how-steep-is-a-ramp:
     covers: [MIT-4.2]
@@ -27,10 +27,14 @@ covers:
 
 # Straight lines: slope and gradient
 
-A small café has one step at its front door, 30 cm high. The owner wants
-everyone to be able to come in, so she buys a ramp that reaches 3 metres
-out from the door. A friend who uses a wheelchair looks at it and says
-it is too steep. Is she right? And how would you measure "too steep"?
+A community hall has one step at its front door, 30 cm high. The
+committee buys a ramp that reaches 3 metres out from the door: ten times
+longer than the step is high. That sounds gentle. A wheelchair user
+tries it and says it is too steep. Is it? And how would you
+measure "too steep" at all?
+
+The answer comes from a real Irish rule, one division and one `if`,
+and I think it is a surprise.
 
 On this page we:
 
@@ -45,8 +49,9 @@ On this page we:
 > **The space we're in.** A flat plane with two axes at right angles:
 > $x$ across and $y$ up. A point is an $(x, y)$ pair, which Python keeps
 > as a tuple, like `(3, 0.3)`. One thing usually goes unsaid: both axes
-> use the same unit, a metre across is a metre up. A slope compares the
-> two, so it only means something when they are measured the same way.
+> use the same unit, so a metre across is a metre up. A slope compares
+> the two, so it only means something when they are measured the same
+> way.
 
 ## Warm-up
 
@@ -59,8 +64,8 @@ and the second from
 id: straight-warm-up-1
 type: fill-in-the-blank
 
-A taxi fare is $f(x) = 4 + 1.5x$ euro for a trip of $x$ km. A 10 km trip
-costs {19} euro.
+The TMP36 temperature chip follows the rule $f(x) = 100x - 50$, where
+$x$ is its voltage. At 0.75 volts it reads {25} °C.
 ```
 
 ```question
@@ -91,7 +96,7 @@ $$\text{slope} = \frac{\text{rise}}{\text{run}}$$
 
 This number is the *slope*. The word *gradient* means the same thing:
 schools often say slope, and building guidance says gradient. What is
-the slope of the café's ramp? Guess before you run it.
+the slope of the hall's ramp? Guess before you run it.
 
 ```python exec
 id: straight-ramp-1
@@ -103,18 +108,18 @@ print("1 in", round(1 / ramp_slope))
 ```
 
 Python shows `0.09999999999999999`, a tiny way under 0.1. That is the
-float rounding we met on
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03),
-not a mistake in the ramp. The slope is 0.1: for every metre along, the
-ramp rises 0.1 of a metre.
+float rounding from
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
+The slope is 0.1: for every
+metre along, the ramp rises 0.1 of a metre.
+
 Building guidance writes a gradient as a ratio instead, like 1:10, said
 "one in ten". It means 1 up for every 10 along. The two are the same
 number: $1:10$ is $\frac{1}{10} = 0.1$. So `1 / ramp_slope` turns a slope
 back into the "1 in" form.
 
 A bigger slope is a steeper ramp, and a slope of 0 is flat ground. The
-slope has no unit: metres divided by metres leave a plain number, so 30
-cm over 300 cm gives the same answer.
+slope has no unit: metres divided by metres leave a plain number.
 
 ## The rule for a ramp
 
@@ -130,14 +135,13 @@ control on the way down:
 | 5 m | 1:15 |
 | 10 m | 1:20 |
 
-The guidance also allows gradients in between these rows. We use the
-three rows as they are, which is the careful reading, and a designer
-would check the current edition before building anything.
+The guidance also allows gradients in between. We use the three rows as
+they are, which is the careful reading.
 
 Choosing a row is an `if` and `elif`, as on
 [Choosing a path](tutorial:choosing-a-path#more-than-two-paths-elif).
 A going of 1.5 m is also "up to 5 m", so the shortest row must be
-checked first. Does the café's ramp pass? Decide before you run it.
+checked first. Does the hall's ramp pass? Decide before you run it.
 
 ```python exec
 id: straight-rule-1
@@ -160,21 +164,22 @@ print("the ramp:", round(ramp_slope, 3), " the limit:", round(limit, 3))
 print("steep enough to fail?", ramp_slope > limit)
 ```
 
-The friend was right. A 3 m ramp may be at most 1:15, about 0.067, and
-this one is 1:10.
+The ramp fails. A 3 m ramp may be at most 1:15, about 0.067, and this
+one is 1:10. The wheelchair user's arms had measured it before the
+maths did.
 
 So how long must the ramp be? Run the slope formula backwards, as on
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-same-move-on-both-sides):
 if $\text{slope} = \frac{\text{rise}}{\text{run}}$, then
 $\text{run} = \frac{\text{rise}}{\text{slope}}$. At 1:15, a rise of
 0.3 m needs a run of $0.3 \times 15 = 4.5$ metres. That is still under
-5 m, so 1:15 is the right row for it.
+5 m, so 1:15 is the row that applies.
 
 ### Your turn
 
 1. Work out the run needed for a 0.3 m step at 1:12. Is a ramp that
    long allowed to be 1:12? Check with `steepest_allowed`.
-2. A second café has a step of 0.45 m. How long must its ramp be? Try
+2. A second hall has a step of 0.45 m. How long must its ramp be? Try
    1:15 first, then 1:20.
 
 ## Slope between any two points
@@ -216,8 +221,8 @@ while $x$ grows by 3, so the rise is $-6$ and the slope is $-2$. A
 *negative slope* means the line goes down as we read it from left to
 right.
 
-Now it is time for a tool, and its last line is yours to write. The
-line `x1, y1 = p` gives each value in the pair a name, as the swap on
+Here is a tool, and its last line is yours to write. The line
+`x1, y1 = p` gives each value in the pair a name, as the swap on
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards#swapping-two-cards)
 named two values at once.
 
@@ -249,8 +254,7 @@ def slope(p, q):
 ```
 
 Run your cell, then the tests. Until `slope` has its `return` line, it
-gives back `None`, and the first test stops with a `TypeError`: Python
-cannot subtract a number from `None`. The third test asks something
+gives back `None`, and the first test stops with a `TypeError`. The third test asks something
 worth a guess first: does it matter which point comes first?
 
 ```python exec
@@ -259,7 +263,7 @@ assert close_enough(slope((1, 2), (5, 4)), 0.5)
 assert close_enough(slope((0, 6), (3, 0)), -2), "downhill is negative"
 assert close_enough(slope((5, 4), (1, 2)), slope((1, 2), (5, 4))), "either order"
 assert slope((0, 3), (7, 3)) == 0, "flat ground"
-assert close_enough(slope((0, 0), (3, 0.3)), ramp_slope), "the café's ramp"
+assert close_enough(slope((0, 0), (3, 0.3)), ramp_slope), "the hall's ramp"
 print("slope keeps its promise.")
 ```
 
@@ -270,12 +274,12 @@ differences does the formula divide?
 
 The order does not matter: swapping the points gives $\frac{-2}{-4}$,
 which is still $0.5$. The tests use `close_enough` from
-[Does it work?](tutorial:does-it-work#close-enough) because a division
-of floats can land a tiny way off.
+[Does it work?](tutorial:does-it-work#close-enough), since floats can
+land a tiny way off.
 
 ## A wall has no slope
 
-The front wall of the café is a line too. Draw it from $(2, 0)$ to
+The front wall of the hall is a line too. Draw it from $(2, 0)$ to
 $(2, 5)$: straight up. What will `slope` say about it? The cell is
 meant to stop with an error.
 
@@ -286,58 +290,59 @@ print(slope((2, 0), (2, 5)))
 
 The last line of the traceback reads
 `ZeroDivisionError: division by zero`. The run is $2 - 2 = 0$, and the
-formula divides by the run. This is not a bug in your `slope`: the
-docstring promised a slope only for points with different $x$ values.
+formula divides by the run. Your `slope` is keeping its promise here:
+the docstring promised a slope only for points with different $x$
+values.
 
-Is "infinitely steep" an answer? Not in the real numbers, where every
-number has some finite size. A *vertical line*, one that goes straight
-up, has no slope in this space. Two sections on, a way of writing lines
-makes room for it.
+Is "infinitely steep" an answer? Not in the real numbers. A *vertical
+line*, one that goes straight up, has no slope in this space. Two
+sections on, a way of writing lines makes room for it.
 
 ## A line as a rule: y = mx + c
 
-Go back to the taxi from the warm-up. A graph of its fare is a straight
-line with slope 1.5: one more kilometre along, €1.50 more up. It crosses
-the $y$ axis at 4, the fare for 0 km.
-
 On
 [Drawing a rule](tutorial:drawing-a-rule#straight-lines-and-where-two-meet),
-server A's time was the line $y = 2x + 8$, and that page promised a proper
-look at steepness. Every straight line that is not vertical can be
-written this way:
+server A took 8 ms to answer, plus 2 ms for every thousand people using
+the app. Its graph was the line $y = 2x + 8$, and that page promised a
+proper look at steepness. Here it is. The slope is 2: one more thousand
+people along, 2 ms more up. The line crosses the $y$ axis at 8, the
+time with nobody else using the app.
+
+Every straight line that is not vertical can be written this way:
 
 $$y = mx + c$$
 
-In words: to find $y$, multiply $x$ by the slope $m$, then add $c$. The
-number $c$ is where the line crosses the $y$ axis, at $x = 0$. It is
-called the *y-intercept*. The taxi's line is $y = 1.5x + 4$.
+In words: multiply $x$ by the slope $m$, then add $c$. The number $c$
+is where the line crosses the $y$ axis, at $x = 0$. It is called the
+*y-intercept*. The TMP36 chip from the warm-up is a line too:
+$y = 100x - 50$, with a slope of 100 and a y-intercept of −50.
 
-What do $m$ and $c$ each do to a line? The cell draws four lines with
-`plot_rule` from your toolkit. Guess which will be steepest, and which
-one goes down, before you run it.
+What do $m$ and $c$ each do? The cell draws server A, server A without
+its 8 ms start, server C, and server B, which always took 20 ms. Which
+will be steepest, and which one is flat?
 
 ```python exec
 id: straight-rule-picture-1
-def taxi(x):
-    return 1.5 * x + 4
+def server_a(thousands):
+    return 2 * thousands + 8
 
-def taxi_no_start(x):
-    return 1.5 * x
+def server_a_no_start(thousands):
+    return 2 * thousands
 
-def gentle(x):
-    return 0.5 * x
+def server_c(thousands):
+    return 1.2 * thousands + 15
 
-def downhill(x):
-    return -2 * x + 1
+def server_b(thousands):
+    return 0 * thousands + 20
 
-for rule in [taxi, taxi_no_start, gentle, downhill]:
-    plot_rule(rule, -4, 4)
+for rule in [server_a, server_a_no_start, server_c, server_b]:
+    plot_rule(rule, 0, 10)
 plt.legend()
 ```
 
-The two taxi lines have the same steepness, one lifted 4 above the
+The two server A lines have the same steepness, one lifted 8 above the
 other. Changing $c$ slides a line up or down, and changing $m$ turns
-it. The `downhill` line has $m = -2$.
+it. Server B has $m = 0$: flat, whatever the crowd.
 
 If we know two points on a line, we know the line. First find $m$ with
 `slope`. Then, since the first point $(x_1, y_1)$ is on the line,
@@ -354,7 +359,7 @@ def line_through(p, q):
     """Return (m, c) for the line y = mx + c through the points p and q.
 
     p and q are (x, y) pairs with different x values.
-    line_through((0, 4), (10, 19)) is (1.5, 4.0), the taxi's line.
+    line_through((0, 8), (10, 28)) is (2.0, 8.0), server A's line.
     """
     ...
 ```
@@ -365,7 +370,7 @@ def line_through(p, q):
     """Return (m, c) for the line y = mx + c through the points p and q.
 
     p and q are (x, y) pairs with different x values.
-    line_through((0, 4), (10, 19)) is (1.5, 4.0), the taxi's line.
+    line_through((0, 8), (10, 28)) is (2.0, 8.0), server A's line.
     """
     m = slope(p, q)
     x1, y1 = p
@@ -374,12 +379,16 @@ def line_through(p, q):
 ```
 
 The tests check the answer the way Unit 7 checks every answer: put it
-back in. Both points must land on the line that comes out.
+back in. Both points must land on the line that comes out. The second
+test finds the TMP36 chip's rule from two readings: 0.5 volts at 0 °C,
+and 0.75 volts at 25 °C.
 
 ```python exec
 id: straight-toolkit-line-tests
-m, c = line_through((0, 4), (10, 19))
-assert close_enough(m, 1.5) and close_enough(c, 4), "the taxi"
+m, c = line_through((0, 8), (10, 28))
+assert close_enough(m, 2) and close_enough(c, 8), "server A"
+m, c = line_through((0.5, 0), (0.75, 25))
+assert close_enough(m, 100) and close_enough(c, -50), "the TMP36 chip"
 
 for p, q in [((1, 2), (5, 4)), ((0, 6), (3, 0)), ((-3, 7), (2, -1.5))]:
     m, c = line_through(p, q)
@@ -398,7 +407,18 @@ title: some steps
 **Think about:** why is using `p` and not `q` for $c$ a free choice?
 ```
 
-The line through $(1, 2)$ and $(5, 4)$ is $y = 0.5x + 1.5$.
+The line through $(1, 2)$ and $(5, 4)$ is $y = 0.5x + 1.5$, and two
+readings were enough to find the chip's whole rule.
+
+<aside class="dl-note" id="straight-note-bresenham">
+
+**A line made of pixels.** A screen has no slopes, only squares. To
+draw a line from one pixel to another, a program steps along one pixel
+at a time and decides, at each step, whether to go up one as well. The
+best-known way to decide was worked out by Jack Bresenham at IBM in
+1962, to drive a pen plotter. Drawing programs still use ideas from it.
+
+</aside>
 
 ## Every line at once: ax + by + c = 0
 
@@ -413,14 +433,15 @@ $$ax + by + c = 0$$
 
 This is the *general form* of a line. A point is on the line when
 putting its $x$ and $y$ in makes the left side 0. The wall is
-$1x + 0y - 2 = 0$. The taxi's line $y = 1.5x + 4$ becomes
-$1.5x - y + 4 = 0$ when we move $y$ to the right-hand side and swap the
+$1x + 0y - 2 = 0$. Server A's line $y = 2x + 8$ becomes
+$2x - y + 8 = 0$ when we move $y$ to the right-hand side and swap the
 sides round. Any line $y = mx + c$ is $mx - y + c = 0$, with
 $a = m$ and $b = -1$.
 
 A note on names: the $c$ in $y = mx + c$ and the $c$ in
 $ax + by + c = 0$ are two different numbers that share a letter, like
-two people called Seán.
+two people called Seán. If this many letters feels like a lot, run the
+next cell first and come back to the algebra after it.
 
 Here is the test as a function. Which of the three points do you expect
 to be on each line?
@@ -432,13 +453,13 @@ def on_line(a, b, c, point):
     x, y = point
     return close_enough(a * x + b * y + c, 0)
 
-for point in [(2, 0), (2, 3.7), (0, 4)]:
-    print(point, "wall:", on_line(1, 0, -2, point), " taxi:", on_line(1.5, -1, 4, point))
+for point in [(2, 0), (2, 3.7), (0, 8)]:
+    print(point, "wall:", on_line(1, 0, -2, point), " server A:", on_line(2, -1, 8, point))
 ```
 
-Both points with $x = 2$ are on the wall, and $(0, 4)$ is on the taxi's
-line. The general form does not say "here is how to find $y$", as
-$y = mx + c$ does. In exchange, it has room for every straight line.
+Both points with $x = 2$ are on the wall, and $(0, 8)$ is on server
+A's line. The general form does not say how to find $y$, as $y = mx + c$ does.
+In exchange, it has room for every straight line.
 
 To get the slope back from the general form, move everything except
 $by$ to the right: $by = -ax - c$, so $y = -\frac{a}{b}x - \frac{c}{b}$.
@@ -464,13 +485,13 @@ On
 [Several unknowns at once](tutorial:several-unknowns-at-once#when-there-is-no-single-answer),
 two parallel lines never met, so their equations had no single answer.
 Now we can say what "the same steepness" means: parallel lines have the
-same slope. The two taxi lines in the picture were parallel.
+same slope. The two server A lines in the picture were parallel.
 
 Two lines are *perpendicular* when they meet at a right angle, like the
-floor and the café wall. Take a line that goes 2 across and 1 up, slope
-$\frac{1}{2}$. Turn it a quarter turn to the left, and it goes 1 back
-and 2 up: the run and rise swap, and one changes sign. The new slope is
-$\frac{2}{-1} = -2$.
+floor and the hall's wall. Take a line that goes 2 across and 1 up,
+slope $\frac{1}{2}$. Turn it a quarter turn to the left, and it goes 1
+back and 2 up: the run and rise swap, and one changes sign. The new
+slope is $-2$.
 
 That is the rule: the slope of a perpendicular line is $-\frac{1}{m}$.
 Said another way, two slopes $m_1$ and $m_2$ belong to perpendicular
@@ -498,14 +519,16 @@ print(0.5 * -2)
 ```
 
 The product is $-1$, so the lines are perpendicular, but only the right
-picture shows a square corner. The left one stretches $y$, and a
-stretched right angle stops looking like one. This is the unsaid
-assumption from the box at the top.
+picture shows a square corner. The same two lines, and one picture
+hides the right angle. That is the unsaid assumption from the box at
+the top: the left picture stretches $y$, and a stretched right angle
+stops looking like one.
 
 ### Your turn
 
-1. A path runs along $y = 3x - 2$. Write the line through $(0, 5)$
-   parallel to it, then the one through $(0, 5)$ perpendicular to it.
+1. A path in a game level runs along $y = 3x - 2$. Write the line
+   through $(0, 5)$ parallel to it, then the one through $(0, 5)$
+   perpendicular to it.
 2. Use `line_through` to find the line through $(1, 1)$ and $(4, 7)$.
    Is it parallel to the path?
 3. Check your perpendicular slope from step 1 with `close_enough`: does

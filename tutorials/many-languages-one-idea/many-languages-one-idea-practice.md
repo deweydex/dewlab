@@ -8,10 +8,11 @@ version: 2026.09.24.1
 # Many languages, one idea — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them, and each is one
+way through: yours may go another way.
 
 Python and SQL cells run on this page. JavaScript, BASIC and one other
 language are shown to read: each answer says what they print, and each
@@ -85,19 +86,21 @@ SELECT COUNT(*) FROM song_tbl WHERE plays > 100;
 
 </details>
 
-**3. Make.** A football team scored 2, 0, 3, 1, 1 and 5 goals in six
-matches. Find the average in Python with your toolkit's `mean`, and then
-without it, with `sum` and `len`.
+**3. Make.** A TMP36 temperature chip on a windowsill, like the one on
+[Machines that take a number](tutorial:machines-that-take-a-number),
+gave these readings in °C, one every hour: 12, 10, 13, 11, 11 and 15.
+Find the average in Python with your toolkit's `mean`, and then without
+it, with `sum` and `len`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
-goals = [2, 0, 3, 1, 1, 5]
-print(mean(goals))
-print(sum(goals) / len(goals))
+readings_c = [12, 10, 13, 11, 11, 15]
+print(mean(readings_c))
+print(sum(readings_c) / len(readings_c))
 ```
 
-Both print `2.0`. Python's own `sum` does the job of the toolkit's
+Both print `12.0`. Python's own `sum` does the job of the toolkit's
 `total`.
 
 </details>
@@ -145,9 +148,10 @@ and 'The Long Road West' (5.0).
 
 </details>
 
-**6. Fix.** This query should list the songs played more often than the
-average song. It stops with an error. Read the error, then repair the
-query.
+**6. Fix.** Schlomi, who is learning SQL too, wants the songs played
+more often than the average song. She writes it the way she would say
+it, which is a fair first try: "plays bigger than the average of
+plays". It stops with an error. Read the error, then change the query.
 
 ```sql exec
 id: many-lang-practice-fix-sql
@@ -179,8 +183,8 @@ WHERE plays > (SELECT AVG(plays) FROM song_tbl);
 ```
 
 The average is 151 plays, and two songs beat it: 'Two Short Days' and
-'Kettle Song'. The mistake is about sequence: the average must be known
-before any row is compared with it.
+'Kettle Song'. Schlomi's words were fine. The trouble is sequence: the
+average must be known before any row is compared with it.
 
 </details>
 
@@ -211,10 +215,10 @@ prints a space before each positive number.
 
 </details>
 
-**8. Make.** Here is a JavaScript function that counts how many bus
-waits, in minutes, were longer than a limit. Write it in Python as
-`count_over(values, limit)`, and check that it gives 3 for the same
-list.
+**8. Make.** Here is a JavaScript function that counts how many of a
+game server's answer times, in milliseconds, were longer than a limit.
+Write it in Python as `count_over(values, limit)`, and check that it
+gives 3 for the same list.
 
 ```js
 function countOver(values, limit) {
@@ -240,13 +244,13 @@ def count_over(values, limit):
             count = count + 1
     return count
 
-waits = [12, 3, 25, 8, 17]
-print(count_over(waits, 10))
+answer_ms = [12, 3, 25, 8, 17]
+print(count_over(answer_ms, 10))
 
 def over_ten(value):
     return value > 10
 
-print(count_if(waits, over_ten))
+print(count_if(answer_ms, over_ten))
 ```
 
 Both print 3. `function` became `def`, the braces became indentation,
@@ -288,9 +292,10 @@ kept by different tools.
 
 </details>
 
-**11. Fix.** Someone turned the tutorial's BASIC loop, `FOR I = 1 TO 7`,
-into Python. The average should be 5.0, but the cell prints 4.4. Find
-the one mistake.
+**11. Fix.** Here is the tutorial's BASIC loop, `FOR I = 1 TO 7`,
+turned into Python line by line. The tutorial's average is 5.0, but
+this cell prints 4.4. Which line does something other than the BASIC
+did?
 
 ```python exec
 id: many-lang-practice-fix-range
@@ -323,24 +328,25 @@ second number. The fix is:
 for i in range(0, 7):
 ```
 
-or, better, `for reading in readings:`, which cannot miss one. This is
-a naming mistake: `R(1)` in BASIC and `readings[1]` in Python are not
+or `for reading in readings:`, which cannot miss one. This is a
+question of naming: `R(1)` in BASIC and `readings[1]` in Python are not
 the same reading.
 
 </details>
 
-**12. Explain.** A friend says, "SQL is not a real programming language:
-it has no loops." What would you say back?
+**12. Explain.** Schlomo, who is learning Python too, has met SQL for
+the first time. "SQL is not a real programming language," he says. "It
+has no loops." What would you say back?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer might say: SQL is a different style, not a lesser one. It
+One answer might say: SQL is a different style, not a lesser one. It
 is declarative, so a query says what result it wants, and the database
 decides the steps. The loops are still there, inside the database, where
 you do not have to write them. For questions about tables, that is
 often the clearer way to write it.
 
-You could also agree with part of what your friend says. SQL is made
+You could also agree with part of what Schlomo says. SQL is made
 for one kind of job, questions about data in tables, while Python is
 made for almost any job. Most programs that use a database are written
 in two languages: SQL for the questions, and another language for
