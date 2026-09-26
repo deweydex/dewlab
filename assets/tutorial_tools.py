@@ -445,12 +445,19 @@ def _animation_html(animation) -> str:
     )
 
 
-def _table_html(frame, max_rows: int = 20, caption: str | None = None) -> str:
+def _table_html(
+    frame, max_rows: int = 20, caption: str | None = None, index: bool = True
+) -> str:
     """A DataFrame or Series as a scrollable HTML table.
 
     Long frames are truncated rather than dumping thousands of rows into the
     page; the note under the table says so, so a reader is never misled about
     how much data they are looking at.
+
+    `index=False` leaves out pandas' own row labels. A Python cell keeps
+    them, since the pandas pages teach the index; a SQL cell's result has
+    no index of its own, only the 0, 1, 2 pandas numbered it with, which
+    sits beside a table's real key and reads as a column of the result.
     """
     pd = _pandas()
     if pd is None:  # pragma: no cover - unreachable once pandas is loaded
@@ -464,7 +471,7 @@ def _table_html(frame, max_rows: int = 20, caption: str | None = None) -> str:
         shown = shown.to_frame()
 
     # pandas escapes cell contents by default; keep it that way.
-    table = shown.to_html(border=0, classes=None, escape=True, na_rep="")
+    table = shown.to_html(border=0, classes=None, escape=True, na_rep="", index=index)
 
     parts = ['<div class="dl-table-wrap">']
     if caption:
@@ -2024,7 +2031,8 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     shape of a SQL *cell* (`CREATE TABLE` here, `INSERT` there,
     `SELECT` at the end), where `run_query()` only ever runs one
     statement. Only the *last* statement's own result renders: if it
-    returned rows (a `SELECT`), as a table, plus `_empty_result_notes()`
+    returned rows (a `SELECT`), as a table without pandas' row numbers
+    (`_table_html()`'s `index=False`), plus `_empty_result_notes()`
     if the table came back empty; otherwise, how many rows it touched,
     the way a database console reports a `CREATE`/`INSERT`/`UPDATE`/
     `DELETE`. Every statement commits at the end, same friendlier
@@ -2054,7 +2062,7 @@ def _run_sql_cell(conn, script: str, max_rows: int = 20):
     frame = None
     if columns:
         frame = pd.DataFrame(cursor.fetchall(), columns=columns)
-        cell.sink.append_html(_table_html(frame, max_rows=max_rows))
+        cell.sink.append_html(_table_html(frame, max_rows=max_rows, index=False))
         cell.last_result_empty = len(frame) == 0
         if cell.last_result_empty:
             for note in _empty_result_notes(conn, statements[-1]):

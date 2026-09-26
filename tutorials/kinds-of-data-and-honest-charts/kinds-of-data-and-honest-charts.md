@@ -702,3 +702,10 @@ asks which songs are on two playlists at once.
 
 For more on choosing charts, the integrated course has
 [Charts: choosing the right chart for your data](tutorial:pictures-worth-numbers).
+
+## Where to read more
+
+CrashCourse (2019). *Data & Infographics: Crash Course Navigating Digital
+Information #8.* <https://www.youtube.com/watch?v=OiND50qfCek>. How a
+number or a chart can help us understand something, or fool us, and what
+to ask before we trust one. Thirteen minutes.

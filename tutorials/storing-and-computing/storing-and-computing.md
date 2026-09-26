@@ -538,3 +538,9 @@ rules Python follows for each.
 Singh, S. (1999). *The Code Book.* Fourth Estate. The history of secret
 codes, from Caesar's shift to the machines of the Second World War, and how
 each one was broken.
+
+CrashCourse (2017). *Representing Numbers and Letters with Binary: Crash
+Course Computer Science #4.*
+<https://www.youtube.com/watch?v=1GSjbWt0c9M>. Every value on this page, a
+number or a piece of text, is stored as ones and zeros. This video shows
+how. About eleven minutes.

@@ -243,3 +243,8 @@ Systems: Queueing Theory in Action*. Cambridge University Press. A
 textbook aimed squarely at computing rather than at queueing theory for
 its own sake — written for exactly the print-queue, request-queue,
 packet-queue examples this tutorial opened with.
+
+engineerguy (2010). *Why the other line is likely to move faster.*
+<https://www.youtube.com/watch?v=F5Ri_HhziI0>. Bill Hammack explains
+queueing theory, which started with telephone calls in Copenhagen, and how
+a shop can arrange its lines so that people wait less. Four minutes.

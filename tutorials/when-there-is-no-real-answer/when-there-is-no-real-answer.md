@@ -444,3 +444,8 @@ sine wave.
 
 For another route through these numbers, the integrated course has
 [Complex numbers: roots that are not real](tutorial:complex-roots).
+
+Up and Atom (2019). *Imaginary Numbers Are Just Regular Numbers.*
+<https://www.youtube.com/watch?v=sZrOxm5Gszk>. Negative numbers once
+seemed impossible too. Jade Tan-Holmes shows that multiplying by i is a
+quarter turn, which is why these numbers live on a plane. Nine minutes.

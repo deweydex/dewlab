@@ -312,3 +312,13 @@ Robert, C. P. and Casella, G. (2004). *Monte Carlo Statistical Methods*
 level — listed because Chapter 1's opening pages make the same argument this
 tutorial does, that the method is most useful on problems where no formula is available,
 and it is worth seeing that stated by the people who use it for real work.
+
+AlphaPhoenix (2016). *RainPi: Calculate Pi with Raindrops!*
+<https://www.youtube.com/watch?v=I-BC_vI4CAE>. Our darts are random
+numbers from Python. Brian Haidet used real raindrops instead, falling on
+sensors shaped to do the same job. Four minutes.
+
+PurpleMind (2025). *Why Do Random Matchsticks Calculate Pi?*
+<https://www.youtube.com/watch?v=8stFid5aI9k>. Drop matchsticks on a floor
+of straight lines, count how many cross a line, and pi appears. This video
+shows why. Eight minutes.

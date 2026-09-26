@@ -292,3 +292,10 @@ animations cost it more work than others.
 | *composite* | The step where the browser puts the painted layers together into one picture | changing `transform` needs only this, after style |
 | `requestAnimationFrame(frame)` | Calls `frame` once, before the next frame, and hands it the time in milliseconds | `function frame(time) { … }` |
 | `prefers-reduced-motion` | A media query that is true when the visitor has asked for less motion | `@media (prefers-reduced-motion: reduce)` |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Frame Rate.*
+<https://www.youtube.com/watch?v=DyqjTZHRdRs>. Captain Disillusion
+explains frame rate, and why still pictures shown fast enough look like
+movement. Four minutes.

@@ -683,3 +683,10 @@ counts every file in a folder, however deep the folders go.
 For another route through the same sorts, with Shell sort as an
 optional challenge, the integrated course has
 [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
+
+## Where to read more
+
+CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. Selection sort and
+merge sort, side by side, and how their steps grow as the list grows.
+About eleven minutes.

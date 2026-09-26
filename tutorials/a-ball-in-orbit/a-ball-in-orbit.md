@@ -367,3 +367,9 @@ Hughes, J. F., van Dam, A., McGuire, M., Sklar, D. F., Foley, J. D.,
 Feiner, S. K. and Akeley, K. (2013). *Computer Graphics: Principles and
 Practice* (3rd ed.). Addison-Wesley. Its chapters on cameras cover
 perspective projection as it is really used, near plane and all.
+
+Sebastian Lague (2020). *Coding Adventure: Solar System.*
+<https://www.youtube.com/watch?v=7axImc1sxa0>. Our ball goes round because
+we tell it to follow a circle. Here, Sebastian Lague lets gravity do the
+pulling instead, and builds a small solar system that you can explore.
+About twelve minutes.

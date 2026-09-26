@@ -354,3 +354,8 @@ Mike Pound (Computerphile) (2016). *Password Cracking.*
 <https://www.youtube.com/watch?v=7U-RbOKanYs>. What the numbers this page
 computes mean in practice — how fast a real machine gets through
 them.
+
+Stand-up Maths (2015). *Matt Explains: Binomial Coefficients.*
+<https://www.youtube.com/watch?v=Pcgvv6T_bD8>. Matt Parker explains "n
+choose r" on a whiteboard, and shows where the same numbers appear in
+Pascal's triangle. Twelve minutes.

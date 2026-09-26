@@ -99,3 +99,10 @@ would become.
 - **A query and its result are two different things.** The SQL that built a
   table and the rows it returned are two different things worth keeping
   separately; this page exports the second.
+
+## Where to read more
+
+Stand-up Maths (2020). *When Spreadsheets Attack!*
+<https://www.youtube.com/watch?v=yb2zkxHDfUE>. What can go wrong when data
+lives in a spreadsheet, including gene names that a spreadsheet quietly
+changed into dates. Matt Parker tells the stories. About fourteen minutes.

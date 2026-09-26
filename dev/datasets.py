@@ -17,7 +17,7 @@ website read it (an `Access-Control-Allow-Origin` header). Without that,
 every reader gets the snapshot, and `live:` should say false.
 
 A refresh changes the numbers every page using the dataset quotes. Before
-committing one, run the pages (DECISIONS_LOG 7.246 has the audit this
+committing one, run the pages (DECISIONS_LOG 7.250 has the audit this
 repository did the first time).
 """
 

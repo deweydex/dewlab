@@ -1,7 +1,7 @@
 ---
 title: "Joining real tables: the rows a JOIN drops"
 year: "2026-2027"
-version: 2026.09.23.1
+version: 2026.09.26.1
 covers:
   a-second-table-written-by-hand:
     touches: [DBM-LO9]
@@ -49,8 +49,14 @@ the country's name, and the income table already calls that column
 it points at share one name, so the key here takes the name the data
 already uses.
 
+The box starts with `DROP TABLE IF EXISTS`, which deletes the table if an
+earlier run left one behind. That lets you change a row and run the box
+again, which you will do further down this page.
+
 ```sql exec
 id: create-country-regions
+DROP TABLE IF EXISTS country_region_tbl;
+
 CREATE TABLE country_region_tbl (
     country TEXT PRIMARY KEY,
     region TEXT

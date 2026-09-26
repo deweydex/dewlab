@@ -356,3 +356,9 @@ Nielsen, M. (2015). *Neural Networks and Deep Learning*.
 builds up from exactly this kind of small, hand-checkable example toward a
 real handwritten-digit classifier, without skipping the arithmetic in
 between.
+
+Spanning Tree (2025). *Perceptrons: The First Trainable Neural Networks.*
+<https://www.youtube.com/watch?v=Ip6RIHwi21c>. Brian Yu tells the story of
+Frank Rosenblatt's perceptron, from 1957, and shows how it learns: each
+time it gets an example wrong, it moves its weights a little. About twelve
+minutes.

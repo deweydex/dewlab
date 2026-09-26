@@ -109,3 +109,11 @@ barely moves at all.
   a loop that treats each group on its own.
 - **A chart raises questions.** A bend in a line says something changed; a
   chart does not say what.
+
+## Where to read more
+
+Gapminder Foundation (2009). *200 years that changed the world.*
+<https://www.youtube.com/watch?v=BPt8ElTQMIg>. Hans Rosling draws 200
+years of health and wealth for every country in the world, one moving
+bubble for each. Our chart has one line per country; his shows two numbers
+at once, and lets time move. Five minutes.

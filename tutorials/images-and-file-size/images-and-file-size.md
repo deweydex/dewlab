@@ -90,3 +90,10 @@ We can now keep a folder of images sized for the web, not for a camera.
 | *JPEG* | A format for photographs | `street.jpg` |
 | *PNG* | A format for exact detail or a transparent background | `screenshot.png` |
 | *SVG* | A format for simple flat shapes, sharp at any size | `logo.svg` |
+
+## Where to read more
+
+Captain Disillusion (2019). *CD / Resolution.*
+<https://www.youtube.com/watch?v=1unkluyh2Ks>. Captain Disillusion
+explains resolution, the number of pixels in a picture, and why more
+pixels are not always worth their cost. Six minutes.

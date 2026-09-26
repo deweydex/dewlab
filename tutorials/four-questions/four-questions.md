@@ -397,3 +397,12 @@ new, in maths or in code, you already have four ways in.
 
 Most of all, we have a question that is always allowed: "what space are
 we in?"
+
+## Where to read more
+
+Up and Atom (2018). *Can You Guess Who's Lying? 3 Logic Riddles to Train
+Your Problem Solving Skills.*
+<https://www.youtube.com/watch?v=xjSjxVAbhJ8>. Three puzzles about people
+who always tell the truth and people who always lie. Try the four
+questions from this page on each one before Jade Tan-Holmes gives her
+answer. About twelve minutes.

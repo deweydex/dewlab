@@ -499,6 +499,9 @@ SQL cell needs no engine of its own: `compose/dewmini.js` generates a call
 to `tutorial_tools.py`'s `_run_sql_cell()` against a shared `sqlite3`
 connection (`db`) and runs it through `pyodide-engine.js` like any other
 Python — SQL and Python share one engine; only JavaScript gets a second.
+The same function renders a `sql exec` cell on a tutorial page. Its result
+table leaves out pandas' index (`_table_html(..., index=False)`), which a
+Python cell's DataFrame keeps.
 
 **dewmini is a workbench, not one column.** Notebooks open in tabs
 (`notebooks[]` in `dewmini.js`, with `cells` re-pointed at whichever is

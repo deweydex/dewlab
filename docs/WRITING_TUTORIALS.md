@@ -251,6 +251,13 @@ about this; believe it.
 `hint` is optional. It appears behind a small **?** on the cell, so it is
 available without being in the way.
 
+A `sql exec` cell takes the same `id` and `hint`. It runs against the page's
+shared database, and only its last statement's result shows: the rows as a
+table if it was a `SELECT`, otherwise how many rows it changed. The table
+has only the query's own columns. A Python cell showing a DataFrame keeps
+pandas' row numbers down the left, since the pandas pages teach the index;
+beside a SQL table's own key they would read as a second id.
+
 ### Hints that wait for an attempt
 
 A `hint:` line is there from the start. A `hint` fence is not: it stays

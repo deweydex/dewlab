@@ -629,3 +629,8 @@ Khan Academy. *Proof: Law of Sines.*
 <https://www.youtube.com/watch?v=APNkWrD-U1k>. Why every side divided by
 the sine of its opposite angle gives the same number, derived rather than
 just checked.
+
+Ellie Sleightholm (2026). *Where Trigonometry Really Comes From.*
+<https://www.youtube.com/watch?v=bkvyu5mxVdY>. Why the ratio of two sides
+stays the same for every triangle with the same angles, and how that
+becomes sine and cosine. About twelve minutes.

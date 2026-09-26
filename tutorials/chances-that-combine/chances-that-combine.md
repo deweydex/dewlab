@@ -639,3 +639,11 @@ uses the whole unit to build a password-strength checker.
 
 For another route through the same ideas, the integrated course has
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
+
+## Where to read more
+
+CrashCourse (2018). *Geometric Distributions and The Birthday Paradox:
+Crash Course Statistics #16.*
+<https://www.youtube.com/watch?v=5VMTeBoEcQg>. Adriene Hill solves the
+birthday problem too, and asks how long we should expect to wait for
+something to happen. Ten minutes.

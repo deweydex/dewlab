@@ -128,3 +128,11 @@ keep your chosen countries in mind for that.
   Both happen before building a query on top of the data.
 - **`to_sql`.** Writes a table built in Python into the page's shared
   database connection, so `SELECT` now works on the same data.
+
+## Where to read more
+
+Stand-up Maths (2020). *UK Government loses data because of Excel
+mistake.* <https://www.youtube.com/watch?v=zUp8pkoeMss>. In 2020,
+thousands of COVID-19 test results in England were missed because a file
+format had no room for more rows. Matt Parker explains what is known.
+About sixteen minutes.

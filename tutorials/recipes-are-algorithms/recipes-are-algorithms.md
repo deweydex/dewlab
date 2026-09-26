@@ -506,3 +506,10 @@ the start.
 The most useful thing on this page is a habit. Before you write any
 steps, ask what a robot would get wrong. The answer is usually something
 you assumed without saying.
+
+## Where to read more
+
+CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. What makes a set of
+steps an algorithm, with sorting and finding a route as examples. About
+eleven minutes.

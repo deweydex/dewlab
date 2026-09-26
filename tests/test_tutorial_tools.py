@@ -264,6 +264,23 @@ class TestRunSqlCell:
         assert "<table" in cell.html
         assert cell.html.count("<table") == 1
 
+    def test_the_result_table_leaves_out_pandas_row_numbers(self, cell, conn):
+        # The ids here skip 5, as a table does after a DELETE: pandas' own
+        # 0-4 beside them would read as a second id column.
+        result = tt._run_sql_cell(
+            conn,
+            "create table t (t_id); insert into t values (1), (2), (3), (4), (6); "
+            "select * from t",
+        )
+        sql_table = cell.html
+        assert "<th></th>" not in sql_table
+        assert "<th>0</th>" not in sql_table
+        assert sql_table.count("<td>") == 5
+        # The same frame shown from a Python cell keeps its index.
+        tt._render_value(result)
+        python_table = cell.html[len(sql_table):]
+        assert "<th>0</th>" in python_table
+
     def test_a_script_ending_in_a_non_select_reports_rows_affected(self, cell, conn):
         result = tt._run_sql_cell(conn, "create table t (a); insert into t values (1), (2)")
         assert result is None
