@@ -2,7 +2,11 @@
 title: "Complex numbers: roots that are not real — Practice"
 practice_for: complex-roots
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  electronics: Resistors, coils and the alternating current through them.
+  rockets: A satellite going round the Earth, a quarter at a time.
+  fantasy-maps: A made-up kingdom, and a map that can be turned.
 ---
 
 # Complex numbers: roots that are not real — Practice
@@ -96,9 +100,28 @@ change.
 
 </details>
 
+**6.** Multiplying by $i$ turns a point a quarter turn about the
+origin. What does multiplying by $-1$ do? Before you run the cell, say
+where $5 + i$ will be.
+
+```python exec
+id: a-half-turn
+print((5 + 1j) * -1)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It prints `(-5-1j)`. Multiplying by $-1$ is a half turn: the point goes
+to the opposite side of the origin, the same distance away.
+
+That fits $i^2 = -1$. Two quarter turns make a half turn, so
+multiplying by $i$ twice is the same as multiplying by $-1$.
+
+</details>
+
 ## Solving
 
-**6.** Solve $x^2 + 4 = 0$.
+**7.** Solve $x^2 + 4 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -106,7 +129,7 @@ $x^2 = -4$, so $x = \pm 2i$.
 
 </details>
 
-**7.** Solve $x^2 - 2x + 5 = 0$.
+**8.** Solve $x^2 - 2x + 5 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -117,7 +140,7 @@ $x = \dfrac{2 \pm 4i}{2} = 1 \pm 2i$.
 
 </details>
 
-**8.** Solve $x^2 + 6x + 13 = 0$.
+**9.** Solve $x^2 + 6x + 13 = 0$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -127,7 +150,7 @@ $x = \dfrac{-6 \pm 4i}{2} = -3 \pm 2i$.
 
 </details>
 
-**9.** Check one of your answers by putting it back into the original
+**10.** Check one of your answers by putting it back into the original
 equation.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -144,7 +167,7 @@ looks strange.
 
 </details>
 
-**10.** The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. What is
+**11.** The equation $x^2 - 6x + 25 = 0$ has a root at $3 + 4i$. What is
 the other root? How can you know without solving the equation?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -160,7 +183,7 @@ pairs.
 
 ## Understanding the discriminant
 
-**11.** How many real roots does each quadratic have? Answer without
+**12.** How many real roots does each quadratic have? Answer without
 solving.
 
 - (a) $x^2 - 7x + 12$
@@ -180,7 +203,7 @@ root, at 1.5.
 
 </details>
 
-**12.** What does a negative discriminant look like on a graph?
+**13.** What does a negative discriminant look like on a graph?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -192,7 +215,7 @@ real solutions" only means that no *real* number is a solution.
 
 </details>
 
-**13.** Can a quadratic with real coefficients have exactly one complex
+**14.** Can a quadratic with real coefficients have exactly one complex
 root and one real root?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -207,7 +230,7 @@ touches it once, or misses it. No parabola crosses once and stops.
 
 ## Why complex numbers exist
 
-**14.** Each new family of numbers was made because a question had no
+**15.** Each new family of numbers was made because a question had no
 answer. Match each family to the question that made it necessary:
 $\mathbb{Z}$, $\mathbb{Q}$, $\mathbb{R}$, $\mathbb{C}$.
 
@@ -227,7 +250,7 @@ now taught in school.
 
 </details>
 
-**15.** Using complex numbers made the solver *shorter*. Why is that a
+**16.** Using complex numbers made the solver *shorter*. Why is that a
 good sign?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -240,7 +263,7 @@ A new idea that removes special cases is usually a good one.
 
 </details>
 
-**16.** Does every polynomial equation have a solution in $\mathbb{C}$?
+**17.** Does every polynomial equation have a solution in $\mathbb{C}$?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -256,7 +279,7 @@ $\mathbb{Q}$, $\mathbb{Z}$ or $\mathbb{N}$.
 
 ## In use
 
-**17.** Where are complex numbers used outside a maths class?
+**18.** Where are complex numbers used outside a maths class?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -273,7 +296,7 @@ In each of these, the complex numbers do real work.
 
 </details>
 
-**18.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If a
+**19.** A circuit's behaviour is described by $x^2 + 2x + 5 = 0$. If a
 root has a negative real part, the circuit becomes steady. Does this one
 become steady?
 
@@ -286,5 +309,105 @@ The real part decides whether the oscillation grows or fades. The
 imaginary part gives how fast it oscillates. A positive real part would
 mean the oscillation keeps growing. In a physical system, that can mean
 something breaks.
+
+</details>
+
+## Your world
+
+**20.** A problem from the world you chose.
+
+<div class="dl-world" data-world="electronics">
+
+A resistor of 40 ohms and a coil of 30 ohms reactance are in a line.
+Their impedance is $40 + 30j$. How much do they resist an alternating
+current?
+
+<details class="dl-answer"><summary>answer</summary>
+
+50 ohms. `abs(40 + 30j)` is 50.0, because $\sqrt{40^2 + 30^2} = 50$.
+Swapping the resistor and the coil's numbers gives the same 50 ohms: a
+distance from the origin does not depend on which way the point
+faces.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="rockets">
+
+A satellite 8000 km from the Earth's centre starts at $8000 + 0i$ on
+the complex plane. Where is it after half an orbit? Which power of $i$
+does that use?
+
+<details class="dl-answer"><summary>answer</summary>
+
+At $-8000$, on the other side of the Earth. Half an orbit is two
+quarter turns, so the position is multiplied by $i^2 = -1$. It is still
+8000 km from the centre.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The map maker turns the map a half turn, upside down. The castle was at
+$3 + 2i$. Where is it now, and which number did the map maker multiply
+by?
+
+<details class="dl-answer"><summary>answer</summary>
+
+At $-3 - 2i$, by multiplying by $-1$, which is $i^2$: two quarter
+turns. East and north both change sign, and the distance from the
+market cross stays the same.
+
+</details>
+
+</div>
+
+## From earlier
+
+**21.** In [Parabolas: completing the square](tutorial:parabolas), the
+vertex form of $x^2 - 2x + 5$ is $(x - 1)^2 + 4$. Find its roots from
+the vertex form, the same way as for real roots.
+
+<details class="dl-answer"><summary>answer</summary>
+
+$(x - 1)^2 + 4 = 0$, so $(x - 1)^2 = -4$. The square roots of $-4$ are
+$2i$ and $-2i$, so $x - 1 = \pm 2i$ and $x = 1 \pm 2i$.
+
+The vertex is $(1, 4)$, above the axis, so there are no real roots. The
+real part of the complex roots is the vertex's $x$, 1. The vertex form
+keeps working when the roots leave the real line.
+
+</details>
+
+**22.** In [Polynomials: representing and combining them in
+Python](tutorial:expressions-come-alive) we multiplied polynomials as
+lists. Multiply the factors $x - (1 + 2i)$ and $x - (1 - 2i)$. Is the
+product $x^2 - 2x + 5$?
+
+```python exec
+id: multiply-complex-factors
+def multiply_poly(a, b):
+    result = [0] * (len(a) + len(b) - 1)
+    for i in range(len(a)):
+        for j in range(len(b)):
+            result[i + j] = result[i + j] + a[i] * b[j]
+    return result
+
+
+print(multiply_poly([-(1 + 2j), 1], [-(1 - 2j), 1]))
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+It prints `[(5+0j), (-2+0j), 1]`, which is $x^2 - 2x + 5$ with the
+constant first. Every imaginary part is 0.
+
+`multiply_poly` never checks what kind of number it is given, so it
+works for complex numbers without any change. The imaginary parts
+cancel because the roots are a conjugate pair: their sum, 2, and their
+product, 5, are both real.
 
 </details>
