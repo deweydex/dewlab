@@ -1,7 +1,10 @@
 ---
 title: "Repeating steps with loops"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   while-loops-repeat-until-done:
     covers: [PDP-LO6]
@@ -17,57 +20,79 @@ covers:
 
 # Repeating steps with loops
 
-Our programs can now run lines in order, and make decisions. One thing
-is still missing: repetition. How would we add up 100 numbers, check
-every item in a list, or convert a whole batch of temperatures? Without
-a way to repeat, we would have to write the same code again and again.
+On [Variables, data types and text](tutorial:storing-and-computing), moving
+a whole word three places along meant writing the same line once for every
+letter. Here is a loop that does it for every letter, however long the
+word. What will it print?
 
-On this page, we make the computer repeat things for us. We also find
-that mathematical notation has had the same idea for centuries.
+```python exec
+id: a-loop-that-codes-1
+word = "CAT"
+coded = ""
+for letter in word:
+    position = ord(letter) - ord("A")
+    coded = coded + chr((position + 3) % 26 + ord("A"))
+print(coded)
+```
 
-## While Loops: Repeat Until Done
+```predict
+type: text
+
+What will it print?
+```
+
+It prints `FDW`: C moved to F, A to D, and T to W. The indented lines ran
+three times, once for each letter of `CAT`, and each time round `letter`
+held the next one. Change the word to your own name, in capitals, and run
+it again. The loop does not care how long it is.
+
+Our programs can run lines in order, and make decisions. This page adds
+the third thing every program is built from: repetition.
+
+## While loops: repeat until done
 
 A *while loop* runs its body again and again, for as long as a condition
-stays True. What do you think this one prints?
+stays `True`. It is for "keep going until…". Here a square pattern keeps
+doubling in size, until the next doubling would no longer fit on a canvas
+64 pixels wide.
 
 ```python exec
 id: while-loops-repeat-until-done-1
-# Count from 1 to 5
-count = 1
-
-while count <= 5:
-    print(count)
-    count = count + 1
-
-print("Done!")
+side = 1
+while side * 2 <= 64:
+    side = side * 2
+    print(side)
+print("Done")
 ```
 
-A while loop needs three things to work:
+```predict
+type: number
 
-1. a starting state: `count = 1`
-2. a condition that Python checks before each pass through the loop:
-   `count <= 5`
-3. an update inside the body that, in the end, makes the condition
-   False: `count = count + 1`
+What is the last number it prints?
+```
 
-What happens if we forget the third part? The condition never becomes
-False, so the loop runs forever. This is a very common mistake, and it
-is worth seeing once. While a cell is running, its **Run** button
-changes to **Stop**. Press it to stop the loop. (If you do not see a
-Stop button, reloading the page stops the loop too.)
+It prints 2, 4, 8, 16, 32 and 64, then `Done`. After 64, doubling again
+would make 128, so the condition is `False` and the loop stops.
 
-### Your turn
+A while loop needs three things:
 
-Before you run the next cell, trace it by hand:
+1. a starting state: `side = 1`
+2. a condition that Python checks before each time round: `side * 2 <= 64`
+3. a change inside the body that, in the end, makes the condition `False`:
+   `side = side * 2`
 
-1. For each pass through the loop, write down the values of `total` and
-   `n` in the comments at the bottom of the cell.
-2. Predict what the cell prints at the end.
-3. Run it to check.
+What happens without the third one? The condition never becomes `False`,
+so the loop never stops. It is worth seeing once. While a cell is running,
+its **Run** button changes to **Stop**: press it to stop the loop. (If you
+do not see a Stop button, reloading the page stops it too.)
+
+### Trace it by hand
+
+Before you run the next cell, write the values of `total` and `n` for each
+time round in the comments at the bottom. What will it print at the end?
 
 ```python exec
 id: your-turn-1
-# Predict the output first
 total = 0
 n = 1
 
@@ -82,48 +107,126 @@ print(total)
 # n=2: total becomes ?, n becomes ?
 # n=3: total becomes ?, n becomes ?
 # n=4: total becomes ?, n becomes ?
-# Final total: ?
 ```
 
-Which sum did that program work out? It adds 1 + 2 + 3 + 4. The program
-starts a total at zero, then adds to it again and again. This is the
-*accumulator pattern*, and it is one of the most common shapes in
-programming.
+It adds 1 + 2 + 3 + 4. It starts a total at zero, then adds to it again and
+again. This is the *accumulator pattern*, one of the most common shapes in
+programming. `coded` in the first cell on this page was an accumulator too,
+of letters instead of numbers.
 
-## For Loops: When You Know How Many Times
+### Your turn
 
-When we know in advance how many times to repeat, a *for loop* is
-simpler. A for loop runs its body once for each item in a sequence. The
-`range()` function makes a sequence of numbers for it:
+<div class="dl-world" data-world="secret-messages">
+
+In English, E is the most common letter. So in a message moved along by a
+Caesar shift, the most common letter is probably E, moved. Suppose the most
+common letter in a coded message is Q. Can you try shifts 0, 1, 2 and so on,
+until moving Q back by the shift gives E? Which shift is it?
+
+```python exec
+id: your-turn-2--secret-messages
+letter = "Q"
+shift = 0
+
+print(shift)
+```
+
+```inputs
+shift
+```
+
+```hint
+The condition is "moving Q back by `shift` does not give E yet". Moving
+back is the Caesar shift with `- shift` in place of `+ shift`.
+```
+
+```solution
+letter = "Q"
+shift = 0
+while chr((ord(letter) - ord("A") - shift) % 26 + ord("A")) != "E":
+    shift = shift + 1
+print(shift)
+---
+The shift is 12. A code-breaker who finds it can move every letter of the
+message back by 12. This is the oldest way of breaking a Caesar shift:
+count the letters.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A pattern starts 3 pixels wide, and each step makes it 5 pixels wider. How
+many steps until it is at least 64 pixels wide?
+
+```python exec
+id: your-turn-2--pixel-art
+width = 3
+steps = 0
+
+print(steps)
+```
+
+```inputs
+steps
+width
+```
+
+```hint
+Keep going while the width is less than 64. Inside the loop, two things
+change: the width, and the count of steps.
+```
+
+```solution
+width = 3
+steps = 0
+while width < 64:
+    width = width + 5
+    steps = steps + 1
+print(steps)
+---
+Thirteen steps, and the pattern ends 68 pixels wide. A while loop suits
+this because nobody knew the number of steps in advance: the loop found it.
+```
+
+</div>
+
+## For loops: when you know how many times
+
+When we know how many times to repeat, or have something to go through one
+item at a time, a *for loop* is simpler. It runs its body once for each item
+in a sequence: each letter of a string, as in the first cell, or each number
+`range()` gives.
 
 ```python exec
 id: for-loops-when-you-know-how-many-times-1
-# Count from 0 to 4
 for i in range(5):
     print(i)
 ```
 
-Did you expect it to start at 0? `range(5)` gives the numbers 0, 1, 2, 3
-and 4: five numbers, starting from 0. This might seem strange. Starting
-from 0 turns out to be very useful in programming, and we will see why
-when we work with lists in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+```predict
+type: number
 
-We can also give `range()` a start and a step:
+What will the last line be?
+```
+
+`range(5)` gives five numbers, 0, 1, 2, 3 and 4, starting from 0. So the
+last line is 4, not 5. Starting from 0 turns out to be very useful, and
+[Lists: keeping many values in order](tutorial:lists-and-sequences) shows
+why.
+
+`range()` can also take a start and a step:
 
 ```python exec
 id: for-loops-when-you-know-how-many-times-2
-# range(start, stop) -- stop is excluded
 for i in range(1, 6):
-    print(i, end=" ")      # end=" " prints on the same line
-print()                     # new line
+    print(i, end=" ")      # end=" " keeps the next print on the same line
+print()
 
-# range(start, stop, step)
 for i in range(0, 20, 5):
     print(i, end=" ")
 print()
 
-# Counting backwards
 for i in range(10, 0, -1):
     print(i, end=" ")
 print("Liftoff!")
@@ -133,25 +236,70 @@ print("Liftoff!")
 |---|---|
 | `range(stop)` | from 0 up to, but not including, `stop` |
 | `range(start, stop)` | from `start` up to, but not including, `stop` |
-| `range(start, stop, step)` | from `start`, jumping by `step` each time, stopping before `stop` |
+| `range(start, stop, step)` | from `start`, jumping by `step`, stopping before `stop` |
 
 ### Your turn
 
-Can you write a for loop that prints the first 10 multiples of 7? (That
-is 7, 14, 21, and so on, up to 70.)
+<div class="dl-world" data-world="secret-messages">
 
-1. Decide what start, stop and step values `range()` needs.
-2. Write your plan as pseudocode comments in the cell below.
-3. Write the loop, and run it.
-
-**Pseudocode first, then the code:**
+A code-breaker's table shows every letter beside the letter it becomes.
+Can you print the whole alphabet, 26 lines, each with a letter and that
+letter moved three places along? `A D`, `B E`, and so on, to `Z C`.
 
 ```python exec
-id: your-turn-2
-# Your loop here
+id: your-turn-3--secret-messages
+# 26 lines: each letter, and where a shift of 3 moves it
+
 ```
 
-## Sigma Notation: Mathematics Meets Loops
+```hint
+`range(26)` gives the positions 0 to 25. `chr(position + ord("A"))` turns
+a position back into a letter.
+```
+
+```solution
+for position in range(26):
+    letter = chr(position + ord("A"))
+    moved = chr((position + 3) % 26 + ord("A"))
+    print(letter, moved)
+---
+Read from the right-hand column back to the left, and the same table
+decodes a message.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you print one row of a checkerboard 16 pixels wide: `#` in the even
+columns and `.` in the odd ones, all on one line?
+
+```python exec
+id: your-turn-3--pixel-art
+# One row, 16 pixels: #.#.#.#.#.#.#.#.
+
+```
+
+```hint
+`range(16)` gives the columns 0 to 15. `print("#", end="")` prints without
+starting a new line.
+```
+
+```solution
+for column in range(16):
+    if column % 2 == 0:
+        print("#", end="")
+    else:
+        print(".", end="")
+print()
+---
+The last `print()` ends the line. Without it, whatever the next cell prints
+would carry on from the end of this row.
+```
+
+</div>
+
+## Sigma notation: mathematics meets loops
 
 Mathematicians have a short way to write sums. Instead of
 $1 + 2 + 3 + 4 + 5$, they write:
@@ -258,7 +406,11 @@ id: your-turn-3
 ```python exec
 id: your-turn-4
 # 2. First 10 terms of the harmonic series
-# (Hint: 1 / i gives a float. What would 1 // i give instead?)
+```
+
+```hint
+`1 / i` gives a float. What would `1 // i` give instead, and why would
+the total come out as 1?
 ```
 
 ```python exec
@@ -266,45 +418,101 @@ id: your-turn-5
 # 3. 10 factorial
 ```
 
-## Nested Loops
+## Nested loops
 
-A loop can contain another loop. These are called *nested loops*. For
-each single pass of the outer loop, the inner loop runs all the way
-through. What do you think this prints?
+A loop can hold another loop. These are *nested loops*. For each single
+time round the outer loop, the inner loop runs all the way through. What do
+you think this one draws?
 
 ```python exec
 id: nested-loops-1
-# A multiplication table (small version)
-for row in range(1, 4):
-    for col in range(1, 4):
-        result = row * col
-        # rjust(4) pads each number to 4 characters wide, so the columns line up
-        print(str(result).rjust(4), end="")
-    print()   # new line after each row
+for row in range(4):
+    for column in range(8):
+        if (row + column) % 2 == 0:
+            print("#", end="")
+        else:
+            print(".", end="")
+    print()   # end the row
 ```
+
+A checkerboard, four rows of eight. The outer loop runs 4 times, and for
+each of those the inner loop runs 8 times, so the `if` runs 32 times, once
+for every pixel. `(row + column) % 2` is what shifts each row along by one.
+
+If the outer loop runs $n$ times, and the inner loop runs $n$ times for
+each, the total is $n \times n$, or $n^2$. Counting the steps an algorithm
+takes matters a great deal when we come to searching and sorting, in
+[Searching a list: linear and binary search](tutorial:finding-things) and
+[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
 
 ### Your turn
 
-1. Change the code above so that it prints a full 10 by 10
-   multiplication table.
-2. How many multiplications does your table work out?
+<div class="dl-world" data-world="secret-messages">
 
-If the outer loop runs n times, and the inner loop runs n times for each
-of those, the total number of steps is n × n, or $n^2$. Counting how many
-steps an algorithm takes will matter a lot when we study searching and
-sorting, in [Searching a list: linear and binary search](tutorial:finding-things) and
-[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).
+Can you print a table of the first five letters, A to E, moved by the
+shifts 1, 2 and 3, one row for each shift? The first row is `B C D E F`.
 
 ```python exec
-id: your-turn-6
-# Your 10x10 multiplication table
+id: your-turn-6--secret-messages
+# One row per shift: 1, 2 and 3
+
 ```
 
-## Building Up Gradually: Counting with Conditions
+```hint
+The outer loop picks a shift. The inner loop goes through the positions 0
+to 4, and prints each moved letter with `end=" "`.
+```
 
-We can put an `if` inside a loop, so that we only count or add some of
-the values. For example, how many numbers from 1 to 100 can be divided
-by both 3 and 7? Can you guess before you run it?
+```solution
+for shift in range(1, 4):
+    for position in range(5):
+        print(chr((position + shift) % 26 + ord("A")), end=" ")
+    print()
+---
+Each row is the alphabet slid one place further along. A cipher table
+like this, with all 26 rows, was once printed on cards for people who
+sent coded messages by hand.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you draw a hollow square, 6 pixels by 6: `#` round the edge, and `.`
+inside?
+
+```python exec
+id: your-turn-6--pixel-art
+# A 6 by 6 square: # on the edges, . inside
+
+```
+
+```hint
+A pixel is on the edge when its row is the first or the last, or its
+column is the first or the last. That is four comparisons joined by `or`.
+```
+
+```solution
+size = 6
+for row in range(size):
+    for column in range(size):
+        if row == 0 or row == size - 1 or column == 0 or column == size - 1:
+            print("#", end="")
+        else:
+            print(".", end="")
+    print()
+---
+Change `size` and the same loops draw a square of any size. The edge is
+row 0 and row `size - 1`, because the rows are numbered from 0.
+```
+
+</div>
+
+## Building up gradually: counting with conditions
+
+An `if` inside a loop lets us count, or add, only some of the values. How
+many numbers from 1 to 100 can be divided by both 3 and 7? Can you guess
+before you run it?
 
 ```python exec
 id: building-up-gradually-counting-with-conditions-1
@@ -317,51 +525,123 @@ print()
 print("Total:", count)
 ```
 
+Four: 21, 42, 63 and 84. A number divided by both 3 and 7 is divided by 21,
+so the loop could have asked `i % 21 == 0`, and found the same four.
+
 ### Your turn
 
-Can you write a program that finds and prints every number from 1 to 50
-that is *either* a perfect square (1, 4, 9, 16, …) *or* a perfect cube
-(1, 8, 27, …)?
+<div class="dl-world" data-world="secret-messages">
 
-One way: for each number, check whether its square root, or its cube
-root, is a whole number. `n ** 0.5` gives the square root of `n`, and
-`n ** (1/3)` gives the cube root.
-
-Be careful with that cube root, though. Python stores most fractions
-only approximately, so `64 ** (1/3)` gives `3.9999999999999996`, not
-`4`. Another way avoids the problem: loop over whole numbers `k`, and
-check whether `k * k` or `k * k * k` equals your number.
-
-**Pseudocode first, then the code:**
+Code-breakers count letters. How many E's are in this message? Can you
+count them with a loop?
 
 ```python exec
-id: your-turn-7
-# Your program here
+id: your-turn-7--secret-messages
+message = "MEET ME BY THE OLD TREE"
+count = 0
+
+print(count)
 ```
 
-## Reflection
+```inputs
+count
+```
 
-On this page, we met `while` loops, `for` loops with `range()`, the
-accumulator pattern for both sums and products, nested loops, and loops
-with an `if` inside them.
+```solution
+title: with what you've met so far
+message = "MEET ME BY THE OLD TREE"
+count = 0
+for letter in message:
+    if letter == "E":
+        count = count + 1
+print(count)
+---
+Six. Counting every letter this way, and finding the most common, is the
+first step in breaking a Caesar shift.
+```
 
-The big idea is the link between loops and mathematical notation. When
-a mathematician writes $\sum$ or $\prod$, they are describing a loop.
-When a programmer writes a `for` loop with an accumulator, they are
-working out a sum or a product. It is the same idea, in two notations.
+```solution
+title: a shorter way you'll meet later
+message = "MEET ME BY THE OLD TREE"
+count = message.count("E")
+print(count)
+---
+A string can count its own characters. It is the same loop, written by
+somebody else.
+```
 
-We now have all three basic control structures: sequential execution,
-selection (`if`, `elif`, `else`), and *iteration*. Iteration is
-repetition: `while` and `for`. Any program can be built from these three
-building blocks.
+</div>
 
-What patterns are you starting to see? What questions do you have?
+<div class="dl-world" data-world="pixel-art">
 
-## Where to Read More
+A row of a picture is written as text: `#` for a lit pixel and `.` for a
+dark one. How many pixels are lit in this row? Can you count them with a
+loop?
+
+```python exec
+id: your-turn-7--pixel-art
+row = "..##.###..#"
+count = 0
+
+print(count)
+```
+
+```inputs
+count
+```
+
+```solution
+title: with what you've met so far
+row = "..##.###..#"
+count = 0
+for pixel in row:
+    if pixel == "#":
+        count = count + 1
+print(count)
+```
+
+```solution
+title: a shorter way you'll meet later
+row = "..##.###..#"
+count = row.count("#")
+print(count)
+---
+A string can count its own characters. It is the same loop, written by
+somebody else.
+```
+
+</div>
+
+## Looking back
+
+Sigma writes down a loop, and a loop with an accumulator works out a sum.
+Which parts of $\sum_{i=1}^{5} i$ does a mathematician leave unsaid, that
+a program has to say out loud?
+
+A challenge: this message was moved along by a Caesar shift, but nobody
+told you by how much. Can you try all 26 shifts, and print what each one
+gives? One of them reads as English.
+
+```python challenge
+# Try every shift. Which one reads as English?
+message = "WKLV LV D VHFUHW"
+for shift in range(26):
+    decoded = ""
+    for letter in message:
+        # Move each capital back by shift. Leave the spaces alone.
+        decoded = decoded + letter
+    print(shift, decoded)
+```
+
+The first cell on this page did one word with one loop. Next,
+[Writing your own functions](tutorial:writing-your-own-functions) gives a
+loop like that a name, so you can use it again without writing it out.
+
+## Where to read more
 
 Khan Academy. *Sigma Notation for Sums.*
 <https://www.youtube.com/watch?v=5jwXThH6fg4>. The mathematical side of the
-accumulator pattern this page builds — the same $\sum$ notation, worked
+accumulator pattern this page builds: the same $\sum$ notation, worked
 through on paper.
 
 Python Software Foundation. *The Python Tutorial — More Control Flow

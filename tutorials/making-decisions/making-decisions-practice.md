@@ -2,282 +2,324 @@
 title: "Making decisions with if, elif and else — Practice"
 practice_for: making-decisions
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Making decisions with if, elif and else — Practice
 
-The answers are hidden until you open them. Before you write an `if`,
-work out which values its condition is True for. When a conditional is
-broken, the fault is most often in the condition, not in the branches.
+Before you write an `if`, work out which values its condition is `True`
+for. When a decision goes a way you did not expect, the place to look is
+usually the condition, not the lines under it. Try each problem before you
+open anything under it.
 
-## Comparisons
+## 1. Capitals and small letters
 
 ```python exec
-id: comparisons-1
-a = 7
-b = 3
-print(a > b, a < b, a >= b, a == b, a != b)
+id: capitals-and-small-letters-1
+print("Apple" < "apple")
 ```
 
-**1.** What does each of these give? Predict first, then check.
+```predict
+What will it print?
 
-- (a) `5 > 3`
-- (b) `5 >= 5`
-- (c) `"apple" < "banana"`
-- (d) `"Apple" < "apple"`
-- (e) `10 == 10.0`
-- (f) `"10" == 10`
+- True
+  - Capital letters have smaller numbers than small letters.
+- False
+  - They are the same word, so neither comes first.
+```
 
-<details class="dl-answer"><summary>answer</summary>
+Then try `"apple" < "banana"`, `10 == 10.0` and `"10" == 10`.
 
-(a) True. (b) True. (c) True. (d) True. (e) True. (f) False.
+<details class="dl-answer"><summary>why</summary>
 
-Python compares strings in alphabetical order. Capital letters come
-before small letters, because of where they sit in the character table.
-That is why a simple sort puts `Zoe` before `adam`.
-
-The last two belong together. `10 == 10.0` is True, because both are the
-number ten. `"10" == 10` is False, because `"10"` is text and `10` is a
-number.
+`True`: Python compares strings character by character, using each
+character's number, and capitals come before small letters. That is why a
+simple sort puts `Zoe` before `adam`. `"apple" < "banana"` is `True` too.
+`10 == 10.0` is `True`, because both are the number ten, and `"10" == 10`
+is `False`, because one is text and the other a number.
 
 </details>
 
-**2.** What is the difference between `=` and `==`?
+## 2. One equals sign or two
+
+What is the difference between `=` and `==`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`=` assigns: it puts a value into a name. `==` asks a question: it gives
-back `True` or `False`.
-
-In Python, `if x = 5:` is a syntax error, and that is a help to you. In
-some other languages this line is allowed. It quietly sets `x` to 5, and
-the condition is then always true.
+`=` gives a name a value. `==` asks a question, and gives back `True` or
+`False`. In Python, `if x = 5:` stops with a syntax error, and that helps
+you. In some other languages that line is allowed: it quietly sets `x` to
+5, and the condition is then always true.
 
 </details>
 
-**3.** Can you write a condition that is True when a number is strictly
-between 10 and 20?
+## 3. Strictly between
 
-<details class="dl-answer"><summary>answer</summary>
+Can you set `between` to `True` when `n` is strictly between 10 and 20, and
+to `False` otherwise?
 
-```python
-10 < n < 20
+```python exec
+id: strictly-between-1
+n = 15
+
+print(between)
 ```
 
+```inputs
+between
+```
+
+```solution
+title: with what you've met so far
+n = 15
+between = n > 10 and n < 20
+print(between)
+```
+
+```solution
+title: a shorter way you'll meet later
+n = 15
+between = 10 < n < 20
+print(between)
+---
 Python allows chained comparisons like this one, and they mean what they
-look like. Most other languages need `n > 10 and n < 20`. That form also
-works in Python, and it is worth being able to write it.
-
-</details>
-
-## If, Else, Elif
-
-**4.** What does this print when `mark` is 75? When it is 50? When it is
-50.5?
-
-```python
-if mark >= 80:
-    print("Distinction")
-elif mark >= 65:
-    print("Merit")
-elif mark >= 50:
-    print("Pass")
-else:
-    print("Unsuccessful")
+look like. Most other languages need the first form.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+## 4. Three ifs instead of elif
 
-`Merit`, `Pass`, `Pass`.
-
-Only one branch ever runs: the first one whose condition is True. That is
-why the order matters. If `>= 50` came first, every mark from 50 up would
-print `Pass`.
-
-</details>
-
-**5.** This code is wrong. Why? What does it print for a mark of 85?
-
-```python
-if mark >= 50:
-    print("Pass")
-if mark >= 65:
-    print("Merit")
-if mark >= 80:
-    print("Distinction")
+```python exec
+id: three-ifs-instead-of-elif-1
+brightness = 150
+if brightness >= 64:
+    print("-")
+if brightness >= 128:
+    print("+")
+if brightness >= 192:
+    print("#")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+How many lines will it print for a brightness of 150? And for 200?
 
-It prints all three.
+<details class="dl-answer"><summary>why</summary>
 
-Separate `if` statements are separate questions, and Python asks each
-one in turn. `elif` means "otherwise, ask this". A grade needs `elif`,
-because a mark belongs to only one grade.
+Two lines for 150, `-` and `+`, and three for 200. Separate `if`
+statements are separate questions, and Python asks each one in turn.
+`elif` means "otherwise, ask this", so only one path runs. A pixel should
+get one character, so it needs `elif`, with the biggest threshold first.
 
 </details>
 
-**6.** Write a program that prints whether a number is positive,
-negative or zero.
+## 5. Positive, negative or zero
 
-<details class="dl-answer"><summary>answer</summary>
+Can you set `sign` to `"positive"`, `"negative"` or `"zero"`, whatever `n`
+holds?
 
-```python
+```python exec
+id: positive-negative-or-zero-1
+n = 0
+
+print(sign)
+```
+
+```inputs
+sign
+```
+
+```solution
+n = 0
 if n > 0:
-    print("positive")
+    sign = "positive"
 elif n < 0:
-    print("negative")
+    sign = "negative"
 else:
-    print("zero")
+    sign = "zero"
+print(sign)
+---
+There are three cases, and zero has to be one of them. With
+`if n >= 0: sign = "positive"`, zero gets the wrong name, and zero is
+exactly the value a tester tries first.
 ```
 
-There are three cases, and zero has to be one of them. If you write
-`if n >= 0: print("positive")`, zero gets the wrong answer, and zero is
-exactly the value a tester will try.
+## 6. Even and positive
 
-</details>
+Can you set `description` to something like `"even and positive"` or `"odd
+and negative"`, from two separate decisions?
 
-**7.** Write a program that prints whether a number is even or odd. Then
-extend it to say "even and positive", "even and negative", and so on.
+```python exec
+id: even-and-positive-1
+n = -7
 
-<details class="dl-answer"><summary>answer</summary>
+print(description)
+```
 
-```python
+```inputs
+description
+```
+
+```solution
+title: with what you've met so far
+n = -7
 if n % 2 == 0:
-    print("even")
+    parity = "even"
 else:
-    print("odd")
+    parity = "odd"
+if n > 0:
+    sign = "positive"
+elif n < 0:
+    sign = "negative"
+else:
+    sign = "zero"
+description = parity + " and " + sign
+print(description)
+---
+Even or odd, and the sign, are two separate questions, so the code makes
+two separate decisions. One long `if` would need six paths.
 ```
 
-And with the sign:
-
-```python
+```solution
+title: a shorter way you'll meet later
+n = -7
 parity = "even" if n % 2 == 0 else "odd"
 sign = "positive" if n > 0 else "negative" if n < 0 else "zero"
-print(parity, "and", sign)
+description = parity + " and " + sign
+print(description)
+---
+`"even" if n % 2 == 0 else "odd"` is an if-else that fits on one line: it
+gives `"even"` when the condition is true, and `"odd"` when it is not.
 ```
 
-This version uses a short form of if-else that fits on one line:
-`"even" if n % 2 == 0 else "odd"` gives `"even"` when the condition is
-True, and `"odd"` when it is False.
+## 7. And, or, not
 
-Even or odd, and the sign, are two separate questions, so the code makes
-two separate decisions. You could write it as one long `if` instead. It
-would work, but it would need four branches, and six once you include
-zero.
-
-</details>
-
-## Boolean Operators
-
-This cell prints every result of `and` and `or`. It uses a loop, which we
-meet in [Repeating steps with loops](tutorial:repeating-yourself). For now, you
+This cell prints every result of `and` and `or`. It uses a loop, which is
+in [Repeating steps with loops](tutorial:repeating-yourself). For now, you
 only need its output.
 
 ```python exec
 id: boolean-operators-1
-# Every pair of True and False, with the result of "and" and "or" for each
 for p in [True, False]:
     for q in [True, False]:
         print(p, q, "   and:", p and q, "   or:", p or q)
 ```
 
-**8.** Predict each one.
-
-- (a) `True and False`
-- (b) `True or False`
-- (c) `not True`
-- (d) `not (5 > 3)`
-- (e) `(5 > 3) and (2 > 4)`
-- (f) `(5 > 3) or (2 > 4)`
+Say what each of these gives: `True and False`, `True or False`,
+`not True`, `not (5 > 3)`, `(5 > 3) and (2 > 4)`, `(5 > 3) or (2 > 4)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-False, True, False, False, False, True.
+`False`, `True`, `False`, `False`, `False`, `True`.
 
 </details>
 
-**9.** A cinema gives a discount to anyone under 16 or over 65. Write the
-condition.
+## 8. Half price
 
-<details class="dl-answer"><summary>answer</summary>
+A cinema charges half price to anyone under 16 or over 65. Can you set
+`half_price` for any `age`?
 
-```python
-age < 16 or age > 65
+```python exec
+id: half-price-1
+age = 70
+
+print(half_price)
 ```
 
-With `and`, nobody would get the discount, because no age is both under
-16 and over 65. When a condition comes out True for nothing, or for
-everything, the operator is often the part that is wrong.
-
-</details>
-
-**10.** A password is acceptable if it has at least 8 characters and
-contains a digit. Write the condition. You have `password`, and a
-variable `has_digit` that is `True` or `False`. (`len(password)` gives
-the number of characters in `password`. We meet `len()` properly in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).)
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-len(password) >= 8 and has_digit
+```inputs
+half_price
 ```
 
-There is no `== True` on the end. `has_digit` is already True or False,
-so comparing it to `True` adds a step and tells us nothing new.
-
-</details>
-
-**11.** Write the condition for "this year is a leap year", using the
-full rule: divisible by 4, except for centuries, unless divisible by 400.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-(year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+```solution
+age = 70
+half_price = age < 16 or age > 65
+print(half_price)
+---
+With `and`, nobody would get half price: no age is both under 16 and over
+65. When a condition comes out `True` for nothing, or for everything, look
+at the operator first.
 ```
 
-Check it against 2024 (True), 1900 (False), 2000 (True) and 2023
-(False).
+## 9. A good password
 
-Python does not need the brackets, because it works out `and` before
-`or`. Without them, though, a reader has to work out that order to check
-your logic. The brackets save them the effort.
+A password is acceptable when it has at least 8 characters and contains a
+digit. `len(password)` gives the number of characters. Can you set
+`acceptable`?
 
-</details>
+```python exec
+id: a-good-password-1
+password = "otter2026"
+has_digit = True
 
-**12.** Write `not (a > b)` in a simpler way.
+print(acceptable)
+```
+
+```inputs
+acceptable
+```
+
+```solution
+password = "otter2026"
+has_digit = True
+acceptable = len(password) >= 8 and has_digit
+print(acceptable)
+---
+There is no `== True` on the end. `has_digit` is already `True` or
+`False`, so comparing it with `True` adds a step and says nothing new.
+```
+
+## 10. A leap year
+
+A year is a leap year when it can be divided by 4, except that a century is
+not, unless it can also be divided by 400. So 2024 is, 1900 is not, and 2000
+is. Can you set `is_leap` for any `year`?
+
+```python exec
+id: a-leap-year-1
+year = 1900
+
+print(is_leap)
+```
+
+```inputs
+is_leap
+```
+
+```hint
+Build it in two parts: "divided by 4 and not a century", or "divided by
+400". Can you write each part on its own first?
+```
+
+```solution
+year = 1900
+is_leap = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+print(is_leap)
+---
+Python does not need the brackets, because it works out `and` before `or`.
+They are there for the reader. Try 2024, 2000, 2023 and 1600 too.
+```
+
+## 11. Two opposites
+
+Write `not (a > b)` in a simpler way. Then write `not (a and b)` in a
+simpler way.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`a <= b`.
+`a <= b`: the opposite of "greater than" is "less than *or equal to*".
+Forgetting the equal case is one of the most common slips there is.
 
-The opposite of "greater than" is "less than or equal to". It is not
-"less than". Forgetting the equal case is one of the most common
-off-by-one bugs.
-
-</details>
-
-**13.** Write `not (a and b)` in a simpler way.
-
-<details class="dl-answer"><summary>answer</summary>
-
-`(not a) or (not b)`.
-
-This is De Morgan's law. We meet it again in
-[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth) and in
-[Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams). The opposite of "both" is "at
-least one is not". The other half of the law: the opposite of "either"
-is "neither".
+`(not a) or (not b)`: the opposite of "both" is "at least one is not". This
+is De Morgan's law. The other half: the opposite of "either" is "neither".
+We meet it again in
+[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
 
 </details>
 
-**14.** What does this print? Why does Python never work out the second
-condition?
+## 12. A condition that protects
 
-```python
+```python exec
+id: a-condition-that-protects-1
 n = 0
 if n != 0 and 10 / n > 1:
     print("yes")
@@ -285,164 +327,246 @@ else:
     print("no")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```predict
+What will it print?
 
-It prints `no`, with no error.
-
-Python stops working out an `and` as soon as one side is False, because
-nothing on the right can make the whole thing True. This is called
-*short-circuiting*. Here it does real work: it is the guard that stops
-the division by zero. Swap the two conditions, and the program crashes.
-
-</details>
-
-## Conditions that give back True or False
-
-The answers to these problems are written as small functions, using
-`def` and `return`. We meet these properly in
-[Writing your own functions](tutorial:writing-your-own-functions). For now, you can
-read `def opposite_signs(a, b):` as "here is a rule called
-`opposite_signs` that takes two values", and `return` as "give back this
-answer". You can also answer each problem with an ordinary `if`.
-
-**15.** You have two integers. Give back `True` if one is negative and
-the other is positive, and `False` if not.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def opposite_signs(a, b):
-    return (a < 0) != (b < 0)
+- yes
+  - 10 divided by something is more than 1.
+- no
+  - The first half is `False`, so the whole `and` is `False`.
+- An error
+  - Dividing by zero stops Python.
 ```
 
-This short version checks whether the two True/False values are
-different. They are different exactly when the signs are different.
+<details class="dl-answer"><summary>why</summary>
 
-The long version is `(a < 0 and b > 0) or (a > 0 and b < 0)`. The two
-versions give different answers for zero:
-
-- The short version sorts every number into "negative" or "not
-  negative". So `0` and `-5` give `True`.
-- The long version asks for one number below zero and one number above
-  zero. So the same pair gives `False`.
-
-Neither is wrong, because the question did not say what to do with
-zero. When a specification has a gap in it, whoever writes the code
-fills the gap. That is the real lesson here.
+It prints `no`, with no error. Python stops working out an `and` as soon as
+one side is `False`, because nothing on the right could make the whole
+thing `True`. This is called *short-circuiting*, and here it guards the
+division. Swap the two conditions, and the program stops with a
+`ZeroDivisionError`.
 
 </details>
 
-**16.** Give back `True` if the sum of two integers is 20, or if one of
-them is 20.
+## 13. Opposite signs
 
-<details class="dl-answer"><summary>answer</summary>
+Can you set `opposite` to `True` when one of `a` and `b` is negative and the
+other is positive?
 
-```python
-def twenty(a, b):
-    return a == 20 or b == 20 or a + b == 20
+```python exec
+id: opposite-signs-1
+a = 0
+b = -5
+
+print(opposite)
 ```
 
-</details>
-
-**17.** Give back `True` if a number is within 20 of 100, or within 20
-of 200.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def near(n):
-    return abs(n - 100) <= 20 or abs(n - 200) <= 20
+```inputs
+opposite
 ```
 
-`abs()` gives the size of a number without its sign, so `abs(-7)` is
-`7`. `abs(n - target) <= 20` is the general shape of "within 20 of".
-It saves writing two comparisons for each target.
-
-</details>
-
-**18.** Give back `True` when a positive number is a multiple of 3 or a
-multiple of 7.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def multiple_of_three_or_seven(n):
-    return n % 3 == 0 or n % 7 == 0
+```solution
+title: with what you've met so far
+a = 0
+b = -5
+opposite = (a < 0 and b > 0) or (a > 0 and b < 0)
+print(opposite)
 ```
 
-21 is a multiple of both, and `or` accepts that. What if you wanted
-"exactly one of the two"? Then you would use `!=` between the two
-conditions, as in problem 15.
-
-</details>
-
-## Classifying Numbers
-
-**19.** Write a classifier that says which number families a value
-belongs to: natural, integer, rational, real.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def classify(value):
-    is_integer = value == int(value)
-    is_natural = is_integer and value >= 0
-    if is_natural:
-        return f"{value} is natural, and therefore integer, rational and real"
-    if is_integer:
-        return f"{value} is an integer, and therefore rational and real"
-    return f"{value} is rational and real, but not an integer"
-
-
-for v in [7, -3, 0, 0.5, -3.5]:
-    print(classify(v))
+```solution
+title: a shorter way you'll meet later
+a = 0
+b = -5
+opposite = (a < 0) != (b < 0)
+print(opposite)
+---
+This asks whether "`a` is negative" and "`b` is negative" differ. The two
+give different answers for zero: here, with 0 and −5, the first says
+`False` and this one `True`. The question did not say what to do with
+zero. When a question has a gap, whoever writes the code fills it, and
+should say how.
 ```
 
-The strings with `f` in front are f-strings, from
-[Variables, data types and text](tutorial:storing-and-computing). The last two
-lines use a loop to try five values in turn; we meet loops in
-[Repeating steps with loops](tutorial:repeating-yourself).
+## 14. Near a hundred
 
-The families sit one inside the next, and that gives the code its shape.
-Each family contains the ones before it, so the first test that comes
-out True gives the most exact answer. For the same reason, we check
-grade boundaries from the top down.
+Can you set `near` to `True` when `n` is within 20 of 100, or within 20 of
+200? `abs()` gives the size of a number without its sign: `abs(-7)` is 7.
 
-</details>
+```python exec
+id: near-a-hundred-1
+n = 185
 
-**20.** The classifier above says every Python float is rational. Is
-that true?
+print(near)
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+near
+```
+
+```solution
+n = 185
+near = abs(n - 100) <= 20 or abs(n - 200) <= 20
+print(near)
+---
+`abs(n - target) <= 20` is the general shape of "within 20 of". It saves
+two comparisons for each target.
+```
+
+## 15. One more path
+
+<div class="dl-world" data-world="secret-messages">
+
+The tutorial's Caesar shift moves capitals. Can you set `moved` so that a
+small letter moves too, counting from `"a"`, and anything else stays as it
+is?
+
+```python exec
+id: one-more-path-1--secret-messages
+character = "q"
+shift = 3
+
+print(moved)
+```
+
+```inputs
+moved
+```
+
+```hint
+Three paths: a capital counts from `"A"`, a small letter from `"a"`, and
+anything else is left alone.
+```
+
+```solution
+character = "q"
+shift = 3
+if character.isupper():
+    moved = chr((ord(character) - ord("A") + shift) % 26 + ord("A"))
+elif character.islower():
+    moved = chr((ord(character) - ord("a") + shift) % 26 + ord("a"))
+else:
+    moved = character
+print(moved)
+---
+`q` moves to `t`. The two letter paths are the same shift, with a
+different starting letter.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A colour pixel has a red, a green and a blue, each from 0 to 255. Its
+brightness is roughly the average of the three. Can you set `pixel` to
+`"#"` when the brightness is 128 or more, and to `"."` otherwise?
+
+```python exec
+id: one-more-path-1--pixel-art
+red = 200
+green = 40
+blue = 90
+
+print(pixel)
+```
+
+```inputs
+pixel
+```
+
+```solution
+red = 200
+green = 40
+blue = 90
+brightness = (red + green + blue) / 3
+if brightness >= 128:
+    pixel = "#"
+else:
+    pixel = "."
+print(pixel)
+---
+The brightness is 110, so it is `.`. An eye sees green as brighter than
+red or blue, so real programs weigh the three differently. The plain
+average is a fair start.
+```
+
+</div>
+
+## 16. Which families
+
+Can you set `summary` to say which number families `value` belongs to,
+the way the tutorial's last task does? For example
+`"-3 is an integer, and so rational and real"`.
+
+```python exec
+id: which-families-1
+value = -3
+
+print(summary)
+```
+
+```inputs
+summary
+```
+
+```solution
+value = -3
+is_integer = value == int(value)
+is_natural = is_integer and value >= 0
+if is_natural:
+    summary = f"{value} is natural, and so an integer, rational and real"
+elif is_integer:
+    summary = f"{value} is an integer, and so rational and real"
+else:
+    summary = f"{value} is rational and real, but not an integer"
+print(summary)
+---
+The families sit one inside the next, and that gives the code its shape:
+the first test that comes out true gives the most exact answer.
+```
+
+## 17. Is every float rational
+
+The tutorial's classifier says every Python float is rational. Is that
+true?
+
+<details class="dl-answer"><summary>one good answer</summary>
 
 For the floats themselves, yes. Apart from a few special values, such as
-infinity, every float is a whole number times a power of two, and that
-is a fraction.
+infinity, every float is a whole number times a power of two, and that is
+a fraction.
 
-For the numbers the floats *stand for*, no. `math.pi` is a float, and π
-is irrational, so the float is only a rational number close to π. The
-exact statement is this: a computer cannot store an irrational number
-exactly, and every number it stores is rational, whether or not the
-thing it stands for is rational.
+For the numbers the floats *stand for*, no. `math.pi` is a float, and π is
+irrational, so the float is only a rational number close to π. A computer
+cannot store an irrational number exactly: every number it stores is
+rational, whether or not the thing it stands for is.
 
 </details>
 
-**21.** A triangle is possible when each side is shorter than the other
-two sides added together. Write a checker. What does it give for sides
-3, 4, 5? And for 1, 2, 10?
+## 18. A possible triangle
 
-<details class="dl-answer"><summary>answer</summary>
+A triangle is possible when each side is shorter than the other two added
+together. Can you set `possible` for any three sides?
 
-```python
-def is_triangle(a, b, c):
-    return a + b > c and a + c > b and b + c > a
+```python exec
+id: a-possible-triangle-1
+a = 1
+b = 10
+c = 2
+
+print(possible)
 ```
 
-For 3, 4, 5 it gives `True`. For 1, 2, 10 it gives `False`: the two
-short sides together cannot reach across the long one.
+```inputs
+possible
+```
 
-All three comparisons are needed. If you check only `a + b > c`, then
-1, 2, 10 passes when the sides are given in a different order, such as
-1, 10, 2.
-
-</details>
+```solution
+a = 1
+b = 10
+c = 2
+possible = a + b > c and a + c > b and b + c > a
+print(possible)
+---
+All three comparisons are needed. Checking only `a + b > c` lets 1, 10, 2
+through, because the long side is not the one in the `c` place.
+```

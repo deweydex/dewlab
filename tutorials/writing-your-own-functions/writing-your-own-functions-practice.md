@@ -2,32 +2,21 @@
 title: "Writing your own functions — Practice"
 practice_for: writing-your-own-functions
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # Writing your own functions — Practice
 
-The answers are hidden in folds under each problem. Many problems ask
-what a piece of code prints. Try to answer on paper first, then copy
-the code into a cell and run it to check.
+Problems on functions, and three from earlier pages. Where a problem gives
+you cases to try, write what you think each one gives in the guess column
+first, then try them on your code.
 
-## Defining and Calling
+## 1. Three ways to write wave
 
-```python exec
-id: defining-and-calling-1
-def greet(name):
-    print("Hello, " + name + "!")
-
-
-def describe_pet(pet_name, animal):
-    print(pet_name + " is a " + animal + ".")
-
-
-greet("Ada")
-describe_pet("Rex", "dog")
-```
-
-**1.** What does each of these three pieces of code print?
+What does each of these print?
 
 (a)
 
@@ -57,42 +46,42 @@ wave
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Nothing. A `def` only tells Python what `wave` means. The body runs
-when the function is called.
-
-(b) `Hi!` twice, once for each call.
-
-(c) Nothing is printed, and the function does not run. Without brackets,
-`wave` is the name of the function, not a call to it. On this site, a
-cell whose last line is a value on its own shows that value, so you may
-see something like `<function wave at 0x...>`. That is Python describing
-the function itself. The brackets are what make it run.
+(a) Nothing: a `def` only tells Python what `wave` means. (b) `Hi!` twice,
+once for each call. (c) The function does not run. Without brackets,
+`wave` is the name of the function, not a call to it. On this site a cell
+whose last line is a value on its own shows that value, so you may see
+something like `<function wave at 0x...>`: Python describing the function
+itself. The brackets are what make it run.
 
 </details>
 
-**2.** Using `describe_pet` from the tools cell, what does each line print?
+## 2. The wrong number of arguments
 
-- (a) `describe_pet("Tom", "cat")`
-- (b) `describe_pet("cat", "Tom")`
-- (c) `describe_pet("Tom")`
-- (d) `describe_pet("Tom", "cat", "grey")`
+```python exec
+id: defining-and-calling-1
+def describe_pet(pet_name, animal):
+    print(pet_name + " is a " + animal + ".")
+
+describe_pet("Tom", "cat")
+```
+
+What happens with `describe_pet("cat", "Tom")`? With `describe_pet("Tom")`?
+And `describe_pet("Tom", "cat", "grey")`? Try them.
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `Tom is a cat.` (b) `cat is a Tom.`
-
-(c) An error: `TypeError: describe_pet() missing 1 required positional
-argument: 'animal'`. (d) An error too: `TypeError: describe_pet() takes
-2 positional arguments but 3 were given`.
-
-Arguments are matched to parameters by position, so the order matters
-and the number must match. Both error messages name the function, and
-(c) even names the parameter that got nothing. That is a lot of help,
-if we read it.
+`cat is a Tom.`, then two errors:
+`TypeError: describe_pet() missing 1 required positional argument:
+'animal'`, and `TypeError: describe_pet() takes 2 positional arguments but
+3 were given`. Arguments are matched to parameters by position, so the
+order matters and the number must match. Both messages name the function,
+and the first even names the parameter that got nothing.
 
 </details>
 
-**3.** What happens here? Why?
+## 3. Called too soon
+
+What happens here, and why?
 
 ```python
 shout("hello")
@@ -103,149 +92,114 @@ def shout(word):
 
 <details class="dl-answer"><summary>answer</summary>
 
-`NameError: name 'shout' is not defined`.
-
-Python runs a program from the top down. On the first line, the `def`
-has not run yet, so the name `shout` does not exist. Put the `def`
+`NameError: name 'shout' is not defined`. Python runs a program from the
+top down, and on the first line the `def` has not run yet. Put the `def`
 first, and the call after it.
 
 </details>
 
-**4.** Write a function `countdown(start)`. It prints the whole numbers
-from `start` down to 1, one on each line, and then prints `Go!`.
+## 4. Countdown
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+Can you write `countdown(start)`, which prints the whole numbers from
+`start` down to 1, one on each line, and then `Go!`?
 
-1. Start with the first line: `def countdown(start):`.
-2. Inside the function, you need a loop that counts down. `range` can
-   count down if you give it a step of -1.
-3. Where does the loop stop? Remember that `range` never includes its
-   stop value.
-4. The `Go!` line comes after the loop, but still inside the function.
+```python exec
+id: countdown-1
+def countdown(start):
+    ...
 
-**Think about:** how far in should the `print("Go!")` line be indented?
-What changes if it is indented as far as the `print` inside the loop?
+countdown(3)
+```
 
-</details>
+```hint
+`range` can count down with a step of −1. Where does it stop, given that
+it never includes its stop value? And how far in should the `Go!` line be
+indented?
+```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```solution
 def countdown(start):
     for n in range(start, 0, -1):
         print(n)
     print("Go!")
 
-
 countdown(3)
+---
+The stop value is 0, so the loop reaches 1. If `print("Go!")` lines up
+with `print(n)`, it becomes part of the loop, and `Go!` appears after
+every number.
 ```
 
-This prints 3, 2, 1 and `Go!`, each on its own line.
+## 5. Is it even
 
-The stop value is 0, so that the loop reaches 1. If `print("Go!")` is
-indented to line up with `print(n)`, it becomes part of the loop, and
-`Go!` appears after every number.
-
-</details>
-
-## Giving a Value Back
+Can you write `is_even(n)`, which returns `True` when `n` is even and
+`False` when it is not?
 
 ```python exec
-id: giving-a-value-back-2
-def sum_up_to(n):
-    total = 0
-    for i in range(1, n + 1):
-        total = total + i
-    return total
-
-
-print(sum_up_to(100))
-print(100 * 101 // 2)
+id: is-it-even-1
+def is_even(n):
+    ...
 ```
 
-**5.** Write a function `is_even(n)` that returns `True` when `n` is even,
-and `False` when it is not.
+```inputs
+guess: yes
+is_even(4)
+is_even(7)
+is_even(0)
+is_even(-2)
+```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```solution
 def is_even(n):
     return n % 2 == 0
+---
+`n % 2 == 0` is already `True` or `False`, so the function can return it
+as it is. An `if` with `return True` and `return False` works too; this
+says the same thing in one line.
 ```
 
-`is_even(4)` is `True`, `is_even(7)` is `False`, and `is_even(0)` is
-`True`.
+## 6. Factorial
 
-You may have written this:
-
-```python
-def is_even(n):
-    if n % 2 == 0:
-        return True
-    else:
-        return False
-```
-
-That works too. But `n % 2 == 0` is already `True` or `False`, so we can
-return it as it is.
-
-</details>
-
-**6.** The tools cell has `sum_up_to(n)`. It adds up the whole numbers
-from 1 to `n` with a loop. What does it return for 100? For 0? Does it
-agree with the formula $\frac{n(n+1)}{2}$?
-
-<details class="dl-answer"><summary>answer</summary>
-
-5050 for 100, and 0 for 0. The formula gives 5050 too.
-
-For 0, `range(1, 1)` holds no numbers, so the loop body never runs, and
-the function returns the starting value of `total`, which is 0. The
-formula also gives 0. A function and a formula that agree on an awkward
-input like 0 is a good sign.
-
-</details>
-
-**7.** Write `factorial(n)`, which returns $n!$. What should `factorial(0)`
+Can you write `factorial(n)`, which returns $n!$? What should `factorial(0)`
 give?
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```python exec
+id: factorial-1
+def factorial(n):
+    ...
+```
 
-1. $5! = 1 \times 2 \times 3 \times 4 \times 5$. This is an accumulator,
-   like `sum_up_to`, but it multiplies.
-2. What should the accumulator start at? Starting at 0 would make every
-   answer 0.
-3. The loop runs over the numbers to multiply. The `return` comes after
-   the loop.
+```inputs
+guess: yes
+factorial(5)
+factorial(1)
+factorial(0)
+```
 
-**Think about:** what your function returns when the loop runs zero
-times.
+```hint
+It is an accumulator that multiplies. What should it start at? And what
+does your function return when the loop runs zero times?
+```
 
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```solution
 def factorial(n):
     result = 1
     for i in range(2, n + 1):
         result = result * i
     return result
+---
+`factorial(0)` gives 1: the loop does not run, and the function returns
+the starting value. Mathematicians define $0!$ as 1 too, which is one
+reason to start the accumulator at 1.
 ```
 
-`factorial(5)` is 120, and `factorial(10)` is 3628800.
+## 7. Found, or not found
 
-`factorial(0)` gives 1. The loop does not run at all, so the function
-returns the starting value. Mathematicians also define $0!$ as 1, so the
-function agrees with them. That is one reason to start the accumulator
-at 1.
+This function asks whether `n` has a factor between 2 and `n - 1`. Before
+you try the cases, write what you think each gives.
 
-</details>
-
-**8.** This function tells us whether `n` has a factor between 2 and
-`n - 1`. What does it return for 9, 7 and 2?
-
-```python
+```python exec
+id: found-or-not-found-1
 def has_factor(n):
     for d in range(2, n):
         if n % d == 0:
@@ -253,22 +207,30 @@ def has_factor(n):
     return False
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+guess: yes
+has_factor(9)
+has_factor(7)
+has_factor(2)
+```
 
-`True` for 9, `False` for 7, and `False` for 2.
+<details class="dl-answer"><summary>why</summary>
 
-For 9, the loop tries 2, then 3. 9 divides by 3, so the function
-returns `True` and stops. It never tries 4 or more. For 7, no number
-from 2 to 6 divides it, so the loop ends and the last line returns
-`False`. For 2, `range(2, 2)` is empty, so the function goes straight to
-`return False`.
+`True` for 9, `False` for 7, and `False` for 2. For 9, the loop tries 2,
+then 3, and 9 divides by 3, so the function returns `True` and stops. For
+7, nothing from 2 to 6 divides it, so the loop ends and the last line
+returns `False`. For 2, `range(2, 2)` is empty, so the function goes
+straight to `return False`.
 
 </details>
 
-**9.** Somebody writes `has_factor` with the last line indented one step
-further, inside the loop. What goes wrong? Try `has_factor(9)`.
+## 8. One step too far in
 
-```python
+Somebody wrote `has_factor` with the last line indented one step further,
+inside the loop. Can you find what goes wrong, and fix it?
+
+```python exec
+id: one-step-too-far-in-1
 def has_factor(n):
     for d in range(2, n):
         if n % d == 0:
@@ -276,97 +238,104 @@ def has_factor(n):
         return False
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+guess: yes
+has_factor(9)
+has_factor(15)
+has_factor(7)
+```
 
-`has_factor(9)` now returns `False`, and 9 is 3 times 3.
+```solution
+def has_factor(n):
+    for d in range(2, n):
+        if n % d == 0:
+            return True
+    return False
+---
+Indented inside the loop, `return False` runs on the first number that
+does not divide, so 9 looked as if it had no factor after trying only 2.
+"Found it" can be answered inside the loop, but "not found" only after the
+loop has tried everything.
+```
 
-The loop tries 2 first. 9 does not divide by 2, so the function reaches
-`return False` and stops, after checking only one number. Every odd
-number now looks as if it has no factor.
+## 9. Half of ten
 
-The rule: "found it" can be answered inside the loop, but "not found"
-can only be answered after the loop has checked everything.
-
-</details>
-
-## Return or Print?
-
-**10.** What does this print?
-
-```python
+```python exec
+id: half-of-ten-1
 def half(n):
     print(n / 2)
-
 
 result = half(10)
 print(result)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```predict
+type: text
 
-```
-5.0
-None
+What will the last line print?
 ```
 
-The first line comes from the `print` inside the function. The function
-has no `return`, so it gives back `None`, and that is what `result`
-holds.
+<details class="dl-answer"><summary>why</summary>
+
+`5.0`, then `None`. The first line comes from the `print` inside the
+function. The function has no `return`, so it gives back `None`, and that
+is what `result` holds.
 
 </details>
 
-**11.** What does `print(print("hi"))` print?
+## 10. Print a print
 
-<details class="dl-answer"><summary>answer</summary>
-
-```
-hi
-None
+```python exec
+id: print-a-print-1
+print(print("hi"))
 ```
 
-Python works out the inner call first. `print("hi")` shows `hi`, and
-like every function without a `return` value, it gives back `None`. The
-outer `print` then shows that `None`.
+```predict
+type: text
 
-So `print` is a function too, and its job is to show things. It does not
-give anything back.
+What will the last line print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`hi`, then `None`. Python works out the inner call first: `print("hi")`
+shows `hi`, and, like every function without a `return` value, gives back
+`None`. The outer `print` then shows that `None`. `print` is a function
+whose job is to show things. It does not give anything back.
 
 </details>
 
-**12.** A room's floor is a rectangle. This function works out its area:
+## 11. Two rooms
 
-```python
+Can you change `floor_area` so that
+`floor_area(4, 3) + floor_area(5, 2)` gives the total floor area of two
+rooms?
+
+```python exec
+id: two-rooms-1
 def floor_area(length, width):
     print(length * width)
 ```
 
-Change it so that you can work out the total floor area of two rooms,
-one 4 by 3 and one 5 by 2, with `floor_area(4, 3) + floor_area(5, 2)`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def floor_area(length, width):
-    return length * width
-
-
-print(floor_area(4, 3) + floor_area(5, 2))
+```inputs
+guess: yes
+floor_area(4, 3) + floor_area(5, 2)
 ```
 
-This prints 22.
+```solution
+def floor_area(length, width):
+    return length * width
+---
+22. With `print`, each call shows its own area and gives back `None`, and
+`None + None` stops with a `TypeError`. A function that returns its answer
+can be part of a bigger calculation.
+```
 
-With the `print` version, each call shows its own area and gives back
-`None`, and `None + None` stops with a `TypeError`. A function that
-returns its answer can be used inside a bigger calculation. A function
-that prints its answer cannot.
+## 12. Which are pure
 
-</details>
-
-## Input-Output Machines
-
-**13.** A *pure function* depends only on its arguments. The same input
-always gives the same output, and it changes nothing outside itself.
-Which of these are pure?
+A *pure function* depends only on its arguments: the same input always
+gives the same output, and it changes nothing outside itself. Which of
+these are pure?
 
 - (a) `def double(x): return x * 2`
 - (b) `def price_with_tax(price): return price * (1 + tax_rate)`, where
@@ -377,75 +346,101 @@ Which of these are pure?
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) and (d) are pure.
-
-(b) depends on `tax_rate`, which is outside the function. If somebody
-changes `tax_rate`, the same price gives a different answer. (c) gives a
-different answer each time, even with no input at all.
-
-A pure function has no *side effects*. A side effect is any change a
-function makes outside itself, such as changing a variable elsewhere in
-the program, or printing to the screen.
-
-Pure functions are easy to test and easy to think about. Their answers
-can also be saved and reused, because the answer to the same question
-never changes. Still, the goal is to know which kind you are writing.
-Functions that are not pure are useful and needed too: a dice game
-needs `roll`.
+(a) and (d). (b) depends on `tax_rate`, outside the function, so changing
+it changes the answer for the same price. (c) gives a different answer
+each time. A change a function makes outside itself, such as printing or
+changing a variable elsewhere, is called a *side effect*. Pure functions
+are the easiest to test, but the others are needed too: a dice game needs
+`roll`.
 
 </details>
 
-**14.** Here is a function and its inverse:
+## 13. Its own inverse
 
-```python
-def celsius_to_fahrenheit(celsius):
-    return celsius * 9 / 5 + 32
+Some functions undo themselves: doing them twice gets you back where you
+started.
 
+<div class="dl-world" data-world="secret-messages">
 
-def fahrenheit_to_celsius(fahrenheit):
-    return (fahrenheit - 32) * 5 / 9
+Can you write `reverse(message)`, which returns the message backwards? Then
+what is `reverse(reverse("OTTER"))`?
+
+```python exec
+id: its-own-inverse-1--secret-messages
+def reverse(message):
+    ...
 ```
 
-What does `fahrenheit_to_celsius(celsius_to_fahrenheit(20))` give? And
-what does `celsius_to_fahrenheit(36.6)` give?
+```inputs
+guess: yes
+reverse("RETTO")
+reverse(reverse("OTTER"))
+reverse("")
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```solution
+def reverse(message):
+    backwards = ""
+    for letter in message:
+        backwards = letter + backwards
+    return backwards
+---
+Turning a message round twice puts it back as it was, so `reverse` is its
+own inverse. ROT13, a Caesar shift of 13, is another: 13 and 13 make the
+whole 26.
+```
 
-`20.0`, and `97.88000000000001`.
+</div>
 
-The inverse undoes the first function, so we get back to 20. It comes
-back as a float, because `/` always gives a float.
+<div class="dl-world" data-world="pixel-art">
 
-The second answer should be 97.88. The tiny extra part at the end comes
-from the way a computer stores decimal numbers. Most decimals, such as
-36.6, cannot be stored exactly, so a small error can appear in the last
-digit. It is not a mistake in the function.
+A photo negative turns each brightness `b`, from 0 to 255, into `255 - b`.
+Can you write `invert(brightness)`? Then what is `invert(invert(200))`?
 
-</details>
+```python exec
+id: its-own-inverse-1--pixel-art
+def invert(brightness):
+    ...
+```
 
-**15.** Here is a function:
+```inputs
+guess: yes
+invert(0)
+invert(200)
+invert(invert(200))
+```
+
+```solution
+def invert(brightness):
+    return 255 - brightness
+---
+Black becomes white, and white black. Inverting twice gives back the
+brightness you started with, so `invert` is its own inverse.
+```
+
+</div>
+
+## 14. Outside the domain
 
 ```python
 def reciprocal(x):
     return 1 / x
 ```
 
-Which input is outside its domain? What happens if you call the function
-with it?
+Which input is outside this function's domain? What happens if you call it
+with that input?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0. The call `reciprocal(0)` stops with
-`ZeroDivisionError: division by zero`.
-
-Every other number works. When a function has an input it cannot
-handle, it is worth deciding on purpose what should happen. We come
-back to this in [Designing and testing good functions](tutorial:building-reusable-tools),
-where such inputs are called edge cases.
+0: `reciprocal(0)` stops with `ZeroDivisionError: division by zero`. When a
+function has an input it cannot handle, it is worth deciding on purpose
+what should happen.
+[Designing and testing good functions](tutorial:building-reusable-tools)
+comes back to such inputs, called edge cases.
 
 </details>
 
-## Functions That Use Other Functions
+## 15. Counting primes
 
 ```python exec
 id: functions-that-use-other-functions-2
@@ -455,87 +450,96 @@ def has_factor(n):
             return True
     return False
 
-
 def is_prime(n):
     if n < 2:
         return False
     return not has_factor(n)
 
-
 print(is_prime(7), is_prime(9), is_prime(1))
 ```
 
-**16.** The tools cell builds `is_prime` out of `has_factor`. Why does
-`is_prime` need the line `if n < 2`? Then use `is_prime` to count the
-prime numbers below 50.
+Why does `is_prime` need the line `if n < 2`? Then can you use `is_prime`
+to count the primes below 50?
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: counting-primes-1
+count = 0
 
-`has_factor(1)` returns `False`, because `range(2, 1)` is empty. Without
-the extra line, `is_prime(1)` would say `True`. But 1 is not a prime
-number. The `if n < 2` line handles 1, and also 0 and negative numbers.
+print(count)
+```
 
-```python
+```inputs
+count
+```
+
+```solution
 count = 0
 for n in range(1, 50):
     if is_prime(n):
         count = count + 1
 print(count)
+---
+15: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 and 47. Without
+`if n < 2`, `is_prime(1)` would say `True`, because `range(2, 1)` is empty
+and `has_factor(1)` finds nothing. But 1 is not a prime.
 ```
 
-There are 15 primes below 50: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31,
-37, 41, 43 and 47.
+## 16. Distance on a screen
 
-</details>
+Two pixels are at `(x1, y1)` and `(x2, y2)`. The distance between them is
+Pythagoras again: the square root of the difference across, squared, plus
+the difference down, squared. Can you write `distance(x1, y1, x2, y2)`?
 
-**17.** Write `sum_of_squares(a, b)`, and then `hypotenuse(a, b)`, which
-uses it. Check your function with a triangle whose shorter sides are 5
-and 12.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-def sum_of_squares(a, b):
-    return a ** 2 + b ** 2
-
-
-def hypotenuse(a, b):
-    return sum_of_squares(a, b) ** 0.5
-
-
-print(hypotenuse(5, 12))
+```python exec
+id: distance-on-a-screen-1
+def distance(x1, y1, x2, y2):
+    ...
 ```
 
-This prints 13.0. $5^2 + 12^2 = 25 + 144 = 169$, and the square root of
-169 is 13.
+```inputs
+guess: yes
+distance(0, 0, 3, 4)
+distance(1, 1, 4, 5)
+distance(2, 3, 2, 3)      # the same pixel
+```
 
-</details>
+```solution
+def distance(x1, y1, x2, y2):
+    across = x2 - x1
+    down = y2 - y1
+    return (across ** 2 + down ** 2) ** 0.5
+---
+Naming `across` and `down` makes the line with Pythagoras in it read like
+the formula.
+```
 
-**18.** Write `divide_with_remainder(a, b)`. It returns two values: how
-many whole times `b` goes into `a`, and what is left over.
+## 17. Two answers at once
 
-<details class="dl-answer"><summary>answer</summary>
+Can you write `divide_with_remainder(a, b)`, which returns two values: how
+many whole times `b` goes into `a`, and what is left over?
 
-```python
+```python exec
+id: two-answers-at-once-1
+def divide_with_remainder(a, b):
+    ...
+```
+
+```inputs
+guess: yes
+divide_with_remainder(17, 5)
+divide_with_remainder(5, 17)
+```
+
+```solution
 def divide_with_remainder(a, b):
     return a // b, a % b
-
-
-times, left_over = divide_with_remainder(17, 5)
-print(times, left_over)
+---
+A comma between the two values returns both. The caller can keep them
+under two names at once: `times, left_over = divide_with_remainder(17, 5)`.
+Python's own `divmod(17, 5)` does the same job.
 ```
 
-This prints `3 2`: 5 goes into 17 three times, with 2 left over.
-
-If you print `divide_with_remainder(17, 5)` directly, you see `(3, 2)`.
-Python shows the two values together, in round brackets.
-
-Python has a built-in function that does the same job: `divmod(17, 5)`
-also gives `(3, 2)`.
-
-</details>
-
-## Scope
+## 18. A count inside and outside
 
 ```python exec
 id: scope-1
@@ -545,52 +549,27 @@ def bump():
     count = 10          # a new, local count
     return count
 
-
 print(bump(), count)
 ```
 
-**19.** What does the cell above print? Why is `count` still 0 afterwards?
+```predict
+type: text
 
-<details class="dl-answer"><summary>answer</summary>
-
-`10 0`.
-
-The line `count = 10` inside the function created a *new* variable. That
-variable exists only while the function is running. An assignment inside
-a function never changes a variable outside it, unless you use the word
-`global`. If you find you need `global`, that is usually a sign that the
-function should return a value instead.
-
-</details>
-
-**20.** What does this print?
-
-```python
-def double(n):
-    n = n * 2
-    return n
-
-
-n = 5
-print(double(n), n)
+What will it print?
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>why</summary>
 
-`10 5`.
-
-A parameter is a local variable. When we call `double(n)`, the value 5
-goes into the function's own `n`. The line `n = n * 2` changes that
-local `n` to 10. The `n` outside the function is a different variable,
-and it is still 5.
-
-Using the same name inside and outside a function is allowed. It is
-also a common cause of confusion, so choose different names when you
-can.
+`10 0`. The line `count = 10` inside the function made a new variable,
+which exists only while the function runs. An assignment inside a function
+never changes a variable outside it. If you want a function to change a
+value, return the new value, and let the caller keep it.
 
 </details>
 
-**21.** One of these works, and one stops with an error. Which one? Why?
+## 19. One works, one does not
+
+One of these works, and one stops with an error. Which one, and why?
 
 ```python
 greeting = "Hello"
@@ -613,26 +592,74 @@ add(5)
 <details class="dl-answer"><summary>answer</summary>
 
 The first works, and prints `Hello, Ada`. The second stops with an
-`UnboundLocalError`, with a message like "cannot access local variable
-'total' where it is not associated with a value".
+`UnboundLocalError`: "cannot access local variable 'total' where it is not
+associated with a value".
 
-A function may *read* a global variable, as `greet` reads `greeting`.
-But `add` gives `total` a new value. When a function assigns to a name
-anywhere in its body, Python treats that name as local in the whole
-function. So on the right of `total = total + n`, Python looks for a
-local `total`, and there is none yet.
+A function may *read* a variable from outside, as `greet` reads
+`greeting`. But `add` gives `total` a new value, and when a function
+assigns to a name anywhere in its body, Python treats that name as local
+in the whole function. So on the right of `total = total + n`, Python looks
+for a local `total`, and there is none yet. The clear fix is to pass the
+value in and return the new one:
+`def add(total, n): return total + n`. This one catches out experienced
+programmers too.
 
-The clear fix is to pass the value in and return the new one:
+</details>
 
-```python
-def add(total, n):
-    return total + n
+## 20. From earlier: how many times round
 
+From *Repeating steps with loops*.
 
-total = 0
-total = add(total, 5)
+```python exec
+id: from-earlier-how-many-times-1
+x = 100
+steps = 0
+while x > 1:
+    x = x // 3
+    steps = steps + 1
+print(steps)
 ```
 
-This is a hard one. It trips up experienced programmers too.
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+4: 100 becomes 33, then 11, then 3, then 1, and the loop stops because 1
+is not more than 1.
+
+</details>
+
+## 21. From earlier: the biggest first
+
+From *Making decisions with if, elif and else*. Why does this give `"-"`
+for a brightness of 200?
+
+```python
+if brightness >= 64:
+    pixel = "-"
+elif brightness >= 192:
+    pixel = "#"
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Python runs the first path whose condition is `True`. 200 is 64 or more,
+so the first path catches it, and the second is never asked. With `>=`,
+the biggest threshold goes first.
+
+</details>
+
+## 22. From earlier: two decimal places
+
+From *Variables, data types and text*. What does `f"{2 / 3:.2f}"` give?
+
+<details class="dl-answer"><summary>answer</summary>
+
+`0.67`: the value of `2 / 3`, shown with two decimal places. The value
+itself keeps every place; `:.2f` only changes how it is shown.
 
 </details>
