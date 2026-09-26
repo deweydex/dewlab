@@ -31,7 +31,8 @@ Your toolkit is loaded on this page: `slope`, `line_through`,
 from this unit, and every tool from Units 1 to 7, such as
 `solve_simultaneous` and `close_enough`. A cell that says
 `distance = ...` hides that tool for the rest of the page, so give your
-numbers names like `gap`. Each answer is hidden until you open it. Where
+numbers names like `gap`. Each answer is hidden until you open it, and
+each one is one way through: yours may go another way. Where
 a problem asks you to predict, make the prediction before you run
 anything. It is the most useful part.
 
@@ -956,8 +957,8 @@ Schlomo's worry is a fair one. If someone changed the Python bounce
 rule and not the JavaScript hit rule, the game could show a hit the
 Python never predicted. One check: have the Python save a few test
 points and their distances to the wall in a table, and have the engine
-compare its own answers with them when it starts. That is one good
-answer, and there are others, such as writing the rule once in a form
+compare its own answers with them when it starts. That is one way
+through, and there are others, such as writing the rule once in a form
 both languages can read.
 
 </details>
