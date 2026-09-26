@@ -16,9 +16,9 @@ route, or to find the space where a "wrong" answer is right.
 
 Many of these can be answered in more than one way. The answer folds
 show one way through, with the thinking behind it. If yours is
-different, it may be more interesting: check it against the four
+different, it may be more interesting. Check it against the four
 questions. Try each one before you open its fold. A guess that misses
-is not wasted; it shows you exactly where to look.
+shows you exactly where to look.
 
 ## Warm-up
 
@@ -45,8 +45,8 @@ The first line multiplies two numbers. The second repeats the string
 
 The third line is the surprise. `"2"` is in quote marks, so it is a
 string, not a number. Python repeats the text "2" three times and gets
-`222`. The same `*`, a different space: with a number it multiplies, and
-with a string it repeats.
+`222`. The `*` is the same, but the space is different. With a number it
+multiplies, and with a string it repeats.
 
 </details>
 
@@ -117,7 +117,7 @@ print(4 * 3)
 ```
 
 It shows `12`, so four photos take about 12 MB. `print(3 * 4)` works
-too: multiplying in either order gives the same answer.
+too. Multiplying in either order gives the same answer.
 
 </details>
 
@@ -158,9 +158,8 @@ It shows `750`: 750 MB. In Python, multiply is `*`, not `x`. To Python,
 by side, with nothing to say what to do with them. So Python cannot
 read the line.
 
-Schlomo's `x` is very common, and sensible: on paper, `x` is how most
-of us write multiply. It is a move from a different
-space.
+Many people write `x`, as Schlomo did. On paper, most of us write
+multiply with an `x`. It is a move from a different space.
 
 </details>
 
@@ -201,8 +200,8 @@ named here?* Python was asked to follow a name that pointed at nothing.
 
 </details>
 
-**7. Explain.** Here are the steps for sending a photo from a phone, out
-of order. Put them in an order that works, and say which two steps
+**7. Explain.** Here are the steps for sending a photo from a phone, in a
+mixed-up order. Put them in an order that works, and say which two steps
 could swap without causing a problem.
 
 - A. Tap Send.
@@ -259,8 +258,8 @@ There are many. Some of them:
   restart closes every app.
 
 A person who has used phones for years fills these gaps without
-noticing. A machine, or someone who has never used one, cannot. Filling
-those gaps is what the next page is about.
+noticing. A machine, or someone who has never used one, cannot. The next
+page shows how to fill those gaps.
 
 </details>
 
@@ -282,7 +281,7 @@ Olé! Olé! Olé! Olé!
 
 In the first line, `2 * "Olé! "` happens first, and gives
 `Olé! Olé! `. Then `+` joins the string `"Olé! Olé!"` on the end. With
-strings, `+` does not add: it joins one piece of text to another. That
+strings, `+` joins one piece of text to another. That
 is one more move that means something different in a different space.
 
 The second line multiplies 10 by 10, and then that answer by 10 again.
@@ -302,8 +301,8 @@ least the price. The machine must be switched on, and the thing you
 chose must be in stock. The number you typed must be one the machine
 knows.
 
-This is a function in the sense of this course: something in, something
-out, and a promise about how the two are connected.
+This is a function, as this course uses the word. Something goes in,
+something comes out, and a promise says how the two are connected.
 
 </details>
 
@@ -330,7 +329,7 @@ Python can tell which is which from the quote marks.
 
 ## Stretch
 
-**13. Another way.** The tutorial worked out `print(4 * 7)`. Show the
+**13. Another way.** The tutorial calculated `print(4 * 7)`. Show the
 same 28 in Python in a different way, without using `*`.
 
 ```python exec
@@ -423,7 +422,7 @@ Here is one example, for the card game Snap.
 - **What does this space let us do?** A normal pack of 52 cards. You may
   only turn your own top card.
 
-One rule nobody writes down: you turn the card away from you, so that
+Here is one rule nobody writes down. You turn the card away from you, so that
 you do not see it before the other player does. Your game will have its
 own. Look for the rules that people only mention when somebody breaks
 them.
@@ -439,7 +438,7 @@ on the tutorial page says what this course chose, and why.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It weighs a few things.
+Here is one answer. It looks at a few things.
 
 - **Who your friend is.** Someone who came to learn programming may want
   to see the computer do something in the first minute. Someone who is

@@ -103,7 +103,7 @@ are left, but the table and its columns
 stay.](delete-with-and-without-where.svg)
 
 Look at the `dinosaur_id` column on the left. After the delete, the ids
-are 1, 2, 3, 4 and 6. Nobody renumbers the rows: Allosaurus keeps its 6,
+are 1, 2, 3, 4 and 6. Nobody renumbers the rows. Allosaurus keeps its 6,
 because a primary key stays with its row. To see this in the box, change
 its last line to `SELECT * FROM dinosaur_tbl;`.
 

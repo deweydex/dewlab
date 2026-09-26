@@ -13,16 +13,16 @@ version: 2026.09.25.2
 # Mixed problems: making your own tools
 
 Each problem here draws on at least one page of Unit 4, and many draw on
-two or more. None of them is harder than what those pages covered. The
-new part is that nobody tells you which page a problem comes from.
-Choosing the tool is part of the problem.
+two or more. None of them is harder than what those pages covered. This
+time, nobody tells you which page a problem comes from. You choose the
+tool yourself, and that is part of the problem.
 
 Along the way, the problems build this unit's product: a unit
 converter for reading about space, where every conversion is tested
 both ways. American space news often gives miles, pounds and degrees
 Fahrenheit first, and most of the world uses kilometres, kilograms and
-degrees Celsius. Your converter will read both. Going there and back
-should bring you home. Problems 5, 6, 10, 15 and 16 are the
+degrees Celsius. Your converter will read both. A conversion there and back
+should return the number you started with. We say the number comes home. Problems 5, 6, 10, 15 and 16 are the
 converter's main parts, and they build on each other, so do those in
 order.
 
@@ -42,7 +42,7 @@ id: mixed-tools-scratch-1
 ```
 
 **1. Predict.** A thermometer shows Fahrenheit. What does this line show?
-Work it out by hand first.
+Find it by hand first.
 
 ```python
 print(compose(celsius_to_fahrenheit, fahrenheit_to_celsius)(212))
@@ -55,7 +55,7 @@ print(compose(celsius_to_fahrenheit, fahrenheit_to_celsius)(212))
 `compose(outer, inner)` runs `inner` first. So 212 °F goes into
 `fahrenheit_to_celsius`, and comes out as 100 °C, the boiling point of
 water. Then `celsius_to_fahrenheit` turns 100 back into 212. A function
-composed with its inverse gives back what it was given, as on
+composed with its inverse returns what it was given, as on
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-promise-run-backwards).
 It is a float, `212.0`, because `/` always gives a float.
 
@@ -78,7 +78,7 @@ print(level)
 
 `1`.
 
-The call works out 2, and gives it back, but nothing keeps it. The
+The call calculates 2 and returns it, but nothing keeps it. The
 parameter `level` lives in the call's own space, and the page's `level`
 never changes. On
 [What a function can see](tutorial:what-a-function-can-see#values-in-by-position-and-by-name)
@@ -99,16 +99,16 @@ A temperature can be below zero on either scale, so the domain of
 about −273 °C. A distance is never negative, so the domain of
 `km_to_miles` is every number from 0 up.
 
-Python will work out `-10 / 1.609344` without a word, and give a negative
-answer. The rule does not know what it is for. That is the lesson from
-[Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out):
+Python will calculate `-10 / 1.609344` without a warning, and give a
+negative answer. The rule does not know what it is for. So, as on
+[Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out),
 the domain belongs in the docstring, and an `assert` can check it.
 
 </details>
 
 **4. Make.** A full-HD screen is 1920 pixels wide and 1080 high, and
 each pixel needs 3 bytes, one for each of red, green and blue. Use
-`rectangle_area` to work out how many megabytes one screenful takes. (A
+`rectangle_area` to find how many megabytes one screenful takes. (A
 megabyte here is 1,000,000 bytes.) A video shows 60 screenfuls a
 second. How many megabytes is that each second?
 
@@ -124,7 +124,7 @@ The screen has 2,073,600 pixels, so one screenful is about 6.2 MB, and
 60 of them are about 373 MB every second. That is why video is always
 squeezed before it is sent. The formula from
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins) did the
-first step; the rest is one line of arithmetic.
+first step. The rest is one line of arithmetic.
 
 </details>
 
@@ -175,15 +175,15 @@ print(miles_to_km(238900))
 close to the 384,400 km a European page would give. On national roads the new signs rounded it
 to 100 km/h. On regional and local roads the new limit was 80 km/h.
 
-`KM_PER_MILE` is a global name, and both functions read it. That is not
-a hidden input in the sense of the tutorial, because it never changes:
-the capital letters are how Python programmers say "this name is fixed".
+`KM_PER_MILE` is a global name, and both functions read it. It is not
+a hidden input in the sense of the tutorial, because it never changes.
+Python programmers use capital letters to say "this name is fixed".
 The rule has one number in it, and it is written once.
 
 </details>
 
 **6. Make.** Here is the tool that makes the converter trustworthy.
-Write `works_both_ways(there, back, values)`. It should give back
+Write `works_both_ways(there, back, values)`. It should return
 `True` when, for every value in `values`, `back(there(value))` is
 `close_enough` to the value, and `False` otherwise. Use `compose`. Try
 it on your two distance functions with the values 0, 1, 26.2 and 100,
@@ -193,9 +193,9 @@ and on the two temperature functions.
 
 1. `round_trip = compose(back, there)` is one function that goes there
    and back.
-2. Loop over `values`. As soon as one value does not come home, give
-   back `False`.
-3. Only after the loop has finished, give back `True`.
+2. Loop over `values`. As soon as one value does not come home,
+   return `False`.
+3. Only after the loop has finished, return `True`.
 
 **Think about:** why must `return True` be outside the loop?
 
@@ -296,7 +296,7 @@ rough answer, and a known-value test says how rough. So a converter needs both
 kinds of test from
 [Running a formula backwards](tutorial:running-a-formula-backwards#the-promise-run-backwards):
 known values, to check the factor, and round trips, to check
-the two directions agree. Neither kind is enough alone.
+the two directions agree.
 
 </details>
 
@@ -321,14 +321,14 @@ It shows about `4.536`, not the `16.09` its writer meant.
 The function reads `factor` each time it runs, and by then the page's
 `factor` points at the pound factor. That is the hidden input from
 [What a function can see](tutorial:what-a-function-can-see#what-a-function-can-see-from-outside).
-No error appears: the answer is quietly off. A test with a known
+No error appears, but the answer is wrong. A test with a known
 value, like `miles_to_km_from_page(1) == 1.609344`, would catch it, if
 it ran after the name was reused.
 
 </details>
 
 **10. Make.** Every converter so far has the same shape: multiply by a
-factor, or divide by it. Write `scaler(factor)`, which gives back a
+factor, or divide by it. Write `scaler(factor)`, which returns a
 function that multiplies its input by `factor`. Astronomers measure the
 solar system in *astronomical units* (AU): one AU is exactly
 149,597,870.7 km, about the distance from the Earth to the Sun. Use
@@ -414,18 +414,18 @@ print(tb_to_gib(1), tb_to_gib_directly(1))
 print(close_enough(tb_to_gib(1), tb_to_gib_directly(1)))
 ```
 
-Both routes give about 931.3, and `close_enough` says `True`. That is
-the surprise many people meet with a new drive: the box says 1 TB, and
+Both routes give about 931.3, and `close_enough` says `True`. Many
+people are surprised by this with a new drive. The box says 1 TB, and
 Windows says about 931 GB. Nothing is missing. The two are counting in
 different units, and Windows writes GB where it means GiB. The second route's number is the two steps of the first route
-multiplied together: composing two scalings is one scaling.
+multiplied together. Two scalings, composed, make one scaling.
 
 </details>
 
 **12. Explain.** A metronome is set in beats per minute. A drummer wants
 to know how many seconds each beat lasts. At 120 beats per minute, each
-beat is $60 \div 120 = 0.5$ seconds. So `seconds_per_beat(bpm)` gives
-back `60 / bpm`. What is its inverse, the function that turns seconds
+beat is $60 \div 120 = 0.5$ seconds. So `seconds_per_beat(bpm)` returns
+`60 / bpm`. What is its inverse, the function that turns seconds
 per beat back into beats per minute? What is surprising about it?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -446,7 +446,7 @@ print(works_both_ways(seconds_per_beat, seconds_per_beat, [40, 60, 120, 200]))
 
 The first line shows `0.5 120.0`. One machine takes 120 to 0.5, and the
 same machine takes 0.5 back to 120. The domain leaves out 0, as the
-`travel_time` formula did: a metronome at 0 beats per minute never
+`travel_time` formula did. A metronome at 0 beats per minute never
 ticks.
 
 </details>
@@ -466,8 +466,8 @@ print(round(one_metre, 3), round(spool_cm3), round(spool_cm3 / one_metre))
 ```
 
 One metre of thread is about 2.405 cm³, the spool is about 806 cm³ of
-plastic, and so it holds about 335 metres of thread. That is running
-the cylinder's formula backwards: we knew the volume, and wanted the
+plastic, and so it holds about 335 metres of thread. We ran the
+cylinder's formula backwards. We knew the volume, and wanted the
 length.
 
 </details>
@@ -520,8 +520,8 @@ These do not agree: 98.6 and 162.6. Converting each day adds 32 three
 times, and converting the total adds it once. A total of temperatures
 is not a temperature anything could be, either.
 
-So "add, then convert" is a move that works in one space and not the
-other. It works for a converter that only multiplies, like miles to
+So "add, then convert" works for distances and not for temperatures.
+It works for a converter that only multiplies, like miles to
 km. It fails for a converter that also adds, like Celsius to
 Fahrenheit.
 
@@ -537,7 +537,7 @@ the functions you have already written.
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Use `if` and `elif`, one branch for each of the six directions.
-2. Each branch gives back one of your converter functions, called on
+2. Each branch returns one of your converter functions, called on
    `value`.
 3. After the last `elif`, an `assert False, "..."` stops with your
    message.
@@ -585,29 +585,29 @@ convert(5, "km", "kg")
 The first three lines show the Moon's distance in km, about 384,500, the
 rover's mass, about 2,260 pounds, and −40.0, where the two temperature
 scales meet. The last line stops with
-`AssertionError: convert does not know km to kg`, which is the promise
-naming its own domain: a distance cannot become a weight.
+`AssertionError: convert does not know km to kg`, The promise names
+its own domain. A distance cannot become a weight.
 
-If someone swaps the units, `convert(42.2, "km", "miles")` still works:
-the strings are matched by what they say, so the order of the branches
-does not matter here. Swapping `value` with a unit is another matter,
-and gives a `TypeError`. Keyword arguments, like
+If someone swaps the units, `convert(42.2, "km", "miles")` still works.
+Python matches the strings by what they say, so the order of the
+branches does not matter here. If someone swaps `value` with a unit,
+Python gives a `TypeError`. Keyword arguments, like
 `convert(value=10, from_unit="km", to_unit="miles")`, make each value's
 job plain in the call itself.
 
 </details>
 
 **16. Make.** The last step: test every pair in `convert` both ways,
-with `works_both_ways`. The trouble is that `works_both_ways` wants
+with `works_both_ways`. But `works_both_ways` wants
 functions of one input, and `convert` has three. Write
-`converter_for(from_unit, to_unit)`, which gives back a one-input
+`converter_for(from_unit, to_unit)`, which returns a one-input
 function, and use it to check all three pairs.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Inside `converter_for`, define a function of one input, `value`, that
    calls `convert(value, from_unit, to_unit)`.
-2. Give that function back, without brackets.
+2. Return that function, without brackets.
 3. For each pair, `there` is `converter_for(a, b)` and `back` is
    `converter_for(b, a)`.
 
@@ -645,9 +645,9 @@ twice, starting from each end, so there are six round trips over five
 values each.
 
 `one_way` is a closure. It finds `from_unit` and `to_unit` in the space
-of the call to `converter_for` that made it, and that is what lets a
-three-input tool become a one-input tool that `compose` can use. That
-is the whole unit in one function: a promise (`convert`), its inverse,
+of the call to `converter_for` that made it. This lets a three-input
+tool become a one-input tool that `compose` can use. This one function
+uses the whole unit: a promise (`convert`), its inverse,
 a composition, a test, and a function that remembers what it can see.
 
 </details>
@@ -681,14 +681,14 @@ print(works_both_ways_first_try(double, third, [0, 1, 2, 3]))    # should be Fal
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both `return` lines are inside the loop, so the function gives back an
+Both `return` lines are inside the loop, so the function returns an
 answer after the first value, and never looks at the rest. The first
 value is 0, and $0 \times 2 \div 3$ is 0, so 0 comes home, and the answer
 is `True`.
 
 A walkthrough shows it: the loop starts with `value` pointing at 0,
-the `if` is True, `return True` runs, and the call's space is thrown
-away with 1, 2 and 3 never checked. The fix is the shape from problem 6:
+the `if` is True, `return True` runs, and the call's space is deleted.
+1, 2 and 3 are never checked. The fix is the shape from problem 6:
 
 ```python
 def works_both_ways_fixed(there, back, values):

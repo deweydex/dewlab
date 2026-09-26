@@ -39,7 +39,7 @@ print(speed(1, 2.9))
 
 <details class="dl-answer"><summary>answer</summary>
 
-About `383733.76`, `5574.4` and `0.3448`.
+It prints about `383733.76`, `5574.4` and `0.3448`.
 
 The Moon is about 384,000 km away. The station takes about 5,574
 seconds for one lap, which is 92.9 minutes. Sound travels about 0.345 km
@@ -79,8 +79,8 @@ two orders opposite?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Going forwards, the last step is "add 32". Undoing works from the last
-step back to the first, the way you take off your shoes before your
+Going forwards, the last step is "add 32". We undo the steps from the last
+one back to the first, the way you take off your shoes before your
 socks. So the first step back is "subtract 32", and the step after it
 undoes the multiplying. If we multiplied first, the 32 would still be
 mixed in with the number we multiply, and we would get a different
@@ -90,7 +90,7 @@ temperature.
 
 **4. Predict.** The novel *Fahrenheit 451* takes 451 °F as the
 temperature at which book paper catches fire. What do these two lines print? Will
-the second one give back exactly 451?
+the second one print exactly 451?
 
 ```python
 print(fahrenheit_to_celsius(451))
@@ -99,9 +99,9 @@ print(celsius_to_fahrenheit(fahrenheit_to_celsius(451)))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`232.77777777777777`, then `451.0`.
+This prints `232.77777777777777`, then `451.0`.
 
-The round trip gives back exactly 451 this time. Sometimes a float round
+The round trip returns exactly 451 this time. Sometimes a float round
 trip lands exactly, and sometimes it lands very close, like the
 `0.9999999999999984` for 1 °C in the tutorial. That is why a test
 of a round trip rounds first, or asks "close enough?".
@@ -122,7 +122,7 @@ but file sizes are in megabytes (MB). A byte is 8 bits, so a megabyte is
 8 megabits. Write `megabits_to_megabytes(megabits)` and its inverse,
 `megabytes_to_megabits(megabytes)`. Test each with a known value, then
 test the round trip for 50, 200 and 1,234.56. How many megabytes a
-second does a 100 Mb/s connection bring in?
+second does a 100 Mb/s connection download?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -162,8 +162,8 @@ print("The converter works both ways.")
 print(megabits_to_megabytes(100))
 ```
 
-It prints `The converter works both ways.`, then `12.5`: a 100 Mb/s
-connection brings in 12.5 MB a second. A known value checks the factor.
+It prints `The converter works both ways.`, then `12.5`. A 100 Mb/s
+connection downloads 12.5 MB a second. A known value checks the factor.
 A round trip checks that the two functions undo each other, and it
 would still pass if both used a factor other than 8. The two kinds of
 test find different problems.
@@ -236,7 +236,7 @@ putting 128 bpm back into the first formula gives 180 seconds again.
 **8. Make.** A 3D printer's software estimates how long a print takes.
 Say that for one printer the rule is 3 minutes for each gram of
 plastic, plus 12 minutes to warm up. (Real estimates depend on the
-shape; this is a simple model.) The printer is free for 2 hours. What
+shape. This is a simple model.) The printer is free for 2 hours. What
 is the heaviest print that will finish in time? Write the rule, run it
 backwards, and check.
 
@@ -281,7 +281,7 @@ hours.
 
 **9. Explain.** A disk stores files in blocks of 4,096 bytes each. A
 file of 1 byte still takes a whole block, and a file of 4,097 bytes
-takes two. Your file takes 3 blocks. Can you work out exactly how
+takes two. Your file takes 3 blocks. Can you find exactly how
 big it is? What does this say about running the rule backwards?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -290,7 +290,7 @@ No. Every file from 8,193 bytes up to 12,288 bytes takes 3 blocks, so
 "3 blocks" only tells you the size was somewhere in that range. Many
 inputs give the same output, so the rule is not one-to-one, and it has
 no inverse. The best a way back can do is give a range of sizes. Like
-`round()`, the rule throws information away, and nothing can bring it
+`round()`, the rule loses information, and nothing can get it
 back.
 
 </details>
@@ -458,7 +458,7 @@ composing the two inverses. In which order do they go?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Fahrenheit to Kelvin goes through Celsius: first
+1. Fahrenheit to Kelvin takes two steps: first
    `fahrenheit_to_celsius`, then `celsius_to_kelvin`.
 2. `compose(outer, inner)` runs `inner` first.
 3. Going back, undo the last step first.
@@ -582,8 +582,8 @@ It shows `20.0`.
 There is more than one good answer to which one to teach. Here are some
 things to weigh. The short rule is quick, and many people use it well. But it does
 not say which part moves first. A common slip is to move the
-$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which turns −76 °F into about −74.2 °C, not −60. The balance is slower, and
-it explains itself: each step is a move you can say out loud. One
+$\frac{9}{5}$ first, and get $C = \frac{5}{9}F - 32$, which turns −76 °F into about −74.2 °C, not −60. The balance is slower, but
+you can say each step out loud. One
 answer might teach the balance first, and then show the short rule as the
 balance with the middle steps left out.
 

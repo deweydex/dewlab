@@ -22,7 +22,7 @@ or skip it. Nothing on a later page needs it.
 You may know this shape already. Maths and programming are two
 subjects, in different rooms, with different books, and they rarely
 talk to each other. Each topic gets a week: percentages, then
-probability, then loops, and on we go. The formula comes first, and the
+probability, then loops, and so on. The formula comes first, and the
 reason comes later, if it comes at all. Every answer gets a tick or a
 cross, and then comes the next question.
 
@@ -37,7 +37,7 @@ you that something happened. It does not tell you what.
 **One subject, not two.** Maths and programming share the same pages
 here. A maths question needs a loop to add up a hundred numbers. A
 program needs a logarithm to explain why it is fast. When each subject
-needs the other, neither one gets learned and then left behind.
+needs the other, neither one is learned once and then forgotten.
 
 **A question first.** Every page starts with something a person might
 want to know: how long a message takes to reach Mars, or whether a coin
@@ -51,15 +51,15 @@ come back on every page, so you never start from nothing.
 
 **"What space are we in?"** On a clock, 10 + 4 is 2. In the counting
 numbers, 3 − 5 has no answer. So when a move does not work, we ask
-where it would. Plenty of moves that "don't work" work somewhere else,
-and finding out where is some of the most interesting maths there is.
+where it would. Plenty of moves that "don't work" work somewhere else.
+Some of the most interesting maths asks where.
 (Many of us were told at school that 4 − 5 was "not allowed". It was
 allowed all along. Nobody had shown us the space where it works.)
 
 **Guess before you run.** Before a cell shows you something new, the
 page asks you to guess what will happen. Your guess will often miss.
-Mine do too. A guess that misses is the most useful kind: it points
-straight at the idea worth a second look. Nobody marks it.
+Mine do too. A guess that misses is the most useful kind. It points
+straight at the idea to look at again. Nobody marks it.
 
 **Error messages on day one.** Red text will appear on your screen in
 the first hour, so [When Python says no](tutorial:when-python-says-no)
@@ -73,15 +73,15 @@ Powers come back when we count bits. Truth tables come back when we
 count outfits.
 
 **A toolkit of your own.** You write small functions, like `digit_at`
-and `factorial`, and later pages load them for you, so last week's work
-is what this week stands on. If one of yours is missing, or stops with
+and `factorial`, and later pages load them for you, so this week's work
+is built on last week's. If one of yours is missing, or stops with
 an error, the page loads a reference version instead, and nothing later
 breaks.
 
 **Your notation counts.** Invent your own names and your own ways of
 writing things down, as long as someone else can follow them. Many
 problems have more than one answer worth giving. The one in the fold
-is one way through, and yours may well be more interesting than mine.
+is one answer, and yours may well be more interesting than mine.
 
 ## What it costs
 
@@ -92,7 +92,7 @@ checking the formula against the list, takes longer than being handed
 $m \times n$. Writing `total` yourself takes longer than using Python's
 own `sum()`.
 
-**Some ideas turn up early, and some late.** Lists get their own page
+**Some ideas come early, and some late.** Lists get their own page
 in Unit 5, but earlier pages use them. Logarithms appear in the first
 unit. Meeting an idea before its own page can feel strange, and it is
 worth knowing in advance that it will happen.
@@ -103,10 +103,9 @@ its own, and you can start there.
 
 **Some questions are hard on purpose.** Some ask you to explain why
 something is true, not only to find the number. That takes longer, and
-it is meant to. The struggle is real, and it is also where the learning
-happens. When you are stuck, open the hint under the cell, read on and
-come back later, or ask your teacher. Stuck is a place to spend a
-while, not a place to stay.
+it is meant to. It is hard work, and you learn most when you are stuck.
+When you are stuck, open the hint under the cell, read on and
+come back later, or ask your teacher.
 
 ## Tell me when it is not working
 
@@ -124,13 +123,13 @@ with a flag on it, in the corner of the screen. They go to GitHub, which
 asks you to sign in with a free account first.
 
 "I could not follow it" is a real report, and I will treat it as one.
-When a page loses a reader, the page is what needs fixing.
+When a page loses a reader, the page needs fixing.
 
 The course is called the Dewey Track, after John Dewey, who argued that
 people learn by doing. (His book *Democracy and Education*, from 1916,
 is one of the books this site keeps as data, so you may meet it again.)
 Here, you learn by dewing. The next page,
-[Recipes are algorithms](tutorial:recipes-are-algorithms), is where the
-dewing starts.
+[Recipes are algorithms](tutorial:recipes-are-algorithms), starts the
+dewing.
 
 <!-- Unsigned until Josh has read the letter (7.228). Once he has, sign it "Josh" again. -->

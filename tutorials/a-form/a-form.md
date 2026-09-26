@@ -50,8 +50,8 @@ This connection does two things:
   Without a label, it may say only "edit text".
 
 In step 3, `for` named a missing `id`, so clicking the label did
-nothing. This mistake is common: one letter differs between
-`for` and `id`. Capitals count too: `Email` and `email`
+nothing. A common mistake is one letter that differs between
+`for` and `id`. Capitals count too, so `Email` and `email`
 differ.
 
 `type="email"` says the field expects an email address. A phone then

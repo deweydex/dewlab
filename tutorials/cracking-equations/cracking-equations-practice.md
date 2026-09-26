@@ -9,8 +9,8 @@ version: 2026.09.24.1
 
 The answers are hidden in folds under each problem. You can check every
 root you find yourself: put it back into the equation, and see whether
-you get zero. This is called *substituting* the root back in. It means a
-wrong answer never needs to survive on this page.
+you get zero. This is called *substituting* the root back in. So you can
+find a wrong answer yourself, and fix it.
 
 The factorising and quadratic problems are adapted from the Mathematics
 repository's factoring worksheet.
@@ -106,7 +106,7 @@ signs: $5 \times (-3) = -15$ and $5 + (-3) = 2$.
 (a), (b) and (e) are each a difference of two squares:
 $x^2 - a^2 = (x - a)(x + a)$. (c) and (d) are each a *perfect square*:
 $x^2 + 2ax + a^2 = (x + a)^2$. These two patterns are worth learning to
-spot quickly. They turn up often, and when you see them you do not need
+spot quickly. They appear often, and when you see them you do not need
 to search for factor pairs.
 
 </details>
@@ -135,7 +135,7 @@ subject of the next page,
 
 (a) $2(x + 2)(x + 3)$. (b) $3(x - 3)(x + 3)$. (c) $5(x - 3)(x + 2)$.
 
-Taking out the common factor first turns each of these into an easy
+If you take out the common factor first, each of these becomes an easy
 case. For example, $5x^2 - 5x - 30 = 5(x^2 - x - 6)$. If you try (c)
 without doing this, you have to search for two numbers that multiply to
 $5 \times (-30) = -150$. That is possible, but not pleasant.
@@ -156,7 +156,7 @@ $(2x + 1)(x + 3)$.
 4. Take out the common bracket: $(2x + 1)(x + 3)$.
 
 Another way is to use the quadratic formula and work backwards from the
-roots. That is what a computer does, and it is the better choice when
+roots. A computer does this, and it is the better choice when
 the numbers are awkward.
 
 </details>
@@ -201,7 +201,7 @@ confirm this by plotting it.
 
 </details>
 
-**10.** What does the discriminant tell you, before you work out anything
+**10.** What does the discriminant tell you, before you calculate anything
 else?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -210,9 +210,9 @@ It tells you how many real roots there are. Positive gives two, zero
 gives one repeated root, and negative gives none.
 
 On the graph, it tells you whether the parabola crosses the $x$-axis,
-touches it, or misses it completely. Working it out first also stops you
-taking the square root of a negative number. That is the error the
-formula gives if you go ahead without checking.
+touches it, or misses it completely. If you find it first, you also avoid
+taking the square root of a negative number. The formula gives that
+error if you continue without checking.
 
 </details>
 
@@ -225,7 +225,8 @@ $x^2 - 4x + 4$, $x^2 - 4x + 3$, $x^2 - 4x + 5$.
 
 Look at the constants: 4, 3, 5. The three parabolas are the same shape,
 moved up or down. The first touches the $x$-axis, the second crosses it
-twice, and the third misses it. One number tells the three cases apart.
+twice, and the third misses it. The discriminant alone separates the
+three cases.
 
 </details>
 
@@ -243,16 +244,16 @@ def verify_roots(a, b, c, roots, tolerance=1e-9):
         print(f"  x = {r:<20} gives {value:<25} {near}")
 ```
 
-You need the tolerance. Many quadratics come out exactly: $x^2 - 4x + 3$
+You need the tolerance. Many quadratics give exact roots: $x^2 - 4x + 3$
 gives 3.0 and 1.0, and both substitute to exactly zero. But
 $3x^2 - 7x + 2$ gives a root of 0.3333333333333333, which substitutes to
 `2.2e-16`. An exact test for zero would say that 0.3333333333333333 is
-not a root, when it is one, give or take rounding.
+not a root, when it is one, apart from rounding.
 
 The interesting case is $x^2 - 200000x + 1$, from the next problem. Its
 small root substitutes to about `1.1e-6`. That is far too large to be
-normal rounding error. Here the tolerance does its real job: it tells
-you the root itself is not accurate.
+normal rounding error. Here the tolerance shows something useful. It
+tells you that the root itself is not accurate.
 
 </details>
 
@@ -266,7 +267,7 @@ accuracy on the small one.
 
 To get the small root, `(-b - sqrt(d)) / (2a)` subtracts two numbers
 that are almost equal, and nearly all the useful digits cancel out. The
-standard fix has two steps. First, work out the large root, which has no
+standard fix has two steps. First, find the large root, which has no
 such subtraction. Then get the small root from a fact about quadratics:
 the two roots multiply to give $\frac{c}{a}$.
 
@@ -275,8 +276,8 @@ big = (-b - math.sqrt(d)) / (2 * a) if b > 0 else (-b + math.sqrt(d)) / (2 * a)
 small = c / (a * big)
 ```
 
-The formula is exactly right as mathematics, but imperfect as computer
-arithmetic. That difference is worth remembering.
+The formula is exact as mathematics. Computer arithmetic is not exact,
+so the result can lose accuracy.
 
 </details>
 
@@ -295,7 +296,7 @@ arithmetic. That difference is worth remembering.
 In (b) and (c), we divide or multiply by a negative number, and that
 *flips* the inequality. In (c): $5 - x < 2$ gives $-x < -3$, and
 multiplying by $-1$ gives $x > 3$. This is the one rule in this topic
-that you need to remember, and it is where most marks are lost.
+that you need to remember. Most lost marks come from it.
 
 </details>
 
@@ -342,10 +343,10 @@ $x = 4$, $y = 3$.
 Adding the two equations eliminates $y$ straight away: $3x = 12$, so
 $x = 4$. Then $4 - y = 1$, so $y = 3$.
 
-Check both equations: $8 + 3 = 11$ and $4 - 3 = 1$. Checking *both*
-matters. The usual mistake is a pair of values that makes one equation
-true and not the other. It looks exactly like a right answer until you
-substitute.
+Check both equations: $8 + 3 = 11$ and $4 - 3 = 1$. It matters that you
+check *both*. The usual mistake is a pair of values that makes one
+equation true and not the other. It looks exactly like a solution until
+you substitute.
 
 </details>
 
@@ -425,7 +426,7 @@ The discriminant of this equation tells you which.
 Check both conditions: $2(12 + 5) = 34$ and $12 \times 5 = 60$.
 
 Many people first try 10 by 7, because 34 and 60 both seem to point to
-it. Its perimeter is right, but its area is 70. A pair of values that
+it. Its perimeter is 34, but its area is 70. A pair of values that
 meets only one condition is not a solution.
 
 </details>
@@ -444,7 +445,7 @@ $t = \frac{20 \pm \sqrt{106}}{9.8}$.
 
 There are two answers, and both make sense. Often a quadratic from a
 real problem has one root you want and one you must think about. Here
-you want them both: the ball passes 15 m once going up and once coming
+you want them both. The ball passes 15 m once going up and once coming
 down.
 
 </details>

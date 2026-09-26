@@ -58,8 +58,7 @@ This editor has two limits:
 
 On the website track, the second limit matters less than it seems. You
 can see your changes on your published site instead.
-[Publishing your site with GitHub Pages](tutorial:publish-it) sets that
-up.
+[Publishing your site with GitHub Pages](tutorial:publish-it) shows how.
 
 ## What we have now
 

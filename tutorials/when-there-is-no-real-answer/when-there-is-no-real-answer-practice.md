@@ -16,7 +16,7 @@ folded away until you open them.
 Your toolkit is loaded on this page, with `evaluate`, `solve_quadratic`
 and `close_enough`. `solve_quadratic_complex` was a cell on the
 tutorial, not a toolkit tool, so the core section starts by writing it
-again. `cmath` is not loaded: each cell that needs it starts with
+again. `cmath` is not loaded. Each cell that needs it starts with
 `import cmath`.
 
 ## Warm-up
@@ -79,7 +79,7 @@ reply to Schlomi asks which space she means.
 
 </details>
 
-**4. Make.** Work out $(3 + 4i) + (1 - 2i)$ and $(3 + 4i)(1 - 2i)$ by
+**4. Make.** Find $(3 + 4i) + (1 - 2i)$ and $(3 + 4i)(1 - 2i)$ by
 hand. Then check both in Python.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -156,7 +156,7 @@ the clock each time. One more press brings it back to $(2, 1)$.
 
 </details>
 
-**6. Make.** Solve $x^2 + 2x + 10 = 0$. First work out the discriminant,
+**6. Make.** Solve $x^2 + 2x + 10 = 0$. First find the discriminant,
 and say how many real roots there are. Then find the complex roots with
 `solve_quadratic_complex`, and put each one back with `evaluate`.
 
@@ -238,8 +238,7 @@ for x, y in [(3, 2), (-1, 4), (0, -5)]:
 
 All three lines end in `True`. `complex(x, y)` makes the number
 $x + yi$. The rule and the multiplication agree because
-$(x + yi) \times i = xi + yi^2 = -y + xi$. So the geometry and the
-algebra are two ways of saying one thing.
+$(x + yi) \times i = xi + yi^2 = -y + xi$.
 
 </details>
 
@@ -255,9 +254,9 @@ print(sorted([3, 1j, 2]))
 `TypeError: '<' not supported between instances of 'complex' and
 'int'`. To sort, Python compares values with `<`, and complex numbers
 have no `<`. There is no order for points on a plane that keeps the
-rules of $\mathbb{R}$. That is why the toolkit's `solve_quadratic`
-promises real roots, smallest first: only in $\mathbb{R}$ does
-"smallest first" mean anything.
+rules of $\mathbb{R}$. So the toolkit's `solve_quadratic` promises
+real roots, smallest first. "Smallest first" only means something in
+$\mathbb{R}$.
 
 </details>
 
@@ -311,9 +310,9 @@ for a, b, c in [(1, -5, 6), (2, -7, 3), (1, -6, 9)]:
 
 The roots agree, with `+0j` on the complex ones. For $x^2 - 6x + 9$,
 `solve_quadratic` gives one root and `solve_quadratic_complex` gives
-the same root twice. Both are fair: the one root is where the curve
-touches the axis, and counting it twice is how "every quadratic has two
-roots" stays true in $\mathbb{C}$.
+the same root twice. Both make sense. The one root is the point where
+the curve touches the axis. In $\mathbb{C}$ we count it twice, so that
+every quadratic has two roots.
 
 </details>
 
@@ -381,9 +380,9 @@ turns, done twice, make a half turn? Check your answer in Python.
 
 <details class="dl-answer"><summary>answer</summary>
 
-A quarter turn against the clock, done twice, is a half turn: that is
-multiplying by $i$. A quarter turn with the clock, done twice, is also
-a half turn, the other way round: that is multiplying by $-i$. So the
+Multiplying by $i$ is a quarter turn against the clock. Done twice, it
+is a half turn. Multiplying by $-i$ is a quarter turn with the clock.
+Done twice, it is also a half turn, the other way round. So the
 two roots are $i$ and $-i$.
 
 ```python
@@ -402,7 +401,7 @@ single answer.
 
 <details class="dl-answer"><summary>answer</summary>
 
-An answer might weigh a few things, and can land on either side.
+An answer might weigh a few things, and can choose either way.
 
 - **What each one explains.** The picture gives $i^2 = -1$ a reason:
   two quarter turns make a half turn. The rule on its own asks you to
@@ -418,6 +417,6 @@ An answer might weigh a few things, and can land on either side.
 - **You.** Some people trust an idea once they can see it. Others trust
   it once they can calculate with it.
 
-It is also fair to want both, in one order or the other.
+You might also want both, in one order or the other.
 
 </details>
