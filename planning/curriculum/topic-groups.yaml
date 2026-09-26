@@ -143,7 +143,10 @@ groups:
       - multiplying-grids
       - undoing-it
       - solving-systems
+      - matrices-in-numpy
       - where-chains-lead
+      - a-filter-or-a-sprite
+      - mixed-matrices
 
   - key: computer-graphics
     name: Computer graphics — depth, perspective, and things that move

@@ -117,6 +117,10 @@ What will `A * B` print?
 
 ```python exec
 id: two-kinds-of-times-1
+import numpy as np
+
+A = np.array([[2, 3], [1, -1]])
+B = np.array([[5, 0], [1, -1]])
 print(A * B)
 print(A @ B)
 ```
@@ -141,7 +145,7 @@ How many times faster will `@` be?
   - Both do 8,000,000 multiplications.
 - About 10 times
   - NumPy is written to be fast.
-- More than 100 times
+- Much more than 10 times
   - NumPy might do the work in a different way.
 ```
 
@@ -149,6 +153,8 @@ How many times faster will `@` be?
 id: how-much-faster-1
 import random
 import time
+
+import numpy as np
 
 big = [[random.random() for j in range(200)] for i in range(200)]
 big_array = np.array(big)
@@ -167,8 +173,11 @@ print("NumPy is", round(your_time / numpy_time), "times faster")
 print("Same answer:", np.allclose(yours, numpys))
 ```
 
-Run it two or three times. The times change a little, but `@` is
-hundreds of times faster. Both do the same 8,000,000 multiplications.
+Run it two or three times. The times change a little. In a browser,
+`@` is usually 40 or 50 times faster. In Python on a laptop, outside a
+browser, it is often several hundred times faster, because NumPy can
+use code tuned for that processor. Both do the same 8,000,000
+multiplications.
 Your `multiply` does them one at a time in Python, and Python checks
 the type of every number before it multiplies. NumPy stores the
 numbers packed together, all of one type, and does the loops in C, a
@@ -188,6 +197,8 @@ first, and `b` was made from it with `@`.
 
 ```python exec
 id: solving-in-one-line-1
+import numpy as np
+
 C = np.array([
     [2, 1, 0, 3, 1],
     [1, 3, 2, 0, 1],
@@ -252,6 +263,8 @@ $n$ steps in one line.
 id: many-steps-at-once-1
 import math
 
+import numpy as np
+
 angle = math.radians(30)
 step = np.array([[math.cos(angle), -math.sin(angle)],
                  [math.sin(angle), math.cos(angle)]])
@@ -282,6 +295,7 @@ line, and check you get the photo back?
 ```python exec
 id: numpy-your-world--photos
 import matplotlib.pyplot as plt
+import numpy as np
 
 height, width = 100, 150
 photo = np.zeros((height, width, 3))
@@ -293,8 +307,8 @@ warm = np.array([[1.2, 0.1, 0.0], [0.1, 1.0, 0.1], [0.0, 0.1, 0.8]])
 warmed = photo @ warm.T
 
 plt.figure()
-plt.imshow(np.clip(np.hstack([photo, warmed]) / 255, 0, 1))
 plt.axis("off")
+plt.imshow(np.clip(np.hstack([photo, warmed]) / 255, 0, 1))
 ```
 
 ```hint
@@ -318,10 +332,10 @@ back = warmed @ np.linalg.inv(warm).T
 print(np.allclose(back, photo))
 print(warmed.max())
 ---
-It prints `True`: the photo comes back. The second line prints 276.0,
+It prints `True`, so the photo is back exactly. The second line prints 276.0,
 more red than a screen can show. A real editor stores whole numbers
 from 0 to 255, so it would cut 276 down to 255. Then even the inverse
-could not bring back the red that was cut.
+could not restore the red that was cut.
 ```
 
 </div>
@@ -335,6 +349,8 @@ how long does one `@` take?
 ```python exec
 id: numpy-your-world--starships
 import time
+
+import numpy as np
 
 hull = np.random.rand(10000, 2) * 20 - 10
 turn = np.array([[0, -1], [1, 0]])
@@ -365,8 +381,7 @@ numpy_time = time.perf_counter() - start
 print(np.allclose(yours, numpys))
 print(your_time > numpy_time)
 ---
-It prints `True` twice. The two agree, and `@` is faster, usually more
-than 10 times. A game that turns thousands of points 60 times a second
+It prints `True` twice. The two agree, and `@` is faster. A game that turns thousands of points 60 times a second
 needs that speed.
 ```
 
@@ -381,6 +396,8 @@ that, and what is left over?
 ```python exec
 id: numpy-your-world--space-scenes
 import math
+
+import numpy as np
 
 angle = math.radians(30)
 step = np.array([[math.cos(angle), -math.sin(angle)],

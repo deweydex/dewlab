@@ -5132,3 +5132,23 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Read against `#say-it-directly` (7.256).** These pages were rewritten before that rule reached `main`, so the merge keeps this branch's versions of the sixteen pages #386 swept. All eighteen pages were then read against the rule, and about 490 sentences changed. As elsewhere, the glossary files were not swept.
 
 *Cost to change: moderate. The order lives in the course file and topic groups; the pages' cross-references assume it, so moving logic back before Venn diagrams would mean moving the names of the two laws back as well. Cell ids are new throughout, which is free until 2 October.*
+
+---
+
+**7.258 — Matrices start from pictures, and multiplication is one move after another.** The content issue (#326), part of #306.
+
+**The order.** A grid of numbers, a matrix moving a picture, multiplication, undoing, systems, a new NumPy page (`matrices-in-numpy`), Markov chains, and a making task, `a-filter-or-a-sprite`, with a mixed set, `mixed-matrices`. The rules used to be taught on abstract $A$, $B$ and $C$, with the geometry arriving on the third page. Composition, which is the reason row-times-column exists, never appeared in two dimensions.
+
+**Pictures first.** `grid-of-numbers` adds, scales and transposes pictures, and keeps the diamond and the `IndexError` from scaling past the ramp as a planned surprise. `what-a-matrix-does-to-a-picture` moves an F, because the unit square hides a flip, and has a matching game and one playground cell in place of four copied plotting cells. `multiplying-grids` starts from "a shear, then a quarter turn: which one matrix does both?", and the row-times-column rule comes out of that, with the `zip` warning kept. `undoing-it` measures the F's area with the shoelace formula, lets the quarter turn break the $a \times d$ guess before $ad - bc$ appears, and shows the flip's $-8$ without `abs`.
+
+**The reader does the elimination.** `solving-systems` opens with two lines crossing, solved with the inverse, then draws parallel lines and one line drawn twice, and links a determinant of 0 to the F flattened onto a line: a point off that line is never reached, and a point on it is reached by a whole line of points. The site has no Parsons block, so the row operations come as shuffled lines in an ordinary cell. Run as they are, they stop with a `NameError`, and the error says what has to come first. The reader then writes `eliminate(M)` as a toolkit cell. Back substitution and `solve(M)` come with it, so `solve` is there on the NumPy page and in the Markov practice.
+
+**NumPy as a check, not a replacement.** `matrices-in-numpy` checks each of the reader's functions against its one line in NumPy, shows `A * B` beside `A @ B`, times a 200×200 multiply both ways, solves a 5×5 system chosen answer-first, and moves a planet 1,000 steps with `matrix_power`.
+
+**Markov chains.** The page names the switch from a column times a matrix to a row times a matrix, splits its word-counting cell into three, and adds a chain built from real data: NASA's daily sunlight for Dublin, with each day bright or dull against the middle day of its own month. A bright day is followed by another 61% of the time, and a dull day by another 62%. After two bright days, the next is bright 65% of the time, and after a dull day then a bright one, 55%: the page says this, because it is where a one-day chain falls short.
+
+**Solutions carry their own setup.** The build runs each solution after the page's starter cells, where a toolkit function from an earlier page is a stub. A world solution that calls `transform`, `inverse` or `solve` therefore includes the matching file from `setup/matrices/`, which holds the reference versions.
+
+**Found while checking.** Every page was run with its solutions, one world at a time. That found a brightness claim the matrix contradicted, a flip described as a turn, two claims about the Plough that were not true, "the one kind of move where order does not matter" (there are others), and an explanation of the $a \times d$ guess that did not say which way it was off.
+
+*Cost to change: moderate. The order lives in the course file and topic groups. Cell ids are new throughout, which is free until 2 October; after that, the toolkit cell ids (`grid-scale`, `matrix-move`, `matrix-dot-multiply`, `matrix-det-inverse`, `systems-eliminate`, `systems-solve` and the rest) are keys for the reader's saved functions on every later page.*
