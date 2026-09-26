@@ -8,7 +8,7 @@ practice_across:
   - the-top-of-the-curve
   - several-unknowns-at-once
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [planet-orbits]
 ---
 
@@ -300,8 +300,8 @@ same 4 thousand, and the time there too.
 </details>
 
 **7. Fix.** Schlomo wrote his own first `same_speed`. It gives an
-answer, but the check after it fails. Run it, and read the message.
-Find the line that makes the check fail, and change it.
+answer, but at that crowd Small and Medium are not equally fast. Can
+you find the line that does not do what he meant, and change it?
 
 ```python exec
 id: mixed-run-fix-order
@@ -313,32 +313,36 @@ def same_speed_first_try(first, second):
 
 thousands = same_speed_first_try([8, 3], [15, 1.25])
 print(thousands)
-assert close_enough(evaluate([8, 3], thousands), evaluate([15, 1.25], thousands)), "the servers should be equally fast here"
-print("Small and Medium are equally fast at", thousands, "thousand people.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+thousands                          # the crowd, in thousands
+evaluate([8, 3], thousands)        # Small's time at that crowd...
+evaluate([15, 1.25], thousands)    # ...and Medium's
+```
 
-It prints `0.25`, and then stops with
-`AssertionError: the servers should be equally fast here`. At 0.25
-thousand people, Small takes 8.75 ms and Medium about 15.31.
-
-The difference is `[-7, 1.75]`, which is $-7 + 1.75g$. The call passes
-$-7$ as $a$ and $1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a
-different equation. Swapping them fixes it:
-
-```python
+```solution
 def same_speed_first_try(first, second):
     """Return the crowd, in thousands, where two servers [fixed, per thousand] are equally fast."""
     difference = [first[0] - second[0], first[1] - second[1]]
     return solve_linear(difference[1], difference[0])
+
+
+thousands = same_speed_first_try([8, 3], [15, 1.25])
+print(thousands)
+---
+Schlomo's version prints `0.25`. At 0.25 thousand people, Small takes
+8.75 ms and Medium about 15.31.
+
+The difference is `[-7, 1.75]`, which is $-7 + 1.75g$. His call passes
+$-7$ as $a$ and $1.75$ as $b$, so it solves $-7g + 1.75 = 0$, a
+different equation. Here the two are swapped.
+
+Now it prints `4.0`, and at 4 thousand people both servers take 20 ms.
+A coefficient list puts the constant first, and $ax + b$ puts it last,
+so almost everyone makes this swap once. Comparing the two servers'
+times showed it.
 ```
-
-Now it prints `4.0`, and the check passes. A coefficient list puts the
-constant first, and $ax + b$ puts it last, so almost everyone
-makes this swap once. Schlomo's check caught it.
-
-</details>
 
 **8. Make.** The chooser's main tool. Write
 `fastest_server(servers, thousands)`, which returns the name of the
