@@ -332,8 +332,8 @@ Reading the printout:
   always removed. That is how a renderer avoids ever dividing by a depth of zero.
 - The range is shared unevenly. Depths 1 to 2 use half of it, and 10
   to 20 use a twentieth. Nearby things get the finest depth steps.
-  Near the camera is also where you would most easily notice two
-  surfaces, one just behind the other, drawn in the wrong order.
+  Near the camera, you would also most easily notice two surfaces,
+  one just behind the other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with
 the screen's edges now at $-1$ and $1$:

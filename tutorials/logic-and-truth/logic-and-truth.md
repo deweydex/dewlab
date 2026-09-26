@@ -192,11 +192,11 @@ evidence for it. It is the whole proof. There are exactly four cases,
 and the loop tried all four.
 
 This is unusual, and it is worth stopping to think about. Usually, "I
-tested it and it worked" is a weak argument. A test of a few inputs
+tested it and it worked" is a weak argument. A few tests
 cannot show that a program works for every input, and you will soon see
 this go wrong in real code. Here the argument is complete, because there
-are only four possible inputs, and we tried every one. A check of every
-case is a proof only when there are few enough cases to check them all.
+are only four possible inputs, and we tried every one. We can prove
+something by checking every case only when there are few enough cases to check them all.
 
 ## Where you have already used this
 
@@ -322,7 +322,7 @@ through a bracket. These are the ideas worth keeping:
 
 - **A truth table is a loop over every case.** There is no need to
   memorise it. If you forget what `or` does, generate the table.
-- **A check of every case is a proof only when there are few cases.** Four
+- **Checking every case proves something only when there are few cases.** Four
   rows is few. Almost nothing else you meet will be that small.
 - **De Morgan's laws are for readability.** They turn tangled conditions
   into ones a person can read. They do not make code do anything new.

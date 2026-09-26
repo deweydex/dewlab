@@ -303,7 +303,7 @@ print("ball_volume keeps its promise.")
 2. What unit would `radius ** 2` give, if the radius is in cm?
 3. Is a volume in cm² or cm³?
 
-**Think about:** how checking the units finds this line before any
+**Think about:** how you can find this line by checking the units, before any
 test runs.
 
 </details>

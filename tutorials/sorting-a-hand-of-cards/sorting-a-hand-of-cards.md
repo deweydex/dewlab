@@ -393,8 +393,8 @@ Insertion sort is different. A hand already in order costs only 4
 comparisons. Each card looks once to its left, finds a lower card, and
 stays. A hand in reverse order costs 10, because every card slides all
 the way to the front. For insertion sort, the order of the cards when
-we start decides how much work there is. Sequence, the third of our
-four questions, matters for the data as well as for the code.
+we start decides how much work there is. So order matters in the data,
+as well as in the code.
 
 ### Your turn
 

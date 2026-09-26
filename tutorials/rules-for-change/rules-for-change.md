@@ -526,7 +526,7 @@ Its volume is $x(30 - 2x)^2$.
 1. Use the product rule and the chain rule to find the slope of the
    volume.
 2. Check your slope rule with `slopes_agree`, for $x$ from 0 to 15.
-3. The slope comes to $(30 - 2x)(30 - 6x)$. Where is it 0? Which
+3. The slope is $(30 - 2x)(30 - 6x)$. Where is it 0? Which
    of those answers gives the biggest box?
 
 ```python exec

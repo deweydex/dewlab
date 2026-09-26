@@ -10,7 +10,7 @@ worlds:
 
 # Dictionaries: looking things up by name — Practice
 
-These problems are on dictionaries, with three from earlier pages. Try each problem
+These problems are on dictionaries, and three more are from earlier pages. Try each problem
 before you open anything under it, and run the cells to test your guesses.
 
 ## 1. Five lookups

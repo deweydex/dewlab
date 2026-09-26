@@ -731,8 +731,8 @@ for centimetres in range(0, 2601):
 print(place_so_far, round(highest_so_far, 4))
 ```
 
-It prints `13.0 4.225`, the answer from problem 13. Counting in
-whole centimetres also avoids adding 0.01 again and again, which would
+It prints `13.0 4.225`, the answer from problem 13. If we count in
+whole centimetres, we also avoid adding 0.01 again and again, which would
 add a small float error at every step.
 
 </details>

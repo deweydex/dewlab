@@ -560,7 +560,7 @@ decides which two are joined first, and that does not change what
 happens to the number. Maths says composition is associative:
 $f \circ (g \circ h) = (f \circ g) \circ h$.
 
-A change of order is different. If you round first, in bytes, and then
+Changing the order is different. If you round first, in bytes, and then
 divide, the answer is no longer rounded to one place.
 `to_megabytes(to_kilobytes(to_one_place(photo)))` gives `3.456789`.
 

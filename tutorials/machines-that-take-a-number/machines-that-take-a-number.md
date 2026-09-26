@@ -237,7 +237,7 @@ print(sensor_celsius(-3))
 
 This time the last line of the error is
 `AssertionError: a TMP36 gives 0.1 to 1.75 volts`. So we can answer the
-question at the top. It was the function's job, once its promise names
+question at the top. It is the function's job, once its promise names
 its domain. The message helps whoever calls the function next, and that is
 often you, a few weeks later.
 

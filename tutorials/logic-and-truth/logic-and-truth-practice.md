@@ -50,8 +50,8 @@ four.
 
 Three inputs give eight rows, and $n$ inputs give $2^n$ rows.
 
-Each new input doubles the number of cases. That is why a check of every
-case soon stops being practical. Twenty inputs give over a
+Each new input doubles the number of cases. That is why we soon cannot check
+every case. Twenty inputs give over a
 million rows.
 
 </details>
@@ -181,8 +181,8 @@ Nothing is left untested.
 
 For almost anything else, such as a function that takes whole numbers,
 the possible inputs never run out. A test can then only fail to find a
-problem. A check of every case is a proof only when there are few enough
-cases to check them all.
+problem. We can prove something by checking every case only when there
+are few enough cases to check them all.
 
 </details>
 

@@ -10,7 +10,7 @@ worlds:
 
 # Lists and looping over them — Practice
 
-These problems are on lists, with three from earlier pages. With indexing
+These problems are on lists, and three more are from earlier pages. With indexing
 and slicing, you learn more by trying things than by solving them in your
 head, so run the cells, change them, and test your guesses. Try each problem before you
 open anything under it.
