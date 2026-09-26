@@ -4825,3 +4825,17 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Names from keys.** A world's name is its key with a capital and spaces (`sea-floor` is "Sea floor"). That keeps the agreed frontmatter, one line per world, and a name worth more than that can come later without changing a page.
 
 *Cost to change: the grouping and fallback live in `applyWorld()`; the build's rules in `world_spans()` and `extract_blocks()`. A world's name that differs from its key would need a richer `worlds:` form, read by `page_worlds()`.*
+
+---
+
+**7.237 — A closer's challenge opens in the Notebook or the Workspace, ready to work on.** The challenge-links issue (#316), part of #306, building the syntax 7.231 agreed.
+
+**The block.** A ```` ```python challenge ```` fence is starter code for the Notebook; ```` ```html challenge ````, ```` ```css challenge ```` and ```` ```js challenge ```` fences side by side are one site for the Workspace. The page shows the starter read-only, since it is not a cell, with one button: **Open it in the Notebook**, or **in the Workspace**.
+
+**The link carries the starter.** The button is an ordinary link to `compose/notebook.html` or `compose/workspace.html`, with the starter in its address (`#challenge=` and a JSON object). Nothing has to pass between two open pages, the tutorial can be closed, and the link works without the tutorial's JavaScript. A starter is a few lines, so the address stays short.
+
+**Never over the reader's work.** The Notebook opens it as a new tab, and the Workspace as a new site, named after the page's id. A tab of that name already there makes this one `running-totals 2`. The same starter opened twice goes back to the tab it made, if that tab still holds it unchanged, so a reader who clicks twice does not get two copies. Both clear the address at once, so a reload does not open it again, and both listen for the address changing, since following the link in a tab that already shows the Notebook does not reload the page.
+
+**Offline.** A downloaded page has no Notebook beside it. There the runtime hides the link and shows **Save it as a file**, which saves `running-totals.py`, or one `running-totals.html` with the CSS and JavaScript inside it, since a single file is what opens from a student's disk.
+
+*Cost to change: the address format is read in three places, `render_challenge()` writing it and `openChallengeFromAddress()` and `takeChallengeFromAddress()` reading it; a change to one is a change to all three.*

@@ -588,6 +588,13 @@ steps the way the base feature was:
   beside each gap instead. Neither says right or wrong (#314). Once shown,
   a new choice re-runs `revealAnswer()`, and a reload restores the choice
   and the reveal from the saved record.
+- **"What does a challenge's button do on a downloaded page?"** (#316) —
+  `initChallenges()`. On the hosted site the build's link does it all, and
+  the runtime leaves it alone. On a downloaded page (`manifest.standalone`)
+  it hides the link and shows the Save button, which reads the starter back
+  out of the link's own address (`challengeStarter()`) and saves it with
+  `challengeFile()`: a `.py`, or one `.html` page with the CSS and
+  JavaScript inside it.
 - **"How does the world chooser work?"** (#315) — `initWorlds()`, called
   before `buildCells()` so a hidden world's editors start hidden, unhides
   the build's `.dl-world-chooser` and calls `applyWorld()` with the choice

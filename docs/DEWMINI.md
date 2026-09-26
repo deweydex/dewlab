@@ -220,6 +220,12 @@ asks first if there is anything in it. The row of tabs appears once you
 have more than one notebook, so a single notebook looks as it always
 did.
 
+A tutorial's challenge can open here too. Its **Open it in the Notebook**
+button brings the starter code in as a new tab named after the page. It
+never replaces a tab you have: if one already has that name, the new one is
+numbered. Opening the same challenge again goes back to its tab, as long as
+you have not changed it.
+
 One thing is worth knowing. **Every tab shares one Python session.** A
 variable you make in one notebook is visible in another. That is
 sometimes useful and sometimes surprising, and it is why the Workbench's

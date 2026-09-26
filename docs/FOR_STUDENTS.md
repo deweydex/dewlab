@@ -32,6 +32,11 @@ is the only difference, and it is meant to be visible at a glance.
 Some cells have a small **?** beside them. That is a hint, tucked out of the
 way until you want it.
 
+Near the end of a page there is often a challenge, with its first few lines
+of code already written. **Open it in the Notebook** (or the Workspace, for
+a web page) opens that code there, next to your own work and never over it.
+A downloaded page has a **Save it as a file** button instead.
+
 Some pages offer their tasks in more than one world: the planets, the sea
 floor, pixel art. A box under the title lists them. Choose the one you like,
 and the tasks change to match. You can change it at any time, and the page
