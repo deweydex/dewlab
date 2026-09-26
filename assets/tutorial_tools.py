@@ -7,8 +7,8 @@ This is the module a student's cell code sees. It does two jobs:
     into that cell's own output area, in the order the code produced it;
 
   * it provides the small bridge a cell uses to put something on the page and
-    read something back: `text_input`, `dropdown`, `button`, `show` and
-    `show_table`, plus `load_csv`, `load_text` and `run_query` for pulling
+    read something back: `text_input`, `dropdown`, `slider`, `button`,
+    `show` and `show_table`, plus `load_csv`, `load_text` and `run_query` for pulling
     in data, the last usable wherever sqlite3 is loaded.
 
 How each behaves was designed rather than looked up, and every such choice
@@ -50,6 +50,7 @@ warnings.filterwarnings(
 __all__ = [
     "text_input",
     "dropdown",
+    "slider",
     "button",
     "image_input",
     "show",
@@ -1438,6 +1439,69 @@ def dropdown(label: str = "", options=(), value=None, id: str | None = None) -> 
         + "</div>"
     )
     return _mount_widget(markup, cell.cell_id, widget_id, "dropdown", current)
+
+
+class _Slider(_Widget):
+    """A slider's handle. `.value` is a number, not the text a box holds.
+
+    It always reads the remembered value rather than the control: on the
+    page, the live slider sits in its cell's strip (`reconcileSliders()` in
+    tutorial-runtime.js), not where this cell's run put the markup, so the
+    element this handle was given may no longer be on the page at all. The
+    page sends every slider's value in before each run (`seedSliders()`).
+    """
+
+    def __init__(self, cell_id, widget_id, element, whole: bool):
+        super().__init__(cell_id, widget_id, element, "slider")
+        self._whole = whole
+
+    @property
+    def value(self):
+        raw = _widget_values.get((self._cell_id, self._widget_id))
+        if raw is None:
+            return None
+        number = float(raw)
+        return int(round(number)) if self._whole else number
+
+
+def slider(
+    label: str = "",
+    low=0,
+    high=10,
+    step=None,
+    value=None,
+    id: str | None = None,  # noqa: A002
+) -> _Slider:
+    """A slider from `low` to `high`. Read where it is with `.value`.
+
+    Moving it runs the cell again, so a plot drawn from `.value` follows
+    the thumb. `step` defaults to 1 when `low` and `high` are whole
+    numbers, and to a hundredth of the range otherwise; `value` defaults
+    to `low`. With whole-number ends and step, `.value` is an `int`.
+    """
+    cell = _require_cell()
+    if not high > low:
+        raise ValueError(f"slider() needs high above low; it got low={low!r}, high={high!r}.")
+    if step is None:
+        step = 1 if isinstance(low, int) and isinstance(high, int) else (high - low) / 100
+    if not step > 0:
+        raise ValueError(f"slider() needs a step above 0; it got step={step!r}.")
+    whole = all(isinstance(n, int) and not isinstance(n, bool) for n in (low, high, step))
+    widget_id = _widget_id(id, label or "slider")
+    start = low if value is None else min(max(value, low), high)
+    current = _widget_values.get((cell.cell_id, widget_id), start)
+    dom_id = f"dl-w-{html.escape(cell.cell_id)}-{html.escape(widget_id)}"
+    shown = html.escape(str(current))
+    markup = (
+        '<div class="dl-widget dl-slider">'
+        + (f'<label for="{dom_id}">{html.escape(str(label))}</label>' if label else "")
+        + f'<input type="range" id="{dom_id}" min="{low}" max="{high}" step="{step}"'
+        + f' value="{html.escape(str(current), quote=True)}">'
+        + f'<output for="{dom_id}">{shown}</output>'
+        + "</div>"
+    )
+    plain = _mount_widget(markup, cell.cell_id, widget_id, "slider", current)
+    return _Slider(cell.cell_id, widget_id, plain._element, whole)
 
 
 def button(label: str = "Go", on_click=None, id: str | None = None) -> _Widget:  # noqa: A002
