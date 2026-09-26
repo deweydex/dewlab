@@ -164,6 +164,18 @@ class TestTheBuildRunsEverySolution:
         write(repo, broken + CELL + SOLUTION + INPUTS)
         b.build()
 
+    def test_a_page_this_python_lacks_a_package_for_is_skipped(self, repo, capsys):
+        # The publish job installs only requirements-build.txt, so a setup
+        # cell that imports matplotlib stops before it defines anything, and
+        # the solution below it meets names that were never made. That says
+        # nothing about the solution, so the build notes it and moves on.
+        setup = ("```python exec\nid: setup\nimport a_package_this_python_lacks\n"
+                 "def helper(values):\n    return sum(values)\n```\n")
+        write(repo, setup + CELL + "```solution\ndef total_of(values):\n"
+                    "    return helper(values)\n```\n```inputs\ntotal_of([1, 2])\n```\n")
+        b.build()
+        assert "a_package_this_python_lacks" in capsys.readouterr().err
+
     def test_an_input_the_solution_cannot_name_fails_the_build(self, repo):
         write(repo, CELL + SOLUTION + "```inputs\ntotl_of([1])\n```\n")
         with pytest.raises(b.BuildError, match="totl_of"):
