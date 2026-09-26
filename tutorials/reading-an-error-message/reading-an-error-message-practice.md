@@ -31,8 +31,8 @@ the line, and runs nothing. (b) A runtime error, a `TypeError`: the line is
 valid Python, but Python will not add a number to a string. (c) A runtime
 error, a `ValueError`: `int` wants a string and got one, but `"thirty"` is
 not written in digits. (d) A runtime error, a `ZeroDivisionError`. In real
-programs this is the usual way that error arrives: a count turns out to be
-zero when the code expected it not to be.
+programs, this error usually comes from a count that is zero when the
+code expected it not to be.
 
 </details>
 
@@ -59,9 +59,9 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-It prints `55`, with no error: a logical error. `*` with a string repeats
+It prints `55`, with no error. This is a logical error. `*` with a string repeats
 the string. The line looks as if it should work, because `5 * 2` gives 10,
-until the value turns out to be a string. A value that came from `input()`
+until you see that the value is a string. A value that came from `input()`
 is always a string.
 
 </details>
@@ -116,8 +116,8 @@ A `TypeError`: Python cannot add a string and a number, though `value * 3`
 would work and give `121212`. A `ValueError`: the type is right, because
 `int` wants a string, but the content is not a number. A `NameError`,
 ending `Did you mean: 'message'?`: read to the end of a message before you
-go looking yourself. And a `ZeroDivisionError`, described as
-`integer modulo by zero`: a remainder is a kind of division, and nothing
+search yourself. And a `ZeroDivisionError`, described as
+`integer modulo by zero`. A remainder is a kind of division, and nothing
 divides by zero.
 
 </details>
@@ -138,7 +138,7 @@ print(price)
 
 A `ValueError`. Python only understands a decimal point, so `"12,50"` is
 the right type for `float`, with content it cannot read. If `typed` came
-from `input()`, the person using the program did nothing wrong: the
+from `input()`, the person using the program did nothing wrong. The
 program needs to say what to type, or check what it got.
 
 </details>
@@ -151,7 +151,7 @@ you look?
 
 <details class="dl-answer"><summary>answer</summary>
 
-At the last line: it names the error and describes it. The lines above it
+At the last line. It names the error and describes it. The lines above it
 say where, with the line number and a copy of the line.
 
 For the marker, look just before it. Python complains at the moment it
@@ -195,7 +195,7 @@ Some of your output appeared above a traceback. What does that tell you?
 
 <details class="dl-answer"><summary>answer</summary>
 
-That it is a runtime error. Python read the whole program, started to run
+It tells you it is a runtime error. Python read the whole program, started to run
 it, and got that far before it stopped. A syntax error prints nothing of
 yours at all, because nothing runs.
 
@@ -203,7 +203,7 @@ yours at all, because nothing runs.
 
 ## 9. Up by how much
 
-A price goes from 50 to 60: up by 10, which is 20% of the old price.
+A price goes from 50 to 60. It goes up by 10, which is 20% of the old price.
 Percentage change is measured against the old value. This program runs.
 Does it agree?
 
@@ -271,7 +271,7 @@ What is the one habit that catches logical errors?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Trying the program on answers you already know. Before you trust a program
+Try the program on answers you already know. Before you trust a program
 on numbers you cannot check, give it numbers you can: halfway between 100
 and 300 is 200, and ten percent of 50 is 5. If the program says something
 else, you have found something.

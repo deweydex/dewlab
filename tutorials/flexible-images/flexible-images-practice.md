@@ -46,7 +46,7 @@ file, 500 by 300? Fix the CSS so it keeps its shape at every width.
 
 1. Look at the HTML. What does the `height` attribute say?
 2. As the photo gets narrower, does its height change at all?
-3. Which declaration lets the browser work out the height from the
+3. Which declaration lets the browser calculate the height from the
    width?
 
 **Think about:** the tutorial's example had no `height` attribute. Why
@@ -69,7 +69,7 @@ from the HTML instead, and leave the CSS alone?
 The `height="300"` attribute sets the photo's height. `max-width: 100%`
 makes the photo narrower on a narrow screen, but nothing changes its
 height, so it stays `300px` tall and looks squashed. `height: auto`
-tells the browser to work out the height from the width, so the photo
+tells the browser to calculate the height from the width, so the photo
 keeps its aspect ratio. When the photo is `300px` wide, it is `180px`
 tall.
 

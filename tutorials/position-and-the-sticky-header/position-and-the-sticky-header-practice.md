@@ -134,8 +134,9 @@ parent is on screen.
 
 The header was inside the short `<div class="top">`. It stuck for a
 moment, and then it scrolled away together with the welcome paragraph,
-as soon as its parent left the preview. Moving the header out of that
-wrapper makes the body its parent. The body holds the whole page, so the
+as soon as its parent left the preview. When we move the header out of
+that wrapper, the body becomes its parent. The body holds the whole
+page, so the
 header stays in view all the way down.
 
 </details>

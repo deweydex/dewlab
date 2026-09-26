@@ -10,7 +10,7 @@ worlds:
 
 # Repeating steps with loops — Practice
 
-Problems on loops, and three from earlier pages. Before you write any loop,
+These problems are on loops, with three from earlier pages. Before you write any loop,
 ask three questions: what am I collecting as I go, what does it start at,
 and what makes the loop stop? Try each problem before you open anything
 under it.
@@ -36,8 +36,8 @@ Then say what these give, and try them: `range(5)`, `range(1, 5)`,
 <details class="dl-answer"><summary>answer</summary>
 
 `range(5, 5)` gives nothing at all: `[]`. The others give 0 to 4, 1 to 4,
-0, 3, 6, 9, and 5 down to 1. The stop value is never included. That is why
-programmers write `range(1, n + 1)` for "1 to n": the `+ 1` is on purpose.
+0, 3, 6, 9, and 5 down to 1. The stop value is never included. So
+programmers write `range(1, n + 1)` for "1 to n". The `+ 1` is on purpose.
 
 </details>
 
@@ -48,8 +48,8 @@ How many numbers does `range(1, 101)` give? And `range(0, 100)`?
 <details class="dl-answer"><summary>answer</summary>
 
 100 each. They cover different numbers, but there are the same number of
-them: with a step of 1, the count is `stop - start`. Leaving out the stop
-value is what makes that arithmetic so easy.
+them. With a step of 1, the count is `stop - start`. Because the stop
+value is left out, that arithmetic is easy.
 
 </details>
 
@@ -101,7 +101,7 @@ like that exists, it is a free test of your loop.
 
 ## 5. Two sigmas
 
-Can you work out $\sum_{i=1}^{10} i^2$, and then $\sum_{i=1}^{10} \frac{1}{i}$?
+Can you calculate $\sum_{i=1}^{10} i^2$, and then $\sum_{i=1}^{10} \frac{1}{i}$?
 
 ```python exec
 id: two-sigmas-1
@@ -141,7 +141,7 @@ adds up `i ** 2` for each `i` in the range.
 
 ## 6. Ten factorial
 
-Can you work out 10! with a loop? Why does the accumulator start at 1, and
+Can you calculate 10! with a loop? Why does the accumulator start at 1, and
 not at 0?
 
 ```python exec
@@ -185,7 +185,7 @@ About 7.485, and about 9.788. It never settles. The sum grows without
 limit, but so slowly that it needs more than $10^{43}$ terms to reach 100.
 So "the terms are getting smaller" is not enough to make a sum finite.
 [Limits: getting closer without arriving](tutorial:approaching-a-limit)
-comes back to this.
+returns to this.
 
 </details>
 
@@ -235,8 +235,8 @@ while n > 0:
 
 It prints 10 forever. Nothing inside the loop changes `n`, so the condition
 never becomes `False`. Every `while` loop needs something inside it that
-moves it towards stopping, and when a loop never stops, that is the first
-thing to look for.
+moves it towards stopping. When a loop never stops, look for that
+first.
 
 </details>
 
@@ -273,9 +273,9 @@ When should you use `while`, and when `for`?
 
 `for` is for a known count: every letter of a message, or every number in
 a range. `while` is for a condition: until the guess matches, or until the
-answer stops changing. Each is awkward doing the other's job: a `while`
+answer stops changing. Each is awkward in the other's job. A `while`
 loop counting to ten needs its own counter, and a `for` loop that has to
-stop early needs a way out.
+stop early needs a way to leave the loop.
 
 </details>
 
@@ -308,7 +308,7 @@ is sometimes 1,048,576 bytes, not a million.
 ## 13. A triangle, and a triangle the other way
 
 Can you print a triangle five rows tall: one `#` on the first row, and five
-on the last? Then the same triangle lined up on the right, so the right
+on the last? Then the same triangle aligned on the right, so the right
 edge is straight?
 
 ```python exec
@@ -370,8 +370,8 @@ This adds 1 for every `i` that passes the test, so it counts them.
 
 <div class="dl-world" data-world="secret-messages">
 
-Some of the simplest codes just write a message backwards. Can you turn
-`"RETTO"` round, with a loop?
+Some of the simplest codes just write a message backwards. Can you reverse
+`"RETTO"`, with a loop?
 
 ```python exec
 id: backwards-1--secret-messages
@@ -521,7 +521,7 @@ through the digits of any number.
 
 ## 18. Up and down to one
 
-The Collatz rule says: if a number is even, halve it; if it is odd,
+The Collatz rule says: if a number is even, halve it. If it is odd,
 multiply it by three and add one. Starting from 27, how many steps does it
 take to reach 1, and how high does it climb on the way?
 
@@ -563,7 +563,7 @@ short.
 ## 19. From earlier: a remainder
 
 From *Algorithms, pseudocode and your first Python*. A film is 200 minutes
-long. How many whole hours is that, and how many minutes left over?
+long. How many whole hours is that, and how many minutes remain?
 
 <details class="dl-answer"><summary>answer</summary>
 

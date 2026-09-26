@@ -165,8 +165,8 @@ A time in CSS needs its unit: `0.3s` for seconds, or `300ms` for
 milliseconds. `0.3` on its own does not mean anything to the browser.
 When one part of a declaration is wrong, the browser ignores the whole
 declaration, so the button had no transition at all. There was no
-error message either. That is why a missing unit is easy to miss: the
-page looks as if the line is not there.
+error message either. So a missing unit is easy to miss. The page looks
+as if the line is not there.
 
 </details>
 
@@ -264,8 +264,7 @@ because `.btn` sets `display: inline-block`.
 Did the button's words almost disappear as it lifted? That is a small
 bug in the starter. `.btn:hover` makes the text white, and
 `.contact-section .btn:hover` makes the background nearly white, but
-nothing sets the text back to a dark colour. Adding
-`color: var(--primary-color);` to `.contact-section .btn:hover` fixes
-it.
+nothing sets the text back to a dark colour. To fix it, add
+`color: var(--primary-color);` to `.contact-section .btn:hover`.
 
 </details>

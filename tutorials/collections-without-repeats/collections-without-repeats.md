@@ -35,7 +35,7 @@ You and a friend each make a playlist in a music app. Some songs are on
 both, and one of you has put a favourite in twice. Which songs are on
 both playlists? And how many different songs are there between you?
 
-A music app answers questions like these in a blink, for playlists of
+A music app answers questions like these very quickly, for playlists of
 thousands of songs. It uses a kind of collection that forgets repeats
 and ignores order. By the end of this page you will use the same few
 moves on two whole novels, one full of dinosaurs and one full of
@@ -54,10 +54,10 @@ On this page we:
   see eight screen colours appear
 - see the same moves at work in a database
 
-> **The space we're in.** Collections where only one thing matters:
+> **The space we're in.** We work with collections where only one thing matters:
 > whether a value is in them or not. Their order does not matter, and
 > neither does how many times a value was written down. Python gives us
-> `set` with no import. One thing usually goes unsaid: a set in Python
+> `set` with no import. We usually do not say it, but a set in Python
 > always holds a limited number of values, because it has to fit in the
 > computer. A set in maths can go on for ever.
 
@@ -120,7 +120,7 @@ Each list has 7 songs, and each set has 6. The set kept "Linger" once
 and "Zombie" once, because a set only records whether a value is in it.
 
 Look at the order of the last line. It is not the order of the list,
-and it may change if you run the cell again: a set makes no promise
+and it may change if you run the cell again. A set makes no promise
 about order. When the order matters to us, `sorted(my_songs)` gives the
 songs as a list, in alphabetical order.
 
@@ -146,7 +146,7 @@ print({1, 2, 2, 3} == {1, 2, 3})
 print(len({"a", "b", "a", "a"}))
 ```
 
-`True`, `False`, `True` and `2`. A list is a row, where the order is
+It prints `True`, `False`, `True` and `2`. A list is a row, where the order is
 part of what it is. A set is a bag, where only what is inside matters.
 
 ## Is it in the set?
@@ -163,7 +163,7 @@ print("Breakeven" in my_songs)
 print("Breakeven" not in my_songs)
 ```
 
-`True`, `False`, `True`. Maths has a symbol for "is an element of":
+It prints `True`, `False`, `True`. Maths has a symbol for "is an element of":
 $\in$, a rounded letter E. With a line through it, $\notin$ means "is
 not an element of". So
 
@@ -176,7 +176,7 @@ For a long list, `in` looks at the values one by one. A set can answer
 without looking through every value, using a short code made from each
 value, called a hash, which
 [Chances that combine](tutorial:chances-that-combine#the-birthday-problem)
-mentioned. That is how the music app answers in a blink. Unit 6 counts
+mentioned. That is how the music app answers so quickly. Unit 6 counts
 the steps.
 
 ## On both lists: intersection
@@ -194,7 +194,7 @@ for song in my_songs:
 print(sorted(shared))
 ```
 
-Two songs: "Dreams" and "Zombie". The loop kept each of my songs that is
+There are two songs: "Dreams" and "Zombie". The loop kept each of my songs that is
 also one of yours.
 
 The *intersection* of two sets is the set of elements that are in both.
@@ -209,8 +209,8 @@ print(sorted(both))
 print(both == set(shared))
 ```
 
-The same two songs, and the two routes agree. The loop is the proof,
-and `&` is the fast way.
+We get the same two songs, so the two ways agree. The loop shows what
+`&` does, and `&` is faster.
 
 ## On either list: union
 
@@ -230,9 +230,9 @@ print(len(either))
 print(sorted(either))
 ```
 
-Ten, not twelve. "Dreams" and "Zombie" are on both lists, and the union
-holds each of them once. How to count a union without making it is the
-subject of the next page.
+The union has ten songs, not twelve. "Dreams" and "Zombie" are on both
+lists, and the union holds each of them once. The next page shows how
+to count a union without making it.
 
 ### Your turn
 
@@ -257,11 +257,11 @@ print(sorted(my_songs - your_songs))
 print(sorted(your_songs - my_songs))
 ```
 
-No: four songs each, and not the same four. Like $5 - 3$ and $3 - 5$,
+No. Each gives four songs, but not the same four. Like $5 - 3$ and $3 - 5$,
 the order of a difference matters.
 
-One more: the songs on exactly one of the two lists, mine or yours but
-not both. That is the *symmetric difference*, written $A \,\triangle\, B$.
+One more move finds the songs on exactly one of the two lists, mine or
+yours but not both. That is the *symmetric difference*, written $A \,\triangle\, B$.
 Python writes it `^`. You met `^` on
 [Bits that flip](tutorial:bits-that-flip#xor-on-single-bits), as
 exclusive or: exactly one of two bits is 1. Here it means exactly one
@@ -273,7 +273,7 @@ print(sorted(my_songs ^ your_songs))
 print((my_songs ^ your_songs) == (either - both))
 ```
 
-Eight songs: the ten in the union, without the two in the
+There are eight songs: the ten in the union, without the two in the
 intersection.
 
 ## Two books, thousands of words
@@ -339,8 +339,8 @@ are not on my playlist?
 On
 [Chances that combine](tutorial:chances-that-combine#not-and-at-least-once),
 the complement of an event was everything that could happen except that
-event. The complement of a set is the same idea: every element that is
-not in the set. It is written $A'$, or sometimes $A^c$.
+event. The complement of a set is the same idea. It is every element that
+is not in the set. It is written $A'$, or sometimes $A^c$.
 
 But "every element" of what? The complement only has an answer once we
 say which elements there are to choose from. That bigger set is the
@@ -359,9 +359,7 @@ print(sorted(not_mine))
 
 Of the 12 songs in the library, 6 are not on my playlist. Change the
 universal set to every song ever recorded, and the complement becomes
-millions of songs. The set $A$ did not change; the space around it did.
-The complement asks "what space are we in?" before it can answer at
-all.
+millions of songs. The set $A$ did not change, but the space around it did.
 
 ## Sets too big to list
 
@@ -385,7 +383,7 @@ set. The last line says `dict`: `{}` makes an empty dictionary, from
 Dictionaries came to Python before sets did, so they got the curly
 brackets first.
 
-An empty set is often where a set begins. `.add(value)` puts one more
+A set often starts empty. `.add(value)` puts one more
 element into a set, and does nothing if it is already there.
 
 ```python exec
@@ -397,7 +395,7 @@ favourites.add("Zombie")
 print(sorted(favourites))
 ```
 
-Two elements: the second "Zombie" changed nothing.
+The set has two elements. The second "Zombie" changed nothing.
 
 At the other end, some sets never stop. A *finite set* has a number of
 elements we could count, even if it is large: the words in a novel,
@@ -418,7 +416,7 @@ of B", means every element of $A$ is also in $B$. So
 $\mathbb{N} \subseteq \mathbb{Z}$. In Python, `<=` asks the same
 question of two sets.
 
-A Python set cannot hold $\mathbb{N}$: it would never finish being
+A Python set cannot hold $\mathbb{N}$. It would never finish being
 made. But we can still ask whether a number is in it, with a test that
 describes the set by a rule. Maths writes a set by its rule like this,
 said "the set of every x in Z such that x is 0 or more":
@@ -437,7 +435,7 @@ print({"Zombie", "Dreams"} <= my_songs)
 print(both <= either)
 ```
 
-`True False False`, then `True` and `True`. A finite set can be listed.
+It prints `True False False`, then `True` and `True`. A finite set can be listed.
 An infinite one needs a rule, and a function is a rule we can run.
 
 ```question
@@ -475,9 +473,9 @@ print(len(checks), len(devices) * len(modes))
 print(("phone", "dark") in checks)
 ```
 
-Six checks, as the counting principle promised.
+There are six checks, as the counting principle promised.
 
-The second way. A pixel on a screen has three small lights: red, green
+Now we make every smaller set. A pixel on a screen has three small lights: red, green
 and blue. Say each light can only be off or fully on. Which colours can
 the pixel show? Guess how many before you read on.
 
@@ -503,7 +501,7 @@ for colour in colours:
 print(len(colours), "colours")
 ```
 
-Eight colours, from no lights to all three. `colours` is a list of sets,
+There are eight colours, from no lights to all three. `colours` is a list of sets,
 not a set of sets, because a Python set cannot hold a value that might
 change, and a set can change. What do they look like? The next cell
 draws one square for each, with each light at full strength (1) or off
@@ -524,9 +522,10 @@ for position in range(len(colours)):
 plt.axis("off")
 ```
 
-Black, red, green, yellow, blue, magenta, cyan and white. Red and green
-light make yellow. That surprises most people who learned to mix paint,
-where red and green make brown: light adds, and paint takes away.
+The colours are black, red, green, yellow, blue, magenta, cyan and
+white. Red and green light make yellow. That surprises most people who
+learned to mix paint, where red and green make brown. Light adds colour,
+and paint takes it away.
 
 <aside class="dl-note" id="collections-note-teletext">
 
@@ -543,7 +542,7 @@ $$|\mathcal{P}(A)| = 2^n$$
 
 It is the same count as the rows of a truth table on
 [True, false and every case](tutorial:true-false-and-every-case#how-many-rows).
-That is no accident: a row that says "red True, green True, blue False"
+This is not by chance. A row that says "red True, green True, blue False"
 is the colour yellow.
 
 ### Your turn
@@ -551,7 +550,7 @@ is the colour yellow.
 1. Some early computers added a fourth element to each pixel, "bright",
    which made every colour stronger. Add it to `lights`, and run the
    first cell. Before you do, how many colours will there be?
-2. With 10 elements, how many subsets? Work it out with `2 ** 10`
+2. With 10 elements, how many subsets? Find it with `2 ** 10`
    first, then check it with the cell.
 3. Use `combinations` from
    [Orders and choices](tutorial:orders-and-choices) to count the
@@ -570,7 +569,7 @@ does. A `CROSS JOIN` makes every pair of rows from two tables, as
 
 The Database Methods course builds real tables with SQL. Its page
 [Joining two tables: foreign keys and JOIN](tutorial:a-second-table-and-a-join)
-is where the JOIN is taught.
+teaches the JOIN.
 
 <details class="dl-why"><summary>Why this way?</summary>
 

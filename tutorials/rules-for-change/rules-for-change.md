@@ -26,9 +26,9 @@ covers:
 
 Your toolkit's `derivative_at` can find the slope of any curve, at any
 point. Ask it about $x^2$ at 3, and it says about 6. At 5, it says about
-10. Each answer is one number, a tiny bit off, and it comes with no
+10. Each answer is one number, not quite exact, and it comes with no
 reason, like a machine that never explains itself. Is there a
-shortcut: one rule that gives the slope everywhere at once, exactly,
+shortcut, one rule that gives the slope everywhere at once, exactly,
 and says why? There is, and you will find it in a table before anyone
 tells you what it is.
 
@@ -48,10 +48,9 @@ On this page we:
 > [How fast, right now?](tutorial:how-fast-right-now), which is an
 > estimate. So "agrees" means "agrees to within $10^{-6}$", the
 > tolerance its own tests used, with `close_enough` from
-> [Does it work?](tutorial:does-it-work#close-enough). One thing
-> usually goes unsaid: a rule for slopes is a promise about every $x$,
-> and checking 40 points does not prove it. It does catch almost every
-> rule that does not hold.
+> [Does it work?](tutorial:does-it-work#close-enough). A rule for
+> slopes is a promise about every $x$. A check at 40 points does not
+> prove it, but it does catch almost every rule that does not hold.
 
 ## Warm-up
 
@@ -109,11 +108,11 @@ for x in range(1, 6):
           round(derivative_at(fourth_power, x), 4))
 ```
 
-Look down each column. For $x^2$ the slopes are 2, 4, 6, 8, 10: always
-twice $x$. For $x^3$ they are 3, 12, 27, 48, 75: three times $x^2$. Can
+Look down each column. For $x^2$ the slopes are 2, 4, 6, 8, 10. They are always
+twice $x$. For $x^3$ they are 3, 12, 27, 48, 75, three times $x^2$. Can
 you see the pattern in the $x^4$ column before reading on?
 
-It is 4, 32, 108, 256, 500: four times $x^3$. In each column, the power
+It is 4, 32, 108, 256, 500, four times $x^3$. In each column, the power
 comes down in front, and the new power is one less. In words: to find
 the slope of $x$ to a power, multiply by the power, and take one off
 the power. This is the *power rule*:
@@ -122,7 +121,7 @@ $$\text{the slope of } x^n \text{ is } n x^{n-1}$$
 
 On
 [How fast, right now?](tutorial:how-fast-right-now#the-derivative-is-a-limit),
-the derivative $f'(a)$ was one number: the slope at one point $a$. The
+the derivative $f'(a)$ was one number, the slope at one point $a$. The
 power rule gives it at every point at once, so the derivative is itself
 a rule. Put in an $x$, and a slope comes out. If $f(x) = x^4$, then
 $f'(x) = 4x^3$. Finding the derivative of a rule is called
@@ -137,10 +136,10 @@ first. The notation $\frac{dy}{dx}$ is Leibniz's.
 
 </aside>
 
-Two small cases come with it. A number in front stays in front: the
-slope of $5x^3$ is $5 \times 3x^2 = 15x^2$, because making a curve 5
-times as tall makes it 5 times as steep. And a number on its own, such
-as 7, has slope 0: its graph is a flat line.
+Two small cases come with it. A number in front stays in front. The
+slope of $5x^3$ is $5 \times 3x^2 = 15x^2$, because a curve 5 times as
+tall is 5 times as steep. And a number on its own, such as 7, has
+slope 0, because its graph is a flat line.
 
 Five rows are a pattern, not a check. This helper checks a slope rule
 against `derivative_at` at every point in a list.
@@ -170,8 +169,8 @@ print(len(points), "points from", points[0], "to", points[-1])
 print(slopes_agree(fourth_power, power_rule_for_fourth, points))
 ```
 
-Sixty-one points, and the power rule agrees with the chord at every
-one.
+The helper checks sixty-one points, and the power rule agrees with the
+chord at every one.
 
 Does it work for powers that are not whole numbers? $\sqrt{x}$ is
 $x^{1/2}$, and $\frac{1}{x}$ is $x^{-1}$, a negative power, as on
@@ -203,16 +202,16 @@ print(slopes_agree(one_over, one_over_slope, positive_points))
 
 Both agree. The power rule holds for any power $n$, not only whole
 numbers. The minus sign in the slope of $\frac{1}{x}$ says it goes
-downhill: the more phones share one Wi-Fi connection, the less each
+downhill. The more phones share one Wi-Fi connection, the less each
 gets.
 
 ## Adding rules: the sum rule
 
 A car's stopping distance has two parts. While the driver sees the
-danger and moves a foot to the brake, the car keeps going: the
-thinking distance. Then the brakes slow it: the braking distance. Here
-is a model in metres, at $v$ km/h, with the shape of the Road Safety
-Authority's chart and rounded, made-up numbers.
+danger and moves a foot to the brake, the car keeps going. This
+is the thinking distance. Then the brakes slow it. This is the braking
+distance. Here is a model in metres, at $v$ km/h, with the shape of
+the Road Safety Authority's chart and rounded, invented numbers.
 
 $$\text{stopping}(v) = 0.2v + 0.006v^2$$
 
@@ -278,7 +277,7 @@ print(slopes_agree(cubic, cubic_slope_rule, points))
 ```
 
 The list is `[3, -4, 3]`, which is $3 - 4x + 3x^2$. The number 5 has
-gone: a number on its own has slope 0. The check agrees at all 61
+gone, because a number on its own has slope 0. The check agrees at all 61
 points.
 
 ## Multiplying rules: the product rule
@@ -292,8 +291,8 @@ how fast?
 The window is a rectangle. When both sides change a
 little, the area changes in three pieces: a strip along one side, a
 strip along the other, and a tiny corner where both changes meet. For
-a very small change, the corner is so small that it disappears. What
-is left is the two strips.
+a very small change, the corner is so small that it disappears. Only
+the two strips are left.
 
 That gives the *product rule*. In words: the first times the slope of the
 second, plus the second times the slope of the first. In symbols, if
@@ -302,7 +301,7 @@ $h(x) = f(x) \times g(x)$, then
 $$h'(x) = f(x)\,g'(x) + g(x)\,f'(x)$$
 
 Many people's first guess is "the slope of a product is the product of
-the slopes". It is a reasonable guess. The cell tries both. Which do
+the slopes". The cell tries both. Which do
 you think will agree with `derivative_at`?
 
 ```python exec
@@ -328,19 +327,19 @@ print("slopes multiplied:", slopes_agree(window_area, slopes_multiplied, moments
 print(product_rule_slope(0), product_rule_slope(10))
 ```
 
-The product rule agrees at every moment. Multiplying the slopes gives
+The product rule agrees at every moment. The product of the slopes is
 $-0.2$ every time, and disagrees at once. At the start, the
 window grows by 2.4 square cm each tenth of a second. After one second,
-ten tenths, it is shrinking by 1.6: the lost height now costs more
-than the new width brings in.
+ten tenths, it is shrinking by 1.6. The lost height now costs more
+than the new width adds.
 
-Is multiplying slopes a foolish move, then? Keep it for now. It is
-the move that works in a different space, two sections from here.
+Keep the idea of multiplying slopes for now. Two sections from here, it
+works in a different space.
 
 ## Dividing rules: the quotient rule
 
 A small video service rents a server for €600 a month, and each film
-it streams costs €0.30 in data. (The prices are made up.) After $n$
+it streams costs €0.30 in data. (The prices are invented.) After $n$
 films, the average cost of a film is the total cost divided by the
 number of films:
 
@@ -383,13 +382,13 @@ print(average_cost(1000), quotient_rule_slope(1000))
 
 After 1,000 films the average cost is €0.90, and it is falling by
 0.0006 of a euro with each extra film. The slope is negative, and it
-gets closer to 0 as $n$ grows: the server's €600 is shared among more
+gets closer to 0 as $n$ grows. The server's €600 is shared among more
 and more films, and each extra film changes the share less.
 
 There is another way. The average is $600 \times n^{-1} + 0.3$, and the
-power rule and the sum rule give $-600n^{-2}$ in one step. Two routes,
-one answer. The quotient rule is the one that works when the bottom is
-not a single power, as in $\frac{x}{x^2 + 1}$.
+power rule and the sum rule give $-600n^{-2}$ in one step. We need the
+quotient rule when the bottom is not a single power, as in
+$\frac{x}{x^2 + 1}$.
 
 ## A rule inside a rule: the chain rule
 
@@ -410,7 +409,7 @@ Metres cancel, leaving square metres per second: $2\pi r \times 0.5$.
 The rates multiply.
 
 That is the *chain rule*. In words: the slope of the outside rule,
-worked out at the inside value, times the slope of the inside rule. In
+calculated at the inside value, times the slope of the inside rule. In
 symbols, if $h(x) = f(g(x))$, then
 
 $$h'(x) = f'(g(x)) \times g'(x)$$
@@ -437,7 +436,7 @@ print(chain_rule_slope(6), 3 * math.pi)
 About 9.42 square metres a second, which is $3\pi$. The chain rule
 agrees at every second.
 
-Here is the space where multiplying slopes works. For a product,
+Multiplying slopes works here. For a product,
 two rules sit side by side, and multiplying their slopes fails. For a
 rule inside a rule, one rule's output is the other's input, and the
 slopes multiply.
@@ -460,7 +459,7 @@ def bracket_cubed_slope(x):
 print(slopes_agree(bracket_cubed, bracket_cubed_slope, points))
 ```
 
-It agrees: the slope of $(2x + 1)^3$ is $6(2x + 1)^2$.
+It agrees. The slope of $(2x + 1)^3$ is $6(2x + 1)^2$.
 
 ### Your turn
 
@@ -489,8 +488,8 @@ down. Its
 so the slope there is 0. The tests on
 [How fast, right now?](tutorial:how-fast-right-now#a-tool-for-the-slope-at-a-point)
 checked this for the kicked ball, at a top we already knew from its
-graph. Now we turn it round: set the slope to 0, and find the bottom
-with no graph at all. By the power rule and the sum rule, the slope of
+graph. Now we go the other way. We set the slope to 0, and find the
+bottom with no graph at all. By the power rule and the sum rule, the slope of
 the bowl is $800t - 440$. Where is that 0? That is a linear equation,
 and your toolkit's `solve_linear` from
 [Solving for x](tutorial:solving-for-x#a-tool-for-any-straight-line-equation)
@@ -512,11 +511,11 @@ is $-9$. It is the same answer as `vertex` gives, found by a new route.
 
 This works for every quadratic, with no graph and no completing the
 square. The slope of $ax^2 + bx + c$ is $2ax + b$, and that is 0 when
-$x = -\frac{b}{2a}$: the formula from Unit 7, found again. The
-difference is what comes next. Completing the square only works on a
+$x = -\frac{b}{2a}$. That is the formula from Unit 7, found again. The
+difference comes next. Completing the square only works on a
 quadratic. A slope of 0 finds the tops and bottoms of any curve whose
-slope we can work out, and the four rules on this page can work out a
-great many, such as the cubic curves many fonts draw with.
+slope we can find, and the four rules on this page can find a great
+many, such as the cubic curves many fonts draw with.
 
 ### Your turn
 
@@ -527,7 +526,7 @@ Its volume is $x(30 - 2x)^2$.
 1. Use the product rule and the chain rule to find the slope of the
    volume.
 2. Check your slope rule with `slopes_agree`, for $x$ from 0 to 15.
-3. The slope works out to $(30 - 2x)(30 - 6x)$. Where is it 0? Which
+3. The slope comes to $(30 - 2x)(30 - 6x)$. Where is it 0? Which
    of those answers gives the biggest box?
 
 ```python exec
@@ -558,7 +557,7 @@ certainty. For proofs from limits, see the page linked at the end.
 |---|---|
 | What is named here? | $f'(x)$, the derivative of $f(x)$; the inside and outside rules of a composition; a polynomial's slope as a new list |
 | What is promised? | each rule promises a slope at every $x$; `slopes_agree` promises only that 61 points agree, which checks the promise but does not prove it |
-| What happens when? | the chain rule works out the inside rule first, then the outside rule's slope at that value; a slope of 0 is found before the top |
+| What happens when? | the chain rule calculates the inside rule first, then the outside rule's slope at that value; a slope of 0 is found before the top |
 | What does this space let us do? | the quotient rule needs a bottom that is not 0; multiplying slopes fails for a product and works for a rule inside a rule |
 
 ## What we have now

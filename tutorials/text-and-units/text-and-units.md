@@ -59,8 +59,8 @@ we saw.
 | `%` | the parent element | depends on the parent |
 
 - A *pixel* (`px`) is a fixed unit. `16px` is always 16 pixels,
-  whatever else on the page changes. That is why the first box kept the
-  same space.
+  whatever else on the page changes. So the first box kept the same
+  space.
 - A *rem* is a unit measured against the *root font size*, the font
   size set on `<html>`. Browsers set this to `16px` by default, so
   normally `1rem` equals `16px`. When we changed the root to `40px`,
@@ -68,8 +68,7 @@ we saw.
   `16px`, the two boxes looked the same.
 - A percentage (`%`) is measured against the parent element, the
   element this one sits inside. For a width, `50%` means half the
-  parent's width. That is why percentages turn up most often for
-  widths.
+  parent's width. So percentages are most common for widths.
 
 ![Two panels, each with the same two boxes. In the left panel the root font size is 16px: the box measured in px has 16 pixels of padding, and the box measured in rem has 1rem, which is also 16 pixels, so the two look the same. In the right panel the root font size is 40px: the px box still has 16 pixels of padding, but the rem box now has 40 pixels. The text in both boxes is bigger, because both take their font size from the root.](px-and-rem.svg)
 
@@ -78,8 +77,8 @@ size of their own, so their text takes the font size from `<html>`.
 
 Why does this matter? Some people set their browser to a larger font
 size. It is a common choice for people with visual impairments. Wherever
-a page uses `rem`, its spacing and text grow to match that setting. That
-is why the starter uses `rem` for most spacing and font sizes.
+a page uses `rem`, its spacing and text grow to match that setting. So
+the starter uses `rem` for most spacing and font sizes.
 
 ### Lining up text
 
@@ -96,8 +95,8 @@ sit inside their element. It has four common values:
 
 Oftentimes, when we put `text-align: center` on a box, we expect the box
 itself to move to the middle. It does not. The box stays where it is,
-and only the lines of text inside it move. Centring the box itself is a
-different job, which we meet in [A readable width, centred on the
+and only the lines of text inside it move. To centre the box itself is a
+different job. We meet it in [A readable width, centred on the
 page](tutorial:the-container).
 
 ## Now in your own site

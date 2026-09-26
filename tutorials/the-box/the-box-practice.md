@@ -78,7 +78,8 @@ first box and `margin-top: 20px` on the second?
 <details class="dl-answer"><summary>answer</summary>
 
 The gap is `30px`, half the height of the grey square. This is *margin
-collapse*: the bottom margin of the first box meets the top margin of the
+collapse*. The bottom margin of the first box meets the top margin of
+the
 second, and they do not add up. The larger of the two sets the gap, and
 here both are `30px`.
 
@@ -158,7 +159,7 @@ body { margin: 0; }
 ```
 
 By default, `width` sets the width of the content only. The padding and
-the border are added on outside it: `20px` and `4px` on each side, so the
+the border are added outside it, `20px` and `4px` on each side, so the
 banner was `48px` wider than the preview. Its right-hand padding and
 border ran off the edge. `box-sizing: border-box` makes `width` include
 the padding and the border, so the whole banner is now as wide as the
@@ -251,7 +252,7 @@ site: box-practice-tag
 With two values, the first sets the top and bottom padding, and the
 second sets the left and right. The space around the tag is outside the
 border, so it is `margin`. The tag stretches across the whole preview.
-That is expected: we set its layers, and not its width.
+This is expected, because we set its layers, and not its width.
 
 </details>
 
@@ -317,8 +318,8 @@ browser's default text size, the panel shows `48` for the heading's top
 margin and `16` for the paragraph's bottom margin, and the gap is `48`
 pixels, not `64`.
 
-So the heading's margin is the one to change. Making the paragraph's
-bottom margin bigger would change nothing here, until it grew larger than
+So we change the heading's margin. A bigger bottom margin on the
+paragraph would change nothing here, until it grew larger than
 the heading's. With `margin-top: var(--spacing-xl)`, the panel shows
 `64`, and the gap is `64` pixels.
 

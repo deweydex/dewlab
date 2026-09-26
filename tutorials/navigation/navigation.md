@@ -61,7 +61,7 @@ Now we can explain what we saw.
   this page or elsewhere. Because it names what it holds, a screen
   reader can announce "navigation" when it reaches one.
 - `aria-label` is an attribute that gives an element a name for a screen
-  reader to read out. With `aria-label="Page"`, a screen reader can say
+  reader to read aloud. With `aria-label="Page"`, a screen reader can say
   "Page navigation", not only "navigation". This matters once a page has
   more than one `<nav>` on it.
 - Inside the `<nav>`, the links sit in a list. `<ul>` is a list, and
@@ -124,4 +124,4 @@ jump to any part of a page.
 |---|---|---|
 | `<nav>` | A semantic tag that wraps a set of links | `<nav aria-label="Main">` |
 | *anchor link* | A link whose `href` starts with `#`. It jumps to the element with the matching `id` on the same page. | `<a href="#skills">` |
-| `aria-label` | An attribute that names an element for a screen reader to read out | `aria-label="Main"` |
+| `aria-label` | An attribute that names an element for a screen reader to read aloud | `aria-label="Main"` |

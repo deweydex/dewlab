@@ -27,19 +27,20 @@ covers:
 
 Fold a sheet of A4 paper in half, and the half has the same shape as
 the whole sheet. That only works because the long side is $\sqrt{2}$
-times the short side: 210 mm across, and $210 \times \sqrt{2}$, about
-297 mm, down. Your calculator says $\sqrt{2}$ is 1.4142135623730951.
+times the short side. It is 210 mm across, and $210 \times \sqrt{2}$,
+about 297 mm, down. Your calculator says $\sqrt{2}$ is 1.4142135623730951.
 But a calculator can only add, take away, multiply and divide, and no
 amount of adding gives a number whose digits never end. So where do
 those digits come from? If you have always trusted the square-root
-button without asking, you are in good company. This page opens it up.
+button without asking, so do most people. This page shows what is
+inside it.
 
 <aside class="dl-note" id="solving-by-note-a4">
 
 **Why A4 is that shape.** The international standard for paper sizes,
 ISO 216, starts from A0, a sheet with an area of one square metre and
 sides in the ratio $1 : \sqrt{2}$. Fold it in half and you get A1, the
-same shape; fold again for A2, and so on down to A4.
+same shape. Fold again for A2, and so on down to A4.
 
 </aside>
 
@@ -55,11 +56,10 @@ On this page we:
 
 > **The space we're in.** Real numbers, kept as floats, and rules
 > whose graphs have no gaps. We cannot solve $x^2 = 2$ by writing down
-> the answer: its digits never end, as
+> the answer, because its digits never end, as
 > [How a computer stores a number](tutorial:how-a-computer-stores-a-number#the-square-root-of-2)
 > showed. So we change the question. "What is the answer?" becomes
-> "Which float is close enough?". One thing usually goes unsaid: every
-> method on this page gives a sequence of guesses, like the sequences
+> "Which float is close enough?". Every method on this page gives a sequence of guesses, like the sequences
 > on [Getting closer](tutorial:getting-closer), and stops when a guess
 > is good enough, not when it is exact.
 
@@ -99,8 +99,8 @@ What is the slope of $y = x^2 - 2$ at $x = 3$?
 ## Squeezing a root between two guesses
 
 To find $\sqrt{2}$, we look for the number whose square is 2. Said
-another way, we look for a root of the rule $x^2 - 2$: an $x$ where the
-rule gives 0, as on
+another way, we look for a root of the rule $x^2 - 2$. A root is an $x$
+where the rule gives 0, as on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule).
 
 Let's try a few guesses. Before you run the cell, which two whole
@@ -133,7 +133,7 @@ guesses squeezes it into a smaller space.
 
 How should we choose the next guess? On
 [Finding things fast](tutorial:finding-things-fast#binary-search-halve-what-is-left),
-binary search looked at the middle of a sorted list, and threw away the
+binary search looked at the middle of a sorted list, and ignored the
 half where the target could not be. We can do the same on a number
 line.
 
@@ -169,7 +169,7 @@ step: 0.5, 0.25, 0.125, and after 8 steps it is 0.00390625. The root is
 always inside. After 8 steps we know that $\sqrt{2}$ is between 1.4140625
 and 1.41796875, so its first two decimal places are 1.41.
 
-Bisection is divide and conquer, as the guessing game was: each step
+Bisection is divide and conquer, as the guessing game was. Each step
 turns the problem into the same problem, half the size.
 
 How many steps until the gap is below a billionth, $10^{-9}$? The gap
@@ -188,7 +188,7 @@ print(math.ceil(math.log2(10 ** 9)))
 print(halvings(10 ** 9) + 1)
 ```
 
-Thirty steps. $10^9$ is $1000^3$, and each thousand is about 10
+It takes thirty steps. $10^9$ is $1000^3$, and each thousand is about 10
 halvings. Every step gives us about one more correct binary digit.
 
 ### Your turn
@@ -207,8 +207,8 @@ id: solving-by-bisect-your-turn
 ## A tool that halves
 
 The loop becomes a tool. Its promise has a condition: the rule must
-have a sign change between `low` and `high`. The body is yours to
-write. It is the last cell with `square_gap` changed to `rule`, and
+have a sign change between `low` and `high`. You write the body. It is
+the last cell with `square_gap` changed to `rule`, and
 the `for` loop changed to a `while` loop that stops when the gap is no
 bigger than `tolerance`.
 
@@ -327,7 +327,7 @@ fake_root = bisect_root(one_over, -1, 2)
 print(fake_root, one_over(fake_root))
 ```
 
-It gives back a number very close to 0, and $\frac{1}{x}$ there is
+It returns a number very close to 0, and $\frac{1}{x}$ there is
 billions, nowhere near 0. The sign changed, but across a gap, not a
 crossing. Bisection kept its promise to halve and keep the sign change.
 The rule broke the condition the promise depended on. So before you
@@ -335,7 +335,7 @@ trust a root, put it back in the rule, as Unit 7 did every time.
 
 ## Following the tangent down: Newton's method
 
-Bisection is sure, but slow: it takes about 30 steps for 9 decimal
+Bisection is sure, but slow. It takes about 30 steps for 9 decimal
 places. It only uses the sign of the rule, never its size or its
 shape. Can a guess use more?
 
@@ -376,7 +376,7 @@ words: from the guess, go back by the height divided by the slope.
 
 $$\text{next guess} = g - \frac{f(g)}{f'(g)}$$
 
-Using that step again and again is *Newton's method*. Here are six
+*Newton's method* uses that step again and again. Here are six
 steps from the guess 1. Watch the last column. How fast do you think
 it will shrink?
 
@@ -393,13 +393,13 @@ After four steps the guess matches $\sqrt{2}$ to 11 decimal places, and after
 five it is the float `math.sqrt` gives. The sixth step moves it by one
 float's width, about $2 \times 10^{-16}$. The number of correct digits
 roughly doubles at every step, once the guess is close. I find that
-astonishing every time: bisection earns one binary digit a step, and
-this earns twice as many digits as it already had.
+astonishing every time. Bisection adds one binary digit a step, and
+this doubles the digits it already had.
 
 For $x^2 - 2$, the slope is $2x$, as
 [Rules for change](tutorial:rules-for-change#a-pattern-in-the-slopes-the-power-rule)
 showed, and the step becomes "the average of $g$ and $\frac{2}{g}$".
-That form is nearly 2,000 years old: Heron of Alexandria described it
+That form is nearly 2,000 years old. Heron of Alexandria described it
 as a way to find square roots.
 
 <aside class="dl-note" id="solving-by-note-raphson">
@@ -414,7 +414,7 @@ Newton–Raphson method.
 ## A tool that follows tangents
 
 The six-step loop becomes your second tool. Its promise has a
-condition too: Newton's method needs a start close enough to a root,
+condition too. Newton's method needs a start close enough to a root,
 where the curve is not flat.
 
 ```python exec
@@ -497,15 +497,15 @@ def newton(rule, start, steps=20):
 
 </details>
 
-The tank's side is about 2.154 m. Two methods, one answer: the tests
+The tank's side is about 2.154 m. The tests
 checked Newton against bisection, and then put the answer back in.
 
 ### A race
 
 Bisection needed 30 steps for 9 decimal places. Newton's method needed
-4 or 5. Each Newton step does more work, because it works out a slope,
-and `derivative_at` works out the rule twice. So a fair count is how
-many times each method works out the rule: about 30 for bisection, and
+4 or 5. Each Newton step does more work, because it calculates a slope,
+and `derivative_at` calculates the rule twice. So a fair count is how
+many times each method calculates the rule: about 30 for bisection, and
 about 15 for Newton. Newton still wins, and the gap grows with every
 extra digit we ask for.
 
@@ -527,8 +527,7 @@ the parabola is at its lowest point, its vertex, as on
 The tangent there is flat, with slope 0. A flat line never meets zero,
 so "follow the tangent down" has nowhere to go.
 
-Is Newton's method broken, then? No. Its move needs a space where the
-slope is not 0, and 0 is outside that space. Start a little to the
+Newton's method needs a space where the slope is not 0, and 0 is outside that space. Start a little to the
 side, at 0.01, and the tangent is nearly flat. What do you expect?
 
 ```python exec
@@ -539,7 +538,7 @@ for step in range(1, 12):
     print(step, guess)
 ```
 
-The first step throws the guess out to 100. Then it walks back,
+The first step sends the guess to 100. Then it walks back,
 roughly halving each time, and only speeds up near the root. It gets
 there in the end, after 11 steps, not 5.
 
@@ -582,8 +581,7 @@ many calculators and libraries find roots.
 
 We started with bisection because it is binary search again, and it
 never loses the root. With both on the page, you can see what speed
-costs: Newton's method is fast, and it needs a good start. Knowing when
-a method fails matters as much as knowing the method.
+costs: Newton's method is fast, and it needs a good start.
 
 </details>
 

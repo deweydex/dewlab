@@ -133,7 +133,7 @@ Which parts of your page show in the preview? Which parts do not?
 
 Only the heading and the paragraph show in the preview, because only
 they are in the body. The title is in the head. The indents are there
-to help us read the file: each element inside another one moves two
+to help us read the file. Each element inside another one moves two
 spaces to the right. The browser ignores them.
 
 `Home | Plushie Shop` is a common pattern for titles: the name of this

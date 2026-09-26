@@ -194,7 +194,7 @@ check.
 
 From `500px` up, the "New" item has `order: 1`, and the others keep
 `0`, so it goes last. Below `500px`, the media query is not true, and
-the row follows the HTML again. This is a fair use of `order`: the
+the row follows the HTML again. Here `order` works well, because the
 plushies are not steps, and either order makes sense to a reader.
 
 </details>
@@ -287,7 +287,6 @@ reader follows all match, because all three come from the HTML.
 
 With `order`, the buttons would have swapped on screen, but Tab and a
 screen reader would still meet "View Portfolio" first. When we want
-one thing to come first for everyone, the source order is the place to
-change it.
+one thing to come first for everyone, we change the source order.
 
 </details>

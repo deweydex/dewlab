@@ -92,7 +92,7 @@ Write the bottom as $(\sqrt{x} - 2)(\sqrt{x} + 2)$. The $(\sqrt{x} - 2)$
 cancels, leaving $\dfrac{1}{\sqrt{x} + 2}$. At $x = 4$ that is
 $\dfrac{1}{2 + 2} = \dfrac{1}{4}$.
 
-It is worth checking with numbers too. The values head for 0.25 from
+It is worth checking with numbers too. The values move towards 0.25 from
 both sides.
 
 </details>
@@ -105,7 +105,7 @@ No.
 
 From the right, it is 1, because a positive number divided by itself is
 1. From the left, it is −1. The two sides disagree, so there is no
-single value it is heading for.
+single value it is moving towards.
 
 This is the step function from the tutorial, written in different
 notation.
@@ -162,10 +162,10 @@ end?
 
 Divide the top and the bottom by $n$:
 $\dfrac{3 + \frac{5}{n}}{1 + \frac{2}{n}}$. As $n$ grows, both small
-terms, $\frac{5}{n}$ and $\frac{2}{n}$, head for 0. That leaves
+terms, $\frac{5}{n}$ and $\frac{2}{n}$, move towards 0. That leaves
 $\dfrac{3}{1} = 3$.
 
-A useful rule of thumb: for large $n$, only the highest powers matter.
+For large $n$, only the highest powers matter. This is a useful rule.
 So the answer is the ratio of the numbers in front of the highest powers
 (the leading coefficients).
 
@@ -179,7 +179,7 @@ without end?
 $\dfrac{2}{5}$.
 
 The reasoning is the same. The $n^2$ terms are much bigger than
-everything else, so everything else stops mattering. What is left is
+everything else, so everything else hardly matters. That leaves
 $\dfrac{2n^2}{5n^2} = \dfrac{2}{5}$.
 
 </details>
@@ -198,7 +198,7 @@ $$\frac{4.9(3 + h)^2 - 4.9 \times 9}{h}.$$
 Expand the top: $4.9(9 + 6h + h^2) - 44.1 = 29.4h + 4.9h^2$. Divide by
 $h$ to get $29.4 + 4.9h$.
 
-As $h$ shrinks, that heads for **29.4 m/s**.
+As $h$ shrinks, that moves towards **29.4 m/s**.
 
 That is $9.8 \times 3$. The speed after $t$ seconds of falling is
 $9.8t$.
@@ -209,7 +209,7 @@ $9.8t$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Zero, and it makes sense: at the instant the ball is let go, it has not
+Zero. This makes sense. At the instant the ball is released, it has not
 started moving.
 
 Its *acceleration*, how fast its speed is changing, is not zero. It is
@@ -226,8 +226,8 @@ Because that gives $\dfrac{0}{0}$: a distance of zero, travelled in no
 time, divided by no time.
 
 $\dfrac{0}{0}$ is not a number, and it is not a short way of writing
-one. It is the arithmetic telling us that the question needs a different
-method. The limit is that method.
+one. It tells us that the question needs a different method. The limit
+is that method.
 
 </details>
 
@@ -245,8 +245,9 @@ no help.)
 In double-precision floating point, `1 + 1e-16` is the same number as
 `1`. So the subtraction on the bottom gives exactly zero.
 
-The mathematics is fine; the arithmetic ran out. This is the same limit
-that makes `0.1 + 0.2 == 0.3` come out `False`, on the practice page for
+The mathematics works. The computer's arithmetic does not have enough
+digits. The same limit makes `0.1 + 0.2 == 0.3` give `False`, on the
+practice page for
 [Variables, data types and text](tutorial:storing-and-computing).
 
 </details>
@@ -260,11 +261,10 @@ We use numbers to *see* what the answer is. A column of values moving
 towards 2 is convincing, and quick to produce.
 
 We use algebra to *know* it. Cancelling $(x - 1)$ proves that the answer
-is exactly 2, with no approximation anywhere and no floating-point
-floor.
+is exactly 2, with no approximation anywhere and no rounding error.
 
-Neither one can replace the other. Using the numbers alone will
-eventually mislead you.
+Neither one can replace the other. If you only use numbers, they will
+mislead you in the end.
 
 </details>
 
@@ -286,7 +286,7 @@ $2n \sin\left(\dfrac{\pi}{n}\right)$.
    circle. As $n$ grows, the polygon gets closer to the circle, so its
    perimeter gets closer to the circle's circumference.
 
-3. It gives us a way to compute $\pi$: take the perimeter of a polygon
+3. It gives us a way to compute $\pi$. Take the perimeter of a polygon
    with many sides and halve it. This is close to Archimedes' method from
    around 250 BCE. It is a limit argument, made two thousand years
    before limits were defined.
@@ -297,8 +297,8 @@ for n in [3, 6, 12, 100, 10000]:
     print(n, 2 * n * math.sin(math.pi / n))
 ```
 
-Notice the circle in the reasoning here: this code uses `math.pi` to
-compute $\pi$, so it proves nothing. Archimedes worked out the side
+Notice a problem here. This code uses `math.pi` to compute $\pi$, so it
+proves nothing. Archimedes found the side
 lengths with geometry instead, by cutting angles in half again and
 again.
 

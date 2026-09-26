@@ -49,8 +49,8 @@ image that we write in its `alt` attribute. It stands in for the image
 whenever the image cannot be seen.
 
 - **When the image fails to load**, the browser shows the alt text in
-  its place. That is what we saw under the first label, and why the
-  preview changed in step 2.
+  its place. This explains what we saw under the first label, and why
+  the preview changed in step 2.
 - **When a screen reader reaches the image**, it reads the alt text
   aloud, in place of the image. It does this whether the image loaded
   or not. In step 3, the image loaded, so the alt text was no longer
@@ -67,8 +67,9 @@ So each of the three images gives a screen reader something different:
 
 An empty `alt=""` is a choice we make on purpose. Sometimes an image is
 only there for decoration, and it tells a visitor nothing new. Then an
-empty `alt` tells a screen reader to skip it. Leaving out `alt`
-completely is different. Nothing tells the screen reader what the image
+empty `alt` tells a screen reader to skip it. If we leave out `alt`
+completely, something different happens. Nothing tells the screen reader
+what the image
 is, and it may read out a file name like `does-not-exist.jpg`.
 
 ### What makes a good description
@@ -129,5 +130,5 @@ not, or when the visitor cannot see it.
 
 Technology Connections (2018). *Closed Captioning: More Ingenious than You
 Know.* <https://www.youtube.com/watch?v=6SL6zs2bDks>. Alt text gives a
-picture words; captions give sound words. How captions were added to
-television, and who uses them. About twenty minutes.
+picture words. Captions give sound words. The video shows how captions
+were added to television, and who uses them. About twenty minutes.

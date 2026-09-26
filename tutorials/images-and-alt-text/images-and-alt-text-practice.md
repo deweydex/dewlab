@@ -85,8 +85,8 @@ The address is a full web address this time. So what is wrong? Fix it.
 
 An `<img>` finds its file with the `src` attribute. `href` is the
 attribute a link uses, so the image had no address at all. It is an
-easy mix-up, because both attributes hold an address. One way to
-remember: `src` is short for "source", where the image comes from.
+easy mix-up, because both attributes hold an address. To remember it,
+note that `src` is short for "source", where the image comes from.
 
 </details>
 
@@ -178,7 +178,7 @@ folder as `index.html`, so it would use the same path. A page inside a
 out of `blog`, and then into `images`.
 
 On GitHub, the old copy of the photo is still beside `index.html`. You
-could delete it: open it on GitHub, and choose **Delete file** from the
+could delete it. Open it on GitHub, and choose **Delete file** from the
 **...** menu.
 
 </details>

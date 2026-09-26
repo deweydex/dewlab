@@ -13,7 +13,7 @@ worlds:
 Problems on sorting, and three from earlier pages. Try tracing the short
 ones by hand before you run anything. To *trace* a sort is to follow it
 step by step on paper, writing down the list after each step. Once you have
-traced a sort, you can find the mistakes in it; if you have only run it,
+traced a sort, you can find the mistakes in it. If you have only run it,
 you usually cannot.
 
 ## 1. One pass
@@ -33,7 +33,7 @@ for i in range(len(items) - 1):
 
 <details class="dl-answer"><summary>answer</summary>
 
-`[1, 4, 2, 5, 8]`. 5 is swapped with 1, then 4, then 2, and stops at 8.
+The list is `[1, 4, 2, 5, 8]`. 5 is swapped with 1, then 4, then 2, and stops at 8.
 The 5 travelled to its place in one pass, which is what "bubbling" means.
 
 </details>
@@ -45,7 +45,7 @@ is sorted? How many does a plain bubble sort do?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two passes sort it: after the second, it is `[1, 2, 4, 5, 8]`. A plain
+Two passes sort it. After the second, it is `[1, 2, 4, 5, 8]`. A plain
 bubble sort still does all four, because it never checks whether the list
 is sorted. Problem 6 fixes that.
 
@@ -78,8 +78,8 @@ Trace selection sort over `[64, 25, 12, 22, 11]`.
 3. Then 22: `[11, 12, 22, 25, 64]`.
 4. Then 25, already in place. The list is sorted.
 
-At most one swap for each place. Selection sort makes the fewest swaps of
-the three, which matters when moving an element is slow.
+There is at most one swap for each place. Selection sort makes the fewest
+swaps of the three, which matters when it is slow to move an element.
 
 </details>
 
@@ -109,9 +109,10 @@ matter whether they start in order?
 
 <details class="dl-answer"><summary>answer</summary>
 
-45 and 190, in order or not. It is always n(n − 1)/2: the loops run the
-same number of times whatever they find, and only the swaps depend on the
-data. Doubling n makes about four times the comparisons.
+It makes 45 and 190, in order or not. It is always n(n − 1)/2. The loops
+run the same number of times whatever they find, and only the swaps
+depend on the data. If you double n, it makes about four times the
+comparisons.
 
 </details>
 
@@ -173,13 +174,13 @@ gains nothing?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Insertion sort does best: each element is already in place, so it makes
+Insertion sort does best. Each element is already in place, so it makes
 n − 1 comparisons and moves nothing. Fast sorts in real software often
 hand small pieces of the job to insertion sort for that reason.
 
-Selection sort gains nothing: it looks through the whole rest of the list
-for the smallest every time, whatever the order. Bubble sort with the flag
-from problem 6 matches insertion sort; without it, it matches selection
+Selection sort gains nothing. It searches the whole rest of the list for
+the smallest every time, whatever the order. Bubble sort with the flag
+from problem 6 matches insertion sort. Without it, it matches selection
 sort.
 
 </details>
@@ -194,14 +195,15 @@ ten million comparisons a second, how long does that take?
 About n(n − 1)/2, which is 500,000,000,000: five hundred billion. At ten
 million a second, that is 50,000 seconds, about fourteen hours. A sort
 that takes about n log n steps makes about twenty million comparisons on
-the same data, which takes two seconds. However quick each step is, it
-cannot close a gap that size.
+the same data, which takes two seconds. A faster computer does not help
+much with a difference that large.
 
 </details>
 
 ## 9. Selection sort from nothing
 
-Can you write `selection_sort(items)` without looking back, so that it
+Can you write `selection_sort(items)` without looking at the tutorial, so
+that it
 returns a new sorted list and leaves `items` as it was?
 
 ```python exec
@@ -240,11 +242,11 @@ In insertion sort, the `while` line is
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is a guard: it stops the loop walking off the front of the list. Python
-works out an `and` from left to right, and stops as soon as one side is
-`False`. With the sides swapped, when `j` reaches −1, Python reads
+It is a guard. It stops the loop before it goes past the front of the
+list. Python checks an `and` from left to right, and stops as soon as one
+side is `False`. With the sides swapped, when `j` reaches −1, Python reads
 `items[-1]`, the last element, before the guard is checked. In Python the
-answer still comes out right, because the guard then fails. But the code
+answer is still correct, because the guard then fails. But the code
 has read something it never meant to, and in many other languages that is
 a crash.
 
@@ -257,9 +259,9 @@ Why do `bubble_counted` and `selection_sort` above start with
 
 <details class="dl-answer"><summary>answer</summary>
 
-So that they sort a copy, and leave the caller's list as it was. Without
-it, `in_order = selection_sort(data)` would sort `data` too: two names for
-one list, from
+They sort a copy, so that they leave the caller's list as it was. Without
+it, `in_order = selection_sort(data)` would sort `data` too, because there
+would be two names for one list, as in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 Python offers both: `sorted(x)` returns a new list, and `x.sort()` changes
 `x` itself.
@@ -315,8 +317,8 @@ sort by their first value, and use the second only to break a tie.
 <div class="dl-world" data-world="secret-messages">
 
 A codebreaker tries every shift, and sorts the decodings so the most
-English-looking is first. A rough score: how many of its letters are E, T,
-A, O, I or N. Can you write `score(text)`, and set `best` to the decoding
+English-looking is first. A rough score counts how many of its letters are
+E, T, A, O, I or N. Can you write `score(text)`, and set `best` to the decoding
 with the highest score?
 
 ```python exec
@@ -457,10 +459,10 @@ print(binary_search(numbers, 72, 0, len(numbers) - 1))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two things. A case that returns without calling itself again: here, an
-empty range, `low > high`, or finding the target. And a call that always
-moves closer to that case: here, each call has a smaller range. Leave
-either out, and the function calls itself until Python stops it with a
+It needs two things. The first is a case that returns without calling
+itself again. Here, that is an empty range, `low > high`, or the target
+found. The second is a call that always moves closer to that case. Here,
+each call has a smaller range. Leave either out, and the function calls itself until Python stops it with a
 `RecursionError`.
 
 </details>
@@ -471,10 +473,10 @@ Can any sort beat about n log n comparisons, for any list?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Not a sort that works by comparing, and that has been proved. Each
-comparison answers one yes-or-no question, so k comparisons can tell apart
-at most 2ᵏ orders. A list of n elements can be in n! orders, and telling
-them all apart takes about n log n questions. Sorts that do not compare,
+No sort that works by comparing can do it, and that has been proved. Each
+comparison answers one yes-or-no question, so k comparisons can separate
+at most 2ᵏ orders. A list of n elements can be in n! orders, and you need
+about n log n questions to separate them all. Sorts that do not compare,
 such as counting sort, can beat it, but only when something is known about
 the data, such as that it is whole numbers in a small range.
 
@@ -488,23 +490,23 @@ is the cheapest way to keep it sorted?
 <details class="dl-answer"><summary>answer</summary>
 
 Find its place with binary search, about 20 comparisons, and insert it
-there. Sorting the whole list again would take about twenty million. There
-is still a cost: inserting into the middle of a list moves every element
-after it one place along, and that grows with n.
+there. A new sort of the whole list would take about twenty million. There
+is still a cost. When you insert into the middle of a list, every element
+after it moves one place along, and that grows with n.
 
 </details>
 
 ## 17. Correct, and slower
 
-Two students hand in sorts that both give the right answers. One makes 45
+Two students submit sorts that both give the right answers. One makes 45
 comparisons on ten items, and the other 90. Is the second one wrong?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No: it is right, and slower, which are two different things. Is ten items
-the real size? Then the difference is millionths of a second, and code
-that is easy to read matters more. If the real input is ten million items,
-the difference is everything. First make it right, then measure it, then
+No. It gives the right answers, and it is slower. Those are two different
+things. Is ten items the real size? Then the difference is millionths of a
+second, and code that is easy to read matters more. If the real input is
+ten million items, the difference matters a lot. First make it right, then measure it, then
 make it faster where the measurement says it matters.
 
 </details>
@@ -533,8 +535,8 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-7. Each look halves what is left, 64, 32, 16, 8, 4, 2, 1, and then there
-is nothing left: seven looks. Six halvings of 64 leave one item, which
+It can need 7. Each look halves what is left, 64, 32, 16, 8, 4, 2, 1, and
+then there is nothing left. That makes seven looks. Six halvings of 64 leave one item, which
 still has to be looked at.
 
 </details>
@@ -563,7 +565,7 @@ What will the last line print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`B`. A loop over a dictionary gives its keys, in the order they were
+The answer is `B`. A loop over a dictionary gives its keys, in the order they were
 added. `key.items()` gives the pairs.
 
 </details>
@@ -590,7 +592,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`None`, the same as `.sort()`. A method that changes its list in place
-gives back nothing, so `row` is `[1, 2, 3]` and `result` is `None`.
+The answer is `None`, the same as `.sort()`. A method that changes its
+list in place returns nothing, so `row` is `[1, 2, 3]` and `result` is `None`.
 
 </details>

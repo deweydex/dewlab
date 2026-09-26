@@ -154,7 +154,7 @@ to fix it.
 ```
 
 `max-width: 600px` means "at `600px` or narrower", so the text was
-centred on phones and not on wide screens: the opposite of the plan.
+centred on phones and not on wide screens. This is the opposite of the plan.
 `min-width: 600px` means "at `600px` or wider".
 
 </details>

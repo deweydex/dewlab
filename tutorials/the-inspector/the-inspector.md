@@ -104,8 +104,8 @@ names the file that the browser could not find.
 
 ## What we have now
 
-We can now look inside any page, including one that is not yet working
-the way we meant it to.
+We can now look inside any page, including one that does not work the
+way we meant it to.
 
 | Part | What it shows | How we use it |
 |---|---|---|

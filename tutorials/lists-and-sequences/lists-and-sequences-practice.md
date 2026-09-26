@@ -10,9 +10,9 @@ worlds:
 
 # Lists and looping over them — Practice
 
-Problems on lists, and three from earlier pages. With indexing and slicing,
-trying things out teaches more than working them out in your head, so run
-the cells, change them, and test your guesses. Try each problem before you
+These problems are on lists, with three from earlier pages. With indexing
+and slicing, you learn more by trying things than by solving them in your
+head, so run the cells, change them, and test your guesses. Try each problem before you
 open anything under it.
 
 ## 1. Which element
@@ -44,7 +44,7 @@ cell.
 (e) 5.
 
 A list of 5 elements has indexes 0 to 4, so the last one is always
-`len(xs) - 1`. There is no index 5. Saying it out loud a few times helps,
+`len(xs) - 1`. There is no index 5. Say it out loud a few times,
 until it stops being a surprise.
 
 </details>
@@ -97,7 +97,7 @@ What will it print?
 
 `[40, 50]`, with no error. A slice stops at the ends of the list, so it
 never goes out of range. An index that is out of range fails. That is
-useful, and it can also hide a mistake: a slice that asks for more than
+useful, but it can also hide a mistake. A slice that asks for more than
 there is gives less, and says nothing.
 
 </details>
@@ -207,7 +207,7 @@ for index in range(1, len(fibs)):
 
 <details class="dl-answer"><summary>answer</summary>
 
-They close in on 1.6180339887…, the *golden ratio*, which is exactly
+They get closer to 1.6180339887…, the *golden ratio*, which is exactly
 (1 + √5)/2. The answers go above it, then below it, then above again, and
 each time they come closer. That is a limit, reached from a very different
 direction than [Limits: getting closer without arriving](tutorial:approaching-a-limit)
@@ -398,7 +398,7 @@ when `number` is not in the list yet.
 
 <div class="dl-world" data-world="secret-messages">
 
-Doubled letters are a clue when breaking a code: in English, EE, LL, SS and
+Doubled letters are a clue when breaking a code. In English, EE, LL, SS and
 OO are common. Can you build `doubles`, the index of every letter that is
 the same as the one after it?
 
@@ -514,7 +514,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-6: the range gives 2, 5, 8, 11, 14 and 17. The next would be 20, and a
+6. The range gives 2, 5, 8, 11, 14 and 17. The next would be 20, and a
 range stops before its stop.
 
 </details>
@@ -546,7 +546,7 @@ What will the last line print?
 <details class="dl-answer"><summary>why</summary>
 
 `8`, then `None`. `double` prints 8, and then ends without a `return`, so
-it gives back `None`, and that is what `result` holds. With
+it returns `None`, and `result` holds that. With
 `return n * 2` in place of the `print`, it would print 8 once.
 
 </details>

@@ -200,7 +200,7 @@ print(square(12))
 The call `square(7)` then stands for the value 49, the same way `int("42")`
 stands for 42. We can store it, print it, or use it in more calculations.
 
-A `return` also ends the function straight away: any lines after it do not
+A `return` also ends the function straight away. Any lines after it do not
 run. Which `return` runs for `larger(5, 5)`?
 
 ```python exec
@@ -216,7 +216,7 @@ print(larger(5, 5))
 ```
 
 For `larger(10, 2)`, `a > b` is `True`, so the function returns 10 and
-stops. For `larger(5, 5)`, it is `False`, so the function goes on to the
+stops. For `larger(5, 5)`, it is `False`, so the function continues to the
 last line and returns `b`, which is 5.
 
 ### Your turn
@@ -307,8 +307,8 @@ it to build a whole picture. That is the next section.
 ## Return or print?
 
 A function that prints a value and a function that returns a value can
-look the same when we run them. They are not the same, and mixing them
-up trips up nearly everyone at first.
+look the same when we run them. They are not the same, and nearly
+everyone confuses them at first.
 
 Here are two functions. How many lines do you think this cell prints:
 one, or two? Run it to check.
@@ -325,12 +325,12 @@ double_and_return(5)
 double_and_print(5)
 ```
 
-Only one line appears. `double_and_return(5)` did work out 10, and it
-gave 10 back. But nothing on that line used the value, so Python threw
-it away. `double_and_print(5)` showed 10 on the screen, because `print`
-is what puts text on the screen.
+Only one line appears. `double_and_return(5)` did calculate 10, and it
+returned 10. But nothing on that line used the value, so Python lost
+it. `double_and_print(5)` showed 10 on the screen, because `print`
+puts text on the screen.
 
-Now let's keep what each function gives back, and look at it. What do
+Now let's keep what each function returns, and look at it. What do
 you think `a` holds?
 
 ```python exec
@@ -343,17 +343,17 @@ print("b + 1 is", b + 1)
 ```
 
 The first line printed 10, because the function body ran. But the
-function had no `return`, so it gave nothing back. In Python, "nothing"
+function had no `return`, so it returned nothing. In Python, "nothing"
 is a value of its own. *`None`* is Python's value for "no value here".
-A function without a `return` always gives back `None`.
+A function without a `return` always returns `None`.
 
 | | `print` inside the function | `return` inside the function |
 |---|---|---|
 | Who sees the value? | a person, on the screen | the code that called the function |
 | Can we store it or calculate with it? | no | yes |
-| What does the call give back? | `None` | the value |
+| What does the call return? | `None` | the value |
 
-So when a function works out an answer, return it. The code that calls
+So when a function calculates an answer, return it. The code that calls
 the function can then decide what to do with the answer: print it,
 store it, or use it in a bigger calculation.
 
@@ -396,7 +396,7 @@ last line can use it.
 In mathematics, a function is a rule that gives *exactly one output* for
 each input. $f(x) = x^2$ takes 3 and gives 9, and takes −3 and also gives
 9. The same input always gives the same output. `square` is a rule like
-that, written in code, and so is `encode`: the same message and shift
+that, written in code, and so is `encode`. The same message and shift
 always give the same code.
 
 Not every Python function works this way. Some depend on things outside the
@@ -424,13 +424,13 @@ is passed in: `def with_discount(price, rate):`.
 
 In mathematics, the inputs a function is meant to take are its *domain*.
 The domain of `square` is every number. A function that divides by its
-input has every number except 0. When we write a function, it is worth
-asking which inputs make sense for it.
+input has every number except 0. When we write a function, we should
+ask which inputs make sense for it.
 
 ### Your turn
 
-A function that undoes another is called its *inverse*. Taking the square
-root undoes squaring a positive number.
+A function that undoes another is called its *inverse*. The square root
+undoes the square of a positive number.
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -480,8 +480,8 @@ the function.
 
 <div class="dl-world" data-world="pixel-art">
 
-Mirroring a picture left to right sends column 0 to the last column, and
-the last to column 0. For a picture `width` pixels wide, can you write
+When we mirror a picture left to right, column 0 goes to the last
+column, and the last goes to column 0. For a picture `width` pixels wide, can you write
 `mirror(x, width)`, which returns the column that `x` moves to?
 
 ```python exec
@@ -534,7 +534,7 @@ print(hypotenuse(3, 4))
 
 `sum_of_squares` calls `square` twice. `hypotenuse` then uses
 `sum_of_squares`, and takes the square root with `** 0.5`. This is
-Pythagoras' theorem: in a triangle with a square corner and sides 3 and 4,
+Pythagoras' theorem. In a triangle with a square corner and sides 3 and 4,
 the longest side is 5.
 
 Each function does one small job, so we can test each one on its own, then
@@ -660,9 +660,9 @@ again. Python stops with a `NameError`. The name `area` does not exist
 outside the function.
 
 Local scope helps us. Each function has its own workspace. A variable
-inside one function cannot get mixed up with a variable in another
+inside one function cannot be confused with a variable in another
 function, even when the two have the same name. A parameter is local
-too: `radius` exists only inside `calculate_area`.
+too. `radius` exists only inside `calculate_area`.
 
 A variable we create outside any function has *global scope*: we can
 read it from anywhere in the program. `discount_rate`, earlier on this
@@ -718,9 +718,9 @@ Which is easier to test: a function that prints its answer, or one that
 returns it? Think of the comparison tables on this page. Could they have
 shown your answer if the function had only printed it?
 
-A challenge: `try_every_shift` prints 26 lines, and you pick out the English
-one by eye. Can you make the computer pick? One way: English text is full of
-E's, so the shift whose decoding has the most E's is probably the right one.
+A challenge: `try_every_shift` prints 26 lines, and you find the English
+one by eye. Can you make the computer pick? Here is one way. English text has
+many E's, so the shift whose decoding has the most E's is probably the right one.
 
 ```python challenge
 # Which shift gives the decoding with the most E's?
@@ -749,7 +749,7 @@ many values together, and our functions start to work on whole lists.
 
 Python Software Foundation. *The Python Tutorial — Defining Functions.*
 <https://docs.python.org/3/tutorial/controlflow.html#defining-functions>.
-The official reference for `def`, `return` and parameters. It also shows
+This is the official reference for `def`, `return` and parameters. It also shows
 default values for parameters, which this page does not cover.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
@@ -759,5 +759,5 @@ functions that return a value, at greater length than this page.
 
 CrashCourse (2017). *Programming Basics: Statements & Functions: Crash
 Course Computer Science #12.*
-<https://www.youtube.com/watch?v=l26oaHV7D40>. Statements, then functions
-that give a value back, written for a small game. About eleven minutes.
+<https://www.youtube.com/watch?v=l26oaHV7D40>. This video explains
+statements, then functions that return a value, in a small game. About eleven minutes.

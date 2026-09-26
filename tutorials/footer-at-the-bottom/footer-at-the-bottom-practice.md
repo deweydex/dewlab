@@ -59,10 +59,10 @@ preview. So what is missing? Fix it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Go through the three rules at the top of this page. Which ones are
+1. Check the three rules at the top of this page. Which ones are
    here?
-2. `margin-top: auto` only pushes the footer down when its parent is set
-   up in one particular way. What is that?
+2. `margin-top: auto` only pushes the footer down when its parent has
+   one particular setting. What is that?
 3. On an ordinary page, what does a top margin of `auto` count as?
 
 **Think about:** which element needs to change: the footer, or its
@@ -123,7 +123,7 @@ How tall is the body here? Fix it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Go through the three rules at the top of this page. Which one is
+1. Check the three rules at the top of this page. Which one is
    missing now?
 2. Without a height of its own, a body is only as tall as its content.
    How much leftover space is there inside it?
@@ -304,7 +304,7 @@ Zoomed out, the page is shorter than the window, and the footer sits at
 the bottom of the window. With `margin-top: auto` turned into a comment,
 the footer moves up to sit right under the content, with empty space
 below it. Without the auto margin, nothing takes the leftover space
-above the footer, so that space ends up below it.
+above the footer, so that space is below it.
 
 Each page has its own copy of the footer, so you change the text in both
 `index.html` and `about.html`. `&copy;` shows as the © sign.

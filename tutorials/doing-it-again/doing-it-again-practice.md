@@ -40,7 +40,7 @@ print("End of playlist")
 
 <details class="dl-answer"><summary>answer</summary>
 
-Seven lines, and the last is `End of playlist`.
+It prints seven lines, and the last is `End of playlist`.
 
 The two pushed-in lines run once for each of the three songs, which
 makes six lines. The last line is not pushed in, so it runs once, after
@@ -53,7 +53,7 @@ does `range(3, 7)` give?
 
 <details class="dl-answer"><summary>answer</summary>
 
-3, 4, 5 and 6. The stop number, 7, is left out.
+3, 4, 5 and 6. The stop number, 7, is not included.
 
 ```python
 for level in range(3, 7):
@@ -77,21 +77,21 @@ print(week_steps)         # 51000
 print(week_steps / 7)     # 7285.714285714285
 ```
 
-The week has 51,000 steps, about 7,286 a day. The average is the total
-shared out equally over the seven days.
+The week has 51,000 steps, about 7,286 a day. The average is the total,
+shared equally over the seven days.
 
 </details>
 
 **4. Explain.** Schlomi, who is learning Python too, reads
-`count = count + 1` and says it can never be true: in maths, $c = c + 1$
-is never true. Where does her idea work, and where does it stop working?
+`count = count + 1` and says it can never be true, because in maths,
+$c = c + 1$ is never true. Where does her idea work, and where does it stop working?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Her idea works in maths, where $=$ says two sides are equal, and no
 number is one more than itself. In Python, `=` is an instruction, not a
 claim that two sides are equal.
-It happens in two steps. First Python works out the right-hand side,
+It happens in two steps. First Python calculates the right-hand side,
 `count + 1`, using the value `count` has now. Then it points the name
 `count` at the answer. So if `count` was 4, it is now 5. The line means
 "count is now one more than it was".
@@ -159,11 +159,10 @@ print("The folder holds", folder, "MB")    # should be 5.05
 
 <details class="dl-answer"><summary>answer</summary>
 
-`folder = 0` is inside the loop, so the running total goes back to 0
+`folder = 0` is inside the loop, so the running total returns to 0
 every time round. At the end it holds only the last size, 0.60.
-Schlomo's two lines both do their jobs. Only the first one is in a place
-where it runs every time: it must come before the loop, so that it runs
-only once.
+Schlomo's two lines both do their jobs. But the first one runs every
+time. It must come before the loop, so that it runs only once.
 
 ```python
 file_sizes = [1.20, 0.85, 2.40, 0.60]
@@ -174,7 +173,7 @@ for size in file_sizes:
 print("The folder holds", round(folder, 2), "MB")    # 5.05
 ```
 
-`round` tidies away a float's tiny rounding, so the answer shows as
+`round` removes a float's tiny rounding error, so the answer shows as
 5.05.
 
 </details>
@@ -193,7 +192,7 @@ print(jar)    # should be 55
 
 <details class="dl-answer"><summary>answer</summary>
 
-`range(1, 10)` stops at 9, because the stop number is left out. So day
+`range(1, 10)` stops at 9, because the stop number is not included. So day
 10 is never added, and $55 - 10 = 45$. The range must go one past the
 last day:
 
@@ -205,7 +204,7 @@ print(jar)    # 55
 ```
 
 Mistakes like this, off by one at the end, are among the most common in
-all of programming. Asking "is the last one included?" catches them.
+all of programming. If you ask "is the last one included?", you catch them.
 
 </details>
 
@@ -224,7 +223,7 @@ for i in range(1, 5):
 print(result)    # 16
 ```
 
-These are the first four odd numbers. Problem 14 comes back to them.
+These are the first four odd numbers. Problem 14 uses them again.
 
 </details>
 
@@ -243,8 +242,8 @@ print(product(scales))    # 1.44
 
 The photo is 1.44 times as wide as the original. In pi notation that is
 $\prod_{i=1}^{3} s_i$, where $s_i$ is the $i$th scale. Adding the
-percentage changes, $+50 + 20 - 20 = 50$, would say 1.5, which is wrong:
-scales multiply.
+percentage changes, $+50 + 20 - 20 = 50$, would give 1.5. But scales
+multiply, so adding does not work here.
 
 </details>
 
@@ -294,7 +293,7 @@ $\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$.
 
 1. Row $i$ has $19 + i$ pixels. Check: row 1 has 20.
 2. For the loop, add $19 + i$ for each $i$ from 1 to 30.
-3. For the formula, split each row into 19 seats plus $i$ seats. Add
+3. For the formula, split each row into 19 pixels plus $i$ pixels. Add
    the 19s and the $i$s separately.
 
 **Think about:** how many 19s are there in all?
@@ -317,7 +316,7 @@ print(pixels)    # 1035
 ```
 
 With the formula, split each row into 19 pixels plus `row` pixels. There
-are 30 lots of 19, and the rest is $1 + 2 + \dots + 30$:
+are 30 groups of 19, and the rest is $1 + 2 + \dots + 30$:
 
 $$30 \times 19 + \frac{30 \times 31}{2} = 570 + 465 = 1035$$
 
@@ -325,8 +324,8 @@ $$30 \times 19 + \frac{30 \times 31}{2} = 570 + 465 = 1035$$
 print(30 * 19 + 30 * 31 // 2)    # 1035
 ```
 
-Both routes give 1,035 pixels. This is one way through. You
-might have found another, such as pairing the top row with the bottom
+Both ways give 1,035 pixels. You might have found another
+way, such as pairing the top row with the bottom
 row, as Gauss did.
 
 </details>
@@ -345,7 +344,7 @@ loop? Say why.
 2. `while`: we know when to stop (a 6), but not how many rolls it takes.
 3. `for`: we know the pixels.
 4. `while`: we know when to stop, but not how many bounces it takes.
-   (The tutorial worked it out: 21, for a ball that keeps 80%.)
+   (The tutorial found it: 21, for a ball that keeps 80%.)
 
 The question to ask is: do I know the values, or how many times? Then
 `for`. Do I only know when to stop? Then `while`.
@@ -379,8 +378,8 @@ for place in [3, 2, 1, 0]:
 ```
 
 The score is 2525, and the loop prints 2, 5, 2 and 5. In Unit 1, the
-display needed one line for each digit; the loop does the same job for
-any number of places. One tool hands its answer to the next.
+display needed one line for each digit. The loop does the same job for
+any number of places. Here the answer from `total` goes into `digit_at`.
 
 </details>
 
@@ -392,7 +391,7 @@ notice? Then find a picture that explains it.
 
 1. The $i$th odd number is $2i - 1$.
 2. Loop over $n$ from 1 to 7. For each $n$, add up $2i - 1$ for $i$ from
-   1 to $n$. `total(range(1, 2 * n, 2))` does that too: `range` can take
+   1 to $n$. `total(range(1, 2 * n, 2))` does that too. `range` can take
    a third number, the step.
 3. Look at the answers. Have you seen these numbers before?
 
@@ -415,7 +414,7 @@ for n in range(1, 8):
 The sums are 1, 4, 9, 16, 25, 36, 49. These are the square numbers:
 $\sum_{i=1}^{n} (2i - 1) = n^2$.
 
-The picture: a 1 by 1 square of dots is 1 dot. Add 3 dots along the
+Here is the picture. A 1 by 1 square of dots is 1 dot. Add 3 dots along the
 right side and the top, in an L shape, and you have a 2 by 2 square.
 Add an L of 5 dots, and you have 3 by 3. Each new odd number is the L
 that makes the square one bigger. So the first 100 odd numbers add up
@@ -445,11 +444,11 @@ print(math.log2(1000))       # 9.965784284662087
 ```
 
 After 10 halvings, the copy is less than 1 pixel wide. Games really do
-this: the smaller copies of a picture are called "mipmaps", and each
+this. The smaller copies of a picture are called "mipmaps", and each
 one is half the width of the one before. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
-a logarithm was "how many times do I multiply by 2?". Halving is the
-same question run backwards: $\log_2 1000$ is about 9.97, so 9 halvings
+a logarithm was "how many times do I multiply by 2?". Halving asks the
+same question backwards. $\log_2 1000$ is about 9.97, so 9 halvings
 are not quite enough and the 10th takes it under 1 pixel. The loop counts
 the halvings one by one, and the logarithm gives the answer in one step.
 
@@ -478,7 +477,7 @@ Both lines show 0.
 
 `running` starts at 0, and 0 multiplied by anything is 0. So the
 answer is 0 whatever the list holds. With an empty list, the loop never
-runs, and the function gives back the starting number, 0.
+runs, and the function returns the starting number, 0.
 
 The fix is to start at 1, the number that changes nothing when you
 multiply by it:
@@ -494,7 +493,7 @@ print(product_draft([2, 3, 4]))    # 24
 print(product_draft([]))           # 1
 ```
 
-The empty list shows why the starting number matters: it is the answer
+The empty list shows why the starting number matters. It is the answer
 when there is nothing to multiply.
 
 </details>

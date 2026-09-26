@@ -51,8 +51,8 @@ Three things still have to happen, each already covered somewhere on this
 site, and none of them connected to each other yet:
 
 1. **JavaScript reads a form's values first.** A page on forms, part of
-   the Web Authoring course once it is here, builds the fields; JavaScript
-   reads what a visitor typed into them.
+   the Web Authoring course once it is here, builds the fields.
+   JavaScript reads what a visitor typed into them.
 2. **JavaScript turns those values into SQL next.** The `INSERT` above
    shows the result, built with the values a form collected instead of
    typed directly.

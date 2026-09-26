@@ -9,8 +9,8 @@ version: 2026.09.05.1
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what the code will do before you run it. Try to answer
-before you check. Being wrong, and finding out why, teaches you more than
-being right by accident.
+before you check. A wrong guess teaches you more than a lucky right one,
+once you see why it was wrong.
 
 ```python exec
 id: setup-1
@@ -27,7 +27,7 @@ def average(values):
     return sum(values) / len(values)
 ```
 
-## Choosing a Test That Catches It
+## Choosing a test that catches it
 
 **1.** `98.6°F` is normal human body temperature. It should convert to
 `37.0°C`.
@@ -43,13 +43,13 @@ id: choosing-a-test-that-catches-it-1
 <details class="dl-answer"><summary>answer</summary>
 
 It gives `41.625`, not `37.0`. So yes, it catches the bug. The answer is
-far enough out that it does not even look reasonable. The tutorial's daily
+far enough from `37.0` that it does not even look reasonable. The tutorial's daily
 readings happened to look reasonable, even though they were wrong. This
 one does not.
 
 </details>
 
-**2.** Freezing point on its own did not catch the bug. After taking away
+**2.** Freezing point on its own did not catch the bug. When we take away
 32, the value is `0`, and `0` divided by anything is still `0`.
 
 `-40°F` is exactly `-40°C`. It is the one temperature where Fahrenheit and
@@ -70,7 +70,7 @@ is the one input that hides this bug. Almost any other reading shows it.
 
 </details>
 
-## Narrowing Down a Different Bug
+## Narrowing down a different bug
 
 **3.** In this pipeline, the bug is in the parsing stage, not in the
 conversion.
@@ -109,7 +109,7 @@ one stage earlier than the fault in the tutorial's example.
 
 </details>
 
-## Naming the Difference
+## Naming the difference
 
 **4.** A website feels slow. Two developers respond in different ways.
 
@@ -128,10 +128,10 @@ The spinner is pragmatic problem-solving. The symptom, a wait that bothers
 people, is less noticeable. But the slow request still runs exactly as
 before.
 
-Finding and fixing the request is semantic analysis. It deals with why
-the site is slow, and not only with how the slowness feels. Both
-developers may have been asked to make the same complaint go away. Only
-one of them removed its cause.
+The second developer found and fixed the request. That is semantic
+analysis. It deals with why the site is slow, and not only with how the
+slowness feels. Both developers may have been asked to stop the same
+complaint. Only one of them removed its cause.
 
 </details>
 
@@ -144,12 +144,12 @@ your own words, why is it lateral thinking, and not good luck?
 Nothing in the problem, "average some Fahrenheit readings in Celsius",
 points to freezing or boiling point. They are not the readings a
 thermometer usually shows. The obvious plan is to test with the kind of
-readings the pipeline will handle every day. Choosing freezing and
-boiling point means not following that plan.
+readings the pipeline will handle every day. When the tutorial chose
+freezing and boiling point, it did not follow that plan.
 
 It was not luck, because the choice was made on purpose. Freezing and
 boiling point are two of the very few conversions anyone can give exactly,
-without a calculator. That is what makes them useful as a check. An
+without a calculator. That makes them useful as a check. An
 everyday reading like `70°F` has no exact answer that people remember. So
 a wrong answer that looked reasonable would have nothing to be checked
 against.

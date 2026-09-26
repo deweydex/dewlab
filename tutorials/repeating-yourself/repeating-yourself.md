@@ -83,7 +83,7 @@ A while loop needs three things:
 
 What happens without the third one? The condition never becomes `False`,
 so the loop never stops. It is worth seeing once. While a cell is running,
-its **Run** button changes to **Stop**: press it to stop the loop. (If you
+its **Run** button changes to **Stop**. Press it to stop the loop. (If you
 do not see a Stop button, reloading the page stops it too.)
 
 ### Trace it by hand
@@ -193,8 +193,8 @@ this because nobody knew the number of steps in advance: the loop found it.
 
 ## For loops: when you know how many times
 
-When we know how many times to repeat, or have something to go through one
-item at a time, a *for loop* is simpler. It runs its body once for each item
+When we know how many times to repeat, or have items to use one at a time,
+a *for loop* is simpler. It runs its body once for each item
 in a sequence: each letter of a string, as in the first cell, or each number
 `range()` gives.
 
@@ -211,7 +211,7 @@ What will the last line be?
 ```
 
 `range(5)` gives five numbers, 0, 1, 2, 3 and 4, starting from 0. So the
-last line is 4, not 5. Starting from 0 turns out to be very useful, and
+last line is 4, not 5. Starting from 0 is very useful, and
 [Lists and looping over them](tutorial:lists-and-sequences) shows
 why.
 
@@ -335,16 +335,16 @@ decisions you already make when you write that loop:
 
 Two of those rows need a closer look.
 
-The stopping row is the one that trips people up. Sigma stops **at** 5,
+The stopping row confuses many people. Sigma stops **at** 5,
 and `range` stops **before** 6. So the two numbers differ by one, but
 they describe the same five values. The number in `range` marks a
 boundary, not an item. We will see the same idea again with slices, in
 [Lists and looping over them](tutorial:lists-and-sequences).
 
 The last row is a real difference between the two. Sigma never writes
-down that the total starts at zero: a sum of nothing is zero, and
-mathematicians leave that unsaid. A loop has to say it out loud. That is
-why `total = 0` sits above every accumulator you write.
+down that the total starts at zero. A sum of nothing is zero, and
+mathematicians do not write it. A loop has to say it. So `total = 0`
+sits above every accumulator you write.
 
 We can make this more general. $\sum_{i=1}^{n} i^2$ means "add up the
 squares of all the integers from 1 to n":
@@ -384,11 +384,11 @@ multiplication.
 
 ### Your turn
 
-Can you work out each of these with a loop? For each one, write
+Can you calculate each of these with a loop? For each one, write
 pseudocode first, then the code.
 
 1. $\sum_{i=1}^{100} i$, the sum of the first 100 natural numbers. (There
-   is a famous story that the young Gauss worked this out in moments.)
+   is a famous story that the young Gauss found this in moments.)
 2. $\sum_{i=1}^{10} \frac{1}{i}$, the first 10 terms of the *harmonic
    series*. The harmonic series is the sum
    $1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \dots$
@@ -435,9 +435,9 @@ for row in range(4):
     print()   # end the row
 ```
 
-A checkerboard, four rows of eight. The outer loop runs 4 times, and for
+It draws a checkerboard, four rows of eight. The outer loop runs 4 times, and for
 each of those the inner loop runs 8 times, so the `if` runs 32 times, once
-for every pixel. `(row + column) % 2` is what shifts each row along by one.
+for every pixel. `(row + column) % 2` shifts each row along by one.
 
 If the outer loop runs $n$ times, and the inner loop runs $n$ times for
 each, the total is $n \times n$, or $n^2$. Counting the steps an algorithm
@@ -525,7 +525,7 @@ print()
 print("Total:", count)
 ```
 
-Four: 21, 42, 63 and 84. A number divided by both 3 and 7 is divided by 21,
+There are four: 21, 42, 63 and 84. A number divided by both 3 and 7 is divided by 21,
 so the loop could have asked `i % 21 == 0`, and found the same four.
 
 ### Your turn
@@ -614,9 +614,9 @@ somebody else.
 
 ## Looking back
 
-Sigma writes down a loop, and a loop with an accumulator works out a sum.
-Which parts of $\sum_{i=1}^{5} i$ does a mathematician leave unsaid, that
-a program has to say out loud?
+Sigma writes down a loop, and a loop with an accumulator calculates a sum.
+Which parts of $\sum_{i=1}^{5} i$ does a mathematician not write, that
+a program has to write?
 
 A challenge: this message was moved along by a Caesar shift, but nobody
 told you by how much. Can you try all 26 shifts, and print what each one
@@ -640,17 +640,17 @@ loop like that a name, so you can use it again without writing it out.
 ## Where to read more
 
 Khan Academy. *Sigma Notation for Sums.*
-<https://www.youtube.com/watch?v=5jwXThH6fg4>. The mathematical side of the
-accumulator pattern this page builds: the same $\sum$ notation, worked
-through on paper.
+<https://www.youtube.com/watch?v=5jwXThH6fg4>. This video shows the maths
+side of the accumulator pattern, with the same $\sum$ notation on
+paper.
 
 Python Software Foundation. *The Python Tutorial — More Control Flow
-Tools.* <https://docs.python.org/3/tutorial/controlflow.html>. The official
+Tools.* <https://docs.python.org/3/tutorial/controlflow.html>. This is the official
 reference for `for`, `range()`, and the rest of Python's looping tools,
 including a few this page does not have room for.
 
 Veritasium (2021). *The Simplest Math Problem No One Can Solve: Collatz
 Conjecture.* <https://www.youtube.com/watch?v=094y1Z2wpJg>. If a number is
-even, halve it; if it is odd, multiply it by 3 and add 1; repeat. Every
+even, halve it. If it is odd, multiply it by 3 and add 1. Repeat. Every
 number anyone has tried reaches 1, but nobody has proved that every number
-will. A `while` loop in four lines. About twenty-two minutes.
+will. The rule is a `while` loop in four lines. About twenty-two minutes.

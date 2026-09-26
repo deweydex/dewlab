@@ -48,13 +48,13 @@ never move.
 **Now margin.** With `padding` back at `20px`, what happens when we
 change `margin` instead, to `0` and then to `4rem`? Does the box itself change size this time?
 
-The boxes stay exactly the same size. What changes is how far apart they
-sit, and how far they are from the edge of the page.
+The boxes stay exactly the same size. The margin changes how far apart
+they sit, and how far they are from the edge of the page.
 
-**Something worth watching for.** With `margin` at `4rem`, look at the
+**Watch for something here.** With `margin` at `4rem`, look at the
 gap between the two boxes. The first box has `4rem` of margin
 below it, and the second has `4rem` above it. So is the gap `8rem`? Look
-closely: it is `4rem`. We will see why below.
+closely. It is `4rem`. We will see why below.
 
 ## Why does this happen?
 

@@ -145,8 +145,7 @@ contents above?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Your paragraphs will say something different. The levels are what
-matter:
+Your paragraphs will say something different. The levels matter most:
 
 ```html
 <h1>Greyhound Rescue</h1>

@@ -34,7 +34,7 @@ What will `len(set("banana"))` print? Guess, then run the cell.
 <details class="dl-answer"><summary>answer</summary>
 
 It prints `3`. The word has six letters, but only three different ones:
-b, a and n. `set` goes through a string letter by letter, the way a
+b, a and n. `set` reads a string letter by letter, the way a
 `for` loop does, and keeps each letter once.
 
 </details>
@@ -44,7 +44,7 @@ colour of every pixel in one picture, as a hex code from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 How many different colours do the two pictures use between them? That
 number is the size of the *palette*, the set of colours the game must
-keep. Work it out with sets.
+keep. Find it with sets.
 
 ```python exec
 id: collections-practice-paints
@@ -60,7 +60,7 @@ print(len(palette))
 print(sorted(palette))
 ```
 
-Six colours. The union holds orange, `FF8800`, and white, `FFFFFF`,
+They use six colours. The union holds orange, `FF8800`, and white, `FFFFFF`,
 once each, although both pictures use them, and teal, `008080`, once,
 although the first picture has it twice. Real image formats such as GIF
 keep a palette like this, with each colour once, and store each pixel as
@@ -80,7 +80,7 @@ print(sorted({1, 2, 3} - {2, 3, 4}))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`[2, 3]`, then `[1, 2, 3, 4]`, then `[1]`. The intersection keeps what
+It prints `[2, 3]`, then `[1, 2, 3, 4]`, then `[1]`. The intersection keeps what
 is in both, the union keeps what is in either, and the difference keeps
 what is in the first set and not in the second.
 
@@ -93,7 +93,7 @@ you print the fruit in alphabetical order?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Nothing is broken. A set makes no promise about order: it only records
+Nothing is broken. A set makes no promise about order. It only records
 which values are in it. Python keeps the elements in an order of its
 own, which can differ from run to run for words.
 `sorted({"pear", "apple", "fig"})` gives a list in alphabetical order,
@@ -122,10 +122,10 @@ print(sorted(warnings))
 print(warnings == set())
 ```
 
-This prints `['parmesan', 'pine nuts']`, then `False`: the pesto is not
+This prints `['parmesan', 'pine nuts']`, then `False`. The pesto is not
 free of allergens. The intersection is what the recipe and the list
 share. An empty intersection would mean nothing to warn about. (Real
-allergen rules count parmesan as milk: a real café would list what is
+allergen rules count parmesan as milk. A real café would list what is
 inside each ingredient, too.)
 
 </details>
@@ -160,9 +160,9 @@ things in Python, when in English they are the same word.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomo's reasoning is the reasoning behind the maths word: the
+Schlomo's reasoning matches the maths word. The
 intersection is "A and B". But in Python, `and` is the word for True
-and False. Given two sets, it does not make an intersection. It gives back the second set whenever the first one is
+and False. Given two sets, it does not make an intersection. It returns the second set whenever the first one is
 not empty, so the cell printed all of `stop_b`. The sign for "in both"
 is `&`:
 
@@ -191,7 +191,7 @@ print(len(first_match | second_match))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two, two and seven. Bríd and Dara played only the first match. Fiona
+There are two, two and seven. Bríd and Dara played only the first match. Fiona
 and Gráinne played only the second. Seven different players took part
 in all: the five from the first match, and the two new ones.
 
@@ -218,7 +218,7 @@ print(sorted(not_yet))
 
 With the counties above, it prints `9`, then the nine counties from
 Carlow to Wexford that are not Dublin, Kildare or Wicklow. The
-universal set is `leinster`: the complement is taken inside it, so
+universal set is `leinster`. The complement is taken inside it, so
 Galway and Kerry, which are not in Leinster, play no part. With all 32
 counties of Ireland as the universal set, the answer would be different,
 though `visited` is the same.
@@ -272,13 +272,13 @@ instead, if all you want to know is whether a number is in it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is finite: it has exactly 1,000,000,000 elements, which is a large
+It is finite. It has exactly 1,000,000,000 elements, which is a large
 number, but a number. Python could try to make it, with
 `set(range(1, 1_000_000_001))`, but a set of a billion numbers needs
 tens of gigabytes of memory, more than most computers have. So in this
 space, a finite set can still be too big to list.
 
-A rule does the job, as for $\mathbb{N}$ on the tutorial page: a test
+A rule does the job, as for $\mathbb{N}$ on the tutorial page. A test
 such as `1 <= number <= 1_000_000_000 and number == int(number)` answers
 "is it in?" at once, without making the set.
 
@@ -314,7 +314,7 @@ for word in line.split():
 print(len(different_words))
 ```
 
-It prints `7`: the line has nine words, and "row" is three of them.
+It prints `7`. The line has nine words, and "row" is three of them.
 `line.split()` cuts the line into a list of words at each space.
 
 </details>
@@ -346,7 +346,7 @@ print(can_run(needed, second_computer))
 print(sorted(needed - second_computer))
 ```
 
-`True`, `False`, then `['matplotlib', 'pandas']`. The program can run
+It prints `True`, `False`, then `['matplotlib', 'pandas']`. The program can run
 when `needed` is a subset of what is installed. The difference says
 what to install. Tools like `pip`, which installs Python packages, ask
 this question every time.
@@ -449,7 +449,7 @@ symbols, $\sum_{k=0}^{n} C(n, k) = 2^n$.
 **15. Make.** On
 [Chances that combine](tutorial:chances-that-combine#the-birthday-problem),
 two people in a class of 23 share a birthday about half the time. A set
-gives a short way to check a class for a shared birthday: if the set of
+gives a short way to check a class for a shared birthday. If the set of
 birthdays is smaller than the class, two of them were the same. Write a
 trial with that idea, and use `simulate` to check the tutorial's answer.
 
@@ -485,7 +485,7 @@ print(simulate(shared_birthday, 10000))
 ```
 
 It prints something near 0.507, such as 0.5094, close to the exact
-answer of about 0.507. The set does the checking in one step: each
+answer of about 0.507. The set checks in one step. Each
 repeated birthday makes the set one element smaller than the list.
 
 </details>
@@ -496,7 +496,7 @@ intersection. In what way is it like one? In what way is it not?
 <details class="dl-answer"><summary>answer</summary>
 
 It is like an intersection because it keeps only what two tables have
-in common: a row of one table is matched only with rows of the other
+in common. A row of one table is matched only with rows of the other
 that share the same value in a column, such as a customer id. A
 customer with no orders is left out, as a song on only one playlist is
 left out of $A \cap B$.
@@ -504,8 +504,8 @@ left out of $A \cap B$.
 It is not quite an intersection because the two tables' rows are
 different kinds of thing, a customer and an order, so no row is "in
 both". A JOIN compares one column, and then makes a new, wider row from
-each matching pair. So it is closer to this: make every pair, as a
-`CROSS JOIN` or `all_pairs` does, then keep only the pairs whose ids
+each matching pair. So it is closer to two steps. First make every pair,
+as a `CROSS JOIN` or `all_pairs` does, then keep only the pairs whose ids
 agree.
 
 </details>

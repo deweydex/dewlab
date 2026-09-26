@@ -25,13 +25,13 @@ covers:
 
 # Kinds of data, and honest charts
 
-Picture an advert for a health drink. (The advert is made up; the
+Picture an advert for a health drink. (The advert is made up. The
 numbers in it are real.) It shows two bars: life expectancy in Ireland,
 and in the UK. The Irish bar is more than three times as tall. Does an
 Irish baby really expect to live three times as long?
 
-No. And here is the part I find most surprising: every number on that
-chart can be true. The trick is in one small choice about where the
+No. But every number on that chart can still be true, and I find that
+the most surprising part. The trick is in one small choice about where the
 picture starts. By the end of this page you will have drawn the
 misleading chart yourself, and the honest one beside it.
 
@@ -45,11 +45,11 @@ On this page we:
   line chart, each for the data it suits
 - draw the misleading chart from the advert, and an honest one beside it
 
-> **The space we're in.** Lists of values, from
+> **The space we're in.** We use lists of values, from
 > [A row of numbers](tutorial:a-row-of-numbers), and matplotlib, which
-> draws charts once we write `import matplotlib.pyplot as plt`. One real
-> dataset: life expectancy by country and year, from Our World in Data.
-> One thing usually goes unsaid: a chart is not the data. It is a
+> draws charts once we write `import matplotlib.pyplot as plt`. We use one
+> real dataset, life expectancy by country and year, from Our World in
+> Data. We usually do not say it, but a chart is not the data. It is a
 > picture that somebody made from the data, and every picture involves
 > choices, such as where an axis starts. An honest chart makes choices
 > that let the reader see the data truly.
@@ -103,8 +103,8 @@ what we can do with them.
 *Categorical data* is data where each answer is a group, or category,
 such as "bus". There are two kinds.
 
-- *Nominal data* is categorical data with no natural order. Bus, car,
-  walk: no one of them comes first. The word comes from the Latin for
+- *Nominal data* is categorical data with no natural order. Bus, car
+  and walk have no order. The word comes from the Latin for
   "name": each answer is a name.
 - *Ordinal data* is categorical data with an order. "Disagree" sits
   between "strongly disagree" and "not sure". We can put the answers in
@@ -128,8 +128,7 @@ Each kind is a space with its own allowed moves:
 | discrete | cups of coffee | yes | yes |
 | continuous | journey time | yes | yes |
 
-A mean journey time makes sense. A "mean way to travel" does not. The
-move is the same, and the space is different.
+A mean journey time makes sense. A "mean way to travel" does not.
 
 ```question
 id: kinds-four-kinds-1
@@ -211,8 +210,8 @@ usually written with a row for each value:
 On What is typical?, `journeys.count("bus")` would have counted one
 value. A frequency table counts every value at once, in one pass
 through the list. The most common value is the mode, from
-[What is typical?](tutorial:what-is-typical). A frequency table shows
-it at a glance: the bus. And each frequency divided by 20 is a relative
+[What is typical?](tutorial:what-is-typical). In a frequency table you
+can see it at once. It is the bus. And each frequency divided by 20 is a relative
 frequency, as on
 [How likely is it?](tutorial:how-likely-is-it#letting-python-toss-the-coin):
 7 of 20, or 35%, came by bus.
@@ -267,7 +266,7 @@ def frequency_table(values):
 ```
 
 Run the toolkit cell, then the tests. Until the body is written,
-`frequency_table` gives back `None`, so expect the first test to stop
+`frequency_table` returns `None`, so expect the first test to stop
 with an `AssertionError`.
 
 ```python exec
@@ -292,7 +291,7 @@ values of a dictionary without their keys, and `total` from
 the keys without their values.
 
 Python has the same tool already, as `Counter` in its `collections`
-module. Writing our own shows what it does inside.
+module. When we write our own, we see what it does inside.
 
 ## Bars and pies, for categories
 
@@ -374,12 +373,12 @@ tilts the labels so that they do not run into each other.
 
 ## Histograms, for measured numbers
 
-Now numerical data, and real data: the life expectancy file from
+Now we use numerical data, and real data: the life expectancy file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950).
 It has a row for each country and year. This time the cell keeps the
 rows for the year 2023, from every country, and takes out the
-`life_expectancy` column as a list. As before, that is all we ask of
-the file: the maths is done on the list.
+`life_expectancy` column as a list. As before, that is all we need from
+the file. We do the maths on the list.
 
 The numbers in this section come from the copy of the file saved on
 {{snapshot: life-expectancy}}. The line under the cell says whether you
@@ -421,7 +420,7 @@ for start in sorted(grouped):
     print(start, "to", start + 5, ":", grouped[start])
 ```
 
-Eight bins, from 50 up to 90. `sorted(grouped)` gives the keys in
+There are eight bins, from 50 up to 90. `sorted(grouped)` gives the keys in
 order, from the smallest bin up. The busiest bin is 75 to 80 years, with
 73 rows.
 
@@ -440,18 +439,18 @@ plt.title("Life expectancy in 2023 (Our World in Data)")
 ```
 
 Compare the heights with the table you just printed. They are the same
-eight numbers. The edges run to 90, not 85: `plt.hist` leaves out any
+eight numbers. The edges run to 90, not 85. `plt.hist` leaves out any
 value past the last edge, and three places are above 85. The histogram
 shows the shape of the data: most places are in the 70s, and the bars
-get shorter towards 50. A table of 261 numbers would never show that at
-a glance.
+get shorter towards 50. A table of 261 numbers would never show that so
+clearly.
 
 ### Your turn
 
 1. Change the bins to `range(50, 95, 10)`, then to `range(50, 90, 2)`.
    How does the shape change?
-2. Which width tells the story best, in your opinion? Several answers
-   are worth giving: too few bins hide the shape, and too many make it
+2. Which width shows the data best, in your opinion? There are several
+   good answers. Too few bins hide the shape, and too many make it
    ragged.
 
 ## Stem-and-leaf: every value kept
@@ -513,7 +512,7 @@ the 10th and the 11th. Counting along the leaves in the plot above, the
 
 ## Lines, for change over time
 
-On A row of numbers we took out Ireland's 74 years as a list, and
+On A row of numbers we kept Ireland's 74 years as a list, and
 looked at the numbers. Now we draw them, with the years along the
 bottom. What shape do you expect? Sketch a guess in the air with your
 finger, then run the cell.
@@ -534,7 +533,7 @@ print(ireland[0], ireland[-1])
 It rose from 65.58 years in 1950 to 82.41 in 2023, with a few small dips,
 the last of them in 2020 and 2021.
 A *line chart* joins points in order, so it suits data where the order
-means something, usually time. The line says "and then": each point
+means something, usually time. The line means "and then". Each point
 comes after the one before it. Joining the bars of the travel survey
 with a line would suggest that "walk" comes after "car", which means
 nothing.
@@ -578,16 +577,16 @@ So the Irish bar is about 3.2 times as tall, for a difference of about
 a year. On the right, the axis starts at 0, and the bars are
 almost the same, because the numbers are almost the same.
 
-Here is the rule underneath. In a bar chart, the reader reads the
+In a bar chart, the reader reads the
 length of each bar as its value. If the axis does not start at 0, the
 lengths no longer match the values, even when every number on the axis
-is true. That is
-why a line chart may zoom in and a bar chart may not: a line shows
-change, and a bar shows an amount.
+is true. So a
+line chart may zoom in, and a bar chart may not. A line shows change,
+and a bar shows an amount.
 
 The second trick is the three-dimensional pie. Here is the travel
 survey again, flat on the left, and tilted as if it were a real pie on
-the right. You do not need to read how the tilted one is drawn: it
+the right. You do not need to read how the tilted one is drawn. It
 stacks many flat pies on top of each other, squashed. Which way to
 travel looks the most common in each?
 
@@ -634,7 +633,7 @@ the same job these charts do today.
 
 </aside>
 
-So an honest chart, in short:
+An honest chart follows these rules:
 
 - a bar chart's axis starts at 0;
 - a pie is flat, with few slices, and its slices make a whole;
@@ -646,7 +645,7 @@ So an honest chart, in short:
 
 1. In the first cell of this section, pick one other country from the
    file, such as `"Spain"` or `"Nigeria"`, and add it to `places` and
-   `values_2023`. Take its list out the same way as `uk`.
+   `values_2023`. Make its list the same way as `uk`.
 2. Change `advert.set_ylim(80.8, 82.6)` so that the advert's chart makes
    the UK look far ahead of Ireland. Which numbers would you choose?
 3. Now say, in one sentence, what an honest chart of the same three
@@ -659,13 +658,13 @@ code. Another way is to collect real misleading charts from news
 reports and adverts, and study them.
 
 Real examples have real value. They show that the tricks happen, and
-where, and a reader learns to recognise them in the wild.
+where, and a reader learns to recognise them in real life.
 
-We drew them ourselves because making the trick shows how small it is:
-one number in `set_ylim`. A reader who has made a chart lie knows that
-every chart is a set of choices, and can ask which choices were made.
-That is the larger idea here. Data does not speak for itself. A person
-chooses how it is shown, and you can now be that person.
+We drew them ourselves because when you make the trick, you see how
+small it is. It is one number in `set_ylim`. A reader who has made a
+chart lie knows that every chart is a set of choices, and can ask which
+choices were made. A person always chooses how data is shown, and now
+you can be that person.
 
 </details>
 

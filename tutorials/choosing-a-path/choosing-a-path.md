@@ -22,15 +22,15 @@ covers:
 
 # Choosing a path: if, elif and else
 
-You may have felt this. A long video call, and the phone in your hand
-gets warm. Then a game on the same phone starts to stutter. Nobody
+You may have felt this. You are on a long video call, and the phone in
+your hand gets warm. Then a game on the same phone starts to stutter. Nobody
 pressed a button to slow it down. The phone did that by itself, on
 purpose. How does a phone decide when to slow its processor down?
 
 A *processor* is the chip that carries out a program's instructions.
 When it works hard, it gets hot. Most phones have no fan, so the way to
 cool the chip is to run it more slowly for a while. This is called
-*thermal throttling*: "thermal" means "to do with heat". Somewhere in the
+*thermal throttling*. "Thermal" means "to do with heat". Somewhere in the
 phone, a few lines of code read a temperature and choose what to do. By
 the end of this page, you will have written lines like them.
 
@@ -44,10 +44,9 @@ On this page we:
 
 > **The space we're in.** We use the whole numbers and decimals from
 > Unit 1, and Python's own ways of comparing them. Every question on this
-> page has exactly two answers, True or False: there is no "maybe" here.
+> page has exactly two answers, True or False. There is no "maybe" here.
 > Lines still run from top to bottom, but now some lines can be skipped.
-> One thing a temperature rule never says out loud: how fine the readings
-> are. Some sensors give whole degrees. Others give tenths.
+> A temperature rule never says how fine the readings are. Some sensors give whole degrees. Others give tenths.
 
 ## Warm-up
 
@@ -143,8 +142,8 @@ Which of these is true for a chip at exactly 80 °C?
 Now a small puzzle. Do $t > 79$ and $t \ge 80$ draw the same picture?
 Think about it before you read on.
 
-They do, if the sensor only ever gives whole degrees: there is no whole
-number between 79 and 80. If it can read 79.5, they do not. The rule did
+They do, if the sensor only ever gives whole degrees, because there is
+no whole number between 79 and 80. If it can read 79.5, they do not. The rule did
 not change. The space we are in decided the answer.
 
 ## Asking Python a question
@@ -166,8 +165,8 @@ question with exactly two possible answers, True or False. `True` and
 `False` are values in Python, the same way `79` is a value. They are
 written with a capital letter.
 
-Asking whether two things are equal needs two equals signs. One equals
-sign already has a job: it names a value. So `temperature = 80` means
+To ask whether two things are equal, we need two equals signs. One
+equals sign already has a job. It names a value. So `temperature = 80` means
 "let `temperature` stand for 80", and `temperature == 80` asks "is
 `temperature` 80?". The sign `!=` asks "is it different?".
 
@@ -205,7 +204,7 @@ room?
 
 Pause here and guess. Ten minutes? An hour? I'll wait.
 
-In words: there is room while the video is at most 10,000 MB. In
+In words, there is room while the video is at most 10,000 MB. In
 symbols, let $m$ stand for the number of minutes. The video takes
 $350m$ MB, and we want
 
@@ -279,11 +278,11 @@ Three is less than five. But $-3$ is greater than $-5$. It is closer to
 zero, so it sits further to the right on the number line. Multiplying or
 dividing by a negative number turns the whole number line round, so the
 order of any two numbers turns round too. I think this is the strangest
-move on the page: the same division gives the right number and the wrong
-sign.
+move on the page. The same division gives the right number but the
+wrong sign.
 
 So in the space of inequalities, dividing by a negative number is
-allowed, with one extra rule: the sign turns round. $-3.5t \ge -80$
+allowed, but the sign turns round. So $-3.5t \ge -80$
 becomes
 
 $$t \le 22.86\ldots$$
@@ -306,8 +305,8 @@ it is at 19.5%, which is not. So the pilot has 22 whole minutes.
 
 There is another way that never divides by a negative. Add $3.5t$ to
 both sides of $100 - 3.5t \ge 20$ to get $100 \ge 20 + 3.5t$. Subtract
-20: $80 \ge 3.5t$. Divide by 3.5: $22.86 \ge t$. That is the same
-answer, read from the other side.
+20: $80 \ge 3.5t$. Divide by 3.5: $22.86 \ge t$. This gives the same
+answer.
 
 ## Two paths: if and else
 
@@ -334,10 +333,10 @@ Under `else` are the lines that run when it is False. Each of these
 groups of pushed-in lines is a *branch*, and the program takes exactly
 one of them. The last line is not pushed in, so it runs every time.
 
-The spaces at the start of a line are how Python knows which lines
+Python uses the spaces at the start of a line to know which lines
 belong to a branch. On
 [When Python says no](tutorial:when-python-says-no) we met the
-`IndentationError`: now we can see why Python cares so much about those
+`IndentationError`. Now we can see why Python cares so much about those
 spaces.
 
 On [Recipes are algorithms](tutorial:recipes-are-algorithms), a robot
@@ -363,7 +362,7 @@ A laptop has a fan with several speeds. The word `elif` is short for "else if". 
 checks the conditions from the top, one after another. It takes the
 first path whose condition is True, and skips every path after it.
 
-Here is a fan rule as a function, which gives back a speed. The limits
+Here is a fan rule as a function, which returns a speed. The limits
 are made up.
 
 ```python exec
@@ -388,8 +387,8 @@ print(fan_speed_for(90))
 Look at the second condition, `temperature < 70`. The fan should be
 "low" from 50 to 69, but the code never checks that the temperature is
 50 or more. It does not need to. We only reach that line when
-`temperature < 50` was False. The order of the checks carries
-information. What happens when is part of the meaning.
+`temperature < 50` was False. So the order of the checks
+matters.
 
 ```question
 id: choosing-elif-2
@@ -430,7 +429,7 @@ The fan runs "high" on a cool laptop. Python did exactly what it was
 told. Every temperature under 50 is also under 85, so the first
 condition catches it, and the line `elif temperature < 50` can never be
 reached. Nothing crashed, and no error message appeared. This kind of
-mistake only shows up when we test with the right temperatures.
+mistake only appears when we test with the right temperatures.
 
 ### Your turn
 
@@ -483,8 +482,8 @@ circles on the number line.
 
 Now let's make a tool from this. The cell below is a toolkit cell, like
 the one where you finished `to_hex` on
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros):
-later pages can use what you write here. The first line of the function and its promise are written for you.
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
+Later pages can use what you write here. The first line of the function and its promise are written for you.
 Replace the comment with one `return` line that keeps the promise.
 
 ```python exec
@@ -510,10 +509,9 @@ def between(value, low, high):
 
 Run your cell, then run the tests below. Each `assert` checks one part
 of the promise, and stays quiet when it holds. We write `== True` and
-`== False` so that a function which gives back nothing at all fails the
-test, instead of slipping through. Until your `return` line is written,
-expect the first test to stop with an `AssertionError`: the promise is
-not kept yet.
+`== False` so that a function which returns nothing at all fails the
+test. Until you write your `return` line, expect the first test to stop
+with an `AssertionError`, because nothing keeps the promise.
 
 ```python exec
 id: choosing-between-2
@@ -525,8 +523,8 @@ assert between(36, 0, 35) == False
 print("All five tests pass.")
 ```
 
-Two tests sit on the ends, and two one step outside. The ends are where
-a mistake like `<` in place of `<=` would hide.
+Two tests sit on the ends, and two one step outside. A mistake like `<`
+in place of `<=` would hide at the ends.
 
 ### Your turn
 
@@ -551,14 +549,14 @@ algebra, and choosing a path with `if`, from programming. In most
 courses they belong to different subjects, often in different terms,
 with different teachers.
 
-Keeping them apart has good points: each subject goes at its own
-speed.
+There are good reasons to keep them apart. Each subject can go at its
+own speed.
 
 We joined them because they are one question asked two ways. "How many
 minutes of video fit?" is an inequality, and a phone answers it with
 `if`. The number line works for both, and the code checks the algebra.
 When each subject needs the other, neither one is a topic you learn once
-and put away.
+and forget.
 
 </details>
 

@@ -70,5 +70,6 @@ with or without installing anything.
 | VS Code | your own computer | yes | yes, by opening the file in a browser |
 | GitHub's editor | GitHub's website, in the browser | no | no, but the published site shows changes |
 
-Next comes [Making your own copy of the starter](tutorial:your-copy-of-the-starter). That is where you get the
-first files you will open.
+Next comes [Making your own copy of the
+starter](tutorial:your-copy-of-the-starter). There you get the first
+files you will open.

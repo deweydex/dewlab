@@ -245,7 +245,7 @@ a `<section>`. Why do you think the cards are not sections too?
 
 The section is one meaningful part of the page, "What I'm Learning",
 with its own `<h2>` heading, so it gets a tag that says so. Each card is
-a box that the CSS styles: the class `card` gives it its background,
+a box that the CSS styles. The class `card` gives it its background,
 padding and shadow. The card does not add a new meaning of its own, so
 a `<div>` is the right choice.
 

@@ -11,18 +11,18 @@ worlds:
 # Searching a list: linear and binary search — Practice
 
 Problems on searching, and three from earlier pages. Several ask you to
-count comparisons without writing code: try those on paper first. Try each
+count comparisons without writing code. Try those on paper first. Try each
 problem before you open anything under it.
 
 ## 1. Why −1
 
-Why does `linear_search` give back −1 when the target is not there, and
+Why does `linear_search` return −1 when the target is not there, and
 not 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 is a real index: the first element. A search that gave 0 for "not there"
-could not be told apart from one that found the target first. −1 is never
+0 is a real index: the first element. A search that returned 0 for "not
+there" would look the same as one that found the target first. −1 is never
 an index that a search finds, so it can only mean "not there". In Python
 it is a real index too, the last element, so a caller who forgets to check
 for −1 gets a wrong answer and no error.
@@ -31,14 +31,14 @@ for −1 gets a wrong answer and no error.
 
 ## 2. Counting looks
 
-Linear search goes through a list of 100 items. How many comparisons does
+Linear search looks at a list of 100 items. How many comparisons does
 it make when the target is first? When it is last? When it is not there?
 And on average, when the target is there and equally likely to be
 anywhere?
 
 <details class="dl-answer"><summary>answer</summary>
 
-1, 100 and 100. On average, about half the list: (1 + 2 + … + 100) / 100
+It makes 1, 100 and 100. On average, about half the list: (1 + 2 + … + 100) / 100
 = 50.5. A missing target is the worst case, because linear search has to
 look at everything before it can say no.
 
@@ -94,9 +94,9 @@ indexes does it look at, in order?
 
 <details class="dl-answer"><summary>answer</summary>
 
-7, then 11, then 13. At 7 it finds 31, and 72 is larger, so `low` becomes
+It looks at 7, then 11, then 13. At 7 it finds 31, and 72 is larger, so `low` becomes
 8. The middle of 8 to 14 is 11, which holds 55, so `low` becomes 12. The
-middle of 12 to 14 is 13, and that is 72: three looks.
+middle of 12 to 14 is 13, and that is 72. That makes three looks.
 
 </details>
 
@@ -133,16 +133,17 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-−1, with no error. The middle is 9, and 3 is smaller, so binary search
-throws the right half away, where 3 is. On a list that is not sorted,
-binary search gives wrong answers without complaint. Nothing in the code
-checks the order: that is up to whoever calls it.
+It returns −1, with no error. The middle is 9, and 3 is smaller, so
+binary search stops looking in the right half, where 3 is. On a list that
+is not sorted, binary search gives wrong answers without complaint.
+Nothing in the code checks the order. The code that calls it must do
+that.
 
 </details>
 
 ## 6. Why //
 
-Why does binary search work out `mid = (low + high) // 2`, and not
+Why does binary search calculate `mid = (low + high) // 2`, and not
 `(low + high) / 2`?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -161,7 +162,7 @@ items? On 1,000,000?
 
 <details class="dl-answer"><summary>answer</summary>
 
-10 and 20. Ten halvings cover 2¹⁰ = 1,024 items, and twenty cover
+It needs 10 and 20. Ten halvings cover 2¹⁰ = 1,024 items, and twenty cover
 2²⁰ = 1,048,576. A thousand times more data costs ten more comparisons.
 
 </details>
@@ -364,7 +365,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`HMS`. `-3` is the cut three places from the end, and a slice with no
+The answer is `HMS`. `-3` is the cut three places from the end, and a slice with no
 second number runs to the end.
 
 </details>
@@ -386,7 +387,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-4. The generator gives a 1 for each S, and `sum()` adds them up.
+The answer is 4. The generator gives a 1 for each S, and `sum()` adds them up.
 `"MISSISSIPPI".count("S")` gives the same.
 
 </details>
@@ -416,8 +417,8 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`{'B': 1, 'A': 3, 'N': 2}`. `.get(letter, 0)` gives 0 the first time a
-letter turns up, so there is no `KeyError`. The keys stay in the order
+The answer is `{'B': 1, 'A': 3, 'N': 2}`. `.get(letter, 0)` gives 0 the
+first time a letter appears, so there is no `KeyError`. The keys stay in the order
 they were added: B first, because BANANA starts with B.
 
 </details>

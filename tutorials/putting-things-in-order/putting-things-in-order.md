@@ -39,16 +39,16 @@ What will the last line print?
   - Strings are compared character by character, from the first.
 ```
 
-The numbers sort as numbers, and the strings as text: `"10"` and `"100"`
+The numbers sort as numbers, and the strings as text. `"10"` and `"100"`
 both start with 1, which comes before 9, so both go first. The same thing
-puts `file10` before `file9` in a folder of files. A sort is only as good
-as its idea of which of two things comes first.
+puts `file10` before `file9` in a folder of files. Every sort needs a rule
+that says which of two things comes first.
 
 In a real program, `sorted()` is the way to sort. This page builds three
 sorts by hand anyway: bubble sort, insertion sort and selection sort. Each
-is short enough to hold in your head all at once, and building them is how
-you see what sorting costs, and why some ways are far slower than others.
-[Searching a list](tutorial:finding-things) showed why it matters: binary
+is short enough to remember all at once. When you build them, you see what
+sorting costs, and why some ways are far slower than others.
+[Searching a list](tutorial:finding-things) showed why it matters. Binary
 search needs sorted data.
 
 ## The swap
@@ -63,7 +63,7 @@ numbers[1], numbers[3] = numbers[3], numbers[1]
 print(numbers)
 ```
 
-`a, b = b, a` works because Python works out the whole right-hand side
+`a, b = b, a` works because Python calculates the whole right-hand side
 first, and only then gives the values to the names on the left. Many other
 languages need a spare variable: `spare = a`, then `a = b`, then
 `b = spare`.
@@ -116,8 +116,8 @@ for pass_number in range(len(data) - 1):
 print("Comparisons in total:", comparisons)
 ```
 
-Three things to look for: the bar moves one place left on every pass; each
-pass makes one comparison fewer than the last; and the last pass swaps
+Look for three things. The bar moves one place left on every pass. Each
+pass makes one comparison fewer than the last. And the last pass swaps
 nothing, because the list was sorted before it ran, and bubble sort had no
 way to know. Try a list of your own: one already sorted, and one in reverse
 order.
@@ -234,8 +234,8 @@ moves. That is where insertion sort beats the other two.
 
 *Selection sort* finds the smallest element in the part of the list not yet
 sorted, and swaps it to the front of that part. Then it finds the next
-smallest, and so on. With a hand of cards, it is looking through all of
-them for the lowest, putting it first, and then looking through the rest.
+smallest, and so on. With a hand of cards, you would search all of them
+for the lowest, put it first, and then search the rest.
 
 ### Your turn
 
@@ -286,8 +286,8 @@ A reversed list is a good test, and not enough on its own.
 
 ## Sorting with a key
 
-`sorted()` can sort by anything: give it a function as `key=`, and it sorts
-by what that function gives back for each element. `reverse=True` puts the
+`sorted()` can sort by anything. Give it a function as `key=`, and it sorts
+by what that function returns for each element. `reverse=True` puts the
 largest first.
 
 ```python exec
@@ -304,7 +304,7 @@ print(sorted(words, key=last_letter))
 
 `key=len` sorts by length, and `key=last_letter` by the last letter. The
 function is passed without brackets, as `generate_sequence` was given a
-rule in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
+rule in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 `sorted()` calls it on each element. Words with the same length keep the
 order they came in, so OWL stays before BAT.
 
@@ -330,7 +330,7 @@ What will it print?
 ```
 
 It prints `None`. `.sort()` changes `numbers` itself, like `append()`, and
-gives back nothing. `sorted()` leaves the old list alone, and gives back a
+returns nothing. `sorted()` leaves the old list alone, and returns a
 new one. The difference is the one from
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
 change the list you were given, or return a new one.
@@ -459,7 +459,7 @@ proportion to $n^2$, written $O(n^2)$.
 | 1,000 | 500,000 | still quick |
 | 1,000,000 | 500,000,000,000 | a long wait |
 
-Faster sorts exist: merge sort takes about $n \log n$ steps, and Python's
+Faster sorts exist. Merge sort takes about $n \log n$ steps, and Python's
 own `sorted()` is built on the same idea. Add a counter to your insertion
 sort and your selection sort, and run all three on the same lists: random,
 already sorted, and reversed. Does each one always make the same number of
@@ -476,7 +476,7 @@ Insertion sort is quick on a list that is nearly in order, and bubble sort
 makes the same number of comparisons whatever it is given. What would you
 want to know about your data before you chose one?
 
-A challenge: *Shell sort* improves insertion sort. It first compares
+Here is a challenge. *Shell sort* improves insertion sort. It first compares
 elements a gap apart, say 4, then a smaller gap, and finishes with a gap of
 1, which is an ordinary insertion sort. By then the list is nearly in
 order, where insertion sort is at its quickest. Can you build it, and count
@@ -496,8 +496,8 @@ print(shell_sort([64, 34, 25, 12, 22, 11, 90]))
 
 The next page,
 [Designing and testing good functions](tutorial:building-reusable-tools),
-turns the testing you did here, with lists chosen to catch a sort out, into
-tests a program runs for you.
+turns the testing you did here, with lists chosen to find a sort's
+mistakes, into tests a program runs for you.
 
 ## Where to read more
 
@@ -505,20 +505,21 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Bingmann, T. (2013). *15 Sorting Algorithms in 6 Minutes*.
-<https://www.youtube.com/watch?v=kPRA0W1kECg>. Sorting made audible and
-visible at once. The difference between the $n^2$ sorts and the
+<https://www.youtube.com/watch?v=kPRA0W1kECg>. It shows sorting as sound
+and as pictures at once. The difference between the $n^2$ sorts and the
 $n \log n$ ones is plain here in a way no table of numbers manages.
 
 Computerphile (2013). *Getting Sorted & Big O Notation*.
-<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. Why the growth rate matters
-more than the constant factor, which is the whole argument of the
-comparison section.
+<https://www.youtube.com/watch?v=kgBjXUE_Nwc>. It explains why the growth
+rate matters more than the constant factor. That is the main argument of
+the comparison section.
 
 Python Software Foundation. *Sorting Techniques*.
-<https://docs.python.org/3/howto/sorting.html>. How `sorted()` and `key=`
-work, including why Python's sort is stable, and when that matters.
+<https://docs.python.org/3/howto/sorting.html>. It explains how `sorted()`
+and `key=` work, including why Python's sort is stable, and when that matters.
 
 Polylog (2022). *The Simplest Sorting Algorithm (You've Never Heard Of).*
-<https://www.youtube.com/watch?v=_W0yUJlscRA>. Two loops and one swap. It
-looks wrong, but it sorts. Polylog shows why it works. Four minutes.
-Compare it with the three sorts on this page: which one is it closest to?
+<https://www.youtube.com/watch?v=_W0yUJlscRA>. The algorithm has two loops
+and one swap. It looks wrong, but it sorts. Polylog shows why it works.
+The video is four minutes long. Compare it with the three sorts on this
+page. Which one is it closest to?

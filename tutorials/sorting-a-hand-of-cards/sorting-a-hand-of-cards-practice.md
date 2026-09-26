@@ -13,7 +13,7 @@ run. **Make** means write something new. **Fix** means find the one
 line in some code that does not do what its writer meant, and change
 it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
-open them, and each one is one way through: yours may go another way.
+open them. Each one is one answer. Yours may be different and work too.
 
 Your toolkit is loaded on this page: `selection_sort` and
 `insertion_sort` from the tutorial, `linear_search` and `binary_search`
@@ -39,14 +39,14 @@ check.
 
 `file_sizes` still holds `[34, 7, 61, 12]`, in the old order. Both
 toolkit sorts promise a new list, and leave the one they are given
-alone. `insertion_sort(file_sizes)[0]` is 7: index 0 of the sorted list
+alone. `insertion_sort(file_sizes)[0]` is 7. Index 0 of the sorted list
 is the smallest value, the smallest file.
 
 </details>
 
 **2. Predict.** You are dealt 6 cards. How many comparisons will
 selection sort make to put them in order? And how many will insertion
-sort make if the 6 cards are already in order? Work both out before
+sort make if the 6 cards are already in order? Find both before
 you run anything.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -99,9 +99,9 @@ the nearest planet lasts a day and a half of ours.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`sorted(scores)` gives back a new list in order, and leaves `scores`
-as it was. `scores.sort()` sorts `scores` itself, in place, and gives
-back `None`.
+`sorted(scores)` returns a new list in order, and leaves `scores`
+as it was. `scores.sort()` sorts `scores` itself, in place, and
+returns `None`.
 
 Use `sorted()` when the old order still matters: a playlist in the
 order a friend made it, or log entries in the order they happened.
@@ -131,19 +131,19 @@ print("The lowest battery is at", ranking[0], "percent")
 1. The last line of the error mentions `'NoneType'`. Which name holds
    `None`?
 2. Print `ranking` on its own. Then print `battery`.
-3. What does `.sort()` give back, and what does it change?
+3. What does `.sort()` return, and what does it change?
 
-**Think about:** which of Python's two sorts gives back a list.
+**Think about:** which of Python's two sorts returns a list.
 
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
 
-The last line is `TypeError: 'NoneType' object is not subscriptable`:
-the code used `[0]` on `None`. `battery.sort()` sorted `battery` in
-place and gave back `None`, so `ranking` is `None`. Schlomo's plan, sort
-and take the first, holds up. Either use the new list that `sorted()`
-gives back, or sort in place and then use `battery`:
+The last line is `TypeError: 'NoneType' object is not subscriptable`.
+The code used `[0]` on `None`. `battery.sort()` sorted `battery` in
+place and returned `None`, so `ranking` is `None`. Schlomo's plan, sort
+and take the first, works. Either use the new list that `sorted()`
+returns, or sort in place and then use `battery`:
 
 ```python
 battery = [42, 37, 45, 29, 40, 88, 51, 33]
@@ -198,7 +198,7 @@ September 2026, in the same order: the names, and each planet's
 distance from the Sun in light-years. A *light-year* is the distance
 light travels in a year, about 9.5 million million kilometres.
 
-There are over six thousand planets, which is a lot for our sorts: the
+There are over six thousand planets, which is a lot for our sorts. The
 next page shows why. So first keep only the planets nearer than 20
 light-years, as a list of pairs, `(distance, name)`. Then sort the
 pairs with one of your tools, and print the first five. Python
@@ -216,7 +216,7 @@ print(len(names), names[0], light_years[0])
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Start with an empty list, `pairs = []`.
-2. Go through by index. When `light_years[i] < 20`, append
+2. Loop by index. When `light_years[i] < 20`, append
    `(light_years[i], names[i])`.
 3. Sort `pairs` with one of your tools, and take the slice `[:5]`.
 
@@ -256,7 +256,7 @@ the loop leaves them out.
 **8. Fix.** Schlomi, who is learning Python too, writes a selection
 sort for the lengths of songs, in seconds. Her first line, `items =
 values`, is meant to make a list of her own to work on. The function
-gives back a sorted list, as it promises. But it breaks the other half
+returns a sorted list, as it promises. But it breaks the other half
 of its promise. Run it, find what happens to `song_lengths`, and
 change the line that causes it.
 
@@ -297,8 +297,8 @@ list, on
 
 Both lines print `[187, 199, 241, 305]`. `items = values` ties a second
 name to the same list, so every swap changes `song_lengths` too, and
-the playlist's own order is lost. Schlomi's idea, a list of her own,
-was the one the tutorial had; it needs `.copy()` to make it happen:
+the playlist's own order is lost. Schlomi wanted a list of her own,
+as the tutorial did. That needs `.copy()`:
 
 ```python
 def sort_lengths(values):
@@ -335,7 +335,7 @@ list of exam marks.
 1. Make `remaining` a copy of the list, and `result` an empty list.
 2. While `remaining` still has items in it, find its smallest value,
    and append that value to `result`.
-3. Find where that value is in `remaining`, and take it out with
+3. Find where that value is in `remaining`, and remove it with
    `.pop()`.
 
 **Think about:** what `while len(remaining) > 0:` checks, and why the
@@ -362,10 +362,10 @@ print(selection_sort_from_tools(marks))
 print(selection_sort_from_tools(marks) == selection_sort(marks))
 ```
 
-It prints `[45, 45, 68, 72, 83, 91]` and `True`. It is the same idea:
-each round selects the smallest of the rest. It builds a second list
-instead of swapping inside one, and it hands the looking to two tools
-you already trust. It still makes about $\frac{n(n-1)}{2}$
+It prints `[45, 45, 68, 72, 83, 91]` and `True`. It is the same idea.
+Each round selects the smallest of the rest. It builds a second list
+instead of swapping inside one, and it lets two tools you already trust
+do the looking. It still makes about $\frac{n(n-1)}{2}$
 comparisons, because `smallest` looks at every item that is left.
 
 </details>
@@ -417,10 +417,10 @@ print(selection_comparisons(board), insertion_comparisons(board))
 <details class="dl-answer"><summary>answer</summary>
 
 The board has 101 scores. Selection sort makes 5,050 comparisons, which
-is $\frac{101 \times 100}{2}$: the same as for any list of 101, because
+is $\frac{101 \times 100}{2}$. That is the same as for any list of 101, because
 it always looks at everything that is left. Insertion sort makes 150.
 Each of the first 100 scores, after the very first, looks once to its
-left and stays: that is 99. The new score, 505, slides left past the
+left and stays. That is 99. The new score, 505, slides left past the
 50 scores above it, and one more comparison finds 500: $99 + 51 = 150$.
 
 When a list is nearly in order, insertion sort does very little work.
@@ -442,8 +442,8 @@ print(insertion_sort(chip_temps))
 ```
 
 **11. Another way.** A third sort, *bubble sort*, goes along the list
-comparing each pair of neighbours, and swaps them if they are out of
-order. One trip along the list is a *pass*. After one pass, the
+comparing each pair of neighbours, and swaps them if they are in the
+wrong order. One trip along the list is a *pass*. After one pass, the
 largest value has "bubbled" to the end. After $n - 1$ passes, the list
 is sorted. Write `bubble_sort(values)`, with the same promise as your
 two tools, and check it against `sorted()` on random lists.
@@ -490,7 +490,7 @@ print("bubble_sort agrees with sorted() every time.")
 This version compares every pair on every pass, so it makes
 $(n - 1)^2$ comparisons, even more than selection sort. After pass
 number `trip`, the last `trip + 1` values are already in place, so the
-inner loop can stop at `len(items) - 1 - trip`, which brings it down to
+inner loop can stop at `len(items) - 1 - trip`, which reduces it to
 $\frac{n(n-1)}{2}$.
 
 </details>
@@ -519,8 +519,8 @@ answer might weigh:
   $\frac{n^2}{2}$ comparisons in the worst case, so any of them can
   show why a better sort is worth having.
 
-The answers with the most in them pick one, say who it is for, and
-say what the choice costs.
+An answer can pick one, say who it is for, and say what the choice
+costs.
 
 </details>
 

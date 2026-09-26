@@ -40,7 +40,7 @@ print(len(server_one | server_two), len(server_one & server_two), len(server_one
 
 <details class="dl-answer"><summary>answer</summary>
 
-`5 2 3`.
+It prints `5 2 3`.
 
 Tom and Sean are in the overlap, so `server_one & server_two` has 2
 names. The union
@@ -95,21 +95,20 @@ if the box were the whole of Ireland?
 *in the box* that is not in the circle. Without a box, there is no
 "everything" to take the circle away from. The tutor means the box is
 the class, and 12 people in the class do not speak Polish. If the box
-were Ireland, the number would be millions. The circle is the same, the
-box is different, and so the answer is different.
+were Ireland, the number would be millions.
 
 </details>
 
 **4. Predict.** An office has 30 computers. 18 are on the Wi-Fi, 15 are
 plugged in with an Ethernet cable, and 7 use both. How many are on the
-network at least one way? How many are on neither? Work it out on
+network at least one way? How many are on neither? Find it on
 paper, then check it in the warm-up cell.
 
 <details class="dl-answer"><summary>answer</summary>
 
-At least one: $18 + 15 - 7 = 26$. The 7 that use both were counted once
+The number on at least one is $18 + 15 - 7 = 26$. The 7 that use both were counted once
 with the Wi-Fi and once with the cable, so they are taken away once.
-Neither: $30 - 26 = 4$, perhaps switched off.
+The number on neither is $30 - 26 = 4$, perhaps switched off.
 
 ```python
 print(18 + 15 - 7, 30 - (18 + 15 - 7))
@@ -145,7 +144,7 @@ polish = {"Bogdan", "Emil", "Gosia", "Jan", "Kasia", "Luke"}
 french = {"Ana", "Chloe", "Hugo", "Iris", "Kasia", "Luke"}
 ```
 
-Work out the size of all eight regions of the three-circle diagram, with
+Find the size of all eight regions of the three-circle diagram, with
 one set operation for each. Which regions are empty? How many learners
 speak exactly two of the three languages?
 
@@ -178,14 +177,14 @@ print("none:", len(learners - (irish | polish | french)))
 The counts are 1, 0, 2, 1, 2, 4, 2 and 0, which add to 12. Luke speaks
 all three. Two regions are empty: nobody speaks Irish and Polish without
 French, and everybody speaks at least one. An empty region is still a
-region: the diagram draws it, and writes 0 in it. Exactly two:
-$0 + 2 + 1 = 3$ people, Chloe, Iris and Kasia.
+region. The diagram draws it, and writes 0 in it. Three people,
+$0 + 2 + 1$, speak exactly two: Chloe, Iris and Kasia.
 
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, wants a function that
-finds "exactly two" from a report's totals. Her idea: add the three
-pairs, then take away the middle, because the middle is not "exactly
+finds "exactly two" from a report's totals. Her idea is to add the
+three pairs, then take away the middle, because the middle is not "exactly
 two". She tests it on the tutorial's laptops: their pairs are 7, 3 and
 4, their middle is 2, and the tutorial found 8. The cell is meant to
 stop with an `AssertionError` until you fix the function.
@@ -224,7 +223,7 @@ for three sets. What does it say about a laptop in all three circles?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Schlomi's idea works this far: the middle must go. But each pair's total
+Schlomi saw that the middle must go. But each pair's total
 includes the middle. There are three pairs, so the middle is counted
 three times, and it must be taken away three times:
 
@@ -239,7 +238,7 @@ $12 - 3 = 9$ days with exactly two of rain, wind and frost.
 
 **7. Another way.** The tutorial found that 14 laptops are updated or
 have antivirus, with `len(updated | antivirus)`. Find the same number without
-using `|` at all. Two different ways are possible; can you find both?
+using `|` at all. There are two different ways. Can you find both?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -333,7 +332,7 @@ There is more than one good answer. Here are some things to weigh.
   person reading survey results also meets totals, not names.
 - **What makes a region make sense.** With names, a region is a set of
   real laptops, and every number in it can be checked by counting. With
-  totals alone, a region is a number worked out by rules, and a miscount
+  totals alone, a region is a number calculated by rules, and a miscount
   is harder to see.
 - **Your friend.** Someone who likes puzzles may enjoy the totals first.
   Someone who has been lost by rules before may want something to point
@@ -452,7 +451,7 @@ groups: try it on the language class from problem 5.
 </details>
 
 **13. Another way.** Pick one of the 20 laptops at random. What is the
-chance that it has exactly two of the three? Work it out by counting,
+chance that it has exactly two of the three? Find it by counting,
 from the tutorial's answer. Then find it a second way, with `simulate`
 from [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-times).
 
@@ -507,7 +506,7 @@ how many names, and which regions they come from. Then run it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Python works out `updated ^ antivirus` first, then `^ backed_up`.
+1. Python calculates `updated ^ antivirus` first, then `^ backed_up`.
 2. Follow Aoife's laptop, which is in all three. Is it in
    `updated ^ antivirus`? Is it in the answer after `^ backed_up`?
 3. Follow Ben's, which is updated and has antivirus but no backup, and
@@ -526,9 +525,9 @@ print(len(odd_ones), sorted(odd_ones))
 ```
 
 It gives 9 names: the 7 laptops with exactly one of the three, and the
-2 with all three. Schlomo's guess is the one most people make, and it
-holds for two sets; for three, it picks up the middle as well. A name ends up in the answer when it is in an odd number of the
-sets: 1 or 3. That is parity, as on
+2 with all three. Most people make Schlomo's guess. It holds for two
+sets. For three, it includes the middle as well. A name is in the
+answer when it is in an odd number of the sets: 1 or 3. That is parity, as on
 [Bits that flip](tutorial:bits-that-flip): XOR of several bits is 1 when
 the number of 1s is odd. Aoife's laptop is in all three:
 `updated ^ antivirus` drops it, and `^ backed_up` puts it back.

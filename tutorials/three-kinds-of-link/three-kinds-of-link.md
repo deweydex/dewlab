@@ -71,7 +71,7 @@ capital letters included.
 
 Sometimes we might click a `mailto:` link and see nothing happen, or see
 the browser ask which program to use. What a `mailto:` link opens
-depends on the computer. It uses whatever email program is set up
+depends on the computer. It uses whatever email program is installed
 there, and some computers have none.
 
 ## Now in your own site

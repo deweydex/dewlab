@@ -75,8 +75,8 @@ called the *checkbox hack*. The checkbox hack is a hidden checkbox, a
 label linked to it with `for`, and a `:checked ~` rule. Together, they
 reveal content only while the checkbox is ticked. Here is each part:
 
-- `display: none` on `.toggle` hides the checkbox completely. That is
-  why we could not see it in step 2.
+- `display: none` on `.toggle` hides the checkbox completely. So we
+  could not see it in step 2.
 - The label's `for="q1"` links it to the checkbox whose `id` is `q1`.
   Clicking the label's text ticks or unticks the box, even while the box
   itself is hidden. In step 3, with the checkbox showing, clicking
@@ -91,8 +91,7 @@ reveal content only while the checkbox is ticked. Here is each part:
   rule above gives it a taller `max-height`, `200px`, and the answer
   shows.
 - The `transition` on `.toggle-content` makes that change slide, where
-  it would otherwise snap. That is what step 4 showed, at a slower
-  speed.
+  it would otherwise snap. Step 4 showed this, at a slower speed.
 
 Why `max-height`, and not `height`? A transition cannot animate `height`
 to `auto`, the height of the content. `max-height` with a fixed number

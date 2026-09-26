@@ -18,7 +18,7 @@ Your toolkit is loaded on this page, including `derivative_at` from
 [How fast, right now?](tutorial:how-fast-right-now), `compose` from
 [Machines that take a number](tutorial:machines-that-take-a-number)
 and `close_enough` from [Does it work?](tutorial:does-it-work). Run the
-first cell before any other: it gives you `slopes_agree` and the list
+first cell before any other. It gives you `slopes_agree` and the list
 of `points` from the tutorial.
 
 ## Warm-up
@@ -57,8 +57,8 @@ def fifth_power(x):
 print(derivative_at(fifth_power, 2))
 ```
 
-It prints a number a tiny way from 80, such as `80.00000000230045`:
-the chord's estimate, off in the ninth decimal place.
+It prints a number very close to 80, such as `80.00000000230045`.
+That is the chord's estimate, different in the ninth decimal place.
 
 </details>
 
@@ -112,10 +112,10 @@ the app?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Server B's graph is a flat line: the time does not change as the crowd
+Server B's graph is a flat line. The time does not change as the crowd
 changes. A slope says how much the output changes for each step of the
 input, and here it changes by nothing. For someone using the app, each
-extra thousand people add 0 ms. Server A's slope is 2: each extra
+extra thousand people add 0 ms. Server A's slope is 2. Each extra
 thousand people add 2 ms.
 
 </details>
@@ -228,7 +228,7 @@ $a - b = -(b - a)$.
 
 **7. Predict.** Schlomi, who is learning Python too, says the slope of
 $(3x + 2)^2$ is $2(3x + 2)$, so at $x = 1$ it is 10. She used the power
-rule, which is a sensible start. What do you think `derivative_at` will
+rule. What do you think `derivative_at` will
 say?
 
 ```python
@@ -241,8 +241,8 @@ print(round(derivative_at(bracket_squared, 1), 6))
 <details class="dl-answer"><summary>answer</summary>
 
 It prints `30.0`. Schlomi used the power rule on the outside, and
-forgot the chain rule's last step: times the slope of the inside, which
-is 3. So the slope is $2(3x + 2) \times 3 = 6(3x + 2)$, and at 1 that
+forgot the chain rule's last step. She needed to multiply by the slope
+of the inside, which is 3. So the slope is $2(3x + 2) \times 3 = 6(3x + 2)$, and at 1 that
 is 30.
 
 </details>
@@ -268,15 +268,15 @@ print(slopes_agree(bracket_squared, expanded_slope, points))
 print(slopes_agree(bracket_squared, chain_slope, points))
 ```
 
-Both print `True`. Multiplying out works for a square. For
-$(3x + 2)^{20}$ it would be a long job, and the chain rule is one line.
+Both print `True`. For a square, you can multiply out the bracket. For
+$(3x + 2)^{20}$ that would be a long job, and the chain rule is one line.
 
 </details>
 
 **9. Make.** A weather balloon is being filled. Its radius, in metres,
 is $1 + 0.1t$ after $t$ seconds. Use `compose` and your toolkit's
 `sphere_volume` to write its volume as a rule of time. How fast is the
-volume growing after 10 seconds? Work it out with the chain rule, then
+volume growing after 10 seconds? Find it with the chain rule, then
 check.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -284,7 +284,7 @@ check.
 1. The volume is $\frac{4}{3}\pi r^3$, and by the power rule its slope,
    per metre of radius, is $4\pi r^2$.
 2. The radius grows by 0.1 m each second.
-3. The chain rule multiplies them, with $r$ worked out at the time you
+3. The chain rule multiplies them, with $r$ calculated at the time you
    want.
 
 **Think about:** the rate you found has units. What are they?
@@ -327,16 +327,16 @@ multiplying slopes works?
 
 $x \times x$ is a product, and the product rule gives
 $x \times 1 + x \times 1 = 2x$, which matches the power rule.
-Multiplying the slopes ignores the two strips of the growing rectangle:
-when both sides grow, each side's growth is multiplied by the *other*
+If we multiply the slopes, we ignore the two strips of the growing
+rectangle. When both sides grow, each side's growth is multiplied by the *other*
 side's length.
 
 Multiplying slopes works for a rule inside a rule. There, the
 chain rule multiplies the outside slope by the inside slope, because
 the inside rule's output is the outside rule's input.
 
-That is one way through. Yours may use other words, or a picture, and
-say the same thing.
+This is one answer. Yours may use other words, or a picture, and say
+the same thing.
 
 </details>
 
@@ -357,7 +357,7 @@ print(vertex(-4.9, 15, 1.8))
 ```
 
 Both say about 1.53 seconds, and `vertex` says the ball is about
-13.28 m up then. At the top the ball stops rising for an instant: its
+13.28 m up then. At the top the ball stops rising for an instant. Its
 speed, the slope of its height, is 0.
 
 </details>
@@ -379,7 +379,7 @@ There is more than one good answer. Here are some things to weigh:
 - A proof from limits shows *why* each rule holds, and a reader who
   follows it can rebuild a rule they have forgotten.
 - Proofs from limits need a lot of algebra, and a reader who
-  struggles with it may lose sight of what the rule is for.
+  struggles with it may forget what the rule is for.
 
 Who is the page for, and what do they need first: a rule they trust
 and can use, or a rule they can prove?
@@ -400,14 +400,14 @@ across, by cutting a square of side $x$ cm from each corner. Its volume
 is $x(30 - 2x)^2$, and its slope, by the product and chain rules, is
 $(30 - 2x)(30 - 6x)$. Multiply out the slope, find where it is 0 with
 `solve_quadratic`, and decide which answer gives the biggest box.
-Check with a fine comb over $x$ from 0 to 15.
+Check with a search in small steps over $x$ from 0 to 15.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. $(30 - 2x)(30 - 6x) = 900 - 180x - 60x + 12x^2$.
 2. So `solve_quadratic(12, -240, 900)` gives the $x$ values where the
    slope is 0.
-3. Work out the volume at each. Which makes sense for a box?
+3. Find the volume at each. Which makes sense for a box?
 
 **Think about:** what does the box look like at $x = 15$?
 
@@ -439,8 +439,8 @@ print(cuts[volumes.index(largest(volumes))], largest(volumes))
 ```
 
 The slope is 0 at $x = 5$ and $x = 15$. At 15 the base has no width
-and the volume is 0: that is a bottom of the curve, not a top. At 5 the
-volume is 2,000 cubic cm, and the fine comb agrees. The biggest box has
+and the volume is 0. That is a bottom of the curve, not a top. At 5 the
+volume is 2,000 cubic cm, and the search agrees. The biggest box has
 5 cm cut from each corner.
 
 </details>
@@ -481,7 +481,7 @@ for step in range(0, 101):
 print(slopes_agree(note, note_slope, times))
 ```
 
-The two columns agree: the slope of $\sin x$ is $\cos x$. By the chain
+The two columns agree. The slope of $\sin x$ is $\cos x$. By the chain
 rule, the slope of $2\sin(6\pi t)$ is $2\cos(6\pi t) \times 6\pi$, and
 the check agrees. The slope is largest when the wave crosses 0, and 0
 at the top and bottom of each wave.
@@ -501,7 +501,7 @@ slope 1. The quotient rule gives
 $\frac{0.25n - (900 + 0.25n)}{n^2} = -\frac{900}{n^2}$.
 
 It falls by less than 0.001 when $\frac{900}{n^2} < 0.001$, that is
-when $n^2 > 900{,}000$, so $n > 948.7$. From the 949th film on.
+when $n^2 > 900{,}000$, so $n > 948.7$. So it happens from the 949th film on.
 
 ```python
 def film_average(films):

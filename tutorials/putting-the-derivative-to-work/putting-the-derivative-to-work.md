@@ -19,10 +19,10 @@ covers:
 # Putting the derivative to work: choose a project
 
 You have spent three pages building one idea: the slope of a curve at
-a single point. It is fair to ask what it is for. This page answers
+a single point. You may ask what it is for. This page answers
 with four short projects, and you choose. A font designer, a photo
 app, a scientist with a table of data, and a program that learns all
-lean on the same idea, and each project shows one of them. Choose one,
+use the same idea, and each project shows one of them. Choose one,
 or do more than one if you like. None of them needs another.
 
 On this page we:
@@ -38,9 +38,9 @@ On this page we:
 > `derivative_at`, `bisect_root` and `newton`, with `vertex`,
 > `solve_quadratic`, `smallest` and the rest from earlier units. Some
 > projects use rules, some use lists of measured numbers, and one uses
-> a picture made of numbers. One thing usually goes unsaid: a real
-> problem does not tell you which tool it wants. Choosing is part of
-> the work, and here you choose the problem too.
+> a picture made of numbers. A real problem does not tell you which
+> tool it wants. You choose the tool as part of the work, and here you
+> choose the problem too.
 
 ## Warm-up
 
@@ -117,7 +117,7 @@ the bottom of a letter's bowl was a quadratic Bézier curve, and its
 lowest point was a vertex, 9 font units below the baseline. Completing
 the square found it. Many fonts use a *cubic Bézier curve* instead,
 with two control points, and then the height is a cubic in $t$.
-Completing the square cannot touch a cubic. A slope of 0 can.
+Completing the square does not work on a cubic. A slope of 0 does.
 
 First, the old bowl the new way, as a warm-up. Where do you expect the
 slope to be 0?
@@ -136,8 +136,8 @@ print(flat_t, bowl_height(flat_t))
 print(vertex(400, -440, 112))
 ```
 
-The same bottom, $t = 0.55$ and $-9$, by a route that does not care
-what shape the rule is. Now a cubic bowl, with its start at height
+We get the same bottom, $t = 0.55$ and $-9$, by a route that works
+for a rule of any shape. Now a cubic bowl, with its start at height
 130, control points at $-60$ and $-50$, and its end at 110. Its height
 is a mix of four heights:
 
@@ -193,7 +193,7 @@ A photo is a grid of numbers, one brightness per pixel, from 0 for
 black to 255 for white, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 Here is one row of pixels, across a dark pen stroke on white paper.
-The numbers are made up, but they have the shape a real scan has: the
+The numbers are invented, but they have the shape a real scan has. The
 edges are a little soft.
 
 ```python exec
@@ -203,9 +203,9 @@ row = [250, 251, 249, 250, 248, 200, 90, 30, 28, 31, 29, 30, 27, 32, 85, 190, 24
 
 On [Getting closer](tutorial:getting-closer#when-the-two-sides-disagree),
 a perfect edge was a jump. In a real picture the jump is spread over a
-pixel or two, so the edge is where the brightness changes fastest.
-That is a large slope. With pixels, the smallest step is one pixel, so
-the slope is the difference between neighbours: a chord one pixel
+pixel or two. At the edge, the brightness changes fastest, so the
+slope is large. With pixels, the smallest step is one pixel, so the
+slope is the difference between neighbours. It is a chord one pixel
 long. Before you run it, which differences will be biggest?
 
 ```python exec
@@ -268,7 +268,7 @@ print(edges.sum(), "edge pixels")
 
 The edges come out as two thin rings, the outline of the "o" inside
 and out, and every flat part of the picture is gone. I think that is
-a lovely result: a letter's whole shape, found by asking only "where
+a lovely result. We found a letter's whole shape by asking only "where
 does the brightness change fast?"
 
 <aside class="dl-note" id="putting-note-sobel">
@@ -292,7 +292,7 @@ In the course's Our World in Data file, Ireland's life expectancy at
 birth rose in all but three of the years from 1990 to 2019, the last
 year before the COVID-19 pandemic. Is there one straight line that fits
 it best, and how fast does it climb? The numbers below come from the
-copy of the file saved on {{snapshot: life-expectancy}}; the line under
+copy of the file saved on {{snapshot: life-expectancy}}. The line under
 the cell says whether yours did too.
 
 ```python exec
@@ -308,14 +308,14 @@ print(len(years), "years, from", years[0], "to", years[-1])
 print(lifespans[0], lifespans[-1])
 ```
 
-Thirty years, from 74.84 to 82.41. "Best" needs a meaning. Here
+Over thirty years, it rose from 74.84 to 82.41. "Best" needs a meaning. Here
 is the usual one. For each year, measure how far the line misses the
 data, square the miss, and add up the squares. The best line makes
 that total as small as it can be. This is called *least squares*. A
 square is never negative, so a miss above the line and a miss below
 both count against it.
 
-One fact makes the maths short: the best line always passes through
+One fact makes the maths short. The best line always passes through
 the middle of the data, the point (mean year, mean life expectancy).
 So we measure every year and value from that middle point. Then the
 line is $y = m \times x$, and only its slope $m$ is left to choose.
@@ -338,7 +338,7 @@ for m in [0, 0.1, 0.2, 0.3, 0.4]:
     print(m, round(total_error(m), 2))
 ```
 
-The error falls and then rises again: it has a bottom. It is a
+The error falls and then rises again. It has a bottom. It is a
 parabola in $m$, since every miss squared is a quadratic in $m$. So
 the best slope is where the error's slope is 0. Your toolkit can find
 it with no algebra at all.
@@ -357,13 +357,14 @@ plt.xlabel("year")
 plt.ylabel("life expectancy at birth, years")
 ```
 
-About 0.288 years of life expectancy for every year that passes:
-roughly three and a half months, every year, for 30 years. The line
+The line climbs about 0.288 years of life expectancy for every year
+that passes. That is roughly three and a half months, every year, for
+30 years. The line
 runs straight through the dots.
 
 With the rules from
 [Rules for change](tutorial:rules-for-change), the slope of the error
-can be written out: it is 0 when $m$ is the sum of $x \times y$ over
+can be written out. It is 0 when $m$ is the sum of $x \times y$ over
 the sum of $x^2$. `numpy` has a line fitter of its own, `np.polyfit`.
 Do all three agree?
 
@@ -382,7 +383,7 @@ does not?
 ## Project 4: Walking downhill
 
 Sometimes nobody can solve "slope = 0" at all, because the rule is too
-big to write down. Then a program can feel its way down instead. Stand
+big to write down. Then a program can walk down instead. Stand
 somewhere on the curve. Find the slope where you stand. Take a small
 step the other way, downhill. Repeat. This is *gradient descent*
 ("gradient" is another word for slope, as on
@@ -431,8 +432,8 @@ print("rate 0.001:", round(walk_downhill(2, 0.001, 30)[-1], 4))
 With 0.3, the walk leaps right over the valley to $-4.3$, where the
 curve is very steep, then to 83, then to about minus 690,000, then
 to a number 18 digits long. It is falling off the world. With 0.001 it is safe, and after 30 steps
-it has only crept from 2 to about 1.6. Too big jumps out; too small
-takes for ever. Choosing the step is most of the craft.
+it has only crept from 2 to about 1.6. A rate that is too big jumps
+out of the valley. A rate that is too small takes for ever.
 
 There is one more surprise. Start on the left, at $-2$:
 
@@ -447,9 +448,9 @@ print("slope where the left walk ended:", round(derivative_at(valley_rule, left_
 
 From $-2$ the walk ends at about $-1.301$, and that valley is lower,
 0.49 against 2.93. The walk from 2 found a bottom, but not the lowest
-one. Walking downhill only knows about the ground under its feet.
+one.
 
-Training a machine-learning model works this way on a huge scale: its
+A machine-learning model is trained this way, on a huge scale. Its
 error depends on millions of numbers, and the training program
 steps every one of them against its slope, a little at a time.
 
@@ -467,7 +468,7 @@ work.
 A shared example is fair and quick to mark. But one example chosen for
 everyone suits some readers and leaves the rest asking what the idea
 is for. A choice lets you pick the use that makes sense to you, and
-every project still turns on the same two questions: where is it flat,
+every project still asks the same two questions: where is it flat,
 and where is it steep?
 
 The cost is that you may not see all four uses. If you did one, the
@@ -482,7 +483,7 @@ other three are still here.
 | What is named here? | a cubic Bézier curve's four points; a row and a grid of pixels; the total squared error; the step size $r$ |
 | What is promised? | a slope of 0 promises a place where a curve turns; a large difference promises an edge; each project ends by setting what it found beside what we expected |
 | What happens when? | gradient descent repeats one move, step against the slope, and the steps shrink as the curve flattens |
-| What does this space let us do? | pixels have no step smaller than one, so an edge is a difference, not a limit; walking downhill only sees the ground under it, so it can stop in a valley that is not the lowest |
+| What does this space let us do? | pixels have no step smaller than one, so an edge is a difference, not a limit; gradient descent only sees the slope where it stands, so it can stop in a valley that is not the lowest |
 
 ## What we have now
 

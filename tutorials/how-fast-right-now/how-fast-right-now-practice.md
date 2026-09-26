@@ -59,7 +59,7 @@ of change of $x^2$ between 1 and 3.
 
 **2. Make.** A GPS logger rides on a coach that leaves Dublin at 10:00.
 The log says that at 10:30 the coach has gone 40 km, and at 11:30 it
-has gone 125 km. (The log is made up.) What was its average speed
+has gone 125 km. (The log is invented.) What was its average speed
 between 10:30 and 11:30, in km/h? Find it with `speed`, and again as
 the slope of a chord with time in hours.
 
@@ -82,15 +82,15 @@ instead of taking a step of 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-With a step of 0, the chord runs from 2 to 2: a single point. Its rise
+With a step of 0, the chord runs from 2 to 2. That is a single point. Its rise
 is 0 and its run is 0, so the slope is $\frac{0}{0}$, and Python raises
 a `ZeroDivisionError`. The derivative never takes a step of 0. It is
 the limit of the chord slopes as the step gets close to 0, the number
 they head for. `derivative_at` cannot take a limit, so it takes one
 small step, $10^{-6}$, and gives a number very close to the limit.
 
-That is one way through. Yours may use other words, or a picture, and
-say the same thing.
+This is one answer. Yours may use other words, or a picture, and say
+the same thing.
 
 </details>
 
@@ -112,9 +112,9 @@ print(derivative_at(server_b, 5))
 About 1.5, printed as 1.499999996212864, and exactly 0.0.
 
 A straight line has the same slope everywhere, so its derivative is
-its slope at every point: the line climbs 1.5 for each step of 1. The
+its slope at every point. The line climbs 1.5 for each step of 1. The
 tiny difference from 1.5 is float rounding. A flat rule never changes,
-so its rate of change is 0: a thousand more people add no time.
+so its rate of change is 0. A thousand more people add no time.
 
 </details>
 
@@ -130,14 +130,14 @@ id: how-fast-practice-core
 **5. Make.** A cup of tea is poured at 90 °C into a room at 20 °C. A
 model for its temperature, after some minutes, is
 $20 + 70e^{-t/10}$. This shape is Newton's law of cooling, a real law
-of physics: the hotter the tea is than the room, the faster it cools.
-(The 10 is made up; a real cup depends on the cup.)
+of physics. The hotter the tea is than the room, the faster it cools.
+(The 10 is invented. A real cup depends on the cup.)
 Write it as a function and find its rate of change at 0 minutes and at
 10 minutes. What does the sign of the answer mean?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write `def tea(minutes):` giving back
+1. Write `def tea(minutes):` that returns
    `20 + 70 * math.exp(-minutes / 10)`.
 2. Call `derivative_at(tea, 0)` and `derivative_at(tea, 10)`.
 3. The answers are in °C per minute.
@@ -159,7 +159,7 @@ print(derivative_at(tea, 10))
 ```
 
 About $-7.0$ °C a minute at the start, and about $-2.58$ °C a minute
-after 10 minutes. The minus sign means the temperature is falling: the
+after 10 minutes. The minus sign means the temperature is falling. The
 tea is cooling. It cools fastest when it is hottest, and more slowly as
 it gets close to the room's 20 °C.
 
@@ -216,8 +216,8 @@ on the two sides only mostly cancel, and a short step is still needed.
 </details>
 
 **8. Another way.** The ball's height is $20t - 5t^2$ metres. Find its
-speed at $t = 1$ with `derivative_at`. Then find it with algebra: work
-out $\frac{f(1 + h) - f(1)}{h}$ with letters, and let $h$ get close to
+speed at $t = 1$ with `derivative_at`. Then find it with algebra. Find
+$\frac{f(1 + h) - f(1)}{h}$ with letters, and let $h$ get close to
 0.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -292,7 +292,7 @@ print(tea(12))
 
 The tangent line gives about 40.6 °C, and the rule gives about
 41.1 °C. Two minutes on, the tangent line is still close, but a little
-low: the curve bends up away from it, because the tea cools more slowly
+low. The curve bends up away from it, because the tea cools more slowly
 as time goes on. A tangent line is a good guess close to its point, and
 a worse one further away.
 
@@ -337,8 +337,8 @@ There is more than one good answer. Here are some things to weigh:
   test may want the rules. Someone who has always been told maths is
   rules to follow may need to see where the rules come from.
 
-Whichever you choose, say what it costs. That is the question the
-tutorial's "Why this way?" fold asks of itself.
+Whichever you choose, say what it costs. The tutorial's "Why this
+way?" fold asks the same question of itself.
 
 </details>
 
@@ -353,8 +353,7 @@ id: how-fast-practice-stretch
 
 **13. Make.** The hailstone's terminal speed in this model is 12
 metres a second. At what time, to the nearest hundredth of a second,
-does it first reach 11.9 metres a second? Search with a loop, as the
-fine comb did on
+does it first reach 11.9 metres a second? Search with a loop, as on
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb).
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -362,7 +361,7 @@ fine comb did on
 1. Start `time_now` at 0.
 2. While `derivative_at(fall_distance, time_now)` is less than 11.9,
    add 0.01 to `time_now`.
-3. Round the time as you go, so that float errors do not pile up.
+3. Round the time as you go, so that float errors do not grow.
 
 **Think about:** could it ever reach 12 metres a second?
 
@@ -380,9 +379,8 @@ print(time_now)
 ```
 
 5.75 seconds. The model's speed rule is $12(1 - e^{-t/1.2})$, which
-gets closer and closer to 12 and never reaches it: the terminal speed is
-the limit of the speed at infinity. That is what "terminal" means in
-this model. (The exact answer is
+gets closer and closer to 12 and never reaches it. In this model, the
+terminal speed is the limit of the speed at infinity. (The exact answer is
 $1.2 \ln 120 \approx 5.745$ seconds, where $\ln$ is a logarithm with
 base $e$. The search rounds it to 5.75.)
 
@@ -413,7 +411,7 @@ gives $2 \times 10^{11}$, to within a float's rounding.
 
 **15. Make.** A derivative at every point is a new rule: the
 hailstone's speed at every time. Write `fall_speed(seconds)`, which
-gives back `derivative_at(fall_distance, seconds)`, and draw it from 0
+returns `derivative_at(fall_distance, seconds)`, and draw it from 0
 to 10 with `plot_rule`. Where is the curve steepest, and what does
 that mean?
 
@@ -433,10 +431,10 @@ for second in [0, 1, 3, 6, 10]:
 ```
 
 The speed starts at 0, is 6.78 after 1 second and 11.01 after 3, and
-levels off near 12: 11.92 at 6 seconds and 12.0 at 10. The speed curve
+settles near 12: 11.92 at 6 seconds and 12.0 at 10. The speed curve
 is steepest at the start, where the speed changes fastest. The slope of
 the speed curve is itself a rate of change, of speed, which is called
-acceleration: the stone speeds up most in the first second, and hardly
+acceleration. The stone speeds up most in the first second, and hardly
 at all once the air's push nearly balances its weight. A rule made
 from the derivative at every point is called the derivative function,
 and [Rules for change](tutorial:rules-for-change) finds such rules

@@ -53,7 +53,7 @@ together. Is the navigation the same on every page? Does a heading style
 mean the same thing each time? Does the page they land on tell them
 where to go next?
 
-Planning is where we make those decisions, once. Without a plan, we
+In a plan, we make those decisions once. Without a plan, we
 make them on every page, while we are also writing HTML.
 
 Three questions do most of the work:
@@ -62,8 +62,8 @@ Three questions do most of the work:
    In seconds, they decide whether to stay.
 2. **What is each page for?** Think about its job, as well as its topic.
    What should a visitor do or learn there? Where should they go next?
-3. **How do the pages connect?** Which pages link to which, and why? A
-   page that nothing links to is a page that no visitor will find.
+3. **How do the pages connect?** Which pages link to which, and why? No
+   visitor will find a page that nothing links to.
 
 A fourth question is about layout: where does everything sit on the
 page, roughly, before we decide exactly how it looks? A wireframe

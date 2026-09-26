@@ -14,7 +14,7 @@ way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
 A guess that misses costs nothing here, and it is often the most useful thing
-on the page: it shows you exactly where your picture and Python's differ.
+on the page. It shows you exactly where your picture and Python's differ.
 Skip a problem if it does not interest you, and come back to it later.
 
 ## Warm-up
@@ -40,7 +40,7 @@ print(10 >= 10)
 `False`, `True`, `True`.
 
 $-1$ is closer to zero than $-4$, so it sits to the right on the number
-line: $-1$ is greater, and `-1 < -4` is False. The two numbers are
+line. So $-1$ is greater, and `-1 < -4` is False. The two numbers are
 different, so `!=` gives True. And `10 >= 10` is True, because `>=`
 includes the value itself.
 
@@ -61,7 +61,7 @@ print(song_seconds < 180)
 ```
 
 This prints `True`, then `False`. Three minutes is 180 seconds. "Under"
-leaves 180 itself out, so the sign is `<`, not `<=`.
+does not include 180 itself, so the sign is `<`, not `<=`.
 
 </details>
 
@@ -74,11 +74,10 @@ level == 2
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first line names a value: from now on `level` stands for 2.
+The first line names a value. From now on `level` stands for 2.
 
 The second line asks a question: "is `level` equal to 2?" Its answer
-is `True`. It changes nothing. One equals sign names; two equals signs
-ask.
+is `True`. It changes nothing.
 
 </details>
 
@@ -93,11 +92,11 @@ work? Is there a space where they both do?
 Each idea works, in a different space.
 
 The battery number on a phone's screen is a whole number. If the test
-only ever sees whole numbers, the two are the same: the whole numbers
-below 20 are 19, 18, 17 and so on.
+only ever sees whole numbers, the two are the same, because the whole
+numbers below 20 are 19, 18, 17 and so on.
 
 Inside the phone, the battery chip can measure more finely than that. If
-the test sees 19.5, the two are different: 19.5 is below 20, so
+the test sees 19.5, the two are different. 19.5 is below 20, so
 `battery < 20` is True, but it is not 19 or less.
 
 ```python
@@ -127,7 +126,7 @@ check your answer with code at the number of photos on either side.
 
 <details class="dl-answer"><summary>answer</summary>
 
-In words: the photos fit while they add up to at most 2,000 KB. Let $p$
+In words, the photos fit while they add up to at most 2,000 KB. Let $p$
 be the number of photos:
 
 $$300p \le 2000$$
@@ -160,7 +159,7 @@ Solve $750 - 60s \ge 150$, and check your answer on both sides of it.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Move the 750 first: subtract it from both sides.
+1. First, subtract 750 from both sides.
 2. You now divide by a negative number. What does that do to $\ge$?
 3. Check with $s = 10$ and $s = 11$ in the cell.
 
@@ -307,8 +306,8 @@ id: choosing-practice-uv
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. Yours may put the checks another way round and
-work as well.
+Here is one answer. Yours may put the checks in another order and
+work too.
 
 ```python
 def uv_band(index):
@@ -334,15 +333,15 @@ print("All tests pass.")
 ```
 
 The smallest limit goes first, and each `elif` only runs when every
-check above it was False. The tests sit at the ends of the bands, where
-a `<` in place of `<=` would show up.
+check above it was False. The tests are at the ends of the bands, because
+a `<` in place of `<=` would appear there.
 
 </details>
 
 **10. Explain.** Schlomi, who is learning Python too, thinks `elif` is one
 word too many. She writes the grade rules with three separate `if` lines
-instead. It is a reasonable idea: every `if` still gets checked, so
-nothing is missed. What does this print for a mark of 90, and why?
+instead. Her idea has one good point. Every `if` still gets checked,
+so nothing is missed. What does this print for a mark of 90, and why?
 
 ```python
 mark = 90
@@ -364,9 +363,8 @@ With `elif`, the three checks belong to one question, and Python stops at
 the first True answer. That is the difference between three separate
 choices and one choice with three paths.
 
-So Schlomi's idea works in one way: nothing is missed. That is the
-trouble. A grade needs exactly one answer, and "nothing is missed" gave
-three.
+So Schlomi's idea does miss nothing. But a grade needs exactly one
+answer, and her three `if` lines gave three.
 
 </details>
 
@@ -400,7 +398,7 @@ def comfortable(temperature):
     return 18 <= temperature <= 22
 ```
 
-Now every test passes. The problem only showed up because two tests sit
+Now every test passes. We only found the problem because two tests are
 exactly on the ends.
 
 </details>
@@ -433,12 +431,12 @@ print(between(5, 10, 1))
 
 `True`, `False`, `False`, `False`.
 
-255 is the top end, and the ends count. 256 is one past it: too big for
-one byte. 0 is not a dice roll.
+255 is the top end, and the ends count. 256 is one past it, so it is too
+big for one byte. 0 is not a dice roll.
 
 The last line gives False because `low` is 10 and `high` is 1. No number
 is both 10 or more and 1 or less, so this `between` is False for every
-value. The function keeps its promise; the promise assumes `low` is not
+value. The function keeps its promise. The promise assumes `low` is not
 bigger than `high`.
 
 </details>
@@ -447,7 +445,8 @@ bigger than `high`.
 digits. Up to 9999, it shows the score in base 10. At 10000 or more the
 score no longer fits, so the game switches to hexadecimal, where four
 digits reach 65535. Use `digit_at` from your toolkit to write
-`score_digit(score, place)`: the digit the display shows in `place`.
+`score_digit(score, place)`, which returns the digit the display shows
+in `place`.
 `score_digit(2026, 3)` should give 2, and `score_digit(50000, 3)`
 should give 12, the hex digit C.
 
@@ -463,7 +462,7 @@ should give 12, the hex digit C.
 makes that true?
 
 **Try this next:** add a third path. At 65536 or more, even hex does not
-fit, so give back 15 for every place, and the display shows FFFF.
+fit, so return 15 for every place, and the display shows FFFF.
 
 </details>
 
@@ -518,7 +517,7 @@ print("They agree.")
 ```
 
 It prints `They agree.` The value is outside when it is too small or too
-big. Every other value is inside. Two different routes, one promise.
+big. Every other value is inside.
 
 </details>
 
@@ -535,7 +534,7 @@ number?
 
 1. Start with the smallest: if `count <= 2 ** 8`, one byte is enough.
 2. Each `elif` tries one more byte.
-3. The order matters: which check has to come first?
+3. The order matters. Which check has to come first?
 
 **Think about:** why the check is `<=` and not `<`. How many different
 values does one byte hold?
@@ -569,7 +568,7 @@ print(bytes_needed(5149139))
 This prints `1`, `2` and `3`. $2^{16}$ is 65,536, far too few for
 Ireland. $2^{24}$ is 16,777,216, which is enough. Four bytes hold
 4,294,967,296 values, so 8 billion people would need more than this
-function allows: the promise only covers up to four bytes.
+function allows. The promise only covers up to four bytes.
 
 </details>
 
@@ -582,16 +581,16 @@ Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through, and your own experience counts as
-evidence here. It weighs a few things.
+Here is one answer, and your own experience counts as
+evidence here. It looks at a few things.
 
-- **One page with both.** Each side explains the other: the number line
-  makes sense of `<=`, and the code checks the algebra. The cost: two new
-  things arrive at once, and the page is longer. Someone who dislikes one
+- **One page with both.** Each side explains the other. The number line
+  makes sense of `<=`, and the code checks the algebra. The cost is that
+  two new things arrive at once, and the page is longer. Someone who dislikes one
   side meets it anyway.
 - **Two separate pages.** Each one can go at its own speed, and a reader
-  who is nervous about one subject can take it on its own. The cost: the
-  link between the two may never be made, and one of them can feel like a
+  who is nervous about one subject can take it on its own. The cost is
+  that nobody may ever show the link between the two, and one of them can feel like a
   topic with no use.
 
 For the maths lover, the code may be a way to check their work. For the

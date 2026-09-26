@@ -56,7 +56,7 @@ Compare the selector with the one in the tutorial. What is missing?
 The dot was missing. Without it, `highlight` is a tag name, so
 `highlight p` looks for a paragraph inside an element called
 `<highlight>`. There is no such element in HTML, so the rule matched
-nothing. The dot is what makes `.highlight` mean "an element with
+nothing. The dot makes `.highlight` mean "an element with
 `class="highlight"`".
 
 </details>

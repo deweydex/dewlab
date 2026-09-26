@@ -126,7 +126,7 @@ The browser fixes this as it reads the page. It ends the bold part at
 the end of the first paragraph, and then starts a new `<strong>` around
 the next paragraph too, to keep the rest of the text bold. The tree
 shows that second `<strong>`, around the Saturday paragraph. The editor
-has no such line. This is why the inspector can show HTML that differs
+has no such line. So the inspector can show HTML that differs
 from the file you wrote.
 
 The fix is to end the bold part where it should end:
