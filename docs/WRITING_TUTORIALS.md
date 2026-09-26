@@ -410,7 +410,10 @@ same function the button calls. A solution that raises an error stops the
 build, and so does an input the solution side cannot even name: a
 `NameError` or `SyntaxError` there is a typo in the page. Any other error an
 input raises is an outcome, and the table shows it. A machine without a
-package the page imports (pandas, say) gets a note, not a failure. Each cell
+package the page imports (pandas, say) gets a note, not a failure, and so
+does every solution below a cell that stopped at that import: the publish
+job installs only `requirements-build.txt`, so a page that draws with
+matplotlib is checked by the test job, not by the publish job. Each cell
 gets 20 seconds, so a deliberate endless loop earlier on the page is a cell
 that fails, not a build that hangs.
 

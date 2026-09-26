@@ -4629,12 +4629,20 @@ if timed:
     signal.signal(signal.SIGALRM, alarm)
 
 
+missing = None  # the first package a cell asked for and this Python lacks
+
+
 async def run(code, name):
+    global missing
     tt._begin(name, tt._RecordingSink(), code)
     if timed:
         signal.alarm(job["seconds"])
     try:
         await tt._run_code(code, tt._page_globals, name)
+    except ModuleNotFoundError as exc:
+        # The cell stopped at its import, so whatever it would have made
+        # after that is missing for every solution below it.
+        missing = missing or f"{type(exc).__name__}: {exc}"
     except BaseException:
         pass  # a cell that fails as written is the page's own business
     finally:
@@ -4659,6 +4667,8 @@ async def main():
             finally:
                 if timed:
                     signal.alarm(0)
+            if missing:
+                result["missingModule"] = missing
             report.append({"cell": cell["id"], "result": result})
     sys.__stdout__.write(json.dumps(report))
 
@@ -4682,8 +4692,12 @@ def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
     Any other error an input raises is an outcome, and the table shows it.
 
     A Python without a package the page imports (a contributor's machine
-    without pandas, say) is noted and skipped, not failed: that says
-    nothing about the solution.
+    without pandas, say, or the publish job, which installs only
+    requirements-build.txt) is noted and skipped, not failed: that says
+    nothing about the solution. That holds when the import is in a cell
+    above the solution, too: once a cell stops at a missing package,
+    every solution below it is noted and skipped, since the names that
+    cell would have made are missing as well.
 
     A page with world variants (#315) runs once per world, with the cells
     a reader in that world would run: every cell outside a variant, and
@@ -4742,6 +4756,14 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         if problem and problem.startswith("ModuleNotFoundError"):
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            continue
+        if result.get("missingModule"):
+            # A cell above it stopped at an import, so the names it would
+            # have made are missing too, and a NameError here would blame
+            # the solution for this Python's missing package.
+            print(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
+                  f"{result['missingModule']}", file=sys.stderr)
             continue
         if problem:
             fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
