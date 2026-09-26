@@ -18,8 +18,8 @@ from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 class TestTheDownloadableCopy:
     """One tutorial with a cell and no maths, built with `standalone=True`:
     the copy is written beside the site, the page links to it, and
-    everything it needs to run travels inside it. Then the two things that
-    must not travel: the version list, and data the copy cannot reach."""
+    everything it needs to run travels inside it, its datasets included.
+    The version list does not travel."""
 
     def standalone(self, repo) -> str:
         return (repo / "site" / "download" / "sample.html").read_text()
@@ -69,10 +69,54 @@ class TestTheDownloadableCopy:
         assert len(manifest(hosted)["versions"]) == 2
         assert "versions" not in manifest(self.standalone(repo_with_assets))
 
-    def test_it_warns_when_a_tutorial_loads_data_it_cannot_carry(self, repo_with_assets, capsys):
-        write(repo_with_assets, '```python exec\nid: c\ndf = await load_csv("x.csv")\n```\n')
+    def test_a_declared_dataset_travels_inside_the_copy(self, repo_with_assets):
+        # A page opened from disk, or offline, cannot fetch data/, so the
+        # snapshot and its index entry are in the manifest (#324).
+        import base64
+        import gzip
+
+        path = write(repo_with_assets, '```python exec\nid: c\ndf = await load_csv("x.csv")\n```\n')
+        add_frontmatter(path, "datasets: [x]\n")
+        dataset(repo_with_assets, "x")
         b.build(standalone=True)
-        assert "cannot reach" in capsys.readouterr().err
+        copy = manifest(self.standalone(repo_with_assets))
+        assert copy["dataIndex"] == {"x.csv": {"snapshot": "2026-09-26"}}
+        assert gzip.decompress(base64.b64decode(copy["dataFiles"]["x.csv"])) == b"a,b\n1,2\n"
+        # The hosted page fetches both instead.
+        hosted = manifest((repo_with_assets / "site" / "tutorials" / "sample.html").read_text())
+        assert "dataFiles" not in hosted and "dataIndex" not in hosted
+        index = json.loads((repo_with_assets / "site" / "data" / "index.json").read_text())
+        assert index == {"x.csv": {"snapshot": "2026-09-26"}}
+
+    def test_an_undeclared_dataset_fails_the_build(self, repo_with_assets):
+        # Declaring is what puts a dataset in the downloaded copy.
+        write(repo_with_assets, '```python exec\nid: c\ndf = await load_csv("x.csv")\n```\n')
+        dataset(repo_with_assets, "x")
+        with pytest.raises(b.BuildError, match="datasets: does not list x"):
+            b.build()
+
+    def test_it_notes_a_web_address_that_data_keeps_no_copy_of(self, repo_with_assets, capsys):
+        write(repo_with_assets, '```python exec\nid: c\n'
+                                'df = await load_csv("https://example.org/y.csv")\n```\n')
+        b.build(standalone=True)
+        assert "keeps no copy of" in capsys.readouterr().err
+
+    def test_a_web_address_data_keeps_a_copy_of_needs_declaring_and_is_not_noted(
+            self, repo_with_assets, capsys):
+        address = "https://example.org/y.csv"
+        recipe = (f"recipe:\n  source: Example\n  url: {address}\n  columns: [a, b]\n"
+                  "live: true\naddress: true\n")
+        dataset(repo_with_assets, "y", extra=recipe)
+        path = write(repo_with_assets, f'```python exec\nid: c\ndf = await load_csv("{address}")\n```\n')
+        with pytest.raises(b.BuildError, match="datasets: does not list y"):
+            b.build(standalone=True)
+        add_frontmatter(path, "datasets: [y]\n")
+        capsys.readouterr()
+        b.build(standalone=True)
+        assert "keeps no copy of" not in capsys.readouterr().err
+        index = manifest(self.standalone(repo_with_assets))["dataIndex"]
+        assert index["y.csv"]["address"] is True
+        assert index["y.csv"]["live"]["url"] == address
 
 
 class TestTheSeriesArchive:

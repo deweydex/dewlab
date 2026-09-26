@@ -1161,3 +1161,150 @@ class TestCompareWithASolution:
         rows = self.run("print('from the solution')\n", ["list(range(1000))"])["rows"]
         assert "from the solution" not in capsys.readouterr().out
         assert rows[0]["yours"]["shown"].endswith("(cut short)")
+
+
+class TestDatasets:
+    """A dataset in `data/` comes live when it has a source a page may read,
+    and from its snapshot when it has not or the source does not answer
+    (#324). The fetches are browser-only, so they are replaced here; what
+    is tested is the order, the shaping, and the note under the cell."""
+
+    INDEX = {
+        "life.csv": {
+            "snapshot": "2026-09-26",
+            "live": {"source": "Our World in Data", "url": "https://example.org/life.csv",
+                     "rename": {"entity": "country"}, "columns": ["country", "year"]},
+        },
+        "book.txt": {"snapshot": "2026-09-20"},
+        "income.csv": {
+            "snapshot": "2026-09-26", "address": True,
+            "live": {"source": "Our World in Data", "url": "https://example.org/income.csv",
+                     "columns": ["a"]},
+        },
+    }
+
+    @pytest.fixture()
+    def world(self, monkeypatch):
+        """A page whose index is INDEX, whose snapshots are `saved`, and
+        whose web is `online`: a URL there answers, and any other raises."""
+        state = {"online": {}, "saved": {
+            "life.csv": b"country,year\nIreland,1950\n",
+            "book.txt": b"It was a dark night.\n",
+            "income.csv": b"a\n1\n",
+        }}
+
+        async def fetch(url):
+            if url not in state["online"]:
+                raise ConnectionError(url)
+            return state["online"][url]
+
+        async def snapshot(name):
+            return state["saved"][name]
+
+        monkeypatch.setattr(tt, "_data_index", dict(self.INDEX))
+        monkeypatch.setattr(tt, "_fetch_bytes", fetch)
+        monkeypatch.setattr(tt, "_snapshot_bytes", snapshot)
+        return state
+
+    @staticmethod
+    def run(coroutine):
+        import asyncio
+        return asyncio.run(coroutine)
+
+    def test_a_live_source_is_shaped_into_the_snapshots_columns(self, world, cell):
+        world["online"]["https://example.org/life.csv"] = (
+            b"entity,code,year\nIreland,IRL,1950\nIreland,IRL,1951\n")
+        frame = self.run(tt.load_csv("life.csv"))
+        assert list(frame.columns) == ["country", "year"]
+        assert len(frame) == 2
+        assert "from Our World in Data just now" in cell.html
+        assert "copy saved on 26 September 2026" in cell.html
+
+    def test_a_source_that_does_not_answer_gives_the_snapshot_and_says_so(self, world, cell):
+        frame = self.run(tt.load_csv("life.csv"))
+        assert frame.to_dict("records") == [{"country": "Ireland", "year": 1950}]
+        assert "The live copy from Our World in Data could not be used" in cell.html
+
+    def test_a_live_copy_the_recipe_no_longer_fits_gives_the_snapshot(self, world, cell):
+        world["online"]["https://example.org/life.csv"] = b"place,when\nIreland,1950\n"
+        frame = self.run(tt.load_csv("life.csv"))
+        assert list(frame.columns) == ["country", "year"]
+        assert "could not be used just now" in cell.html
+
+    def test_a_dataset_with_no_live_source_names_its_date(self, world, cell):
+        assert self.run(tt.load_text("book.txt")) == "It was a dark night.\n"
+        assert "Loaded the copy of book.txt saved on 20 September 2026." in cell.html
+
+    def test_an_address_data_keeps_a_copy_of_falls_back_to_it(self, world, cell):
+        frame = self.run(tt.load_csv("https://example.org/income.csv"))
+        assert frame.to_dict("records") == [{"a": 1}]
+        assert "Loaded the copy of income.csv saved on" in cell.html
+
+    def test_any_other_address_still_explains_its_failure(self, world, monkeypatch):
+        async def remote(name):
+            raise ConnectionError(f"Couldn't fetch {name}.")
+        monkeypatch.setattr(tt, "_fetch_remote", remote)
+        with pytest.raises(ConnectionError, match="Couldn't fetch"):
+            self.run(tt.load_csv("https://example.org/other.csv"))
+
+    def test_outside_a_cell_the_data_still_loads_without_a_note(self, world):
+        assert self.run(tt.load_text("book.txt")) == "It was a dark night.\n"
+
+    def test_a_downloaded_page_reads_its_snapshots_from_the_manifest(self):
+        import base64
+        import gzip
+        import json
+        packed = base64.b64encode(gzip.compress(b"x\n1\n")).decode()
+        tt.configure("../data/", json.dumps({"x.csv": {"snapshot": "2026-09-26"}}),
+                     json.dumps({"x.csv": packed}))
+        try:
+            assert self.run(tt._snapshot_bytes("x.csv")) == b"x\n1\n"
+            assert self.run(tt._dataset_index()) == {"x.csv": {"snapshot": "2026-09-26"}}
+        finally:
+            tt.configure("../data/")
+
+
+class TestShapeLive:
+    def test_every_step_in_its_order(self):
+        raw = (b"-BEGIN HEADER-\nnotes\n-END HEADER-\n"
+               b"YEAR, T2M ,CODE\n1949,1.234,A\n1950,-999,B\n1951,2.345,\n2030,3.0,C\n")
+        recipe = {
+            "skip_through": "-END HEADER-",
+            "rename": {"YEAR": "year", "T2M": "temperature"},
+            "missing": [-999],
+            "drop_empty": ["CODE"],
+            "at_least": {"year": 1950},
+            "at_most": {"year": 2025},
+            "columns": ["year", "temperature"],
+            "round": {"temperature": 1},
+        }
+        # 1949 is too early, 1951 has no code, 2030 is too late: only 1950
+        # is left, and its -999 is no value at all.
+        assert tt.shape_live(raw, recipe) == b"year,temperature\n1950,\n"
+
+    def test_namibia_is_not_a_missing_value(self):
+        raw = b"name,cc\nMassospondylus,NA\nTyrannosaurus,US\nSomething,\n"
+        assert tt.shape_live(raw, {"columns": ["name", "cc"]}) == (
+            b"name,cc\nMassospondylus,NA\nTyrannosaurus,US\nSomething,\n")
+
+    def test_a_marker_that_is_not_there_is_a_failure(self):
+        with pytest.raises(ValueError, match="no line starts with"):
+            tt.shape_live(b"a\n1\n", {"skip_through": "-END-", "columns": ["a"]})
+
+
+class TestDataNote:
+    def test_its_three_cases(self):
+        import datetime
+        entry = {"snapshot": "2026-09-26", "live": {"source": "Our World in Data"}}
+        assert tt.data_note("life.csv", entry, used_live=True) == (
+            "Loaded life.csv from Our World in Data just now. The numbers on this "
+            "page come from the copy saved on 26 September 2026, so yours may be "
+            "a little different.")
+        assert tt.data_note("life.csv", entry, used_live=False,
+                            today=datetime.date(2026, 10, 6)) == (
+            "Loaded the copy of life.csv saved on 26 September 2026 (10 days ago). "
+            "The live copy from Our World in Data could not be used just now, so "
+            "this is the copy the page was written with.")
+        assert tt.data_note("book.txt", {"snapshot": "2026-09-20"}, used_live=False) == (
+            "Loaded the copy of book.txt saved on 20 September 2026.")
+        assert tt.data_note("x.csv", {}, used_live=False) == "Loaded x.csv."

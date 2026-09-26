@@ -1,0 +1,34 @@
+# Attribution for data/daylight.csv.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the numbers they are working with back to their source.
+
+source: >
+  Computed by the NASA/JPL Horizons On-Line Ephemeris System (Jon Giorgini
+  and the JPL Solar System Dynamics Group), from its tables of when the
+  Sun rises and sets at a place.
+
+url: https://ssd.jpl.nasa.gov/horizons/
+
+license: >
+  Horizons states no licence. Its output here is the times the Sun rises
+  and sets, which are facts about the sky rather than anyone's creative
+  work, computed by NASA's Jet Propulsion Laboratory. This site credits
+  it as above.
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Four places and one year, 2026, made by dev/daylight.py, which says how
+  to make it again. Each sunrise is paired with the sunset after it, to
+  the minute. It has no live source: Horizons answers one place at a time,
+  as text, and does not let pages on other websites read it; and the sky
+  it describes does not change.
+
+description: >
+  Sunrise, sunset and hours of daylight on every day of 2026, in
+  Reykjavik, Dublin, Accra and Cape Town: from far north, to near the
+  equator, to the south. place; date, the day of the sunrise; sunrise_utc
+  and sunset_utc, in Coordinated Universal Time, which is Irish winter
+  time, so a summer clock in Dublin reads an hour later; and
+  daylight_hours, from sunrise to sunset. Sunrise is when the top edge of
+  the Sun appears, allowing for the way the air bends its light.

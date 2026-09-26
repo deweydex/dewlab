@@ -7,6 +7,7 @@ covers:
     touches: [DBM-LO5]
   one-line-per-country:
     touches: [DBM-LO7]
+datasets: [income-share-top-1]
 ---
 
 # Charting a query's result: one line per country

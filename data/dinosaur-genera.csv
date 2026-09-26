@@ -1,0 +1,1616 @@
+genus,named_by,first_mya,last_mya,first_stage,last_stage,finds
+Yaverlandia,Galton 1971,132.6,121.4,Hauterivian,Barremian,1
+Fenestrosaurus,Osborn 1924,83.6,72.2,Campanian,,1
+Nqwebasaurus,de Klerk et al. 2000,143.1,132.6,Berriasian,Valanginian,1
+Kinnareemimus,Buffetaut et al. 2009,125.77,121.4,Barremian,,1
+Pelecanimimus,Pérez-Moreno et al. 1994,125.77,121.4,Barremian,,1
+Arkansaurus,Hunt and Quinn 2018,113.2,100.5,Albian,,1
+Aviatyrannis,Rauhut 2003,154.8,149.2,Kimmeridgian,,2
+Garudimimus,Barsbold 1981,93.9,83.6,Turonian,Santonian,1
+Paraxenisaurus,Serrano-Brañas et al. 2020,83.6,72.2,Campanian,,1
+Harpymimus,Barsbold and Perle 1984,110.1,100.5,Albian,,1
+Deinocheirus,Kielan-Jaworowska 1969,100.5,66.0,Cenomanian,Maastrichtian,5
+Tyrannomimus,Hattori et al. 2023,121.4,113.2,Aptian,,1
+Shenzhousaurus,Ji et al. 2003,125.77,119.57,Barremian,Aptian,1
+Lepidocheirosaurus,Alifanov and Saveliev 2015,168.2,165.3,Bathonian,,1
+Hexing,Jin et al. 2012,125.77,119.57,Barremian,Aptian,1
+Afromimus,Sereno 2017,113.2,100.5,Albian,,1
+Tototlmimus,Serrano-Brañas et al. 2016,83.6,72.2,Campanian,,1
+Mexidracon,Serrano-Brañas et al. 2025,83.6,72.2,Campanian,,1
+Gallimimus,Osmólska et al. 1972,93.9,66.0,Turonian,Maastrichtian,30
+Struthiomimus,Osborn 1916,83.6,66.0,Campanian,Maastrichtian,18
+Sinornithomimus,Kobayashi and Lü 2003,93.9,89.8,Turonian,,1
+Qiupalong,Xu et al. 2011,72.2,66.0,Maastrichtian,,1
+Ornithomimus,Marsh 1890,83.6,66.0,Campanian,Maastrichtian,35
+Anserimimus,Barsbold 1988,72.2,66.0,Maastrichtian,,2
+Aepyornithomimus,Chinzorig et al. 2017,83.6,72.2,Campanian,,1
+Dromiceiomimus,Russell 1972,72.2,66.0,Maastrichtian,,5
+Rativates,McFeeters et al. 2016,83.6,72.2,Campanian,,1
+Archaeornithomimus,Russell 1972,89.8,72.2,Coniacian,Campanian,3
+Dzharacursor,Averianov and Sues 2024,93.9,89.8,Turonian,,1
+Beishanlong,Makovicky et al. 2010,121.4,113.2,Aptian,,1
+Erythrovenator,Müller 2020,237.0,227.3,Carnian,,1
+Shuangbaisaurus,Wang et al. 2017,201.4,199.5,Hettangian,,1
+Sinosaurus,Young 1940,201.4,192.9,Hettangian,Sinemurian,16
+Himeoolithus,Tanaka et al. 2020,113.2,110.1,Albian,,1
+Anteavis,Martínez et al. 2025,237.0,227.3,Carnian,,1
+Protoavis,Chatterjee 1991,227.3,205.7,Norian,,1
+Velocipes,Huene 1932,227.3,205.7,Norian,,1
+Dracoraptor,Martill et al. 2016,201.4,199.5,Hettangian,,1
+Lophostropheus,Ezcurra and Cuny 2007,205.7,199.5,Rhaetian,Hettangian,1
+Pendraig,Spiekman et al. 2021,237.0,227.3,Carnian,,1
+Gojirasaurus,Carpenter 1997,227.3,205.7,Norian,,1
+Syntarsus,Raath 1969,205.7,184.2,Rhaetian,Pliensbachian,11
+Lucianovenator,Martinez and Apaldetti 2017,227.3,205.7,Norian,,1
+Panguraptor,You et al. 2014,201.4,199.5,Hettangian,,1
+Camposaurus,Hunt et al. 1998,227.3,205.7,Norian,,1
+Coelophysis,Cope 1889,227.3,192.9,Norian,Sinemurian,26
+Podokesaurus,Talbot 1911,227.3,192.9,Norian,Sinemurian,26
+Rioarribasaurus,Hunt and Lucas 1991,227.3,192.9,Norian,Sinemurian,26
+Segisaurus,Camp 1936,192.9,174.7,Pliensbachian,Toarcian,2
+Lepidus,Nesbitt and Ezcurra 2015,227.3,205.7,Norian,,1
+Megapnosaurus,Ivie et al. 2001,201.4,192.9,Hettangian,Sinemurian,8
+Procompsognathus,Fraas 1913,215.38,211.18,Norian,,1
+Powellvenator,Ezcurra 2017,227.3,205.7,Norian,,1
+Sarcosaurus,Andrews 1921,201.4,192.9,Hettangian,Sinemurian,4
+Notatesseraeraptor,Zahner and Brinkmann 2019,227.3,205.7,Norian,,1
+Dilophosaurus,Welles 1970,201.4,184.2,Hettangian,Pliensbachian,14
+Spinostropheus,Sereno et al. 2004,161.5,93.9,Oxfordian,Cenomanian,3
+Vitakrisaurus,Malkani 2010,72.2,66.0,Maastrichtian,,3
+Vitakridrinda,Malkani 2004,72.2,66.0,Maastrichtian,,8
+Fosterovenator,Dalman 2014,154.8,143.1,Kimmeridgian,Tithonian,1
+Berberosaurus,Allain et al. 2007,192.9,174.7,Pliensbachian,Toarcian,1
+Chenanisaurus,Longrich et al. 2017,72.2,66.0,Maastrichtian,,2
+Vespersaurus,Langer et al. 2019,121.4,72.2,Aptian,Campanian,1
+Noasaurus,Bonaparte and Powell 1980,72.2,66.0,Maastrichtian,,1
+Masiakasaurus,Sampson et al. 2001,72.2,66.0,Maastrichtian,,29
+Velocisaurus,Bonaparte 1991,85.7,83.6,Santonian,,2
+Deltadromeus,Sereno et al. 1996,100.5,93.9,Cenomanian,,6
+Berthasaura,de Souza et al. 2021,121.4,72.2,Aptian,Campanian,1
+Huinculsaurus,Baiano et al. 2020,110.1,106.3,Albian,,1
+Austrocheirus,Ezcurra et al. 2010,83.6,72.2,Campanian,,1
+Ligabueino,Bonaparte 1996,125.77,119.57,Barremian,Aptian,1
+Kiyacursor,Averianov et al. 2024,121.4,113.2,Aptian,,2
+Limusaurus,Xu et al. 2009,161.5,154.8,Oxfordian,,3
+Elaphrosaurus,Janensch 1920,154.8,93.9,Kimmeridgian,Cenomanian,4
+Laevisuchus,Huene 1933,72.2,66.0,Maastrichtian,,2
+Jubbulpuria,Huene 1933,72.2,66.0,Maastrichtian,,2
+Saltriovenator,Dal Sasso et al. 2018,199.5,192.9,Sinemurian,,1
+Genyodectes,Woodward 1901,113.2,100.5,Albian,,1
+Ceratosaurus,Marsh 1884,157.9,143.1,,,29
+Rugops,Sereno et al. 2004,100.5,93.9,Cenomanian,,1
+Ekrixinatosaurus,Calvo et al. 2004,113.2,110.1,Albian,,1
+Guemesia,Agnolín et al. 2021,83.6,66.0,Campanian,Maastrichtian,1
+Thanos,Delcourt and Iori 2020,85.7,72.2,Santonian,Campanian,1
+Skorpiovenator,Canale et al. 2008,110.1,106.3,Albian,,2
+Aucasaurus,Coria et al. 2002,83.6,72.2,Campanian,,2
+Ilokelesia,Coria and Salgado 2000,110.1,106.3,Albian,,1
+Dahalokely,Farke and Sertich 2013,93.9,89.8,Turonian,,1
+Rahiolisaurus,Novas et al. 2010,72.2,66.0,Maastrichtian,,1
+Carnotaurus,Bonaparte 1985,72.2,66.0,Maastrichtian,,1
+Llukalkan,Gianechini et al. 2020,85.7,83.6,Santonian,,1
+Quilmesaurus,Coria 2001,72.2,66.0,Maastrichtian,,1
+Viavenator,Filippi et al. 2016,85.7,83.6,Santonian,,1
+Caletodraco,Buffetaut et al. 2024,100.5,93.9,Cenomanian,,1
+Pycnonemosaurus,Kellner and Campos 2002,100.5,66.0,Cenomanian,Maastrichtian,1
+Elemgasem,Baiano et al. 2022,93.9,85.7,Turonian,Coniacian,1
+Koleken,Pol et al. 2024,72.2,66.0,Maastrichtian,,1
+Niebla,Aranciaga Rolando et al. 2021,72.2,66.0,Maastrichtian,,1
+Abelisaurus,Bonaparte 1984,72.2,66.0,Maastrichtian,,1
+Majungasaurus,Lavocat 1955,72.2,66.0,Maastrichtian,,25
+Majungatholus,Sues and Taquet 1979,72.2,66.0,Maastrichtian,,25
+Arcovenator,Tortosa et al. 2014,83.6,66.0,Campanian,Maastrichtian,6
+Rajasaurus,Wilson et al. 2003,72.2,66.0,Maastrichtian,,1
+Genusaurus,Accarie et al. 1995,110.1,106.3,Albian,,1
+Indosaurus,Huene 1933,72.2,66.0,Maastrichtian,,1
+Lametasaurus,Matley 1924,72.2,66.0,Maastrichtian,,1
+Spectrovenator,Zaher et al. 2020,121.4,113.2,Aptian,,1
+Vitosaura,Jiménez Velandia et al. 2025,83.6,72.2,Campanian,,1
+Xenotarsosaurus,Martínez et al. 1986,100.5,89.8,Cenomanian,Turonian,1
+Eoabelisaurus,Pol and Rauhut 2012,184.2,174.7,Toarcian,,1
+Tarascosaurus,Le Loeuff and Buffetaut 1991,83.6,72.2,Campanian,,1
+Indosuchus,Huene 1933,72.2,66.0,Maastrichtian,,1
+Kurupi,Iori et al. 2021,72.2,66.0,Maastrichtian,,1
+Kryptops,Sereno and Brusatte 2008,121.4,100.5,Aptian,Albian,1
+Tralkasaurus,Cerroni et al. 2020,110.1,106.3,Albian,,1
+Datanglong,Mo et al. 2014,121.4,113.2,Aptian,,1
+Siamraptor,Chokchaloemwong et al. 2019,121.4,113.2,Aptian,,1
+Lusovenator,Malafaia et al. 2020,152.21,143.1,Kimmeridgian,Tithonian,2
+Ulughbegsaurus,Tanaka et al. 2021,93.9,89.8,Turonian,,3
+Erectopus,Huene 1923,125.77,93.9,Barremian,Cenomanian,8
+Shidaisaurus,Wu et al. 2009,170.9,168.2,Bajocian,,1
+Alpkarakush,Rauhut et al. 2024,165.3,161.5,Callovian,,1
+Yuanmouraptor,Zou et al. 2025,174.7,168.2,Aalenian,Bajocian,1
+Yangchuanosaurus,Dong et al. 1978,170.9,113.2,Bajocian,Aptian,4
+Sinraptor,Currie and Zhao 1994,168.2,154.8,Bathonian,Oxfordian,2
+Metriacanthosaurus,Walker 1964,161.5,159.0,Oxfordian,,1
+Siamotyrannus,Buffetaut et al. 1996,125.77,121.4,Barremian,,1
+Allosaurus,Marsh 1877,161.5,137.05,Oxfordian,Berriasian,147
+Saurophagus,Ray 1941,161.5,137.05,Oxfordian,Berriasian,147
+Creosaurus,Marsh 1878,161.5,137.05,Oxfordian,Berriasian,147
+Antrodemus,Leidy 1873,161.5,137.05,Oxfordian,Berriasian,147
+Epanterias,Cope 1878,161.5,137.05,Oxfordian,Berriasian,147
+Labrosaurus,Marsh 1879,161.5,137.05,Oxfordian,Berriasian,147
+Apatodon,Marsh 1877,161.5,137.05,Oxfordian,Berriasian,147
+Monolophosaurus,Zhao and Currie 1994,165.3,161.5,Callovian,,1
+Chilantaisaurus,Hu 1964,93.9,83.6,Turonian,Santonian,2
+Fukuiraptor,Azuma and Currie 2000,132.6,113.2,Hauterivian,Aptian,2
+Neovenator,Hutt et al. 1996,125.77,121.4,Barremian,,1
+Asfaltovenator,Rauhut and Pol 2019,180.4,168.6,Toarcian,Bajocian,1
+Kelmayisaurus,Dong 1973,137.05,100.5,Valanginian,Albian,1
+Lajasvenator,Coria et al. 2020,137.05,132.6,Valanginian,,1
+Veterupristisaurus,Rauhut 2011,152.21,149.2,Kimmeridgian,,2
+Acrocanthosaurus,Stovall and Langston 1950,121.4,93.9,Aptian,Cenomanian,14
+Giganotosaurus,Coria and Salgado 1995,113.2,106.3,Albian,,4
+Taurovenator,Motta et al. 2016,110.1,106.3,Albian,,2
+Shaochilong,Brusatte et al. 2009,121.4,100.5,Aptian,Albian,1
+Mapusaurus,Coria and Currie 2006,110.1,106.3,Albian,,1
+Carcharodontosaurus,(Stromer 1931),143.1,72.2,Berriasian,Campanian,44
+Sauroniops,Cau et al. 2013,143.1,72.2,Berriasian,Campanian,44
+Unquillosaurus,Powell 1979,83.6,72.2,Campanian,,1
+Tameryraptor,Kellermann et al. 2025,100.5,93.9,Cenomanian,,1
+Concavenator,Ortega et al. 2010,125.77,121.4,Barremian,,1
+Eocarcharia,Sereno and Brusatte 2008,121.4,100.5,Aptian,Albian,2
+Meraxes,Canale et al. 2022,110.1,106.3,Albian,,1
+Tyrannotitan,Novas et al. 2005,113.2,100.5,Albian,,3
+Saurophaganax,Chure 1995,152.21,143.1,Kimmeridgian,Tithonian,2
+Cruxicheiros,Benson and Radley 2010,168.2,165.3,Bathonian,,1
+Vectaerovenator,Barker et al. 2020,119.57,113.2,Aptian,,1
+Shanyangosaurus,Xue et al. 1996,72.2,66.0,Maastrichtian,,1
+Bahariasaurus,Stromer 1934,113.2,66.0,Albian,Maastrichtian,5
+Iberospinus,Mateus and Estraviz-López 2022,125.77,121.4,Barremian,,1
+Protathlitis,Santos-Cubedo et al. 2023,125.77,121.4,Barremian,,1
+Riojavenatrix,Isasmendi et al. 2024,121.4,119.57,Aptian,,1
+Vallibonavenatrix,Malafaia et al. 2019,125.77,121.4,Barremian,,1
+Baryonyx,Charig and Milner 1986,139.1,110.1,Berriasian,Albian,12
+Suchomimus,Sereno et al. 1998,121.4,100.5,Aptian,Albian,2
+Riparovenator,Barker et al. 2021,125.77,121.4,Barremian,,1
+Ceratosuchops,Barker et al. 2021,125.77,121.4,Barremian,,1
+Angaturama,Kellner and Campos 1996,119.57,113.2,Aptian,,1
+Camarillasaurus,Sánchez-Hernández and Benton 2014,125.77,121.4,Barremian,,1
+Spinosaurus,Stromer 1915,125.77,72.2,Barremian,Campanian,44
+Oxalaia,Kellner et al. 2011,100.5,93.9,Cenomanian,,1
+Ichthyovenator,Allain et al. 2012,121.4,113.2,Aptian,,1
+Irritator,Martill et al. 1996,119.57,113.2,Aptian,,1
+Streptospondylus,Meyer 1832,165.3,159.0,Callovian,Oxfordian,1
+Sciurumimus,Rauhut et al. 2012,152.21,149.2,Kimmeridgian,,1
+Xuanhanosaurus,Dong 1984,170.9,168.2,Bajocian,,1
+Condorraptor,Rauhut 2005,180.4,168.6,Toarcian,Bajocian,1
+Piatnitzkysaurus,Bonaparte 1979,182.9,180.4,Toarcian,,1
+Marshosaurus,Madsen 1976,154.8,143.1,Kimmeridgian,Tithonian,3
+Torvosaurus,Galton and Jensen 1979,165.3,143.1,Callovian,Tithonian,28
+Edmarka,Bakker et al. 1992,165.3,143.1,Callovian,Tithonian,28
+Wiehenvenator,Rauhut et al. 2016,165.3,161.5,Callovian,,1
+Duriavenator,Benson 2008,168.6,168.2,Bajocian,,1
+Megalosaurus,Parkinson 1822,205.7,66.0,Rhaetian,Maastrichtian,60
+Leshansaurus,Li et al. 2009,168.2,161.5,Bathonian,Callovian,1
+Eustreptospondylus,Walker 1964,165.3,161.5,Callovian,,1
+Magnosaurus,Huene 1932,170.9,168.6,Bajocian,,1
+Piveteausaurus,Taquet and Welles 1977,165.3,154.8,Callovian,Oxfordian,3
+Dubreuillosaurus,Allain 2005,168.2,165.3,Bathonian,,1
+Afrovenator,Sereno et al. 1994,170.9,143.1,Bajocian,Tithonian,3
+Gasosaurus,Dong and Tang 1985,170.9,154.8,Bajocian,Oxfordian,1
+Pandoravenator,Rauhut and Pol 2017,157.9,149.2,,,1
+Chuandongocoelurus,He 1984,170.9,154.8,Bajocian,Oxfordian,1
+Kayentavenator,Gay 2010,199.5,184.2,Sinemurian,Pliensbachian,1
+Cryolophosaurus,Hammer and Hickerson 1994,199.5,184.2,Sinemurian,Pliensbachian,1
+Yunyangosaurus,Dai et al. 2020,184.2,170.9,Toarcian,Aalenian,1
+Kaijiangosaurus,He 1984,170.9,168.2,Bajocian,,1
+Becklespinax,Olshevsky 1991,139.1,132.6,Berriasian,Valanginian,1
+Mirischia,Naish et al. 2004,119.57,113.2,Aptian,,1
+Nedcolbertia,Kirkland et al. 1998,137.05,132.6,Valanginian,,2
+Tanycolagreus,Carpenter et al. 2005,154.8,143.1,Kimmeridgian,Tithonian,4
+Aoniraptor,Motta et al. 2016,110.1,106.3,Albian,,1
+Phuwiangvenator,Samathi et al. 2019,125.77,121.4,Barremian,,2
+Vayuraptor,Samathi et al. 2019,125.77,121.4,Barremian,,1
+Siats,Zanno and Makovicky 2013,100.5,93.9,Cenomanian,,1
+Megaraptor,Novas 1998,93.9,85.7,Turonian,Coniacian,3
+Aerosteon,Sereno et al. 2008,83.6,72.2,Campanian,,1
+Tratayenia,Porfiri et al. 2018,85.7,83.6,Santonian,,1
+Orkoraptor,Novas et al. 2008,83.6,72.2,Campanian,,2
+Joaquinraptor,Ibiricu et al. 2025,72.2,66.0,Maastrichtian,,1
+Maip,Aranciaga Rolando et al. 2022,72.2,66.0,Maastrichtian,,1
+Murusraptor,Coria and Currie 2016,89.8,85.7,Coniacian,,1
+Australovenator,Hocknull et al. 2009,125.77,89.8,Barremian,Turonian,4
+Lourinhanosaurus,Mateus 1998,152.21,145.06,Kimmeridgian,Tithonian,2
+Xinjiangovenator,Rauhut and Xu 2005,137.05,100.5,Valanginian,Albian,1
+Lingyuanosaurus,Yao et al. 2019,121.4,113.2,Aptian,,1
+Alxasaurus,Russell and Dong 1994,121.4,113.2,Aptian,,1
+Martharaptor,Senter et al. 2012,137.05,132.6,Valanginian,,1
+Beipiaosaurus,Xu et al. 1999,125.77,119.57,Barremian,Aptian,2
+Nothronychus,Kirkland and Wolfe 2001,93.9,89.8,Turonian,,2
+Paralitherizinosaurus,Kobayashi et al. 2022,83.6,72.2,Campanian,,1
+Enigmosaurus,Barsbold and Perle 1983,100.5,83.6,Cenomanian,Santonian,1
+Nanshiungosaurus,Dong 1979,113.2,66.0,Albian,Maastrichtian,2
+Erliansaurus,Xu et al. 2002,83.6,72.2,Campanian,,1
+Segnosaurus,Perle 1979,100.5,83.6,Cenomanian,Santonian,6
+Therizinosaurus,Maleev 1954,72.2,66.0,Maastrichtian,,2
+Tiantaisaurus,Qian et al. 2012,106.3,100.5,Albian,,1
+Eshanosaurus,Xu et al. 2001,201.4,199.5,Hettangian,,1
+Duonychus,Kobayashi et al. 2025,100.5,83.6,Cenomanian,Santonian,1
+Suzhousaurus,Li et al. 2007,121.4,110.1,Aptian,Albian,2
+Neimongosaurus,Zhang et al. 2001,85.7,72.2,Santonian,Campanian,2
+Kayrasaurus,Liao et al. 2026,125.77,119.57,Barremian,Aptian,1
+Jianchangosaurus,Pu et al. 2013,125.77,119.57,Barremian,Aptian,1
+Falcarius,Kirkland et al. 2005,143.1,132.6,Berriasian,Valanginian,2
+Fukuivenator,Azuma et al. 2016,121.4,113.2,Aptian,,1
+Erlikosaurus,Barsbold and Perle 1980,93.9,83.6,Turonian,Santonian,1
+Zuolong,Choiniere et al. 2010,161.5,154.8,Oxfordian,,1
+Huaxiagnathus,Hwang et al. 2004,125.77,119.57,Barremian,Aptian,1
+Scipionyx,Dal Sasso and Signore 1996,113.2,110.1,Albian,,1
+Sinocalliopteryx,Ji et al. 2007,125.77,119.57,Barremian,Aptian,2
+Aniksosaurus,Martínez and Novas 2006,100.5,89.8,Cenomanian,Turonian,1
+Compsognathus,Wagner 1861,154.8,145.06,Kimmeridgian,Tithonian,4
+Ornitholestes,Osborn 1903,157.9,143.1,,,4
+Xunmenglong,Xing et al. 2020,132.6,125.77,Hauterivian,,1
+Aristosuchus,Seeley 1887,125.77,119.57,Barremian,Aptian,1
+Bicentenaria,Novas et al. 2012,113.2,110.1,Albian,,1
+Huadanosaurus,Qiu et al. 2025,125.77,121.4,Barremian,,1
+Sinosauropteryx,Ji and Ji 1996,125.77,119.57,Barremian,Aptian,4
+Ngexisaurus,Zhao 1983,174.7,161.5,Aalenian,Callovian,1
+Santanaraptor,Kellner 1999,119.57,113.2,Aptian,,1
+Juravenator,Göhlich and Chiappe 2006,152.21,149.2,Kimmeridgian,,1
+Kol,Turner et al. 2009,83.6,72.2,Campanian,,1
+Migmanychion,Wang et al. 2023,121.4,119.57,Aptian,,1
+Yixianosaurus,Xu and Wang 2003,125.77,119.57,Barremian,Aptian,1
+Avimimus,Kurzanov 1981,83.6,66.0,Campanian,Maastrichtian,8
+Chirostenotes,Gilmore 1924,83.6,66.0,Campanian,Maastrichtian,28
+Macrophalangia,Sternberg 1932,83.6,66.0,Campanian,Maastrichtian,28
+Microvenator,Ostrom 1970,121.4,93.9,Aptian,Cenomanian,4
+Beibeilong,Pu et al. 2017,100.5,89.8,Cenomanian,Turonian,1
+Citipes,Funston 2020,83.6,66.0,Campanian,Maastrichtian,12
+Caenagnathasia,Currie et al. 1994,93.9,72.2,Turonian,Campanian,7
+Caenagnathus,Sternberg 1940,83.6,66.0,Campanian,Maastrichtian,8
+Anzu,Lamanna et al. 2014,72.2,66.0,Maastrichtian,,6
+Apatoraptor,Funston and Currie 2016,72.2,66.0,Maastrichtian,,1
+Hagryphus,Zanno and Sampson 2005,83.6,72.2,Campanian,,1
+Epichirostenotes,Sullivan et al. 2011,83.6,72.2,Campanian,,1
+Elmisaurus,Osmolska 1981,72.2,66.0,Maastrichtian,,4
+Nomingia,Barsbold et al. 2000,72.2,66.0,Maastrichtian,,4
+Anomalipes,Yu et al. 2018,83.6,72.2,Campanian,,1
+Leptorhynchos,Longrich et al. 2013,83.6,66.0,Campanian,Maastrichtian,10
+Gigantoraptor,Xu et al. 2007,83.6,72.2,Campanian,,1
+Eoneophron,Atkins-Weltman et al. 2024,72.2,66.0,Maastrichtian,,1
+Incisivosaurus,Xu et al. 2002,125.77,100.5,Barremian,Albian,4
+Oviraptor,Osborn 1924,89.8,72.2,Coniacian,Campanian,3
+Nankangia,Lü et al. 2013,72.2,66.0,Maastrichtian,,1
+Huanansaurus,Lü et al. 2015,72.2,66.0,Maastrichtian,,1
+Wulatelong,Xu et al. 2013,83.6,72.2,Campanian,,1
+Tongtianlong,Lü et al. 2016,72.2,66.0,Maastrichtian,,1
+Rinchenia,Barsbold 1997,72.2,66.0,Maastrichtian,,1
+Citipati,Clark et al. 2001,83.6,72.2,Campanian,,2
+Corythoraptor,Lü et al. 2017,72.2,66.0,Maastrichtian,,1
+Yulong,Lü et al. 2013,72.2,66.0,Maastrichtian,,2
+Ganzhousaurus,Wang et al. 2013,72.2,66.0,Maastrichtian,,1
+Ingenia,Barsbold 1981,72.2,66.0,Maastrichtian,,1
+Banji,Xu and Han 2010,72.2,66.0,Maastrichtian,,1
+Oksoko,Funston et al. 2020,72.2,66.0,Maastrichtian,,3
+Heyuannia,Lü 2003,83.6,66.0,Campanian,Maastrichtian,2
+Ajancingenia,Easter 2013,83.6,66.0,Campanian,Maastrichtian,2
+Shixinggia,Lü and Zhang 2005,72.2,66.0,Maastrichtian,,1
+Jiangxisaurus,Wei et al. 2013,72.2,66.0,Maastrichtian,,1
+Machairasaurus,Longrich et al. 2010,83.6,72.2,Campanian,,1
+Khaan,Clark et al. 2001,83.6,72.2,Campanian,,2
+Nemegtomaia,Lü et al. 2005,83.6,66.0,Campanian,Maastrichtian,3
+Conchoraptor,Barsbold 1986,83.6,72.2,Campanian,,2
+Gobiraptor,Lee et al. 2019,72.2,66.0,Maastrichtian,,1
+Luoyanggia,Lü et al. 2009,121.4,100.5,Aptian,Albian,1
+Yuanyanglong,Hao et al. 2025,121.4,100.5,Aptian,Albian,1
+Protarchaeopteryx,Ji and Ji 1997,125.77,119.57,Barremian,Aptian,1
+Caudipteryx,Ji et al. 1998,125.77,119.57,Barremian,Aptian,2
+Ningyuansaurus,Ji et al. 2012,125.77,119.57,Barremian,Aptian,1
+Xingtianosaurus,Qiu et al. 2019,125.77,119.57,Barremian,Aptian,1
+Similicaudipteryx,He et al. 2008,121.4,113.2,Aptian,,1
+Yi,Xu et al. 2015,165.3,154.8,Callovian,Oxfordian,1
+Scansoriopteryx,Czerkas and Yuan 2002,125.77,119.57,Barremian,Aptian,1
+Ambopteryx,Wang et al. 2019,161.5,143.1,Oxfordian,Tithonian,1
+Epidendrosaurus,Zhang et al. 2002,165.3,161.5,Callovian,,1
+Pedopenna,Xu and Zhang 2005,165.3,161.5,Callovian,,1
+Epidexipteryx,Zhang et al. 2008,165.3,161.5,Callovian,,1
+Paronychodon,Cope 1876,154.8,66.0,Kimmeridgian,Maastrichtian,141
+Euronychodon,Antunes and Sigogneau-Russell 1991,154.8,66.0,Kimmeridgian,Maastrichtian,141
+Tripriodon,Marsh 1889,154.8,66.0,Kimmeridgian,Maastrichtian,141
+Changzhousaurus,Xu 2026,121.4,113.2,Aptian,,1
+Eosinopteryx,Godefroit et al. 2013,168.2,152.21,Bathonian,Kimmeridgian,1
+Zhongornis,Gao et al. 2008,125.77,119.57,Barremian,Aptian,1
+Pamparaptor,Porfiri et al. 2011,93.9,85.7,Turonian,Coniacian,1
+Xixiasaurus,Lü et al. 2010,89.8,72.2,Coniacian,Campanian,1
+Anchiornis,Xu et al. 2009,168.2,152.21,Bathonian,Kimmeridgian,3
+Jianianhualong,Xu et al. 2017,125.77,119.57,Barremian,Aptian,1
+Sinovenator,Xu et al. 2002,125.77,119.57,Barremian,Aptian,4
+Mei,Xu and Norell 2004,125.77,119.57,Barremian,Aptian,2
+Xiaotingia,Xu et al. 2011,168.2,152.21,Bathonian,Kimmeridgian,1
+Tochisaurus,Kurzanov and Osmólska 1991,72.2,66.0,Maastrichtian,,1
+Harenadraco,Lee et al. 2024,83.6,72.2,Campanian,,1
+Geminiraptor,Senter et al. 2010,137.05,132.6,Valanginian,,1
+Sinusonasus,Xu and Wang 2004,125.77,119.57,Barremian,Aptian,1
+Archaeornithoides,Elzanowski and Wellnhofer 1992,83.6,72.2,Campanian,,1
+Philovenator,Xu et al. 2012,83.6,72.2,Campanian,,1
+Tamarro,Sellés et al. 2021,72.2,66.0,Maastrichtian,,1
+Jinfengopteryx,Ji et al. 2005,125.77,121.4,Barremian,,1
+Liaoningvenator,Shen et al. 2017,125.77,119.57,Barremian,Aptian,1
+Papiliovenator,Pei et al. 2022,83.6,72.2,Campanian,,1
+Gobivenator,Tsuihiji et al. 2014,83.6,72.2,Campanian,,1
+Daliansaurus,Shen et al. 2017,125.77,119.57,Barremian,Aptian,1
+Almas,Pei et al. 2017,83.6,72.2,Campanian,,1
+Urbacodon,Averianov and Sues 2007,125.77,72.2,Barremian,Campanian,6
+Xenovenator,Rivera-Sylva et al. 2026,83.6,72.2,Campanian,,5
+Latenivenatrix,van der Reest and Currie 2017,83.6,72.2,Campanian,,4
+Stenonychosaurus,Sternberg 1932,83.6,66.0,Campanian,Maastrichtian,14
+Albertavenator,Evans et al. 2017,83.6,66.0,Campanian,Maastrichtian,4
+Saurornithoides,Osborn 1924,100.5,66.0,Cenomanian,Maastrichtian,8
+Borogovia,Osmolska 1987,72.2,66.0,Maastrichtian,,1
+Talos,Zanno et al. 2011,83.6,72.2,Campanian,,1
+Zanabazar,Norell et al. 2009,72.2,66.0,Maastrichtian,,1
+Byronosaurus,Norell et al. 2000,83.6,72.2,Campanian,,3
+Linhevenator,Xu et al. 2011,83.6,72.2,Campanian,,1
+Hypnovenator,Kubota et al. 2024,113.2,106.3,Albian,,1
+Troodon,Leidy 1856,83.6,66.0,Campanian,Maastrichtian,103
+Polyodontosaurus,Gilmore 1932,83.6,66.0,Campanian,Maastrichtian,103
+Sinornithoides,Russell and Dong 1994,113.2,110.1,Albian,,2
+Hesperornithoides,Hartman et al. 2019,154.8,143.1,Kimmeridgian,Tithonian,1
+Pectinodon,Carpenter 1982,100.5,66.0,Cenomanian,Maastrichtian,9
+Imperobator,Ely and Case 2019,72.2,66.0,Maastrichtian,,1
+Zhenyuanlong,Lü and Brusatte 2015,125.77,119.57,Barremian,Aptian,1
+Nuthetes,Owen 1854,143.1,137.05,Berriasian,,7
+Zhongjianosaurus,Xu and Qin 2017,121.4,113.2,Aptian,,1
+Graciliraptor,Xu and Wang 2004,125.77,119.57,Barremian,Aptian,1
+Hesperonychus,Longrich and Currie 2009,83.6,72.2,Campanian,,4
+Jian,Zhou et al. 2026,121.4,113.2,Aptian,,1
+Sinornithosaurus,Xu et al. 1999,125.77,119.57,Barremian,Aptian,3
+Shanag,Turner et al. 2007,143.1,100.5,Berriasian,Albian,1
+Microraptor,Xu et al. 2000,121.4,113.2,Aptian,,10
+Archaeoraptor,Sloan 1999,121.4,113.2,Aptian,,10
+Cryptovolans,Czerkas et al. 2002,121.4,113.2,Aptian,,10
+Changyuraptor,Han et al. 2014,125.77,119.57,Barremian,Aptian,1
+Daurlong,Wang et al. 2022,121.4,119.57,Aptian,,1
+Dromaeosauroides,Christiansen and Bonde 2003,139.1,137.05,Berriasian,,1
+Balaur,Csiki et al. 2010,72.2,66.0,Maastrichtian,,2
+Richardoestesia,Currie et al. 1990,154.8,66.0,Kimmeridgian,Maastrichtian,239
+Asiamericana,Nessov 1995,154.8,66.0,Kimmeridgian,Maastrichtian,239
+Tianyuraptor,Zheng et al. 2009,125.77,119.57,Barremian,Aptian,1
+Wulong,Poust et al. 2020,121.4,113.2,Aptian,,1
+Kuru,Napoli et al. 2021,83.6,72.2,Campanian,,1
+Variraptor,Le Loeuff and Buffetaut 1998,83.6,66.0,Campanian,Maastrichtian,3
+Bambiraptor,Burnham et al. 2000,83.6,72.2,Campanian,,1
+Vectiraptor,Longrich et al. 2022,125.77,121.4,Barremian,,1
+Saurornitholestes,Sues 1978,83.6,66.0,Campanian,Maastrichtian,148
+Atrociraptor,Currie and Varricchio 2004,83.6,66.0,Campanian,Maastrichtian,6
+Zapsalis,Cope 1876,85.7,66.0,Santonian,Maastrichtian,7
+Boreonykus,Bell and Currie 2016,83.6,72.2,Campanian,,2
+Itemirus,Kurzanov 1976,93.9,89.8,Turonian,,5
+Dakotaraptor,DePalma et al. 2015,72.2,66.0,Maastrichtian,,2
+Yurgovuchia,Senter et al. 2012,139.1,132.6,Berriasian,Valanginian,2
+Dromaeosaurus,Matthew and Brown 1922,110.1,66.0,Albian,Maastrichtian,48
+Adasaurus,Barsbold 1977,72.2,66.0,Maastrichtian,,1
+Deinonychus,Ostrom 1969,143.1,93.9,Berriasian,Cenomanian,47
+Tsaagan,Norell et al. 2006,83.6,72.2,Campanian,,1
+Acheroraptor,Evans et al. 2013,72.2,66.0,Maastrichtian,,3
+Linheraptor,Xu et al. 2010,83.6,72.2,Campanian,,1
+Dineobellator,Jasinski et al. 2020,72.2,66.0,Maastrichtian,,1
+Shri,Turner et al. 2021,83.6,72.2,Campanian,,2
+Velociraptor,Osborn 1924,89.8,66.0,Coniacian,Maastrichtian,20
+Kansaignathus,Averianov and Lopatin 2021,85.7,83.6,Santonian,,1
+Utahraptor,Kirkland et al. 1993,137.05,132.6,Valanginian,,4
+Achillobator,Perle et al. 1999,100.5,83.6,Cenomanian,Santonian,1
+Luanchuanraptor,Lü and et al 2007,72.2,66.0,Maastrichtian,,1
+Pyroraptor,Allain and Taquet 2000,83.6,66.0,Campanian,Maastrichtian,3
+Neuquenraptor,Novas and Pol 2005,93.9,85.7,Turonian,Coniacian,2
+Unenlagia,Novas and Puerta 1997,93.9,85.7,Turonian,Coniacian,2
+Ypupiara,Brum et al. 2021,72.2,66.0,Maastrichtian,,1
+Buitreraptor,Makovicky et al. 2005,113.2,110.1,Albian,,3
+Diuqin,Porfiri et al. 2024,85.7,83.6,Santonian,,1
+Austroraptor,Novas et al. 2008,72.2,66.0,Maastrichtian,,2
+Rahonavis,Forster et al. 1998,72.2,66.0,Maastrichtian,,2
+Rahona,Forster et al. 1998,72.2,66.0,Maastrichtian,,2
+Hulsanpes,Osmolska 1982,83.6,72.2,Campanian,,1
+Halszkaraptor,Cau et al. 2017,83.6,72.2,Campanian,,1
+Natovenator,Lee et al. 2022,83.6,72.2,Campanian,,1
+Mahakala,Turner et al. 2007,83.6,72.2,Campanian,,1
+Serikornis,Lefèvre et al. 2017,161.5,154.8,Oxfordian,,1
+Pneumatoraptor,Osi et al. 2010,85.7,83.6,Santonian,,1
+Caihong,Hu et al. 2018,161.5,154.8,Oxfordian,,1
+Overoraptor,Motta et al. 2020,110.1,106.3,Albian,,1
+Archaeopteryx,Meyer 1861,149.2,121.4,Tithonian,Barremian,10
+Jurapteryx,Howgate 1985,149.2,121.4,Tithonian,Barremian,10
+Griphosaurus,Wagner 1861,149.2,121.4,Tithonian,Barremian,10
+Archaeornis,Petronievics 1917,149.2,121.4,Tithonian,Barremian,10
+Baminornis,Chen et al. 2025,152.21,145.06,Kimmeridgian,Tithonian,1
+Alcmonavis,Rauhut et al. 2019,149.2,145.06,Tithonian,,1
+Zhengheornis,Wang et al. 2026,152.21,145.06,Kimmeridgian,Tithonian,1
+Dalianraptor,Gao and Liu 2005,121.4,113.2,Aptian,,1
+Fukuipteryx,Imai et al. 2019,121.4,113.2,Aptian,,1
+Kompsornis,Wang et al. 2020,121.4,113.2,Aptian,,1
+Neimengornis,Wang et al. 2021,121.4,113.2,Aptian,,1
+Aurornis,Godefroit et al. 2013,168.2,152.21,Bathonian,Kimmeridgian,1
+Fujianvenator,Xu et al. 2023,152.21,145.06,Kimmeridgian,Tithonian,1
+Kunpengornis,Huang et al. 2026,121.4,113.2,Aptian,,1
+Bellulia,Wang et al. 2016,121.4,113.2,Aptian,,1
+Dingavis,O'Connor et al. 2016,121.4,113.2,Aptian,,1
+Chaoyangia,Hou and Zhang 1993,121.4,113.2,Aptian,,1
+Vorona,Forster et al. 1996,72.2,66.0,Maastrichtian,,5
+Zhongjianornis,Zhou et al. 2010,121.4,113.2,Aptian,,1
+Mengciusornis,Wang et al. 2020,121.4,113.2,Aptian,,1
+Liaoningornis,Hou 1997,125.77,119.57,Barremian,Aptian,1
+Antarcticavis,Cordes-Person et al. 2020,72.2,66.0,Maastrichtian,,1
+Apsaravis,Norell and Clarke 2001,83.6,72.2,Campanian,,1
+Hollanda,Bell et al. 2010,83.6,72.2,Campanian,,1
+Changmaornis,Wang et al. 2013,121.4,113.2,Aptian,,1
+Jiuquanornis,Wang et al. 2013,121.4,113.2,Aptian,,1
+Archaeorhynchus,Zhou and Zhang 2006,125.77,113.2,Barremian,Aptian,2
+Jianchangornis,Zhou et al. 2009,121.4,113.2,Aptian,,1
+Schizooura,Zhou et al. 2012,121.4,113.2,Aptian,,1
+Piscivoravis,Zhou et al. 2013,121.4,113.2,Aptian,,1
+Juehuaornis,Wang et al. 2015,121.4,113.2,Aptian,,1
+Longicrusavis,O'Connor et al. 2010,125.77,119.57,Barremian,Aptian,1
+Hongshanornis,Zhou and Zhang 2005,125.77,119.57,Barremian,Aptian,2
+Tianyuornis,Zheng et al. 2014,125.77,121.4,Barremian,,1
+Archaeornithura,Wang et al. 2015,132.6,125.77,Hauterivian,,1
+Songlingornis,Hou 1997,121.4,113.2,Aptian,,1
+Parahongshanornis,Li et al. 2011,121.4,113.2,Aptian,,1
+Yixianornis,Zhou and Zhang 2001,121.4,113.2,Aptian,,1
+Yumenornis,Wang et al. 2013,121.4,113.2,Aptian,,1
+Patagopteryx,Alvarenga and Bonaparte 1992,85.7,83.6,Santonian,,1
+Ambiortus,Kurochkin 1982,132.6,121.4,Hauterivian,Barremian,1
+Eogranivora,Zheng et al. 2018,125.77,119.57,Barremian,Aptian,1
+Kaririavis,Carvalho et al. 2021,119.57,113.2,Aptian,,1
+Cerebavis,Kurochkin and Saveliev 2006,100.5,93.9,Cenomanian,,1
+Tingmiatornis,Bono et al. 2016,100.5,93.9,Cenomanian,,1
+Gargantuavis,Buffetaut and Le Loeuff 1998,83.6,66.0,Campanian,Maastrichtian,4
+Kookne,Novas et al. 2019,72.2,66.0,Maastrichtian,,1
+Kuszholia,Nessov 1992,93.9,89.8,Turonian,,2
+Enaliornis,Seeley 1876,106.3,100.5,Albian,,2
+Pelagornis,Seeley 1866,106.3,100.5,Albian,,2
+Baptornis,Marsh 1877,89.8,72.2,Coniacian,Campanian,10
+Parascaniornis,Lambrecht 1933,89.8,72.2,Coniacian,Campanian,10
+Judinornis,Nessov and Borkin 1983,72.2,66.0,Maastrichtian,,1
+Fumicollis,Bell and Chiappe 2015,89.8,83.6,Coniacian,Santonian,1
+Pasquiaornis,Tokaryk et al. 1997,100.5,93.9,Cenomanian,,2
+Chupkaornis,Tanaka et al. 2018,89.8,83.6,Coniacian,Santonian,1
+Canadaga,Hou 1999,83.6,66.0,Campanian,Maastrichtian,2
+Hesperornis,Marsh 1872,89.8,66.0,Coniacian,Maastrichtian,65
+Hargeria,Lucas 1903,89.8,66.0,Coniacian,Maastrichtian,65
+Lestornis,Marsh 1876,89.8,66.0,Coniacian,Maastrichtian,65
+Coniornis,Marsh 1893,89.8,66.0,Coniacian,Maastrichtian,65
+Parahesperornis,Martin 1984,89.8,83.6,Coniacian,Santonian,3
+Asiahesperornis,Nessov and Prizemlin 1991,83.6,66.0,Campanian,Maastrichtian,2
+Brodavis,Martin et al. 2012,83.6,66.0,Campanian,Maastrichtian,5
+Potamornis,Elzanowski et al. 2001,72.2,66.0,Maastrichtian,,1
+Archaeovolans,Czerkas and Xu 2002,121.4,113.2,Aptian,,1
+Limenavis,Clarke and Chiappe 2001,72.2,66.0,Maastrichtian,,1
+Apatornis,Marsh 1873,89.8,83.6,Coniacian,Santonian,1
+Iaceornis,Clarke 2004,85.7,83.6,Santonian,,1
+Janavis,Benito et al. 2022,72.2,66.0,Maastrichtian,,1
+Ichthyornis,Marsh 1872,100.5,72.2,Cenomanian,Campanian,33
+Plegadornis,Wetmore 1962,100.5,72.2,Cenomanian,Campanian,33
+Angelinornis,Kashin 1972,100.5,72.2,Cenomanian,Campanian,33
+Colonosaurus,Marsh 1872,100.5,72.2,Cenomanian,Campanian,33
+Similiyanornis,Wang et al. 2020,121.4,113.2,Aptian,,1
+Yanornis,Zhou and Zhang 2001,125.77,113.2,Barremian,Aptian,4
+Aberratiodontus,Gong et al. 2004,125.77,113.2,Barremian,Aptian,4
+Abitusavis,Wang et al. 2020,125.77,119.57,Barremian,Aptian,1
+Palintropus,Brodkorb 1970,83.6,72.2,Campanian,,1
+Crateropteryx,Seeley 1900,168.2,165.3,Bathonian,,1
+Feitianius,O'Connor et al. 2016,121.4,113.2,Aptian,,1
+Fortipesavis,Clark and O’Connor 2021,100.5,93.9,Cenomanian,,1
+Paraprotopteryx,Zheng et al. 2007,132.6,125.77,Hauterivian,,1
+Lectavis,Chiappe 1993,72.2,66.0,Maastrichtian,,1
+Gretcheniao,Chiappe et al. 2019,125.77,119.57,Barremian,Aptian,1
+Dapingfangornis,Li et al. 2006,121.4,113.2,Aptian,,2
+Houornis,Wang and Liu 2015,121.4,113.2,Aptian,,1
+Sinornis,Sereno and Rao 1992,121.4,113.2,Aptian,,1
+Gurilynia,Kurochkin 1999,72.2,66.0,Maastrichtian,,1
+Kizylkumavis,Nessov 1984,93.9,89.8,Turonian,,1
+Abavornis,Panteleyev 1998,93.9,89.8,Turonian,,2
+Zhyraornis,Nessov 1984,100.5,89.8,Cenomanian,Turonian,3
+Nanantius,Molnar 1986,106.3,100.5,Albian,,2
+Alexornis,Brodkorb 1976,85.7,83.6,Santonian,,1
+Incolornis,Panteleyev 1998,93.9,89.8,Turonian,,1
+Explorornis,Panteleyev 1998,93.9,89.8,Turonian,,3
+Lenesornis,Kurochkin 1996,93.9,89.8,Turonian,,1
+Sazavis,Nessov 1989,93.9,89.8,Turonian,,2
+Catenoleimus,Panteleyev 1998,93.9,89.8,Turonian,,1
+Yungavolucris,Chiappe 1993,72.2,66.0,Maastrichtian,,1
+Neobohaiornis,Shen et al. 2024,121.4,113.2,Aptian,,1
+Longusunguis,Wang et al. 2014,121.4,113.2,Aptian,,1
+Parabohaiornis,Wang et al. 2014,121.4,113.2,Aptian,,1
+Shenqiornis,Wang et al. 2010,161.5,121.4,Oxfordian,Barremian,1
+Bohaiornis,Hu et al. 2011,121.4,113.2,Aptian,,2
+Sulcavis,O'Connor et al. 2013,121.4,113.2,Aptian,,1
+Zhouornis,Zhang et al. 2013,121.4,113.2,Aptian,,2
+Holbotia,Zelenkov and Averianov 2015,132.6,121.4,Hauterivian,Barremian,1
+Imparavis,Wang et al. 2024,121.4,119.57,Aptian,,1
+Falcatakely,O'Connor et al. 2020,72.2,66.0,Maastrichtian,,1
+Cruralispennia,Wang et al. 2017,132.6,125.77,Hauterivian,,1
+Iberomesornis,Sanz et al. 1990,125.77,121.4,Barremian,,2
+Orienantius,Liu et al. 2019,132.6,125.77,Hauterivian,,1
+Gobipteryx,Elzanowski 1974,83.6,66.0,Campanian,Maastrichtian,8
+Microenantiornis,Wei and Li 2017,121.4,113.2,Aptian,,1
+Concornis,Sanz and Buscalioni 1992,125.77,121.4,Barremian,,2
+Yuornis,Xu et al. 2021,72.2,66.0,Maastrichtian,,1
+Otogornis,Hou 1994,125.77,121.4,Barremian,,1
+Gobipipus,Kurochkin et al. 2013,83.6,72.2,Campanian,,1
+Shangyang,Wang and Zhou 2019,121.4,113.2,Aptian,,1
+Yatenavis,Álvarez Herrera et al. 2023,72.2,66.0,Maastrichtian,,1
+Parvavis,Wang et al. 2014,93.9,83.6,Turonian,Santonian,1
+Navaornis,Chiappe et al. 2024,83.6,66.0,Campanian,Maastrichtian,1
+Eoalulavis,Sanz et al. 1996,125.77,121.4,Barremian,,1
+Halimornis,Chiappe et al. 2002,83.6,72.2,Campanian,,1
+Neuquenornis,Chiappe and Calvo 1994,85.7,83.6,Santonian,,2
+Intiornis,Novas et al. 2010,83.6,72.2,Campanian,,1
+Soroavisaurus,Chiappe 1993,72.2,66.0,Maastrichtian,,1
+Mirarce,Atterholt et al. 2018,83.6,72.2,Campanian,,1
+Bauxitornis,Dyke and Osi 2010,85.7,83.6,Santonian,,2
+Avisaurus,Brett-Surman and Paul 1985,72.2,66.0,Maastrichtian,,2
+Gettyia,Atterholt et al. 2018,83.6,72.2,Campanian,,1
+Enantiophoenix,Cau and Arduini 2008,100.5,93.9,Cenomanian,,1
+Elsornis,Chiappe et al. 2007,83.6,72.2,Campanian,,1
+Piscivorenantiornis,Wang and Zhou 2017,121.4,113.2,Aptian,,1
+Yuanjiawaornis,Hu et al. 2015,121.4,113.2,Aptian,,1
+Longchengornis,Hou 1997,121.4,113.2,Aptian,,1
+Gracilornis,Li and Hou 2011,121.4,113.2,Aptian,,1
+Alethoalaornis,Li et al. 2007,121.4,113.2,Aptian,,1
+Largirostrornis,Hou 1997,121.4,113.2,Aptian,,1
+Eopengornis,Wang et al. 2014,132.6,125.77,Hauterivian,,1
+Chiappeavis,O'Connor et al. 2016,121.4,113.2,Aptian,,1
+Pengornis,Zhou et al. 2008,121.4,113.2,Aptian,,1
+Yuanchuavis,Wang et al. 2021,143.1,100.5,Berriasian,Albian,1
+Parapengornis,Hu et al. 2015,125.77,113.2,Barremian,Aptian,2
+Qiliania,Ji et al. 2011,121.4,113.2,Aptian,,1
+Junornis,Liu et al. 2017,125.77,119.57,Barremian,Aptian,1
+Dunhuangia,Wang et al. 2015,121.4,113.2,Aptian,,1
+Flexomornis,Tykoski and Fiorillo 2010,100.5,93.9,Cenomanian,,1
+Brevirostruavis,Li et al. 2021,121.4,113.2,Aptian,,1
+Huoshanornis,Wang et al. 2010,121.4,113.2,Aptian,,1
+Elektorornis,Xing et al. 2019,100.5,93.9,Cenomanian,,1
+Xiangornis,Hu et al. 2012,121.4,113.2,Aptian,,1
+Fortunguavis,Wang et al. 2014,121.4,113.2,Aptian,,1
+Linyiornis,Wang et al. 2016,121.4,113.2,Aptian,,1
+Cathayornis,Zhou et al. 1992,121.4,113.2,Aptian,,3
+Musivavis,Wang et al. 2022,121.4,113.2,Aptian,,1
+Vescornis,Zhang et al. 2004,125.77,119.57,Barremian,Aptian,1
+Eoenantiornis,Hou et al. 1999,125.77,119.57,Barremian,Aptian,1
+Cratoavis,Carvalho et al. 2015,119.57,113.2,Aptian,,1
+Grabauornis,Dalsatt et al. 2014,125.77,119.57,Barremian,Aptian,1
+Martinavis,Walker et al. 2007,83.6,66.0,Campanian,Maastrichtian,6
+Elbretornis,Walker and Dyke 2009,72.2,66.0,Maastrichtian,,2
+Dalingheornis,Zhang et al. 2006,125.77,119.57,Barremian,Aptian,1
+Enantiornis,Walker 1981,93.9,66.0,Turonian,Maastrichtian,4
+Eocathayornis,Zhou 2002,121.4,113.2,Aptian,,1
+Evgenavis,O'Connor et al. 2014,125.77,113.2,Barremian,Aptian,1
+Noguerornis,Lacasa Ruiz 1989,125.77,121.4,Barremian,,1
+Avimaia,Bailleul et al. 2019,121.4,113.2,Aptian,,1
+Monoenantiornis,Hu and O'Connor 2017,121.4,113.2,Aptian,,1
+Protopteryx,Zhang and Zhou 2000,132.6,121.4,Hauterivian,Barremian,2
+Pterygornis,Wang et al. 2014,121.4,113.2,Aptian,,1
+Castignovolucris,Buffetaut et al. 2023,83.6,66.0,Campanian,Maastrichtian,1
+Longirostravis,Hou et al. 2004,125.77,119.57,Barremian,Aptian,1
+Chromeornis,O’Connor et al. 2025,121.4,113.2,Aptian,,1
+Longipteryx,Zhang et al. 2000,121.4,113.2,Aptian,,3
+Shengjingornis,Li et al. 2012,121.4,113.2,Aptian,,1
+Camptodontornis,Demirjian 2019,121.4,113.2,Aptian,,1
+Camptodontus,Li et al. 2010,121.4,113.2,Aptian,,1
+Rapaxavis,Morschhauser et al. 2009,121.4,113.2,Aptian,,1
+Boluochia,Zhou 1995,121.4,113.2,Aptian,,1
+Shanweiniao,O'Connor et al. 2009,125.77,119.57,Barremian,Aptian,1
+Xinghaiornis,Wang et al. 2013,125.77,119.57,Barremian,Aptian,1
+Alamitornis,Agnolin and Martinelli 2009,72.2,66.0,Maastrichtian,,1
+Qiupanykus,Lü et al. 2018,72.2,66.0,Maastrichtian,,1
+Tugulusaurus,Dong 1973,137.05,100.5,Valanginian,Albian,1
+Xiyunykus,Xu et al. 2018,137.05,132.6,Valanginian,,1
+Patagonykus,Novas 1994,93.9,85.7,Turonian,Coniacian,1
+Elopteryx,Andrews 1913,72.2,66.0,Maastrichtian,,3
+Albertonykus,Longrich and Currie 2009,72.2,66.0,Maastrichtian,,2
+Achillesaurus,Martinelli and Vera 2007,85.7,83.6,Santonian,,1
+Alvarezsaurus,Bonaparte 1991,85.7,83.6,Santonian,,1
+Trierarchuncus,Fowler et al. 2020,72.2,66.0,Maastrichtian,,6
+Alnashetri,Makovicky et al. 2012,113.2,110.1,Albian,,2
+Albinykus,Nesbitt et al. 2011,85.7,72.2,Santonian,Campanian,1
+Ceratonykus,Alifanov and Barsbold 2009,83.6,72.2,Campanian,,1
+Shuvuuia,Chiappe et al. 1998,83.6,72.2,Campanian,,3
+Jaculinykus,Kubo et al. 2023,83.6,72.2,Campanian,,1
+Linhenykus,Xu et al. 2011,83.6,72.2,Campanian,,2
+Ondogurvel,Averianov and Lopatin 2022,83.6,72.2,Campanian,,1
+Parvicursor,Karhu and Rautian 1996,83.6,72.2,Campanian,,1
+Xixianykus,Xu et al. 2010,89.8,83.6,Coniacian,Santonian,1
+Mononykus,Perle et al. 1993,83.6,66.0,Campanian,Maastrichtian,6
+Mononychus,Perle et al. 1993,83.6,66.0,Campanian,Maastrichtian,6
+Dzharaonyx,Averianov and Sues 2022,93.9,89.8,Turonian,,1
+Khulsanurus,Averianov and Lopatin 2021,83.6,72.2,Campanian,,1
+Nemegtonykus,Lee et al. 2019,72.2,66.0,Maastrichtian,,1
+Bonapartenykus,Agnolin et al. 2012,72.2,66.0,Maastrichtian,,3
+Bannykus,Xu et al. 2018,121.4,113.2,Aptian,,1
+Haplocheirus,Choiniere et al. 2010,161.5,154.8,Oxfordian,,1
+Aorun,Choiniere et al. 2013,165.3,161.5,Callovian,,1
+Shishugounykus,Qin et al. 2019,161.5,154.8,Oxfordian,,1
+Jinbeisaurus,Wu et al. 2020,100.5,72.2,Cenomanian,Campanian,1
+Eotyrannus,Hutt et al. 2001,132.6,121.4,Hauterivian,Barremian,1
+Xiongguanlong,Li et al. 2009,121.4,113.2,Aptian,,1
+Suskityrannus,Nesbitt et al. 2019,93.9,89.8,Turonian,,1
+Gualicho,Apesteguia et al. 2016,110.1,106.3,Albian,,1
+Timimus,Rich and Vickers-Rich 1994,113.2,93.9,Albian,Cenomanian,2
+Dryptosaurus,Marsh 1877,113.2,66.0,Albian,Maastrichtian,13
+Laelaps,Cope 1866,113.2,66.0,Albian,Maastrichtian,13
+Moros,Zanno et al. 2019,100.5,93.9,Cenomanian,,1
+Timurlengia,Brusatte et al. 2016,93.9,89.8,Turonian,,1
+Juratyrant,Brusatte and Benson 2013,145.06,143.1,Tithonian,,1
+Khankhuuluu,Voris et al. 2025,100.5,83.6,Cenomanian,Santonian,2
+Raptorex,Sereno et al. 2009,125.77,66.0,Barremian,Maastrichtian,1
+Alectrosaurus,Gilmore 1933,100.5,72.2,Cenomanian,Campanian,19
+Kileskus,Averianov et al. 2010,168.2,165.3,Bathonian,,2
+Yutyrannus,Xu et al. 2012,125.77,119.57,Barremian,Aptian,1
+Sinotyrannus,Ji et al. 2009,121.4,113.2,Aptian,,1
+Guanlong,Xu et al. 2006,161.5,154.8,Oxfordian,,1
+Proceratosaurus,Huene 1926,168.2,165.3,Bathonian,,1
+Calamosaurus,Lydekker 1891,125.77,119.57,Barremian,Aptian,1
+Appalachiosaurus,Carr et al. 2005,85.7,66.0,Santonian,Maastrichtian,6
+Dilong,Xu et al. 2004,125.77,119.57,Barremian,Aptian,2
+Nanotyrannus,Bakker et al. 1988,72.2,66.0,Maastrichtian,,6
+Stokesosaurus,Madsen 1974,154.8,143.1,Kimmeridgian,Tithonian,6
+Lythronax,Loewen et al. 2013,83.6,72.2,Campanian,,1
+Tarbosaurus,Maleev 1955,89.8,66.0,Coniacian,Maastrichtian,56
+Maleevosaurus,Carpenter 1992,89.8,66.0,Coniacian,Maastrichtian,56
+Shanshanosaurus,Dong 1977,89.8,66.0,Coniacian,Maastrichtian,56
+Jenghizkhan,Olshevsky 1995,89.8,66.0,Coniacian,Maastrichtian,56
+Tyrannosaurus,Osborn 1905,83.6,66.0,Campanian,Maastrichtian,87
+Stygivenator,Olshevsky 1995,83.6,66.0,Campanian,Maastrichtian,87
+Dynamosaurus,Osborn 1905,83.6,66.0,Campanian,Maastrichtian,87
+Dinotyrannus,Olshevsky 1995,83.6,66.0,Campanian,Maastrichtian,87
+Manospondylus,Cope 1892,83.6,66.0,Campanian,Maastrichtian,87
+Zhuchengtyrannus,Hone et al. 2011,83.6,72.2,Campanian,,1
+Asiatyrannus,Zheng et al. 2024,72.2,66.0,Maastrichtian,,1
+Dynamoterror,McDonald et al. 2018,83.6,72.2,Campanian,,1
+Bistahieversor,Carr and Williamson 2010,83.6,72.2,Campanian,,4
+Labocania,Molnar 1974,85.7,72.2,Santonian,Campanian,2
+Teratophoneus,Carr et al. 2011,83.6,72.2,Campanian,,3
+Daspletosaurus,Russell 1970,83.6,66.0,Campanian,Maastrichtian,21
+Thanatotheristes,Voris et al. 2020,83.6,72.2,Campanian,,2
+Nanuqsaurus,Fiorillo and Tykoski 2014,72.2,66.0,Maastrichtian,,1
+Alioramus,Kurzanov 1976,72.2,66.0,Maastrichtian,,3
+Bagaraatan,Osmólska 1996,72.2,66.0,Maastrichtian,,1
+Yezosaurus,Muramoto and Obata 1977,85.7,72.2,Santonian,Campanian,1
+Albertosaurus,Osborn 1905,85.7,66.0,Santonian,Maastrichtian,32
+Gorgosaurus,Lambe 1914,83.6,66.0,Campanian,Maastrichtian,20
+Teihivenator,Yun 2017,72.2,66.0,Maastrichtian,,1
+Aratasaurus,Sayão et al. 2020,113.2,110.1,Albian,,1
+Coelurus,Marsh 1879,157.9,113.2,,,14
+Dracovenator,Yates 2005,201.4,192.9,Hettangian,Sinemurian,2
+Liliensternus,Welles 1984,227.3,201.4,Norian,Rhaetian,5
+Zupaysaurus,Arcucci and Coria 2003,227.3,205.7,Norian,,1
+Sauropus,Hitchcock 1845,227.3,205.7,Norian,,8
+Chimaera,Hitchcock 1858,227.3,205.7,Norian,,8
+Chimaerichnus,Hitchcock 1871,227.3,205.7,Norian,,8
+Aethyopus,Hitchcock 1848,227.3,205.7,Norian,,8
+Kank,Motta et al. 2026,72.2,66.0,Maastrichtian,,2
+Ovoraptor,Osborn 1924,83.6,72.2,Campanian,,1
+Alwalkeria,Chatterjee and Creisler 1994,237.0,227.3,Carnian,,1
+Walkeria,Chatterjee 1987,237.0,227.3,Carnian,,1
+Eodromaeus,Martinez et al. 2011,237.0,227.3,Carnian,,1
+Ptychotherates,Srivastava and Nesbitt 2026,205.7,201.4,Rhaetian,,1
+Nhandumirim,Marsola et al. 2019,227.3,205.7,Norian,,1
+Saltopus,Huene 1910,237.0,205.7,Carnian,Norian,1
+Chindesaurus,Long and Murry 1995,227.3,205.7,Norian,,2
+Thecodontosaurus,Riley and Stutchbury 1836,247.0,192.9,,,14
+Bagualosaurus,Pretto et al. 2019,237.0,205.7,Carnian,Norian,1
+Yimenosaurus,Bai et al. 1990,201.4,199.5,Hettangian,,1
+Gyposaurus,Broom 1911,201.4,174.7,Hettangian,Toarcian,9
+Ammosaurus,Marsh 1891,201.4,199.5,Hettangian,,3
+Yaleosaurus,Huene 1932,201.4,199.5,Hettangian,,3
+Actiosaurus,Sauvage 1883,205.7,201.4,Rhaetian,,1
+Buriolestes,Cabreira et al. 2016,237.0,227.3,Carnian,,1
+Arcusaurus,Yates et al. 2011,201.4,192.9,Hettangian,Sinemurian,1
+Issi,Beccari et al. 2021,227.3,205.7,Norian,,1
+Xixiposaurus,Sekiya 2010,201.4,192.9,Hettangian,Sinemurian,1
+Unaysaurus,Leal et al. 2004,227.3,205.7,Norian,,1
+Plateosaurus,Meyer 1837,227.3,199.5,Norian,Hettangian,36
+Sellosaurus,Huene 1905,227.3,199.5,Norian,Hettangian,36
+Platysaurus,Agassiz 1846,227.3,199.5,Norian,Hettangian,36
+Ruehleia,Galton 2001,227.3,205.7,Norian,,1
+Plateosauravus,Huene 1932,227.3,201.4,Norian,Rhaetian,2
+Jaklapallisaurus,Novas et al. 2011,227.3,201.4,Norian,Rhaetian,2
+Macrocollum,Müller et al. 2018,227.3,205.7,Norian,,2
+Panphagia,Martínez and Alcober 2009,237.0,227.3,Carnian,,1
+Saturnalia,Langer et al. 1999,237.0,227.3,Carnian,,3
+Chromogisaurus,Ezcurra 2010,237.0,227.3,Carnian,,1
+Pampadromaeus,Cabreira et al. 2011,237.0,227.3,Carnian,,3
+Pantydraco,Galton et al. 2007,237.0,227.3,Carnian,,1
+Nambalia,Novas et al. 2011,227.3,205.7,Norian,,1
+Kholumolumo,Peyre de Fabrègues and Allain 2020,227.3,205.7,Norian,,1
+Huayracursor,Hechenleitner et al. 2025,237.0,205.7,Carnian,Norian,1
+Guaibasaurus,Bonaparte et al. 1999,227.3,205.7,Norian,,3
+Agnosphitys,Fraser et al. 2002,237.0,227.3,Carnian,,1
+Ahvaytum,Lovelace et al. 2025,237.0,227.3,Carnian,,1
+Qianlong,Han et al. 2023,199.5,192.9,Sinemurian,,1
+Eoraptor,Sereno et al. 1993,233.6,227.3,Carnian,,1
+Mbiresaurus,Griffin et al. 2022,237.0,227.3,Carnian,,4
+Asylosaurus,Galton 2007,205.7,201.4,Rhaetian,,1
+Efraasia,Galton 1973,227.3,205.7,Norian,,5
+Riojasaurus,Bonaparte 1969,227.3,205.7,Norian,,2
+Strenusaurus,Bonaparte 1969,227.3,205.7,Norian,,2
+Eucnemesaurus,Van Hoepen 1920,227.3,201.4,Norian,Rhaetian,4
+Aliwalia,Galton 1985,227.3,201.4,Norian,Rhaetian,4
+Xiangyunloong,Hu et al. 2026,201.4,174.7,Hettangian,Toarcian,1
+Wudingloong,Wang et al. 2025,201.4,192.9,Hettangian,Sinemurian,1
+Ignavusaurus,Knoll 2010,201.4,192.9,Hettangian,Sinemurian,2
+Pradhania,Kutty et al. 2007,201.4,192.9,Hettangian,Sinemurian,1
+Leyesaurus,Apaldetti et al. 2011,201.4,174.7,Hettangian,Toarcian,1
+Lufengosaurus,Young 1940,201.4,168.2,Hettangian,Bajocian,28
+Sarahsaurus,Rowe et al. 2011,199.5,184.2,Sinemurian,Pliensbachian,2
+Massospondylus,Owen 1854,237.0,174.7,Carnian,Toarcian,80
+Adeopapposaurus,Martínez 2009,201.4,174.7,Hettangian,Toarcian,2
+Glacialisaurus,Smith and Pol 2007,199.5,184.2,Sinemurian,Pliensbachian,1
+Coloradisaurus,Lambert 1983,227.3,205.7,Norian,,2
+Ngwevu,Chapelle et al. 2019,201.4,192.9,Hettangian,Sinemurian,1
+Anchisaurus,Marsh 1885,201.4,192.9,Hettangian,Sinemurian,5
+Amphisaurus,Marsh 1882,201.4,192.9,Hettangian,Sinemurian,5
+Megadactylus,Hitchcock 1865,201.4,192.9,Hettangian,Sinemurian,5
+Musankwa,Barrett et al. 2024,237.0,205.7,Carnian,Norian,1
+Tuebingosaurus,Regalado Fernández and Werneburg 2022,227.3,205.7,Norian,,1
+Leonerasaurus,Pol et al. 2011,192.9,184.2,Pliensbachian,,1
+Camelotia,Galton 1985,205.7,201.4,Rhaetian,,2
+Melanorosaurus,Haughton 1924,227.3,192.9,Norian,Sinemurian,9
+Seitaad,Sertich and Loewen 2010,192.9,174.7,Pliensbachian,Toarcian,1
+Xingxiulong,Wang et al. 2017,201.4,174.7,Hettangian,Toarcian,2
+Gongxianosaurus,He et al. 1998,184.2,174.7,Toarcian,,1
+Damalasaurus,Zhao 1985,201.4,174.7,Hettangian,Toarcian,1
+Amygdalodon,Cabrera 1947,192.9,182.9,Pliensbachian,Toarcian,1
+Cetiosaurus,Owen 1841,174.7,119.57,Aalenian,Aptian,30
+Spinophorosaurus,Remes et al. 2009,170.9,165.3,Bajocian,Bathonian,1
+Rhoetosaurus,Longman 1926,159.0,157.9,,,1
+Haestasaurus,Upchurch et al. 2015,139.1,132.6,Berriasian,Valanginian,1
+Bicharracosaurus,Reutter et al. 2026,161.5,149.2,Oxfordian,Kimmeridgian,2
+Aragosaurus,Sanz et al. 1987,154.8,143.1,Kimmeridgian,Tithonian,1
+Atlasaurus,Monbaron et al. 1999,168.2,165.3,Bathonian,,1
+Yuzhoulong,Dai et al. 2022,168.2,161.5,Bathonian,Callovian,1
+Europasaurus,Sander et al. 2006,152.21,149.2,Kimmeridgian,,1
+Tehuelchesaurus,Rich et al. 1999,157.9,143.1,,,1
+Camarasaurus,Cope 1877,161.5,143.1,Oxfordian,Tithonian,138
+Morosaurus,Marsh 1878,161.5,143.1,Oxfordian,Tithonian,138
+Uintasaurus,Holland 1919,161.5,143.1,Oxfordian,Tithonian,138
+Cathetosaurus,Jensen 1988,161.5,143.1,Oxfordian,Tithonian,138
+Caulodon,Cope 1877,161.5,143.1,Oxfordian,Tithonian,138
+Lourinhasaurus,Dantas et al. 1998,152.21,145.06,Kimmeridgian,Tithonian,5
+Ceratocaudia,Natarajan et al. 2026,201.4,168.2,Hettangian,Bajocian,1
+Duriatitan,Barrett et al. 2010,154.8,137.05,Kimmeridgian,Berriasian,8
+Pelorosaurus,Mantell 1850,145.06,110.1,Tithonian,Albian,3
+Vouivria,Mannion et al. 2017,159.0,154.8,Oxfordian,,1
+Venenosaurus,Tidwell et al. 2001,121.4,113.2,Aptian,,1
+Abydosaurus,Chure et al. 2010,100.5,93.9,Cenomanian,,1
+Brachiosaurus,Riggs 1903,157.9,143.1,,,20
+Soriatitan,Royo-Torres et al. 2017,132.6,121.4,Hauterivian,Barremian,1
+Cedarosaurus,Tidwell et al. 1999,137.05,110.1,Valanginian,Albian,3
+Giraffatitan,(Paul 1988),161.5,143.1,Oxfordian,Tithonian,42
+Lusotitan,Antunes and Mateus 2003,152.21,145.06,Kimmeridgian,Tithonian,1
+Sonorasaurus,Ratkevich 1998,106.3,93.9,Albian,Cenomanian,1
+Galvesaurus,Barco et al. 2005,152.21,145.06,Kimmeridgian,Tithonian,1
+Fukuititan,Azuma and Shibata 2010,121.4,113.2,Aptian,,1
+Fushanosaurus,Wang et al. 2019,161.5,154.8,Oxfordian,,1
+Liaoningotitan,Zhou et al. 2018,125.77,119.57,Barremian,Aptian,1
+Gannansaurus,Lü et al. 2013,72.2,66.0,Maastrichtian,,1
+Erketu,Ksepka and Norell 2006,100.5,72.2,Cenomanian,Campanian,2
+Ruixinia,Mo et al. 2023,125.77,119.57,Barremian,Aptian,1
+Huabeisaurus,Pang and Cheng 2000,100.5,72.2,Cenomanian,Campanian,1
+Phuwiangosaurus,Martin et al. 1994,125.77,113.2,Barremian,Aptian,15
+Tambatitanis,Saegusa and Ikeda 2014,113.2,110.1,Albian,,1
+Qiaowanlong,You and Li 2009,121.4,113.2,Aptian,,1
+Silutitan,Wang et al. 2021,137.05,132.6,Valanginian,,1
+Nagatitan,Sethapanichsakul et al. 2026,121.4,100.5,Aptian,Albian,1
+Gobititan,You et al. 2003,113.2,110.1,Albian,,1
+Daxiatitan,You et al. 2008,125.77,113.2,Barremian,Aptian,1
+Euhelopus,Romer 1956,143.1,100.5,Berriasian,Albian,5
+Helopus,Wiman 1929,143.1,100.5,Berriasian,Albian,5
+Tangvayosaurus,Allain et al. 1999,121.4,100.5,Aptian,Albian,2
+Xianshanosaurus,Lü et al. 2009,121.4,100.5,Aptian,Albian,1
+Yongjinglong,Li et al. 2014,125.77,113.2,Barremian,Aptian,1
+Ruyangosaurus,Lü et al. 2009,121.4,100.5,Aptian,Albian,1
+Yunmenglong,Lü et al. 2013,121.4,100.5,Aptian,Albian,1
+Austrosaurus,Longman 1933,106.3,100.5,Albian,,1
+Australodocus,Remes 2007,149.2,143.1,Tithonian,,1
+Huanghetitan,You et al. 2006,125.77,113.2,Barremian,Aptian,1
+Astrophocaudia,D'Emic 2013,113.2,110.1,Albian,,1
+Sibirotitan,Averianov et al. 2018,125.77,113.2,Barremian,Aptian,4
+Jiangxititan,Mo et al. 2023,72.2,66.0,Maastrichtian,,1
+Triunfosaurus,Carvalho et al. 2017,143.1,125.77,Berriasian,Hauterivian,1
+Padillasaurus,Carballido et al. 2015,125.77,121.4,Barremian,,1
+Dasosaurus,Mayer et al. 2026,119.57,113.2,Aptian,,1
+Sonidosaurus,Xu et al. 2006,83.6,72.2,Campanian,,1
+Tastavinsaurus,Canudo et al. 2008,121.4,119.57,Aptian,,2
+Angolatitan,Mateus et al. 2011,89.8,85.7,Coniacian,,1
+Europatitan,Torcida Fernández-Baldor et al. 2017,125.77,119.57,Barremian,Aptian,1
+Ligabuesaurus,Bonaparte et al. 2006,113.2,110.1,Albian,,1
+Sauroposeidon,Wedel et al. 2000,121.4,93.9,Aptian,Cenomanian,6
+Paluxysaurus,Rose 2007,121.4,93.9,Aptian,Cenomanian,6
+Jiangshanosaurus,Tang et al. 2001,100.5,89.8,Cenomanian,Turonian,1
+Sarmientosaurus,Martínez et al. 2016,100.5,89.8,Cenomanian,Turonian,1
+Mansourasaurus,Sallam et al. 2018,83.6,72.2,Campanian,,1
+Diamantinasaurus,Hocknull et al. 2009,100.5,89.8,Cenomanian,Turonian,6
+Wintonotitan,Hocknull et al. 2009,100.5,89.8,Cenomanian,Turonian,7
+Savannasaurus,Poropat et al. 2016,100.5,89.8,Cenomanian,Turonian,3
+Dzharatitanis,Averianov and Sues 2021,93.9,89.8,Turonian,,1
+Garumbatitan,Mocho et al. 2024,125.77,121.4,Barremian,,1
+Liubangosaurus,Mo et al. 2010,121.4,113.2,Aptian,,1
+Brontomerus,Taylor et al. 2011,121.4,100.5,Aptian,Albian,1
+Chucarosaurus,Agnolin et al. 2023,110.1,106.3,Albian,,1
+Puertasaurus,Novas et al. 2005,83.6,72.2,Campanian,,1
+Tengrisaurus,Averianov and Skutschas 2017,137.05,132.6,Valanginian,,1
+Rukwatitan,Gorscak et al. 2014,100.5,72.2,Cenomanian,Campanian,1
+Bravasaurus,Hechenleitner et al. 2020,83.6,66.0,Campanian,Maastrichtian,1
+Overosaurus,Coria et al. 2013,85.7,83.6,Santonian,,1
+Maxakalisaurus,Kellner et al. 2006,83.6,66.0,Campanian,Maastrichtian,3
+Chadititan,Agnolin et al. 2025,83.6,72.2,Campanian,,1
+Uberabatitan,Salgado and Carvalho 2008,72.2,66.0,Maastrichtian,,1
+Muyelensaurus,Calvo et al. 2007,89.8,83.6,Coniacian,Santonian,1
+Punatitan,Hechenleitner et al. 2020,83.6,66.0,Campanian,Maastrichtian,1
+Rinconsaurus,Calvo and González Riga 2003,85.7,83.6,Santonian,,1
+Pitekunsaurus,Filippi and Garrido 2008,83.6,72.2,Campanian,,1
+Brasilotitan,Machado et al. 2013,83.6,66.0,Campanian,Maastrichtian,1
+Arrudatitan,Silva Junior et al. 2022,83.6,66.0,Campanian,Maastrichtian,1
+Notocolossus,González Riga et al. 2016,89.8,83.6,Coniacian,Santonian,2
+Quetecsaurus,González Riga and Ortiz David 2014,93.9,89.8,Turonian,,1
+Drusilasaura,Navarrete et al. 2011,100.5,89.8,Cenomanian,Turonian,1
+Futalognkosaurus,Calvo et al. 2007,93.9,85.7,Turonian,Coniacian,1
+Phosphatotitan,Longrich et al. 2026,72.2,66.0,Maastrichtian,,1
+Mendozasaurus,González-Riga 2003,89.8,85.7,Coniacian,,1
+Traukutitan,Juárez Valieri and Calvo 2011,85.7,83.6,Santonian,,1
+Austroposeidon,Bandeira et al. 2016,83.6,66.0,Campanian,Maastrichtian,1
+Yeneen,Filippi et al. 2026,85.7,83.6,Santonian,,1
+Borealosaurus,You et al. 2004,106.3,100.5,Albian,,1
+Mnyamawamtuka,Gorscak and O'Connor 2019,121.4,93.9,Aptian,Cenomanian,1
+Tiamat,Pereira et al. 2024,113.2,93.9,Albian,Cenomanian,1
+Gandititan,Han et al. 2024,100.5,89.8,Cenomanian,Turonian,1
+Baotianmansaurus,Zhang et al. 2009,93.9,72.2,Turonian,Campanian,1
+Dongyangosaurus,Lü et al. 2008,100.5,89.8,Cenomanian,Turonian,1
+Choconsaurus,Simón et al. 2018,110.1,106.3,Albian,,1
+Argyrosaurus,Lydekker 1893,83.6,66.0,Campanian,Maastrichtian,1
+Barrosasaurus,Salgado and Coria 2009,93.9,72.2,Turonian,Campanian,2
+Ninjatitan,Gallina et al. 2021,139.1,132.6,Berriasian,Valanginian,1
+Aegyptosaurus,Stromer 1932,143.1,93.9,Berriasian,Cenomanian,7
+Marisaurus,Malkani 2003,72.2,66.0,Maastrichtian,,5
+Balochisaurus,Malkani 2004,72.2,66.0,Maastrichtian,,12
+Qaikshaheen,Malkani 2023,72.2,66.0,Maastrichtian,,3
+Pellegrinisaurus,Salgado 1996,72.2,66.0,Maastrichtian,,1
+Epachthosaurus,Powell 1990,100.5,89.8,Cenomanian,Turonian,3
+Arackar,Rubilar-Rogers et al. 2021,83.6,66.0,Campanian,Maastrichtian,1
+Gondwanatitan,Kellner and Azevedo 1999,83.6,66.0,Campanian,Maastrichtian,2
+Caieiria,Silva Junior et al. 2022,72.2,66.0,Maastrichtian,,1
+Mesetasaurus,Soto Núñez et al. 2026,85.7,72.2,Santonian,Campanian,1
+Aeolosaurus,Powell 1987,83.6,66.0,Campanian,Maastrichtian,6
+Panamericansaurus,Calvo and Porfiri 2010,72.2,66.0,Maastrichtian,,1
+Baurutitan,Kellner et al. 2005,72.2,66.0,Maastrichtian,,4
+Trigonosaurus,Campos et al. 2005,72.2,66.0,Maastrichtian,,4
+Uriash,Díez Díaz et al. 2025,72.2,66.0,Maastrichtian,,1
+Titanomachya,Pérez-Moreno et al. 2024,72.2,66.0,Maastrichtian,,1
+Udelartitan,Soto et al. 2024,100.5,83.6,Cenomanian,Santonian,1
+Qingxiusaurus,Mo et al. 2008,100.5,66.0,Cenomanian,Maastrichtian,1
+Igai,Gorscak et al. 2023,83.6,72.2,Campanian,,1
+Nicksaurus,Malkani 2014,72.2,66.0,Maastrichtian,,1
+Opisthocoelicaudia,Borsuk-Bialynicka 1977,72.2,66.0,Maastrichtian,,1
+Neuquensaurus,Powell 1992,85.7,66.0,Santonian,Maastrichtian,15
+Loricosaurus,Huene 1927,85.7,66.0,Santonian,Maastrichtian,15
+Microcoelus,Lydekker 1893,85.7,66.0,Santonian,Maastrichtian,15
+Saltasaurus,Bonaparte and Powell 1980,72.2,66.0,Maastrichtian,,1
+Yamanasaurus,Apesteguía et al. 2020,72.2,66.0,Maastrichtian,,1
+Ibirania,Navarro et al. 2022,85.7,72.2,Santonian,Campanian,3
+Alamosaurus,Gilmore 1922,83.6,66.0,Campanian,Maastrichtian,38
+Rocasaurus,Salgado and Azpilicueta 2000,72.2,66.0,Maastrichtian,,4
+Bonatitan,Martinelli and Forasiepi 2004,72.2,66.0,Maastrichtian,,1
+Zhuchengtitan,Mo et al. 2017,83.6,72.2,Campanian,,1
+Qunkasaura,Mocho et al. 2024,83.6,66.0,Campanian,Maastrichtian,1
+Abditosaurus,Vila et al. 2022,72.2,66.0,Maastrichtian,,2
+Isisaurus,Wilson and Upchurch 2003,72.2,66.0,Maastrichtian,,7
+Rapetosaurus,Curry Rogers and Forster 2001,72.2,66.0,Maastrichtian,,5
+Tapuiasaurus,Zaher et al. 2011,121.4,113.2,Aptian,,1
+Paralititan,Smith et al. 2001,100.5,93.9,Cenomanian,,2
+Nullotitan,Novas et al. 2019,72.2,66.0,Maastrichtian,,3
+Elaltitan,Mannion and Otero 2012,89.8,85.7,Coniacian,,1
+Jainosaurus,Hunt et al. 1995,72.2,66.0,Maastrichtian,,1
+Bustingorrytitan,Simón and Salgado 2023,110.1,106.3,Albian,,1
+Atacamatitan,Kellner et al. 2011,100.5,66.0,Cenomanian,Maastrichtian,1
+Shingopana,Gorscak et al. 2017,100.5,72.2,Cenomanian,Campanian,1
+Nemegtosaurus,Nowinski 1971,89.8,66.0,Coniacian,Maastrichtian,3
+Quaesitosaurus,Kurzanov and Bannikov 1983,83.6,72.2,Campanian,,1
+Kaijutitan,Filippi et al. 2019,89.8,85.7,Coniacian,,1
+Malawisaurus,Jacobs et al. 1993,121.4,113.2,Aptian,,8
+Antarctosaurus,Huene 1927,89.8,66.0,Coniacian,Maastrichtian,8
+Vahiny,Curry Rogers and Wilson 2014,72.2,66.0,Maastrichtian,,2
+Hamititan,Wang et al. 2021,137.05,132.6,Valanginian,,1
+Baalsaurus,Calvo and Gonzalez Riga 2019,93.9,85.7,Turonian,Coniacian,1
+Abdarainurus,Averianov and Lopatin 2020,85.7,72.2,Santonian,Campanian,1
+Malarguesaurus,González Riga et al. 2009,89.8,85.7,Coniacian,,2
+Narambuenatitan,Filippi et al. 2011,83.6,72.2,Campanian,,1
+Petrobrasaurus,Filippi et al. 2011,89.8,83.6,Coniacian,Santonian,1
+Laplatasaurus,Huene 1927,83.6,72.2,Campanian,,1
+Menucocelsior,Aranciaga Rolando et al. 2022,72.2,66.0,Maastrichtian,,2
+Lohuecotitan,Díez Díaz et al. 2016,83.6,66.0,Campanian,Maastrichtian,1
+Inawentu,Filippi et al. 2024,85.7,83.6,Santonian,,1
+Petrustitan,Díez Díaz et al. 2025,72.2,66.0,Maastrichtian,,3
+Dreadnoughtus,Lacovara et al. 2014,83.6,72.2,Campanian,,2
+Patagotitan,Carballido et al. 2017,113.2,100.5,Albian,,1
+Argentinosaurus,Bonaparte and Coria 1993,110.1,106.3,Albian,,1
+Magyarosaurus,Huene 1932,72.2,66.0,Maastrichtian,,11
+Bonitasaura,Apesteguía 2004,85.7,83.6,Santonian,,2
+Normanniasaurus,Le Loeuff et al. 2013,110.1,106.3,Albian,,2
+Paludititan,Csiki et al. 2010,72.2,66.0,Maastrichtian,,2
+Garrigatitan,Díez Díaz et al. 2021,83.6,72.2,Campanian,,1
+Lirainosaurus,Sanz et al. 1999,83.6,66.0,Campanian,Maastrichtian,10
+Atsinganosaurus,Garcia et al. 2010,83.6,72.2,Campanian,,1
+Ampelosaurus,Le Loeuff 1995,83.6,66.0,Campanian,Maastrichtian,5
+Karongasaurus,Gomani 2005,121.4,113.2,Aptian,,2
+Andesaurus,Calvo and Bonaparte 1991,113.2,110.1,Albian,,1
+Ikqaumishan,Malkani 2023,72.2,66.0,Maastrichtian,,3
+Gspsaurus,Malkani 2014,72.2,66.0,Maastrichtian,,7
+Maojandino,Malkani 2014,72.2,66.0,Maastrichtian,,7
+Saraikimasoom,Malkani 2014,72.2,66.0,Maastrichtian,,12
+Khanazeem,Malkani 2022,72.2,66.0,Maastrichtian,,2
+Khetranisaurus,Malkani 2004,72.2,66.0,Maastrichtian,,4
+Imrankhanhero,Malkani 2023,72.2,66.0,Maastrichtian,,3
+Sulaimanisaurus,Malkani 2004,72.2,66.0,Maastrichtian,,6
+Pakisaurus,Malkani 2004,72.2,66.0,Maastrichtian,,12
+Mongolosaurus,Gilmore 1933,121.4,100.5,Aptian,Albian,1
+Chubutisaurus,del Corro 1975,119.57,110.1,Aptian,Albian,2
+Dongbeititan,Wang et al. 2007,125.77,119.57,Barremian,Aptian,1
+Oceanotitan,Mocho et al. 2019,152.21,149.2,Kimmeridgian,,1
+Ornithopsis,Seeley 1870,145.06,119.57,Tithonian,Aptian,6
+Fusuisaurus,Mo et al. 2006,121.4,113.2,Aptian,,1
+Dashanpusaurus,Peng et al. 2005,170.9,154.8,Bajocian,Oxfordian,1
+Haplocanthosaurus,Hatcher 1903,154.8,143.1,Kimmeridgian,Tithonian,11
+Haplocanthus,Hatcher 1903,154.8,143.1,Kimmeridgian,Tithonian,11
+Amphicoelias,Cope 1877,157.9,143.1,,,3
+Campananeyen,Lerzo et al. 2024,113.2,110.1,Albian,,1
+Maraapunisaurus,Carpenter 2018,149.2,143.1,Tithonian,,1
+Amazonsaurus,Carvalho et al. 2003,119.57,106.3,Aptian,Albian,1
+Rayososaurus,Bonaparte 1996,113.2,110.1,Albian,,1
+Lavocatisaurus,Canudo et al. 2018,121.4,110.1,Aptian,Albian,1
+Xenoposeidon,Taylor and Naish 2007,139.1,132.6,Berriasian,Valanginian,1
+Agustinia,Bonaparte 1999,113.2,100.5,Albian,,1
+Katepensaurus,Ibiricu et al. 2013,100.5,89.8,Cenomanian,Turonian,1
+Cathartesaura,Gallina and Apesteguía 2005,110.1,106.3,Albian,,1
+Limaysaurus,Salgado et al. 2004,113.2,93.9,Albian,Cenomanian,6
+Demandasaurus,Torcida Fernández-Baldor et al. 2011,125.77,119.57,Barremian,Aptian,2
+Rebbachisaurus,Lavocat 1954,106.3,93.9,Albian,Cenomanian,5
+Tataouinea,Fanti et al. 2013,113.2,100.5,Albian,,1
+Itapeuasaurus,Lindoso et al. 2019,100.5,93.9,Cenomanian,,1
+Nigersaurus,Sereno et al. 1999,121.4,100.5,Aptian,Albian,3
+Nopcsaspondylus,Apesteguía 2007,113.2,110.1,Albian,,1
+Sidersaura,Lerzo et al. 2024,110.1,106.3,Albian,,2
+Astigmasaura,Bellardini et al. 2025,110.1,106.3,Albian,,1
+Comahuesaurus,Carballido et al. 2012,119.57,110.1,Aptian,Albian,1
+Zapalasaurus,Salgado et al. 2006,125.77,119.57,Barremian,Aptian,1
+Cienciargentina,Simón and Salgado 2025,110.1,106.3,Albian,,1
+Histriasaurus,Dalla Vecchia 1998,132.6,121.4,Hauterivian,Barremian,1
+Cetiosauriscus,Huene 1927,165.3,161.5,Callovian,,1
+Pilmatueia,Coria et al. 2019,137.05,132.6,Valanginian,,1
+Suuwassea,Harris and Dodson 2004,154.8,143.1,Kimmeridgian,Tithonian,2
+Bajadasaurus,Gallina et al. 2019,139.1,132.6,Berriasian,Valanginian,1
+Dicraeosaurus,Janensch 1914,161.5,143.1,Oxfordian,Tithonian,19
+Brachytrachelopan,Rauhut et al. 2005,154.8,145.06,Kimmeridgian,Tithonian,1
+Amargasaurus,Bonaparte 1984,125.77,121.4,Barremian,,2
+Kaatedocus,Tschopp and Mateus 2013,154.8,149.2,Kimmeridgian,,1
+Athenar,Whitlock et al. 2025,149.2,145.06,Tithonian,,1
+Dyslocosaurus,Mcintosh et al. 1992,154.8,143.1,Kimmeridgian,Tithonian,1
+Smitanosaurus,Whitlock and Wilson Mantilla 2020,152.21,145.06,Kimmeridgian,Tithonian,1
+Amargatitanis,Apesteguía 2007,125.77,121.4,Barremian,,1
+Dinheirosaurus,Bonaparte and Mateus 1999,152.21,149.2,Kimmeridgian,,1
+Diplodocus,Marsh 1878,157.9,143.1,,,66
+Seismosaurus,Gillette 1991,157.9,143.1,,,66
+Tornieria,Sternfeld 1911,152.21,143.1,Kimmeridgian,Tithonian,7
+Barosaurus,Marsh 1890,157.9,143.1,,,19
+Gigantosaurus,Fraas 1908,157.9,143.1,,,19
+Galeamopus,Tschopp et al. 2015,154.8,143.1,Kimmeridgian,Tithonian,6
+Leinkupal,Gallina et al. 2014,139.1,132.6,Berriasian,Valanginian,1
+Ardetosaurus,van der Linden et al. 2024,154.8,149.2,Kimmeridgian,,1
+Supersaurus,Jensen 1985,154.8,143.1,Kimmeridgian,Tithonian,5
+Dystylosaurus,Jensen 1985,154.8,143.1,Kimmeridgian,Tithonian,5
+Ultrasauros,Olshevsky 1991,154.8,143.1,Kimmeridgian,Tithonian,5
+Ultrasaurus,Jensen 1985,154.8,143.1,Kimmeridgian,Tithonian,5
+Apatosaurus,Marsh 1877,157.9,143.1,,,67
+Titanosaurus,Marsh 1877,157.9,143.1,,,67
+Brontosaurus,Marsh 1879,154.8,143.1,Kimmeridgian,Tithonian,23
+Eobrontosaurus,Bakker 1998,154.8,143.1,Kimmeridgian,Tithonian,23
+Elosaurus,Peterson and Gilmore 1902,154.8,143.1,Kimmeridgian,Tithonian,23
+Lingwulong,Xu et al. 2018,174.7,161.5,Aalenian,Callovian,1
+Dystrophaeus,Cope 1877,157.9,154.8,,,1
+Cardiodon,Owen 1841,168.2,165.3,Bathonian,,1
+Narindasaurus,Royo-Torres et al. 2021,168.2,165.3,Bathonian,,1
+Losillasaurus,Casanovas et al. 2001,154.8,143.1,Kimmeridgian,Tithonian,3
+Turiasaurus,Royo-Torres et al. 2006,154.8,143.1,Kimmeridgian,Tithonian,5
+Amanzia,Schwarz et al. 2020,154.8,152.21,Kimmeridgian,,2
+Moabosaurus,Britt et al. 2017,137.05,132.6,Valanginian,,2
+Tendaguria,Bonaparte et al. 2000,149.2,143.1,Tithonian,,2
+Mierasaurus,Royo-Torres et al. 2017,139.1,132.6,Berriasian,Valanginian,1
+Zby,Mateus et al. 2014,152.21,149.2,Kimmeridgian,,2
+Jobaria,Sereno et al. 1999,161.5,143.1,Oxfordian,Tithonian,2
+Nebulasaurus,Xing et al. 2015,174.7,168.2,Aalenian,Bajocian,1
+Bellusaurus,Dong 1990,159.0,157.9,,,1
+Chuanjiesaurus,Fang et al. 2000,170.9,168.2,Bajocian,,1
+Klamelisaurus,Zhao 1993,165.3,161.5,Callovian,,1
+Abrosaurus,Ouyang 1989,170.9,154.8,Bajocian,Oxfordian,1
+Xinjiangtitan,Wu et al. 2013,168.2,143.1,Bathonian,Tithonian,1
+Eomamenchisaurus,Lü et al. 2008,174.7,161.5,Aalenian,Callovian,1
+Yuanmousaurus,Lü et al. 2006,174.7,161.5,Aalenian,Callovian,1
+Tonganosaurus,Li et al. 2010,201.4,174.7,Hettangian,Toarcian,1
+Volgatitan,Averianov and Efimov 2018,132.6,125.77,Hauterivian,,1
+Huangshanlong,Huang et al. 2014,174.7,161.5,Aalenian,Callovian,1
+Omeisaurus,Young 1939,174.7,143.1,Aalenian,Tithonian,13
+Anhuilong,Ren et al. 2018,174.7,161.5,Aalenian,Callovian,1
+Rhomaleopakhus,Upchurch et al. 2021,152.21,143.1,Kimmeridgian,Tithonian,1
+Qijianglong,Xing et al. 2015,161.5,143.1,Oxfordian,Tithonian,1
+Hudiesaurus,Dong 1997,152.21,143.1,Kimmeridgian,Tithonian,1
+Uragasaurus,Nilpanapan et al. 2026,149.2,137.05,Tithonian,Berriasian,1
+Jingiella,Ren et al. 2024,154.8,149.2,Kimmeridgian,,1
+Tienshanosaurus,Young 1937,161.5,154.8,Oxfordian,,3
+Mamenchisaurus,Young 1954,168.2,113.2,Bathonian,Aptian,24
+Wamweracaudia,Mannion et al. 2019,149.2,143.1,Tithonian,,2
+Daanosaurus,Ye et al. 2005,154.8,143.1,Kimmeridgian,Tithonian,1
+Tongnanlong,Wei et al. 2025,161.5,143.1,Oxfordian,Tithonian,1
+Analong,Ren et al. 2021,170.9,168.2,Bajocian,,1
+Ferganasaurus,Alifanov and Averianov 2003,165.3,161.5,Callovian,,1
+Huashanosaurus,Mo et al. 2025,201.4,161.5,Hettangian,Callovian,1
+Perijasaurus,Rincón et al. 2022,180.4,170.9,Toarcian,Aalenian,1
+Janenschia,Wild 1991,149.2,143.1,Tithonian,,2
+Lapparentosaurus,Bonaparte 1986,168.2,165.3,Bathonian,,1
+Jinchuanloong,Li et al. 2025,168.2,165.3,Bathonian,,1
+Bagualia,Pol et al. 2020,182.9,180.4,Toarcian,,1
+Datousaurus,Dong and Tang 1984,174.7,154.8,Aalenian,Oxfordian,2
+Shunosaurus,Dong et al. 1983,174.7,154.8,Aalenian,Oxfordian,5
+Protognathosaurus,Olshevsky 1991,170.9,154.8,Bajocian,Oxfordian,1
+Protognathus,Zhang 1988,170.9,154.8,Bajocian,Oxfordian,1
+Patagosaurus,Bonaparte 1979,182.9,168.6,Toarcian,Bajocian,4
+Chebsaurus,Mahammed et al. 2005,165.3,161.5,Callovian,,1
+Barapasaurus,Jain et al. 1975,199.5,184.2,Sinemurian,Pliensbachian,2
+Tazoudasaurus,Allain et al. 2004,192.9,174.7,Pliensbachian,Toarcian,2
+Volkheimeria,Bonaparte 1979,182.9,180.4,Toarcian,,1
+Isanosaurus,Buffetaut et al. 2000,192.9,174.7,Pliensbachian,Toarcian,1
+Chinshakiangosaurus,Yeh 1975,201.4,199.5,Hettangian,,1
+Lamplughsaura,Kutty et al. 2007,201.4,192.9,Hettangian,Sinemurian,4
+Oplosaurus,Gervais 1852,137.05,121.4,Valanginian,Barremian,1
+Ohmdenosaurus,Wild 1978,182.9,180.4,Toarcian,,1
+Sanpasaurus,Young 1944,184.2,174.7,Toarcian,,3
+Tapinosaurus,Rabeck 1925,152.21,149.2,Kimmeridgian,,1
+Ingentia,Apaldetti et al. 2018,227.3,205.7,Norian,,1
+Lessemsaurus,Bonaparte 1999,227.3,205.7,Norian,,1
+Antetonitrus,Yates and Kitching 2003,201.4,192.9,Hettangian,Sinemurian,2
+Vulcanodon,Raath 1972,199.5,184.2,Sinemurian,Pliensbachian,1
+Archaeodontosaurus,Buffetaut 2005,168.2,165.3,Bathonian,,2
+Kotasaurus,Yadagiri 1988,199.5,184.2,Sinemurian,Pliensbachian,2
+Pulanesaura,McPhee et al. 2015,201.4,192.9,Hettangian,Sinemurian,1
+Microdontosaurus,Zhao 1983,174.7,161.5,Aalenian,Callovian,1
+Yizhousaurus,Zhang et al. 2018,199.5,192.9,Sinemurian,,1
+Mussaurus,Bonaparte and Vince 1979,199.5,192.9,Sinemurian,,2
+Aardonyx,Yates et al. 2010,201.4,192.9,Hettangian,Sinemurian,1
+Jingshanosaurus,Zhang and Yang 1995,201.4,199.5,Hettangian,,2
+Chuxiongosaurus,Lü et al. 2010,201.4,199.5,Hettangian,,2
+Lishulong,Zhang et al. 2024,199.5,174.7,Sinemurian,Toarcian,1
+Irisosaurus,Peyre de Fabrègues et al. 2020,192.9,184.2,Pliensbachian,,1
+Sefapanosaurus,Otero et al. 2015,227.3,199.5,Norian,Hettangian,1
+Ledumahadi,McPhee et al. 2018,201.4,192.9,Hettangian,Sinemurian,1
+Schleitheimia,Rauhut et al. 2020,227.3,205.7,Norian,,1
+Meroktenos,Peyre de Fabrègues and Allain 2016,227.3,201.4,Norian,Rhaetian,1
+Yunnanosaurus,Young 1940,201.4,184.2,Hettangian,Pliensbachian,17
+Blikanasaurus,Galton and Van Heerden 1985,227.3,201.4,Norian,Rhaetian,2
+Daemonosaurus,Sues et al. 2011,205.7,201.4,Rhaetian,,1
+Tawa,Nesbitt et al. 2009,227.3,205.7,Norian,,3
+Gnathovorax,Pacheco et al. 2019,233.6,227.3,Carnian,,1
+Staurikosaurus,Colbert 1970,237.0,227.3,Carnian,,2
+Teyuwasu,Kischlat 1999,237.0,227.3,Carnian,,2
+Sanjuansaurus,Alcober and Martínez 2010,237.0,227.3,Carnian,,1
+Herrerasaurus,Reig 1963,237.0,227.3,Carnian,,11
+Frenguellisaurus,Novas 1986,237.0,227.3,Carnian,,11
+Ischisaurus,Reig 1963,237.0,227.3,Carnian,,11
+Archaeocursor,Yao et al. 2025,199.5,184.2,Sinemurian,Pliensbachian,1
+Xiaosaurus,Dong and Tang 1983,170.9,154.8,Bajocian,Oxfordian,1
+Gongbusaurus,Dong et al. 1983,168.2,154.8,Bathonian,Oxfordian,5
+Ferganocephale,Averianov et al. 2005,165.3,161.5,Callovian,,3
+Krzyzanowskisaurus,Heckert 2005,237.0,205.7,Carnian,Norian,4
+Chilesaurus,Novas et al. 2015,149.2,143.1,Tithonian,,1
+Pisanosaurus,Casamiquela 1967,233.6,227.3,Carnian,,1
+Laquintasaura,Barrett et al. 2014,201.4,199.5,Hettangian,,1
+Scutellosaurus,Colbert 1981,201.4,184.2,Hettangian,Pliensbachian,23
+Lesothosaurus,Galton 1978,201.4,192.9,Hettangian,Sinemurian,9
+Jakapil,Riguetti et al. 2022,113.2,110.1,Albian,,1
+Spicomellus,Maidment et al. 2021,168.2,161.5,Bathonian,Callovian,1
+Sarcolestes,Lydekker 1893,165.3,161.5,Callovian,,2
+Vectipelta,Pond et al. 2023,139.1,137.05,Berriasian,,1
+Mymoorapelta,Kirkland and Carpenter 1994,154.8,143.1,Kimmeridgian,Tithonian,3
+Stegouros,Soto-Acuña et al. 2021,83.6,66.0,Campanian,Maastrichtian,1
+Antarctopelta,Salgado and Gasparini 2006,83.6,72.2,Campanian,,1
+Kunbarrasaurus,Leahey et al. 2015,106.3,100.5,Albian,,2
+Ahshislepelta,Burns and Sullivan 2011,83.6,72.2,Campanian,,1
+Shamosaurus,Tumanova 1983,121.4,100.5,Aptian,Albian,2
+Chuanqilong,Han et al. 2014,121.4,113.2,Aptian,,1
+Gobisaurus,Vickaryous et al. 2001,121.4,100.5,Aptian,Albian,2
+Zhongyuansaurus,Xu et al. 2007,121.4,100.5,Aptian,Albian,2
+Huaxiazhoulong,Zhu et al. 2024,83.6,72.2,Campanian,,1
+Datai,Xing et al. 2024,93.9,85.7,Turonian,Coniacian,1
+Liaoningosaurus,Xu et al. 2001,125.77,119.57,Barremian,Aptian,1
+Ankylosaurus,Brown 1908,83.6,66.0,Campanian,Maastrichtian,16
+Oohkotokia,Penkalski 2014,83.6,72.2,Campanian,,5
+Zaraapelta,Arbour et al. 2014,100.5,83.6,Cenomanian,Santonian,1
+Eopinacosaurus,Penkalski 2026,83.6,72.2,Campanian,,2
+Talarurus,Maleev 1952,100.5,83.6,Cenomanian,Santonian,3
+Crichtonpelta,Arbour and Currie 2016,106.3,89.8,Albian,Turonian,2
+Pinacosaurus,Gilmore 1933,89.8,72.2,Coniacian,Campanian,24
+Syrmosaurus,Maleev 1952,89.8,72.2,Coniacian,Campanian,24
+Nodocephalosaurus,Sullivan 1999,83.6,72.2,Campanian,,6
+Jinyunpelta,Zheng et al. 2018,113.2,100.5,Albian,,1
+Saichania,Maryanska 1977,100.5,72.2,Cenomanian,Campanian,5
+Tianzhenosaurus,Pang and Cheng 1998,100.5,72.2,Cenomanian,Campanian,5
+Shanxia,Barrett et al. 1998,100.5,72.2,Cenomanian,Campanian,5
+Euoplocephalus,Lambe 1910,83.6,66.0,Campanian,Maastrichtian,18
+Stereocephalus,Lambe 1902,83.6,66.0,Campanian,Maastrichtian,18
+Dyoplosaurus,Parks 1924,83.6,72.2,Campanian,,1
+Scolosaurus,Nopcsa 1928,83.6,72.2,Campanian,,4
+Anodontosaurus,Sternberg 1929,83.6,66.0,Campanian,Maastrichtian,14
+Platypelta,Penkalski 2018,83.6,72.2,Campanian,,7
+Tarchia,Maryanska 1977,83.6,66.0,Campanian,Maastrichtian,4
+Ziapelta,Arbour et al. 2014,83.6,72.2,Campanian,,1
+Akainacephalus,Wiersma and Irmis 2018,83.6,72.2,Campanian,,1
+Zuul,Arbour and Evans 2017,83.6,72.2,Campanian,,1
+Tsagantegia,Tumanova 1993,100.5,83.6,Cenomanian,Santonian,2
+Aletopelta,Ford and Kirkland 2001,83.6,72.2,Campanian,,1
+Bissektipelta,Parish and Barrett 2004,93.9,89.8,Turonian,,1
+Cedarpelta,Carpenter et al. 2001,121.4,100.5,Aptian,Albian,3
+Taohelong,Yang et al. 2013,125.77,113.2,Barremian,Aptian,1
+Glyptodontopelta,Ford 2000,83.6,66.0,Campanian,Maastrichtian,11
+Europelta,Kirkland et al. 2013,113.2,110.1,Albian,,1
+Niobrarasaurus,Carpenter et al. 1995,89.8,83.6,Coniacian,Santonian,2
+Peloroplites,Carpenter et al. 2008,121.4,100.5,Aptian,Albian,1
+Gargoyleosaurus,Carpenter et al. 1998,152.21,145.06,Kimmeridgian,Tithonian,1
+Nodosaurus,Marsh 1889,100.5,66.0,Cenomanian,Maastrichtian,3
+Panoplosaurus,Lambe 1919,83.6,66.0,Campanian,Maastrichtian,15
+Pawpawsaurus,Lee 1996,106.3,100.5,Albian,,1
+Tatankacephalus,Parsons and Parsons 2009,113.2,100.5,Albian,,1
+Propanoplosaurus,Stanford et al. 2011,119.57,113.2,Aptian,,1
+Sauroplites,Bohlin 1953,121.4,113.2,Aptian,,1
+Texasetes,Coombs 1995,106.3,100.5,Albian,,2
+Patagopelta,Riguetti et al. 2022,72.2,66.0,Maastrichtian,,1
+Sauropelta,Ostrom 1970,121.4,93.9,Aptian,Cenomanian,34
+Silvisaurus,Eaton 1960,106.3,100.5,Albian,,2
+Polacanthus,Fox 1866,139.1,100.5,Berriasian,Albian,16
+Euacanthus,Owen 1897,139.1,100.5,Berriasian,Albian,16
+Vectensia,Delair 1982,139.1,100.5,Berriasian,Albian,16
+Acantholipan,Rivera-Sylva et al. 2018,83.6,72.2,Campanian,,1
+Struthiosaurus,Bunzel 1870,83.6,66.0,Campanian,Maastrichtian,23
+Danubiosaurus,Bunzel 1871,83.6,66.0,Campanian,Maastrichtian,23
+Crataeomus,Seeley 1881,83.6,66.0,Campanian,Maastrichtian,23
+Leipsanosaurus,Nopcsa 1918,83.6,66.0,Campanian,Maastrichtian,23
+Pleuropeltus,Seeley 1881,83.6,66.0,Campanian,Maastrichtian,23
+Stegopelta,Williston 1905,100.5,93.9,Cenomanian,,1
+Gastonia,Kirkland 1998,137.05,100.5,Valanginian,Albian,3
+Dongyangopelta,Chen et al. 2013,113.2,93.9,Albian,Cenomanian,1
+Anoplosaurus,Seeley 1879,100.5,93.9,Cenomanian,,1
+Hungarosaurus,Osi 2005,85.7,83.6,Santonian,,2
+Borealopelta,Brown et al. 2017,121.4,113.2,Aptian,,1
+Animantarx,Carpenter et al. 1999,121.4,100.5,Aptian,Albian,1
+Hylaeosaurus,Mantell 1833,139.1,110.1,Berriasian,Albian,10
+Invictarx,McDonald and Wolfe 2018,83.6,72.2,Campanian,,1
+Hoplitosaurus,Lucas 1902,125.77,113.2,Barremian,Aptian,2
+Edmontonia,Sternberg 1928,83.6,66.0,Campanian,Maastrichtian,16
+Denversaurus,Bakker 1988,83.6,66.0,Campanian,Maastrichtian,16
+Chassternbergia,(Bakker 1988),83.6,66.0,Campanian,Maastrichtian,16
+Sinankylosaurus,Wang et al. 2020,83.6,72.2,Campanian,,1
+Dracopelta,Galton 1980,145.06,143.1,Tithonian,,1
+Huayangosaurus,Dong et al. 1982,170.9,154.8,Bajocian,Oxfordian,1
+Baiyinosaurus,Li et al. 2024,168.2,165.3,Bathonian,,1
+Gigantspinosaurus,Ouyang 1992,168.2,161.5,Bathonian,Callovian,1
+Isaberrysaura,Salgado et al. 2017,170.9,168.6,Bajocian,,1
+Bashanosaurus,Hui et al. 2022,168.2,161.5,Bathonian,Callovian,1
+Thyreosaurus,Zafaty et al. 2024,168.2,161.5,Bathonian,Callovian,1
+Adratiklit,Maidment et al. 2020,168.2,161.5,Bathonian,Callovian,1
+Kentrosaurus,Hennig 1915,161.5,143.1,Oxfordian,Tithonian,27
+Doryphorosaurus,Nopcsa 1916,161.5,143.1,Oxfordian,Tithonian,27
+Kentrurosaurus,Hennig 1916,161.5,143.1,Oxfordian,Tithonian,27
+Dacentrurus,Lucas 1902,154.8,121.4,Kimmeridgian,Barremian,31
+Miragaia,Mateus et al. 2009,154.8,121.4,Kimmeridgian,Barremian,31
+Natronasaurus,Ulansky 2014,154.8,121.4,Kimmeridgian,Barremian,31
+Omosaurus,Owen 1875,154.8,121.4,Kimmeridgian,Barremian,31
+Stegosaurus,Marsh 1877,161.5,93.9,Oxfordian,Cenomanian,86
+Hypsirophus,Cope 1878,161.5,93.9,Oxfordian,Cenomanian,86
+Diracodon,Marsh 1881,161.5,93.9,Oxfordian,Cenomanian,86
+Yanbeilong,Jia et al. 2024,113.2,100.5,Albian,,1
+Jiangjunosaurus,Jia et al. 2007,161.5,154.8,Oxfordian,,1
+Wuerhosaurus,Dong 1973,137.05,100.5,Valanginian,Albian,3
+Hesperosaurus,Carpenter et al. 2001,157.9,143.1,,,8
+Loricatosaurus,Maidment et al. 2008,165.3,161.5,Callovian,,2
+Changdusaurus,Zhao 1985,174.7,161.5,Aalenian,Callovian,1
+Tuojiangosaurus,Dong et al. 1977,168.2,161.5,Bathonian,Callovian,1
+Mongolostegus,Tumanova and Alifanov 2018,121.4,100.5,Aptian,Albian,1
+Yingshanosaurus,Zhou 1986,168.2,161.5,Bathonian,Callovian,1
+Paranthodon,Nopcsa 1929,143.1,132.6,Berriasian,Valanginian,1
+Chungkingosaurus,Dong et al. 1983,168.2,161.5,Bathonian,Callovian,4
+Yuxisaurus,Yao et al. 2022,192.9,184.2,Pliensbachian,,1
+Scelidosaurus,Owen 1859,205.7,174.7,Rhaetian,Toarcian,13
+Emausaurus,Haubold 1990,184.2,182.9,Toarcian,,1
+Tianyulong,Zheng et al. 2009,168.2,152.21,Bathonian,Kimmeridgian,1
+Abrictosaurus,Hopson 1975,201.4,192.9,Hettangian,Sinemurian,1
+Pegomastax,Sereno 2012,201.4,192.9,Hettangian,Sinemurian,1
+Lycorhinus,Haughton 1924,201.4,184.2,Hettangian,Pliensbachian,5
+Lanasaurus,Gow 1975,201.4,184.2,Hettangian,Pliensbachian,5
+Heterodontosaurus,Crompton and Charig 1962,201.4,184.2,Hettangian,Pliensbachian,7
+Manidens,Pol et al. 2011,184.2,170.9,Toarcian,Aalenian,2
+Fruitadens,Butler et al. 2010,149.2,143.1,Tithonian,,4
+Echinodon,Owen 1861,152.21,137.05,Kimmeridgian,Berriasian,6
+Eocursor,Butler et al. 2007,201.4,192.9,Hettangian,Sinemurian,1
+Asilisaurus,Nesbitt et al. 2010,247.0,241.464,,,4
+Gamatavus,Pretto et al. 2022,241.464,237.0,Ladinian,,1
+Amanasaurus,Müller and Garcia 2023,237.0,227.3,Carnian,,1
+Lewisuchus,Romer 1972,241.464,233.6,Ladinian,Carnian,4
+Pseudolagosuchus,Arcucci 1987,241.464,233.6,Ladinian,Carnian,4
+Soumyasaurus,Sarigul et al. 2018,227.3,205.7,Norian,,1
+Silesaurus,Dzik 2003,233.6,227.3,Carnian,,3
+Eucoelophysis,Sullivan and Lucas 1999,227.3,201.4,Norian,Rhaetian,2
+Lutungutali,Peecook et al. 2013,247.0,227.3,,,1
+Kwanasaurus,Martz and Small 2019,227.3,201.4,Norian,Rhaetian,6
+Sacisaurus,Ferigolo and Langer 2007,227.3,205.7,Norian,,1
+Technosaurus,Chatterjee 1984,227.3,205.7,Norian,,1
+Diodorus,Kammerer et al. 2012,237.0,205.7,Carnian,Norian,1
+Minimocursor,Manitkoon et al. 2023,149.2,137.05,Tithonian,Berriasian,1
+Jeholosaurus,Xu et al. 2000,125.77,119.57,Barremian,Aptian,2
+Parksosaurus,Sternberg 1937,72.2,66.0,Maastrichtian,,3
+Changmiania,Yang et al. 2020,125.77,119.57,Barremian,Aptian,1
+Thescelosaurus,Gilmore 1913,93.9,66.0,Turonian,Maastrichtian,55
+Bugenasaura,Galton 1995,93.9,66.0,Turonian,Maastrichtian,55
+Fona,Avrahami et al. 2024,100.5,93.9,Cenomanian,,3
+Doolysaurus,Jung et al. 2026,113.2,93.9,Albian,Cenomanian,1
+Nevadadromeus,Bonde et al. 2022,100.5,93.9,Cenomanian,,1
+Koreanosaurus,Huh et al. 2011,83.6,72.2,Campanian,,2
+Haya,Makovicky et al. 2011,85.7,72.2,Santonian,Campanian,2
+Oryctodromeus,Varricchio et al. 2007,106.3,93.9,Albian,Cenomanian,9
+Zephyrosaurus,Sues 1980,121.4,100.5,Aptian,Albian,4
+Yueosaurus,Zheng et al. 2012,113.2,93.9,Albian,Cenomanian,1
+Orodromeus,Horner and Weishampel 1988,83.6,66.0,Campanian,Maastrichtian,9
+Albertadromeus,Brown et al. 2013,83.6,72.2,Campanian,,1
+Stormbergia,Butler 2005,201.4,192.9,Hettangian,Sinemurian,1
+Yandusaurus,He 1979,170.9,168.2,Bajocian,,2
+Nanosaurus,Marsh 1877,157.9,143.1,,,32
+Drinker,Bakker et al. 1990,157.9,143.1,,,32
+Othnielosaurus,Galton 2007,157.9,143.1,,,32
+Enigmacursor,Maidment and Barrett 2025,154.8,143.1,Kimmeridgian,Tithonian,1
+Chaoyangsaurus,Zhao et al. 1999,152.21,132.6,Kimmeridgian,Valanginian,1
+Chaoyangosaurus,Zhao and Cheng 1983,152.21,132.6,Kimmeridgian,Valanginian,1
+Hualianceratops,Han et al. 2015,161.5,154.8,Oxfordian,,1
+Xuanhuaceratops,Zhao et al. 2006,152.21,132.6,Kimmeridgian,Valanginian,1
+Stenopelix,Meyer 1857,139.1,137.05,Berriasian,,1
+Yinlong,Xu et al. 2006,161.5,154.8,Oxfordian,,1
+Styracosaurus,Lambe 1913,83.6,72.2,Campanian,,10
+Centrosaurus,Lambe 1905,83.6,66.0,Campanian,Maastrichtian,57
+Spinops,Farke et al. 2011,83.6,72.2,Campanian,,1
+Rubeosaurus,McDonald and Horner 2010,83.6,72.2,Campanian,,2
+Coronosaurus,Ryan et al. 2012,83.6,72.2,Campanian,,2
+Crittendenceratops,Dalman et al. 2018,83.6,72.2,Campanian,,2
+Yehuecauhceratops,Rivera-Sylva et al. 2017,83.6,72.2,Campanian,,1
+Furcatoceratops,Ishikawa et al. 2023,83.6,72.2,Campanian,,1
+Nasutoceratops,Sampson et al. 2013,83.6,72.2,Campanian,,1
+Avaceratops,Dodson 1986,83.6,72.2,Campanian,,3
+Wendiceratops,Evans and Ryan 2015,83.6,72.2,Campanian,,1
+Pachyrhinosaurus,Sternberg 1950,83.6,66.0,Campanian,Maastrichtian,16
+Einiosaurus,Sampson 1994,83.6,72.2,Campanian,,3
+Achelousaurus,Sampson 1994,83.6,72.2,Campanian,,2
+Xenoceratops,Ryan et al. 2012,83.6,72.2,Campanian,,1
+Monoclonius,Cope 1876,83.6,72.2,Campanian,,13
+Sinoceratops,Xu et al. 2010,83.6,72.2,Campanian,,1
+Stellasaurus,Wilson et al. 2020,83.6,72.2,Campanian,,1
+Diabloceratops,Kirkland and Deblieux 2010,83.6,72.2,Campanian,,2
+Menefeeceratops,Dalman et al. 2021,83.6,72.2,Campanian,,1
+Machairoceratops,Lund et al. 2016,83.6,72.2,Campanian,,1
+Anchiceratops,Brown 1914,83.6,66.0,Campanian,Maastrichtian,7
+Spiclypeus,Mallon et al. 2016,83.6,72.2,Campanian,,1
+Torosaurus,Marsh 1891,83.6,66.0,Campanian,Maastrichtian,12
+Triceratops,Marsh 1889,83.6,66.0,Campanian,Maastrichtian,166
+Nedoceratops,Ukrainsky 2007,83.6,66.0,Campanian,Maastrichtian,166
+Diceratops,Hatcher and Lull 1905,83.6,66.0,Campanian,Maastrichtian,166
+Diceratus,Mateus 2008,83.6,66.0,Campanian,Maastrichtian,166
+Ojoceratops,Sullivan and Lucas 2010,83.6,66.0,Campanian,Maastrichtian,166
+Sterrholophus,Marsh 1891,83.6,66.0,Campanian,Maastrichtian,166
+Tatankaceratops,Ott and Larson 2010,83.6,66.0,Campanian,Maastrichtian,166
+Eotriceratops,Wu et al. 2007,72.2,66.0,Maastrichtian,,1
+Regaliceratops,Brown and Henderson 2015,72.2,66.0,Maastrichtian,,1
+Judiceratops,Longrich 2013,83.6,72.2,Campanian,,1
+Kosmoceratops,Sampson et al. 2010,83.6,72.2,Campanian,,2
+Bravoceratops,Wick and Lehman 2013,72.2,66.0,Maastrichtian,,1
+Utahceratops,Sampson et al. 2010,83.6,72.2,Campanian,,9
+Coahuilaceratops,Loewen et al. 2010,72.2,66.0,Maastrichtian,,1
+Sierraceratops,Dalman et al. 2022,83.6,66.0,Campanian,Maastrichtian,1
+Vagaceratops,Sampson 2010,83.6,72.2,Campanian,,7
+Mercuriceratops,Ryan et al. 2014,83.6,72.2,Campanian,,7
+Chasmosaurus,Lambe 1914,83.6,72.2,Campanian,,21
+Mojoceratops,Longrich 2010,83.6,72.2,Campanian,,21
+Eoceratops,Lambe 1915,83.6,72.2,Campanian,,21
+Protorosaurus,Lambe 1914,83.6,72.2,Campanian,,21
+Bisticeratops,Dalman et al. 2022,83.6,72.2,Campanian,,1
+Pentaceratops,Osborn 1923,83.6,66.0,Campanian,Maastrichtian,14
+Agujaceratops,Lucas et al. 2006,83.6,72.2,Campanian,,16
+Arrhinoceratops,Parks 1925,83.6,66.0,Campanian,Maastrichtian,3
+Navajoceratops,Fowler and Freedman Fowler 2020,83.6,72.2,Campanian,,1
+Terminocavus,Fowler and Freedman Fowler 2020,83.6,72.2,Campanian,,1
+Lokiceratops,Loewen et al. 2024,83.6,72.2,Campanian,,1
+Medusaceratops,Ryan et al. 2010,83.6,72.2,Campanian,,1
+Albertaceratops,Ryan 2007,83.6,72.2,Campanian,,2
+Ajkaceratops,Osi et al. 2010,85.7,83.6,Santonian,,1
+Serendipaceratops,Rich and Vickers-Rich 2003,121.4,119.57,Aptian,,1
+Psittacosaurus,Osborn 1923,137.05,100.5,Valanginian,Albian,70
+Hongshanosaurus,You et al. 2003,137.05,100.5,Valanginian,Albian,70
+Protiguanodon,Osborn 1923,137.05,100.5,Valanginian,Albian,70
+Liaoceratops,Xu et al. 2002,125.77,119.57,Barremian,Aptian,2
+Montanoceratops,Sternberg 1951,83.6,66.0,Campanian,Maastrichtian,3
+Helioceratops,Jin et al. 2009,121.4,100.5,Aptian,Albian,1
+Zhuchengceratops,Xu et al. 2010,83.6,72.2,Campanian,,1
+Udanoceratops,Kurzanov 1992,83.6,72.2,Campanian,,1
+Ischioceratops,He et al. 2015,83.6,72.2,Campanian,,1
+Unescoceratops,Ryan et al. 2012,83.6,72.2,Campanian,,1
+Cerasinops,Chinnery and Horner 2007,83.6,72.2,Campanian,,3
+Koreaceratops,Lee et al. 2010,113.2,100.5,Albian,,1
+Leptoceratops,Brown 1914,72.2,66.0,Maastrichtian,,8
+Prenoceratops,Chinnery 2004,83.6,72.2,Campanian,,2
+Gremlin,Ryan et al. 2023,83.6,72.2,Campanian,,2
+Gryphoceratops,Ryan et al. 2012,85.7,83.6,Santonian,,1
+Ferrisaurus,Arbour and Evans 2019,72.2,66.0,Maastrichtian,,1
+Auroraceratops,You et al. 2005,113.2,110.1,Albian,,2
+Aquilops,Farke et al. 2014,110.1,100.5,Albian,,1
+Beg,Yu et al. 2020,106.3,93.9,Albian,Cenomanian,1
+Archaeoceratops,Dong and Azuma 1997,121.4,110.1,Aptian,Albian,3
+Sasayamagnomus,Tanaka et al. 2024,113.2,110.1,Albian,,1
+Yamaceratops,Makovicky and Norell 2006,85.7,72.2,Santonian,Campanian,2
+Mosaiceratops,Zheng et al. 2015,93.9,72.2,Turonian,Campanian,1
+Turanoceratops,Nessov et al. 1989,93.9,89.8,Turonian,,6
+Zuniceratops,Wolfe and Kirkland 1998,93.9,89.8,Turonian,,3
+Breviceratops,Kurzanov 1990,83.6,72.2,Campanian,,2
+Bagaceratops,Maryanska and Osmólska 1975,83.6,66.0,Campanian,Maastrichtian,18
+Magnirostris,You and Dong 2003,83.6,66.0,Campanian,Maastrichtian,18
+Lamaceratops,Alifanov 2003,83.6,66.0,Campanian,Maastrichtian,18
+Gobiceratops,Alifanov 2008,83.6,66.0,Campanian,Maastrichtian,18
+Platyceratops,Alifanov 2003,83.6,66.0,Campanian,Maastrichtian,18
+Protoceratops,Granger and Gregory 1923,121.4,72.2,Aptian,Campanian,38
+Bainoceratops,Tereshchenko and Alifanov 2003,121.4,72.2,Aptian,Campanian,38
+Graciliceratops,Sereno 2000,100.5,83.6,Cenomanian,Santonian,1
+Asiaceratops,Nessov et al. 1989,100.5,93.9,Cenomanian,,8
+Micropachycephalosaurus,Dong 1978,89.8,83.6,Coniacian,Santonian,1
+Notoceratops,Tapia 1919,72.2,66.0,Maastrichtian,,1
+Ferenceratops,Maidment et al. 2026,72.2,66.0,Maastrichtian,,9
+Albalophosaurus,Ohashi and Barrett 2009,125.77,121.4,Barremian,,1
+Goyocephale,Perle et al. 1982,85.7,66.0,Santonian,Maastrichtian,1
+Tylocephale,Maryańska and Osmólska 1974,83.6,72.2,Campanian,,1
+Colepiocephale,Sullivan 2003,83.6,72.2,Campanian,,4
+Sinocephale,Evans et al. 2021,83.6,66.0,Campanian,Maastrichtian,1
+Brontotholus,Woodruff et al. 2025,83.6,72.2,Campanian,,4
+Acrotholus,Evans et al. 2013,85.7,83.6,Santonian,,1
+Sphaerotholus,Williamson and Carr 2003,83.6,66.0,Campanian,Maastrichtian,6
+Platytholus,Horner et al. 2023,72.2,66.0,Maastrichtian,,1
+Foraminacephale,Schott and Evans 2017,83.6,72.2,Campanian,,5
+Amtocephale,Watabe et al. 2011,100.5,83.6,Cenomanian,Santonian,1
+Alaskacephale,Sullivan 2006,72.2,66.0,Maastrichtian,,1
+Zavacephale,Chinzorig et al. 2025,119.57,100.5,Aptian,Albian,1
+Wannanosaurus,Hou 1977,72.2,66.0,Maastrichtian,,1
+Prenocephale,Maryańska and Osmólska 1974,83.6,66.0,Campanian,Maastrichtian,6
+Stegoceras,Lambe 1902,83.6,66.0,Campanian,Maastrichtian,46
+Ornatotholus,Galton and Sues 1983,83.6,66.0,Campanian,Maastrichtian,46
+Hanssuessia,Sullivan 2003,83.6,66.0,Campanian,Maastrichtian,46
+Gravitholus,Wall and Galton 1979,83.6,66.0,Campanian,Maastrichtian,46
+Homalocephale,Maryańska and Osmólska 1974,72.2,66.0,Maastrichtian,,2
+Pachycephalosaurus,Brown and Schlaikjer 1943,83.6,66.0,Campanian,Maastrichtian,34
+Stygimoloch,Galton and Sues 1983,83.6,66.0,Campanian,Maastrichtian,34
+Stenotholus,Giffin et al. 1988,83.6,66.0,Campanian,Maastrichtian,34
+Dracorex,Bakker et al. 2006,83.6,66.0,Campanian,Maastrichtian,34
+Tylosteus,Leidy 1872,83.6,66.0,Campanian,Maastrichtian,34
+Burianosaurus,Madzia et al. 2018,100.5,93.9,Cenomanian,,1
+Daurosaurus,Alifanov and Saveliev 2014,168.2,165.3,Bathonian,,1
+Hypsilophodon,Huxley 1870,154.8,119.57,Kimmeridgian,Aptian,10
+Gideonmantellia,Ruiz-Omeñaca et al. 2012,125.77,121.4,Barremian,,1
+Vectidromeus,Longrich et al. 2024,143.1,100.5,Berriasian,Albian,1
+Mantellisaurus,Paul 2007,143.1,119.57,Berriasian,Aptian,17
+Mantellodon,Paul 2012,143.1,119.57,Berriasian,Aptian,17
+Dollodon,Paul 2008,143.1,119.57,Berriasian,Aptian,17
+Planicoxa,DiCroce and Carpenter 2001,121.4,113.2,Aptian,,1
+Craspedodon,Dollo 1883,89.8,83.6,Coniacian,Santonian,1
+Lurdusaurus,Taquet and Russell 1999,113.2,100.5,Albian,,1
+Gravisaurus,Chabli 1988,113.2,100.5,Albian,,1
+Draconyx,Mateus and Antunes 2001,149.2,145.06,Tithonian,,1
+Owenodon,Galton 2009,149.2,137.05,Tithonian,Berriasian,6
+Hesperonyx,Rotatori et al. 2024,152.21,149.2,Kimmeridgian,,1
+Oblitosaurus,Sánchez-Fenollosa et al. 2023,152.21,143.1,Kimmeridgian,Tithonian,1
+Eousdryosaurus,Escaso et al. 2014,152.21,145.06,Kimmeridgian,Tithonian,1
+Valdosaurus,Galton 1977,154.8,119.57,Kimmeridgian,Aptian,12
+Dysalotosaurus,Virchow 1919,152.21,149.2,Kimmeridgian,,1
+Elrhazosaurus,Galton 2009,121.4,113.2,Aptian,,1
+Dryosaurus,Marsh 1894,154.8,143.1,Kimmeridgian,Tithonian,24
+Ouranosaurus,Taquet 1972,121.4,66.0,Aptian,Maastrichtian,8
+Altirhinus,Norman 1998,110.1,100.5,Albian,,1
+Bolong,Wu et al. 2010,125.77,119.57,Barremian,Aptian,2
+Barilium,Norman 2010,137.05,121.4,Valanginian,Barremian,5
+Torilion,Carpenter and Ishida 2010,137.05,121.4,Valanginian,Barremian,5
+Kukufeldia,McDonald et al. 2010,137.05,121.4,Valanginian,Barremian,5
+Sellacoxa,Carpenter and Ishida 2010,137.05,121.4,Valanginian,Barremian,5
+Hypselospinus,Norman 2010,139.1,132.6,Berriasian,Valanginian,9
+Wadhurstia,Carpenter and Ishida 2010,139.1,132.6,Berriasian,Valanginian,9
+Darwinsaurus,Paul 2012,139.1,132.6,Berriasian,Valanginian,9
+Lophorhothon,Langston 1960,85.7,72.2,Santonian,Campanian,2
+Bayannurosaurus,Xu et al. 2018,121.4,119.57,Aptian,,1
+Iguanodon,Mantell 1825,154.8,66.0,Kimmeridgian,Maastrichtian,133
+Therosaurus,Fitzinger 1843,154.8,66.0,Kimmeridgian,Maastrichtian,133
+Struthopus,Ballerstedt 1922,154.8,66.0,Kimmeridgian,Maastrichtian,133
+Heterosaurus,Cornuel 1850,154.8,66.0,Kimmeridgian,Maastrichtian,133
+Iguanosaurus,Anonymous 1824,154.8,66.0,Kimmeridgian,Maastrichtian,133
+Lanzhousaurus,You et al. 2005,125.77,113.2,Barremian,Aptian,1
+Theiophytalia,Brill and Carpenter 2007,121.4,100.5,Aptian,Albian,1
+Calvarius,Prieto-Márquez and Sellés 2023,72.2,66.0,Maastrichtian,,1
+Napaisaurus,Ji and Zhang 2022,121.4,113.2,Aptian,,1
+Magnamanus,Fuentes Vidarte et al. 2016,132.6,121.4,Hauterivian,Barremian,1
+Riabininohadros,Ulansky 2015,72.2,66.0,Maastrichtian,,1
+Siamodon,Buffetaut and Suteethorn 2011,121.4,113.2,Aptian,,1
+Probactrosaurus,Rozhdestvensky 1966,121.4,100.5,Aptian,Albian,2
+Yunganglong,Wang et al. 2013,100.5,83.6,Cenomanian,Santonian,1
+Jeyawati,McDonald et al. 2010,93.9,89.8,Turonian,,1
+Fylax,Prieto-Márquez and Carrera Farias 2021,72.2,66.0,Maastrichtian,,1
+Protohadros,Head 1998,100.5,93.9,Cenomanian,,4
+Nanningosaurus,Mo et al. 2007,100.5,66.0,Cenomanian,Maastrichtian,1
+Telmatosaurus,Nopcsa 1903,83.6,66.0,Campanian,Maastrichtian,23
+Hecatasaurus,Brown 1910,83.6,66.0,Campanian,Maastrichtian,23
+Limnosaurus,Nopcsa 1900,83.6,66.0,Campanian,Maastrichtian,23
+Kryptohadros,Magyar et al. 2026,72.2,66.0,Maastrichtian,,1
+Tethyshadros,Dalla Vecchia 2009,83.6,72.2,Campanian,,1
+Gonkoken,Alarcón-Muñoz et al. 2023,72.2,66.0,Maastrichtian,,1
+Zhanghenglong,Xing et al. 2014,85.7,83.6,Santonian,,1
+Bactrosaurus,Gilmore 1933,93.9,72.2,Turonian,Campanian,8
+Gongpoquansaurus,You et al. 2014,113.2,110.1,Albian,,1
+Fukuisaurus,Kobayashi and Azuma 2003,121.4,113.2,Aptian,,1
+Koshisaurus,Shibata and Azuma 2015,121.4,113.2,Aptian,,1
+Gilmoreosaurus,Brett-Surman 1979,83.6,72.2,Campanian,,2
+Jintasaurus,You and Li 2009,121.4,113.2,Aptian,,1
+Penelopognathus,Godefroit et al. 2005,121.4,113.2,Aptian,,1
+Huehuecanauhtlus,Ramírez-Velasco et al. 2012,85.7,83.6,Santonian,,2
+Portellsaurus,Santos-Cubedo et al. 2021,125.77,121.4,Barremian,,1
+Ratchasimasaurus,Shibata et al. 2011,121.4,113.2,Aptian,,1
+Eolambia,Kirkland 1998,121.4,93.9,Aptian,Cenomanian,12
+Nanyangosaurus,Xu et al. 2000,93.9,72.2,Turonian,Campanian,1
+Equijubus,You et al. 2003,113.2,110.1,Albian,,1
+Cariocecus,Bertozzo et al. 2025,125.77,121.4,Barremian,,1
+Datonglong,Xu et al. 2016,100.5,72.2,Cenomanian,Campanian,1
+Yamatosaurus,Kobayashi et al. 2021,72.2,66.0,Maastrichtian,,1
+Lapampasaurus,Coria et al. 2012,72.2,66.0,Maastrichtian,,1
+Aquilarhinus,Prieto-Márquez et al. 2020,83.6,72.2,Campanian,,1
+Shantungosaurus,Hu 1973,100.5,66.0,Cenomanian,Maastrichtian,5
+Zhuchengosaurus,Zhao et al. 2007,100.5,66.0,Cenomanian,Maastrichtian,5
+Huaxiaosaurus,Zhao 2011,100.5,66.0,Cenomanian,Maastrichtian,5
+Edmontosaurus,Lambe 1917,89.8,66.0,Coniacian,Maastrichtian,85
+Anatotitan,Brett-Surman 1990,89.8,66.0,Coniacian,Maastrichtian,85
+Anatosaurus,Lull and Wright 1942,89.8,66.0,Coniacian,Maastrichtian,85
+Kerberosaurus,Bolotsky and Godefroit 2004,72.2,66.0,Maastrichtian,,2
+Kundurosaurus,Godefroit et al. 2012,72.2,66.0,Maastrichtian,,2
+Ugrunaaluk,Mori et al. 2016,72.2,66.0,Maastrichtian,,1
+Kelumapusaura,Rozadilla et al. 2021,72.2,66.0,Maastrichtian,,1
+Gryposaurus,Lambe 1914,83.6,66.0,Campanian,Maastrichtian,22
+Coahuilasaurus,Longrich et al. 2024,83.6,72.2,Campanian,,2
+Huallasaurus,Rozadilla et al. 2021,72.2,66.0,Maastrichtian,,2
+Secernosaurus,Brett-Surman 1979,72.2,66.0,Maastrichtian,,1
+Kritosaurus,Brown 1910,85.7,66.0,Santonian,Maastrichtian,25
+Naashoibitosaurus,Hunt and Lucas 1993,83.6,72.2,Campanian,,1
+Mandschurosaurus,Riabinin 1930,121.4,66.0,Aptian,Maastrichtian,3
+Kamuysaurus,Kobayashi et al. 2019,72.2,66.0,Maastrichtian,,1
+Saurolophus,Brown 1912,83.6,66.0,Campanian,Maastrichtian,38
+Prosaurolophus,Brown 1916,83.6,66.0,Campanian,Maastrichtian,15
+Bonapartesaurus,Cruzado-Caballero and Powell 2017,72.2,66.0,Maastrichtian,,1
+Augustynolophus,Prieto-Márquez et al. 2015,72.2,66.0,Maastrichtian,,2
+Acristavus,Gates et al. 2011,83.6,72.2,Campanian,,2
+Hadrosaurus,Leidy 1858,85.7,66.0,Santonian,Maastrichtian,9
+Wulagasaurus,Godefroit et al. 2008,72.2,66.0,Maastrichtian,,1
+Maiasaura,Horner and Makela 1979,83.6,72.2,Campanian,,7
+Ornatops,McDonald et al. 2021,83.6,72.2,Campanian,,1
+Brachylophosaurus,Sternberg 1953,83.6,72.2,Campanian,,8
+Probrachylophosaurus,Freedman Fowler and Horner 2015,83.6,72.2,Campanian,,1
+Anasazisaurus,Hunt and Lucas 1993,83.6,72.2,Campanian,,1
+Laiyangosaurus,Zhang et al. 2019,83.6,72.2,Campanian,,1
+Gongshuilong,Yao et al. 2026,72.2,66.0,Maastrichtian,,1
+Barsboldia,Maryanska and Osmólska 1981,72.2,66.0,Maastrichtian,,2
+Ahshislesaurus,Dalman et al. 2025,83.6,72.2,Campanian,,3
+Rhinorex,Gates and Scheetz 2014,83.6,72.2,Campanian,,1
+Minqaria,Longrich et al. 2024,72.2,66.0,Maastrichtian,,1
+Adynomosaurus,Prieto-Márquez et al. 2019,72.2,66.0,Maastrichtian,,1
+Canardia,Prieto-Marquez et al. 2013,72.2,66.0,Maastrichtian,,2
+Blasisaurus,Cruzado-Caballero et al. 2010,72.2,66.0,Maastrichtian,,1
+Arenysaurus,Pereda-Suberbiola et al. 2009,72.2,66.0,Maastrichtian,,1
+Taleta,Longrich et al. 2025,72.2,66.0,Maastrichtian,,1
+Pararhabdodon,Casanovas Cladellas 1992,72.2,66.0,Maastrichtian,,7
+Ajnabia,Longrich et al. 2021,72.2,66.0,Maastrichtian,,1
+Olorotitan,Godefroit et al. 2003,72.2,66.0,Maastrichtian,,1
+Latirhinus,Prieto-Márquez and Serrano Brañas 2012,83.6,72.2,Campanian,,1
+Kazaklambia,Bell and Brink 2013,89.8,83.6,Coniacian,Santonian,1
+Angulomastacator,Wagner and Lehman 2009,83.6,72.2,Campanian,,1
+Corythosaurus,Brown 1914,83.6,72.2,Campanian,,29
+Hypacrosaurus,Brown 1913,83.6,66.0,Campanian,Maastrichtian,37
+Cheneosaurus,Lambe 1917,83.6,66.0,Campanian,Maastrichtian,37
+Velafrons,Gates et al. 2007,83.6,72.2,Campanian,,2
+Lambeosaurus,Parks 1923,83.6,72.2,Campanian,,19
+Stephanosaurus,Lambe 1914,83.6,72.2,Campanian,,19
+Didanodon,Osborn 1902,83.6,72.2,Campanian,,19
+Procheneosaurus,Matthew 1920,83.6,72.2,Campanian,,19
+Tetragonosaurus,Parks 1931,83.6,72.2,Campanian,,19
+Jaxartosaurus,Riabinin 1937,89.8,83.6,Coniacian,Santonian,2
+Nipponosaurus,Nagao 1936,85.7,72.2,Santonian,Campanian,1
+Aralosaurus,Rozhdestvensky 1968,85.7,72.2,Santonian,Campanian,1
+Adelolophus,Gates et al. 2014,83.6,72.2,Campanian,,1
+Magnapaulia,Prieto-Marquez et al. 2012,83.6,72.2,Campanian,,4
+Tlatolophus,Ramírez-Velasco et al. 2021,83.6,72.2,Campanian,,1
+Parasaurolophus,Parks 1922,83.6,72.2,Campanian,,20
+Charonosaurus,Godefroit et al. 2000,72.2,66.0,Maastrichtian,,1
+Plesiolophus,McFeeters et al. 2026,83.6,72.2,Campanian,,1
+Amurosaurus,Bolotsky and Kurzanov 1991,72.2,66.0,Maastrichtian,,2
+Sahaliyania,Godefroit et al. 2008,72.2,66.0,Maastrichtian,,2
+Tsintaosaurus,Young 1958,83.6,72.2,Campanian,,4
+Eotrachodon,Prieto-Márquez et al. 2016,85.7,83.6,Santonian,,1
+Malefica,Prieto-Márquez and Wagner 2023,83.6,72.2,Campanian,,1
+Qianjiangsaurus,Dai et al. 2025,100.5,66.0,Cenomanian,Maastrichtian,1
+Levnesovia,Sues and Averianov 2009,93.9,89.8,Turonian,,3
+Zuoyunlong,Wang et al. 2017,100.5,83.6,Cenomanian,Santonian,1
+Xuwulong,You et al. 2011,121.4,113.2,Aptian,,1
+Shuangmiaosaurus,You et al. 2003,106.3,100.5,Albian,,1
+Batyrosaurus,Godefroit et al. 2012,85.7,72.2,Santonian,Campanian,1
+Cedrorestes,Gilpin et al. 2007,137.05,132.6,Valanginian,,1
+Gobihadros,Tsogtbaatar et al. 2019,100.5,83.6,Cenomanian,Santonian,6
+Haolong,Huang et al. 2026,125.77,121.4,Barremian,,1
+Claosaurus,Marsh 1890,89.8,72.2,Coniacian,Campanian,3
+Plesiohadros,Tsogtbaatar et al. 2014,85.7,72.2,Santonian,Campanian,1
+Tanius,Wiman 1929,89.8,72.2,Coniacian,Campanian,5
+Morelladon,Gasulla et al. 2015,125.77,121.4,Barremian,,1
+Sirindhorna,Shibata et al. 2015,121.4,113.2,Aptian,,1
+Comptonatus,Lockwood et al. 2024,125.77,121.4,Barremian,,1
+Proa,McDonald et al. 2012,113.2,110.1,Albian,,1
+Brighstoneus,Lockwood et al. 2021,125.77,121.4,Barremian,,1
+Istiorachis,Lockwood et al. 2025,132.6,121.4,Hauterivian,Barremian,1
+Cumnoria,Seeley 1888,152.21,149.2,Kimmeridgian,,1
+Iguanacolossus,McDonald et al. 2010,139.1,132.6,Berriasian,Valanginian,2
+Hippodraco,McDonald et al. 2010,137.05,132.6,Valanginian,,1
+Dakotadon,Paul 2008,137.05,132.6,Valanginian,,1
+Delapparentia,Ruiz-Omeñaca 2011,125.77,121.4,Barremian,,2
+Camptosaurus,Marsh 1885,157.9,143.1,,,42
+Uteodon,McDonald 2011,157.9,143.1,,,42
+Brachyrophus,Cope 1878,157.9,143.1,,,42
+Camptonotus,Marsh 1879,157.9,143.1,,,42
+Symphyrophus,Cope 1878,157.9,143.1,,,42
+Iyuku,Forster et al. 2022,137.05,132.6,Valanginian,,1
+Mahuidacursor,Cruzado-Caballero et al. 2019,85.7,83.6,Santonian,,1
+Fostoria,Bell et al. 2019,100.5,93.9,Cenomanian,,2
+Macrogryphosaurus,Calvo et al. 2007,89.8,85.7,Coniacian,,1
+Trinisaura,Coria et al. 2013,83.6,72.2,Campanian,,1
+Tietasaura,Bandeira et al. 2024,137.05,125.77,Valanginian,Hauterivian,1
+Qantassaurus,Rich and Vickers-Rich 1999,125.77,121.4,Barremian,,2
+Muttaburrasaurus,Bartholomai and Molnar 1981,106.3,93.9,Albian,Cenomanian,3
+Morrosaurus,Rozadilla et al. 2016,72.2,66.0,Maastrichtian,,1
+Diluvicursor,Herne et al. 2018,113.2,110.1,Albian,,1
+Chakisaurus,Nogueira et al. 2024,110.1,106.3,Albian,,1
+Sektensaurus,Ibiricu et al. 2019,83.6,66.0,Campanian,Maastrichtian,2
+Isasicursor,Novas et al. 2019,72.2,66.0,Maastrichtian,,2
+Leaellynasaura,Rich and Vickers-Rich 1989,113.2,110.1,Albian,,4
+Talenkauen,Novas et al. 2004,83.6,72.2,Campanian,,2
+Notohypsilophodon,Martínez 1998,100.5,89.8,Cenomanian,Turonian,1
+Anabisetia,Coria and Calvo 2002,93.9,89.8,Turonian,,2
+Weewarrasaurus,Bell et al. 2018,100.5,93.9,Cenomanian,,2
+Kangnasaurus,Haughton 1915,100.5,66.0,Cenomanian,Maastrichtian,1
+Atlascopcosaurus,Rich and Vickers-Rich 1989,125.77,110.1,Barremian,Albian,7
+Gasparinisaura,Coria and Salgado 1996,83.6,72.2,Campanian,,3
+Galleonosaurus,Herne et al. 2019,125.77,110.1,Barremian,Albian,3
+Callovosaurus,Galton 1980,165.3,161.5,Callovian,,1
+Choyrodon,Gates et al. 2018,110.1,100.5,Albian,,2
+Transylvanosaurus,Augustin et al. 2022,72.2,66.0,Maastrichtian,,1
+Tenontosaurus,Ostrom 1970,121.4,93.9,Aptian,Cenomanian,83
+Iani,Zanno et al. 2023,100.5,93.9,Cenomanian,,1
+Convolosaurus,Andrzejewski et al. 2019,119.57,113.2,Aptian,,1
+Ampelognathus,Tykoski et al. 2023,100.5,93.9,Cenomanian,,1
+Emiliasaura,Coria et al. 2024,137.05,132.6,Valanginian,,1
+Rhabdodon,Matheron 1869,83.6,66.0,Campanian,Maastrichtian,37
+Oligosaurus,Seeley 1881,83.6,66.0,Campanian,Maastrichtian,37
+Ornithomerus,Seeley 1881,83.6,66.0,Campanian,Maastrichtian,37
+Zalmoxes,Weishampel et al. 2003,83.6,66.0,Campanian,Maastrichtian,44
+Onychosaurus,Nopcsa 1902,83.6,66.0,Campanian,Maastrichtian,44
+Matheronodon,Godefroit et al. 2017,83.6,72.2,Campanian,,1
+Mochlodon,Seeley 1881,85.7,66.0,Santonian,Maastrichtian,4
+Pareisactus,Párraga and Prieto-Márquez 2019,72.2,66.0,Maastrichtian,,1
+Foskeia,Dieudonné et al. 2026,125.77,119.57,Barremian,Aptian,1
+Obelignathus,Czepiński and Madzia 2025,83.6,66.0,Campanian,Maastrichtian,2
+Osmakasaurus,McDonald 2011,154.8,121.4,Kimmeridgian,Barremian,3
+Kulindadromeus,Godefroit et al. 2014,168.2,165.3,Bathonian,,3
+Agilisaurus,Peng 1990,170.9,154.8,Bajocian,Oxfordian,1
+Pulaosaurus,Yang et al. 2025,165.3,154.8,Callovian,Oxfordian,1
+Sanxiasaurus,Hu Dai et al. 2019,184.2,170.9,Toarcian,Aalenian,1
+Kulindapteryx,Alifanov and Saveliev 2014,168.2,165.3,Bathonian,,1
+Hexinlusaurus,Barrett et al. 2005,170.9,154.8,Bajocian,Oxfordian,1
+Nyasasaurus,Charig 1967,247.0,241.464,,,2

@@ -5,10 +5,21 @@
 source: >
   Our World in Data, "CO₂ and Greenhouse Gas Emissions" — their compilation
   of the Global Carbon Project, Maddison Project, UN population and other
-  series. https://github.com/owid/co2-data
+  series.
+
+url: https://github.com/owid/co2-data
 
 license: >
   CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+snapshot: 2026-09-26
+
+trimmed: >
+  The countries only (the rows with an ISO code; regions and income groups
+  have none), the years 1950 to 2023, and 14 of the file's 79 columns. On
+  26 September 2026 the recipe below gave this file byte for byte from the
+  source, which also has 2024 by then. It has no live source: the file is
+  14 MB, too much for every page to fetch every time it runs.
 
 description: >
   Emissions by country and year. co2 is in millions of tonnes, co2_per_capita
@@ -16,3 +27,13 @@ description: >
   _co2 split co2 by source (coal, oil, gas, cement). Trimmed from the fuller
   Our World in Data release to the countries, years and columns worth
   teaching with.
+
+recipe:
+  source: Our World in Data
+  url: https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv
+  drop_empty: [iso_code]
+  at_least: {year: 1950}
+  at_most: {year: 2023}
+  columns: [country, iso_code, year, population, gdp, co2, co2_per_capita,
+            coal_co2, oil_co2, gas_co2, cement_co2, methane, nitrous_oxide,
+            temperature_change_from_co2]

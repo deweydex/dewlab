@@ -3,14 +3,27 @@
 # so a reader can trace the text they are working with back to its source.
 
 source: >
-  "The Montessori Method: Scientific Pedagogy as Applied to Child Education
-  in 'The Children's Houses,'" by Maria Montessori, translated from the
-  Italian by Anne E. George. First published by Frederick A. Stokes
+  Project Gutenberg EBook of The Montessori Method, by Maria Montessori,
+  translated from the Italian by Anne E. George (EBook #39863). First
+  published as "The Montessori Method: Scientific Pedagogy as Applied to
+  Child Education in 'The Children's Houses'" by Frederick A. Stokes
   Company, 1912.
 
+url: https://www.gutenberg.org/ebooks/39863
+
 license: >
-  Public domain in the United States — published in 1912, well before the
-  cutoff for automatic public-domain status.
+  Public domain in the United States, published in 1912. Project
+  Gutenberg's header and licence footer are removed, which its licence
+  allows for a public-domain text that no longer carries its name.
+  https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-20
+
+trimmed: >
+  Project Gutenberg's header and licence footer are removed, and its
+  Windows line endings are plain ones. Everything between them is
+  Gutenberg's text, character for character, as it was when the file was
+  saved. It has no live source, for the same reasons as the novels.
 
 description: >
   The complete text of the 1912 English translation, title page, an

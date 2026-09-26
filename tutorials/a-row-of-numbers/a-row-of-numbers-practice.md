@@ -382,7 +382,7 @@ print(len(ireland), len(spain))
 ```
 
 **13. Make.** The cell above makes two lists of life expectancy, for
-Ireland and for Spain, each from 1950 to 2016. In how many of those
+Ireland and for Spain, each from 1950 to 2023. In how many of those
 years was Spain's higher than Ireland's? And in which year did Spain
 first pass Ireland?
 
@@ -408,11 +408,13 @@ years_ahead = []
 for i in range(len(ireland)):
     if spain[i] > ireland[i]:
         years_ahead.append(1950 + i)
-print(len(years_ahead))    # 53
+print(len(years_ahead))    # 59
 print(years_ahead[0])      # 1964
 ```
 
-Spain was ahead in 53 of the 67 years, every year from 1964 to 2016.
+Spain was ahead in 59 of the 74 years: every year from 1964 to 2023
+except 2020, when the first year of COVID-19 hit Spain harder. (These
+are the numbers in the copy saved on {{snapshot: life-expectancy}}.)
 Keeping the years in a list answers both questions: its length is the
 count, and its first value is the first year. `count_if` looks at one
 value at a time, and this question needs a value from each of two

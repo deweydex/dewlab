@@ -7,6 +7,7 @@ covers:
     covers: [DBM-LO8]
   querying-it-as-sql:
     touches: [DBM-LO5]
+datasets: [income-share-top-1]
 ---
 
 # Loading a CSV dataset into a SQL table

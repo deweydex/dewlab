@@ -824,6 +824,15 @@ p code, li code {
 .dl-output pre:last-child { margin-bottom: 0; }
 
 .dl-stdout { color: var(--dl-fg); }
+/* load_csv()'s line about which copy of a dataset a cell got: quiet, and
+ * in the page's own font, so it never reads as the cell's printed output. */
+.dl-output .dl-data-note {
+  margin: 0 0 0.5rem;
+  font-family: var(--dl-font-family);
+  font-size: 0.78rem;
+  color: var(--dl-muted);
+}
+.dl-output .dl-data-note:last-child { margin-bottom: 0; }
 .dl-repr { color: var(--dl-navy); }
 :root[data-theme="dark"] .dl-repr { color: var(--dl-heading); }
 @media (prefers-color-scheme: dark) {
@@ -1952,6 +1961,10 @@ p code, li code {
 .dl-reference-group dd {
   margin: 0.15rem 0 0.7rem;
   line-height: 1.5;
+}
+.dl-reference-group dd .dl-dataset-saved {
+  margin: 0.3rem 0 0;
+  color: var(--dl-muted);
 }
 .dl-reference-group dd code {
   display: block;

@@ -263,14 +263,16 @@ def asset(repo: Path, slug: str, name: str, content: bytes = b"x",
 def dataset(repo: Path, name: str, source: str = "Some source",
             license: str = "CC0", description: str = "A dataset.",
             with_csv: bool = True, with_txt: bool = False,
-            with_attribution: bool = True) -> None:
+            with_attribution: bool = True, extra: str = "") -> None:
     if with_csv:
         (repo / "data" / f"{name}.csv").write_text("a,b\n1,2\n")
     if with_txt:
         (repo / "data" / f"{name}.txt").write_text("Some plain text.\n")
     if with_attribution:
         (repo / "data" / f"{name}.yaml").write_text(
-            f'source: "{source}"\nlicense: "{license}"\ndescription: "{description}"\n'
+            f'source: "{source}"\nurl: "https://example.org/{name}"\n'
+            f'license: "{license}"\nsnapshot: 2026-09-26\n'
+            f'trimmed: "Nothing."\ndescription: "{description}"\n{extra}'
         )
 
 

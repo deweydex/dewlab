@@ -141,10 +141,13 @@ too.
 Run this cell first. It loads the life expectancy file from
 [A row of numbers](tutorial:a-row-of-numbers#a-real-list-ireland-since-1950),
 and takes out two lists: Ireland's values, one for each year from 1950
-to 2016, and another country's. Change `other_country` to the country
+to 2023, and another country's. Change `other_country` to the country
 you want to compare, such as `"Poland"`, `"Nigeria"` or `"Brazil"`. The
 name must be spelled as it is in the file. The answers below use Spain,
 so your numbers will differ from them if you choose another country.
+They also use the copy of the file saved on
+{{snapshot: life-expectancy}}. The line under the cell says whether you
+got that copy or a newer one, with a few different numbers.
 
 ```python exec
 id: mixed-many-data
@@ -160,7 +163,7 @@ print(len(ireland), "years for Ireland,", len(other), "for", other_country)
 
 If the second number is 0, the name is not in the file: check its
 spelling and its capital letters. The problems below expect both lists
-to have 67 values, one for each year.
+to have 74 values, one for each year.
 
 A scratch cell for the core problems:
 
@@ -196,13 +199,13 @@ for name, values in [("Ireland", ireland), (other_country, other)]:
 ```
 
 ```text
-Ireland 65.61 81.14 15.53
-  first 10 years: 67.86  last 10 years: 80.54
-Spain 61.87 82.97 21.1
-  first 10 years: 65.9  last 10 years: 82.19
+Ireland 65.58 82.41 16.83
+  first 10 years: 67.81  last 10 years: 82.0
+Spain 61.75 83.67 21.92
+  first 10 years: 65.82  last 10 years: 82.92
 ```
 
-Spain started about 4 years behind Ireland, and ended almost 2 years
+Spain started about 4 years behind Ireland, and ended more than a year
 ahead. The loop goes through a list of pairs, and takes each pair apart
 into `name` and `values`, as on
 [How likely is it?](tutorial:how-likely-is-it#counting-equally-likely-outcomes).
@@ -244,8 +247,8 @@ for name, values in [("Ireland", ireland), (other_country, other)]:
 ```
 
 ```text
-Ireland 73.79 73.26 71
-Spain 75.03 76.3 76
+Ireland 74.56 74.015 82
+Spain 75.73 76.825 83
 ```
 
 Life expectancy is continuous, so almost no two values are exactly the
@@ -257,8 +260,8 @@ Spain's low early years form a tail to the left.
 
 </details>
 
-**7. Explain.** Ireland's standard deviation over these 67 years is
-about 4.2 years. On
+**7. Explain.** Ireland's standard deviation over these 74 years is
+about 4.7 years. On
 [What is typical?](tutorial:what-is-typical#the-standard-deviation) the
 standard deviation measured how spread out a list is. What is spread out
 here? Is it how long people in Ireland live?
@@ -267,10 +270,10 @@ here? Is it how long people in Ireland live?
 
 No. Each value is one year's life expectancy for the whole country, so
 the list has one value per year, not one per person. The spread is
-across time: it says how much the yearly figure changed over 67 years.
+across time: it says how much the yearly figure changed over 74 years.
 A list that rises steadily has a large spread even if every single year
 was very predictable. How long individual people live varies far more
-than 4.2 years, and this file cannot tell us about that. A report
+than 4.7 years, and this file cannot tell us about that. A report
 should say what one value in its list stands for, so that a reader does
 not read the spread as something else.
 
@@ -289,12 +292,12 @@ for name, values in [("Ireland", ireland), (other_country, other)]:
 ```
 
 ```text
-Ireland range: 16.36  std dev: 4.18
-Spain range: 21.45  std dev: 5.39
+Ireland range: 17.66  std dev: 4.73
+Spain range: 22.19  std dev: 5.66
 ```
 
 Spain's values are more spread out by both measures, because Spain rose
-further: from about 61.5 years to about 83. Notice that the range uses
+further: from about 61.5 years to about 83.7. Notice that the range uses
 `largest` and `smallest`, not the first and last values. They are
 nearly the same here, because both lists mostly rise, and in a list that
 went up and down they would not be.
@@ -331,7 +334,7 @@ does repointing a name change?
 <details class="dl-answer"><summary>answer</summary>
 
 Schlomo's name is honest, and that is the trouble. The first line
-points the name `mean` at a number, 73.79…, and the function is gone
+points the name `mean` at a number, 74.56…, and the function is gone
 from this page. On the second line, `mean(other)`
 tries to call that number, and a number cannot be called. Give the
 number its own name:
@@ -362,7 +365,7 @@ the lowest bin up.
    `frequency_table`.
 3. `sorted(table)` gives the keys of a dictionary in order.
 
-**Think about:** do the frequencies in each table add up to 67?
+**Think about:** do the frequencies in each table add up to 74?
 
 </details>
 
@@ -386,13 +389,13 @@ for name, values in [("Ireland", ireland), (other_country, other)]:
         print(" ", start, "to", start + 5, "years:", table[start])
 ```
 
-For Ireland, the bins from 60 up hold 1, 11, 29, 19 and 7 years. For
-Spain they hold 3, 11, 15, 25 and 13. Each adds up to 67. Ireland spent
+For Ireland, the bins from 60 up hold 1, 11, 29, 18 and 15 years. For
+Spain they hold 3, 11, 16, 24 and 20. Each adds up to 74. Ireland spent
 the most years in the 70 to 75 bin, and Spain in the 75 to 80 bin.
 
 </details>
 
-**11. Predict.** In how many of the 67 years was life expectancy 75 or
+**11. Predict.** In how many of the 74 years was life expectancy 75 or
 more, in each country? Guess from the frequency tables in problem 10,
 then check with `count_if`.
 
@@ -407,9 +410,9 @@ def seventy_five_or_more(years_expected):
 print(count_if(ireland, seventy_five_or_more), count_if(other, seventy_five_or_more))
 ```
 
-This prints `26 38`. The frequency tables give the same answer without
-a new count: the bins from 75 up hold $19 + 7 = 26$ years for Ireland,
-and $25 + 13 = 38$ for Spain.
+This prints `33 44`. The frequency tables give the same answer without
+a new count: the bins from 75 up hold $18 + 15 = 33$ years for Ireland,
+and $24 + 20 = 44$ for Spain.
 
 </details>
 
@@ -452,13 +455,13 @@ print(len(ireland_high | other_high),
       len(ireland_high) + len(other_high) - len(ireland_high & other_high))
 ```
 
-With Spain: 26 years in both, 0 for Ireland only, 12 for Spain only,
-and 29 in neither. The union has 38 years, and $26 + 38 - 26 = 38$.
+With Spain: 33 years in both, 0 for Ireland only, 11 for Spain only,
+and 30 in neither. The union has 44 years, and $33 + 44 - 33 = 44$.
 
 The empty region says that Ireland's circle sits inside Spain's: every
 year Ireland was at 75 or more, Spain was too. In the language of
 [Collections without repeats](tutorial:collections-without-repeats#sets-too-big-to-list),
-`ireland_high <= other_high` is `True`. Spain reached 75 in 1979, and
+`ireland_high <= other_high` is `True`. Spain reached 75 in 1980, and
 Ireland only in 1991.
 
 </details>
@@ -490,12 +493,12 @@ plt.plot(years, ireland, label="Ireland")
 plt.plot(years, other, label=other_country)
 plt.xlabel("year")
 plt.ylabel("life expectancy at birth, in years")
-plt.title("Life expectancy, 1950 to 2016 (Our World in Data)")
+plt.title("Life expectancy since 1950 (Our World in Data)")
 plt.legend()
 ```
 
 The lines cross in the mid-1960s, when Spain overtook Ireland, and the
-gap widens until about 1980. A line chart suits it: the order of the
+gap widens until the early 1980s. They touch again in 2020. A line chart suits it: the order of the
 years means something, and each point comes after the one before.
 
 The axis does not need to start at 0. A line shows change, and the
@@ -507,16 +510,16 @@ must start at 0.
 
 **14. Explain.** Schlomi, who is learning Python too, wants her report
 to make it plain that Spain's mean is higher. Her bar chart of the two
-means shows 73.8 for Ireland and 75.0 for Spain, with the vertical axis
-from 73 to 75.5, so Spain's bar is more than twice as tall as Ireland's. Every
+means shows 74.6 for Ireland and 75.7 for Spain, with the vertical axis
+from 74 to 76, so Spain's bar is almost three times as tall as Ireland's. Every
 number on the axis is true. What is dishonest about the chart, and what
 would you change so that it still makes her point?
 
 <details class="dl-answer"><summary>answer</summary>
 
 Her point is a fair one, and the chart overstates it. The bars'
-lengths are not the values. Ireland's bar is $73.8 - 73 = 0.8$
-long, and Spain's is $75.0 - 73 = 2.0$, so Spain looks two and a half
+lengths are not the values. Ireland's bar is $74.6 - 74 = 0.6$
+long, and Spain's is $75.7 - 74 = 1.7$, so Spain looks almost three
 times as high, for a difference of about a year. A reader compares the
 lengths, not the axis labels. The honest fix is to start the axis at 0,
 so that the bars are almost the same, because the numbers are. If the
@@ -577,19 +580,20 @@ The report for Ireland begins:
 
 ```text
 Life expectancy at birth in Ireland (Our World in Data)
-  1950 : 65.61 years    2016 : 81.14 years
-  mean: 73.79   median: 73.26
-  range: 16.36   standard deviation: 4.18
+  1950 : 65.58 years    2023 : 82.41 years
+  mean: 74.56   median: 74.015
+  range: 17.66   standard deviation: 4.73
    60 to 65 years: 1
    65 to 70 years: 11
    ...
 ```
 
 Your two sentences will be your own. For Spain, one pair might be:
-"Life expectancy rose in both countries between 1950 and 2016, by
-about 15.5 years in Ireland and about 21 years in Spain. Spain started
-lower, passed Ireland in the mid-1960s, and has stayed ahead, though
-by 2016 the gap was under two years."
+"Life expectancy rose in both countries between 1950 and 2023, by
+about 17 years in Ireland and about 22 years in Spain. Spain started
+lower, passed Ireland in the mid-1960s, and has stayed ahead in every
+year since except 2020, though by 2023 the gap was under a year and a
+half."
 
 </details>
 
@@ -608,7 +612,7 @@ list.
    values.
 
 **Think about:** why does this give exactly the same answer as adding
-up all 67 rounded values?
+up all 74 rounded values?
 
 </details>
 
@@ -626,8 +630,8 @@ from_table = weighted / total(table.values())
 print(from_table, mean(whole_years(ireland)))
 ```
 
-Both give 73.8208…. That is a little different from the mean of the
-raw values, 73.79, because rounding moved each value a little. Adding 71 eight times is the same as
+Both give 74.5675…. That is a little different from the mean of the
+raw values, 74.56, because rounding moved each value a little. Adding 71 eight times is the same as
 adding $71 \times 8$ once, so a frequency table holds everything a mean
 needs. In symbols, with $f$ for each value's frequency:
 $\bar{x} = \frac{\sum f x}{\sum f}$. This is how a mean is found when a
@@ -635,7 +639,7 @@ survey gives only a table, not the raw list.
 
 </details>
 
-**17. Explain.** Your report compares two countries over 67 years with
+**17. Explain.** Your report compares two countries over 74 years with
 a few numbers and a chart. Name two things the report cannot tell a
 reader, however carefully it is made, and one sentence you would add to
 the report so that nobody reads more into it than it holds.
@@ -651,12 +655,13 @@ There are many answers worth giving. Here is one way through:
 - **Why.** The report shows that Spain rose faster. It cannot say why:
   health care, diet, income, or something else. A chart shows *that*,
   and rarely *why*.
-- **After 2016.** The file stops in 2016, so the report cannot say what
-  happened since, and a mean over all 67 years mixes 1950 with 2016.
+- **After the last year.** The copy saved on
+  {{snapshot: life-expectancy}} stops in 2023, so the report cannot say
+  what happened since, and a mean over all 74 years mixes 1950 with 2023.
 
 A sentence worth adding: "Each value is the life expectancy of a baby
 born in that year, as estimated by Our World in Data; the figures
-describe countries, not people, and end in 2016." Saying where the data
+describe countries, not people, and end in 2023." Saying where the data
 came from, and what it stands for, is part of an honest report, as it
 is part of an honest chart.
 

@@ -154,6 +154,21 @@ real risk that duplication carries.
 
 ---
 
+## `dev/datasets.py`, `dev/daylight.py`, `dev/book_counts.py`
+
+The datasets in `data/` (#324). `datasets.py` fetches the source of every
+dataset with a `recipe:`, shapes it with the runtime's own
+`tutorial_tools.shape_live()`, and says how far the snapshot has drifted,
+row by row; `--refresh <name>` saves the source as the snapshot and moves
+its `snapshot:` date to today. For a `live: true` dataset it also checks
+the `Access-Control-Allow-Origin` header a browser needs. `daylight.py`
+and `book_counts.py` make the two datasets whose sources are not files:
+sunrise and sunset from NASA/JPL Horizons, and chapters and character
+names counted from the novels in `data/`. See `docs/WRITING_TUTORIALS.md`
+("Datasets") for when to run which.
+
+---
+
 ## Not yet covered here
 
 Six more scripts live in `dev/` — `check_doc_links.py`,
