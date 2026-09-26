@@ -4933,3 +4933,19 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 - **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
 
 *Cost to change: none for the data and length; the sweep is page prose.*
+
+---
+
+**7.246 — The first three pages of "A table of your own" get pictures, bold key terms, predictions, and a `DROP TABLE IF EXISTS` that makes their boxes safe to run twice.** Josh, 26 September 2026: "see if maybe that first introduction to tables and the next couple pages couldn't use a few more graphics and maybe an edit? I also don't see some of the bold or terminology focus things that we had discussed previously". Numbered 7.246 because the open OOP part 2 pull request already claims 7.245.
+
+**The bold terms had never reached this course.** 7.207 brought bold-italic key terms to six graphics pages and left the rest for later; the glossary file for `a-table-is-a-list-of-rows` already noted that the whole series had no marked terms at all. The three pages now mark theirs as 7.207 did (`***term***`), so the Reference panel links back to where each is introduced. Page one gains the terms it used without defining: *database*, *query* (which every later page in the course leans on), *cell*, *record*, *attribute*, *header*, *comment*, *data type* and *primary key*. Page two gains *condition* and the six comparison operators. *Cell* is the table's own word here, which is why these pages call the code editor a *box* throughout.
+
+**Six pictures, drawn from the pages' own SQL.** `dev/graphics/database_methods.py` gains a table drawer beside its ERDs. Every value in a picture comes from running the page's cell in sqlite at generation time, the same rule the ERDs follow, so a picture cannot show a row the box does not build. Page one: the parts of a table, on a shopping list (Josh's own example from his opening paragraph), and what `CREATE TABLE`, `INSERT` and `SELECT` each leave behind. Page two: `SELECT` picking columns and `WHERE` picking rows, with the result as the cells in both; and `WHERE` then `ORDER BY` as two steps. Page three: `UPDATE` and `DELETE`, each with and without its `WHERE`, side by side. Each picture has labels as well as tints, so colour is never the only signal.
+
+**Three things the old prose said that the runtime does not do.** Running a box a second time never rebuilt the table: it failed with `table dinosaur_tbl already exists`, because a page's database lives for as long as the page is open. The per-cell Reset (↺) clears output and never touched the table. And page three's "run it without the `WHERE` and watch every length become 2.5" could not show that, since the box's own `SELECT` kept its `WHERE` too. The fix is `DROP TABLE IF EXISTS` at the top of each dinosaur box, the idiom `sets-in-databases` and `many-languages-one-idea` already use, taught on page one with an experiment that fails on purpose when it is commented out. The reader's own-table steps start with it too. Page three now asks the reader to remove both `WHERE`s.
+
+**Cell ids unchanged,** so no saved work moves. `version:` is bumped on all three, because a cell's starter code changed.
+
+**Left alone:** the tail of page two's recap, which the open video pull request appends a "Where to read more" to; and the runtime's pandas index column (0, 1, 2…) that shows beside every SQL result, which sits oddly next to `dinosaur_id` but is a runtime change, not a page change.
+
+*Cost to change: low. Prose and six generated SVGs; a picture changes by editing its function and re-running the generator. Removing `DROP TABLE IF EXISTS` would need the "run it again" sentences on all three pages changed back.*

@@ -4,17 +4,14 @@
 # earlier series feeds it (this module has no series.yaml chaining first-
 # database after anything else), so the cumulative list starts empty here.
 #
-# This module was ported without the usual single-asterisk emphasis
-# convention (docs/WRITING_TUTORIALS.md#marking-a-term) -- dev/curriculum_map.py's
-# EMPHASIS_RE finds zero marked terms across all four of this series'
-# tutorials. Candidates below came from reading the prose and cells
-# directly, cross-checked against each tutorial's own "What you have now"
-# recap list. Worth a note back to whoever ported this module: the recap
-# lists Table/Row/Column/Statement here but not CREATE TABLE, INSERT,
-# SELECT, PRIMARY KEY, or the column types, even though the tutorial gives
-# each of those its own explanation and the reader is expected to write
-# them in "Your turn" -- likely an oversight if this module later adopts
-# the emphasis convention.
+# The page now marks its terms in bold italics
+# (docs/WRITING_TUTORIALS.md#marking-a-term), so the emphasis pass finds
+# them: table, cell, row, record, column, attribute, header, database,
+# comment, statement, data type, primary key, query, naming convention.
+# Row and record are one entry each rather than one between them, because a
+# reader looks either word up; the same goes for column and attribute.
+# `*` is left for asking-questions-of-a-table: this page shows it only
+# inside the fixed phrase SELECT * FROM.
 entries:
   - term: table
     kind: concept
@@ -22,17 +19,54 @@ entries:
       A table stores many records in one place. Every record inside it is
       shaped the same way, with the same columns from one row to the next.
 
+  - term: cell
+    kind: concept
+    definition: >
+      A cell is one box of a table's grid. It holds one value, where one
+      row and one column cross.
+
   - term: row
     kind: concept
     definition: >
-      A row holds one record in a table, such as one dinosaur or one line
-      in a shopping list.
+      A row is a line of cells from left to right. It describes one
+      thing, such as one dinosaur or one line of a shopping list.
+
+  - term: record
+    kind: concept
+    definition: >
+      A record is a database's word for a row: everything a table holds
+      about one thing.
 
   - term: column
     kind: concept
     definition: >
-      A column holds one property that every row in a table has, such as
-      a dinosaur's name or its diet.
+      A column is a line of cells from top to bottom. Every value in it is
+      the same kind of thing, such as every dinosaur's name.
+
+  - term: attribute
+    kind: concept
+    definition: >
+      An attribute is a database's word for a column: one kind of value
+      that every row in a table has.
+
+  - term: header
+    kind: concept
+    definition: >
+      A header is the name at the top of a column. In SQL it is the
+      column's name, such as length_meters.
+
+  - term: database
+    kind: concept
+    definition: >
+      A database is a collection of tables. A program keeps them safe and
+      answers questions about them.
+
+  - term: comment
+    kind: concept
+    definition: >
+      A comment is a line that SQL does not run. It starts with two
+      dashes, and is there for a person to read.
+    example: "-- my guess: 2"
 
   - term: statement
     kind: concept
@@ -55,6 +89,13 @@ entries:
       column names listed after the table's name.
     example: "INSERT INTO dinosaur_tbl (name, diet) VALUES ('Stegosaurus', 'Herbivore');"
 
+  - term: query
+    kind: concept
+    definition: >
+      A query is a statement that asks a table for rows. SELECT is the
+      statement that does it.
+    example: "SELECT * FROM dinosaur_tbl;"
+
   - term: "SELECT"
     kind: keyword
     definition: >
@@ -66,9 +107,16 @@ entries:
     kind: keyword
     definition: >
       PRIMARY KEY marks the column that gives each row in a table its own
-      unique number, filled in automatically when a row is added. In this
-      course the key is named after its table, such as dinosaur_id.
+      value, different from every other row's. When an INSERT leaves it
+      out, the database gives the row the next number. In this course the
+      key is named after its table, such as dinosaur_id.
     example: "dinosaur_id INTEGER PRIMARY KEY"
+
+  - term: data type
+    kind: concept
+    definition: >
+      A data type is the kind of value a column holds. Every column in a
+      CREATE TABLE has one.
 
   - term: "TEXT, REAL, INTEGER"
     kind: keyword
@@ -85,3 +133,11 @@ entries:
       in _tbl, and its key is named after it, such as dinosaur_tbl and
       dinosaur_id.
     example: "CREATE TABLE dinosaur_tbl (dinosaur_id INTEGER PRIMARY KEY, name TEXT);"
+
+  - term: "DROP TABLE IF EXISTS"
+    kind: keyword
+    definition: >
+      DROP TABLE removes a whole table, its columns as well as its rows.
+      IF EXISTS stops it failing when there is no table of that name, so
+      a box that starts with it can run more than once.
+    example: "DROP TABLE IF EXISTS dinosaur_tbl;"
