@@ -1,11 +1,13 @@
-# Outline — Maths Preliminaries
+# Outline — The Zen of Slashes and Surds
 
-**Status:** proposed, not yet written. No page below exists.
-**Kind:** a module of its own (`courses/maths-preliminaries.yaml`), for
-readers who struggle with mathematics. It covers the primary and
-secondary school ground that the other modules assume: parts of a whole,
-fractions, powers, the first ideas of algebra, and seeing numbers as
-pictures and graphs.
+**Status:** in progress. The pilot pages are written: `before-we-start`,
+`one-whole-many-slices`, `same-amount-different-names` and `the-long-way`,
+each with its practice page. The rest below is planned.
+**Kind:** a module of its own (`courses/zen-of-slashes-and-surds.yaml`),
+for readers who struggle with mathematics. It covers the primary and
+secondary school ground that the other modules assume: fractions (the
+slashes), powers, roots and logarithms (the surds, and their partners),
+the first ideas of algebra, and seeing numbers as pictures and graphs.
 **Closes:** nothing new on the outcome map. `MIT-1.1` (operations in N,
 Z, Q, R; powers and logarithms) and `MIT-1.7` (rational algebraic
 expressions) are marked covered already. This module is the ground under
@@ -68,7 +70,7 @@ this (`PEDAGOGICAL_STYLE_GUIDE.md#no-verdicts`). The picture, the cell's
 output, or the page's answer behind a fold shows what happened, and nobody
 says right or wrong.
 
-### A departure from 7.229 that needs a decision
+### A departure from 7.229, decided in 7.254
 
 `DECISIONS_LOG.md` 7.229 (25 September 2026) says the whole site names a
 feeling *rarely*, and always with a route. This module names one more
@@ -76,8 +78,29 @@ often than that, because noticing frustration is part of what it teaches.
 Every mention still carries a route, which keeps the part of 7.229 that
 protects the reader. The difference is frequency and purpose: a fixed
 "calm check" at the same places on every page (below), not a feeling
-named in passing. This needs its own entry in the decisions log before the
-first page ships.
+named in passing. `DECISIONS_LOG.md` 7.254 records the decision. The
+words live once, in `setup/zen-calm-check.md`, and every page includes
+them.
+
+## Language: plainer than plain
+
+Many readers of this module read English as a second language, and
+many had trouble with reading at school as well as with maths. So the
+module goes further than `PEDAGOGICAL_STYLE_GUIDE.md#plain-language`:
+
+- **Short sentences, one idea each.** Most are under fifteen words. A
+  sentence with "and", "but" and "so" in it is usually two or three.
+- **Common words.** *Normal*, not *ordinary*; *scary*, not *frightening*;
+  *in total*, not *altogether*; *aloud*, not *out loud*.
+- **Every hard word explained where it appears**, the maths ones and the
+  others: *frustrated* comes with "annoyed, tired or stuck", *Zen* with
+  "a calm mind", *Python* with "a language for computers".
+- **No idioms and no phrasal verbs**, even easy-looking ones: *keep in
+  mind*, *saves ink*, *gives it away*, *pick up*, *work out*.
+- **Lists instead of long sentences** when a sentence has three or more
+  parts, as in "here are some ideas" at the end of a practice page.
+- **One gap per line** in a fill-in-the-blank question, with a blank line
+  between sentences, so each gap reads as its own small step.
 
 ## How the ideas are shown
 
@@ -252,13 +275,14 @@ what a printed sheet cannot give.
 
 ## The strands
 
-Four strands, each a staircase of short pages, each ending at a "view from
-the top" page that shows why the climb was worth it. The pages are
-listed in order; titles and ids are proposals.
+Five strands, each a staircase of short pages. The first four end at a
+"view from the top" page that shows why the climb was worth it. The pages
+are listed in order. Ids of pages not yet written are proposals.
 
 ### Strand 0. Before we start
 
-- **How this module works** (`how-this-module-works`). No mathematics.
+- **Before we start: how this module works** (`before-we-start`,
+  written). No mathematics.
   The beliefs above, in the reader's words: fluency, guesses, calm,
   noticing, small steps. One guess on the page, about something harmless,
   so the reader has made a guess before any mathematics appears. The calm
@@ -266,9 +290,10 @@ listed in order; titles and ids are proposals.
 
 ### Strand A. Parts of a whole (fractions)
 
-1. **Cutting a pizza: one whole, many slices** (`one-whole-many-slices`).
-   The staircase above.
-2. **The same amount, different names** (`same-amount-different-names`).
+1. **Cutting a pizza: one whole, many slices** (`one-whole-many-slices`,
+   written). The staircase above.
+2. **The same amount, different names** (`same-amount-different-names`,
+   written).
    The fraction wall: $\frac{1}{2} = \frac{2}{4} = \frac{3}{6}$, seen
    before it is said. Multiplying top and bottom by the same number cuts
    every slice again without changing the pizza.
@@ -304,7 +329,7 @@ The order of the *Exponent Rules – Discovery Worksheet* (Maths for IT,
 Autumn 2025), each section split into two or three smaller pages, each
 starting with squiggles and pictures before letters.
 
-1. **The long way** (`the-long-way`). A power written out as
+1. **The long way** (`the-long-way`, written). A power written out as
    repeated multiplication: $\heartsuit^3 = \heartsuit \cdot \heartsuit
    \cdot \heartsuit$. Paper folding and the golden beads.
 2. **Joining two stacks** (`joining-two-stacks`). Multiplying with the
@@ -318,19 +343,65 @@ starting with squiggles and pictures before letters.
 5. **More on the bottom** (`more-on-the-bottom`). Negative powers, from
    dividing when the bottom has more. Reciprocals return.
 6. **A power of a power** (`a-power-of-a-power`). Stacks of stacks.
-7. **Halfway steps** (`halfway-steps`). Roots as fractional powers:
-   what times itself gives $\heartsuit^{4}$? Then $\heartsuit^{1/2}$.
-8. **Stretching the halfway steps** (`stretching-the-halfway-steps`).
-   $\heartsuit^{2/3}$: what the top and the bottom of the fraction each
-   do.
-9. **Everything at once** (`everything-at-once`). The worksheet's mixed
+7. **Everything at once** (`everything-at-once`). The worksheet's mixed
    simplification challenge, with the "looks scary, is simple" problems
-   and invent-five.
-10. **View from the top: from a virus to Voyager** (`powers-of-ten`).
+   and invent-five. Its fractional-power sections wait for strand C.
+8. **View from the top: from a virus to Voyager** (`powers-of-ten`).
     Powers of ten and scientific notation, from the Grade 8 sequence.
     See below.
 
-### Strand C. Seeing it (pictures and graphs)
+### Strand C. Undoing a power (surds and logarithms)
+
+Surds and logarithms are where many readers stop. Both are the same
+move, undoing a power: a root asks which number was multiplied, a
+logarithm asks how many times. So this strand does what the whole
+module does, more slowly. **Each idea gets a friendly name and a picture
+first, and its usual sign last**, only after the reader has used the
+friendly one enough to want something shorter.
+
+| Usual sign | Friendly name first | The picture behind it |
+|---|---|---|
+| $\sqrt{49}$ | **side(49)**: the side of a square of 49 beads | the bead squares: 1, 4, 9, 16, … |
+| $\sqrt[3]{27}$ | **edge(27)**: the edge of a cube of 27 beads | the bead cubes |
+| $49^{1/2}$ | **halfway(49)**: half of the multiplying | $\heartsuit^{1/2} \cdot \heartsuit^{1/2} = \heartsuit$, from strand B's rule |
+| $\log_{10} 1000$ | **hops(10 → 1000)**: how many ×10 hops from 1 to 1000 | a row of hops, $1 \to 10 \to 100 \to 1000$ |
+| $\log_2 16$ | **folds(16)**: how many folds make 16 pieces | the folded paper from strand B |
+
+The friendly names are written in plain text and in Python the same way
+(`side(49)`, `hops(10, 1000)`), so a reader can check one in a cell. The
+reveal is always a short section headed "The usual way to write it",
+which shows the sign, says it means exactly the friendly name, and says
+the reader can keep using whichever feels calmer.
+
+1. **The side of a square** (`the-side-of-a-square`). Bead squares, and
+   side(n). Which squares have a whole side? Then edge(n) for the bead
+   cubes. The usual way to write it: $\sqrt{\;}$ and $\sqrt[3]{\;}$.
+2. **Sides that never end** (`sides-that-never-end`). side(2), the
+   diagonal of a one-by-one square: no whole number, and no fraction
+   either. A cell runs it to twenty places and it does not stop. Then
+   side(8) as two side(2)s, from a picture of a square of area 8 made of
+   four squares of area 2. The usual way to write it, and the word
+   *surd* last of all.
+3. **Halfway steps** (`halfway-steps`). halfway(♡) is the power that,
+   done twice, gives ♡. It is side(♡) again. The usual way to write it:
+   $\heartsuit^{1/2}$, then $\heartsuit^{1/3}$ as edge.
+4. **Stretching the halfway steps** (`stretching-the-halfway-steps`).
+   $\heartsuit^{2/3}$: what the top and the bottom of the fraction each
+   do. The worksheet's sections 7 and 8.
+5. **How many hops?** (`how-many-hops`). hops(10 → 1000), folds(16),
+   and counting the digits of a number as nearly the same question. The
+   usual way to write it: $\log$, last.
+6. **Hops that add** (`hops-that-add`). hops for a product is the hops
+   of each part added together, seen on two rulers laid side by side: a
+   slide rule, the material engineers used for three hundred years.
+7. **View from the top: surds and logs in the wild**
+   (`surds-and-logs-in-the-wild`). A sheet of A4 folded in half keeps its
+   shape because its sides are in the ratio side(2)
+   ($297/210 \approx 1.4143$). And the largest known prime,
+   $2^{136279841} - 1$ (found in October 2024), has 41,024,320 digits:
+   hops, not counting, tells us so.
+
+### Strand D. Seeing it (pictures and graphs)
 
 1. **The number line** (`the-number-line`). Whole numbers, fractions and
    negatives in one line, and the space between them.
@@ -339,14 +410,12 @@ starting with squiggles and pictures before letters.
 3. **A pattern as dots** (`a-pattern-as-dots`). Plot $1, 2, 3, \dots$
    against $2, 4, 6, \dots$ and then against $2, 4, 8, \dots$. One makes a
    line and one makes a curve. Why?
-4. **Counting the zeros** (`counting-the-zeros`). A logarithm as "how
-   many times did we multiply by ten?", before it is anything else.
-5. **View from the top: drawing things that differ by millions**
+4. **View from the top: drawing things that differ by millions**
    (`drawing-across-scales`). Log scales: the planets on an ordinary axis
    and then on a log axis, and a scale strip from a virus to the
    observable universe.
 
-### Strand D. The balance (first algebra)
+### Strand E. The balance (first algebra)
 
 Short, because the Dewey Track already teaches this
 (`rules-with-letters-in-them`, `running-a-formula-backwards`). Two or
@@ -364,7 +433,7 @@ practice kinds above, in the reader's chosen notation.
 
 ## The views from the top
 
-The last page of strands A, B and C is a reward, not a test. It uses the
+The last page of strands A to D is a reward, not a test. It uses the
 strand's mathematics on something with wonder in it, and it is where the
 material from the earlier version of this outline now lives.
 
@@ -379,7 +448,7 @@ Each factor narrows the count. Its descendants each teach something:
 |---|---|---|
 | **Seager** (2013): $N = N_* F_Q F_{HZ} F_O F_L F_S$ | counts planets with gases life could have made, that a telescope could detect | the same shape, with factors that can be measured |
 | **Frank & Sullivan** (2016): $A = N_{ast} \cdot f_{bt}$ | asks whether anyone has *ever* arisen, and drops $L$ | a reciprocal: set $A = 1$, and $f_{bt} = 1 / N_{ast}$. For the Milky Way, $N_{ast} \approx 6 \times 10^{10}$, so "one in 60 billion" ($1.7 \times 10^{-11}$) |
-| **Sandberg, Drexler & Ord** (2018) | gives each factor a range many powers of ten wide, and samples it | why the median and the mean can disagree hugely; for strand C's view |
+| **Sandberg, Drexler & Ord** (2018) | gives each factor a range many powers of ten wide, and samples it | why the median and the mean can disagree hugely; for strand D's view |
 | **Westby & Conselice** (2020) | assumes intelligence takes about 5 billion years wherever it arises | "at least 36" civilisations: which assumption fixed that number? |
 | **Backus** (2010) | the same chain for finding a partner in London | a human-scale version; teacher's call, as its "attractive" factor makes it awkward in some rooms, and it can be rebuilt as a study-partner chain |
 
@@ -401,9 +470,12 @@ no longer at the sheet's 117 AU: it reaches one light-day from Earth
 (about $2.59 \times 10^{10}$ km) on 18 November 2026. NASA's "Where are
 Voyager 1 and 2 now?" page has the live figure.
 
-**Strand C: drawing across scales.** Kepler's third law with NASA's
+**Strand C: surds and logs in the wild.** Described with the strand
+above.
+
+**Strand D: drawing across scales.** Kepler's third law with NASA's
 planetary data on log–log axes is a straight line with slope $3/2$, which
-is strand B's halfway steps seen as a picture. Sandberg, Drexler and
+is strand C's stretched halfway steps seen as a picture. Sandberg, Drexler and
 Ord's ten thousand Drake equations make a histogram that can only be
 read on a log axis.
 
@@ -428,16 +500,16 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
 
 ## Before writing
 
-- **A pilot first.** Strand 0 and pages A1 to A3, with their practice
-  pages, in front of one class before the rest is written. What the pilot
-  should answer: are the steps small enough, does the calm check help or
-  annoy, and do readers use the notation switch.
-- **The decision about 7.229**, above.
+- **A pilot first.** Strand 0, pages A1 and A2 and page B1, with their
+  practice pages, are written, so a class meets both slashes and powers.
+  What the pilot should answer: are the steps small enough, does the calm
+  check help or annoy, and do readers use the notation switch.
 - **The recurring character.** The style guide allows one who makes the
   mistakes. This module needs one before the "spot what happened"
   problems can be written.
-- **The picture script** in `dev/`, and a check that its SVGs read in both
-  themes.
+- **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
+  in the site's theme colours, so they read in light, dark and high
+  contrast.
 - **The ids.** Settle them before the first page ships: once a page has
   been in front of a class, its id is the key a reader's saved work lives
   under.
