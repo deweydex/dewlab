@@ -4914,7 +4914,29 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.243 — The second half of the OOP course keeps growing the reader's class, to a world someone else can play.** The OOP rebuild, part 2 (#323), part of #306.
+**7.243 — A video library in `planning/video-library/`: 895 hand-picked YouTube and Nebula videos, keyed to the tutorials they would sit beside.** Josh supplied a list of 119 channels and asked for something filterable to reach for when building pages, and to browse for ideas: coding projects, algorithms, simulations.
+
+**Three CSV files, not a page on the site.** Nothing links to a video yet, and the list is for people writing tutorials, which is what 7.192 kept `planning/` for. A spreadsheet filters by tutorial slug or topic with no tooling. `picks.csv` is the judgement; `channels.csv` says which channels were read and why the rest were not; `all-videos.csv` keeps every title from the 58 reviewed channels, so a search for a technique does not depend on what was picked.
+
+**Picked from titles, not from watching.** Every title on the reviewed channels was read, and each pick names the tutorial folders it fits, checked against `tutorials/`. The README says plainly that a video must be watched before it goes on a page, and that its `note` column is written for authors and is never the sentence a student reads.
+
+**Nebula by channel and by title.** Twenty channels appear in Nebula's public channel list; for six of them, videos were matched to YouTube titles one to one, which gave 90 Nebula links among the picks.
+
+*Cost to change: low. Plain data with no reader in `build.py` or the tests; a row can be added or removed by hand. If a page ever embeds or lists videos, it should read `picks.csv` rather than copy from it.*
+
+---
+
+**7.244 — The Dewey Track: exoplanet data kept with its acknowledgment; length is not a limit; the judging-words sweep.** Josh, 26 September 2026: "I believe acknowledgement is enough if it is public data since we are using it for educational purposes... sure lets sweep for judging words and no we don't need to trim, so long as its good, i think the length is less of an issue".
+
+- **`data/exoplanets.csv`** stays. The NASA Exoplanet Archive states no licence and asks for an acknowledgment, which `data/exoplanets.yaml` carries; the site uses the data for teaching.
+- **Length.** The 1,800–2,600-word range the unit rewrites were briefed to is dropped. A page is as long as it needs to be to read well. Several Dewey Track tutorials run to 3,000–3,600 words and stay that way.
+- **The sweep.** Every Dewey Track page is swept for *right*, *wrong*, *correct*, *good*, *bad* and *mistake* about the reader's work, and for feelings named without a route (7.229), to match the style guide's no-verdicts principle. Geometry (*right angle*), quoted UI labels and error text are left alone.
+
+*Cost to change: none for the data and length; the sweep is page prose.*
+
+---
+
+**7.245 — The second half of the OOP course keeps growing the reader's class, to a world someone else can play.** The OOP rebuild, part 2 (#323), part of #306.
 
 **One project from the first page to the last.** The milestones of 7.242 go on, one version a page, each in `setup/oop/<world>-<n>.py`: a child class with one sentence that says why (`Healer`, `Bathyscaphe`, `Lander`); a container that holds the reader's objects (`Room`, `Expedition`, `Mission`); five tests, and the open door from 7.242 closed; docstrings, with examples doctest can run; a `run_choice` front end. A new page at the end, `your-world-playable`, runs each world's eighth version with its five tests passing and a menu to play from, then asks the reader to add one rule the way the series did: test first, then the rule, the docstring, the command. Where a page's task changes a class, its starter includes the version before and its solution the version after; where it adds a new class, a cell of its own holds the classes so far, so the task cell shows only what is new.
 

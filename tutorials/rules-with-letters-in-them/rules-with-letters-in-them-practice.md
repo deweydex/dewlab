@@ -185,7 +185,7 @@ for x in range(-10, 11):
 print("4x + 11 checks out.")
 ```
 
-A common slip is $-2(x - 4) = -2x - 8$. The check finds it at once:
+Many people write $-2(x - 4) = -2x - 8$. The check shows the difference at once:
 at $x = 0$ the two sides would be 11 and $-5$.
 
 </details>

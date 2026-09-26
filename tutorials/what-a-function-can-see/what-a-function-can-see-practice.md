@@ -115,6 +115,8 @@ print(game_score(10, 4))
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def game_score(enemies, coins, points_per_enemy=3):
     """Give back a player's score. An enemy is worth points_per_enemy, 3 unless given."""
@@ -268,6 +270,8 @@ id: what-function-practice-thunder
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def thunder_km(seconds, celsius=20):
     """Give back how far away a storm is, in km, rounded to two places.
@@ -333,6 +337,8 @@ second?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def with_reading(readings, value):
     """Give back a new list: readings with value at the end. readings does not change."""
@@ -348,7 +354,7 @@ The first line shows `[14.2, 14.8]` and the second
 `[14.2, 14.8, 15.1]`. `readings + [value]` makes a new list, and changes
 nothing that already exists.
 
-Both versions are good ones. `add_reading` suits a log you are building
+Both versions work. `add_reading` suits a log you are building
 up and mean to change. `with_reading` suits a case where you want to
 keep the old list too, and it is easier to test, because everything it
 does comes out through `return`.
@@ -357,8 +363,8 @@ does comes out through `return`.
 
 **11. Fix.** Schlomi, who is learning Python too, is writing an
 adventure game, where a backpack is a list of items. Her cell stops
-with an error on the second `pick_up` line. Find the mistake, and fix
-it.
+with an error on the second `pick_up` line. Find the line that does not
+do what Schlomi meant, and change it.
 
 ```python exec
 id: what-function-practice-fix-backpack
@@ -424,8 +430,8 @@ week = double_it(rain_mm) + rain_mm
 
 `week` is 9. The `+ rain_mm` at the end reads the page's `rain_mm`,
 which is still 3. Using the same spelling for two names in two spaces is
-allowed, but a walkthrough is the moment it gets confusing, which is a
-good reason to choose different names.
+allowed, but in a walkthrough the two are hard to tell apart, which is
+one reason to choose different names.
 
 </details>
 
@@ -463,6 +469,8 @@ stays 0.
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def brightener(factor):
@@ -507,6 +515,8 @@ def fall_time(height, gravity=9.81):
 ```
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def fall_timer(gravity):
@@ -572,6 +582,8 @@ trial itself?
 </details>
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 import random

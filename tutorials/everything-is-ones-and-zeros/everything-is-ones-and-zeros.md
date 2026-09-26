@@ -43,8 +43,7 @@ that is lit:
 
 And here is the same 8, written as one number: `0x6996996`. Look at
 that number for a moment. Can you see the 8 in it? If it looks like
-nonsense, that is the right feeling. By the end of this page it will
-not. You will also know why a web page that asks for the colour
+nonsense for now, read on: by the end of this page it will not. You will also know why a web page that asks for the colour
 `#FF8800` gets orange, when not one of those characters says "orange".
 
 On this page we:
@@ -130,7 +129,8 @@ second is the same sum we did by hand.
 
 ### Your turn
 
-1. Change `0b1101` to `0b1111` and run the cell. Were you right?
+1. Change `0b1101` to `0b1111` and run the cell. Did it show what you
+   expected?
 2. Try `0b10000`. Why is it one more than `0b1111`?
 3. Make up a row of 0s and 1s of your own, work it out, and check.
 

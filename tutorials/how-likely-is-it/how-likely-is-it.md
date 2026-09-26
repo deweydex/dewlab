@@ -28,8 +28,8 @@ covers:
 A friend tosses a coin ten times and gets seven heads. "This coin is
 not fair," they say. Are they right? Or could an ordinary coin do that
 too? Before you read on, decide what you think. Most of us have a strong
-feeling about questions like this, and feelings about chance are often
-wrong in interesting ways.
+feeling about questions like this, and feelings about chance often
+miss in interesting ways.
 
 To answer, we need to say how likely something is, with a number. By
 the end of this page we will have that number, found in two different
@@ -332,7 +332,7 @@ function has no `return` yet. If it shows 50, check what you divide by.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One good way to write it. Yours may differ and still keep the promise.
+One way through. Yours may differ and still keep the promise.
 
 ```python
 def simulate(trial, times):

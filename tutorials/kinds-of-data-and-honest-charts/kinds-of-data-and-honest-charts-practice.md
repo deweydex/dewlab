@@ -9,8 +9,9 @@ datasets: [life-expectancy]
 # Kinds of data, and honest charts — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
@@ -230,6 +231,8 @@ the histogram agrees.
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 bins = []
 for rate in heart_rates:
@@ -251,8 +254,9 @@ just before its right one.
 </details>
 
 **8. Fix.** Ten phones in a library report their Wi-Fi signal, and a
-program draws a bar chart of the answers. Every number is right, and
-yet the chart is hard to read. Run it, then find the mistake.
+program draws a bar chart of the answers. Every number matches the
+data, and yet the chart is hard to read. Run it, then find the line that
+does not do what its writer meant.
 
 ```python exec
 id: kinds-practice-fix-sizes
@@ -294,7 +298,7 @@ tutorial, and says the chart is dishonest: its axis does not start at
 <details class="dl-answer"><summary>answer</summary>
 
 Not in the same way. Schlomo is using the rule for bar charts, and it
-is a good rule there. A line chart shows change, and a reader reads its
+works there. A line chart shows change, and a reader reads its
 height against the numbers on the axis, not as a length from 0. Zooming
 in shows a change that matters: a rise from 4.2% to 5.1% is a real
 story for thousands of people. So it can be honest, if the axis has
@@ -319,6 +323,8 @@ journeys = ["bus", "car", "walk", "bus", "bike", "car", "bus", "train",
 ```
 
 <details class="dl-answer"><summary>answer</summary>
+
+One way through; yours may differ and work as well.
 
 ```python
 def by_bus(way):
@@ -450,6 +456,8 @@ as stem 3 in `[12, 15, 41]`. Is an empty row useful?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 def stem_and_leaf(values):
     """Print a stem-and-leaf plot of values, whole numbers from 0 to 99."""
@@ -494,6 +502,8 @@ different about it?
 
 <details class="dl-answer"><summary>answer</summary>
 
+One way through; yours may differ and work as well.
+
 ```python
 travel = frequency_table(journeys)
 best = None
@@ -520,7 +530,8 @@ you have chosen, for a class like yours, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one good answer. A good answer weighs a few things.
+There is more than one answer worth giving. One way through weighs a
+few things.
 
 Names first gives a reader words to think with before the pictures
 arrive, and a clear table of which moves each kind allows. That suits a
@@ -533,7 +544,7 @@ already has. That usually makes a name stick better. But it takes
 longer, and a reader who is unsure may read a broken chart as their own
 mistake.
 
-A good answer also says who the class is: what they already know, and
+An answer can also say who the class is: what they already know, and
 what they find hard.
 
 </details>
@@ -551,7 +562,7 @@ so the whole is 85 ticks, not 50 people. The pie would suggest, for
 example, that a service ticked by 30 people has about a third of the
 viewers, when in fact 30 of 50 people, 60%, use it.
 
-One good answer is a bar chart: one bar per service, each bar's height the
+One answer is a bar chart: one bar per service, each bar's height the
 number of people who ticked it, and a title that says people could tick
 more than one. People who use two services at once belong to two sets
 at once, and that overlap is the subject of

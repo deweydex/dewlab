@@ -240,7 +240,8 @@ id: circles-your-turn-1
 
 How many laptops are updated or have antivirus, or both? Here is a
 first try. Before you
-run it, look at the first line and guess whether it is right.
+run it, look at the first line and guess whether it answers that
+question.
 
 ```python exec
 id: circles-either-1
@@ -290,7 +291,7 @@ print(broken, "pairs of sets broke the rule")
 
 None of them. A thousand checks are not a proof. The picture is the
 proof: whichever of the three regions a laptop stands in, the formula
-counts it once. The checks tell us we wrote that idea down correctly.
+counts it once. The checks tell us the code says the same as that idea.
 
 You have met this rule before, in a different space. On
 [Chances that combine](tutorial:chances-that-combine#when-both-can-happen)
@@ -592,7 +593,7 @@ one, and 6 have none of them.
 
 There are two checks here. The first is the three-set formula:
 $34 + 25 + 18 - 12 - 8 - 6 + 3 = 54$, the same as `inside`. The second
-is the one that catches most mistakes in a filled diagram: every region
+is the one that catches most miscounts in a filled diagram: every region
 must be 0 or more. If a step gives −2 laptops, one of the totals was
 miscounted, or copied down with a slip. A count of laptops lives in the
 whole numbers from 0 up, and a region outside that space is a message

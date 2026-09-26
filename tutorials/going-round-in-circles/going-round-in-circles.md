@@ -323,7 +323,7 @@ title: some steps
 2. Give back a pair: `radius * math.cos(angle)` first, then
    `radius * math.sin(angle)`, in round brackets.
 
-**Think about:** what would go wrong if you left out `math.radians`?
+**Think about:** what would happen if you left out `math.radians`?
 Which test would catch it?
 ```
 
