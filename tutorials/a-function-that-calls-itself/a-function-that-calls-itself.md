@@ -1,7 +1,7 @@
 ---
 title: "A function that calls itself: recursion"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   folders-inside-folders:
     touches: [MIT-6.8, PDP-LO6]
@@ -436,27 +436,23 @@ title: some steps
 why is 0 the count it should give?
 ```
 
-Now the tests. Until `count_items` is written, the first test stops
-with an error. Look at the fourth test: what is a folder of empty
-folders worth?
+How does your `count_items` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Look at the fourth row: what is a folder of empty folders worth?
+Where a row is different, try that call on its own.
 
-```python exec
-id: calls-itself-toolkit-tests
-assert count_items([]) == 0
-assert count_items(["only.jpg"]) == 1
-assert count_items(holidays) == 9
-assert count_items([[[[]]]]) == 0                  # folders, and no photos
-assert count_items([[["deep.jpg"]]]) == 1
-assert count_items([1, [2, [3, [4, [5]]]]]) == 5   # items need not be names
-print("count_items keeps its promise.")
+```inputs
+for: calls-itself-toolkit
+count_items([])
+count_items(["only.jpg"])
+count_items(holidays)
+count_items([[[[]]]])                  # folders, and no photos
+count_items([[["deep.jpg"]]])
+count_items([1, [2, [3, [4, [5]]]]])   # items need not be names
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too. Run the
-tests to see what yours does.
-
-```python
+```solution
+for: calls-itself-toolkit
 def count_items(nested):
     """Count the items inside nested, a list that may hold lists, at any depth.
 
@@ -472,16 +468,14 @@ def count_items(nested):
     return found
 ```
 
-</details>
-
 It counts 9 photos in "Holidays", where the loop found 8. It does not
 matter how deep a folder is. Each folder is counted by its own call,
 and each call only has to look one level down.
 
 ### Your turn
 
-If you have not written `count_items` yet, open the answer under the
-tests and copy it into the stub.
+If you have not written `count_items` yet, open the solution under the
+table and copy it into the stub.
 
 1. A music library has a folder for each artist, and inside it a folder
    for each album. The artists' names are in comments, so that
