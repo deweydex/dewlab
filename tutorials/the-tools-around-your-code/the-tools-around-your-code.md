@@ -21,7 +21,7 @@ covers:
 # Your development environment: finding a bug inside a class
 
 Ada attacks Grace. The cell below should print Grace's health after the
-hit. Run it: it stops with an error, and that is on purpose. The error
+hit. Run it. It stops with an error, on purpose. The error
 names three lines of the cell.
 
 ```python exec
@@ -109,11 +109,11 @@ should pass `self.strength`.
 An error shows where Python could go no further. The mistake can be one
 call further out, in the line that passed in the wrong value. So read a
 traceback from the bottom, and then ask of each line above it: did this
-line give the method below it what that method expects? When one method
-calls another, that is where a class's mistakes like to hide.
+line give the method below it what that method expects? A class's
+mistakes often hide where one method calls another.
 
-Finding the mistake that makes a program go wrong, and fixing it, is
-called *debugging*.
+When you find the mistake that makes a program go wrong, and fix it, you
+are *debugging*.
 
 ### Your turn
 
@@ -334,7 +334,7 @@ print(ada.health)
 ```
 
 It prints `1`, and nothing says why. A traceback cannot help, because
-nothing failed. What we need is to see the health after each hit. Add
+nothing failed. We need to see the health after each hit. Add
 this line at the end of the loop, under the armour line, with the same
 indent, and run the cell again:
 
@@ -343,8 +343,8 @@ indent, and run the cell again:
 ```
 
 Now we can see each step: 6, then 2, then 1. The first two are what we
-expected: 10 take away 4 is 6, and 6 take away 4 is 2. The third is
-where it goes wrong. Health 2 and a hit of 4 should leave 0.
+expected: 10 take away 4 is 6, and 6 take away 4 is 2. The third step
+goes wrong. Health 2 and a hit of 4 should leave 0.
 
 <details class="dl-answer"><summary>Why the third hit leaves 1</summary>
 
@@ -593,8 +593,8 @@ have to scroll back to find it. (A docstring is a short description
 written at the top of a class or function.)
 
 Neither of those needed you to search for anything. The editor already knew,
-because it reads the same code you do. That is what an *integrated
-development environment* adds to a plain text file. It pays attention to
+because it reads the same code you do. An *integrated development
+environment* adds this to a plain text file. It pays attention to
 what you are writing, and it helps.
 
 ## Where a bigger project lives
@@ -669,5 +669,6 @@ sorts bugs into three kinds, and has advice for each, including what to
 do when you are stuck.
 
 Python Software Foundation. *The Python Tutorial*, section 8, "Errors and
-Exceptions". <https://docs.python.org/3/tutorial/errors.html>. How Python
-reports an error, and the names of the errors you will meet most often.
+Exceptions". <https://docs.python.org/3/tutorial/errors.html>. This
+section shows how Python reports an error, and the names of the errors
+you will meet most often.

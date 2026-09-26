@@ -41,7 +41,7 @@ site: image-alt
 
 Now we can explain what we saw. In step 1, the browser looked for a
 file called `does-not-exist.jpg`, and found nothing. Something still
-appeared: most browsers show the words from `alt` in place of the
+appeared. Most browsers show the words from `alt` in place of the
 image, and some also show a small broken-image icon. Those words are
 the subject of the next page, [Describing an image with alt
 text](tutorial:describing-an-image).
@@ -80,8 +80,8 @@ Each one starts from the same HTML file, `index.html`:
 ![A small site drawn as folders. The outer folder, "projects", holds a file called photo.jpg and a folder called "my-site". Inside "my-site" are the HTML file index.html, a file called photo.jpg, and a folder called "images" that holds a third photo.jpg. Three arrows start from index.html. The arrow labelled "photo.jpg" goes to the photo beside index.html. The arrow labelled "images/photo.jpg" goes into the images folder, to the photo there. The arrow labelled "../photo.jpg" goes up and out of "my-site", to the photo in "projects".](paths.svg)
 
 So a path is a set of directions. Each `/` means "go into this folder".
-`..` means "go up one folder". A full web address is different: it
-names the site as well, so it finds the same file from any page.
+`..` means "go up one folder". A full web address is different. It names
+the site as well, so it finds the same file from any page.
 
 Now we can explain step 3. Without `https://`, the address no longer
 starts like a web address. So the browser reads `picsum.photos/400/300`

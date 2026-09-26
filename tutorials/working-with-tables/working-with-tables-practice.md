@@ -49,7 +49,7 @@ readings["evening"]
 
 It is a *Series*. A Series is one column, with the row labels down its
 left side. A DataFrame is a group of Series that share the same row
-labels. Most things you do to a single column give you a Series back.
+labels. Most things you do to a single column return a Series.
 
 </details>
 
@@ -63,7 +63,7 @@ readings[readings["site"] == "Sligo"]
 
 This gives a DataFrame with one row. It is like
 `SELECT * FROM readings WHERE site = 'Sligo';`. Note the two equals
-signs: in Python, `==` compares, and a single `=` gives a name to a
+signs. In Python, `==` compares, and a single `=` gives a name to a
 value.
 
 To get Sligo's values on their own:
@@ -72,8 +72,8 @@ To get Sligo's values on their own:
 readings.set_index("site").loc["Sligo"]
 ```
 
-The first way is filtering. The second way is looking up a row by its
-label. Both are useful, and they give back different shapes.
+The first way filters the rows. The second way looks up a row by its
+label. Both are useful, and they return different shapes.
 
 </details>
 
@@ -85,8 +85,8 @@ label. Both are useful, and they give back different shapes.
 
 Four True or False values, one for each row: True, False, False, True.
 
-The comparison runs on the whole column at once. This is the key idea
-in pandas: you write the condition once, and pandas tests it on every
+The comparison runs on the whole column at once. This is the key idea in
+pandas. You write the condition once, and pandas tests it on every
 row.
 
 </details>
@@ -119,7 +119,7 @@ Cork and Wexford.
 
 In SQL you would write `AND`. pandas is different in two ways. The
 operator is `&`. And each condition needs its own round brackets.
-Without them, Python works out `&` before `>`, and the line fails with
+Without them, Python calculates `&` before `>`, and the line fails with
 a confusing error message.
 
 </details>
@@ -155,7 +155,7 @@ readings.sort_values("rise", ascending=False)
 Galway, Cork, Wexford, Sligo.
 
 `ascending=False` puts the largest first, like `ORDER BY rise DESC` in
-SQL. `sort_values` gives back a new, sorted table, and leaves
+SQL. `sort_values` returns a new, sorted table, and leaves
 `readings` in its old order. That is nearly always what you want.
 
 </details>
@@ -214,7 +214,7 @@ missing?
 <details class="dl-answer"><summary>answer</summary>
 
 The mean of the values that are there. By default, pandas skips missing
-values when it works out a mean.
+values when it calculates a mean.
 
 That is handy, but it is a decision pandas makes for you. If three of
 the four readings were missing, pandas would report the fourth one as
@@ -230,8 +230,8 @@ id: checking-yourself-1
 readings["evening"].mean()
 ```
 
-**13.** What is the mean rise across all four sites? Can you work it out
-in Python, and then compare it with the difference between the two
+**13.** What is the mean rise across all four sites? Can you calculate
+it in Python, and then compare it with the difference between the two
 means?
 
 <details class="dl-answer"><summary>answer</summary>

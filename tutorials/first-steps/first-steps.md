@@ -49,12 +49,12 @@ and ends, so they are not shown.
 This is the first programming page, and everyone starts here. You do not
 need to know anything about computers or maths to begin. Over the coming
 weeks we learn to program, and some maths along the way. The two are closer
-than most people expect: a formula is also a set of steps, written for a
+than most people expect. A formula is also a set of steps, written for a
 person instead of a computer.
 
 ## How this page works
 
-Most of this page is reading. Between the paragraphs are *cells*: small
+Most of this page is text to read. Between the paragraphs are *cells*: small
 boxes of Python you can change and run. The result appears underneath. The
 Python runs inside this browser tab, on the computer in front of you, and
 nobody else can see what you type. You do not need to install anything.
@@ -83,7 +83,7 @@ What will the last line show?
 ```
 
 The numbers have no quotes around them. Python works with numbers
-directly: text needs quotes, and numbers do not. And `100 / 4` gives
+directly. Text needs quotes, and numbers do not. And `100 / 4` gives
 `25.0`, not `25`. Dividing with `/` always gives a number with a decimal
 point, even when the answer is whole. The next page explains why Python
 keeps two kinds of number.
@@ -92,7 +92,7 @@ keeps two kinds of number.
 
 ## A few more things Python can do
 
-Python works through a calculation in a fixed order, the same one you may
+Python does a calculation in a fixed order, the same one you may
 know from school as BODMAS or PEMDAS: brackets first, then powers, then
 multiplication and division, then addition and subtraction.
 
@@ -133,8 +133,8 @@ print(17 % 5)      # remainder: what is left over
 | `**` | power | `2 ** 3` | `8` |
 
 The last two work as a pair. Five goes into 17 three times, with 2 left
-over: `17 // 5` counts the whole fives, and `17 % 5` gives what is left.
-The remainder turns up more often than you might expect. A number is even
+over. `17 // 5` counts the whole fives, and `17 % 5` gives what is left.
+The remainder appears more often than you might expect. A number is even
 when its remainder after dividing by 2 is 0, and a clock goes back to 0
 after 23 because of a remainder.
 
@@ -191,7 +191,7 @@ from.
 
 A screen draws a picture out of small squares called pixels. An old games
 console had a screen 320 pixels wide and 240 tall. How many pixels is that?
-A phone photo is 4000 by 3000 pixels: how many times more is that?
+A phone photo is 4000 by 3000 pixels. How many times more is that?
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -229,7 +229,7 @@ them. Here is one for making a cup of tea:
 6. Take the tea bag out.
 
 It starts from a known point: a kettle, water, a cup and a tea bag. The
-steps come in a clear order. And it finishes: at the end, there is a cup of
+steps come in a clear order. And it finishes. At the end, there is a cup of
 tea.
 
 Step 3 is different from the others. "While the water has not boiled, wait"
@@ -237,8 +237,8 @@ repeats the waiting until the water boils. This is a *loop*: a step, or a
 group of steps, that repeats until something is true. We write loops in
 Python in [Repeating steps with loops](tutorial:repeating-yourself).
 
-Programming is writing algorithms carefully enough for a computer to follow
-them. A computer is very fast, but it cannot guess what you meant. It does
+When we program, we write algorithms carefully enough for a computer to
+follow them. A computer is very fast, but it cannot guess what you meant. It does
 exactly what you tell it, and nothing more.
 
 Think of something you do most days: making breakfast, getting to college,
@@ -251,8 +251,8 @@ right of the page.
 
 Before we write Python, it helps to plan the steps in plain English.
 *Pseudocode* is a plan for a program, written in plain English, sometimes
-with a little code-like structure. No computer runs it. Writing pseudocode
-first is one of the most useful habits you can build.
+with a little code-like structure. No computer runs it. Write pseudocode
+first. It is one of the most useful habits you can build.
 
 Here is a plan for finding the middle of a screen 320 pixels wide and 240
 tall:
@@ -284,7 +284,7 @@ This is the way of working we use all through these pages:
 3. Turn the pseudocode into Python.
 
 For a small problem, the pseudocode can feel like extra work. As problems
-get bigger, it is what keeps you from getting lost.
+get bigger, it keeps you from getting lost.
 
 ### Your turn
 
@@ -371,7 +371,7 @@ print(later)
 ```
 
 The next page, [Variables, data types and text](tutorial:storing-and-computing),
-gives values names, and meets text as something Python can take apart.
+gives values names. It also shows how Python can split text into pieces.
 
 ## Where to read more
 
@@ -380,18 +380,18 @@ better than this one. These are worth your time.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
 (2nd ed.). Green Tea Press. Free at <https://greenteapress.com/wp/think-python-2e/>.
-Chapters 1 and 2 cover this tutorial's ground at greater length, and the book is
+Chapters 1 and 2 cover this tutorial's topics at greater length, and the book is
 written for exactly this audience.
 
 Python Software Foundation. *The Python Tutorial*, sections 3.1 and 3.1.1.
-<https://docs.python.org/3/tutorial/introduction.html>. The official reference
-for the arithmetic operators, including the exact behaviour of `//` and `%`.
+<https://docs.python.org/3/tutorial/introduction.html>. This is the official
+reference for the arithmetic operators, including the exact behaviour of `//` and `%`.
 
 Khan Academy. *Intro to algorithms*.
-<https://www.khanacademy.org/computing/computer-science/algorithms>. Worked
-through slowly, with exercises, if the pace here was too quick.
+<https://www.khanacademy.org/computing/computer-science/algorithms>. It goes
+more slowly, with exercises, if the pace here was too quick.
 
 CrashCourse (2017). *Intro to Algorithms: Crash Course Computer Science
-#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. What makes a set of
-steps an algorithm, with sorting and finding a route as examples. About
-eleven minutes.
+#13.* <https://www.youtube.com/watch?v=rL8X2mlNHPM>. It explains what makes
+a set of steps an algorithm, with sorting and finding a route as examples.
+The video is about eleven minutes long.

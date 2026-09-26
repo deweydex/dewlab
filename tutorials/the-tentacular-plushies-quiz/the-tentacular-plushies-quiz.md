@@ -276,7 +276,7 @@ if over_30_count > 0 and under_15_count > 0:
 
 ## One way to do it
 
-Every check passing means your own database already meets the tasks.
+If every check passes, your own database already meets the tasks.
 This is one complete solution, not the only one. Compare it with your
 own to see a full example.
 

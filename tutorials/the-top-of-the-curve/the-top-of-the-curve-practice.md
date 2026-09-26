@@ -93,7 +93,7 @@ number. How could she know?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through: complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
+Here is one answer. Complete the square. $x^2 - 2x + 5 = (x - 1)^2 + 4$. A real square is
 never negative, so $(x - 1)^2$ is 0 or more, and the whole rule is 4 or
 more. It can never come down to 0. The discriminant from
 [Solving for x](tutorial:solving-for-x#how-many-answers-the-discriminant)
@@ -115,14 +115,14 @@ rectangular pen against the edge of the map. The edge is one long
 side, so the fence makes the other three. If each short side is $w$
 blocks, the long side is $40 - 2w$ blocks. What $w$ gives the biggest
 pen, and how many squares of ground does it hold? Find it with
-`vertex`, then check it with a fine comb.
+`vertex`, then check it with a search in small steps.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The area is width times length: $w(40 - 2w)$.
 2. Multiply out the bracket: $40w - 2w^2$. So $a = -2$, $b = 40$ and
    $c = 0$.
-3. For the fine comb, try every $w$ from 0 to 20 in steps of 0.1, and
+3. For the search, try every $w$ from 0 to 20 in steps of 0.1, and
    keep the largest area.
 
 **Think about:** why must $w$ be between 0 and 20?
@@ -148,7 +148,7 @@ print(widths[areas.index(biggest)], biggest)
 
 Both give a width of 10 blocks and 200 squares of ground. The long
 side is then $40 - 20 = 20$ blocks. The width must be between 0 and 20,
-because at 20 the long side is 0: that is the domain of the rule. A
+because at 20 the long side is 0. So 0 to 20 is the domain of the rule. A
 game needs whole blocks, and here the best width is whole already.
 
 </details>
@@ -172,9 +172,9 @@ print("vertex_again keeps its promise.")
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The second test's message shows what the function gave back. Is the
+1. The second test's message shows what the function returned. Is the
    $x$ anywhere near 0.55?
-2. Work out `440 / 2 * 400` by hand, in the order Python does it.
+2. Calculate `440 / 2 * 400` by hand, in the order Python does it.
 3. Compare with the formula $-\frac{b}{2a}$. What is on the bottom?
 
 **Think about:** why did the first test pass? What is special about its
@@ -194,7 +194,7 @@ x = -b / (2 * a)
 ```
 
 Schlomo's $x$ for the bowl was 88,000, far off the letter. The first
-test passed by luck: its $a$ is 1, and multiplying by 1 and dividing by
+test passed by luck. Its $a$ is 1, and multiplying by 1 and dividing by
 1 give the same answer. A test with $a = 1$ cannot tell the two lines
 apart, which is a reason to test with other values too.
 
@@ -224,9 +224,9 @@ The search prints frame `14`, at a height of about 10.996 m, and
 They differ a little, and each gives what it measures. The true top is at 1.4286
 seconds, between frame 14 and frame 15, and the game never draws that
 moment. So the highest ball a player sees is 4 mm lower than the real
-top. For a game, that is close enough. For a program that must know the true
-top, such as one that checks whether the ball clears a bar, the
-formula is the one to trust.
+top. For a game, that is close enough. A program that must know the true
+top, such as one that checks whether the ball clears a bar, should
+use the formula.
 
 </details>
 
@@ -249,7 +249,7 @@ print((roots[0] + roots[1]) / 2)
 roots are about −0.12 and 2.57 seconds, and halfway between them is
 1.22 again. The mirror puts the vertex midway between the roots. The
 negative root is a time before the sliotar was struck, but it still
-does its job as the other end of the mirror.
+marks the other end of the mirror.
 
 </details>
 
@@ -259,7 +259,7 @@ form for several values of $x$, with a loop.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Taking out the 2: $2x^2 - 12x + 22 = 2(x^2 - 6x) + 22$. Inside the
+First take out the 2: $2x^2 - 12x + 22 = 2(x^2 - 6x) + 22$. Inside the
 bracket, half of $-6$ is $-3$, and $x^2 - 6x = (x - 3)^2 - 9$. So
 
 $$2\left((x - 3)^2 - 9\right) + 22 = 2(x - 3)^2 - 18 + 22 = 2(x - 3)^2 + 4$$
@@ -286,10 +286,10 @@ that number were negative instead? Sketch both, or draw them with
 
 With a positive number, the parabola opens upwards, and its lowest
 point is 9 below the axis. It must cross the axis on the way down and
-again on the way up: two roots. For $(x - 2)^2 - 9$ they are −1 and 5.
+again on the way up, so it has two roots. For $(x - 2)^2 - 9$ they are −1 and 5.
 
 With a negative number, it opens downwards, and its *highest* point is
-9 below the axis. It never reaches the axis: no roots.
+9 below the axis. It never reaches the axis, so it has no roots.
 
 So the vertex and the sign of $a$ together say how many roots there
 are, without any formula. A vertex exactly on the axis gives one root.
@@ -304,15 +304,15 @@ and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-This question has more than one answer. Here is one way through, which
-weighs things like these:
+This question has more than one answer. Here is one, which weighs
+things like these:
 
 - The table and the graph show *why* there is a lowest point, and why
   0.5 and 0.6 tie. A reader who forgets the formula can still find the
   answer that way.
 - The table can miss the answer, as it did between 0.5 and 0.6. That
-  miss is a reason to want a formula, and it is felt more strongly
-  when the reader has seen it happen.
+  miss is a reason to want a formula, and a reader feels it more after
+  seeing it happen.
 - Formula first is shorter, and it gets a reader to an answer
   quickly, which some readers find encouraging.
 - Formula first can leave a reader who gets a strange answer, such as a
@@ -332,15 +332,15 @@ Schlomo's idea work, and where does it stop working?
 <details class="dl-answer"><summary>answer</summary>
 
 The bowl does not go down to $-108$, but part of his idea works. The curve never reaches
-its control point: the control point only pulls it. The bowl's lowest
+its control point. The control point only pulls it. The bowl's lowest
 point is only 9 units below the baseline, at $t = 0.55$, where $x$ is
 about 288. You can see it in the tutorial's picture: the dotted lines
 go down to $-108$, and the curve stays far above them.
 
-The part that works: the curve always stays inside the triangle its three
-points make. So the control point is a limit on how low the bowl can
-go. Schlomo found a floor, $-108$, that the curve cannot go below. He
-did not find the bottom itself. Here is one way to check:
+This part of his idea works. The curve always stays inside the
+triangle its three points make. So the bowl cannot go below the
+control point's height, $-108$. Schlomo found this limit, but not the
+bottom itself. Here is one way to check:
 
 ```python
 print(vertex(400, -440, 112))

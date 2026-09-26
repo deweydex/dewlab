@@ -12,7 +12,7 @@ tutorial page. Each problem says what kind it is: **Predict**, **Make**,
 **Fix**, **Explain** or **Another way**. Before you open an answer, try
 the routine: read the last line, find the line it names, ask which of
 the four questions it is about, change one thing, and run again. If red
-text still worries you a little, come back to that routine: this page
+text still worries you a little, come back to that routine. This page
 is a place to practise it.
 
 ## Warm-up
@@ -45,7 +45,7 @@ reading it at the last line?
 
 The last line says what went wrong: the kind of error, and a sentence
 about what happened. Everything above it says where, and how the program
-got there. Knowing *what* first tells us what to look for when we read
+got there. When we know *what* happened, we know what to look for in
 the *where*. The places above are listed oldest first ("most recent call
 last"), so the bottom is also where Python stopped.
 
@@ -85,8 +85,8 @@ def startup_steps():
 startup_steps()
 ```
 
-Many devices light every segment for a moment when they start, for a
-good reason: it shows at once if a segment is broken.
+Many devices light every segment for a moment when they start. This
+shows at once if a segment is broken.
 
 </details>
 
@@ -117,7 +117,6 @@ print("Goals this season:", goals)
 Both lines print `Goals this season: 14`. The first turns the number
 into a string, so `+` joins two strings. The second gives `print` two
 things, separated by a comma, and `print` puts a space between them.
-They are two routes out of the same problem.
 
 </details>
 
@@ -194,11 +193,10 @@ ZeroDivisionError: division by zero
 ```
 
 Schlomo's idea works for half of the question. Line 2, inside `speed`,
-is the line that failed: the division happens there. But the line
+is the line that failed, because the division happens there. But the line
 responsible is line 10, `report(300, 0)`, which asked for a speed over
-0 seconds. Line 2 did its job for `report(300, 60)`. His idea is where
-most people start, and the traceback is the trail that takes us from line 2 back
-to line 10.
+0 seconds. Line 2 did its job for `report(300, 60)`. Most people start
+with his idea. The traceback leads us from line 2 back to line 10.
 
 </details>
 
@@ -253,7 +251,7 @@ score = 250
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are many answers. Here is one way through:
+Here is one answer. Yours may be different and work too.
 
 ```python
 score = 250
@@ -288,7 +286,7 @@ does exactly what it was asked. The move is allowed in the space of
 strings. It is not the move we meant.
 
 This is worse than an error. An error stops and tells us. A wrong
-answer with no error goes on quietly. `int(lives) * 2` gives `6`.
+answer with no error does not stop, and says nothing. `int(lives) * 2` gives `6`.
 
 </details>
 
@@ -308,7 +306,7 @@ place along the line. The problem is that the name `totl` was never
 declared, which in C means it was never named before it was used.
 
 The closest Python error is a `NameError`. The difference is when it is
-found: the C compiler finds it before the program runs, and Python
+found. The C compiler finds it before the program runs, and Python
 finds it when it reaches that line.
 
 </details>
@@ -349,7 +347,7 @@ ValueError: Unknown format code 'X' for object of type 'str'
 ```
 
 A `ValueError` means a function was given a value it cannot work with.
-The important words are at the end: the object
+The important words are at the end. They say the object
 was a `str`, a string. `to_hex` promises to work with a whole number,
 so turn the text into one with `int()`:
 
@@ -359,8 +357,8 @@ print(to_hex(brightness))
 ```
 
 This prints `FF`. We had never seen `ValueError` before, and the message
-still told us what was wrong. That is the point of reading the last
-line first.
+still told us what was wrong. That is why we read the last line
+first.
 
 </details>
 
@@ -396,10 +394,10 @@ print("rows_needed:", rows_needed)
 ```
 
 This prints `left: 0` and `rows_needed: 0.0`. Every pixel is painted,
-so line 4 makes `left` zero, and the 0 travels down to line 7. Nothing
-is wrong with line 7 at all: the question it asks has no answer when no
-rows are left. Printing values is a second way to follow the trail, and
-it works even when there is no error to read.
+so line 4 makes `left` zero, and the 0 travels down to line 7. Line 7
+has no mistake in it. The question it asks has no answer when no rows
+are left. You can also print values to follow the trail, and this works
+even when there is no error to read.
 
 </details>
 
@@ -420,7 +418,7 @@ TypeError: digit_at() missing 1 required positional argument: 'place'
 ```
 
 `digit_at` promises the digit of a number in a given place. We gave
-only the number. So this is about *what is promised*: a function's
+only the number. So this is about *what is promised*. A function's
 promise holds only when it gets everything it asked for. An *argument*
 is Python's word for a value given to a function when it is called.
 `digit_at(2026, 0)` keeps the promise, and gives `6`. The base could be
@@ -464,33 +462,33 @@ Python reports the `SyntaxError` on line 4 first, because it reads the
 whole cell before running any of it. Once the bracket is closed, the
 `ZeroDivisionError` on line 3 comes next, because line 3 runs before
 line 4. Once `width` is not zero, the `NameError` for `pixls` on line 4
-comes last. This is one way through; yours will be different, and the
-order of its reports should follow the same rule. A mistake Python finds while reading always comes first.
+comes last. This is one answer. Yours will be different, and the
+order of its reports follows the same rule. A mistake Python finds while reading always comes first.
 After that, running mistakes come in the order of the lines.
 
 </details>
 
 **15. Explain.** This page on error messages comes in the first
-unit of the course. Some courses leave errors until later, and deal with
-each one as it comes up. If you were planning a course for people who are
+unit of the course. Some courses leave errors until later, and explain
+each one when it happens. If you were planning a course for people who are
 new to programming, where would you put a page like this one: in the first
 week, after a few weeks, or nowhere, with errors met one at a time? Give a
 reason, and say what your choice costs.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It weighs a few things.
+Here is one answer. It looks at a few things.
 
 - **In the first week.** Errors arrive on the first day anyway, and a
   reader who expects to fail may read red text as a mark against them.
-  Reading it early changes that. The cost: with little code written,
-  most of the examples have to be made up.
+  If they read this page early, that changes. The cost is that, with
+  little code written, most of the examples have to be made up.
 - **After a few weeks.** By then a reader has met real errors of their
-  own, and the page can use them. The cost: those first weeks of red
-  text go unexplained.
+  own, and the page can use them. The cost is that nobody explains the
+  red text in those first weeks.
 - **Nowhere, one error at a time.** Each error is met in a real place,
-  when it matters. The cost: the routine that works for every error,
-  last line first, may never be said out loud.
+  when it matters. The cost is that nobody may ever say the routine
+  that works for every error, last line first.
 
 Whichever you choose, say who the course is for, because that changes
 which cost matters most.

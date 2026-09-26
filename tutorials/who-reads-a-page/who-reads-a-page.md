@@ -70,8 +70,8 @@ site: readers
 
 The two look the same, but only the second version's links take part
 when we press **Tab**. The words in the first version only look like
-links. To the browser, they are text in a box, and so they are to
-everyone who uses the browser's model of the page.
+links. The browser sees them as text in a box. So does everyone who
+uses the browser's model of the page.
 
 ## What the browser takes from a page
 
@@ -112,7 +112,7 @@ other ways to move around it. The exact keys differ, but most screen
 readers can:
 
 - **Jump from heading to heading**, or list every heading on the page.
-  Many screen reader users move around a page this way. That is why the
+  Many screen reader users move around a page this way. So the
   heading levels need to make sense on their own, as a list of
   contents. A heading chosen for its size breaks that list.
 - **Jump from landmark to landmark.** A *landmark* is a main region of
@@ -125,7 +125,7 @@ readers can:
   same. "Read more about me" does not.
 - **Read an image's alt text**, in place of the image. With `alt=""`,
   the screen reader skips the image. With no `alt` at all, some screen
-  readers read out the file name.
+  readers read the file name aloud.
 
 What about bold and italic text? The tags `<b>` and `<i>` also make
 text bold and italic, and they often look the same as `<strong>` and

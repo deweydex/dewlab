@@ -31,12 +31,12 @@ lowest on the left. You do it without thinking, in a few seconds. But
 what exactly did your hands do? And how many moves did it take?
 
 Your hands already know at least one algorithm, and this page writes
-it down. There is a surprise on the way. One of the two ways people
+it down. One of the two ways people
 sort cards does almost no work on a hand that is already in order. The
 other does exactly as much work on that hand as on any other.
 
 On the last page, binary search needed a sorted list, and Python's
-`sorted()` made one for us. This page opens that box.
+`sorted()` made one for us. This page shows how sorting works inside.
 
 On this page we:
 
@@ -48,11 +48,11 @@ On this page we:
 - promise a new sorted list and leave the old one alone
 - add `selection_sort` and `insertion_sort` to the toolkit
 
-> **The space we're in.** A list of values that can be compared with
+> **The space we're in.** We work with a list of values that can be compared with
 > `<`: numbers, or words, which compare the way a dictionary orders
 > them. To keep things plain, a card is its number: Ace is 1, Jack is
-> 11, Queen is 12 and King is 13, and we leave the suits out. One thing
-> usually goes unsaid: a sort only ever compares two values at a time.
+> 11, Queen is 12 and King is 13, and we leave the suits out. We usually
+> do not say it, but a sort only ever compares two values at a time.
 > It never sees the whole hand at once, the way your eye does.
 
 ## Warm-up
@@ -168,7 +168,7 @@ the 7 had, so it was lost. By the time the second line ran, `hand[0]`
 was already 1.
 
 With real cards you never have this problem, because you hold one card
-in each hand. In code, the fix is the same idea: keep the 7 under a
+in each hand. In code, the fix is the same idea. Keep the 7 under a
 name of its own before it is replaced. Python can also do both at once:
 
 ```python exec
@@ -178,9 +178,9 @@ hand[0], hand[3] = hand[3], hand[0]
 print(hand)
 ```
 
-This time it prints `[1, 3, 12, 7, 9]`. The order of events is what
-makes it work. First, Python works out everything on the right of the
-`=`: the values 1 and 7. Only then does it point `hand[0]` at 1 and
+This time it prints `[1, 3, 12, 7, 9]`. The order of events makes it
+work. First, Python calculates everything on the right of the `=`, the
+values 1 and 7. Only then does it point `hand[0]` at 1 and
 `hand[3]` at 7. So nothing is lost.
 
 ## Selection sort: find the smallest, again and again
@@ -223,7 +223,7 @@ hand = [7, 3, 12, 1, 9]
 print(selection_steps(hand))
 ```
 
-Four rounds. In round 1, the Ace was found at index 3 and swapped with
+It takes four rounds. In round 1, the Ace was found at index 3 and swapped with
 the 7 at index 0. In round 2, the smallest of the rest was the 3,
 already at index 1, so it swapped with itself and nothing moved. In
 round 3, the 7 swapped with the Queen. In round 4, the 9 swapped with
@@ -285,7 +285,7 @@ print(insertion_steps(hand))
 
 The 3 slid one place, past the 7. The Queen did not move, because the 7
 to its left is lower. The Ace slid all the way to the front, past three
-cards: it moved the furthest. The 9 slid past the Queen and stopped at
+cards, so it moved the furthest. The 9 slid past the Queen and stopped at
 the 7.
 
 The list is in two parts here too, a sorted part on the left and the
@@ -372,7 +372,7 @@ for five_cards in hands:
 | in reverse order | 10 | 10 |
 
 Selection sort makes 10 comparisons every time, even on the hand that
-was already in order. I find that a strange result: it does all that
+was already in order. I find that a strange result. It does all that
 work to learn nothing new. It has to look at every card left to be sure
 which is the smallest, whatever the order.
 In the first round it compares 4 pairs, then 3, then 2, then 1:
@@ -390,11 +390,11 @@ In words: for $n$ cards, selection sort makes $n$ times $n - 1$,
 halved, comparisons. For 5 cards that is $\frac{4 \times 5}{2} = 10$.
 
 Insertion sort is different. A hand already in order costs only 4
-comparisons: each card looks once to its left, finds a lower card, and
+comparisons. Each card looks once to its left, finds a lower card, and
 stays. A hand in reverse order costs 10, because every card slides all
 the way to the front. For insertion sort, the order of the cards when
-we start decides how much work there is. Sequence, the third of our
-four questions, matters to the data as well as to the code.
+we start decides how much work there is. So order matters in the data,
+as well as in the code.
 
 ### Your turn
 
@@ -430,12 +430,12 @@ answer = hand.sort()
 print(hand, answer)
 ```
 
-`sorted(hand)` gives back a new list, in order, and leaves `hand` as it
-was. `hand.sort()` does something else: it sorts `hand` itself, in
-place, and gives back `None`. It is a procedure, in the words of
+`sorted(hand)` returns a new list, in order, and leaves `hand` as it
+was. `hand.sort()` does something else. It sorts `hand` itself, in
+place, and returns `None`. It is a procedure, in the words of
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
 So `answer` is `None`. A line like `hand = hand.sort()` looks
-harmless, and it throws the whole hand away.
+harmless, but it loses the whole hand.
 
 Both are useful. Sorting in place needs no second list, which matters
 when the list is huge. A new list keeps the original, which matters
@@ -452,9 +452,9 @@ and every swap would change the caller's list too.
 ## Two tools for your toolkit
 
 Here are the two sorts as toolkit tools, with their promises. Each
-gives back a new sorted list, and leaves `values` alone. They are
+returns a new sorted list, and leaves `values` alone. They are
 stubs. For each one, start from the `..._steps` version above: keep the
-copy, take out the `print` line, and rename `hand` and `cards` so that
+copy, delete the `print` line, and rename `hand` and `cards` so that
 the names fit any list, not only cards.
 
 ```python exec
@@ -560,8 +560,8 @@ and which one would catch it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way to write them. Yours may differ and still keep the
-promises: the tests are the judge.
+Here is one answer. Yours may be different and still keep the
+promises. The tests check that.
 
 ```python
 def selection_sort(values):
@@ -626,8 +626,8 @@ contacts = ["Siobhán", "Tomasz", "Aoife", "Kwame", "Niamh", "Oisín", "Priya", 
 
 This page taught selection sort and insertion sort, two ways people
 already sort cards. Many courses start with a third, bubble sort, which
-walks along the list swapping any two neighbours that are out of
-order, again and again.
+walks along the list swapping any two neighbours that are in the
+wrong order, again and again.
 
 Bubble sort has real strengths. Its code is short, it only ever
 compares neighbours, and it is a favourite in exams. The practice page
@@ -646,8 +646,8 @@ steps, in which order?" one you can answer from your own hands.
 | The question | On this page |
 |---|---|
 | What is named here? | `place`, the index being filled or the card being placed; `smallest_at`, an index kept as a name; a copy, `cards`, with a name of its own |
-| What is promised? | `selection_sort` and `insertion_sort` promise a new list in ascending order, and the old one unchanged; `.sort()` promises to change the list itself, and gives back `None` |
-| What happens when? | a swap works out both values before it moves either; selection sort always makes $\frac{n(n-1)}{2}$ comparisons; insertion sort makes fewer when the list starts nearly in order |
+| What is promised? | `selection_sort` and `insertion_sort` promise a new list in ascending order, and the old one unchanged; `.sort()` promises to change the list itself, and returns `None` |
+| What happens when? | a swap calculates both values before it moves either; selection sort always makes $\frac{n(n-1)}{2}$ comparisons; insertion sort makes fewer when the list starts nearly in order |
 | What does this space let us do? | anything that can be compared with `<`; one comparison of two values at a time; changing a list in place, or making a new one |
 
 ## What we have now
@@ -656,13 +656,13 @@ steps, in which order?" one you can answer from your own hands.
 |---|---|
 | sort, ascending order | put values in order; from smallest to largest |
 | sorting algorithm | a way of sorting, written as clear steps |
-| swap, `a[i], a[j] = a[j], a[i]` | two values change places; Python works out the right-hand side first |
+| swap, `a[i], a[j] = a[j], a[i]` | two values change places; Python calculates the right-hand side first |
 | selection sort | find the smallest of the rest, and swap it to the front of the rest; repeat |
 | insertion sort | take each value in turn, and slide it into its place among the sorted values to its left |
 | comparison | one look at two values, to see which is smaller: the step we count |
 | $\frac{n(n-1)}{2}$ | the comparisons selection sort makes on $n$ values, and insertion sort's worst case |
-| `sorted(values)` | Python's sort that gives back a new list |
-| `values.sort()` | Python's sort that changes the list in place, and gives back `None` |
+| `sorted(values)` | Python's sort that returns a new list |
+| `values.sort()` | Python's sort that changes the list in place, and returns `None` |
 | `range(13, 0, -1)` | counting down: a third number in `range` is the step |
 | `selection_sort`, `insertion_sort` | your two new toolkit tools |
 
@@ -677,6 +677,6 @@ the integrated course has
 ## Where to read more
 
 Polylog (2022). *The Simplest Sorting Algorithm (You've Never Heard Of).*
-<https://www.youtube.com/watch?v=_W0yUJlscRA>. Two loops and one swap. It
-looks wrong, but it sorts. Which of this page's two sorts is it closest
+<https://www.youtube.com/watch?v=_W0yUJlscRA>. It uses two loops and one
+swap. It looks wrong, but it sorts. Which of this page's two sorts is it closest
 to? Four minutes.

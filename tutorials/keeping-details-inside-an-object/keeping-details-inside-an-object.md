@@ -21,7 +21,7 @@ covers:
 
 The Nautilus has a hull that is safe to 400 m, and no deeper. Here is its
 class, with that rule inside `dive`. The submarine is told to dive 500 m,
-then 150 m. How deep does it end up?
+then 150 m. How deep is it at the end?
 
 ```python exec
 id: keeping-details-to-itself-1
@@ -64,13 +64,12 @@ rule. The check is not copied into every line of the program that makes
 the submarine dive. Any code that calls `dive()` gets the check, whether
 its writer remembered the rule or not.
 
-This idea has a name. *Encapsulation* is keeping an object's data behind
-its own methods. Code outside the class asks the object to make a change,
+This idea has a name. *Encapsulation* means that an object's data stays
+behind its own methods. Code outside the class asks the object to make a change,
 and the object's methods decide how. The rules about the data then live
 in one place, next to the data itself.
 
-A rule kept in one method is only as good as the other methods, though.
-What does `rise(-500)` do to this submarine? Run it and see. Can you make
+But the other methods need rules too. What does `rise(-500)` do to this submarine? Run it and see. Can you make
 `rise` refuse a negative number of metres, the way `dive` refuses a dive
 that is too deep?
 
@@ -340,11 +339,11 @@ What would `voyager.burn(-50)` do to this version?
 <div class="dl-world" data-world="your-own">
 
 Which rule does your world have that your class does not keep yet? A
-shop's stock cannot go below zero; a creature cannot run faster than its
+shop's stock cannot go below zero. A creature cannot run faster than its
 top speed. Can you keep the rule in a method, make the field it protects
 private, and give it a getter? Your class from
 [Classes and objects](tutorial:objects-and-classes) is saved in that
-page's last cell: copy it here to start.
+page's last cell. Copy it here to start.
 
 ```python exec
 id: your-class-2--your-own
@@ -453,17 +452,17 @@ working when the tank changes to millilitres?
   - `use` works in litres on the outside.
 ```
 
-A caller that reached in for `_litres` breaks, because that field is
-gone. Every caller that went through the methods works as before. That is
+A caller that used `_litres` directly breaks, because that field is
+gone. Every caller that used the methods works as before. That is
 what encapsulation and abstraction protect.
 
 ## Looking back
 
-Python never stops code reaching in to change `_depth`. So what does the
+Python never stops code from changing `_depth` directly. So what does the
 underscore protect, and who is it for?
 
 A challenge: a health bar that starts full at `1.0` goes wrong the same
-way the oxygen tank did. Ten hits of `0.1` do not leave Ada down. Can you
+way the oxygen tank did. Ten hits of `0.1` do not bring her health to 0. Can you
 change the inside of the class to keep whole hit points, 100 for a full
 bar, without changing any line below the class?
 
@@ -498,13 +497,13 @@ better than this one.
 
 Python Software Foundation. *The Python Tutorial*, section 9.6, "Private
 Variables". <https://docs.python.org/3/tutorial/classes.html#private-variables>.
-The official note on the one-underscore convention and on names with two
-underscores.
+This is the official note on the one-underscore convention and on names
+with two underscores.
 
 Python Software Foundation. *The Python Tutorial*, section 15,
 "Floating-Point Arithmetic: Issues and Limitations".
-<https://docs.python.org/3/tutorial/floatingpoint.html>. Why `0.1` cannot
-be stored exactly, and what to do about it.
+<https://docs.python.org/3/tutorial/floatingpoint.html>. This section
+explains why `0.1` cannot be stored exactly, and what to do about it.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer
 Scientist* (2nd ed.). Green Tea Press. Free at

@@ -55,7 +55,7 @@ em, a {
    boxes with a border do? What do the shaded phrases do?
 2. Add `display: inline;` to the `h2, p` rule. What happens to the three
    boxes?
-3. Take that line out again. Now add `display: block;` to the `em, a`
+3. Delete that line again. Now add `display: block;` to the `em, a`
    rule. What happens to the shaded phrases?
 
 Now we can explain what we saw. When no layout rule moves a box, the
@@ -87,8 +87,8 @@ step 3, `display: block` put each shaded phrase on a line of its own.
 [Lining boxes up in a row with Flexbox](tutorial:flexbox-first-steps) uses a third value,
 `flex`, which lays out the boxes inside an element in a row or a column.
 
-One rule of normal flow explains a lot on the other pages: a block box
-fills the width of its parent, unless something stops it. That is why a
+One rule of normal flow explains a lot on the other pages. A block box
+fills the width of its parent, unless something stops it. So a
 container needs a `max-width` before `margin: 0 auto` can centre it.
 Without one, the box already fills the width, and there is no space left
 over for the auto margins to share. Many websites wrap their content in
@@ -99,7 +99,7 @@ Normal flow also explains the footer. In normal flow, a block box is
 only as tall as its content, and each box comes straight after the one
 above it. So on a short page, the footer sits right under the text.
 `display: flex` on the body changes the rules for the body's children,
-and that is what lets `margin-top: auto` push the footer down.
+and this lets `margin-top: auto` push the footer down.
 
 ## What `width` measures
 
@@ -108,8 +108,8 @@ it takes up more room than that on the page. Why? By default, `width`
 sets the width of the content only. The padding and the border are
 added on outside it.
 
-The property that decides this is `box-sizing`. *box-sizing* sets what
-`width` and `height` measure. It has two values:
+The *box-sizing* property decides this. It sets what `width` and
+`height` measure. It has two values:
 
 - `content-box` is the default. `width` measures the content alone, and
   the padding and border are added outside it.
@@ -155,11 +155,11 @@ margin meets a top margin, the larger one sets the gap. This is *margin
 collapse*. Three more things about it are worth knowing.
 
 1. **It happens in normal flow.** The children of an element with
-   `display: flex` keep their margins apart, and the margins add up.
+   `display: flex` keep their margins apart, and the margins add together.
 2. **It can happen between a parent and its first child.** Suppose a
    box has no border and no padding at the top. Then the top margin of
    its first child does not stay inside it. The margin passes through,
-   and shows up above the parent instead. A little padding or a border
+   and appears above the parent instead. A little padding or a border
    on the parent keeps the child's margin inside. This surprises most
    people the first time they see it.
 3. **You can find it in your own site.** On your About page, look at
@@ -187,7 +187,7 @@ does the element keep its space in normal flow?
 An element that keeps its space leaves room for itself in the flow,
 even when it is drawn somewhere else. An element that leaves the flow
 takes no room at all, and the boxes after it move up to fill the gap.
-That is the clue you may have found on the sticky header page, when
+You may have seen this on the sticky header page, when
 `fixed` let the content slide up behind the header. Here is the same
 difference between `relative` and `absolute`:
 
@@ -214,7 +214,7 @@ All of this is easier to believe once we see it on a real page, and
 [Looking inside a page with the inspector](tutorial:the-inspector) can show it. When we
 point at an element in the **Elements** tab, most browsers shade its
 margin in its own colour. On a centred container, the two auto margins
-show up as two equal bands, one on each side. When we select an
+appear as two equal bands, one on each side. When we select an
 element, most browsers also have a panel that draws its box model as a
 diagram, like the one on [The box model: padding, border and
 margin](tutorial:the-box), with the real numbers for each layer.

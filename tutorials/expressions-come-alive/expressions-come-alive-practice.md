@@ -44,9 +44,9 @@ print(multiply_poly([3, 1], [2, 1]))
 
 Look at the numbers. In every answer, the middle number is the sum of
 the two constants, and the last number is their product. In (a),
-$2 + 5 = 7$ and $2 \times 5 = 10$. This is not a coincidence. It is what
-makes factorising possible: going backwards from the expanded form to
-the brackets. You will do that in
+$2 + 5 = 7$ and $2 \times 5 = 10$. This is not a coincidence. It makes
+factorising possible. When you factorise, you go backwards from the
+expanded form to the brackets. You will do that in
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
 
 </details>
@@ -56,7 +56,7 @@ general rule?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$n^2 + 10n + 25$ and $w^2 + 6w + 9$.
+They are $n^2 + 10n + 25$ and $w^2 + 6w + 9$.
 
 The rule is $(x + a)^2 = x^2 + 2ax + a^2$. The middle coefficient is
 twice the constant, because the $ax$ term appears twice: once from the
@@ -114,7 +114,7 @@ about the coefficients?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
+They are $x^2 + 2x + 1$, then $x^3 + 3x^2 + 3x + 1$, then $x^4 + 4x^3 + 6x^2 + 4x + 1$.
 
 The coefficients are 1 2 1, then 1 3 3 1, then 1 4 6 4 1. These are the
 rows of Pascal's triangle. Each row is built by adding pairs of
@@ -129,7 +129,7 @@ many ways there are to choose $k$ things from $n$. You met them there in
 
 <details class="dl-answer"><summary>answer</summary>
 
-$x^3 + 5x^2 + 7x + 2$.
+It is $x^3 + 5x^2 + 7x + 2$.
 
 A *binomial* is a polynomial with two terms, such as $x + 2$. FOIL only
 names the four products you get from two binomials. The real rule is
@@ -181,8 +181,8 @@ of degree 10? Can it be done with fewer?
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 55 for the powers alone. Working out `x ** i` by hand takes $i$
-multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
+It does about 55 for the powers alone. By hand, each `x ** i` takes
+$i$ multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
 
 A method called Horner's method does it with 10:
 
@@ -218,8 +218,8 @@ def add_poly(a, b):
     return result
 ```
 
-The different lengths are the hard part. Treating a missing coefficient
-as 0 is exactly right, because a polynomial of lower degree does have
+The different lengths are the hard part. A missing coefficient should
+count as 0, because a polynomial of lower degree does have
 zero coefficients for the higher powers.
 
 </details>
@@ -240,8 +240,8 @@ def multiply_poly(a, b):
 The degree of the result is the sum of the two degrees. So the list
 length is `len(a) + len(b) - 1`.
 
-The line worth looking at closely is `result[i + j]`. Multiplying $x^i$
-by $x^j$ gives $x^{i+j}$, so the exponents add, and the indexes add with
+The line worth looking at closely is `result[i + j]`. When we multiply
+$x^i$ by $x^j$, we get $x^{i+j}$, so the exponents add, and the indexes add with
 them. We chose the list representation so that this would be true.
 
 </details>
@@ -286,7 +286,7 @@ This one function handles six special cases:
 5. the sign of the first term
 6. the zero polynomial, which prints as `0`
 
-Testing it is more work than writing it. That is true of most
+It is more work to test it than to write it. That is true of most
 formatting code.
 
 </details>
@@ -294,7 +294,7 @@ formatting code.
 ## Verification
 
 **14.** How can you check that your `multiply_poly` is right, without
-working it out by hand?
+calculating it by hand?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -325,8 +325,8 @@ The right side: $1 + 30 + 300 + 1000 = 1331$. They agree.
 
 Evaluating at 10 has a nice side effect. The coefficients appear as the
 digits of the answer, as long as none of them is 10 or more. So
-$11^2 = 121$ and $11^3 = 1331$ are rows of Pascal's triangle in
-disguise. At $11^5 = 161051$ the pattern breaks, because the
+$11^2 = 121$ and $11^3 = 1331$ are rows of Pascal's triangle, written as
+numbers. At $11^5 = 161051$ the pattern breaks, because the
 coefficients 10 carry into the next digit.
 
 </details>
@@ -340,8 +340,8 @@ and its perimeter?
 
 The area is $x^2 + 8x + 15$, and the perimeter is $4x + 16$.
 
-The area comes from multiplying, so it is quadratic. The perimeter comes
-from adding, so it is linear. That is why, if you double the length and
+We multiply to get the area, so it is quadratic. We add to get the
+perimeter, so it is linear. That is why, if you double the length and
 width of a room, the length of its walls doubles, but you need four
 times as much carpet.
 
@@ -352,12 +352,12 @@ around the outside. What is the area of the path?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$(x + 4)^2 - x^2 = 8x + 16$.
+The area of the path is $(x + 4)^2 - x^2 = 8x + 16$.
 
 The lawn and path together are $x + 4$ wide, not $x + 2$, because the
-path is on both sides. Most people get this wrong the first time, and
-that is the point of the problem. The answer is a small surprise too: it
-is linear, so the path's area does not grow quadratically with the
+path is on both sides. Most people use $x + 2$ the first time, and that
+is the point of the problem. The answer is a small surprise too. It is
+linear, so the path's area does not grow quadratically with the
 lawn.
 
 </details>
@@ -371,8 +371,8 @@ years?
 The amount is $1000(1 + r)^n$ with $r = 0.05$. After 3 years it is
 $1000 \times 1.05^3 = 1157.63$ (to the nearest cent).
 
-Expanding $(1 + r)^3 = 1 + 3r + 3r^2 + r^3$ and multiplying by 1000
-gives $1000 + 150 + 7.50 + 0.125$. The first two terms are the
+When we expand $(1 + r)^3 = 1 + 3r + 3r^2 + r^3$ and multiply by 1000,
+we get $1000 + 150 + 7.50 + 0.125$. The first two terms are the
 simple-interest answer. Everything after them is interest on interest.
 For a small $r$, those later terms shrink fast. That is why
 $(1 + r)^n \approx 1 + nr$ is a good approximation over a year or two,
@@ -385,12 +385,12 @@ each one useful for?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$x^2 + 2xy + y^2$, $x^2 - 2xy + y^2$, and $x^2 - y^2$.
+They are $x^2 + 2xy + y^2$, $x^2 - 2xy + y^2$ and $x^2 - y^2$.
 
 The third is useful for mental arithmetic:
 $37 \times 43 = (40 - 3)(40 + 3) = 1600 - 9 = 1591$.
 
-The first two turn up whenever you square a distance, or a difference
+The first two appear whenever you square a distance, or a difference
 from a mean. The standard deviation does exactly that.
 
 </details>

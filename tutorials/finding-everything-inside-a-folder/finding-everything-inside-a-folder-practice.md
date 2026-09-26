@@ -9,8 +9,8 @@ version: 2026.09.05.1
 
 The answers are hidden in folds under each problem. Several problems ask
 you to predict what the code will do before you run it. Try to answer
-before you check. Being wrong, and finding out why, teaches you more than
-being right by accident.
+before you check. A wrong guess teaches you more than a lucky right one,
+once you see why it was wrong.
 
 ```python exec
 id: setup-1
@@ -36,7 +36,7 @@ def count_files(folder):
     return total
 ```
 
-## The Base Case
+## The base case
 
 **1.** An empty folder, `{"name": "empty", "files": [], "subfolders": []}`,
 holds no files and no subfolders.
@@ -50,7 +50,7 @@ id: the-base-case-1
 
 <details class="dl-answer"><summary>answer</summary>
 
-`0`. The line `total = len(folder["files"])` sets `total` to `0`, because
+It gives `0`. The line `total = len(folder["files"])` sets `total` to `0`, because
 `files` is empty. Then the loop `for sub in folder["subfolders"]` runs zero
 times, because there are no subfolders.
 
@@ -90,7 +90,7 @@ does not change the answer.
 
 </details>
 
-## A Different Tree
+## A different tree
 
 **3.** Here is a second folder. This one is for work, not photos.
 
@@ -121,7 +121,7 @@ id: a-different-tree-2
 
 <details class="dl-answer"><summary>answer</summary>
 
-`6`.
+The total is `6`.
 
 - One file is directly in `work`: `report.docx`.
 - Two are in `"acme"`: `invoice.pdf` and `contract.pdf`.
@@ -132,7 +132,7 @@ nothing by itself.
 
 </details>
 
-## Visiting in a Different Order
+## Visiting in a different order
 
 **4.** The tutorial's `count_files_iterative` visits the most recently
 added folder first. That is because `pop()`, with nothing in the
@@ -161,7 +161,7 @@ def count_files_iterative_ordered(folder):
 ```
 
 The total for `photos` is still `5`. The one line to change is `pop()`
-to `pop(0)`. Everything else stays the same: the same folders are
+to `pop(0)`. Everything else stays the same. The same folders are
 visited, and the same files are counted. Only the *order* changes. The
 tutorial already showed that the order never changes the total.
 

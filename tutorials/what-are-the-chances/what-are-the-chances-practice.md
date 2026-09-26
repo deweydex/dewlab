@@ -18,9 +18,9 @@ Several of these are adapted from the statistics and probability worksheet in th
 Run this cell once before you start. It loads the `math` and `random` modules, and gives you two functions:
 
 - `probability(favourable, total)` divides one count by the other.
-- `simulate(trial)` runs a trial many times (100,000 by default) and gives back the proportion of runs that came out `True`. You give it a small function that runs one trial and returns `True` or `False`.
+- `simulate(trial)` runs a trial many times (100,000 by default) and returns the proportion of runs that were `True`. You give it a small function that runs one trial and returns `True` or `False`.
 
-The last line shows one way to call it: `lambda: random.randint(1, 6) == 6` is a one-line function that rolls a die and says whether it came up 6. `random.randint(1, 6)` picks a whole number from 1 to 6.
+The last line shows one way to call it: `lambda: random.randint(1, 6) == 6` is a one-line function that rolls a die and says whether it shows 6. `random.randint(1, 6)` picks a whole number from 1 to 6.
 
 ```python exec
 id: tools-1
@@ -52,7 +52,7 @@ print(simulate(lambda: random.randint(1, 6) == 6))
 
 (a) 1/6. (b) 1/2. (c) 1/3. (d) 0.
 
-Every probability is between 0 and 1. An impossible event, like rolling a 7, has a probability of exactly 0. It is not a very small number; it is 0.
+Every probability is between 0 and 1. An impossible event, like rolling a 7, has a probability of exactly 0. It is 0, not a very small number.
 
 </details>
 
@@ -60,7 +60,7 @@ Every probability is between 0 and 1. An impossible event, like rolling a 7, has
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.5, 0.3 and 0.2, and they add up to 1.
+They are 0.5, 0.3 and 0.2, and they add up to 1.
 
 They must add up to 1. Every counter is one of the three colours, so no case is missing. No counter has two colours, so the events are mutually exclusive. Together, the three events cover every outcome exactly once.
 
@@ -72,7 +72,7 @@ If a list of probabilities like this does not add up to 1, either a case is miss
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.7.
+It is 0.7.
 
 This uses the complement rule: $P(\text{not } A) = 1 - P(A)$. The rule is short, and it is the most useful trick in this topic. A question that asks for "at least one" is almost always easier to answer as "1 minus the chance of none".
 
@@ -93,7 +93,7 @@ This uses the complement rule: $P(\text{not } A) = 1 - P(A)$. The rule is short,
 
 A total of 7 is the most likely total. There are six ways to make it (1 and 6, 2 and 5, and so on), and only one way to make 12.
 
-(d) uses the complement trick. The chance of *no* six is $\frac{5}{6} \times \frac{5}{6} = \frac{25}{36}$, so the chance of at least one six is $1 - \frac{25}{36} = \frac{11}{36}$. Adding $\frac16 + \frac16$ gives $\frac{12}{36}$, which is wrong: it counts the double six twice.
+(d) uses the complement trick. The chance of *no* six is $\frac{5}{6} \times \frac{5}{6} = \frac{25}{36}$, so the chance of at least one six is $1 - \frac{25}{36} = \frac{11}{36}$. Adding $\frac16 + \frac16$ gives $\frac{12}{36}$, which is wrong, because it counts the double six twice.
 
 </details>
 
@@ -110,12 +110,12 @@ A total of 7 is the most likely total. There are six ways to make it (1 and 6, 2
 
 - (a) 4/52.
 - (b) 13/52.
-- (c) 16/52. That is $\frac{4}{52} + \frac{13}{52} - \frac{1}{52}$: we subtract the ace of hearts, because it was counted twice.
+- (c) 16/52. That is $\frac{4}{52} + \frac{13}{52} - \frac{1}{52}$. We subtract the ace of hearts, because it was counted twice.
 - (d) 12/52.
 - (e) 6/52.
 - (f) 32/52. That is $\frac{26 + 12 - 6}{52}$.
 
-Each "or" here needs the overlap subtracted, and each "and" is the overlap. This idea comes back with sets in [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists), where it is called the inclusion-exclusion principle.
+Each "or" here needs the overlap subtracted, and each "and" is the overlap. This idea appears again with sets in [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists), where it is called the inclusion-exclusion principle.
 
 </details>
 
@@ -125,7 +125,7 @@ Each "or" here needs the overlap subtracted, and each "and" is the overlap. This
 
 $\frac{13}{52} \times \frac{12}{51} = \frac{1}{17} \approx 0.0588$.
 
-The second fraction is where "without replacement" shows: only 12 hearts are left among 51 cards. With replacement, the first card goes back into the deck, so the answer would be $\frac{13}{52} \times \frac{13}{52} = 0.0625$. That is slightly higher, because the first heart is still in the deck.
+The second fraction shows "without replacement". Only 12 hearts are left among 51 cards. With replacement, the first card goes back into the deck, so the answer would be $\frac{13}{52} \times \frac{13}{52} = 0.0625$. That is slightly higher, because the first heart is still in the deck.
 
 </details>
 
@@ -133,7 +133,7 @@ The second fraction is where "without replacement" shows: only 12 hearts are lef
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\frac{6}{16} = 0.375$, and $\frac{15}{16} = 0.9375$.
+The answers are $\frac{6}{16} = 0.375$ and $\frac{15}{16} = 0.9375$.
 
 Four flips give $2^4 = 16$ equally likely sequences, such as HHTT. For exactly two heads, we choose which 2 of the 4 flips are heads: $C(4,2) = 6$ ways. This is the Pascal's triangle counting from the practice page of [Counting: factorials, permutations and combinations](tutorial:counting-carefully) again.
 
@@ -149,21 +149,21 @@ $\frac{4}{2{,}598{,}960} \approx 1.5 \times 10^{-6}$, or about 1 in 650,000.
 
 There are four royal flushes, one in each suit, out of $C(52,5)$ hands.
 
-A simulation of this teaches something because it struggles. A million deals usually find one or two royal flushes, and sometimes none. How much the count changes from run to run is the lesson.
+A simulation of this is useful because it finds so few. A million deals usually find one or two royal flushes, and sometimes none. The lesson is in how much the count changes from run to run.
 
 </details>
 
 ## Independence
 
-**9.** A coin has come up heads five times in a row. What is the probability of heads on the next flip?
+**9.** A coin has landed heads five times in a row. What is the probability of heads on the next flip?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One half.
+It is one half.
 
 The coin has no memory. The belief that a tails is now "due" is called the gambler's fallacy, and nearly everybody feels it.
 
-What *is* unlikely is five heads in a row, judged *before you start*: $\frac{1}{32}$. Once those five flips have happened, they change nothing about the next flip.
+Five heads in a row *is* unlikely, if you judge it *before you start*. Its probability is $\frac{1}{32}$. Once those five flips have happened, they change nothing about the next flip.
 
 </details>
 
@@ -178,7 +178,7 @@ What *is* unlikely is five heads in a row, judged *before you start*: $\frac{1}{
 
 (a) and (d) are independent. (b) and (c) are not.
 
-(d) surprises people. $P(\text{red}) = \frac12$ and $P(\text{face}) = \frac{12}{52}$. $P(\text{both}) = \frac{6}{52}$, which is exactly $\frac12 \times \frac{12}{52}$. Half the face cards are red, so knowing the colour tells you nothing about whether it is a face card.
+(d) surprises people. $P(\text{red}) = \frac12$ and $P(\text{face}) = \frac{12}{52}$. $P(\text{both}) = \frac{6}{52}$, which is exactly $\frac12 \times \frac{12}{52}$. Half the face cards are red, so the colour tells you nothing about whether it is a face card.
 
 Independence is a fact about numbers that we can check. It is not a feeling about whether two things seem related.
 
@@ -188,7 +188,7 @@ Independence is a fact about numbers that we can check. It is not a feeling abou
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 50.7%.
+It is about 50.7%.
 
 We use the complement. The chance that all 23 birthdays are different is $\frac{365}{365} \times \frac{364}{365} \times \cdots \times \frac{343}{365} \approx 0.4927$.
 
@@ -199,7 +199,7 @@ for i in range(23):
 print(1 - p)
 ```
 
-Almost everyone's first guess is far too low. The question sounds like "does someone share *my* birthday?", and for 23 people that is only about 6%. But any pair of people can share a birthday. A class of 23 has $C(23,2) = 253$ pairs, and it is the pairs that matter.
+Almost everyone's first guess is far too low. The question sounds like "does someone share *my* birthday?", and for 23 people that is only about 6%. But any pair of people can share a birthday. A class of 23 has $C(23,2) = 253$ pairs, and the pairs matter.
 
 (This ignores 29 February, and assumes every birthday is equally likely.)
 
@@ -239,7 +239,7 @@ for _ in range(100000):
 print(hits / 100000, 1 / 17)
 ```
 
-About 0.0588. `random.sample(deck, 2)` draws 2 cards without replacement, which is what the problem describes. Calling `random.choice` twice could pick the same card twice. That would simulate a different problem, and Python would give no warning.
+It is about 0.0588. `random.sample(deck, 2)` draws 2 cards without replacement, which is what the problem describes. Two calls to `random.choice` could pick the same card twice. That would simulate a different problem, and Python would give no warning.
 
 </details>
 
@@ -249,7 +249,7 @@ The next tutorial, [The Monty Hall problem: three doors and a simulation](tutori
 
 <details class="dl-answer"><summary>answer</summary>
 
-Switching wins two thirds of the time.
+If you switch, you win two thirds of the time.
 
 ```python
 import random
@@ -262,9 +262,9 @@ for _ in range(100000):
 print(wins / 100000)
 ```
 
-The simulation is shorter than the argument, which is a good reason to write it. The whole problem comes down to one line. Switching wins exactly when your first guess was wrong, and your first guess is wrong two times in three.
+The simulation is shorter than the argument, which is a good reason to write it. The whole problem is one line. A switch wins exactly when your first guess was wrong, and your first guess is wrong two times in three.
 
-How the host behaves matters a great deal. Suppose the host opened a door at random, and it happened to have no prize. Then switching would win only half the time. The puzzle works because the host knows where the prize is, and never opens that door.
+How the host behaves matters a great deal. Suppose the host opened a door at random, and it happened to have no prize. Then a switch would win only half the time. The puzzle works because the host knows where the prize is, and never opens that door.
 
 </details>
 
@@ -274,11 +274,11 @@ How the host behaves matters a great deal. Suppose the host opened a door at ran
 
 <details class="dl-answer"><summary>answer</summary>
 
-One half.
+It is one half.
 
 Half the red cards are hearts. With the formula, $P(\text{heart} \mid \text{red}) = \frac{13/52}{26/52} = \frac{13}{26} = \frac12$.
 
-Knowing the card is red shrinks the group we count in. We now count only among the 26 red cards, so the bottom of the fraction becomes the thing we know.
+When we know the card is red, the group we count in is smaller. We now count only among the 26 red cards, so the bottom of the fraction becomes the thing we know.
 
 </details>
 
@@ -286,13 +286,13 @@ Knowing the card is red shrinks the group we count in. We now count only among t
 
 <details class="dl-answer"><summary>answer</summary>
 
-About 1%.
+It is about 1%.
 
 Picture a million people. 100 of them have the disease, and 99 of those test positive. The other 999,900 do not have it, but 1% of them, which is 9,999 people, test positive anyway.
 
 So there are $99 + 9{,}999 = 10{,}098$ positive tests, and only 99 of them are true. $\frac{99}{10{,}098}$ is about 0.98%.
 
-The disease is rare, so the false positives far outnumber the true ones. This is Bayes' theorem at work. Counting people, as we did here, makes the answer much easier to see than the formula does. Nearly everybody, doctors included, guesses 99%.
+The disease is rare, so the false positives far outnumber the true ones. This is Bayes' theorem at work. When we count people, as we did here, the answer is much easier to see than with the formula. Nearly everybody, doctors included, guesses 99%.
 
 </details>
 
@@ -300,11 +300,11 @@ The disease is rare, so the false positives far outnumber the true ones. This is
 
 <details class="dl-answer"><summary>answer</summary>
 
-1/11. The answer is not 1/6.
+It is 1/11, not 1/6.
 
 There are 11 outcomes with at least one six, and only one of them is the double six.
 
-Now compare: if you are told that *the first die* is a six, the answer is 1/6. The two pieces of information sound alike, but they narrow the outcomes differently, so the answers are different. Most wrong probability arguments go wrong at exactly this point.
+Now compare. If you are told that *the first die* is a six, the answer is 1/6. The two pieces of information sound alike, but they narrow the outcomes differently, so the answers are different. Most wrong probability arguments go wrong at exactly this point.
 
 </details>
 
@@ -312,10 +312,10 @@ Now compare: if you are told that *the first die* is a six, the answer is 1/6. T
 
 <details class="dl-answer"><summary>answer</summary>
 
-1/3.
+It is 1/3.
 
 Write the older child first. The four equally likely cases are GG, GB, BG and BB. We know BB did not happen, so three cases are left, and one of them is GG.
 
-This is the same trap as the dice question. And as with the dice, being told "the older child is a girl" gives 1/2 instead. The answer depends on exactly what you were told, not on what is true.
+This is the same trap as the dice question. And as with the dice, if you are told "the older child is a girl", the answer is 1/2 instead. The answer depends on exactly what you were told, not on what is true.
 
 </details>

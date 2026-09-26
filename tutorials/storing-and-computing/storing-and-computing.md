@@ -48,7 +48,7 @@ value the name holds. And `+` with two pieces of text joins them end to end.
 In [Algorithms, pseudocode and your first Python](tutorial:first-steps),
 each result was gone as soon as it was shown. With names, a value stays, so
 we can build on it. This page is about names, the different kinds of value
-Python keeps, and text: something Python can take apart, one character at a
+Python keeps, and text. Python can split text into its characters, one at a
 time.
 
 ## Variables: giving names to things
@@ -72,12 +72,12 @@ What will it print?
 ```
 
 It prints 6. In maths, $c = c + 1$ can never be true. In Python it is an
-instruction, carried out once: work out the right-hand side, `count + 1`,
-which is 6, then give that value the name `count`. The old 5 is gone.
+instruction, and Python runs it once. First it calculates the right-hand
+side, `count + 1`, which is 6. Then it gives that value the name `count`. The old 5 is gone.
 
 A variable's name should say what it holds. `shift` is a good name for the
-number of places a secret code moves each letter. `s` is a poor one:
-somebody reading the code, and that could be you in a few months, would
+number of places a secret code moves each letter. `s` is a poor one.
+Somebody reading the code, and that could be you in a few months, would
 not know what `s` means. Python has a few rules for names:
 
 - A name starts with a letter or an underscore (`_`).
@@ -154,13 +154,13 @@ has several types built in. These are the four we use most:
 | `str` | text, in quotes | `"hello"`, `'world'` |
 | `bool` | true or false | `True`, `False` |
 
-An *integer* (`int`) is a whole number. Integers go on in both directions
+An *integer* (`int`) is a whole number. Integers continue in both directions
 from zero: …, −3, −2, −1, 0, 1, 2, 3, … Python's integers match the
 integers in maths, which mathematicians call **Z**, from the German word
 *Zahlen*, meaning "numbers".
 
 A *floating-point number* (`float`) is a number with a decimal point.
-Floats stand in for the real numbers of maths (**R**), but they cannot
+Floats represent the real numbers of maths (**R**), but they cannot
 store every real number exactly. The practice page for this tutorial shows
 why.
 
@@ -168,7 +168,7 @@ A *string* (`str`) is a piece of text, written between quotes. Single
 quotes and double quotes both work.
 
 A *Boolean* (`bool`) is a value that is either `True` or `False`. Booleans
-are named after George Boole, who worked out an algebra of logic in the
+are named after George Boole, who created an algebra of logic in the
 1840s.
 
 The `type()` function tells us what type a value is.
@@ -202,7 +202,7 @@ What will the second line print?
 ```
 
 It prints `402`. The `+` operator does different things for different
-types: for numbers it adds, and for strings it *concatenates*, which means
+types. For numbers it adds, and for strings it *concatenates*, which means
 it joins them end to end. This is why types matter.
 
 Before you run the next cell, write what you think each line will print in
@@ -233,7 +233,7 @@ print("ha" * 3)           # a string repeated
 
 Every character also has a number of its own. The computer stores the
 number, and shows you the character. `ord()` gives a character's number, and
-`chr()` goes the other way, from a number to its character.
+`chr()` does the opposite, from a number to its character.
 
 ```python exec
 id: text-you-can-take-apart-2
@@ -243,15 +243,14 @@ print(chr(67))
 ```
 
 `A` is 65, `B` is 66, and so on up to `Z`, which is 90. The capital letters
-are numbered in order, one after another. That is what makes the next
-section possible: to move a letter along the alphabet, we can move its
-number.
+are numbered in order, one after another. So, to move a letter along the
+alphabet, we can move its number. The next section does this.
 
 ## Type conversion
 
 Sometimes we need a value as another type. Python has a function for each
 type: `int()`, `float()`, `str()` and `bool()`. Each one takes a value and
-gives it back as its own type.
+returns it as its own type.
 
 ```python exec
 id: type-conversion-1
@@ -264,8 +263,8 @@ print("The answer is " + number_as_text)
 ```
 
 This matters most when a program asks the person using it to type
-something. The `input()` function asks for some typing, and gives back what
-was typed. It always gives back a string, even when the person types a
+something. The `input()` function asks for some typing, and returns what
+was typed. It always returns a string, even when the person types a
 number.
 
 The lines in the next cell are comments, so the cell does nothing yet. To
@@ -285,8 +284,8 @@ id: type-conversion-2
 
 ## Putting it together: a small program
 
-Now we can move a letter along the alphabet, which is the heart of the
-oldest secret code there is. Julius Caesar is said to have written to his
+Now we can move a letter along the alphabet. This is the main step in
+the oldest secret code there is. Julius Caesar is said to have written to his
 generals with every letter moved three places along: A became D, B became E.
 It is called a *Caesar shift*.
 
@@ -325,8 +324,8 @@ What will X become?
 ```
 
 X moves on to Y, then Z, then round to A. The `% 26` is the same remainder
-that made a clock go back to 0 after 23: there are 26 letters, so position 26
-is position 0 again. Take it out of the cell, and see what X becomes then.
+that made a clock go back to 0 after 23. There are 26 letters, so position 26
+is position 0 again. Delete it from the cell, and see what X becomes then.
 
 <details class="dl-answer"><summary>What each line does</summary>
 
@@ -421,7 +420,7 @@ section shows a shorter way to write lines like this one.
 ## Putting values into text
 
 Joining pieces with `+` and `str()` works, but it is easy to forget a space
-or a `str()`. An *f-string* is a shorter way: a string with the letter `f`
+or a `str()`. An *f-string* is a shorter way. It is a string with the letter `f`
 straight before the opening quote. Inside it, Python replaces each name in
 curly brackets with that name's value, turned into text for you.
 
@@ -445,7 +444,7 @@ print(f"The screen is {ratio:.2f} times as wide as it is tall")
 
 `:.2f` after the name, inside the curly brackets, means "show this number
 with 2 decimal places". Change the `2` to `1` or `4`, and run the cell
-again. It changes only how the number is shown: `ratio` still holds every
+again. It changes only how the number is shown. `ratio` still holds every
 decimal place.
 
 ### Your turn
@@ -527,15 +526,15 @@ tedious part for you.
 ## Where to read more
 
 Computerphile (2014). *Floating Point Numbers.*
-<https://www.youtube.com/watch?v=PZRI1IfStY0>. Why `float` cannot represent
-every number exactly, and why that turns out to matter.
+<https://www.youtube.com/watch?v=PZRI1IfStY0>. This video explains why `float`
+cannot represent every number exactly, and why that matters.
 
 Python Software Foundation. *The Python Tutorial — An Informal Introduction
-to Python.* <https://docs.python.org/3/tutorial/introduction.html>. The
+to Python.* <https://docs.python.org/3/tutorial/introduction.html>. This is the
 official reference for `int`, `float`, `str` and `bool`, with the exact
 rules Python follows for each.
 
-Singh, S. (1999). *The Code Book.* Fourth Estate. The history of secret
+Singh, S. (1999). *The Code Book.* Fourth Estate. This book tells the history of secret
 codes, from Caesar's shift to the machines of the Second World War, and how
 each one was broken.
 

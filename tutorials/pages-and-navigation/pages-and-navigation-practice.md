@@ -161,8 +161,9 @@ How did this happen, do you think? Fix it.
 ```
 
 The author copied the menu from the home page, then added the marker to
-**Contact**, but did not take it off **Home**. Moving the marker is two
-edits: take it off one link, and put it on another. Only one link on a
+**Contact**, but did not take it off **Home**. To move the marker, we
+make two edits: take it off one link, and put it on another. Only one
+link on a
 page should carry `aria-current="page"`.
 
 </details>
@@ -262,7 +263,7 @@ One way to write it:
 
 Every page links to the same `styles.css`, so this one rule styles the
 marker on all five pages. If one page shows a line under the wrong link,
-or under two links, the mistake is in that page's HTML: the marker is on
+or under two links, the mistake is in that page's HTML. The marker is on
 the wrong link, as in problems 1 and 3.
 
 </details>

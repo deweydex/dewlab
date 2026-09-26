@@ -41,12 +41,12 @@ A snapshot is the state of every file, not only the changed ones. Git
 saves space by storing each version of a file only once, however many
 commits share it.
 
-The id is worked out from everything in the commit: the files, the
+The id is calculated from everything in the commit: the files, the
 message, the author, the time and the commit before it. So two
-different commits never end up with the same id, and a commit cannot be
+different commits never have the same id, and a commit cannot be
 changed later without its id changing too. GitHub shows only the first
 seven characters, such as `5f60c9a`, because that is enough to tell
-commits apart.
+one commit from another.
 
 ## Why `add` comes before `commit`
 
@@ -54,7 +54,7 @@ Sometimes we change two things at once: we fix a spelling mistake in
 `about.html`, and we try a new colour in `styles.css`. Those are two
 different changes, and each one deserves its own message.
 
-`git add` is how we choose. It puts a change in the *staging area*: a
+We choose with `git add`. It puts a change in the *staging area*: a
 list of the changes that will go into the next commit. `git commit`
 records what is in the staging area, and nothing else. So we can add
 `about.html`, commit it as "Fix a spelling mistake", then add
@@ -65,7 +65,7 @@ are not in it yet. It is a good command to type whenever you are not
 sure where a change is.
 
 GitHub's own editor does the `add` for us, because we edit one file at a
-time there. That is why a commit on the GitHub website needs one button.
+time there. So a commit on the GitHub website needs only one button.
 
 ## A line of commits
 
@@ -81,7 +81,7 @@ that counts its commits. It opens the history, newest first. Clicking a
 commit shows exactly what it changed: removed lines in red, and added
 lines in green. This is the same view a pull request shows.
 
-Going back does not mean losing work. `git revert` makes a new commit
+We can go back without losing work. `git revert` makes a new commit
 that undoes an earlier one. The mistake and its fix both stay in the
 history, so we can always see what happened and when.
 
@@ -91,13 +91,13 @@ When you clone a repository, you get the whole history, not only the
 newest files. So there are two copies of the history: one on your
 computer and one on GitHub. A commit you make on your computer is in
 your copy only. `git push` copies the commits that GitHub does not have
-yet, as in the picture above. That is the whole job of `push`.
+yet, as in the picture above. `push` does only this.
 
 In the picture, a label called `main` points at the newest commit in
 each copy. A *branch* is a name for a line of commits, and that name
 always points at the newest commit in the line. Each new commit moves
 the name along. `main` is the usual name for a repository's first
-branch. That is why GitHub Pages asks which branch to publish from: it
+branch. So GitHub Pages asks which branch to publish from. It
 publishes the files as they are in the newest commit on that branch.
 
 A repository can have more than one branch, so that someone can try an
@@ -119,14 +119,13 @@ GitHub is a website that keeps Git repositories online, and adds its own
 tools around them: issues, pull requests and GitHub Pages. Other
 websites do the same job, such as GitLab and Bitbucket.
 
-Git was written in 2005 by Linus Torvalds, to keep track of the code of
+Git was written in 2005 by Linus Torvalds, to record the code of
 Linux, a system that runs on computers all over the world. Many people
 work on Linux at once, and Git was built so that each of them could
 have a full copy of the history.
 
-These are not tools made only for students. Many people who build
-websites and software for a living use Git and GitHub every day, and the
-path a change takes, from an editor to a published site, is much the
+Many people who build websites and software for a living use Git and
+GitHub every day. The path a change takes, from an editor to a published site, is much the
 same for them as it is for us.
 
 ## What we have now

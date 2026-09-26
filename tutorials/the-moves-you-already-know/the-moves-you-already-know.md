@@ -93,8 +93,8 @@ type: fill-in-the-blank
 
 `count = count + 1` is storing, even though it looks like arithmetic.
 First Python adds 1 to `count`, then it stores the result under
-`count` again. And every line is also part of a sequence: nothing in a
-method runs out of order.
+`count` again. And every line is also part of a sequence: a method runs
+its lines in the order they are written.
 
 ## Storing inside a class
 
@@ -148,7 +148,7 @@ meant to last, so it lives on `self`.
 
 ## One method, several moves
 
-Finding the largest value in a list uses all four moves. The method
+To find the largest value in a list, a method uses all four moves. It
 stores the best value so far, repeats a step for each value in the list,
 and chooses whether each one is better than the best so far.
 
@@ -333,7 +333,7 @@ return?
 
 Give a class in your world a list: the scores in a game, the fish in a
 net, the heights of the trees in a forest. Can you write a method that
-goes through the list and chooses? It might find the largest, the
+looks at each item in the list and chooses? It might find the largest, the
 smallest, or how many pass a test of your own.
 
 ```python exec
@@ -346,8 +346,8 @@ id: one-method-several-moves-1--your-own
 ## Looking back
 
 Every method on this page was built from storing, sequence, selection and
-iteration. A class did not add a fifth move. What it added is a second
-place to store a value: on the object, through `self`, where it lasts from
+iteration. A class did not add a fifth move. It added a second place to
+store a value: on the object, through `self`, where it lasts from
 one method call to the next. In the method you wrote, which names should
 last, and which should vanish when the method ends?
 
@@ -381,8 +381,8 @@ Everything here is covered elsewhere too, often in a form that will suit you
 better than this one.
 
 Python Software Foundation. *The Python Tutorial*, section 4, "More Control
-Flow Tools". <https://docs.python.org/3/tutorial/controlflow.html>. The
-official tour of `if`, `for` and `while`, with more of what each can do
+Flow Tools". <https://docs.python.org/3/tutorial/controlflow.html>. This
+is the official tour of `if`, `for` and `while`, with more of what each can do
 than this page shows.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer

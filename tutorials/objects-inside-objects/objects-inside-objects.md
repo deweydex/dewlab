@@ -78,10 +78,10 @@ Look at what `StarSystem` does and does not do:
 - Its field `_planets` starts as an empty list, and `add()` puts one
   planet in at a time.
 - `total_moons()` asks each planet for its own `moon_count()`. It never
-  looks inside a planet's list of moons: that belongs to the planet.
+  looks inside a planet's list of moons. That list belongs to the planet.
 
-Building a class out of objects of other classes, held in its fields, is
-called *composition*. A star system has planets.
+When a class is built from objects of other classes, held in its fields,
+we call it *composition*. A star system has planets.
 
 Can you give `StarSystem` a `farthest()` method, which returns the planet
 farthest from the star?
@@ -171,8 +171,8 @@ A test helps. Say the sentences out loud, and ask which one is true:
 An *is a* relationship means one class is a special kind of another, and
 calls for inheritance. A *has a* relationship means one object holds
 others, and calls for composition. When both seem to fit, many
-programmers choose "has a": an object that holds another can swap it for
-a different one later, and an object that inherits keeps everything its
+programmers choose "has a". An object that holds another can swap it for
+a different one later. An object that inherits keeps everything its
 parent does, even the parts that make no sense for it.
 
 ```question
@@ -187,13 +187,13 @@ type: fill-in-the-blank
 
 ## Cases that are not clear-cut
 
-The sentence test settles most cases. Here are four where good
+The sentence test decides most cases. Here are four where good
 programmers disagree, and the reasons each way.
 
 **A dictionary or a class?** A moon could be
 `{"name": "Io", "width": 3643}`, or a `Moon` object. The dictionary is
-less code, and fine while a moon only knows things. A class earns its
-place when a moon keeps a rule (a width is never negative) or answers a
+less code, and fine while a moon only knows things. A class is useful
+when a moon keeps a rule (a width is never negative) or answers a
 question (is it bigger than ours?). Many designs start with a dictionary
 and grow a class the day the first rule arrives.
 
@@ -280,14 +280,14 @@ print(double_width(Square(3)))
 
 It prints `18`, then `36`. `double_width` was written for rectangles,
 where doubling the width doubles the area, and every rectangle keeps that
-promise but the square. A square that can change its width is not a
-rectangle that can change its width. "Is a" has to hold for everything
+promise but the square. A square must change its height when its width
+changes, so it breaks that promise. "Is a" has to hold for everything
 the parent does, not only for what the thing is.
 
 **Two things at once.** An astronaut can be a commander and a scientist,
 both at once, and change roles between missions. `Commander(Astronaut)`
 and `Scientist(Astronaut)` leave nowhere for someone who is both.
-Composition does: an astronaut *has* roles.
+Composition has room for both. An astronaut *has* roles.
 
 ```python exec
 id: cases-that-are-not-clear-cut-3
@@ -305,7 +305,7 @@ print(peggy.can("scientist"), peggy.can("pilot"))
 
 It prints `True False`. Peggy Whitson, a biochemist, was the first woman
 to command the International Space Station. A person is rarely one kind
-of thing for life, and "has a" bends where "is a" breaks.
+of thing for life.
 
 ### Your turn: your class, fifth version
 
@@ -326,7 +326,8 @@ id: your-class-5-so-far--game
 
 A room holds characters. Can you write a `Room` class, with a name, an
 `enter(character)` method that refuses anyone already inside, and a
-`standing()` method that returns the names of everyone who is not down?
+`standing()` method that returns the names of everyone who is not down
+(everyone whose health is above 0)?
 
 ```python exec
 id: your-class-5--game
@@ -540,7 +541,7 @@ What in your world holds several of your things? A shop holds stock, a
 herd holds animals, a library holds books. Can you write that class, with
 at least one method that asks each thing it holds a question? Your
 classes from [Inheritance](tutorial:one-parent-many-children) are saved
-there: copy them into the first cell.
+there. Copy them into the first cell.
 
 ```python exec
 id: your-class-5-so-far--your-own
@@ -592,10 +593,10 @@ Scientist* (2nd ed.). Green Tea Press. Free at
 diagrams", names the two relationships on this page: IS-A and HAS-A.
 
 Martin, R. C. (1996). "The Liskov Substitution Principle". *C++ Report*,
-March 1996. An article that uses the same square and rectangle to explain
+March 1996. This article uses the same square and rectangle to explain
 the rule behind them: a child must keep every promise its parent makes.
 It is written for C++, and the idea is the same in Python.
 
 Real Python. *Inheritance and Composition: A Python OOP Guide*.
-<https://realpython.com/inheritance-composition-python/>. A longer look
-at the choice this page makes, with more examples of each.
+<https://realpython.com/inheritance-composition-python/>. This is a longer
+look at the choice this page makes, with more examples of each.

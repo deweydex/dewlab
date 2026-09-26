@@ -85,7 +85,7 @@ Here is one pass of the pulse, drawn along a line of time:
 
 ![A line of time for one pass of the pulse animation, 1.5 seconds long. Three keyframes are marked on it: 0% at 0 seconds, where the button is its normal size and fully solid; 50% at 0.75 seconds, where it is a little bigger and a little see-through; and 100% at 1.5 seconds, where it is back to normal. Between the keyframes, many small ticks along the line mark the frames the browser fills in on its own, sixty every second on most screens.](pulse-on-a-timeline.svg)
 
-The `animation` line then puts the keyframes to work. It combines four
+The `animation` line then uses the keyframes. It combines four
 settings in one line:
 
 ```css

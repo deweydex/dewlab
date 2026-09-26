@@ -65,14 +65,15 @@ What will the first line print?
 
 It prints `Grog (health 7)`, then `Grog (health 9)`. The first line,
 `class Troll(Character):`, says "a troll is a character, plus something
-different". This is *inheritance*: building a new class on an existing
+different". This is *inheritance*, which builds a new class on an existing
 one. The new class keeps everything the existing class does, and changes
 or adds only what is different.
 
 Two names help us talk about it:
 
 - The *parent class* is the existing class, here `Character`. It gives
-  `__init__`, `__str__`, `heal` and the rest to the new class, for free.
+  `__init__`, `__str__`, `heal` and the rest to the new class, with no new
+  code.
 - The *child class* is the new class, here `Troll`. It changes one
   method, `take_damage`.
 
@@ -89,9 +90,9 @@ Two names help us talk about it:
 
 </details>
 
-Why go through `super()`, and not write `self._health = ...` again? Because
+Why use `super()`, and not write `self._health = ...` again? Because
 `Character.take_damage` already keeps two rules: a negative hit is
-refused, and health stops at 0. Going through it keeps both, for trolls
+refused, and health stops at 0. When we use it, trolls keep both rules
 too, without writing either again. Try `grog.take_damage(-8)`.
 
 ## A limit of its own
@@ -124,7 +125,7 @@ What will it print?
   - `heal` reads a limit that is not the troll's.
 ```
 
-It prints `Grog (health 10)`: healing took Grog *down* from 18 to 10. Look
+It prints `Grog (health 10)`: healing *lowered* Grog from 18 to 10. Look
 at the last line of `heal`, in the cell at the top of the page:
 
 ```python
@@ -167,9 +168,9 @@ A child's method with the same name as the parent's replaces it, for the
 child. This is called *overriding*. `Troll` overrides `take_damage`, and
 still calls the parent's version through `super()`.
 
-A phoenix is different. When a phoenix is down, it can still heal: it
-rises from its own ashes. `Character.heal` refuses anyone who is down, so
-a phoenix cannot go through it. What will the last line print?
+A phoenix is different. A character is *down* when its health is 0.
+When a phoenix is down, it can still heal: it rises from its own ashes.
+`Character.heal` refuses anyone who is down, so a phoenix cannot use it. What will the last line print?
 
 ```python exec
 id: another-kind-of-creature-1
@@ -196,7 +197,7 @@ What will the last line print?
 It prints `Ember (health 5)`. The two overrides are two different
 decisions:
 
-- `Troll.take_damage` goes through `super()`, because the parent's rules
+- `Troll.take_damage` uses `super()`, because the parent's rules
   are still the right rules. Only the amount changes.
 - `Phoenix.heal` does not, because the parent's rule is the one thing a
   phoenix breaks. It writes its own line instead, and keeps the rule that
@@ -231,14 +232,14 @@ and `Ember (health 4)`. The same two lines did three different things:
 
 The loop never asked which kind of character it had. Each object runs the
 version of the method that belongs to its own class. This is
-*polymorphism*: one method name working across several classes, each
-object running its own version.
+*polymorphism*. One method name works across several classes, and each
+object runs its own version.
 
 ### Your turn: your class, fourth version
 
 This is the fourth version of your class. It gets at most one child class,
 and one sentence, as a comment, that says why the child is a kind of the
-parent. A class with no child is a fair answer too, if you can say why.
+parent. A class with no child is also a good answer, if you can say why.
 Is there a class attribute that a child might want its own value for?
 
 <div class="dl-world" data-world="game">
@@ -337,8 +338,8 @@ limit is the one they find.
 
 <div class="dl-world" data-world="solar-system">
 
-A lander is a probe that can land, and once it is down, it burns no more
-fuel. Can you write `Lander(Probe)`, with a `land()` method? Which one
+A lander is a probe that can land, and once it has landed, it burns no
+more fuel. Can you write `Lander(Probe)`, with a `land()` method? Which one
 method would you override, so that `burn` refuses after landing without
 being written again?
 
@@ -392,8 +393,8 @@ bigger tank.
 Is there a kind of your thing that is a special case: it does one thing
 differently, or one thing more? Write at most one child class, with a
 comment of one sentence that says why it is a kind of your class. If no
-kind fits your world, write that sentence instead: it is a design decision
-too.
+kind fits your world, write that sentence instead. That is a design
+decision too.
 
 ```python exec
 id: your-class-4--your-own
@@ -404,10 +405,10 @@ id: your-class-4--your-own
 
 ## Looking back
 
-`Troll.take_damage` went through `super()`, and `Phoenix.heal` did not.
-What did each one keep of its parent, and what did each one give up?
+`Troll.take_damage` used `super()`, and `Phoenix.heal` did not.
+What did each one keep of its parent, and what did each one replace?
 
-A challenge: a zombie is a character that gets up once. The first time a
+A challenge: a zombie is a character that comes back once. The first time a
 hit knocks it down, it stands up again with 5 health. Can you write
 `Zombie(Character)`, and keep every rule `take_damage` already has?
 
@@ -443,5 +444,5 @@ another.
 
 Python Software Foundation. *The Python Tutorial*, section 9.5,
 "Inheritance". <https://docs.python.org/3/tutorial/classes.html#inheritance>.
-The official reference, including how Python finds a method, and classes
-with more than one parent, which this page does not need.
+This is the official reference. It also covers how Python finds a method,
+and classes with more than one parent, which this page does not need.

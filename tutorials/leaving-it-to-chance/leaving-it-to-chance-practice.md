@@ -12,7 +12,7 @@ yourself before you open its fold.
 
 One warning applies to every problem on this page. Your numbers will not
 match the numbers in the answers unless you set the same seed. That is
-the main idea of the tutorial, and it makes checking your work a little
+the main idea of the tutorial, and it makes your checks a little
 unusual here. You are checking that the *shape* of your result is right:
 roughly the right size, and the right kind of number. You are not
 checking that it matches digit for digit.
@@ -20,7 +20,7 @@ checking that it matches digit for digit.
 Where an answer sets a seed, use the same seed, and your numbers will
 match exactly.
 
-## Getting Numbers Out
+## Getting numbers out
 
 ```python exec
 id: getting-numbers-out-1
@@ -82,18 +82,18 @@ bad luck.
 Without a seed, the count changes on every run. With a seed, the count is
 the same every time, because the flips come out in the same order.
 
-Here is one good sentence: setting a seed makes the *run* repeatable,
-and the numbers look just as random as before.
+Here is one sentence: a seed makes the *run* repeatable, and the
+numbers look just as random as before.
 
 </details>
 
-## Seeds and Repetition
+## Seeds and repetition
 
 **4.** This problem has three steps.
 
 1. Write a function `roll_under(seed, n)`. It sets the given seed, then
    returns a list of `n` dice rolls.
-2. Show that calling it twice with the same seed gives the same list.
+2. Show that two calls with the same seed give the same list.
 3. Show that two different seeds give different lists.
 
 ```python exec
@@ -140,7 +140,7 @@ If you can replay the exact run that broke, it is an ordinary bug to fix.
 
 </details>
 
-## Choosing Things
+## Choosing things
 
 **6.** A bag holds four red marbles, three blue and one green.
 
@@ -199,7 +199,7 @@ print("all different:", len(hand) == len(set(hand)))
 ```
 
 The line that builds `deck` is a list comprehension with two `for` parts.
-It works like a nested loop: for each suit, it goes through every rank.
+It works like a nested loop: for each suit, it visits every rank.
 
 Use `sample`, because a dealt card does not go back in the deck. With
 `choices`, the same card could appear twice in one hand. In a card game
@@ -235,7 +235,7 @@ list as it was. Often, that is what you want.
 
 </details>
 
-## Thinking It Through
+## Thinking it through
 
 **9.** A lottery draws six numbers from 1 to 45. Someone says that
 1, 2, 3, 4, 5, 6 is a worse choice than 7, 19, 23, 31, 38, 44, because
@@ -253,8 +253,7 @@ hint: There are over eight million combinations, so a simulation will almost nev
 
 Both combinations are equally likely: one chance in 8,145,060 each. Any
 simulation you write will show that six numbers in a row are rare. But it
-will also show that *any* one named combination is just as rare. That is
-the point.
+will also show that *any* one named combination is just as rare.
 
 The argument is really about how the two combinations look to a person.
 The draw cannot see any difference. We see 1-2-3-4-5-6 as a pattern, and
@@ -281,8 +280,8 @@ You would expect to wait about a thousand seconds, which is about
 seventeen minutes. But you might wait much longer, or see it in the first
 minute. "One in a thousand" is an average, not a timetable.
 
-At one in a million, you would wait about eleven days. Running the whole
-program again and again is no longer a sensible way to find the failure.
+At one in a million, you would wait about eleven days. It is no longer
+sensible to run the whole program again and again to find the failure.
 Here are the usual choices:
 
 - Make each run faster, or run many at the same time.
@@ -293,6 +292,6 @@ Here are the usual choices:
 
 The general idea is worth keeping. Simulation is a good tool for finding
 something that happens often. It is a poor tool for finding something
-rare. Most of the skill is knowing which of the two you are looking for.
+rare. So first decide which of the two you are looking for.
 
 </details>

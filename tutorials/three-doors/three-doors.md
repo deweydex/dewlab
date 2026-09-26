@@ -42,15 +42,15 @@ We use the probability and simulation from
 
 ## Why staying feels fine
 
-Here is the reasoning most people reach first. It deserves to be set
-out properly, step by step.
+Here is the reasoning most people reach first. It is worth writing out
+properly, step by step.
 
 Two doors are still shut. One of them has the car. Nothing you have been
 told makes one door different from the other. So the chance is one in
-two for either door, and switching gains you nothing.
+two for either door, and a switch gains you nothing.
 
-That argument is careful. It is also wrong. This page is about finding
-the one step in it that fails.
+That argument is careful. It is also wrong. On this page we find the one
+step in it that fails.
 
 If you are still not convinced at the end, many clever people agree with
 you. This problem caused a public argument among people who do
@@ -212,20 +212,20 @@ open, the door he opens tells us where the car is.
 Now count the bottom row. Switching wins in two of the three cases. That
 is two out of three, the same as the simulation kept telling us.
 
-Here is another way to say it. Switching wins exactly when your first
+Switching wins exactly when your first
 pick was wrong. Your first pick was a one-in-three guess, so it is wrong
 two times in three. Switching turns every wrong first guess into a win.
 
 ## A host who is not paying attention
 
-Is the host's knowledge really what makes switching better? If it is,
+Does the host's knowledge really make switching better? If it does,
 then a host who knows nothing should make the advantage disappear. We
 can test that with a simulation.
 
 So here is a careless host. He opens one of the other two doors at
 random, without knowing what is behind it. Sometimes he opens the door
-with the car himself, and the game is spoiled: there is nothing left to
-decide.
+with the car himself, and the game is spoiled. Then there is nothing left
+to decide.
 
 Before you run the cell, what do you think will happen to the two
 thirds?
@@ -292,10 +292,10 @@ staying and switching each win about half the time.
 
 So the first argument, "one in two", is right about this game with a
 careless host. It is wrong about the original game. Against a careless
-host, the two shut doors are equally good. The two thirds never came
-from the number of doors that were still shut. It came from the host
-knowing where the car was, and from the fact that in two cases out of
-three he had no choice.
+host, the two shut doors are equally good. The two thirds came from two
+facts. The host knew where the car was, and in two cases out of three he
+had no choice. It never came from the number of doors that were still
+shut.
 
 ### Your turn
 
@@ -327,19 +327,19 @@ Switching wins two times in three. It wins exactly when your first pick
 was wrong, and a one-in-three guess is wrong two times in three.
 
 The simulation convinced us, and the three cases explained why. Each one
-needs the other. A number with no argument behind it is a fact you have
-to trust without knowing why. An argument with nothing to check it
-against is how the fifty-fifty answer lasted so long.
+needs the other. Without the argument, the number is a fact you have to
+trust without knowing why. Without a check, an argument can stay wrong
+for a long time, as the fifty-fifty answer did.
 
-## Where to Read More
+## Where to read more
 
-vos Savant, M. (1990). *Ask Marilyn*. Parade Magazine. The column that
-set off the argument. Thousands of readers wrote in to say the answer
+vos Savant, M. (1990). *Ask Marilyn*. Parade Magazine. This is the column
+that started the argument. Thousands of readers wrote in to say the answer
 was wrong, including people with doctorates, which is worth remembering
 the next time an answer feels obvious.
 
 Rosenhouse, J. (2009). *The Monty Hall Problem: The Remarkable Story of
-Math's Most Contentious Brain Teaser*. Oxford University Press. A whole
-book on this one question, including the variations where the answer
-changes — a host with a preference between the two goat doors, or one
-who only offers the switch sometimes.
+Math's Most Contentious Brain Teaser*. Oxford University Press. It is a
+whole book on this one question. It includes the variations where the
+answer changes, such as a host with a preference between the two goat
+doors, or one who only offers the switch sometimes.

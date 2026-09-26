@@ -73,15 +73,15 @@ in the file.</p>
 
 Spaces, tabs and new lines are called *whitespace*. In ordinary text,
 a browser turns every run of whitespace into one space. So many spaces
-show as one, and a new line in the file shows as a space too. That is
-why we can indent our HTML and break long lines wherever we like: the
-page does not change. When we want a new line inside a paragraph, we
+show as one, and a new line in the file shows as a space too. So we can
+indent our HTML and break long lines wherever we like. The page does
+not change. When we want a new line inside a paragraph, we
 ask for one with `<br>`, a line break.
 
 ## When a tag is missing
 
 A browser never stops with an error when an HTML file has a mistake in
-it. It makes a guess, and carries on. Here is a list and three
+it. It makes a guess, and continues. Here is a list and three
 paragraphs, all with closing tags missing:
 
 ```html site
@@ -108,15 +108,15 @@ list. Here the browser's guess is always right, and the list and the
 first two paragraphs look fine.
 
 Other guesses are harder. A `<strong>` could end anywhere, so the
-browser carries it on, even into the next paragraph. That is the kind
+browser continues it, even into the next paragraph. That is the kind
 of mistake the practice pages ask you to fix. The inspector shows the
 tree with the browser's guesses filled in, which is often the quickest
 way to see where a missing tag went.
 
 These guesses are the same in every modern browser. The rules for HTML
-spell out what to do with each kind of mistake, so browsers do not
-have to make up their own. The same rules add a missing `<html>`,
-`<head>` or `<body>`, which is why the example on [The head and body
+say exactly what to do with each kind of mistake, so browsers do not
+have to invent their own. The same rules add a missing `<html>`,
+`<head>` or `<body>`, so the example on [The head and body
 of a page](tutorial:the-skeleton) worked without them. We still write
 every closing tag. Then the browser has nothing to guess, and the next
 person to read the file does not either.
@@ -190,10 +190,10 @@ In the starter, without its comments, it looks like this:
 
 | Line | What it tells the browser |
 |---|---|
-| `<!DOCTYPE html>` | Read this page with today's rules. Without it, browsers fall back to an old set of rules, called quirks mode, kept so that very old pages still work. |
+| `<!DOCTYPE html>` | Read this page with today's rules. Without it, browsers use an old set of rules, called quirks mode, kept so that very old pages still work. |
 | `<html lang="en">` | The page is written in English. [Who else reads a page](tutorial:who-reads-a-page) shows who uses that. |
 | `<meta charset="UTF-8">` | How the text is stored in the file. UTF-8 can hold the letters of almost every language, and it comes first so that the browser knows it before it reads any words. |
-| `<meta name="viewport" ...>` | How wide to draw the page on a phone. [Changing the layout for phones: media queries](tutorial:media-queries) comes back to it. |
+| `<meta name="viewport" ...>` | How wide to draw the page on a phone. [Changing the layout for phones: media queries](tutorial:media-queries) explains it. |
 | `<meta name="description" ...>` | A short description of the page, which search engines may show. |
 | `<title>` | The text for the browser tab. |
 | `<link rel="stylesheet" href="styles.css">` | Load the CSS in `styles.css`. [CSS rules and stylesheets](tutorial:a-rule-and-where-it-lives) starts there. |

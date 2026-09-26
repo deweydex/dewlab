@@ -24,7 +24,7 @@ $\left[\begin{array}{cc|c} 3 & -2 & 5 \\ 1 & 4 & -3 \end{array}\right]$,
 and the solution is $x = 1$, $y = -1$.
 
 Check against the original equations: $3(1) - 2(-1) = 5$ and
-$1 + 4(-1) = -3$. Both are correct.
+$1 + 4(-1) = -3$. Both equations are true.
 
 </details>
 
@@ -48,7 +48,7 @@ $x_1 + 2x_2 - x_3 = 2$ by Gaussian elimination.
 3. Rows 2 and 3 are now a $2\times2$ system, in $x_2$ and $x_3$ only. Use
    row 2 to remove $x_2$ from row 3.
 4. Row 3 now has one unknown in it. Solve for $x_3$.
-5. Work back up. Put $x_3$ into row 2 to find $x_2$. Then put both into
+5. Move back up. Put $x_3$ into row 2 to find $x_2$. Then put both into
    row 1 to find $x_1$.
 
 **Think about:** the answers here are not whole numbers. Does that make
@@ -102,8 +102,8 @@ why you cannot.
 <details class="dl-answer"><summary>answer</summary>
 
 There is no solution. As in problem 3, the second left-hand side is
-twice the first. But the right-hand sides do not follow: doubling the
-first equation gives $6$ on the right, not $7$.
+twice the first. But the right-hand sides do not follow the same rule. If you
+double the first equation, you get $6$ on the right, not $7$.
 
 In a picture, these are two lines with the same slope that cross the
 $y$-axis at different places. Such lines never meet. The two equations
@@ -128,18 +128,18 @@ in problem 4, with one more unknown.
 
 **6.** A friend says that $x_1 = 3, x_2 = 1, x_3 = 2$ solves
 $x_1 + x_2 + x_3 = 6$, $2x_1 - x_2 + 3x_3 = 11$, $x_1 + 2x_2 - x_3 = 2$.
-Are they right?
+Does it?
 
 <details class="dl-answer"><summary>answer</summary>
 
 No. The first equation works: $3 + 1 + 2 = 6$. The second works too:
 $2(3) - 1 + 3(2) = 6 - 1 + 6 = 11$. But the third gives
-$3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so the answer is
-wrong, even though it makes the first two true.
+$3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so these numbers do
+not solve the system, even though they make the first two true.
 
 A solution has to make every equation true. If you check only some of
-them, especially the ones that look easiest, a wrong answer can slip
-through. (The real solution to this system is the one with fractions,
+them, especially the ones that look easiest, you may not notice that an
+answer is wrong. (The real solution to this system is the one with fractions,
 from problem 2.)
 
 </details>
@@ -153,13 +153,13 @@ whole-number solution.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Pick an answer, say $(2, -1, 3)$. Then choose left-hand sides, and work
-out each right-hand side from your answer. For example:
+Pick an answer, say $(2, -1, 3)$. Then choose left-hand sides, and calculate
+each right-hand side from your answer. For example:
 $x + y + z = 4$, $x - y + z = 6$ and $2x + y - z = 0$.
 
 Check them first: $2 - 1 + 3 = 4$, $2 + 1 + 3 = 6$ and $4 - 1 - 3 = 0$.
 All three are true, because we built them that way. Elimination on this
-system gives back $(2, -1, 3)$, because that is the only point where all
+system gives $(2, -1, 3)$, because that is the only point where all
 three equations agree.
 
 Be careful when you choose the left-hand sides. If one equation is a
@@ -168,7 +168,7 @@ the problem from problem 3: infinitely many solutions, and elimination
 cannot find a single answer. In the example above, no left-hand side
 can be made from the other two, so the system is safe.
 
-Working backwards like this is useful. Many textbook problems with tidy
+This backwards method is useful. Many textbook problems with tidy
 answers are written in this way.
 
 </details>

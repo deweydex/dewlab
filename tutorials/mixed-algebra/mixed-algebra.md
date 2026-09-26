@@ -16,8 +16,8 @@ version: 2026.08.23.1
 
 Each problem here needs at least two of the algebra tutorials. Many of
 them need a picture as well as a calculation. Nothing here is harder
-than what those tutorials covered. The hard part is new: nobody tells
-you which tool to use. Choosing the tool is part of the problem.
+than what those tutorials covered. One thing is new. Nobody tells you
+which tool to use. You choose the tool yourself, as part of the problem.
 
 Each answer is hidden in a fold under its question. Some problems also
 have a hint fold, to open first if you get stuck. When a problem can be
@@ -81,10 +81,10 @@ print(roots(1, -3, -4))
 
 Expanded, it is $2x^2 + 7x - 15$. The roots are 1.5 and −5.
 
-Factorising back gives $2(x - 1.5)(x + 5)$, which multiplies out to the
+Factorising back gives $2(x - 1.5)(x + 5)$, which expands to the
 original.
 
-The leading 2 is the part people often drop. $(x - 1.5)(x + 5)$ on its
+People often drop the leading 2. $(x - 1.5)(x + 5)$ on its
 own is $x^2 + 3.5x - 7.5$. That is half of what we wanted.
 
 </details>
@@ -127,7 +127,7 @@ What is it?
 
 1. The roots tell you the shape. Start by writing a quadratic that has
    roots 1 and 3, in factorised form. Do not worry about its size yet.
-2. Multiply that out, or leave it factorised. Either works for the next
+2. Expand that, or leave it factorised. Either works for the next
    step.
 3. Now use the third fact. What does "passes through $(0, 6)$" let you
    substitute?
@@ -176,15 +176,15 @@ not remind you of it.
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The unknown is on the bottom of a fraction, so the first move is to
-   get it off the bottom. Multiply both sides by $x - 3$.
+   clear the fraction. Multiply both sides by $x - 3$.
 2. Expand, and look at where $x$ now appears. It appears twice.
 3. Move every term that contains $x$ to one side, and everything else to
    the other side.
 4. Now take $x$ out as a common factor on that side, and divide.
 
 **Think about:** step 4 is only possible because you gathered the $x$
-terms first. Whenever the unknown appears twice, gathering and then
-factoring is the move to make.
+terms first. Whenever the unknown appears twice, gather the terms and
+then factorise.
 
 **Try this next:** your answer is undefined at one value of $y$. Which
 one? Then check that the original expression never produces that value.
@@ -204,8 +204,8 @@ the only move available when the unknown appears twice.
 
 Notice that the result is undefined at $y = 2$. And the original never
 produces 2: as $x$ grows, $\dfrac{2x + 1}{x - 3}$ gets closer and closer
-to 2, but never reaches it. The rearranged formula carried that fact
-across without being asked.
+to 2, but never reaches it. The rearranged formula kept that fact,
+without being asked.
 
 </details>
 
@@ -244,8 +244,8 @@ Then turn both sides upside down.
 
 Turning both sides upside down is safe here only because neither side
 is zero. When $u = f$, the side $\dfrac{u - f}{uf}$ is zero, and the
-lens forms no image. The algebra breaks down and the physics breaks
-down at the same moment.
+lens forms no image. At that point, the algebra and the physics both
+fail together.
 
 </details>
 
@@ -266,7 +266,7 @@ The vertex sits halfway between the roots, at
 $x = -\dfrac{b}{2a} = \dfrac{4}{2} = 2$. There, $y = 4 - 8 + 3 = -1$.
 
 Then plot it and check. Everything you predicted should be visible. If
-the picture disagrees with you, the picture is right.
+the picture shows something different, check your working again.
 
 </details>
 
@@ -281,7 +281,7 @@ as $(x - 4)(x + 1) = 0$, so $x = 4$ or $x = -1$. Then $y = 3x$ gives
 the $y$ values.
 
 Every "where do these meet?" question is a "solve this equation"
-question. The graph is how you check that you found all the answers.
+question. Use the graph to check that you found all the answers.
 
 </details>
 
@@ -296,7 +296,7 @@ parabola $y = x^2$ completely?
    quadratic in $x$.
 3. A quadratic has no real solutions exactly when one particular
    quantity is negative. Which quantity?
-4. Work out that quantity in terms of $m$. For what values of $m$ is it
+4. Find that quantity in terms of $m$. For what values of $m$ is it
    negative?
 
 **Think about:** you should find that there are none. Before you trust
@@ -320,7 +320,7 @@ crosses the parabola twice.
 The $+1$ is the reason. A line through $(0, 1)$ starts *inside* the
 parabola, and it cannot get out without crossing the sides. Change the
 intercept to −1, and the answer becomes a range of $m$. That range is
-worth working out.
+worth finding.
 
 </details>
 
@@ -331,7 +331,7 @@ to 10. Which one is largest, and where?
 
 $2^x$ is largest at first, up to about $x = 1.4$. Then $x^3$ is largest,
 from about 1.4 to about 9.9. Just before 10, $2^x$ overtakes everything,
-and it stays ahead for good.
+and it stays ahead after that.
 
 At $x = 10$ the values are 100, 1000 and 1024. At $x = 20$ they are 400,
 8000 and 1,048,576.
@@ -394,8 +394,8 @@ print(z ** 2 - 6 * z + 13)
 
 Python prints `0j`, which is zero.
 
-Notice the $4i^2$ becoming $-4$. That one substitution is the whole
-difference between complex arithmetic and ordinary algebra.
+Notice that $4i^2$ becomes $-4$. That one step is the only difference
+between complex arithmetic and ordinary algebra here.
 
 </details>
 
@@ -463,7 +463,7 @@ height after $t$ seconds is $h = 2 + 15t - 4.9t^2$ metres.
 
 **Think about:** for the last part, the parabola opens downwards. So the
 times above 10 m are *between* the two roots, and not outside them. A
-sketch settles which.
+sketch shows which.
 
 **Try this next:** how long is the ball above 12 m? Above 14 m? At what
 height does the answer become "never"?
@@ -484,8 +484,8 @@ height there is about 13.48 m.
 **Above 10 m:** $2 + 15t - 4.9t^2 > 10$ becomes
 $-4.9t^2 + 15t - 8 > 0$. The roots of $-4.9t^2 + 15t - 8 = 0$ are
 about 0.69 and 2.37. The ball is above 10 m *between* those times,
-because the parabola opens downwards. Getting that direction right is
-the important part.
+because the parabola opens downwards. Be careful with that direction.
+It is the important part.
 
 </details>
 
@@ -532,8 +532,8 @@ $\dfrac{1 + \sqrt{5}}{2}$, and its conjugate, $\dfrac{1 - \sqrt{5}}{2}$.
 (c) Use a logarithm: $x = \log_2 10 \approx 3.32$.
 
 (d) There is no exact form. The answer is about 0.511. You can find it
-by plotting, or by *bisection*: halving an interval that contains the
-answer, again and again. That is the same idea as binary search in
+by plotting, or by *bisection*. Bisection halves an interval that
+contains the answer, again and again. That is the same idea as binary search in
 [Searching a list: linear and binary search](tutorial:finding-things).
 
 (e) There is no exact form, and this can be proved. The answer is about

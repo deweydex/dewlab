@@ -42,8 +42,8 @@ finished. So the four cells below hold working versions of all of
 them. Run all four before you start.
 
 If you would rather, delete the body of any function and write it again
-from memory. Writing a function again from memory is often the best
-test of whether you understand it.
+from memory. When you write a function again from memory, you find out
+how well you understand it.
 
 Two ways of writing numbers meet on this page. A polynomial is a list
 with the constant first, as on the polynomials page, so `[3, -4, 1]` is
@@ -274,7 +274,7 @@ equations = [
 
 ## Problem 4: Building and verifying
 
-This problem ties everything together. We start from the roots we
+This problem uses all the tools together. We start from the roots we
 want, and work backwards to the equation.
 
 Say we want the roots $x = 2$ and $x = -5$. Which quadratic has those
@@ -321,7 +321,7 @@ scale from 1 (not confident) to 5 (very confident).
 7. Finding the intersection and union of two sets
 8. Solving a system of two linear equations
 
-Then pick one task that you rated low, and spend some time working on
+Then pick one task that you rated low, and spend some time practising
 it.
 
 ```python exec
@@ -341,8 +341,8 @@ id: problem-5-self-assessment-1
 
 ## Building it yourself
 
-The real test of this material is to build a small algebra engine from
-nothing. That means polynomials and their operations, equation solving,
+A good way to check your understanding is to build a small algebra
+engine from nothing. That means polynomials and their operations, equation solving,
 and set operations, all written fresh, without copying from the
 tutorials. The ideas and patterns are the same. Only the typing is new.
 
@@ -354,9 +354,6 @@ not to memorise it. Here are two examples:
   loop.
 - If you understand that a set intersection keeps the elements that
   appear in both sorted lists, you can write the merge.
-
-In the long run, understanding usually does far more for you than
-memorising.
 
 What are the three most important ideas from the four tutorials above?
 Choose the ones you would want to remember even if you forgot
@@ -379,16 +376,16 @@ We have reached polynomial algebra, equation solving, and set theory in
 and on to limits and derivatives in
 [Derivatives: the rate of change of a curve](tutorial:rates-of-change).
 Each piece builds on the ones before it, and the maths ideas and the
-programming ideas are woven together all the way through.
+programming ideas are connected all the way through.
 
 Here is a final question to reflect on. What has changed about how you
 think about mathematics since we started? And what has changed about
 how you think about programming?
 
-## Where to Read More
+## Where to read more
 
 Pastötter, B. and Bäuml, K.-H. T. (2014). *Retrieval Practice Enhances New
 Learning: The Forward Effect of Testing.* Frontiers in Psychology, 5, 286.
-<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3983480/>. Why rebuilding a
-function from memory, as this page asks you to, teaches more than copying
-it out again.
+<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3983480/>. This paper
+explains why you learn more when you rebuild a function from memory, as
+this page asks, than when you copy it again.

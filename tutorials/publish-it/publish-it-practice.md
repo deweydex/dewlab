@@ -18,14 +18,14 @@ When no file name comes at the end, GitHub Pages sends `index.html`.
 
 There are three kinds of problem:
 
-- addresses to work out, and to read
+- addresses to find, and to read
 - sites that give a "404: page not found" error, where we find the
   mistake
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and
+its reason, than from reading the answer.
 
 ## Work out the address
 
@@ -82,7 +82,7 @@ So the same repository is on GitHub at
 ## Why is this page not found?
 
 **3.** Each of these people gets a GitHub page that says `404` when
-they visit their site. `404` means "not found": the address reached
+they visit their site. `404` means "not found". The address reached
 GitHub, but GitHub had nothing to send for it. For each person, what is
 wrong? How would they fix it?
 
@@ -167,12 +167,12 @@ files. Can you click your address there?
 
 <details class="dl-answer"><summary>answer</summary>
 
-In step 2 you see your home page: GitHub Pages sends your `index.html`,
+In step 2 you see your home page. GitHub Pages sends your `index.html`,
 because the address names no file.
 
 In step 3, `about.html` opens your About page. `About.html` gives a
-GitHub 404 page. There is no file with that name: only one with a small
-`a`.
+GitHub 404 page. There is no file with that name. There is only one with
+a small `a`.
 
 After step 6, the address appears at the top of the README on your
 repository's front page. GitHub turns a full address that starts with

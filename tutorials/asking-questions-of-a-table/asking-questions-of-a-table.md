@@ -145,7 +145,7 @@ ORDER BY length_meters DESC;
 ```
 
 Brachiosaurus comes first, at 25.0 metres. Velociraptor is not there at
-all: at 2.0 metres, it is not longer than 5. And Triceratops comes
+all. At 2.0 metres, it is not longer than 5. And Triceratops comes
 before Stegosaurus.
 
 `ORDER BY` sorts the result by a column. `DESC` puts the largest value
@@ -153,7 +153,7 @@ first, and `ASC` puts the smallest value first. Leaving the word out
 also gives you `ASC`.
 
 A query can use both `WHERE` and `ORDER BY`, the way this one does.
-`WHERE` comes first in the query, and it happens first, too: the
+`WHERE` comes first in the query, and it happens first, too. The
 database keeps the rows the condition allows, and then sorts only the
 rows it kept.
 
@@ -209,7 +209,7 @@ turn, with the one you want to see at the bottom. Before each run, can
 you say how many rows it will show?
 
 What you type in this box is saved on this device, like every box on
-this site. Keep a copy of your statements too: you will bring the same
+this site. Keep a copy of your statements too. You will bring the same
 table back again on the next page.
 
 ## What you have now

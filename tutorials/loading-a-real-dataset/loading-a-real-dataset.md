@@ -14,10 +14,11 @@ datasets: [income-share-top-1]
 
 Real data almost never starts as a database table. It starts as a file, most
 often a *CSV*. A CSV holds rows of plain text, one line per record, with each
-value separated by a comma. Turning a CSV into a table you can query is where
-this page starts.
+value separated by a comma. This page starts by turning a CSV into a
+table you can query.
 
-The dataset below is real: how much of a country's income before tax goes to
+The dataset below is real. It shows how much of a country's income
+before tax goes to
 the richest 1% of its people, by year. It comes from the [World Inequality
 Database](https://ourworldindata.org/how-has-income-inequality-within-countries-evolved-over-the-past-century),
 published through Our World in Data under a Creative Commons licence that
@@ -43,9 +44,9 @@ with no data yet.
 
 ## Cleaning: names, and what is missing
 
-The columns arrive with the dataset's own working names. Renaming them is
-the first cleaning step, and a common one: a column's short code is fine for
-the people who built the dataset, and confusing for anyone reading a query
+The columns arrive with the dataset's own working names. We rename them
+first. This is a common cleaning step. A column's short code is fine for
+the people who built the dataset, but it confuses anyone reading a query
 later.
 
 ```python exec
@@ -60,7 +61,7 @@ income_share = income_share.rename(columns={
 income_share[["country", "year", "share", "share_extrapolated"]].head()
 ```
 
-The second cleaning step is checking what is missing, before building
+The second cleaning step checks what is missing, before we build
 anything on top of it.
 
 ```python exec
@@ -70,7 +71,7 @@ income_share["share"].isna().sum(), income_share["share_extrapolated"].isna().su
 
 `share` is missing for thousands of rows. The original survey data simply
 does not reach every country in every year. `share_extrapolated` fills those
-gaps with an estimate, worked out from related data, so it is missing far
+gaps with an estimate, calculated from related data, so it is missing far
 less often. The rest of this series uses `share_extrapolated`, and says so
 at each query, rather than treating an estimate as if it were the same thing
 as a measurement.
@@ -91,9 +92,9 @@ id: income-share-to-sql
 income_share.to_sql("income_share_tbl", db, if_exists="replace", index=False)
 ```
 
-`if_exists="replace"` means running this cell again starts the table fresh,
-rather than failing because it is already there. That's useful while you
-are still working out what the table should hold.
+`if_exists="replace"` means that when you run this cell again, it starts
+the table fresh. It does not fail because the table is already there.
+That's useful while you are still deciding what the table should hold.
 
 ## Querying it as SQL
 
@@ -111,12 +112,12 @@ LIMIT 15;
 
 ## Your turn
 
-Pick two or three countries of your own — a country you have lived in, one
+Pick two or three countries of your own: a country you have lived in, one
 you would like to visit, one that came up in another class. Change the
 `country IN (...)` list above to yours, then run the query again. Look for a
 country whose numbers move up and down sharply between years, next to one
-that stays fairly steady. The next page joins this table to a second one;
-keep your chosen countries in mind for that.
+that stays fairly steady. The next page joins this table to a second
+one. Remember your chosen countries for that.
 
 ## What you have now
 
@@ -125,7 +126,7 @@ keep your chosen countries in mind for that.
 - **`load_csv`.** Fetches a CSV from a web address and returns it as a table
   you can work with in Python.
 - **Cleaning renames columns to plain names, then checks what is missing.**
-  Both happen before building a query on top of the data.
+  Both happen before you build a query on top of the data.
 - **`to_sql`.** Writes a table built in Python into the page's shared
   database connection, so `SELECT` now works on the same data.
 

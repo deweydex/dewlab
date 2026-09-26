@@ -14,8 +14,8 @@ write once you know what it should produce.
 
 ## Set arithmetic
 
-This first cell uses Python's own `set` type, which the tutorial left
-aside. Python writes a set in curly brackets, and it has an operator for
+This first cell uses Python's own `set` type, which the tutorial did not
+use. Python writes a set in curly brackets, and it has an operator for
 each operation: `|` for union, `&` for intersection, `-` for difference
 and `^` for symmetric difference. We wrap each result in `sorted()`,
 because Python's `set` does not keep its elements in order (problem 19
@@ -43,7 +43,7 @@ print("symmetric   ", sorted(A ^ B))
 
 (a) $\{1, 2, 3, 4, 5, 6, 7\}$. (b) $\{4, 5\}$. (c) $\{1, 2, 3\}$. (d) $\{6, 7\}$.
 
-Look at (c) and (d): they are different. That is the point of this
+Look at (c) and (d). They are different. That is the point of this
 problem. For union and intersection, the order of the two sets makes no
 difference. For difference, it does.
 
@@ -53,7 +53,7 @@ difference. For difference, it does.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$\{1, 2, 3, 6, 7\}$.
+It is $\{1, 2, 3, 6, 7\}$.
 
 There are two ways to describe it. It is $(A \setminus B) \cup (B \setminus A)$,
 and it is also $(A \cup B) \setminus (A \cap B)$. The two descriptions
@@ -162,10 +162,10 @@ def make_set(items):
 
 `make_set([3, 1, 4, 1, 5])` gives `[1, 3, 4, 5]`.
 
-After sorting, any repeats sit next to each other. So it is enough to
-compare each item with the last one we kept. Without sorting, we would
+After the sort, any repeats sit next to each other. So it is enough to
+compare each item with the last one we kept. Without a sort, we would
 have to search the whole result for every item. That takes about $n^2$
-steps, where sorting first takes about $n \log n$.
+steps, but a sort first takes about $n \log n$.
 
 </details>
 
@@ -238,8 +238,8 @@ def intersection(a, b):
     return result
 ```
 
-The outline is the same as `union()`. What happens in each of the three
-cases is different. There is also no step at the end for leftovers.
+The outline is the same as `union()`, but each of the three cases does
+something different. There is also no step at the end for leftovers.
 When one list runs out, nothing left in the other list can be in both.
 
 </details>
@@ -280,8 +280,8 @@ def symmetric_difference(a, b):
 With the merge walk, it is the body of `union()`, except that the equal
 case adds nothing to the result.
 
-The combined version walks through the lists four times, and it is easy
-to see that it is correct. The merge-walk version walks through them
+The combined version passes over the lists four times, and it is easy
+to see that it is correct. The merge-walk version passes over them
 once, but it takes a minute to check. Which one should you write? That
 depends on whether the slower one is slow enough to matter. If it is
 not, the easier one to read is the better choice.
@@ -331,8 +331,8 @@ For our sorted sets, `is_equal(a, b)` is `a == b`.
 
 By definition, two sets are equal when each one is a subset of the other:
 `is_subset(a, b) and is_subset(b, a)`. This version still works when the
-sets are not stored in sorted order. It is also how mathematics defines
-equal sets.
+sets are not stored in sorted order. Mathematics defines equal sets this
+way too.
 
 </details>
 
@@ -369,13 +369,13 @@ then 6.
 common = {e.lower() for e in first} & {e.lower() for e in second}
 ```
 
-The main job is to make the addresses match before comparing them, here
+The main job is to make the addresses match before we compare them, here
 by changing them all to lower case.
 
 There is a detail worth knowing before you remove repeats from anybody's
 mailing list. The part after the @ is not case-sensitive. The official
 standard says the part before the @ can be case-sensitive, but almost no
-email provider treats it that way. So changing to lower case is right in
+email provider treats it that way. So lower case is right in
 practice, even though the standard does not promise it.
 
 </details>
@@ -392,8 +392,8 @@ def words(text):
 only_in_first = words(one) - words(two)
 ```
 
-Removing the punctuation before comparing matters more than it looks.
-Without it, `cat` and `cat.` count as different words, and the answer
+We remove the punctuation before we compare, and this matters more than it looks.
+Without that step, `cat` and `cat.` count as different words, and the answer
 fills up with noise.
 
 </details>
@@ -414,9 +414,8 @@ for pattern in range(2 ** len(items)):
 
 Each subset matches one binary number. Bit `i` of the number says
 whether item `i` is in the subset. In the code, `pattern >> i & 1` reads
-bit `i` of `pattern`: it gives 1 if the bit is on and 0 if it is off.
-This match between subsets and binary numbers is why the count is
-exactly $2^n$. It is also a useful trick whenever you need to list every
+bit `i` of `pattern`. It gives 1 if the bit is on and 0 if it is off.
+Because subsets match binary numbers, the count is exactly $2^n$. It is also a useful trick whenever you need to list every
 possible choice.
 
 </details>
@@ -426,16 +425,16 @@ possible choice.
 <details class="dl-answer"><summary>answer</summary>
 
 Python's `set` is a *hash table*, and not a sorted list. A hash table
-works out a number, called a hash, from each element, and uses it to
+calculates a number, called a hash, from each element, and uses it to
 decide where the element is stored. The hash has nothing to do with the
 order of the elements.
 
 There is a trade here. Python's `set` tests membership in about the same
 time however large the set is, on average. A sorted list takes about
-$\log n$ steps. What the `set` gives up is order. You cannot ask a `set`
+$\log n$ steps. The `set` loses order. You cannot ask a `set`
 for its smallest element without looking at all of it.
 
-Building sets from sorted lists, as the tutorial does, makes the
+When we build sets from sorted lists, as the tutorial does, we make the
 opposite trade. Neither choice is right for every problem.
 
 </details>

@@ -33,8 +33,8 @@ id: the-game-so-far
 
 To play this game now, you would write Python: `grog.take_damage(3)`,
 then `print(grog)`, then `ada.heal(2)`. A friend who has never written
-Python could not play it at all. The classes work. The problem is that
-using them means writing code.
+Python could not play it at all. The classes work. But to use them, you
+have to write code.
 
 A *front end* is the part of a program that lets somebody use it without
 reading or writing any of its code. It asks them a plain question, turns
@@ -43,9 +43,9 @@ build two, for the same classes.
 
 ## Deciding, kept apart from asking
 
-The front end has two jobs: asking what the player wants, and deciding
-what that means. We write the deciding part first, as a function,
-`run_choice`. It takes the command as text, and it never asks for it. So
+The front end has two jobs. It asks what the player wants, and it
+decides what that means. We write the code that decides first, as a
+function, `run_choice`. It takes the command as text, and it never asks for it. So
 we can try it with a list of commands, before anybody types anything.
 What will the third line print?
 
@@ -90,13 +90,12 @@ What will the third line print?
 
 It prints `Ada (health 8) | Grog (health 5)`. Each command in the list
 runs one call: two attacks, a rest, and `dance`, which is not a command,
-so `run_choice` says so and carries on. `quit` returns `False`: the one
+so `run_choice` says so and continues. `quit` returns `False`, the one
 answer that means "stop".
 
 `run_choice` never calls `input()`. It acts on whatever `choice` it is
-given, as a method acts on its arguments. That is what lets us test it
-with a list, and it is what lets us give it a second front end later with
-no change at all.
+given, as a method acts on its arguments. So we can test it with a list,
+and later give it a second front end with no change at all.
 
 ## A loop that asks
 
@@ -112,7 +111,7 @@ print("Goodbye.")
 ```
 
 A cell on this page cannot wait for someone to type, so here the typing
-is written in advance, in a list, and a small `ask` stands in for
+is written in advance, in a list, and a small `ask` takes the place of
 `input`, as on
 [From cells to a program](tutorial:from-cells-to-a-program). On a
 computer, `ask = input` is the only change.
@@ -137,10 +136,10 @@ print("Goodbye.")
 
 A player will type things nobody planned for: `fly`, `Attack` with a
 capital, an empty line. A front end has to expect that, because the
-player has never seen `run_choice` and cannot fix it. Checking what a
-person typed, before the program uses it, is called *input validation*.
-Here the `else` does it: anything unknown is answered, and the loop goes
-on. Try adding `"Attack"` to `typed`. What happens, and should it?
+player has never seen `run_choice` and cannot fix it. When a program
+checks what a person typed before it uses it, we call that *input
+validation*. Here the `else` does it. Anything unknown gets an answer,
+and the loop continues. Try adding `"Attack"` to `typed`. What happens, and should it?
 
 ## A menu to choose from
 
@@ -164,15 +163,15 @@ command = dropdown("What now?", ["look", "attack", "rest", "quit"])
 still_playing = run_choice(ada, grog, command.value)
 ```
 
-This front end took two lines, because the deciding was already written,
-and tested. Two front ends, one set of classes: the classes never knew
-which one was asking.
+This front end took two lines, because the code that decides was already
+written and tested. We now have two front ends. The classes do not know
+which one is asking.
 
 A menu also changes what input validation has to do. Nobody can choose
 `fly` from it, so that mistake cannot happen at all. A front end that
 makes a mistake impossible is often kinder than one that catches it
-afterwards, and `run_choice` still keeps its `else`, for the front ends
-that let people type.
+afterwards. `run_choice` still keeps its `else`, for the front ends that
+let people type.
 
 On a page like this one, the cell's own Run is the Go button. Python here
 runs in the background, away from the page, so a button on the page
@@ -443,15 +442,16 @@ better than this one.
 
 Sweigart, A. (2019). *Automate the Boring Stuff with Python* (2nd ed.).
 No Starch Press. Free at <https://automatetheboringstuff.com/>. Chapter 8,
-"Input Validation", on checking what a person types before a program
-trusts it.
+"Input Validation", is about checking what a person types before a
+program trusts it.
 
 Python Software Foundation. *The Python Tutorial*, section 7.1, "Fancier
 Output Formatting".
-<https://docs.python.org/3/tutorial/inputoutput.html>. How a front end
-can lay out what it shows, once plain `print()` is not enough.
+<https://docs.python.org/3/tutorial/inputoutput.html>. This section shows
+how a front end can arrange what it shows, once plain `print()` is not
+enough.
 
 CrashCourse (2017). *Keyboards & Command Line Interfaces: Crash Course
 Computer Science #22.* <https://www.youtube.com/watch?v=4RPtJ9UyHS0>.
 Before windows and a mouse, people used programs the way this page's menu
-does: type something, read the answer. About eleven minutes.
+does: type something, read the answer. It is about eleven minutes long.

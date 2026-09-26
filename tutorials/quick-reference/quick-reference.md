@@ -12,23 +12,23 @@ covers:
 # Quick reference
 
 Use this page to look something up. It is not meant to be read start to
-finish. HTML and CSS come first, because every track uses them; SQL comes
+finish. HTML and CSS come first, because every track uses them. SQL comes
 last, for the data track.
 
 ## HTML
 
 | Tag | What it does |
 |---|---|
-| `<!DOCTYPE html>` | Tells the browser this is an HTML5 page. The first line of every file. |
+| `<!DOCTYPE html>` | Tells the browser this is an HTML5 page. It is the first line of every file. |
 | `<html>` | Wraps the whole page. |
 | `<head>` | Holds information about the page, such as its title. Nothing inside it is shown on the page. |
 | `<body>` | Wraps everything the page shows. |
-| `<h1>` to `<h6>` | Marks a heading. Use only one `<h1>` per page; it is the most important. |
+| `<h1>` to `<h6>` | Marks a heading. Use only one `<h1>` per page. It is the most important. |
 | `<p>` | Marks a paragraph. |
 | `<strong>` | Marks text as important. Shown bold by default. |
 | `<em>` | Marks text as emphasised. Shown in italics by default. |
 | `<a href="…">` | Makes a link. `href` names the address it goes to. |
-| `<img src="…" alt="…">` | Shows an image. `src` names its file; `alt` describes it for a reader who cannot see it. |
+| `<img src="…" alt="…">` | Shows an image. `src` names its file. `alt` describes it for a reader who cannot see it. |
 | `<ul>`, `<ol>`, `<li>` | Make an unordered list, an ordered list, and one item inside either. |
 | `<nav>` | Groups the links a reader uses to move around the site. |
 | `<header>`, `<main>`, `<footer>` | Mark the page's header, its main content, and its footer. Use one `<main>` per page. |
@@ -96,7 +96,7 @@ won.
 
 ## SQL
 
-Assumes a table already exists in the database you are querying.
+These all assume a table already exists in the database you are querying.
 
 | Statement | What it does |
 |---|---|
@@ -109,7 +109,7 @@ Assumes a table already exists in the database you are querying.
 | `COUNT(*)` | Counts the rows. |
 | `GROUP BY col` | Puts rows with the same value in `col` together, so you can count or total each group. |
 | `JOIN other_tbl ON this_tbl.other_id = other_tbl.other_id` | Combines two tables using a key they share. The foreign key has the same name as the key it points at. |
-| `INSERT INTO table (col1, col2) VALUES (?, ?)` | Adds one row. Use `?` placeholders for the values, never build the text of a query out of them. |
+| `INSERT INTO table (col1, col2) VALUES (?, ?)` | Adds one row. Use `?` placeholders for the values. Never build the text of a query from them. |
 | `UPDATE table SET col = ? WHERE …` | Changes existing rows. Always include a `WHERE`, or every row changes. |
 | `DELETE FROM table WHERE …` | Removes rows. Always include a `WHERE`, or every row is deleted. |
 
@@ -118,5 +118,5 @@ Assumes a table already exists in the database you are querying.
 | Symptom | Usual cause |
 |---|---|
 | "no such table" | The table hasn't been created yet on this page, or its name is spelled differently than you typed. |
-| A change from an earlier cell doesn't show up | Cells on one page share the same database top to bottom. Check the cell that made the change ran, and ran without an error. |
+| A change from an earlier cell doesn't appear | Cells on one page share the same database top to bottom. Check the cell that made the change ran, and ran without an error. |
 | A `WHERE` matches nothing you expect | Check the value's spelling and case match what's actually stored. |

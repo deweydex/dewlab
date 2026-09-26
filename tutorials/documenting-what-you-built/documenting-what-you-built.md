@@ -40,8 +40,8 @@ describes the design choices you made, and why. It also records how you
 tested the site.
 
 The plan and the README rarely match exactly. That is normal. A plan
-changes once building starts. `readme.md` records where you ended up,
-and the plan shows where you expected to go.
+changes once building starts. `readme.md` records what you built, and
+the plan shows what you expected to build.
 
 ## What maintenance.md is for
 

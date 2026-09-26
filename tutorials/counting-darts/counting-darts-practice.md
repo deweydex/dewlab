@@ -30,7 +30,7 @@ def inside_circle(x, y):
     return x * x + y * y <= 1
 ```
 
-## The Same Idea, Rearranged
+## The same idea, rearranged
 
 **1.** The tutorial multiplied by 4, because the quarter-circle sits inside
 a square of area 1. Now suppose you throw darts at the square from
@@ -39,7 +39,7 @@ circle. What would you multiply by?
 
 <details class="dl-answer"><summary>answer</summary>
 
-By 4 again, and that is not a coincidence.
+You multiply by 4 again. That is not a coincidence.
 
 The big square is made of four unit squares, one in each corner around
 the origin. The circle is made of four quarter-circles, one in each of
@@ -56,8 +56,8 @@ Here is the general rule underneath both:
 **estimated area = (fraction that landed inside) × (area of the region
 you threw at)**
 
-Get into the habit of writing down that outer area every time. Nearly
-every mistake in this kind of code is there.
+Write down that outer area every time. Most mistakes in this kind of
+code happen there.
 
 </details>
 
@@ -92,7 +92,7 @@ With 20,000 darts, this is off by about 0.0035. That is the accuracy
 the square-root rule predicts, and no better.
 
 Measuring an area this way is called *Monte Carlo integration*, and it is
-the reason the method matters. Nobody needs it for $x^2$: calculus gives
+the reason the method matters. Nobody needs it for $x^2$, because calculus gives
 $1/3$ exactly, in one line. But some curves have no formula for the area
 under them. For those, calculus cannot give an exact answer, and this
 code still works without any change.
@@ -132,7 +132,7 @@ and on this run it happened to give a good result.
 
 </details>
 
-## How Much Work Is Enough
+## How much work is enough
 
 **4.** The tutorial said that a hundred thousand darts give roughly two
 correct decimal places. Each extra decimal place costs about a hundred
@@ -151,7 +151,7 @@ You can time it to check. So a billion darts take around fifteen to twenty
 minutes, with the tab doing nothing else. And the number it computes is
 already known, by better methods, to more than a hundred trillion digits.
 
-So here is the plain conclusion. For π, this method is a toy. It is most
+For π, this method is a toy. It is most
 useful for questions that have no better method at all.
 
 </details>
@@ -195,7 +195,7 @@ square-root way that the tutorial showed.
 
 </details>
 
-## A Shape With No Formula
+## A shape with no formula
 
 **6.** Two unit circles, one centred at $(0, 0)$ and one at $(1, 0)$,
 overlap. The overlap is shaped like a lens. Estimate its area.
@@ -231,7 +231,7 @@ two equal circles.
 That difference is the whole argument for the method. The formula gets
 harder to find for two circles of different sizes. It gets much harder
 for three circles. For a blob of any shape, there is no formula at all.
-The eight lines of the loop do not care. Change the condition, and they
+The eight lines of the loop work for any shape. Change the condition, and they
 measure a different shape, with no new mathematics.
 
 </details>
@@ -257,12 +257,12 @@ thousand times as many darts for the same accuracy.
 
 Choose the smallest rectangle that you are *certain* contains the shape.
 "Certain" is the important word. If you are unsure, take the larger
-rectangle. It is better to pay in time than to get a wrong answer that
-nobody notices.
+rectangle. A slower program is better than a wrong answer that nobody
+notices.
 
 </details>
 
-## Thinking It Through
+## Thinking it through
 
 **8.** Someone suggests a tidier method. Instead of throwing darts at
 random, lay a regular grid of points over the square, and count the
@@ -282,14 +282,13 @@ dimensions. That is fine. In ten dimensions it needs $100^{10}$, which is
 $10^{20}$ points, and that is impossible.
 
 Random sampling does not have this problem. The error still falls as
-$1/\sqrt{n}$, whether the problem has two dimensions or two hundred. A
-random point does not care how many coordinates it has.
+$1/\sqrt{n}$, whether the problem has two dimensions or two hundred.
 
 That is why Monte Carlo methods are the main tool in physics, finance
 and machine learning, where problems often have hundreds of dimensions.
 It is also why they look like an odd choice in the two-dimensional
 example everyone learns first. That example was chosen because it is
-easy to draw. It is not the case where the method wins.
+easy to draw. It is not the case where the method is most useful.
 
 </details>
 
@@ -302,13 +301,14 @@ Probably neither of you. Two runs of a correct simulation with different
 seeds are *supposed* to disagree. With a few hundred darts, a spread of
 that size is completely ordinary.
 
-A better question is this: how much disagreement would be too much? At
+How much disagreement would be too much? At
 what point would you suspect a bug, and not luck? To answer that, you
 need a number for how far apart two correct runs usually fall, and not
-only a feeling. The $1/\sqrt{n}$ rule is where that number starts.
+only a feeling. The $1/\sqrt{n}$ rule is the first step towards that
+number.
 Statistics gives the full answer, and it is beyond this page.
 
-Until then, here is the practical habit. When two people compare
+Until then, use this habit. When two people compare
 simulation results, they should compare seeds first. The same seed with
 different answers means a real bug. Different seeds with different
 answers is normal.

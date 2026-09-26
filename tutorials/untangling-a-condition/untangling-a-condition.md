@@ -22,10 +22,9 @@ covers:
 # Untangling a condition: De Morgan's laws
 
 Sooner or later, you will open someone's program and find a line like
-`not (not (a and not b) and c)`. Most people's eyes slide right off it.
-If that happens to you, it is not a sign that logic is not for you. It is
-a sign that the line was written badly, and this page is about how to
-write it well.
+`not (not (a and not b) and c)`. Most people cannot read it at first.
+If that happens to you, the line was written badly. This page shows how
+to write it well.
 
 Let's start small. A food-delivery app has an **Order** button. The
 button is greyed out when the restaurant cannot take an order. One
@@ -114,7 +113,7 @@ many of the four rows should the button be greyed out?
 ```
 
 Now let's print both truth tables with `truth_table` from your toolkit. It
-also gives back each result column, so the last line can compare the two
+also returns each result column, so the last line can compare the two
 columns, the way we compared two rules on the last page. Run it to check
 your answer.
 
@@ -141,7 +140,7 @@ brackets, so how does Python know what to do first? Python has an order for
 these words, the same way arithmetic does multiplication before addition:
 `not` first, then `and`, then `or`. So `not is_open or not has_stock` means
 `(not is_open) or (not has_stock)`. In `grey_out_a`, the brackets change the
-order: Python works out `is_open and has_stock` first, and then `not` flips
+order. Python calculates `is_open and has_stock` first, and then `not` flips
 the result.
 
 ## A move from arithmetic
@@ -151,7 +150,7 @@ inside, and the plus stays a plus:
 
 $$-(3 + 5) = -3 + (-5)$$
 
-Both sides are $-8$. It is natural to try the same move with `not`: put it
+Both sides are $-8$. It is natural to try the same move with `not`. We put it
 on each part, and keep the joining word. That gives a third version.
 
 ```python
@@ -179,14 +178,14 @@ If you guessed "the same", many people do. I think it is the most
 natural guess in the whole unit, and the move has a reason behind it.
 It works in arithmetic, the space of numbers,
 where a minus sign goes onto each part and the plus stays. In the space of
-True and False, `not` does a second job as well: it changes the joining
+True and False, `not` does a second job as well. It changes the joining
 word. When `not` goes onto each part, `and` turns into `or`. That second
 job is the whole secret of this page, and we will see it again.
 
 ## Checking every row with one function
 
-Comparing result columns works well, but `truth_table` prints every row on
-the way, and it stops at three inputs. A rule with ten inputs has 1,024 rows.
+We can compare result columns, but `truth_table` prints every row,
+and it stops at three inputs. A rule with ten inputs has 1,024 rows.
 Let's write a function that compares two rules quietly, for any number of
 inputs.
 
@@ -206,12 +205,12 @@ for row in product([False, True], repeat=2):
     print(row)
 ```
 
-The first line is an *import*: it brings `product` into our page's space,
+The first line is an *import*. It brings `product` into our page's space,
 because Python does not give it to us without asking. Then `product` makes
 every row, and the loop does something for each one. Each row is a few
 values in round brackets. Python calls that a *tuple*.
 
-We need to hand a row to a rule. The rule wants two separate inputs, but a
+We need to give a row to a rule. The rule wants two separate inputs, but a
 row is one tuple. A star in front of the row, `*row`, spreads its values out,
 one for each input:
 
@@ -267,7 +266,7 @@ print("Both tests passed.")
    pass?
 4. Add one more `assert` that you expect to fail, such as
    `assert same_rule(both, grey_out_a, 2)`. Run it, and read the last line of
-   the error. The error here is the test doing its job.
+   the error. Here the test is doing its job.
 
 ```python exec
 id: untangling-your-tests
@@ -312,7 +311,7 @@ print("guess_2:", same_rule(can_fly, guess_2, 2))
 ```
 
 It is `guess_2`. The drone can fly when it is not raining *and* it is not
-windy. The same thing happened as before: `not` went onto each part, and the
+windy. The same thing happened as before. `not` went onto each part, and the
 joining word changed, this time from `or` to `and`.
 
 These two facts are called *De Morgan's laws*, after Augustus De Morgan, a
@@ -333,15 +332,15 @@ $$\lnot(A \lor B) = \lnot A \land \lnot B$$
 As a recipe, it is two steps. First, put a `not` on each part. Then swap
 the joining word: `and` becomes `or`, and `or` becomes `and`.
 
-The two laws are two promises, and `same_rule` is how we check a promise.
+The two laws are two promises, and we check a promise with `same_rule`.
 We have checked both on every row, so the laws hold for every possible pair
-of inputs. A proof by checking every case is still a proof.
+of inputs. This counts as a proof, because we checked every case.
 
 <aside class="dl-note" id="untangling-note-de-morgan">
 
 **Augustus De Morgan** was born in India in 1806, and taught mathematics
-in London. He was Ada Lovelace's maths tutor; we meet her in Unit 10. His
-book *Formal Logic* came out in 1847, the same year as George Boole's
+in London. He was Ada Lovelace's maths tutor. We meet her in Unit 10. His
+book *Formal Logic* was published in 1847, the same year as George Boole's
 first book on logic. The laws are older than their name: logicians in
 the Middle Ages, such as William of Ockham, stated them in words.
 
@@ -375,7 +374,7 @@ as two comparisons joined by `and`:
 
 $$\text{low} \le \text{value} \;\text{ and }\; \text{value} \le \text{high}$$
 
-That page met a real range: an iPhone is designed to work from 0 °C to
+That page used a real range. An iPhone is designed to work from 0 °C to
 35 °C. Say a phone warns its owner outside that range. So "warn" is
 `not between(temperature, 0, 35)`. Let's use the first law on it, one
 step at a time:
@@ -384,11 +383,11 @@ step at a time:
    `not (0 <= temperature) or not (temperature <= 35)`.
 2. The warm-up showed that "not 80 and over" is `temperature < 80`. In the
    same way, a `not` in front of a comparison turns it round, and the end
-   point changes sides: `not (0 <= temperature)` is `temperature < 0`, and
+   point changes sides. So `not (0 <= temperature)` is `temperature < 0`, and
    `not (temperature <= 35)` is `temperature > 35`.
 3. So "warn" is `temperature < 0 or temperature > 35`.
 
-That matches the number line: the safe temperatures sit in one piece in
+That matches the number line. The safe temperatures sit in one piece in
 the middle, and "warn" is everything to the left of it *or* everything to
 the right.
 
@@ -406,7 +405,7 @@ print("Checked every whole degree from -20 to 60.")
 ```
 
 It prints no disagreements. The loop checked 81 temperatures, more than a
-phone will meet. The law says more than the loop can: it holds for 35.5,
+phone will meet. The law says more than the loop can. It holds for 35.5,
 for $-100$ and for a million as well, because it only depends on each
 comparison being True or False.
 
@@ -421,8 +420,8 @@ def refuse_booking(is_under_12, with_adult, has_paid):
 ```
 
 Can you say, in one sentence, when a booking is refused? Pause and try
-before you read on. Most people cannot, at first, and that is the point
-of this section. Let's untangle it, one law at a time, and check each step with
+before you read on. Most people cannot, at first. Let's untangle it,
+one law at a time, and check each step with
 `same_rule` before we take the next. Order matters here, so we work from the
 outside in.
 
@@ -440,8 +439,8 @@ def step_1(is_under_12, with_adult, has_paid):
 print(same_rule(refuse_booking, step_1, 3))
 ```
 
-**Step 2.** Now there is a `not not` at the front. Two nots cancel: flipping
-True to False and then back again gives True. This is called *double
+**Step 2.** Now there is a `not not` at the front. Two nots cancel. If you flip
+True to False and then back again, you get True. This is called *double
 negation*. What do you expect `same_rule` to say this time?
 
 ```python exec
@@ -456,11 +455,10 @@ Both steps print `True`, so `step_2` is the same rule as the tangled one, on
 all eight rows. And now it can be read aloud: a booking is refused if a child
 under 12 comes without an adult, or if the booking has not been paid.
 
-That is a strange and pleasing result: a line nobody could read turned
-into a sentence anybody can, and a computer checked every step. That is
-what untangling is for. The program does exactly what it did before.
-What changed is how quickly a person can read it, and check it. A condition
-that people can read is a condition that people can fix.
+I find this result strange and pleasing. A line nobody could read turned
+into a sentence anybody can read, and a computer checked every step. The
+program does exactly what it did before. Now a person can read it, check
+it and fix it much more quickly.
 
 ### Your turn
 
@@ -514,9 +512,8 @@ algebra proof still works when a rule has too many inputs to check row
 by row.
 
 We checked every row because it is a proof you can run, read and trust
-without taking anyone's word for it. A promise that has been checked is
-stronger than a promise that is believed. Checking also shows its own
-limit: every extra input doubles the rows. The practice page asks where
+without taking anyone's word for it. This way also has a limit. Every
+extra input doubles the rows. The practice page asks where
 that limit starts to matter.
 
 </details>
@@ -525,7 +522,7 @@ that limit starts to matter.
 
 | Question | On this page |
 |---|---|
-| What is named here? | Each condition got a function name, like `grey_out_a`, so we could hand the whole rule to another function. The two laws got a name too: De Morgan's laws. |
+| What is named here? | Each condition got a function name, like `grey_out_a`, so we could pass the whole rule to another function. The two laws got a name too: De Morgan's laws. |
 | What is promised? | `same_rule` promises `True` only when two rules agree on every row. Each law is a promise that two ways of writing a rule are equivalent. |
 | What happens when? | `not` goes first, then `and`, then `or`, unless brackets say otherwise. We untangled from the outside in, one checked step at a time. |
 | What does this space let us do? | In the space of True and False, `not` on each part swaps `and` with `or`. In arithmetic, a minus sign on each part leaves the plus alone. The same-looking move belongs to a different space. |

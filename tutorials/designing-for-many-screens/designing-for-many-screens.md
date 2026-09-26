@@ -25,7 +25,7 @@ On this page we:
 ## The line that tells a phone its own width
 
 Sometimes we might see a media query work in a desktop browser, and yet
-never switch on for a real phone. Oftentimes the page is missing this
+never switch on for a real phone. Often the page is missing this
 line in its `<head>`:
 
 ```html
@@ -115,9 +115,9 @@ So the order of media queries matters.
   largest width to the smallest. That is why your starter's `768px`
   block comes before its `480px` block.
 
-Which way is better? Neither is wrong, and many sites use each.
-Mobile-first has one thing going for it: the phone's CSS is the
-simplest, and everything else is added on top. Many websites now get
+Which way is better? Many sites use each. Mobile-first has one
+advantage. The phone's CSS is the simplest, and everything else is
+added on top. Many websites now get
 more visits from phones than from computers, so their designers often
 start with the phone.
 
@@ -130,8 +130,8 @@ lines of text that grow too long, or a row with too much empty space,
 that width is a good place for a breakpoint.
 
 It is tempting to pick breakpoints from a list of phones and tablets.
-But screens come in many widths, and new ones arrive every year, so any
-list goes out of date. Round numbers such as `768px` and `480px`, the
+But screens come in many widths, and new ones arrive every year, so no
+list stays complete. Round numbers such as `768px` and `480px`, the
 ones in your starter, are common starting points. `768px` is about the
 width of a tablet held upright, and `480px` is wider than most phones.
 They are a starting point, not a rule.

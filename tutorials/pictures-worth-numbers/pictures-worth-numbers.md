@@ -44,12 +44,12 @@ statistician Francis Anscombe in 1973. The four datasets have nearly
 the same mean and the same standard deviation. They also have the same
 correlation. *Correlation* is a number between $-1$ and $1$ that
 measures how closely two lists of numbers follow a straight line. A
-correlation near $1$ means the points lie close to a line that goes up;
-a correlation near $0$ means there is no straight-line pattern. We will
+correlation near $1$ means the points lie close to a line that goes up.
+A correlation near $0$ means there is no straight-line pattern. We will
 not calculate it on this page.
 
 For the four datasets, every one of those numbers is about the same. So
-the numbers cannot tell the datasets apart. What happens when we plot
+the numbers cannot show the difference between the datasets. What happens when we plot
 them? Run the cell to see.
 
 ```python exec
@@ -81,8 +81,8 @@ plt.show()
 The four summaries are the same, but the four pictures tell very
 different stories. One is a loose cloud around a line. One is a smooth
 curve. One is a neat line with a single point far away from it. One is
-a column of points with one point far off to the right. This is why
-charts matter: they show us what the numbers alone cannot.
+a column of points with one point far off to the right. Charts show us
+what the numbers alone cannot.
 
 ## Choosing the right chart
 
@@ -219,7 +219,7 @@ plot_histogram(scores, 'Quiz Score Distribution', 'Score', num_bins=6)
 ```
 
 The last line draws a whole labelled chart. The details, like the colour
-and the axis labels, live inside the function. `num_bins` and `colour`
+and the axis labels, are inside the function. `num_bins` and `colour`
 have default values, so we only give them when we want something
 different.
 
@@ -276,7 +276,7 @@ def analyse_dataset(data, title):
 
 The function is not finished yet. How might you complete it?
 
-1. Bring in your `mean()`, `median()`, `mode()` and `std_dev()`
+1. Use your `mean()`, `median()`, `mode()` and `std_dev()`
    functions from
    [Statistics: averages, spread and frequency](tutorial:making-sense-of-data).
    You can copy them from your earlier work, or write them again.
@@ -304,7 +304,8 @@ Here are a few rules that help with almost any chart:
   axes. Imagine someone sees the chart with no text around it. They
   should still understand what it shows.
 - **Colour.** Choose colours to make the chart clearer, not to decorate
-  it. For separate categories, use colours that are easy to tell apart.
+  it. For separate categories, use colours that look very different from
+  each other.
   For a quantity that changes smoothly, use a *gradient*: one colour
   that goes smoothly from light to dark.
 - **No chart junk.** *Chart junk* is anything on a chart that is only
@@ -322,8 +323,8 @@ makes each one work, or fail?
 
 ## Reflection
 
-Drawing charts and calculating statistics are two parts of the same
-job: understanding data. A good analyst moves between numbers and
+Charts and statistics are two parts of the same job. Both help us
+understand data. A good analyst moves between numbers and
 pictures all the time, and uses each one to check the other.
 
 We now have a complete set of tools for exploring a dataset: counting,
@@ -333,19 +334,19 @@ together.
 What is the most important thing you have learned about presenting
 data?
 
-## Where to Read More
+## Where to read more
 
 Anscombe, F. J. (1973). *Graphs in Statistical Analysis.* The American
-Statistician, 27(1), 17–21. The original paper behind the quartet this
-page opens with — four datasets, one lesson.
+Statistician, 27(1), 17–21. This is the original paper behind the quartet
+this page opens with.
 
 Matplotlib development team. *Pyplot Tutorial.*
-<https://matplotlib.org/stable/tutorials/pyplot.html>. The official
-reference for everything this page's charts do, and the many options it
-does not have room to cover.
+<https://matplotlib.org/stable/tutorials/pyplot.html>. This is the official
+reference for everything this page's charts do. It also covers the many
+options this page does not have room for.
 
 CrashCourse (2018). *Charts Are Like Pasta: Data Visualization Part 1:
 Crash Course Statistics #5.*
-<https://www.youtube.com/watch?v=hEWY6kkBdpo>. Which chart suits which
-kind of data, starting with bar charts and pie charts for categories.
-About ten minutes.
+<https://www.youtube.com/watch?v=hEWY6kkBdpo>. It explains which chart
+suits which kind of data, starting with bar charts and pie charts for
+categories. The video is about ten minutes long.

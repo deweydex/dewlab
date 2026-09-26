@@ -68,8 +68,8 @@ rules inside do nothing at all.
 The condition here is about width, the most common kind. It tests the
 width of the *viewport*. The viewport is the part of the browser window
 that shows the page. On a phone, that is most of the screen. In our
-example, the viewport is the preview itself, and that is why the slider
-turns the rule on and off.
+example, the viewport is the preview itself, so the slider turns the
+rule on and off.
 
 - `max-width: 350px` means "when the viewport is 350 pixels wide or
   narrower".
@@ -93,7 +93,7 @@ our example, the breakpoint is `350px`. In step 3 we moved it to
 What if a media query and an ordinary rule both set the same property?
 While the condition is true, both rules match. When two rules with the
 same selector set the same property, the one further down the
-stylesheet wins. That is why the `@media` block comes after the
+stylesheet wins. So the `@media` block comes after the
 ordinary `.msg` rule. Media queries usually sit at the bottom of a
 stylesheet, below the rules they change. [The cascade: which CSS rule wins](tutorial:which-rule-wins) looks at this more closely.
 

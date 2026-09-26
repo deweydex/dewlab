@@ -34,7 +34,7 @@ It holds three kinds of file:
 |---|---|
 | `index.html`, `about.html`, `gallery.html`, `contact.html`, `resources.html` | Five HTML pages. Each one already has the structure the project brief asks for. Placeholder text marks where your own writing goes. |
 | `styles.css` | One stylesheet, linked from all five pages. It has enough CSS to make Flexbox, Grid, a media query and link states work. The colours, the fonts and the personality are yours to add. |
-| `planning.md`, `readme.md`, `maintenance.md` | Three documents the brief asks you to write. Each one is a template with the questions already in it. You answer the questions, so you do not have to work out what to say. |
+| `planning.md`, `readme.md`, `maintenance.md` | Three documents the brief asks you to write. Each one is a template with the questions already in it. You answer the questions, so you do not have to decide what to say. |
 
 ## Getting your own copy
 
@@ -59,8 +59,8 @@ choose yourself, or `project_wad`?
 
 Open `planning.md` before you touch any HTML or CSS.
 
-Why first? The planning document gets marks of its own. Answering its
-questions first also makes the building faster. You will know what you
+Why first? The planning document gets marks of its own. If you answer
+its questions first, you also build faster. You will know what you
 are building before you start, so you do not have to decide while you
 build. Your teacher has the brief itself, with the marking criteria on
 it.

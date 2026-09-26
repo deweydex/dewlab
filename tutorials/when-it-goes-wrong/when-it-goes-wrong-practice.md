@@ -35,7 +35,7 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-An `IndexError: string index out of range`. A string is indexed like a
+It raises an `IndexError: string index out of range`. A string is indexed like a
 list, and fails like one: five letters have positions 0 to 4.
 
 </details>
@@ -60,7 +60,7 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-A `KeyError: 'E'`. The right-hand side runs first, and it asks for a key
+It raises a `KeyError: 'E'`. The right-hand side runs first, and it asks for a key
 that is not there yet. `counts.get("E", 0) + 1` starts it at 0.
 
 </details>
@@ -76,9 +76,9 @@ print(letters)
 
 <details class="dl-answer"><summary>answer</summary>
 
-A `TypeError: 'list' object is not callable`. `list` was Python's
-function for making lists, and the first line gave the name to a list.
-From then on, `list(...)` tries to call a list. Choosing a different name,
+It raises a `TypeError: 'list' object is not callable`. `list` was
+Python's function for making lists, and the first line gave the name to a
+list. From then on, `list(...)` tries to call a list. A different name,
 such as `numbers`, fixes it. Restart Python, or reload the page, to get
 `list` back.
 
@@ -123,9 +123,9 @@ that failed?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because the line that failed is often correct, and the cause is further
-up: a value made in one place and used in another. The chain shows how
-the bad value travelled, call by call, so you can follow it back to where
+The line that failed is often correct, and the cause is earlier in the
+program. A value is made in one place and used in another. The chain shows
+how the bad value travelled, call by call, so you can trace it to where
 it came from.
 
 </details>
@@ -154,7 +154,7 @@ What will the first line print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`3 ####`, three times. Both loops use the name `i`, so the inner loop
+It prints `3 ####`, three times. Both loops use the name `i`, so the inner loop
 overwrites the outer one's, and when the `print` runs, `i` is the inner
 loop's last value. Give each loop its own name: `row` and `column`, say.
 
@@ -213,7 +213,7 @@ is why a test on `"SKY"` passes the bug.
 
 <div class="dl-world" data-world="pixel-art">
 
-This is meant to give back one column of a picture, top to bottom. It
+This is meant to return one column of a picture, top to bottom. It
 works on some pictures. Can you find the bug, fix it, and add a test that
 catches it?
 
@@ -280,8 +280,8 @@ print(long_words("MEET ME BY THE BRIDGE TONIGHT"))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`print("word:", word)` inside the loop shows `M`, then `E`, then `E`: a
-loop over a string goes through its characters, not its words. Every
+`print("word:", word)` inside the loop shows `M`, then `E`, then `E`. A
+loop over a string uses its characters, not its words. Every
 "word" has length 1. `for word in sentence.split():` gives the words, and
 the answer 2: BRIDGE and TONIGHT.
 
@@ -314,10 +314,10 @@ print(decode("PHHW PH", 3))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`shift_back("D", 3)` should give A, three letters back, and it gives G:
-the `+ shift` moves forward. With `- shift`, it gives A, and the message
-decodes to MEET ME. `decode` was right all along. Testing it first would
-have pointed at it anyway, but testing the smallest piece first says
+`shift_back("D", 3)` should give A, three letters back, and it gives G.
+The `+ shift` moves forward. With `- shift`, it gives A, and the message
+decodes to MEET ME. `decode` was right from the start. A test of `decode`
+would have pointed at the bug too. A test of the smallest piece says
 exactly which line.
 
 </details>
@@ -330,11 +330,11 @@ help?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Explaining a line makes you say what it does, not what you meant it to do,
-and the bug is in the gap between the two. Halfway through an explanation,
-people often stop and say "oh". The duck does nothing, and that is the
-point: it does not interrupt, and it does not already know what the code
-is supposed to do. A classmate who lets you finish works as well.
+When you explain a line, you have to say what it does, not what you meant
+it to do. The bug is in the gap between the two. Halfway through an
+explanation, people often stop and say "oh". The duck does nothing, and
+that helps. It does not interrupt, and it does not already know what the
+code is supposed to do. A classmate who lets you finish works as well.
 
 </details>
 
@@ -378,7 +378,7 @@ least work on it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Insertion sort. Every element but the last is already in place, so each
+Insertion sort does least work. Every element but the last is already in place, so each
 costs one comparison, and only the last is moved back to where it belongs.
 Selection sort still searches the whole unsorted part every time, and
 bubble sort, without a flag, still makes every comparison.
@@ -406,7 +406,7 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-A `TypeError`: `+` will not join a number to a string. `str(index) +
+It raises a `TypeError`, because `+` will not join a number to a string. `str(index) +
 letter` gives `0A`, and `print(index, letter)` shows both with a space
 between.
 

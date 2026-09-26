@@ -37,10 +37,10 @@ print(solve_quadratic(1, -5, 6))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`2.5`, then `None`, then `[2.0, 3.0]`.
+They print `2.5`, then `None`, then `[2.0, 3.0]`.
 
 $4x - 10 = 0$ gives $x = \frac{10}{4} = 2.5$. $0x + 3 = 0$ has no
-answer at all, so `solve_linear` keeps its promise and gives back
+answer at all, so `solve_linear` keeps its promise and returns
 `None`. And $x^2 - 5x + 6 = (x - 2)(x - 3)$, so the roots are 2 and 3,
 smallest first. They are floats, because the formula divides.
 
@@ -62,11 +62,11 @@ print(seconds)
 print(300 + 4 * seconds)
 ```
 
-It prints `50.0` and `500.0`: 50 more seconds finish the download.
+It prints `50.0` and `500.0`. The download finishes in 50 more seconds.
 
 </details>
 
-**3. Predict.** Without running anything, work out the discriminant of
+**3. Predict.** Without running anything, calculate the discriminant of
 each quadratic, and say how many real roots it has. Then check with
 `solve_quadratic`.
 
@@ -100,7 +100,7 @@ whole answer to the question about the photo?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out $3000^2$, then $(-3000)^2$.
+1. Calculate $3000^2$, then $(-3000)^2$.
 2. Ask what $x$ stands for in the question.
 
 **Think about:** which space the equation lives in, and which space the
@@ -110,7 +110,7 @@ photo lives in.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 The equation has two roots, 3000 and −3000, because
 $(-3000)^2 = 9\,000\,000$ as well. `solve_quadratic(1, 0, -9000000)`
@@ -186,8 +186,7 @@ b = 32 - 50
 
 Now `celsius` is `10.0`, and the check passes. Moving a number across
 the equals sign and keeping its old sign is one of the most common
-slips in algebra, for everyone. Schlomo's check caught it, which is
-what a check is for.
+slips in algebra, for everyone. Schlomo's check caught it.
 
 </details>
 
@@ -207,7 +206,7 @@ two numbers add to −2 and multiply to −15? Then check the roots with
 
 <details class="dl-answer"><summary>answer</summary>
 
-3 and −5: $3 \times (-5) = -15$ and $3 + (-5) = -2$. So
+The numbers are 3 and −5: $3 \times (-5) = -15$ and $3 + (-5) = -2$. So
 $x^2 - 2x - 15 = (x + 3)(x - 5)$, and the roots are −3 and 5.
 
 ```python
@@ -295,7 +294,7 @@ print("roots_of keeps its promise.")
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Print `roots_of(2, -7, 3)`. The roots should be 0.5 and 3.
-2. Work out `12 / 2 * 2` in your head, the way Python does: left to
+2. Calculate `12 / 2 * 2` in your head, the way Python does: left to
    right.
 
 **Think about:** why the first test passed anyway.
@@ -320,14 +319,14 @@ have found this. It is the order of operations from
 </details>
 
 **11. Explain.** For $x^2 + 4 = 0$, the toolkit's `solve_quadratic`
-gives back `[]`, an empty list. It could have stopped with an error
+returns `[]`, an empty list. It could have stopped with an error
 instead. Why is an empty list a better way to keep its promise? Think
 about a loop like `for x in solve_quadratic(a, b, c):`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 The promise is "a list of the real roots". When there are none, an
-empty list keeps that promise exactly: it says "no real roots" in the
+empty list keeps that promise exactly. It says "no real roots" in the
 same shape as "two roots" or "one root".
 
 Code that uses the tool does not need a special case. A loop over an
@@ -357,7 +356,7 @@ plot_rule(six_eight, 0, 6)
 ```
 
 `solve_quadratic` gives `[2.0, 4.0]`, and the graph crosses the x-axis
-at 2 and 4. The picture shows the roots at a glance. Inspection is
+at 2 and 4. The picture shows the roots at once. Inspection is
 quick when the roots are whole numbers. The formula always works.
 
 </details>
@@ -383,7 +382,7 @@ says how long that takes.
 
 1. Call the stone's falling time $u$. The depth is $4.9u^2$ metres.
 2. The sound takes $\frac{4.9u^2}{343}$ seconds to climb that far.
-3. So $u + \frac{4.9u^2}{343} = 3$. Take 3 from both sides and read off
+3. So $u + \frac{4.9u^2}{343} = 3$. Take 3 from both sides and find
    $a$, $b$ and $c$ for `solve_quadratic`.
 
 **Think about:** which root is a time after you let go?
@@ -392,7 +391,7 @@ says how long that takes.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 $\frac{4.9}{343}u^2 + u - 3 = 0$.
 
@@ -408,8 +407,7 @@ The roots are about −72.9 and 2.88. A time before you let go of the
 stone means nothing here, so the stone falls for 2.88 seconds, and the
 well is about 40.7 m deep. The sound takes the last 0.12 seconds, and
 the two times add up to 3 again. If you had left out the sound, you
-would have said $4.9 \times 3^2 = 44.1$ m: a real well, measured this
-way, holds a small surprise in its last tenth of a second.
+would have said $4.9 \times 3^2 = 44.1$ m. That is 3.4 m too deep.
 
 </details>
 
@@ -433,8 +431,8 @@ Both match.
 
 For $x^2 - 10x + 21$ the roots add to 10, so the other root is
 $10 - 3 = 7$. Check: $3 \times 7 = 21$. This is factorising by
-inspection, seen from the roots' side: when $a$ is 1, the two numbers
-you look for are the roots with their signs turned round.
+inspection again. When $a$ is 1, the two numbers you look for are the
+roots with their signs changed.
 
 </details>
 
@@ -450,7 +448,7 @@ Expanding $2(x + 3)$ gives $2x + 6$. Take away the right side:
 - $2(x + 3) = 2x + 7$ becomes $0x - 1 = 0$, so `solve_linear(0, -1)`.
 
 Both give `None`, and for different reasons. The first is true for
-every $x$: it is an identity, as on
+every $x$. It is an identity, as on
 [Rules with letters in them](tutorial:rules-with-letters-in-them). The
 second is true for no $x$ at all. `None` promises only "no single
 answer". A tool that needed to tell the two apart would have to look at

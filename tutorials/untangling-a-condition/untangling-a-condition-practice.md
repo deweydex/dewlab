@@ -16,7 +16,7 @@ this page can use them.
 
 ## Warm-up
 
-This cell sets up a few rules for the warm-up problems. Run it first.
+This cell makes a few rules for the warm-up problems. Run it first.
 
 ```python exec
 id: untangling-practice-tools-1
@@ -39,8 +39,8 @@ Can she jump? Say `True` or `False`, then check with
 
 `False`. She cannot jump.
 
-Inside the brackets, `False or True` is `True`: at least one thing is
-stopping her. The `not` flips that to `False`.
+Inside the brackets, `False or True` is `True`, because at least one thing
+is stopping her. The `not` flips that to `False`.
 
 With the second law, the rule is `not is_falling and not is_stunned`. She
 needs both to be false, and one of them is true.
@@ -55,8 +55,8 @@ using the first law. Then say it in plain words.
 
 `not is_weekday or not is_daytime`.
 
-Put a `not` on each part, then swap `and` for `or`. In words: do not
-disturb me at the weekend, or in the evening and night. You can check
+Put a `not` on each part, then swap `and` for `or`. In words, the rule
+is: do not disturb me at the weekend, or in the evening and night. You can check
 it:
 
 ```python
@@ -100,7 +100,7 @@ In how many rows do they disagree?
 There, `either` is `True` and `both` is `False`.
 
 They agree when the two inputs are the same, because `True and True` and
-`True or True` are both `True`, and the same goes for `False`.
+`True or True` are both `True`, and it is the same for `False`.
 
 </details>
 
@@ -242,7 +242,7 @@ id: untangling-practice-quiet-hours
 2. `not (hour >= 23)` is `hour < 23`, and `not (hour < 7)` is `hour >= 7`.
 3. For whole-number hours, `hour < 23` is the same as `hour <= 22`.
 
-**Think about:** which hours are left when you take the quiet hours away?
+**Think about:** which hours are left when you remove the quiet hours?
 
 **Try this next:** a shop is closed `hour < 9 or hour >= 18`. When is it
 open?
@@ -280,7 +280,7 @@ rows, and `same_rule` checked all four. There is nothing left to check.
 
 Temperatures are numbers, and there are far more numbers than $-20$ to
 60: 35.5, $-100$, a million. The loop checked 81 of them and said nothing
-about the rest. What makes the temperature rule hold everywhere is the law, because each
+about the rest. The law makes the temperature rule hold everywhere, because each
 comparison is only ever True or False. The loop was a check on a few
 cases, and the law is the reason it holds for all of them.
 
@@ -301,8 +301,8 @@ number of nots flips the value, and an even number leaves it alone.
 **11. Fix.** A video website shows a film to anyone aged 18 or over, or
 anyone whose parent has said yes. The rule for blocking the film was
 `not (age >= 18 or parent_ok)`. Schlomi, who is learning Python too,
-wanted to remove the brackets, which makes sense: fewer brackets,
-fewer places to go wrong. But one word did not change the way it needed
+wanted to remove the brackets, so that there were fewer places for a
+mistake. But one word did not change the way it needed
 to, and now a 20-year-old on their own is blocked. Find it and change it.
 
 ```python exec
@@ -326,9 +326,9 @@ def block(age, parent_ok):
 ```
 
 Now the three lines print `False`, `False` and `True`. You could also
-write `age < 18 and not parent_ok`, which reads well aloud: block the film
-for someone under 18 whose parent has not said yes. Schlomi's instinct
-works, and the law is what makes it safe.
+write `age < 18 and not parent_ok`, which reads well aloud. It says to block
+the film for someone under 18 whose parent has not said yes. Schlomi's
+idea works, and the law makes it safe.
 
 </details>
 
@@ -346,8 +346,8 @@ id: untangling-practice-first-difference
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through; yours may differ and work as well. It has the
-same shape as `same_rule`. The only change is what it gives back:
+Here is one answer. Yours may be different and work too. It has the
+same shape as `same_rule`. Only the value it returns is different:
 
 ```python
 from itertools import product
@@ -405,7 +405,7 @@ print(same_rule(heating_on, heating_step_1, 3))   # True
 print(same_rule(heating_on, heating_step_2, 3))   # True
 ```
 
-In words: the heating comes on when it is not warm, someone is at home,
+In words, the heating comes on when it is not warm, someone is at home,
 and no window is open.
 
 </details>
@@ -440,8 +440,8 @@ for a in [0, 1]:
 
 The two columns match on all four rows. You can also multiply out the
 right side by hand: $(1 - a)(1 - b) = 1 - a - b + ab$, so the right side is
-$2 - a - b - 1 + a + b - ab$, which is $1 - ab$. That is the left side. The
-same law, proved in the space of numbers.
+$2 - a - b - 1 + a + b - ab$, which is $1 - ab$. That is the left side. So the
+law also holds in the space of numbers.
 
 </details>
 
@@ -462,9 +462,8 @@ print(rows, rows / 10_000_000)    # 1073741824 107.3741824
 ```
 
 Each extra input doubles the time, so 40 inputs would take over 30 hours,
-and 50 inputs over three and a half years. Checking every row is a real
-proof, but it stops being practical fast. That is why laws like De
-Morgan's matter: they let us prove two rules are the same without
-checking every row.
+and 50 inputs over three and a half years. A check of every row is a real
+proof, but it soon takes too long. Laws like De Morgan's let us prove
+two rules are the same without checking every row.
 
 </details>

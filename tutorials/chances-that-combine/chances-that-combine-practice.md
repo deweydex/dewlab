@@ -11,8 +11,8 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means answer in words. **Another
 way** means reach the same place by a second route. The answers are
-folded away until you open them, and each shows one way through: yours
-may be different, and work as well.
+folded away until you open them, and each shows one answer. Yours
+may be different and work too.
 
 Your toolkit is loaded on this page, `at_least_one` included, along with
 `all_pairs`, `product`, `combinations` and `simulate` from earlier in
@@ -35,9 +35,9 @@ Say it as a fraction, then run the cell above to see it as a decimal.
 
 $\frac{1}{4}$, which is `0.25`.
 
-The two tosses are independent: a coin does not remember. So the
+The two tosses are independent, because a coin does not remember. So the
 multiplication rule gives $\frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$.
-Listing them gives the same: heads-heads, heads-tails, tails-heads and
+A list gives the same: heads-heads, heads-tails, tails-heads and
 tails-tails, and only one of the four is two heads.
 
 </details>
@@ -60,13 +60,13 @@ for each one.
 - c. Not independent. After one king is gone, 3 kings are left in 51
   cards, not 4 in 52. The first draw changes the second.
 
-A useful question for each one: does the first event change what is
-left, or what is likely, for the second?
+For each one, ask: does the first event change what is left, or what
+is likely, for the second?
 
 </details>
 
 **3. Make.** A web server is up and working on 85% of days. Write one
-line that works out the chance it is down on a given day. What does Python
+line that calculates the chance it is down on a given day. What does Python
 print, and why is it not exactly `0.15`?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -80,13 +80,13 @@ chance is $1 - 0.85 = 0.15$. (A real server that was down on 15% of days
 would lose its customers quickly. Real ones aim for 99.9% and more.)
 
 The tiny extra at the end is the float rounding from
-[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros):
+[Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 0.85 has no exact binary form, so Python holds a number very close to
 it. The answer is right to about 16 digits.
 
 </details>
 
-**4. Predict.** What does this print? Work it out by hand first, with
+**4. Predict.** What does this print? Calculate it by hand first, with
 the complement.
 
 ```python
@@ -119,7 +119,7 @@ import random
 **5. Make.** An online game needs two players' phones to be online at
 the same minute. The first player's phone is online 40% of the time,
 and the second's 50% of the time, and the two have nothing to do with
-each other. What is the chance that both are online? Work it out with
+each other. What is the chance that both are online? Find it with
 the multiplication rule, then check it with `simulate`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -179,7 +179,7 @@ print(count, "of", len(deck))
 
 <details class="dl-answer"><summary>answer</summary>
 
-16 of 52, which is about 0.308.
+It is 16 of 52, which is about 0.308.
 
 A heart and a king are not mutually exclusive, because the king of
 hearts is both. There are 13 hearts and 4 kings, and 1 card is in both
@@ -192,7 +192,7 @@ The overlap rule is there to catch that.
 
 </details>
 
-**7. Fix.** A weather app works out the chance of at least one wet day in
+**7. Fix.** A weather app calculates the chance of at least one wet day in
 a week, when each day has a 30% chance of rain. It says 0.9998, which
 seems far too sure. Find why, and change it.
 
@@ -239,7 +239,7 @@ between 0 and 1. Only a sense of what the answer should be caught it.
 
 **8. Another way.** The Chevalier de Méré's bet was at least one six in
 four rolls of a die. The page found $1 - \left(\frac{5}{6}\right)^4$.
-Find the same answer a second way: loop over every possible set of four
+Find the same answer a second way. Loop over every possible set of four
 rolls, and count the ones with a six in them.
 
 ```python exec
@@ -286,7 +286,7 @@ fast way to the same count.
 
 **9. Make.** The Chevalier had a second bet: at least one double six in
 24 rolls of two dice. The story says he reasoned that $24 \times \frac{1}{36} =
-\frac{2}{3}$, so he should win. Work out the real chance with
+\frac{2}{3}$, so he should win. Find the real chance with
 `at_least_one`. Should he have taken the bet?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -299,9 +299,9 @@ It prints about `0.491`. That is a little less than a half, so over many
 games this bet loses slightly more often than it wins. He should not
 have taken it.
 
-His reasoning added chances, but 24 rolls are not mutually exclusive:
-two of them can both be double sixes. The complement gets it right: no
-double six in 24 rolls is $\left(\frac{35}{36}\right)^{24}$. The story
+His reasoning added chances, but 24 rolls are not mutually exclusive.
+Two of them can both be double sixes. The complement gives the right
+answer. No double six in 24 rolls is $\left(\frac{35}{36}\right)^{24}$. The story
 goes that he asked the mathematician Blaise Pascal why he was losing
 money, and that letters between Pascal and Pierre de Fermat in 1654
 about this kind of question helped start probability as a branch of maths.
@@ -309,19 +309,19 @@ about this kind of question helped start probability as a branch of maths.
 </details>
 
 **10. Make.** A GAA club raffle sells 20 tickets, and you have bought 3.
-Two prizes are drawn, and a drawn ticket is not put back. Work out:
+Two prizes are drawn, and a drawn ticket is not put back. Find:
 
 - a. the chance that you win both prizes;
 - b. the chance that you win at least one prize.
 
 Check both by listing every possible draw, with `all_pairs` and a loop
-that leaves out pairs where the same ticket is drawn twice.
+that skips pairs where the same ticket is drawn twice.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. For a: the first draw is yours with chance $\frac{3}{20}$. After
    that, how many of your tickets are left, and how many tickets in all?
-2. For b: the complement of "at least one" is "none". Work out the
+2. For b: the complement of "at least one" is "none". Find the
    chance that neither draw is yours, in the same way.
 3. For the listing: number the tickets 1 to 20, and say yours are 1, 2
    and 3.
@@ -370,7 +370,7 @@ Python too, uses `at_least_one(3 / 20, 2)` and gets about 0.2775, not
 
 <details class="dl-answer"><summary>answer</summary>
 
-The listing fits this raffle: about 0.284.
+The listing fits this raffle, at about 0.284.
 
 `at_least_one` keeps its promise only when the tries are
 independent. The raffle draws are not. A ticket that has been drawn is
@@ -379,8 +379,8 @@ is not yours, one of the 17 tickets that are not yours has gone, and
 your chance on the second draw goes up to $\frac{3}{19}$.
 
 Schlomi's answer would fit a raffle where each drawn ticket
-goes back in the drum before the next draw. Her move is fine; it
-belongs to a different space.
+goes back in the drum before the next draw. Her move works,
+but it belongs to a different space.
 
 </details>
 
@@ -394,7 +394,7 @@ id: chances-practice-stretch
 ```
 
 **12. Make.** A program keeps names in 12 boxes, called buckets. It
-works out a short code from each name, a hash, and the code chooses the
+calculates a short code from each name, a hash, and the code chooses the
 bucket. Suppose each name is equally likely to land in any of the 12.
 How many names must go in before the chance that two share a bucket is
 more than a half? Use a `while` loop and `product`.
@@ -433,7 +433,7 @@ print(names, chance_of_shared_bucket(names))
 It prints `5` and about `0.618`. With 4 names the chance is about
 0.427, so 5 is the first count where a shared bucket is more likely
 than not. With 365 in place of 12, the same loop stops at 23. A shared
-bucket does not break the program: it keeps a short list in each
+bucket does not break the program, because it keeps a short list in each
 bucket. But the birthday problem says the programmer should plan for
 it from the start.
 
@@ -441,8 +441,8 @@ it from the start.
 
 **13. Another way.** Here is a birthday problem small enough to list
 every case. A "year" has 4 days, and there are 3 people. Find the chance
-that two of them share a day twice: once with the complement and
-`product`, and once with three loops that list every case.
+that two of them share a day. Do it two ways: once with the complement
+and `product`, and once with three loops that list every case.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -509,7 +509,7 @@ print(simulate(room_of_2, 1000))
 
 The two steps are in the wrong order. The day is added to `seen` first,
 so the check `day in seen` always finds it, even for the first person.
-The function returns True straight away, every time. Check first, then
+The function returns True at once, every time. Check first, then
 add:
 
 ```python
@@ -527,7 +527,7 @@ print(simulate(room_of_2, 100000))
 ```
 
 Now it prints a number near $\frac{1}{365} \approx 0.0027$. The
-problem was about sequence: what happens when. Both lines did their
+problem was about sequence, or what happens when. Both lines did their
 jobs, and only their order had to change.
 
 </details>
@@ -540,7 +540,7 @@ higher or lower than 0.918? Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Lower.
+It should be lower.
 
 The only way to have no wet day is a whole dry week. With independent
 days, that needs seven separate pieces of luck, each with chance 0.7,
@@ -549,8 +549,8 @@ day makes the next one more likely, so a whole dry week is more likely
 than 0.08. The complement, at least one wet day, is then less likely
 than 0.918.
 
-The formula is not wrong. It answers the question for a space where the
-days are independent. Real weather is a different space, and the first
+The formula answers the question for a space where the days are
+independent. Real weather is a different space, and the first
 step is to notice that.
 
 </details>
@@ -563,20 +563,20 @@ could go wrong with each choice?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. It weighs a few things.
+Here is one answer. It looks at a few things.
 
 - **A question where the guess misses.** The surprise makes people want
   to know why, and it shows that a feeling about chance can be checked.
-  What can go wrong: to someone who expects to fail, a missed guess can
+  What can go wrong? To someone who expects to fail, a missed guess can
   look like more proof. It helps to say that most people guess the same way,
   and that the guess is not marked.
 - **A question where the guess lands.** It builds confidence, and it gives
-  the friend a first success. What can go wrong: if the point of the
+  the friend a first success. What can go wrong? If the point of the
   lesson is a surprise, starting safely can make the surprise feel like
   a trick later.
 
-What makes a missed guess safe is how it is treated: nobody marks it, and
-the answer is used to find out which way the guess leaned. Whichever
+A missed guess is safe when nobody marks it, and the answer shows which
+way the guess leaned. Whichever
 question you chose, say what you would do to make it safe.
 
 </details>

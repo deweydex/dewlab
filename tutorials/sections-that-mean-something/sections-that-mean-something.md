@@ -85,7 +85,7 @@ it. It can say "navigation" when it reaches a `<nav>`. Search engines
 use these tags too, and so do other developers who read your code.
 
 So choosing a semantic tag in place of a `<div>` changes what a page
-means. It does not change how the page looks: even with no CSS at all, a
+means. It does not change how the page looks. Even with no CSS at all, a
 browser shows a `<div>` and a `<section>` the same way. `<div>` is still
 useful. It is the right choice when a group of content has no special
 meaning, and we only need a box to style.

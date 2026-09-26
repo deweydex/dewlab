@@ -31,13 +31,13 @@ covers:
 A hailstone about a centimetre across hits the ground at about 12
 metres a second, a little over 40 km/h. But the moment it starts to
 fall, it is barely moving. So here is a question that sounds simple:
-how fast is it falling exactly 3 seconds after it starts? Not on
-average. Right then.
+how fast is it falling exactly 3 seconds after it starts? I do not
+mean on average. I mean right then.
 
 Stop on that "right then" for a moment. Speed is distance divided by
 time, and in a single instant the stone moves no distance, in no time.
 So what can "its speed right now" even mean? Some weather radars
-measure exactly that number. This page finds out what they measure.
+measure exactly that number. This page finds what they measure.
 
 On this page we:
 
@@ -53,8 +53,8 @@ On this page we:
 > time, not only at whole seconds, in real numbers, with floats in the
 > code. We can find the slope of a chord, from
 > [Straight lines](tutorial:straight-lines), and a limit, from
-> [Getting closer](tutorial:getting-closer). One thing usually goes
-> unsaid: in a single instant, nothing moves at all. So "distance
+> [Getting closer](tutorial:getting-closer). In a single instant,
+> nothing moves at all. So "distance
 > divided by time" at one instant is $\frac{0}{0}$, and this whole page
 > is about that $\frac{0}{0}$.
 
@@ -136,7 +136,7 @@ plt.ylabel("metres fallen")
 
 The curve starts flat and gets steeper, and after about 5 seconds it is
 close to a straight line. On a graph of distance against time, a steep
-part means many metres in each second: steep is fast.
+part means many metres in each second. Steep means fast.
 
 <aside class="dl-note" id="how-fast-note-hail">
 
@@ -208,7 +208,7 @@ chords climb, 10.46, 10.78, 10.90. After ten rows they are 11.0158 and
 Now watch it happen. In this short animation, the left side shows the
 stone at 3 seconds and at 3 + step. The right side shows the chord
 between those two moments. Each frame makes the step shorter. Before
-you run it: as the chord gets shorter, what happens to its direction?
+you run it, guess. As the chord gets shorter, what happens to its direction?
 
 ```python exec
 id: how-fast-shrink-2
@@ -243,9 +243,9 @@ FuncAnimation(figure, draw_frame, frames=24, interval=250)
 
 As the second stone moves up towards the first, the two ends of the
 chord close in. The blue line through them is drawn long, so you can
-see its direction: it turns a little less on each frame, and settles.
-The slope above the graph falls to about 11.02. The animation loops;
-run the cell again to watch it from the start.
+see its direction. It turns a little less on each frame, and settles.
+The slope above the graph falls to about 11.02. The animation loops.
+Run the cell again to watch it from the start.
 
 ## The derivative is a limit
 
@@ -259,10 +259,10 @@ $\frac{f(a + h) - f(a)}{h}$. Its limit, as $h$ gets close to 0, is the
 
 $$f'(a) = \lim_{h \to 0} \frac{f(a + h) - f(a)}{h}$$
 
-At $h = 0$ exactly, the fraction is $\frac{0}{0}$: a hole, like the
-one on the last page. The derivative is the limit at that hole: the
-slope of the curve at a single point. That is what "its speed right
-now" means. I think it is a lovely answer to a question that looked
+At $h = 0$ exactly, the fraction is $\frac{0}{0}$. That is a hole,
+like the one on the last page. The derivative is the limit at that
+hole. It is the slope of the curve at a single point. "Its speed right
+now" means this slope. I think it is a lovely answer to a question that looked
 impossible.
 
 Speed at one instant is an *instantaneous rate of change*: the rate of
@@ -276,7 +276,8 @@ a time. It sends out radio waves. A wave that bounces off a moving
 hailstone comes back with its frequency changed a little, by an amount
 that depends on how fast the stone moves along the beam. This is the
 *Doppler effect*. A radar pointing straight up reads the fall speed
-from its echo, over a tiny moment: the derivative, measured.
+from its echo, over a tiny moment. So the radar measures the
+derivative.
 
 <aside class="dl-note" id="how-fast-note-doppler">
 
@@ -310,7 +311,7 @@ is
 $$\frac{f(a + h) - f(a - h)}{2h}$$
 
 and it has the same limit, the derivative. Now it becomes a tool. Here
-is its promise; the body is yours to write.
+is its promise. You write the body.
 
 ```python exec
 id: how-fast-toolkit
@@ -342,7 +343,7 @@ kicked ball on
 [Drawing a rule](tutorial:drawing-a-rule#curves-that-bend-parabolas-and-cubics)
 is at its top after 2 seconds, where for a moment it is going neither
 up nor down. Until `derivative_at` is written, the first test stops
-with a `TypeError`, because `...` gives back `None`.
+with a `TypeError`, because `...` returns `None`.
 
 ```python exec
 id: how-fast-toolkit-tests
@@ -370,8 +371,9 @@ does it divide by?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Here is one way through. One line does it: the rise of the centred chord
-over its run, which is two steps long.
+Here is one answer. Yours may be different and work too. One line does
+it. It divides the rise of the centred chord by its run, which is two
+steps long.
 
 ```python
 def derivative_at(rule, x, step=1e-6):
@@ -386,7 +388,7 @@ def derivative_at(rule, x, step=1e-6):
 </details>
 
 The hailstone's speed at 3 seconds is 11.01498 metres a second. The
-tests use a tolerance of $10^{-6}$, not the usual $10^{-9}$: the next
+tests use a tolerance of $10^{-6}$, not the usual $10^{-9}$. The next
 section says why.
 
 ## Why the step cannot be 0, or too small
@@ -408,7 +410,7 @@ and a computer cannot take a limit. It can only take a small step.
 
 So why not a very small step, like $10^{-15}$? The model comes with a
 speed rule of its own, $12(1 - e^{-t/1.2})$ metres a second. Let's take
-it as the true slope, and measure how far out each step is. Where do
+it as the true slope, and measure the error at each step. Where do
 you expect the error to be smallest?
 
 ```python exec
@@ -427,24 +429,25 @@ here.
    times shorter, this error gets about 100 times smaller: $10^{-3}$ at
    a step of 0.1, $10^{-9}$ at $10^{-4}$.
 2. A short chord subtracts two distances that are nearly the same.
-   Each distance is a float, a tiny way off, as on
+   Each distance is a float, with a tiny error, as on
    [How a computer stores a number](tutorial:how-a-computer-stores-a-number#when-rounding-errors-add-up).
-   Subtracting leaves only that tiny error, and dividing by a tiny
+   When we subtract them, only that tiny error is left, and dividing by a tiny
    $2h$ makes it large.
 
 The first error falls as the step shrinks, and the second one rises.
 They balance somewhere near $10^{-5}$ or $10^{-6}$. At $10^{-6}$ the
 error is less than a billionth of a metre a second. At $10^{-15}$ the
-answer is off by about 0.36, over 3%, which is
-[Getting closer](tutorial:getting-closer#when-the-floats-run-out)
-again: the floats have run out. So `derivative_at` uses $10^{-6}$ by
+answer is wrong by about 0.36, over 3%. As on
+[Getting closer](tutorial:getting-closer#when-the-floats-run-out),
+the floats have run out. So `derivative_at` uses $10^{-6}$ by
 default. It is a good step for rules whose values are of ordinary
-size, and a chord, not a limit, so its answer is close, not exact.
+size. It still makes a chord, not a limit, so its answer is close, not
+exact.
 
 ## The tangent line
 
 The derivative is a slope, so it gives a straight line through the
-point: the line through $(3, f(3))$ with slope $f'(3)$. As on
+point. It is the line through $(3, f(3))$ with slope $f'(3)$. As on
 [Straight lines](tutorial:straight-lines#a-line-as-a-rule-y-mx-c),
 $c = y_1 - m x_1$. What will this line look like beside the curve?
 
@@ -501,7 +504,7 @@ id: how-fast-tangent-your-turn
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page found a derivative as a number, from the slopes of shorter
-and shorter chords, and gave you a tool that works it out for any
+and shorter chords, and gave you a tool that calculates it for any
 rule.
 
 Most courses teach the rules for derivatives early: for $x^n$, the

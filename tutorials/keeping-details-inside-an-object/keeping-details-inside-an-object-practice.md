@@ -7,7 +7,8 @@ version: 2026.09.26.1
 
 # Encapsulation: keeping an object's data behind its methods — Practice
 
-Problems on keeping rules inside a class, and three from earlier pages.
+This page has problems on keeping rules inside a class, and three from
+earlier pages.
 Try each problem before you open anything under it, and run the cells to
 test your guesses.
 
@@ -49,7 +50,7 @@ What will the last line print?
 <details class="dl-answer"><summary>why</summary>
 
 The refusal, then `-10`. `burn` refused the first burn. The next line
-reached in to `_fuel` and took 80 away directly, and nothing checked it.
+changed `_fuel` directly and took 80 away, and nothing checked it.
 The underscore asked it not to. It could not stop it.
 
 </details>
@@ -146,8 +147,8 @@ when both give the same result here?
 did not stop `heating._temperature = 50`.
 
 `22` is a safe value, so today both lines give the same result. But the
-next value might not be safe, and only the method checks it. Calling the
-method means the check always runs.
+next value might not be safe, and only the method checks it. If you call
+the method, the check always runs.
 
 </details>
 
@@ -218,7 +219,8 @@ the new version.
 
 `print(spare._millilitres / 1000)` stops with an `AttributeError`,
 because the object has no `_millilitres` field any more. Callers that
-used only the methods are safe. Callers that reached in are not.
+used only the methods are safe. Callers that used the field directly are
+not.
 
 </details>
 
@@ -229,11 +231,10 @@ for one idea, or two ideas?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-Two ideas, seen from two sides. Encapsulation is about where the data and
+They are two ideas, seen from two sides. Encapsulation is about where the data and
 its rules live: behind the class's own methods. Abstraction is about what
 a caller has to know: what `dive(250)` does, not the `if` inside it.
-Keeping the data behind methods is what lets a caller see only the
-methods.
+When the data is behind methods, a caller only needs to see the methods.
 
 </details>
 
@@ -350,7 +351,7 @@ What will the last line print?
 
 `0`. The count was stored in a plain name, which vanished when `dive`
 ended. It should be `self._refusals = self._refusals + 1`. (And the last
-line reaches in to a private field. A getter, `get_refusals()`, would be
+line uses a private field directly. A getter, `get_refusals()`, would be
 the polite way to ask.)
 
 </details>

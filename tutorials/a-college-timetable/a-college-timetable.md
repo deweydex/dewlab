@@ -29,7 +29,7 @@ teach in two places, at the same time.
 
 This page designs and builds that database, then writes the query that
 actually finds a clash. It is the longest page in this module on
-purpose. A short example can show you the shape of a technique; a
+purpose. A short example can show you the shape of a technique. A
 problem this size is closer to the one a real college's admin office
 actually has.
 
@@ -38,25 +38,26 @@ actually has.
 Start with what the college needs to keep track of, before writing a
 single `CREATE TABLE`.
 
-A *programme* is a course a student enrols in — Software Development,
-Business Studies, Culinary Arts. A programme has a name, and nothing
+A *programme* is a course a student enrols in, such as Software
+Development, Business Studies or Culinary Arts. A programme has a name,
+and nothing
 else worth storing about it here.
 
 A *module* belongs to one programme. Software Development includes
-Database Methods and Web Authoring; Business Studies includes
+Database Methods and Web Authoring. Business Studies includes
 Bookkeeping and Marketing Fundamentals. A module needs its own name, and
 a column pointing back at the programme it belongs to.
 
 A *teacher* has a name. Nothing here says which module a teacher
-teaches — that fact belongs somewhere else, because the same teacher
+teaches. That fact belongs somewhere else, because the same teacher
 can teach more than one module, and the same module could, in principle,
 be taught by more than one teacher across different groups.
 
 A *room* has a name and a capacity: how many people can sit in it at
 once.
 
-None of the four tables above says anything about *when*. That is the
-job of a fifth table, for *sessions*: one row per class, naming which
+None of the four tables above says anything about *when*. A fifth table,
+for *sessions*, does that. It has one row per class, naming which
 module it is, which teacher is running it, which room it is in, what
 date, and what time it starts and ends.
 
@@ -67,13 +68,12 @@ table has that table's key name, and sits straight under its own key.
 So `session_tbl` starts with `session_id`, then `module_id`,
 `teacher_id` and `room_id`, then the date and times.
 
-The date is worth a design decision of its own. Storing it as a weekday
-name — `'Monday'`, `'Tuesday'` — reads well, but sorts alphabetically:
-`'Friday'` comes before `'Monday'` as plain text, which would put the
-end of the week at the top of every list this page builds. An actual
-calendar date, written `'2026-09-14'`, sorts the same way whether the
-computer reads it as text or as a date — the reason this page uses real
-dates instead.
+The date needs a design decision of its own. A weekday name, such as
+`'Monday'` or `'Tuesday'`, reads well, but it sorts alphabetically. As
+plain text, `'Friday'` comes before `'Monday'`, which would put the end
+of the week at the top of every list this page builds. A calendar date,
+written `'2026-09-14'`, sorts the same way whether the computer reads it
+as text or as a date. So this page uses real dates instead.
 
 ![Five tables. programme_tbl, teacher_tbl and room_tbl stand on their own.
 module_tbl points at programme_tbl, with a line from programme_id to
@@ -81,10 +81,10 @@ programme_id. session_tbl points at module_tbl, teacher_tbl and room_tbl,
 so three lines arrive at it, each from a key to the column of the same
 name, and none leave.](timetable-erd.svg)
 
-Four tables that describe things, and a fifth that describes an event
-tying several of them together, is a shape you will meet again outside
-this course. `session_tbl` is the table every clash lives or does not live
-in — everything else exists so a session can point at the right row
+Four tables describe things, and a fifth describes an event that ties
+several of them together. You will meet this shape again outside this
+course. If there is a clash, it is in `session_tbl`. The other tables
+exist so a session can point at the right row
 instead of repeating a teacher's name or a room's capacity on every row
 that mentions them.
 
@@ -179,17 +179,18 @@ INSERT INTO session_tbl (module_id, teacher_id, room_id, session_date, start_tim
 SELECT COUNT(*) AS session_count FROM session_tbl;
 ```
 
-Fourteen sessions, across three programmes' worth of modules, five
-teachers and four rooms, running over one working week, Monday
-2026-09-14 to Friday 2026-09-18. `start_time` and `end_time` are stored
-as text, written the same way a clock shows them — `'09:00'`, `'13:00'`
-— with a leading zero on any hour before ten. Written consistently like
+The box adds fourteen sessions, across three programmes' worth of
+modules, five teachers and four rooms, over one working week, from
+Monday 2026-09-14 to Friday 2026-09-18. `start_time` and `end_time` are
+stored as text, the same way a clock shows them, such as `'09:00'` and
+`'13:00'`, with a leading zero on any hour before ten. Written
+consistently like
 that, ordinary text comparison already puts them in the right order:
-`'09:00' < '11:00'` is true, the same way it would be for numbers. That
-is what the rest of this page relies on.
+`'09:00' < '11:00'` is true, the same way it would be for numbers. The
+rest of this page relies on this.
 
-The five `DROP TABLE IF EXISTS` lines at the top delete any tables an
-earlier run left behind, so the box builds the whole database from
+The five `DROP TABLE IF EXISTS` lines at the top delete any tables from
+an earlier run, so the box builds the whole database from
 nothing each time you run it. They go in the opposite order to the
 `CREATE TABLE`s. `session_tbl` goes first, because its rows point into
 three of the other tables, and `programme_tbl` goes last. Some databases
@@ -197,15 +198,14 @@ will not delete a table while another table still points into it.
 
 The line for `Liam O''Sullivan` is worth a second look: two single
 quotes in a row, inside a name that already has one. SQL uses a doubled
-single quote to mean one literal quote inside a string — the same
-problem an apostrophe in a name causes in most languages that quote
-strings with `'`.
+single quote to mean one quote inside a string. An apostrophe in a name
+causes the same problem in most languages that quote strings with `'`.
 
 ## Asking it real questions
 
-A single `session_tbl` row is not very readable on its own — it is mostly
-numbers pointing at other tables. Joining all five tables together turns
-those numbers back into names.
+A single `session_tbl` row is not very readable on its own. It is mostly
+numbers pointing at other tables. A join of all five tables turns those
+numbers back into names.
 
 ```sql exec
 id: everyones-full-timetable
@@ -223,9 +223,10 @@ JOIN room_tbl ON session_tbl.room_id = room_tbl.room_id
 ORDER BY session_tbl.session_date, session_tbl.start_time;
 ```
 
-Three `JOIN`s, one for each table `session_tbl` points at — the same idea
-[a second table and a join](tutorial:a-second-table-and-a-join) covered
-with two tables, extended to four. A `WHERE` narrows this to one
+The query has three `JOIN`s, one for each table `session_tbl` points at.
+[A second table and a join](tutorial:a-second-table-and-a-join) used the
+same idea with two tables. Here it joins four. A `WHERE` narrows this to
+one
 person's own week:
 
 ```sql exec
@@ -244,36 +245,35 @@ WHERE teacher_tbl.name = 'Aoife Byrne'
 ORDER BY session_tbl.session_date, session_tbl.start_time;
 ```
 
-Five rows for Aoife Byrne. Two of them share a date, 2026-09-14 —
+Aoife Byrne has five rows. Two of them share a date, 2026-09-14:
 Database Methods in IT Lab 1 from 09:00 to 11:00, and Bookkeeping in
 Room 101 from 10:00 to 12:00. Read those two rows again, side by side.
-Something about them does not add up — the next section is what
-actually catches it.
+Something about them looks wrong. The next sections find it.
 
 ## Finding a clash
 
 Two sessions clash when they share a room (or a teacher) and their
-times overlap. "Overlap" needs a precise test, because two sessions
-back to back — one ending at 11:00, the next starting at 11:00 — are
-not a clash. They only overlap if each one starts before the other
+times overlap. "Overlap" needs a precise test, because two sessions back
+to back, one ending at 11:00 and the next starting at 11:00, are not a
+clash. They only overlap if each one starts before the other
 ends.
 
 Try that rule on paper first, with two made-up sessions:
 
 - Session A runs 10:00 to 12:00. Session B runs 11:00 to 13:00. Does A
-  start before B ends? 10:00 is before 13:00 — yes. Does B start before
-  A ends? 11:00 is before 12:00 — yes. Both hold, so they overlap,
+  start before B ends? 10:00 is before 13:00, so yes. Does B start before
+  A ends? 11:00 is before 12:00, so yes. Both hold, so they overlap,
   between 11:00 and 12:00.
 - Session A runs 09:00 to 11:00. Session C runs 11:00 to 13:00. Does A
-  start before C ends? 09:00 is before 13:00 — yes. Does C start before
-  A ends? 11:00 is before 11:00 — no, 11:00 is not before itself. One
+  start before C ends? 09:00 is before 13:00, so yes. Does C start before
+  A ends? No, because 11:00 is not before itself. One
   condition fails, so A and C do not overlap. They are back to back.
 
-That second check is the one that keeps a normal, fully booked day from
-being reported as one long clash.
+That second check stops a normal, fully booked day from being reported
+as one long clash.
 
-Turning that into SQL means comparing a `session_tbl` row against every
-other `session_tbl` row — the same table, joined to itself. A *self-join*
+In SQL, we compare a `session_tbl` row against every other `session_tbl`
+row. The same table is joined to itself. A *self-join*
 gives each side of the comparison its own name, so `WHERE` can tell them
 apart:
 
@@ -301,23 +301,23 @@ WHERE s1.start_time < s2.end_time
 `session_tbl AS s1` and `session_tbl AS s2` are the same table, given two
 different names so a row can be compared against another row from the
 very table it came from. `s1.room_id = s2.room_id AND s1.session_date =
-s2.session_date` narrows the comparison to sessions that could possibly
-clash — same room, same date — before the overlap test even runs.
+s2.session_date` narrows the comparison to sessions that could clash, in
+the same room on the same date, before the overlap test runs.
 `s1.session_id < s2.session_id` rules out comparing a row with itself (which would
 trivially "overlap" its own time) and stops each real pair from being
-reported twice, once each way round. The last two lines are exactly the
-rule worked out on paper above.
+reported twice, once each way round. The last two lines are the rule we
+tested on paper above.
 
 One row comes back: the two Room 204 sessions from 2026-09-14,
 overlapping between 11:00 and 12:00. Aoife Byrne's own two sessions on
-that same date are not in this result — this query only checks rooms so
+that same date are not in this result. This query only checks rooms so
 far, and her two sessions are in different rooms.
 
 ## The same idea, for a teacher
 
 A teacher booked into two sessions at once is the same problem, with
 `teacher_id` in place of `room_id`. Try writing that query yourself
-before opening the fold below — everything it needs is in the query
+before opening the fold below. Everything it needs is in the query
 above, with one join and one column changed.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -327,18 +327,18 @@ above, with one join and one column changed.
    line, and both
    `start_time`/`end_time` comparisons unchanged.
 2. `ON s1.room_id = s2.room_id` becomes `ON s1.teacher_id =
-   s2.teacher_id` — a teacher clash means the same teacher, not the
+   s2.teacher_id`. A teacher clash means the same teacher, not the
    same room.
 3. `JOIN room_tbl ON room_tbl.room_id = s1.room_id` becomes a join to
    `teacher_tbl` instead, so the result can show a name rather than a
    `teacher_id`.
 
-**Think about:** why `s1.session_date = s2.session_date` still belongs
-in the `ON` clause even though nothing else changed about it.
+**Think about:** why does `s1.session_date = s2.session_date` still
+belong in the `ON` clause, even though nothing about it changed?
 
 **Try this next:** a version that finds a teacher double-booked, *or* a
 room double-booked, in one query. `OR` between the two `ON` conditions
-gets partway there — what would need to change about the columns the
+gets partway there. What would need to change about the columns the
 query selects, once a room clash and a teacher clash can both appear in
 the same row?
 
@@ -368,8 +368,8 @@ WHERE s1.start_time < s2.end_time
 
 Run against the data on this page, one row comes back: Aoife Byrne,
 2026-09-14, one session from 09:00 to 11:00 and the cover session added
-later at 10:00 to 12:00 — the same clash `one-teachers-timetable`
-already showed the raw ingredients of.
+later at 10:00 to 12:00. `one-teachers-timetable` already showed the two
+rows of this clash.
 
 </details>
 
@@ -392,27 +392,25 @@ Then run `find-room-clashes` and `find-teacher-clashes` again. If either
 one now returns a row it did not before, your new session clashes with
 something already on the timetable. Change its room, or its time, and
 run both boxes again until neither reports it. If neither query changes
-at all, you picked a genuinely free slot on the first try — check by
-choosing a room and time you can already see is busy in
-`everyones-full-timetable`, and confirm the clash queries actually catch
-it.
+at all, you picked a free slot on the first try. To check, choose a room
+and time you can already see is busy in `everyones-full-timetable`, and
+see whether the clash queries catch it.
 
 ## What you have now
 
-- **A five-table design for one real problem.** Four tables describing
-  things (`programme_tbl`, `teacher_tbl`, `room_tbl`, `module_tbl`) and
-  one describing an event that ties several of them together
-  (`session_tbl`) — a shape worth recognising outside this course, not
-  just inside it.
-- **A real date sorts correctly; a weekday name does not.** `'Friday'`
+- **A five-table design for one real problem.** Four tables describe
+  things (`programme_tbl`, `teacher_tbl`, `room_tbl`, `module_tbl`), and
+  one describes an event that ties several of them together
+  (`session_tbl`). You will see this shape outside this course too.
+- **A real date sorts correctly. A weekday name does not.** `'Friday'`
   comes before `'Monday'` as plain text. `'2026-09-18'` comes after
   `'2026-09-14'`, both as text and on a calendar.
-- **Self-join.** Joining a table to itself, under two different names,
-  to compare one of its rows against another.
+- **Self-join.** A self-join joins a table to itself, under two
+  different names, to compare one of its rows against another.
 - **The overlap test.** Two time ranges overlap only if each one starts
-  before the other ends — both conditions, not just one.
-- **`s1.session_id < s2.session_id`.** The line that keeps a self-join
-  from matching a row with itself, and from reporting the same pair
+  before the other ends. Both conditions must be true, not just one.
+- **`s1.session_id < s2.session_id`.** This line stops a self-join from
+  matching a row with itself, and from reporting the same pair
   twice.
 
 ## Where to read more

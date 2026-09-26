@@ -55,9 +55,9 @@ too. (In the first rule, `list-style: none` removes the list's
 bullet points.)
 
 Everything else stayed the same: the links, their order and their
-wording. This is *consistent navigation*: one menu, copied onto every
-page, with only the current-page marker changing. A visitor who knows
-their way around one page already knows where everything is on the
+wording. This is called *consistent navigation*. One menu is copied onto
+every page, and only the current-page marker changes. A visitor who
+knows one page already knows where everything is on the
 next.
 
 Oftentimes, when we copy a menu onto a new page, we forget to move the

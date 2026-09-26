@@ -16,8 +16,8 @@ circle. These problems move between them, often without saying so.
 
 Each answer is hidden in a fold under its question. Some problems also
 have a hint fold, to open first if you get stuck. Draw the situation
-before you calculate. In this topic more than any other, the picture is
-where mistakes become visible.
+before you calculate. In this topic more than any other, the picture
+shows you the mistakes.
 
 ## Tools
 
@@ -79,8 +79,7 @@ Use $x = r\cos\theta$ and $y = r\sin\theta$. Since
 $\cos 30° = \dfrac{\sqrt{3}}{2}$ and $\sin 30° = \dfrac{1}{2}$, that
 gives exactly $x = 5\sqrt{3} \approx 8.66$ and $y = 5$.
 
-This is the unit circle, made 10 times bigger. That is what the unit
-circle is for.
+This is the unit circle, made 10 times bigger.
 
 </details>
 
@@ -88,7 +87,7 @@ circle is for.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because dividing loses the quadrant.
+Because the division loses the quadrant.
 
 $\dfrac{4}{3}$ and $\dfrac{-4}{-3}$ are the same number. So `atan`
 cannot tell $(3, 4)$ from $(-3, -4)$. It returns 53.13° for both, but
@@ -126,12 +125,12 @@ Find the third side, and the other two angles.
    angle between them give you the third side.
 3. Once you have all three sides, the sine rule will give you an angle.
 4. Use it on the *shorter* of the two sides you started with. That
-   matters; see "Think about" below.
+   matters. See "Think about" below.
 
 **Think about:** the sine rule cannot tell an acute angle from the
 obtuse angle that pairs with it, because both have the same sine. The
-angle opposite the shorter side is always acute. So choosing it removes
-the doubt, and you do not have to guess.
+angle opposite the shorter side is always acute. So if you choose it,
+there is no doubt, and you do not have to guess.
 
 **Try this next:** find the third angle by subtracting from 180°
 instead, and check that it agrees. Which method would you trust if the
@@ -169,7 +168,6 @@ alone. First find $s$, half the perimeter. Then the area is
 $\sqrt{s(s - a)(s - b)(s - c)}$. Here $s = \dfrac{5 + 12 + 13}{2} = 15$,
 and the area is $\sqrt{15 \times 10 \times 3 \times 2} = \sqrt{900} = 30$.
 It gives the same 30 without knowing that the triangle is right-angled.
-That is what Heron's formula is for.
 
 </details>
 
@@ -181,7 +179,7 @@ That is what Heron's formula is for.
 1. You have two sides and an angle that is *not* between them. Sketch
    it: draw the 8, mark the 30° at one end, and swing the 5 from the
    other end.
-2. The sine rule gives you the angle opposite the 8. Work out its sine
+2. The sine rule gives you the angle opposite the 8. Find its sine
    first, before you take an inverse.
 3. Now stop. Your calculator gives one angle. Is there another angle
    between 0° and 180° with the same sine?
@@ -205,9 +203,9 @@ $\sin \theta = \dfrac{8 \sin 30°}{5} = \dfrac{8 \times 0.5}{5} = 0.8$. So
 the angle opposite the 8 is either 53.13° or 126.87°. Both have a sine
 of 0.8.
 
-This is the ambiguous case, and it really is ambiguous: two different
-triangles fit everything you were told. A drawing shows why. Swinging
-the 5 from the end of the 8 crosses the base line twice.
+This is the ambiguous case. Two different triangles fit everything you
+were told. A drawing shows why. When you swing the 5 from the end of the
+8, it crosses the base line twice.
 
 The unit circle explains it in one line. Sine is symmetric about 90°,
 so $\sin\theta$ never tells you which side of 90° you are on.
@@ -230,8 +228,8 @@ $\sqrt{41}$, so $s \approx 8.89$. The formula gives 15.
 **The coordinate formula.**
 $\frac{1}{2}|x_1(y_2 - y_3) + x_2(y_3 - y_1) + x_3(y_1 - y_2)| = \frac{1}{2}|0 + 6(5) + 2(0)| = 15$.
 
-When three routes agree, you can trust the answer. Checking like this is
-a good habit to build.
+When three routes agree, you can trust the answer. It is a good habit to
+check like this.
 
 </details>
 
@@ -247,8 +245,8 @@ upwards at $x = 0$ itself, and again at $x = \pi$.
 
 The 3 stretches the wave upwards and downwards. The 2 squashes it from
 side to side, and halves the period from $2\pi$ to $\pi$. The number
-inside does the opposite of what it looks like it should do. That
-catches everybody at least once.
+inside does the opposite of what it looks like it should do. Almost
+everybody makes this mistake at least once.
 
 </details>
 
@@ -259,9 +257,9 @@ they?
 
 A quarter turn: $\cos x = \sin\left(x + \dfrac{\pi}{2}\right)$.
 
-They are the same wave, started at a different point. That is what the
-unit circle says: cosine is the across value, and sine is the up value,
-of the same turning point.
+They are the same wave, started at a different point. The unit circle
+shows this. Cosine is the across value, and sine is the up value, of the
+same turning point.
 
 </details>
 
@@ -301,8 +299,8 @@ long in each cycle can it enter the harbour?
 4. That arc is a fraction of a full turn. The same fraction of the
    period is your answer.
 
-**Think about:** you never needed to work out an actual clock time. The
-answer came out as a fraction of the cycle. So it is the same for any
+**Think about:** you never needed to find an actual clock time. The
+answer was a fraction of the cycle. So it is the same for any
 harbour with this middle level and amplitude.
 
 **Try this next:** try a boat that needs 4.5 m, and then one that needs
@@ -351,7 +349,7 @@ different notation. This is the one the rest are built from.
 
 **14.** Three phone masts are at $(0, 0)$, $(10, 0)$ and $(4, 8)$, in
 kilometres. A phone is 6 km from the first mast and 7 km from the
-second. Where might it be? Does the third mast settle it?
+second. Where might it be? Does the third mast tell you which?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -370,7 +368,7 @@ more accuracy does not fix that. The third measurement tells you which
 side you are on. It is not about precision.
 
 **Try this next:** what if the third mast were at $(4, 0)$ instead, on
-the line between the other two? Would it still settle the question?
+the line between the other two? Would it still tell you which?
 
 </details>
 
@@ -505,7 +503,7 @@ three sides and never runs into the ambiguous case. `acos` returns a
 value between 0° and 180°, and that is exactly the range an inside angle
 can have. So the doubt that troubles the sine rule cannot happen here.
 
-Checking that the three angles add up to 180° is a free test. It is
-worth an `assert`, instead of checking by eye.
+The three angles must add up to 180°, so you get an extra test with no
+extra work. Use an `assert` for it, instead of checking by eye.
 
 </details>

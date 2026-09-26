@@ -23,11 +23,11 @@ Here is a shopping list, drawn as a grid of small boxes. Look at it for a
 moment before you continue. What does every line of the list have? And
 what changes from one line to the next?
 
-Every line has an item, a quantity and an aisle. What changes is what is
-in them: milk on one line, bread on the next.
+Every line has an item, a quantity and an aisle. The values in them
+change: milk on one line, bread on the next.
 
-A grid like this is a ***table***. That is really all a table is: boxes
-with values in them, arranged in rows and columns. Things only get
+A grid like this is a ***table***. A table is only boxes with values in
+them, arranged in rows and columns. Things only get
 interesting when we want particular values in particular boxes, by a rule
 that everyone follows. The parts have names:
 
@@ -41,12 +41,12 @@ that everyone follows. The parts have names:
   database calls a column an ***attribute***.
 - The name at the top of a column is its ***header***.
 
-The rule that makes a grid into a table is this one: every row has the
-same columns. A new line on the shopping list gets an item, a quantity
+One rule makes a grid into a table. Every row has the same columns. A
+new line on the shopping list gets an item, a quantity
 and an aisle, like every line before it. A database table follows the
 same rule, and this page builds one.
 
-Three things to keep in mind as you go:
+Remember three things as you go:
 
 - Every box of SQL on this page is yours to change. Change something, run
   it again, and see what happens.
@@ -80,7 +80,7 @@ dinosaur a name, a diet, a length and a period. None of them gives it a
 `dinosaur_id`. What do you think Triceratops's `dinosaur_id` will be,
 once the table is built? Write your guess down, or type it on the first
 line of the box as `-- my guess: …`. A line that starts with two dashes
-is a ***comment***: SQL does not run it.
+is a ***comment***. SQL does not run it.
 
 Then click Run.
 
@@ -116,7 +116,7 @@ Triceratops, and so on down to 6. Did that match your guess?
 
 That box ran four instructions, one after another. Each one is called a
 ***statement***, and each one ends with a semicolon, `;`. Three of them
-do the main work, and the picture shows what each one leaves behind.
+do the main work, and the picture shows what each one does.
 
 ![Three steps, one under the other. Step 1: CREATE TABLE makes the
 table, its name and its columns, with no rows yet. It is drawn as an empty
@@ -127,7 +127,7 @@ to 6, Allosaurus, with the dinosaur_id column highlighted. Step 3:
 SELECT * FROM dinosaur_tbl reads every row back, and shows them under the
 box. Reading changes nothing.](three-statements.svg)
 
-What each part of the box does:
+Here is what each part of the box does:
 
 - **CREATE TABLE** names the table and lists its columns. Each column has
   a name and a ***data type***: the kind of value it holds. `TEXT` is for
@@ -147,7 +147,7 @@ What each part of the box does:
   statement that asks a table for rows like this is called a
   ***query***.
 - **DROP TABLE IF EXISTS dinosaur_tbl**, at the top, deletes any
-  dinosaur table left from an earlier run. That is what lets you run the
+  dinosaur table left from an earlier run. This line lets you run the
   box as often as you like. Each run starts from nothing.
 
 Let's read one row by hand. The fourth line under `VALUES` is
@@ -191,8 +191,8 @@ attribute, one row per record. The difference is how the data changes.
 Anyone looking at a spreadsheet can type into any cell they see. A
 table's rows change only through a statement that somebody runs on
 purpose, such as `INSERT`. Later in this course, several programs will
-read and change the same table at the same time. That rule is what
-keeps the table correct when they do.
+read and change the same table at the same time. That rule keeps the
+table correct when they do.
 
 ## Your turn
 

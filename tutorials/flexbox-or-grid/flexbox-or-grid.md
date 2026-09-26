@@ -88,7 +88,7 @@ of their own, and they grew to fill it. They no longer lined up with
 the boxes above them. As the preview narrowed, the flex row wrapped
 again, to two boxes on a line, then one.
 
-Grid works in two directions at once. It sets up rows and columns, and
+Grid works in two directions at once. It makes rows and columns, and
 every box goes into a cell. Boxes 4 and 5 sat in the first two
 columns, under boxes 1 and 2, and the third cell stayed empty. The grid
 kept three columns at every width, and the columns got narrower,
@@ -96,13 +96,13 @@ because our grid asks for three columns and nothing else.
 
 ![Five numbered boxes laid out two ways, side by side. On the left, flexbox with wrapping: boxes 1, 2 and 3 share the first row, and boxes 4 and 5 share the second row, each half its width. On the right, a grid with three columns: boxes 1, 2 and 3 fill the first row, and boxes 4 and 5 sit under boxes 1 and 2, with an empty dashed cell after them. The caption under flexbox says each row shares out its own space. The caption under grid says the columns line up in every row.](flex-or-grid.svg)
 
-A short way to say it: with flexbox, the content decides how much room
-each box gets. With grid, the grid decides, and the content fills it.
+So with flexbox, the content decides how much room each box gets. With grid, the grid decides, and the content fills it.
 
 ## Which one to reach for
 
-Both tools can do many of the same jobs, so there is often no wrong
-answer. Still, each is at its best in some places:
+Both tools can do many of the same jobs, so often either one is
+fine. Still, each one suits some
+jobs best:
 
 | Job | Often done with | Why |
 |---|---|---|
@@ -163,8 +163,8 @@ The rules for accessible websites, called WCAG, ask for two things
 here. When the order of content matters to its meaning, a screen reader
 must be able to read it in an order that makes sense. And the keyboard
 focus must move through the page in an order that makes sense. The
-flexbox rules themselves say the same thing: `order` is for how things
-look, and it is no replacement for putting the HTML in the right order.
+flexbox rules themselves say the same thing. `order` changes only how
+things look. It does not replace putting the HTML in the right order.
 
 A simple test catches most problems. Load the page, put the mouse away,
 and press Tab from the top to the bottom. Does the outline move in the

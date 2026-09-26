@@ -15,11 +15,11 @@ attributes. There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. Being wrong, and then finding out
-why, teaches more than reading the answer.
+the answer. Try the problem first. You learn more from a mistake, and its
+reason, than from reading the answer.
 
-A browser does not stop when it meets a mistake in HTML. It guesses
-what we meant, and carries on. So a small mistake in the text can make
+A browser does not stop when it meets a mistake in HTML. It guesses what
+we meant, and continues. So a small mistake in the text can make
 a strange change on the page, some distance away from the mistake
 itself.
 
@@ -59,8 +59,8 @@ and not the rest of that sentence.
 ```
 
 The closing tag `</strong>` was missing. The browser had to guess where
-the bold text should end, and it guessed wrong: the bold ran on to the
-end of the first paragraph, and then into the second one too. With the
+the bold text should end. The bold ran on to the end of the first
+paragraph, and then into the second one too. With the
 closing tag straight after "made by hand", the element ends where we
 meant it to.
 
@@ -129,7 +129,7 @@ What is wrong with the attribute? Fix it.
 
 An attribute is written `name="value"`, and here the `=` was missing.
 The browser could not tell the name from the value, so the link had no
-`href` at all. An `<a>` element with no `href` is not a link: it shows
+`href` at all. An `<a>` element with no `href` is not a link. It shows
 as plain text, and nothing happens when we click it. With `=` back, the
 link is blue again. (Clicking it in the preview still goes nowhere,
 because there is no `about.html` here. In your own site, there is.)

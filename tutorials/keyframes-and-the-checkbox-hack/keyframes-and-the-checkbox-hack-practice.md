@@ -182,8 +182,8 @@ At the end of each pass, the sign jumped straight from invisible back
 to solid. An `infinite` animation starts again at `0%` as soon as it
 reaches `100%`, and the browser fills in nothing between the end of one
 pass and the start of the next. So the `100%` stage should match the
-`0%` stage, as it does in the tutorial's pulse. Then the fading back
-happens inside the pass, between `50%` and `100%`.
+`0%` stage, as it does in the tutorial's pulse. Then the sign fades back
+in during the pass, between `50%` and `100%`.
 
 </details>
 

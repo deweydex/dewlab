@@ -25,10 +25,10 @@ covers:
 
 Next week your team starts its project, and it will share one toolkit.
 Someone who has never seen your code opens it and finds `halvings(n)`.
-Can they tell what it does, what it needs, and what it gives back,
+Can they tell what it does, what it needs, and what it returns,
 without asking you?
 
-Here is the surprise: the stranger who reads your code most often is
+Here is the surprise. The stranger who reads your code most often is
 you, six months from now. By then you will have forgotten why you wrote
 it that way. This page is about writing for that person.
 
@@ -45,8 +45,7 @@ On this page we:
 > **The space we're in.** Python runs any code that is valid, however
 > it is written. Names, comments, layout and docstrings are for people,
 > and Python ignores them. So nothing on this page changes what a
-> program does. One thing usually goes unsaid: code is read many more
-> times than it is written. Your whole toolkit is loaded, from
+> program does. Code is read many more times than it is written. Your whole toolkit is loaded, from
 > `digit_at` to `angle_between` and beyond.
 
 ## Warm-up
@@ -114,14 +113,14 @@ in order from coldest to warmest, and the order of the hours is gone.
 Which hour was coldest? The log can no longer say. The line `l.sort()`
 sorted the caller's own list, as `hand.sort()` did in the warm-up.
 
-A change a function makes outside itself, beyond the value it gives
-back, is called a *side effect*. Printing is a side effect too. Some
+A change a function makes outside itself, beyond the value it
+returns, is called a *side effect*. Printing is a side effect too. Some
 side effects are the whole point of a function, like `plot_rule`
 drawing. This one is a surprise. A surprise side effect is often an
-expensive bug to find, because the damage shows up somewhere else,
+expensive bug to find, because the damage appears somewhere else,
 later.
 
-It took a whole paragraph to find out what nine short lines do, and
+It took a whole paragraph to find what nine short lines do, and
 nothing in the function helped: not its name, not the names inside it,
 and not its one comment.
 
@@ -140,7 +139,7 @@ the code, never about the person who wrote it.
 | What is named here? | Does each name say what it holds? Is any number left without a name? |
 | What is promised? | Does the docstring say what goes in and what comes out? Do tests check that promise, edges included? |
 | What happens when? | Can you follow the steps in order? Is any step written twice, or never used? |
-| What does this space let us do? | Does the function use a name from outside, a [hidden input](tutorial:what-a-function-can-see#what-a-function-can-see-from-outside)? Does it change anything it was handed, or print when it could give back? |
+| What does this space let us do? | Does the function use a name from outside, a [hidden input](tutorial:what-a-function-can-see#what-a-function-can-see-from-outside)? Does it change anything it was handed, or print when it could return? |
 
 Here is a review of `m`, written the way a reviewer writes one: what
 they saw, why it matters, and what they suggest.
@@ -150,10 +149,10 @@ they saw, why it matters, and what they suggest.
    `show` and `result`.
 2. **Promise.** There is no docstring, so a reader cannot tell what
    happens with an even number of values, or with an empty list.
-3. **Sequence.** `len(l)//2` is worked out three times. Give it a name
+3. **Order.** `len(l)//2` is calculated three times. Give it a name
    once.
 4. **Space.** `l.sort()` changes the list it was handed. Use `sorted()`,
-   which gives back a new list.
+   which returns a new list.
 5. **Space.** With `p=True` the function also prints. It is doing two
    jobs. The caller can print the result.
 6. **Comment.** `# sort the list` says what the line already says.
@@ -181,7 +180,7 @@ Which review comment gives the writer the most to work with?
 ## Changing the code, keeping the promise
 
 Changing how code is written, without changing what it does, is called
-*refactoring*. The danger is plain: a small change can break something
+*refactoring*. The danger is plain. A small change can break something
 that worked. So a refactor starts with tests, written before any code
 is touched.
 
@@ -206,11 +205,11 @@ def check_median_tool(tool):
 check_median_tool(m)
 ```
 
-Every answer matches, and the last test stops the cell with its
-message: the list handed in was changed. The tests now record what the
+Every answer matches, and the last test stops the cell. Its
+message says the list handed in was changed. The tests now record what the
 function does, the side effect included.
 
-Here is the rewrite, with each finding from the review dealt with.
+Here is the rewrite, with each finding from the review fixed.
 Before you run it, which test do you expect it to stop at, if any?
 
 ```python exec
@@ -237,7 +236,7 @@ It passes every test, and the log keeps the order of the hours. The
 printing moved out of the function, to the line that wants it. Compare
 `middle_value` with the `median` you wrote on
 [What is typical?](tutorial:what-is-typical#the-middle-one-in-the-line-the-median).
-Line for line, they are very close: the review led back to your own
+Line for line, they are very close. The review led back to your own
 tool.
 
 In a real refactor, the changes go in one at a time, with the tests run
@@ -315,7 +314,7 @@ function keeps its new promise, and the docstring still made the old
 one. On
 [Does it work?](tutorial:does-it-work#names-and-comments-a-stranger-can-read)
 we said that a comment which no longer matches the code is worse than
-none. A docstring example that runs cannot drift for long.
+none. A docstring example that runs cannot stay wrong for long.
 
 ### Your turn
 
@@ -351,8 +350,8 @@ that matter most in a toolkit.
   the screen.
 
 Above every rule, PEP 8 puts one more: code in one project should look
-the same. A team that follows its own agreed rules has done better than
-a team where each person follows their own good ones.
+the same. Code is easier to read when a whole team follows one set of
+rules than when each person follows their own.
 
 <aside class="dl-note" id="code-other-note-zen">
 
@@ -430,8 +429,8 @@ the code. `p` and `q` are what
 and `y1` are the first point's coordinates, as in the formula. Each
 docstring says so. `a` and `b` in `close_enough` are any two numbers,
 and a longer name would say no more. `truth_table` promises to print a
-table: printing is its job. A linter finds places worth a second look. A person decides
-what they mean. That is why a team uses both.
+table. Printing is its job. A linter finds places worth a second look.
+A person decides what they mean. So a team uses both.
 
 A note the tool cannot give is whether a docstring is true. For that,
 you need a reader, and tests.
@@ -443,7 +442,7 @@ open two of your earlier pages and read your own toolkit cells as a
 stranger would.
 
 1. Pick three toolkit functions, such as `pixel_row`,
-   `celsius_to_fahrenheit` and `std_dev`. Go through the checklist for
+   `celsius_to_fahrenheit` and `std_dev`. Use the checklist for
    each, question by question.
 2. Write your findings as review comments: what you saw, why it
    matters, and what you suggest. Three comments are enough.
@@ -459,7 +458,7 @@ purpose, and then a checklist. Many courses teach style as a list of
 rules first, and ask students to follow them from the start.
 
 A list of rules first is quicker, and in a job it is how a team's
-standard arrives: written down, before you write a line.
+standard arrives. It is written down before you write a line.
 
 We started from `m` because a rule makes more sense to someone who has
 met the problem it solves. Reading `m` cost you a paragraph, and the
@@ -482,7 +481,7 @@ than you have met.
 
 | Term or tool | What it means |
 |---|---|
-| side effect | a change a function makes outside itself, beyond the value it gives back |
+| side effect | a change a function makes outside itself, beyond the value it returns |
 | code review, reviewer | reading someone's code to find problems before anyone uses it; the person who reads |
 | a review checklist | the four questions, asked of every function |
 | refactoring | changing how code is written without changing what it does |

@@ -36,7 +36,7 @@ print(close_enough(2, 2))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`True`, `False`, `True`, `True`.
+It prints `True`, `False`, `True`, `True`.
 
 `0.1 + 0.2` is off from 0.3 by far less than a billionth. 9.99 and 10
 are 0.01 apart, which is more than the default tolerance, but less than
@@ -72,8 +72,7 @@ print("minutes_to_hours keeps its promise.")
 
 It prints `minutes_to_hours keeps its promise.` The first test comes from
 a fact, the second sits at the edge, and the third goes there and back.
-This is one way through. Yours may use other values and test the same
-things.
+Here is one answer. Yours may be different and work too.
 
 </details>
 
@@ -88,9 +87,8 @@ dividing by zero or using a name that points at nothing. It has no idea
 what the function was meant to do. So a function can run with no error
 and still break its promise. The tutorial's `to_celsius` ran, and said
 water boils at about 194 °C. Only a test case, such as "32 °F should
-give 0 °C", showed that it broke its promise. Schlomo's idea works in
-one direction: an error does mean something needs a look. It stops
-working in the other direction: no error does not mean the promise is
+give 0 °C", showed that it broke its promise. An error does mean that
+something needs a look. But no error does not mean the promise is
 kept.
 
 </details>
@@ -203,9 +201,9 @@ Now all three pass. Testing only `(5, 1)` would have missed this bug.
 </details>
 
 **7. Fix.** Schlomi, who is learning Python too, writes a function for
-a photo app that makes a picture 10% wider. The test fails. Run it, then
-decide: which one does not say what Schlomi meant, the code, the
-comment or the docstring? Change it.
+a photo app that makes a picture 10% wider. The test fails. Run it. Which
+one does not say what Schlomi meant: the code, the comment or the
+docstring? Change it.
 
 ```python exec
 id: does-it-practice-fix-wider
@@ -220,8 +218,8 @@ print("wider keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 The app's rule is 10%, and the docstring and the comment both say 10%.
-The code multiplies by 1.15, which adds 15%. So the code is the one to
-change:
+The code multiplies by 1.15, which adds 15%. So we change the
+code:
 
 ```python
 def wider(width):
@@ -229,7 +227,7 @@ def wider(width):
     return width * 1.10
 ```
 
-The comment can go: it says what the code says. Notice the test uses
+We can delete the comment, because it says what the code says. Notice the test uses
 `close_enough`. `100 * 1.10` is `110.00000000000001`, so `==` would fail
 even with 1.10 in the code. That is why Schlomi's test uses
 `close_enough`.
@@ -244,7 +242,7 @@ to 1,000.
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def km_to_miles(km):
@@ -264,7 +262,7 @@ print("The distance converter works both ways.")
 ```
 
 It prints `The distance converter works both ways.` The marathon test
-needs a wider tolerance, because 26.2 is itself rounded: the exact value
+needs a wider tolerance, because 26.2 is itself rounded. The exact value
 is about 26.219. The round trip uses the default tolerance, and `==`
 would have failed on 41 km, among others.
 
@@ -294,7 +292,7 @@ and 2, where many different rules happen to agree.
 </details>
 
 **10. Make.** This function from a camera app works, but nobody can
-tell what it does. Give it and its names words, add a docstring, and
+tell what it does. Rename it and its inputs with words, add a docstring, and
 test that your version gives the same answers as the old one for three
 different sets of values.
 
@@ -341,11 +339,11 @@ print(photo_megabytes(4000, 3000, 24))
 ```
 
 It prints `The two versions agree.`, then `36.0`. A 12-megapixel photo
-at 24 bits a pixel is 36 MB before it is squeezed. Writing `*values`
-hands the three numbers in a row to the function as its three inputs,
+at 24 bits a pixel is 36 MB before it is squeezed. The `*values`
+passes the three numbers in a row to the function as its three inputs,
 the same way `*row` did on
-[Untangling a condition](tutorial:untangling-a-condition). This is one
-way through: your names may be different and as clear.
+[Untangling a condition](tutorial:untangling-a-condition). Here is one
+answer. Yours may be different and work too.
 
 </details>
 
@@ -377,7 +375,7 @@ billionth. `math.isclose` asks whether they are within a billionth *of
 their size*. For the Moon, 0.1 m out of 384 million metres is tiny
 compared with the size, so `math.isclose` says True. For two numbers
 that are both about a billionth, one is double the other, so
-`math.isclose` says False. Each tool suits its own space: a fixed
+`math.isclose` says False. Each tool suits its own space. A fixed
 tolerance suits numbers of an everyday size, like temperatures and
 distances in a room.
 
@@ -439,8 +437,8 @@ def rainy_days(rainfall):
     return count
 ```
 
-Now it gives 3. This is a sequence bug: every line is needed, and one
-of them ran inside the loop when it belongs before it.
+Now it gives 3. The order of the lines matters here. Every line is
+needed, but one of them ran inside the loop when it belongs before it.
 
 </details>
 
@@ -455,7 +453,7 @@ id: does-it-practice-stretch
 
 **13. Make.** The unit converter this unit is building has many pairs
 of functions that should undo each other. Write
-`works_both_ways(forwards, backwards, values)`, which gives back `True`
+`works_both_ways(forwards, backwards, values)`, which returns `True`
 when `backwards(forwards(value))` is close enough to `value` for every
 value in `values`, and `False` otherwise. Test it on the temperature
 tools, on the travel tools, and on a pair that does not undo each other.
@@ -464,8 +462,8 @@ tools, on the travel tools, and on a pair that does not undo each other.
 
 1. Loop over `values`.
 2. For each one, go there and back, and compare with `close_enough`.
-3. If any value fails, give back `False` straight away. If the loop
-   finishes, give back `True`.
+3. If any value fails, return `False` straight away. If the loop
+   finishes, return `True`.
 
 **Think about:** `travel_time` and `distance_travelled` take two inputs.
 How could you make a one-input function from each, for a fixed speed?
@@ -476,7 +474,7 @@ How could you make a one-input function from each, for a fixed speed?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def works_both_ways(forwards, backwards, values):
@@ -503,8 +501,8 @@ print(works_both_ways(km_at_80, hours_at_80, [0.5, 1, 2.75, 10]))
 print(works_both_ways(celsius_to_fahrenheit, celsius_to_fahrenheit, temperatures))
 ```
 
-This prints `True`, `True`, `False`. Converting to Fahrenheit twice does
-not bring a temperature back, and the tool catches it.
+This prints `True`, `True`, `False`. If you convert to Fahrenheit twice,
+you do not get the first temperature back, and the tool catches it.
 
 </details>
 
@@ -518,7 +516,7 @@ would you change its tolerance?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`close_enough` keeps its promise both times: the first pair differs by
+`close_enough` keeps its promise both times. The first pair differs by
 less than a billionth, and the second by 0.1, which is more. The
 trouble is the tolerance, not the function. A billionth is far too big
 for numbers that are themselves about a billionth, since one lab result
@@ -586,7 +584,7 @@ def battery_colour(percent):
 
 or `elif between(percent, 20, 49):`, with the toolkit's `between`. A
 test in the middle, like 35, would never have found this bug. Bugs like
-this one live at the edges, so the edges are where tests go.
+this one are often at the edges, so put your tests there.
 
 </details>
 
@@ -598,18 +596,17 @@ would skip the hand trace altogether?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things.
+There is more than one good answer. Here are some things to weigh.
 
 - **By hand first.** You have to predict each value before you see it,
   and a prediction that misses shows you exactly where your picture of
-  the code and Python's differ. The cost: it is slow, and a value copied
+  the code and Python's differ. But it is slow, and a value copied
   by hand can come out different from the one Python holds.
 - **Debugger first.** It is fast, and it copies every value exactly.
-  The cost: the values appear before you have thought about them, so it
+  But the values appear before you have thought about them, so it
   is possible to watch without learning much.
 
-A loop that runs 1,000 times is one place to skip the hand trace: nobody
+A loop that runs 1,000 times is one place to skip the hand trace. Nobody
 can write 1,000 rows. A function you already trust, like `total`, is
 another. One answer might say: trace a short, new function by hand,
 and use the debugger for long runs, or to check a hand trace.

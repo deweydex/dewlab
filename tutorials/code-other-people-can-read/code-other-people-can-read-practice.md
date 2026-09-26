@@ -11,12 +11,12 @@ Each problem says what kind it is. **Predict** means guess first, then
 run. **Make** means write something new. **Fix** means find why code
 that looks fine does something else, and change it. **Explain** means
 answer in words. **Another way** means reach the same place by a second
-route. The answers are folded away until you open them, and each is one
-way through: yours may go another way.
+route. The answers are folded away until you open them. Each is one
+answer, and yours may be different and work too.
 
 Your toolkit is loaded on this page. The tutorial's `quick_review` and
-`check_median_tool` are not: they were page cells, so a problem that
-needs one gives it again. Schlomo and Schlomi, who are learning Python
+`check_median_tool` are not loaded. They were page cells, so a problem
+that needs one gives it again. Schlomo and Schlomi, who are learning Python
 too, wrote two of the functions below.
 
 ## Warm-up
@@ -49,7 +49,7 @@ It prints `3`, then `['Dreams', 'Zombie', 'Linger']`.
 
 `append` changes the list that `morning` points at, so the function has
 a side effect. Here the name says "add", so a stranger would probably
-expect the playlist to change. The function also gives back the new
+expect the playlist to change. The function also returns the new
 length, which the name does not say. A docstring can say both:
 
 ```python
@@ -64,7 +64,7 @@ def add_track(playlist, track):
 
 </details>
 
-**2. Make.** A download manager works out how long a file will take
+**2. Make.** A download manager calculates how long a file will take
 like this. Rewrite it with names that say what goes in and what comes
 out, a docstring, and a named constant for each magic number. Then
 check with `assert` that your version agrees with this one for files
@@ -103,7 +103,7 @@ for megabytes in [0, 5, 700, 4500]:
 print(download_seconds(700, 100))
 ```
 
-It prints `58.0`: about a minute for 700 MB. The name
+It prints `58.0`. That is about a minute for 700 MB. The name
 `megabits_per_second` also answers a stranger's first question: bits or
 bytes?
 
@@ -118,7 +118,7 @@ the first did not?
 
 One possible comment: "In `score_round`, `x2` holds the player's second
 throw. Could it be `second_throw`? I had to read the whole loop to find
-out what it was."
+what it was."
 
 It says what the reviewer saw, why it mattered, and what they suggest.
 It is about the code, not the person, so the writer can act on it
@@ -184,7 +184,7 @@ print("rainy_days keeps its promise.")
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Work out by hand how many of the five readings are more than 1 mm.
+1. Count by hand how many of the five readings are more than 1 mm.
 2. Run the function on the same list with `print`. What does it give?
 3. The docstring and the test agree with each other. Which line of the
    code says something else?
@@ -237,8 +237,8 @@ doctest.run_docstring_examples(image_megabytes, globals(), name="image_megabytes
 
 Only the third. The report says it expected `0` and got `0.0`. The `/`
 always gives a float, and `doctest` compares the text Python prints,
-not the number. The number is 0 either way; the example's text is what
-differs. Writing `0.0` in the docstring makes it match.
+not the number. The number is 0 either way. Only the example's text
+differs. If you write `0.0` in the docstring, it matches.
 
 </details>
 
@@ -259,7 +259,7 @@ def t(a,b):
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Say in one sentence what `t` gives back. That sentence is the start
+1. Say in one sentence what `t` returns. That sentence is the start
    of your docstring and a clue to the name.
 2. The first two lines are two machines from
    [Machines that take a number](tutorial:machines-that-take-a-number#machines-in-a-row-composition):
@@ -344,15 +344,15 @@ They could change, to `megabytes` and `seconds`. `p` and `q` match the
 maths written above `slope`, where two points are called $p$ and $q$.
 `mb` and `s` come from no formula. They are short forms a stranger has
 to decode, and the docstring does not say what they stand for: is `mb`
-megabytes or megabits? The linter's note is the same in both cases;
-the reason behind the name is what differs, and only a person can
-judge that.
+megabytes or megabits? The linter's note is the same in both cases.
+The reason behind the name differs, and only a person can judge
+that.
 
 </details>
 
 **9. Fix.** Schlomi refactored a game's `best_score`. A leaderboard
 shows the best score at the top, so she sorted the scores and took the
-first one. That is a fair picture of a leaderboard. The tests were
+first one. The tests were
 written before her change, and one now stops the cell. Find the line,
 and change it.
 
@@ -383,8 +383,8 @@ the last one:
 ```
 
 Then all three tests pass. The one-value test passed before the change
-too, because the smallest and largest of `[7]` are the same. That is
-why a test suite needs more than one test case.
+too, because the smallest and largest of `[7]` are the same. So a
+test suite needs more than one test case.
 
 </details>
 
@@ -415,8 +415,8 @@ for tracks in [[210, 185, 240], [], [3600]]:
 print(playlist_minutes_again([210, 185, 240]))
 ```
 
-It prints `10.583333333333334`. Most reviewers would pick the second:
-it is one line, and `total` is a tool the team has already tested. The
+It prints `10.583333333333334`. Most reviewers would pick the second.
+It is one line, and `total` is a tool the team has already tested. The
 first shows every step, which helps while you are learning, and repeats
 work the toolkit already does.
 
@@ -424,7 +424,7 @@ work the toolkit already does.
 
 **11. Make.** Write a docstring for this function that says all four
 things: what comes out, what must go in, the edges, and an example.
-Make the example one that `doctest` can run: the Sun is 149,600,000 km
+Make the example one that `doctest` can run. The Sun is 149,600,000 km
 from the Earth, on average. Run `doctest` to check it.
 
 ```python
@@ -460,7 +460,7 @@ doctest.run_docstring_examples(light_minutes, globals(), name="light_minutes")
 
 **12. Explain.** Schlomo wrote this for his weather station. His chip
 reads a little high, so he put its error in a name at the top, where
-he can find it and change it. That is a sensible habit. The function
+he can find it and change it. The function
 works when the page first runs. Which question from the review
 checklist does it raise, and what could happen later? Write the review
 comment you would leave.
@@ -540,11 +540,11 @@ Add this before `return notes`:
 
 For `t` it gives `['no docstring', 'short name a', 'short name b',
 'short name x', 'number 5', 'number 1024', 'number 100', 'number 50',
-'number 1.5']`. The 5, the 1024 and the 1.5 are magic numbers: a
+'number 1.5']`. The 5, the 1024 and the 1.5 are magic numbers. A
 stranger cannot tell what they mean. The 100 and the 50 are the TMP36's
 own rule, and a docstring that names the chip explains them. The 1 in
 `round(x, 1)`, one decimal place, is skipped. The tool finds places to
-look; a person decides. `True` is left out because its type is `bool`,
+look. A person decides. `True` is left out because its type is `bool`,
 not `int`.
 
 </details>
@@ -569,11 +569,11 @@ print("image_megabytes keeps its promise.")
 ```
 
 Both check the same three cases. The `assert` lines compare numbers,
-so `0` and `0.0` agree, and `close_enough` forgives float rounding.
+so `0` and `0.0` agree, and `close_enough` ignores tiny float errors.
 `doctest` compares printed text, which is stricter, but its examples
 sit in the docstring, where a stranger reads them with `help()`. Many
 teams keep a few examples in the docstring and the full tests
-elsewhere. `close_enough` would also let through the tutorial's
+elsewhere. `close_enough` would also accept the tutorial's
 `sensor_celsius(0.57)`, which `doctest` printed as `6.999999999999993`.
 
 </details>
@@ -591,8 +591,8 @@ lets a reader meet the problem each rule solves, so the rules make
 sense, but it asks them to read messy code before they know what to
 look for. An answer might also say who the reader is: a person who has
 written code for a while may get more from the function first, and a
-person starting out may want the rules. Either choice holds up if the
-reasons are there.
+person starting out may want the rules. Either choice works if you give
+your reasons.
 
 </details>
 

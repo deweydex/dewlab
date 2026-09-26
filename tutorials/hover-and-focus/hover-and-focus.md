@@ -92,14 +92,14 @@ The `transition` property makes a change to another property happen
 smoothly over time, instead of jumping straight to its new value. This
 one says: when `transform` or `box-shadow` changes, take 0.2 seconds to
 do it. The transition sits on the button's base rule, not on `:hover`
-itself. That is what makes the change smooth in both directions, lifting
-and settling back. In step 4, with the transition inside `:hover`, the
+itself. This makes the change smooth in both directions, as it lifts and
+as it settles back. In step 4, with the transition inside `:hover`, the
 button lifted smoothly, but jumped straight back when the pointer left.
 
 **Why does focus matter?** Some people move through a page with the
 keyboard alone, pressing Tab from one link to the next. The focus style
-is how they see where they are. A person using a mouse may never see it
-at all, and that answers step 3: the lift is for the mouse, and the
+shows them where they are. A person using a mouse may never see it at
+all. This answers step 3. The lift is for the mouse, and the
 outline is for the keyboard. In most browsers, clicking a button also
 gives it focus, so you may have seen the outline as soon as you
 clicked.

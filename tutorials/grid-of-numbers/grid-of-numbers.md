@@ -31,9 +31,8 @@ This page and the five pages after it answer questions like these.
 A *matrix* is a grid of numbers, arranged in rows and columns. We will
 build matrices from plain Python lists of lists, and we will write every
 operation ourselves before any library does it for us. A library such as
-NumPy would be faster to use. Writing the code ourselves is slower, but
-it lets us watch the arithmetic happen, so we do not have to trust that
-it did.
+NumPy would be faster to use. It is slower to write the code ourselves, but we can watch
+the arithmetic happen, so we do not have to trust that it did.
 
 On this page we:
 
@@ -68,8 +67,8 @@ square is: 0 is blank and 9 is solid. `ramp` is a string that we use as
 a lookup table. `ramp[value]` turns a number into a character.
 
 The last line builds the text for one row. The part inside the brackets,
-`ramp[value] for value in row`, works like a list comprehension: it
-makes one character for each number in the row. `"".join(...)` glues
+`ramp[value] for value in row`, works like a list comprehension. It
+makes one character for each number in the row. `"".join(...)` joins
 those characters into a single string. Comprehensions are in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
@@ -133,8 +132,8 @@ print("C =", C)
 
 How might `add(a, b)` return the sum of two matrices of the same shape?
 
-A nested loop visits every position exactly once. The outer loop goes
-through the rows, and the inner loop goes through the columns.
+A nested loop visits every position exactly once. The outer loop visits
+each row, and the inner loop visits each column.
 
 ```python exec
 id: two-grids-added-together-2
@@ -168,7 +167,7 @@ two entries.
 
 When `add` works, try these:
 
-1. Work out `A + B` by hand.
+1. Calculate `A + B` by hand.
 2. Does `add(A, B)` agree with you?
 3. Now find `A + B + C`. You can do this by calling `add` twice.
 
@@ -198,7 +197,7 @@ $$k\begin{bmatrix} a & b \\ c & d \end{bmatrix} = \begin{bmatrix} ka & kb \\ kc 
 1. How might you write `scale(k, m)`? Write it in the first cell below.
 2. Write a `subtract(a, b)` in the same way as `add`, if you want one.
 3. In the second cell, use `scale` together with `add` or `subtract` to
-   work out `3A` and `2B - A`, with the matrices from above.
+   calculate `3A` and `2B - A`, with the matrices from above.
 
 ```python exec
 id: scaling-and-the-shape-rule-1
@@ -229,7 +228,7 @@ add(A, D)
 
 This cell is meant to fail. If you see a traceback, nothing is broken.
 
-What error you see depends on how you wrote `add`. It is probably an
+The error you see depends on how you wrote `add`. It is probably an
 `IndexError`, about a position that does not exist in `D`. That error is
 true, but it does not help much. It points at a symptom, deep inside a
 loop. The real problem is that these two matrices could never be added.
@@ -293,7 +292,7 @@ rows and the columns? The first *column* of `M` would become the first
    at row $j$, column $i$ of `m`.
 2. Try it on `M` above.
 3. Check the shape of the result. It should have 3 rows and 2 columns,
-   the other way round from `M`.
+   the opposite of `M`.
 
 ```python exec
 id: turning-it-sideways-the-transpose-2
@@ -374,24 +373,24 @@ to have built everything before it yourself.
 What surprised you on this page? Did you know in advance that
 `add(A, B)` would equal `add(B, A)`, or did you expect to have to check?
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 1:
 Vectors, What Even Are They?*
 <https://www.youtube.com/watch?v=fNk_zzaMoSs>. Matrices in this tutorial are
-built from plain lists; this is the geometric picture underneath them, and the
-series it opens is worth the whole hour.
+built from plain lists. This video shows the geometric picture underneath
+them. The whole series takes about an hour, and it is worth watching.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
 (2nd ed.). Green Tea Press. <https://greenteapress.com/wp/think-python-2e/>.
-Chapter 10 on lists is the Python half of what a matrix is built from here.
+Chapter 10 covers lists, and on this page we build a matrix from lists.
 
 Python Software Foundation. *5. Data Structures — Nested List
 Comprehensions.* <https://docs.python.org/3/tutorial/datastructures.html>.
-The pattern behind every nested loop in this tutorial, spelled out as its own
-topic.
+This section explains the pattern behind every nested loop in this
+tutorial.
 
 Sam Levey (2024). *The Matrix Transpose: Visual Intuition.*
-<https://www.youtube.com/watch?v=wjYpzkQoyD8>. Turning a grid sideways
-looks like bookkeeping. This shows what the transpose means, and why it
+<https://www.youtube.com/watch?v=wjYpzkQoyD8>. The transpose can look
+like bookkeeping. This video shows what the transpose means, and why it
 matters later. About twenty-six minutes.

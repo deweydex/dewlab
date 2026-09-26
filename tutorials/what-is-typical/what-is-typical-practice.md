@@ -28,7 +28,7 @@ print(sleep_hours)
 ```
 
 **1. Predict.** Someone slept 7, 8, 6, 8 and 9 hours on five nights.
-Work out the mean, the median and the mode by hand. Then check with
+Find the mean, the median and the mode by hand. Then check with
 your toolkit.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -57,9 +57,9 @@ print(mode(goals))              # 1
 ```
 
 The mean is about 1.71 goals, and the median and mode are both 1. No
-match can have 1.71 goals, but the mean is still useful: over 70
+match can have 1.71 goals, but the mean is still useful. Over 70
 matches, it says to expect about 120 goals. For "a typical match", 1
-goal is a fair answer, because the median and the mode agree on it.
+goal works well, because the median and the mode agree on it.
 
 </details>
 
@@ -85,11 +85,11 @@ should they use, and why are the other two no help?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The mode, the setting chosen most often. The mean setting might be
+They should use the mode, the setting chosen most often. The mean setting might be
 5.3 megapixels, which is not a setting anyone can choose. The median is
 a real setting, but it says only that half the choices were smaller and
 half bigger, not which one was most popular. The mode answers the
-question directly: this is the setting most people chose.
+question directly. It is the setting most people chose.
 
 </details>
 
@@ -130,8 +130,8 @@ than land.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, times five downloads
-of the same file, in seconds, and wants the median. Her idea is a
-quick one: the median is in the middle, so take the value in the
+of the same file, in seconds, and wants the median. She has a
+quick idea. The median is in the middle, so she takes the value in the
 middle position. Her code gives an answer, with no error. Is it the
 median?
 
@@ -163,9 +163,9 @@ means anything?
 <details class="dl-answer"><summary>answer</summary>
 
 The function takes the middle position of the list as it was given,
-which is 78 seconds, the slowest download. Schlomi's idea had a
-picture that works, the middle one of a line, and one step missing: the line must
-be *in order*, so the values must be sorted first:
+which is 78 seconds, the slowest download. Schlomi's picture, the
+middle one of a line, works. But one step is missing. The line must be
+*in order*, so the values must be sorted first:
 
 ```python
 def middle_time(values):
@@ -220,7 +220,7 @@ the function. That makes `mean` a local name for the whole function.
 So when the right-hand side calls `mean(...)`, Python looks in the
 call's own space, finds a local `mean` with no value yet, and stops
 with an `UnboundLocalError`. Schlomo's name said exactly what the number
-was; here it collides with a tool. Give the
+was. But here it is also the name of a tool. Give the
 number its own name:
 
 ```python
@@ -237,8 +237,8 @@ data_report([125.0, 40.0, 78.0, 312.0, 65.0])
 ```
 
 Outside a function, the same line would work once, and then hide the
-tool for the rest of the page. Either way, a tool's name is best left
-to the tool.
+tool for the rest of the page. Either way, do not use a tool's name for
+a number.
 
 </details>
 
@@ -271,15 +271,15 @@ sharing out.
 
 The mean is what each value would be if the total were shared out
 equally. The values above the mean have more than their share, and the
-values below it have less. Sharing out moves exactly the extra from the
-first group to the second, so the amounts above and below must be
-equal. The positive deviations and the negative ones cancel out.
+values below it have less. When we share out, we move exactly the extra from
+the first group to the second, so the amounts above and below must be
+equal. The positive deviations and the negative ones cancel each other.
 
 With a formula: the deviations add up to
 $\sum x_i - n\bar{x}$, and $n\bar{x}$ is the total, so the answer is
 the total minus the total, which is 0.
 
-That is one way through. Yours may use a picture, such as a see-saw
+That is one answer. Yours may use a picture, such as a see-saw
 that balances at the mean, and say the same thing.
 
 </details>
@@ -304,7 +304,7 @@ middle index?
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 def median_by_trimming(values):
@@ -322,8 +322,8 @@ print(median_by_trimming([10, 2, 7, 4]))                       # 5.5
 
 Both ways give 200 ms. The mean of one value is that value, so
 `mean(in_line)` works whether one or two are left. Each trim takes one
-value from each side, so the middle is never touched. That is why the
-median ignores outliers: they are the first things trimmed away.
+value from each side, so the middle is never touched. So the median
+ignores outliers. They are the first values we trim away.
 
 </details>
 
@@ -338,7 +338,7 @@ routes = ["46A", "15", "46A", "39A", "15", "46A",
 
 <details class="dl-answer"><summary>answer</summary>
 
-One way through; yours may differ and work as well.
+Here is one answer. Yours may be different and work too.
 
 ```python
 routes = ["46A", "15", "46A", "39A", "15", "46A",
@@ -346,7 +346,7 @@ routes = ["46A", "15", "46A", "39A", "15", "46A",
 print(mode(routes), routes.count(mode(routes)))    # 46A 5
 ```
 
-The 46A, with 5 of the 12 passengers. The mode is the only one of the
+The 46A is most used, by 5 of the 12 passengers. The mode is the only one of the
 three averages that works here, because route names are words, not
 amounts. "46A" is a name, even though it has a number in it.
 
@@ -360,8 +360,7 @@ friend, which way would you choose, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is more than one answer worth giving. One way through weighs a
-few things:
+There is more than one good answer. Here are some things to weigh:
 
 - **Time and exams.** The formula first is quicker, and an exam or a
   calculator often wants only the number.
@@ -375,8 +374,8 @@ few things:
   square root, or square something else. With the steps
   first, a common problem is a lesson that runs long.
 
-Whichever you choose, say what it costs. That is the question the
-tutorial's "Why this way?" fold asks of itself.
+Whichever you choose, say what it costs. The tutorial's "Why this
+way?" fold asks the same question about itself.
 
 </details>
 
@@ -409,8 +408,8 @@ for country in ["Ireland", "Spain", "Nigeria"]:
 
 These are the numbers from the copy of the file saved on
 {{snapshot: life-expectancy}}. Over these 74 years, Spain's typical value
-is a little higher than Ireland's, and its standard deviation is bigger:
-Spain started lower in 1950 and rose further. Nigeria's typical value is
+is a little higher than Ireland's, and its standard deviation is bigger,
+because Spain started lower in 1950 and rose further. Nigeria's typical value is
 far lower, and its spread is almost the same as Spain's, since it rose
 by about 19 years, from 35.5 to 54.5. A standard deviation across years
 measures how much a country changed, not how far apart its people are.
@@ -435,7 +434,7 @@ print(round(statistics.stdev(response_ms), 2))     # 1041.38
 ```
 
 `pstdev` matches yours, because both divide by $n$. The `p` stands for
-population: the list is the whole group we care about. `stdev`
+population. It means the list is the whole group we care about. `stdev`
 divides by $n - 1 = 10$ instead of 11, so its answer is a little
 bigger. It is meant for a sample, a few values picked from a bigger
 group, where dividing by $n$ would tend to give too small an answer.
@@ -477,8 +476,8 @@ print(round(std_dev(dice_totals), 2))
 Your numbers will differ a little each run. The mean is close to 7, and
 the mode is almost always 7, because six of the 36 pairs add up to 7,
 more than any other total. The standard deviation is close to 2.4. If
-the mode ever comes out as 6 or 8, that is the simulation's wobble,
-and a run of 100,000 rolls would settle it.
+the mode ever comes out as 6 or 8, that is random chance in the
+simulation, and a run of 100,000 rolls would settle it.
 
 </details>
 

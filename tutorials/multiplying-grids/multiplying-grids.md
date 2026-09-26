@@ -17,7 +17,7 @@ covers:
 
 In [Matrices: adding, scaling and transposing a grid of
 numbers](tutorial:grid-of-numbers), adding two matrices worked the way
-you would guess. We paired up the entries and added them.
+you would guess. We paired the entries and added them.
 
 Multiplying two matrices does not work like that. Almost nobody guesses
 the rule for matrix multiplication at the first try. So we will build it
@@ -25,9 +25,9 @@ slowly, from something smaller that you already know how to do.
 
 On this page we:
 
-- work out the dot product of two lists
+- calculate the dot product of two lists
 - use the dot product to multiply two matrices
-- find out whether the order of multiplication matters
+- see whether the order of multiplication matters
 - meet the matrix that changes nothing
 
 ## The dot product first
@@ -44,7 +44,7 @@ paired = list(zip(a, b))
 print(paired)
 ```
 
-`zip` pairs up the two lists, position by position: $1$ with $4$, $2$
+`zip` pairs the two lists, position by position: $1$ with $4$, $2$
 with $5$, and $3$ with $6$. Each pair is printed in round brackets.
 
 The *dot product* of `a` and `b` is the number we get when we multiply
@@ -73,11 +73,11 @@ id: the-dot-product-first-3
 ```
 
 Python raises no error, and that should make us suspicious. `zip` stops
-at the end of the shorter list, without a word. So `dot` used only the
+at the end of the shorter list. So `dot` used only the
 first two entries of `a` and ignored the third. There is no error and no
 warning. The answer is wrong, but it looks exactly like a right one.
 
-We can make this mistake loud. What if `dot` checked the lengths first,
+We can make this mistake raise an error. What if `dot` checked the lengths first,
 with `if len(a) != len(b): raise ValueError(...)`? Write that version
 below.
 
@@ -108,7 +108,7 @@ same way, with a different row and a different column.
 The picture also shows why the shapes have to agree. A row and a column
 can only pair up term by term if they have the same length.
 
-That is the whole rule. The hard part is getting at the columns of $B$,
+That is the whole rule. The hard part is to get the columns of $B$,
 because a list of lists stores rows. But you have already written
 something that turns columns into rows: `transpose`, from the last page.
 No page starts with code from an earlier page, so here it is again,
@@ -126,8 +126,8 @@ def transpose(m):
 How might you write `multiply(a, b)`, with your own `dot` and
 `transpose`?
 
-1. Go through every row of `a`.
-2. For each row, go through every column of `b`. The columns of `b` are
+1. Loop over every row of `a`.
+2. For each row, loop over every column of `b`. The columns of `b` are
    the rows of `transpose(b)`.
 3. The entry of the result for that row and column is `dot(row, column)`.
 
@@ -159,14 +159,14 @@ multiply(A3, E)
 
 What happened for you?
 
-- If your `dot` checks the lengths, this raises a `ValueError`. Good:
-  that is why we added the check.
+- If your `dot` checks the lengths, this raises a `ValueError`.
+  That is why we added the check.
 - If your `dot` has no check, you get a 2×2 result, and the third column
-  of `A3` has been thrown away without a word. This is the same silent
+  of `A3` has been lost with no warning. This is the same silent
   mistake as in the dot-product section, one level up.
 
-If you skipped the check, it is worth going back to add it now. A matrix
-multiplication that fails loudly is much easier to fix than one that
+If you skipped the check, add it now. A matrix
+multiplication that stops with an error is much easier to fix than one that
 gives a wrong answer that looks right.
 
 This gives us the shape rule. To multiply an $m \times n$ matrix by an
@@ -244,35 +244,35 @@ Python lists: add, scale, transpose, the dot product, and now matrix
 multiplication.
 
 Most people do not find the multiplication rule obvious when they first
-meet it. Building it from the dot product, one row and one column at a
-time, is what makes it start to make sense.
+meet it. It starts to make sense when you build it from the dot product,
+one row and one column at a time.
 
 Here are some questions to think about:
 
 - Were you surprised that `AB` is not equal to `BA`? Or did you expect
   it, once you saw how the rule works?
-- `transpose` gave us a way to get at the columns of `B`. Did that
+- `transpose` gave us a way to get the columns of `B`. Did that
   connection make sense to you? What made it clear, if it did?
 
-## Where to Read More
+## Where to read more
 
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 3:
 Linear Transformations and Matrices.*
-<https://www.youtube.com/watch?v=kYB8IZa5AuE>. Where the row-times-column
-rule in this tutorial comes from geometrically — essential watching before
-the next tutorial, which is built entirely on this idea.
+<https://www.youtube.com/watch?v=kYB8IZa5AuE>. This video shows where the
+row-times-column rule comes from, in geometry. Watch it before the next
+tutorial, which is built entirely on this idea.
 
 Grant Sanderson (3Blue1Brown) (2017). *But What Is a Neural Network? |
 Deep Learning, Chapter 1.*
 <https://www.youtube.com/watch?v=aircAruvnKk>. A forward pass through a
-network is nothing but the matrix multiplication from this tutorial, applied
-over and over.
+network is only the matrix multiplication from this tutorial, repeated
+many times.
 
 Strang, G. (2016). *Introduction to Linear Algebra* (5th ed.).
-Wellesley-Cambridge Press. The standard textbook treatment, for anyone who
-wants the proofs behind why the rule works the way it does.
+Wellesley-Cambridge Press. This is the standard textbook, for anyone who
+wants the proofs behind the rule.
 
 3Blue1Brown (2016). *Matrix multiplication as composition: Chapter 4,
 Essence of linear algebra.* <https://www.youtube.com/watch?v=XkY2DOUCWMU>.
-Multiplying two matrices means doing one change after another. Grant
+When you multiply two matrices, you do one change after another. Grant
 Sanderson shows why, and why the order matters. Ten minutes.

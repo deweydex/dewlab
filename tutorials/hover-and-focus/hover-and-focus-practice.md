@@ -181,8 +181,8 @@ change smooth, and the other not? Fix it.
 
 The card jumped up and down, while its shadow faded. A `transition`
 animates only the properties it names. This one named `box-shadow`
-alone, so the change to `transform` happened all at once. Naming both,
-with a comma between them, makes both changes smooth, in both
+alone, so the change to `transform` happened all at once. When we name
+both, with a comma between them, both changes are smooth, in both
 directions.
 
 </details>
@@ -239,7 +239,7 @@ from the hover style?
 The `transition` goes on the base `.shop` rule, not on `:hover`, so the
 colour changes smoothly both ways. `outline-offset` sets the gap
 between the link and its outline. The two states look different on
-purpose: a keyboard user needs to see focus clearly, even while the
+purpose. A keyboard user needs to see focus clearly, even while the
 pointer is resting on the link.
 
 </details>
@@ -305,7 +305,7 @@ way `.contact-section .btn:hover` already wins over `.btn:hover`.
 
 Is this the only button with the problem? The **Learn More About Me**
 button sits in the hero, and `.hero` has the same dark background. Press
-Tab until it has focus: its outline is hidden too. The same fix works
+Tab until it has focus. Its outline is hidden too. The same fix works
 there, with `.hero .btn:focus` as the selector. Buttons on a light
 background keep their dark outline, which shows well.
 

@@ -33,8 +33,8 @@ def multiply(a, b):
     return [[dot(row, col) for col in bt] for row in a]
 ```
 
-**1.** Each hour, a student either studies or *procrastinates* (puts the
-work off). If they are studying, there is an 80% chance that they are
+**1.** Each hour, a student either studies or *procrastinates* (delays the
+work). If they are studying, there is an 80% chance that they are
 still studying the next hour. If they are procrastinating, there is a
 60% chance that they start studying the next hour. Write the 2×2
 transition matrix, with studying as state 1.
@@ -73,7 +73,7 @@ What does it settle on?
 
 1. Start from any state vector you like. `[[1, 0]]` and `[[0.5, 0.5]]`
    both work, because the starting point stops mattering.
-2. In a loop, work out `multiply(state, P)` and store the result in
+2. In a loop, calculate `multiply(state, P)` and store the result in
    `state` again, many times.
 3. Print only the last few steps. Check that they have stopped changing,
    to about four decimal places.
@@ -125,7 +125,7 @@ it is almost certain.
 
 Sometimes an absorbing state is the whole reason for building a Markov
 chain. It models a process that matters only until it stops. One example
-is a customer who, sooner or later, cancels their subscription. Another
+is a customer who, in the end, cancels their subscription. Another
 is a gambler who keeps playing until all their money is gone.
 
 </details>
@@ -193,7 +193,7 @@ it, and on how many other links those pages have.
 Page A ranked highest because both other pages link to it. One of them,
 B, links to nothing else, so every visitor to B goes straight on to A.
 
-A page's outgoing links only share out the visitors that the page
+A page's outgoing links only share the visitors that the page
 already has. They do not change how many visitors the page has to share
 in the first place.
 
@@ -258,6 +258,6 @@ natural.
 ## Where to read more
 
 Spanning Tree (2020). *How Google's PageRank Algorithm Works.*
-<https://www.youtube.com/watch?v=meonLcN7LD4>. The random surfer from the
-ranking problems, and the damping factor that stops it being trapped on
+<https://www.youtube.com/watch?v=meonLcN7LD4>. This video explains the random
+surfer from the ranking problems, and the damping factor that stops it being trapped on
 one page. About five minutes.
