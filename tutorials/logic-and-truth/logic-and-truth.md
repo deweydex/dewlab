@@ -19,7 +19,7 @@ covers:
 
 You have been writing `and`, `or` and `not` since
 [Making decisions with if, elif and else](tutorial:making-decisions).
-There we met a short rule for each operator. On this page we lay out
+There we met a short rule for each operator. On this page we list
 every case in full.
 
 The operators are everywhere in code, so it can feel as if there is
@@ -39,11 +39,11 @@ On this page we:
 This page comes after
 [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
 on purpose. Union and intersection showed us a pattern. The logic here
-turns out to be the same pattern with different names.
+is the same pattern with different names.
 
 ## Every possible case
 
-An `and` takes two values, each either `True` or `False`, and gives back
+An `and` takes two values, each either `True` or `False`, and returns
 one value. Each input has only two possibilities, so there are only four
 situations in total. Four is few enough to list them all.
 
@@ -59,9 +59,9 @@ for a in [True, False]:
 ```
 
 There are four rows, and a loop made them. Nobody typed them out. This is
-the main idea of this section. A truth table is what you get when you try
-every input, so there is no need to memorise it. And trying every input
-is a nested loop, which you can already write.
+the main idea of this section. You get a truth table when you try every
+input, so there is no need to memorise it. And a loop that tries every
+input is a nested loop, which you can already write.
 
 Here are the truth tables for the other two operators:
 
@@ -79,7 +79,7 @@ for a in [True, False]:
 ```
 
 `or` is true when either input is true, and that includes when both are
-true. This is the one that trips people up. In everyday English, "or"
+true. This is the one that confuses people. In everyday English, "or"
 usually means one or the other, but not both. If someone asks "tea or
 coffee?", they do not expect you to say "both". The logical `or` does
 include both.
@@ -125,8 +125,8 @@ The three columns are the same all the way down.
 
 The middle column deserves a second look. For `True` and `False`
 values, "exclusive or" and "not equal to" are the *same operation*.
-Exactly one of the two being true means the same as the two being
-different. This is not a coincidence or a trick. It is one idea with two
+"Exactly one of the two is true" means the same as "the two are
+different". This is not a coincidence or a trick. It is one idea with two
 names, because people reached it from different directions.
 
 The third column uses `^`. This is Python's *bitwise XOR*. It works on
@@ -192,19 +192,18 @@ evidence for it. It is the whole proof. There are exactly four cases,
 and the loop tried all four.
 
 This is unusual, and it is worth stopping to think about. Usually, "I
-tested it and it worked" is a weak argument. Testing a few inputs cannot
-show that a program works for every input, and you will soon see this
-go wrong in real code. Here the argument is complete, because there are
-only four possible inputs, and we tried every one. Checking every case
-is a proof when there are few enough cases to check them all, and almost
-never otherwise.
+tested it and it worked" is a weak argument. A test of a few inputs
+cannot show that a program works for every input, and you will soon see
+this go wrong in real code. Here the argument is complete, because there
+are only four possible inputs, and we tried every one. A check of every
+case is a proof only when there are few enough cases to check them all.
 
 ## Where you have already used this
 
 Why learn De Morgan's laws? They turn conditions that are hard to read
 into conditions that are easy to read.
 
-Here is a condition of the kind that turns up in real code. The last
+Here is a condition of the kind that appears in real code. The last
 lines use `all()`, a built-in function that gives `True` when every
 value it is given is `True`. The `for` parts inside it work like a list
 comprehension: they try all four combinations of `a` and `s`.
@@ -226,13 +225,13 @@ print("agree everywhere:",
           for a in [True, False] for s in [True, False]))
 ```
 
-The first version has three `not`s, and it takes a moment to work out.
+The first version has three `not`s, and it takes a moment to understand.
 The second version says what it means. They are the same function, and
 De Morgan's laws take you from one to the other.
 
 People rarely write the first version on purpose. It grows a little at a
-time: someone adds a condition, later wraps the whole thing in a `not`,
-then adds another condition. Knowing the laws lets you untangle it
+time. Someone adds a condition, later wraps the whole thing in a `not`,
+then adds another condition. If you know the laws, you can untangle it
 afterwards.
 
 ### Your turn
@@ -263,7 +262,7 @@ def three(a, b, c):
 
 ## The same shapes, on sets
 
-Here is the reason this page comes after
+Now we can see why this page comes after
 [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists).
 
 Everything above was about `True` and `False`. The same two laws hold for
@@ -309,7 +308,7 @@ are the same kind of question, asked about different things. Once you
 see that, a rule you learned in one place works in the other, and you do
 not have to learn it again.
 
-This connection is why this page sits where it does, and it is the most
+Because of this connection, this page comes where it does. It is the most
 useful idea on the page.
 [Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams)
 turns it into a picture. There, we shade the same two laws on a diagram,
@@ -323,7 +322,7 @@ through a bracket. These are the ideas worth keeping:
 
 - **A truth table is a loop over every case.** There is no need to
   memorise it. If you forget what `or` does, generate the table.
-- **Checking every case is a proof only when there are few cases.** Four
+- **A check of every case is a proof only when there are few cases.** Four
   rows is few. Almost nothing else you meet will be that small.
 - **De Morgan's laws are for readability.** They turn tangled conditions
   into ones a person can read. They do not make code do anything new.
@@ -333,19 +332,19 @@ Now look back at something you have written before, and find a
 condition in it. In a few sentences, say whether De Morgan's laws would
 make it easier to read.
 
-## Where to Read More
+## Where to read more
 
 Khan Academy. *Equivalent Compound Booleans.*
 <https://www.khanacademy.org/computing/ap-computer-science-principles/programming-101/x2d2f703b37b450a3:logical-equivalence/a/equivalent-compound-booleans>.
-De Morgan's Laws from the programming side, with the same two rules this
-page proves by looping over four rows.
+It explains De Morgan's laws from the programming side, with the same two
+rules this page proves by looping over four rows.
 
 Steve Mould (2013). *Can you solve this 4 card puzzle?*
-<https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. A famous puzzle about an
-"if" rule, which surprises most people, because an "if" does not mean
-what we expect. Three minutes. Write your answer down before the end.
+<https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. It shows a famous puzzle
+about an "if" rule, which surprises most people, because an "if" does not
+mean what we expect. The video is three minutes long. Write your answer down before the end.
 
 CrashCourse (2017). *Boolean Logic & Logic Gates: Crash Course Computer
-Science #3.* <https://www.youtube.com/watch?v=gI-qXk7XojA>. AND, OR, NOT
-and XOR as switches inside a computer, each with its truth table. About
-ten minutes.
+Science #3.* <https://www.youtube.com/watch?v=gI-qXk7XojA>. It shows AND,
+OR, NOT and XOR as switches inside a computer, each with its truth table.
+The video is about ten minutes long.
