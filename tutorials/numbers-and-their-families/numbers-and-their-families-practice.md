@@ -2,14 +2,18 @@
 title: "Number types, powers and logarithms — Practice"
 practice_for: numbers-and-their-families
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  music: Notes, octaves and the frequencies that make them.
+  rockets: Rockets, orbits and the planets they travel between.
+  fantasy-maps: A made-up kingdom, drawn to scale on a map.
 ---
 
 # Number types, powers and logarithms — Practice
 
 The answers are hidden in folds under each problem. You remember the
-rules for powers best when you use them, so try the working by hand first. Then use
-the cells to check your answers.
+rules for powers best when you use them, so try the working by hand
+first. Then use the cells to check your answers.
 
 Some of these problems are adapted from the fractions and exponents
 worksheets in the Mathematics repository.
@@ -142,7 +146,7 @@ But we said the fraction was in lowest terms. If $a$ and $b$ are both
 even, it is not. This is a contradiction, so no such fraction exists.
 
 This is one of the oldest proofs we know. It is short enough to rebuild
-from the idea, without memorising it. Notice what it tells us: no
+from the idea, without memorising it. Notice what it tells us. No
 fraction is equal to √2. It does not give us any way to calculate √2.
 
 </details>
@@ -159,9 +163,48 @@ both sides by 3, and you get $1 = 0.999\ldots$ The careful argument says
 that the difference between them is never negative, and it is smaller
 than every positive number. The only number like that is zero.
 
-Many people find this uncomfortable, and that feeling is worth naming. It
-comes from the idea that 0.999… is a process that keeps going. But it is
-a single number.
+Many people find this hard to accept at first, because 0.999… looks
+like a process that keeps going. It is a single number, and both
+arguments above show which one.
+
+</details>
+
+**9.** The tutorial showed that Python stores `0.1` as a fraction with
+$2^{55}$ on the bottom. The cell asks for five decimals as fractions.
+
+```python exec
+id: stored-exactly
+from fractions import Fraction
+
+for value in [0.5, 0.1, 0.25, 0.2, 0.75]:
+    print(value, Fraction(value))
+```
+
+```predict
+type: choice
+
+Before you run it: which of the five come out as the fraction you would
+write by hand?
+
+- All five
+  - Each one is a short decimal, so each should be easy to store.
+- 0.5, 0.25 and 0.75
+- Only 0.5
+  - One half is the simplest fraction there is.
+- None of them
+  - If 0.1 is not stored exactly, perhaps no decimal is.
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+0.5, 0.25 and 0.75 come out as $\frac{1}{2}$, $\frac{1}{4}$ and
+$\frac{3}{4}$. 0.1 and 0.2 do not.
+
+A fraction with a power of 2 on the bottom has a binary decimal that
+ends, in the same way that a fraction with a power of 10 on the bottom
+has an ordinary decimal that ends. $\frac{1}{4}$ is 0.01 in binary.
+$\frac{1}{10}$ has a 5 on the bottom as well as a 2, and in binary it
+never ends, like $\frac{1}{3} = 0.333\ldots$ in decimal.
 
 </details>
 
@@ -175,7 +218,7 @@ print((a**2)**3, a**6)
 print(a**0, a**-2, 1 / a**2)
 ```
 
-**9.** Simplify each one without a calculator.
+**10.** Simplify each one without a calculator.
 
 - (a) $2^3 \times 2^4$
 - (b) $(5^2)^3$
@@ -195,24 +238,22 @@ print(a**0, a**-2, 1 / a**2)
 
 </details>
 
-**10.** Why is $a^0 = 1$?
+**11.** Simplify $\dfrac{(a^3 b^2)^2}{a^2 b}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is 1 because $\frac{a^n}{a^n} = a^{n-n} = a^0$, and any number (except 0)
-divided by itself is 1.
+$a^4 b^3$.
 
-So $a^0 = 1$ is not an extra rule added on. It is the only value that
-keeps the subtraction rule working. The same reason explains why
-$a^{-n}$ has to be $\frac{1}{a^n}$. Follow the pattern downwards,
-$a^3, a^2, a^1, a^0, a^{-1}$, and each step divides by $a$.
+First the power of a power: $(a^3 b^2)^2 = a^6 b^4$. Then divide, one
+base at a time: $a^{6-2} = a^4$ and $b^{4-1} = b^3$.
 
-$0^0$ is the one case people disagree on, and different areas of
-mathematics answer it differently. Python says 1.
+Check it with numbers. With $a = 2$ and $b = 3$, the top is
+$(8 \times 9)^2 = 5184$ and the bottom is $4 \times 3 = 12$, so the
+fraction is 432. And $2^4 \times 3^3 = 16 \times 27 = 432$.
 
 </details>
 
-**11.** Calculate $16^{1/2}$, $27^{1/3}$, $8^{2/3}$ and $16^{-1/2}$.
+**12.** Calculate $16^{1/2}$, $27^{1/3}$, $8^{2/3}$ and $16^{-1/2}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -226,14 +267,38 @@ answer, but the numbers along the way are bigger.
 
 </details>
 
-**12.** Can you write `power(base, exponent)` without using `**`? It
-should handle negative and zero exponents.
+**13.** Here is a power of a power, with no brackets.
+
+```python exec
+id: power-of-a-power
+print(2 ** 3 ** 2)
+```
+
+```predict
+type: number
+
+What will it print?
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
+It prints 512.
+
+Python reads a chain of powers from the right, so `2 ** 3 ** 2` means
+$2^{(3^2)} = 2^9 = 512$. If it worked from the left, it would be
+$(2^3)^2 = 2^6 = 64$. Mathematics reads a tower of powers the same way
+as Python: $2^{3^2}$ is $2^9$. When you mean $(2^3)^2$, write the
+brackets.
+
+</details>
+
+**14.** Here is the `power` function from the tutorial. What happens
+when you ask it for `power(2, 0.5)`? Why?
+
+```python exec
+id: power-with-a-fraction
 def power(base, exponent):
-    """base raised to a whole-number exponent, without **."""
+    """base to a whole-number exponent, without using **."""
     if exponent == 0:
         return 1
     if exponent < 0:
@@ -242,21 +307,30 @@ def power(base, exponent):
     for _ in range(exponent):
         result = result * base
     return result
+
+
+print(power(2, 0.5))
 ```
 
-`power(2, 10)` is 1024, `power(3, 0)` is 1, and `power(2, -3)` is 0.125.
+<details class="dl-answer"><summary>answer</summary>
 
-The neat part is the negative case, where the function calls itself. It
-turns a case it cannot do into one it can.
+It stops with `TypeError: 'float' object cannot be interpreted as an
+integer`.
+
+The loop runs `range(exponent)` times, and `range` needs a whole number.
+"Multiply by the base half a time" has no meaning, so repeated
+multiplication cannot make a square root. That is why $a^{1/2}$ needs
+the power-of-a-power rule to give it a meaning. Python's `**` uses a
+different method, based on logarithms, so `2 ** 0.5` works.
 
 </details>
 
-**13.** How many multiplications does that function do for
+**15.** How many multiplications does that function do for
 `power(2, 1000)`? Can it be done with fewer?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It does a thousand. And yes, it can be done with far fewer: about ten
+It does a thousand. It can be done with far fewer, about ten
 squarings.
 
 The trick is to square again and again: $a^{1000} = (a^{500})^2$, and
@@ -282,7 +356,7 @@ instead of on a list. It makes public-key cryptography possible.
 
 ## Logarithms
 
-**14.** Calculate each one without a calculator.
+**16.** Calculate each one without a calculator.
 
 - (a) $\log_2 8$
 - (b) $\log_{10} 1000$
@@ -300,7 +374,7 @@ exactly when the number is below 1: $3^{-2} = \frac{1}{9}$.
 
 </details>
 
-**15.** Why is $\log(ab) = \log a + \log b$?
+**17.** Why is $\log(ab) = \log a + \log b$?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -316,44 +390,62 @@ this rule built into a ruler.
 
 </details>
 
-**16.** Can you write `log_base(x, base)` so that it returns the
-whole-number part of the logarithm, using repeated division?
+**18.** Here is the `log_base` function from the tutorial. What does
+it return for `log_base(0.25, 2)`? What should the answer be? Can you
+change the function so that it works for numbers between 0 and 1 too?
+
+```python exec
+id: log-below-one
+def log_base(x, base):
+    """The whole-number part of the logarithm of x, for x >= 1."""
+    count = 0
+    while x >= base:
+        x = x / base
+        count = count + 1
+    return count
+
+
+print(log_base(0.25, 2))
+```
+
+<details class="dl-hint"><summary>stuck? here are some steps</summary>
+
+1. $0.25 = \frac{1}{4} = 2^{-2}$. What is $\log_2 0.25$?
+2. For a number below 1, dividing makes it smaller still. What could
+   you do to it instead, to bring it up to 1?
+3. Each time you do that, which way should `count` move?
+
+**Think about:** for 0.3, the logarithm is about $-1.74$. Which whole
+number should the function return: $-1$ or $-2$?
+
+</details>
 
 <details class="dl-answer"><summary>answer</summary>
 
+Here is one answer. Yours may be different and work too. It returns 0,
+because $0.25 < 2$, so the loop never runs. The answer should be $-2$,
+because $2^{-2} = \frac{1}{4}$.
+
 ```python
 def log_base(x, base):
-    """The integer part of log(x) to the given base, for x >= 1."""
+    """The whole number at or just below the logarithm of x, for x > 0."""
     count = 0
+    while x < 1:
+        x = x * base
+        count = count - 1
     while x >= base:
         x = x / base
         count = count + 1
     return count
 ```
 
-`log_base(1024, 2)` is 10, `log_base(1000, 10)` is 3, and
-`log_base(100, 3)` is 4, since $3^4 = 81$ and $3^5 = 243$.
-
-When you divide until you fall below the base, you use the definition of
-a logarithm backwards. When we count the steps of an algorithm, the whole-number
-part is all we use.
+`log_base(0.25, 2)` is now $-2$, and `log_base(0.3, 2)` is also $-2$,
+the whole number just below $-1.74$. For numbers of 1 or more, nothing
+has changed.
 
 </details>
 
-**17.** A binary search on a million items takes about twenty steps. How
-many steps does it take on a billion items?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It takes about thirty.
-
-$\log_2(10^9) \approx 30$. If you multiply the data by a thousand, you add
-only ten steps, because a thousand is about $2^{10}$. In practice, a
-logarithm counts doublings.
-
-</details>
-
-**18.** Sound is measured in decibels (dB). A sound of 10 dB has ten
+**19.** Sound is measured in decibels (dB). A sound of 10 dB has ten
 times the power of a sound of 0 dB. How much more powerful is 60 dB than
 30 dB?
 
@@ -369,53 +461,155 @@ magnitude scale for the brightness of stars.
 
 </details>
 
-## Geometry as functions
+## Your world
 
-**19.** Can you write functions for the area of a circle, the area of a
-triangle from its base and height, and the volume of a cylinder?
+**20.** A problem from the world you chose.
+
+<div class="dl-world" data-world="music">
+
+A *pure* fifth, the sound of two notes that fit together best, has
+frequencies in the ratio $\frac{3}{2}$. A piano's fifth is seven
+semitones, $2^{7/12}$. How close are they? Musicians measure small gaps
+in *cents*, where one semitone is 100 cents, so a ratio $r$ is
+$1200 \log_2 r$ cents.
+
+```python exec
+id: your-world--music
+import math
+
+pure = 3 / 2
+piano = 2 ** (7 / 12)
+```
 
 <details class="dl-answer"><summary>answer</summary>
+
+The piano's fifth is about 1.4983, a little below 1.5. The gap is
+$1200 \log_2 \frac{1.5}{1.4983} \approx 1.96$ cents, about a fiftieth
+of a semitone.
+
+```python
+print(piano, 1200 * math.log2(pure / piano))
+```
+
+Twelve pure fifths would overshoot seven octaves, so a piano cannot
+have every fifth pure and every octave pure at once. Tuning every
+semitone to $2^{1/12}$ shares the small error out equally. It is called
+*equal temperament*.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="rockets">
+
+Kepler's rule says years $= \text{distance}^{3/2}$. A mission planner
+knows that Uranus takes about 84 years to go round the Sun, and Neptune
+about 165. How far from the Sun is each, in AU? Rearrange the rule
+first.
+
+```python exec
+id: your-world--rockets
+years = {"Uranus": 84, "Neptune": 165}
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Raise both sides to the power $\frac{2}{3}$:
+$\text{distance} = \text{years}^{2/3}$, because
+$(d^{3/2})^{2/3} = d^1$.
+
+```python
+for planet, time in years.items():
+    print(planet, time ** (2 / 3))
+```
+
+Uranus is about 19.18 AU from the Sun and Neptune about 30.08 AU. The
+measured mean distances are about 19.19 and 30.07 AU.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="fantasy-maps">
+
+The kingdom's map is drawn at a scale of 1 : 50,000, so 1 cm on the map
+is 50,000 cm on the ground. The King's Road is 7.2 cm long on the map.
+How long is it in kilometres? A field is 4 cm² on the map. How many
+km² is it?
+
+```python exec
+id: your-world--fantasy-maps
+scale = 50_000
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The road is 3.6 km, and the field is 1 km².
+
+$7.2 \times 50\,000 = 360\,000$ cm, which is 3.6 km. An area
+multiplies by the scale squared: $4 \times 50\,000^2 = 10^{10}$ cm². A
+km² is $100\,000^2 = 10^{10}$ cm², so the field is exactly 1 km².
+
+```python
+print(7.2 * scale / 100 / 1000, 4 * scale ** 2 / 100_000 ** 2)
+```
+
+</details>
+
+</div>
+
+## Formulas as functions
+
+**21.** The tutorial wrote `circle_area`, `cylinder_volume` and
+`sphere_volume`. Can you write `cone_volume(radius, height)` and
+`sphere_surface_area(radius)`? A cone fits exactly inside a cylinder of
+the same radius and height. What fraction of the cylinder does it fill?
+
+<details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
 
 ```python
 import math
 
 
-def circle_area(radius):
-    """Area of a circle."""
-    return math.pi * radius ** 2
+def cone_volume(radius, height):
+    """The volume of a cone: a third of the cylinder around it."""
+    return math.pi * radius ** 2 * height / 3
 
 
-def triangle_area(base, height):
-    """Area of a triangle from its base and perpendicular height."""
-    return base * height / 2
-
-
-def cylinder_volume(radius, height):
-    """Volume of a cylinder."""
-    return circle_area(radius) * height
+def sphere_surface_area(radius):
+    """The area of the outside of a sphere."""
+    return 4 * math.pi * radius ** 2
 ```
 
-It is worth making the last function call the first one on purpose. A
-cylinder is a circle with depth. If you wrote out $\pi r^2 h$ again, you
-would hide that.
+A cone fills exactly a third of its cylinder. With radius 3 and height
+12, the cone is about 113.1 and the cylinder about 339.3.
+
+`sphere_surface_area(3)` is also about 113.1. That is a coincidence of
+these numbers: for radius 3, $4\pi r^2 = 36\pi$, and the cone
+$\frac{1}{3}\pi \times 9 \times 12$ is $36\pi$ too.
 
 </details>
 
-**20.** A circle's radius doubles. What happens to its circumference and
-its area?
+**22.** A model of a building is made at a scale of 1 : 10, so every
+length is a tenth of the real one. The real building needs 400 litres
+of paint for its walls. How much paint does the model need? The model
+is solid clay, and the real building would fill 2,000 m³. How much clay
+is the model?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The circumference doubles, and the area becomes four times as big.
+4 litres of paint, and 2 m³ of clay.
 
-The circumference is $2\pi r$, so it grows at the same rate as $r$. The area is
-$\pi r^2$, so it grows with $r$ squared, and $2^2 = 4$. This is why a
-pizza twice as wide is four times as much pizza. It is also why an image
-with double the width and height needs four times the memory.
+Paint covers an area, and an area scales by $\left(\frac{1}{10}\right)^2
+= \frac{1}{100}$. Clay fills a volume, and a volume scales by
+$\left(\frac{1}{10}\right)^3 = \frac{1}{1000}$. So the model needs a
+hundredth of the paint and a thousandth of the clay.
 
 </details>
 
-**21.** Can you write a function that takes a number and reports which
+**23.** Can you write a function that takes a number and reports which
 families it belongs to, whether it is prime, and its prime factors?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -446,5 +640,46 @@ The `if n > 1` at the end catches the last prime factor. That factor is
 larger than the square root, so the loop never reaches it. If you leave
 the check out, every number with a large prime factor loses that factor
 without any error. Most quick tests will not catch this bug.
+
+</details>
+
+## From earlier
+
+**24.** A binary search on a million items takes about twenty steps. How
+many steps does it take on a billion items?
+
+<details class="dl-answer"><summary>answer</summary>
+
+It takes about thirty.
+
+$\log_2(10^9) \approx 30$. If you multiply the data by a thousand, you add
+only ten steps, because a thousand is about $2^{10}$. In practice, a
+logarithm counts doublings.
+
+</details>
+
+**25.** In [Probability: simple, compound and
+conditional](tutorial:what-are-the-chances) we found the chance of an event
+by counting. The `fractions` module keeps a chance exact. What is the
+chance of rolling two sixes with two fair dice? And the chance of at
+least one six?
+
+```python exec
+id: from-earlier-chances
+from fractions import Fraction
+
+six = Fraction(1, 6)
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+Two sixes: $\frac{1}{36}$. At least one six: $\frac{11}{36}$.
+
+The two dice do not affect each other, so the chances multiply:
+`six * six` is `Fraction(1, 36)`. For at least one six, it is easier to
+count the other way. The chance of no six is
+$\left(\frac{5}{6}\right)^2 = \frac{25}{36}$, so the chance of at
+least one is $1 - \frac{25}{36} = \frac{11}{36}$. `1 - (1 - six) ** 2`
+gives `Fraction(11, 36)`, with no rounding anywhere.
 
 </details>
