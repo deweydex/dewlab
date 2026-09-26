@@ -23,9 +23,9 @@ The templates are never published. `tests/build/test_templates.py` builds
 them in a temporary copy of the site on every test run, so a template that
 stops building fails there first.
 
-Some of the syntax they use is agreed but not yet live: the worlds arrive
-with #315 and the challenge with #316. Until then a challenge block builds
-as a plain code block, and a world's `<div>` shows its contents without
-converting them. Each of those pull requests updates these templates, and
-the test, as it lands. The solution, inputs and predict blocks are live, and
-the build runs every solution in these templates on every test run.
+Some of the syntax they use is agreed but not yet live: the challenge
+arrives with #316, and until then a challenge block builds as a plain code
+block. That pull request updates these templates, and the test, as it
+lands. The solution, inputs and predict blocks and the worlds are live, and
+the build runs every solution in these templates, once per world, on every
+test run.

@@ -47,7 +47,8 @@ describes the new one. A stale comment is worse than no comment.
 **Cell ids are a contract, and so is a tutorial's id.** Once a tutorial has
 been in front of a class, a cell id is the key somebody's saved work lives
 under, and the tutorial's id — its folder name — is the other half of that
-key. Renaming either throws that work away.
+key. Renaming either throws that work away. A cell in a world variant ends
+in its world (`your-turn-1--planets`), so the world is part of its id too.
 
 **Editing `assets/tutorial-runtime.js` without rebuilding the vendor
 bundle looks harmless until CI catches it.** `standalone-bundle-is-current`

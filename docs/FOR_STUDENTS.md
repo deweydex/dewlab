@@ -32,6 +32,11 @@ is the only difference, and it is meant to be visible at a glance.
 Some cells have a small **?** beside them. That is a hint, tucked out of the
 way until you want it.
 
+Some pages offer their tasks in more than one world: the planets, the sea
+floor, pixel art. A box under the title lists them. Choose the one you like,
+and the tasks change to match. You can change it at any time, and the page
+keeps your work in each world separately.
+
 Every cell has a **reset** button. It restores the code the tutorial started
 with and clears the cell's visible result. Only that one cell changes —
 everything else on the page stays as it was. One thing worth knowing: reset

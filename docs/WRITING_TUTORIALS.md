@@ -240,8 +240,9 @@ readings[readings["evening"] > 14]
 `id` is how saved progress finds this cell again. Write it in small letters and
 hyphens. The usual shape is `<section-slug>-<n>`: `filter-evening-1` is the
 first cell under a heading whose slug is `filter-evening`. A cell inside a
-world variant adds its world after two hyphens: `your-turn-1--planets`
-([Worlds](#worlds)). It must be unique within the tutorial, and it should stay the same when you edit the cell. That is
+world variant adds its world after two hyphens, `your-turn-1--planets`, and
+the build fails without it ([Worlds](#worlds)). An id must be unique within
+the tutorial, and it should stay the same when you edit the cell. That is
 what lets you fix a typo without wiping what students have written. Once a
 tutorial has been in front of a class, a cell id is the key somebody's saved
 work lives under, and renaming one throws that work away. The editor warns
@@ -545,9 +546,6 @@ file to save.
 <a id="worlds"></a>
 ## Worlds
 
-**Status.** Agreed syntax, live with #315. Until then, a world's `<div>`
-builds, but its contents are shown without being converted.
-
 A page's frontmatter lists the worlds it offers, each with one line saying
 what it is:
 
@@ -558,10 +556,11 @@ worlds:
   pixels: Pixel art on a grid five squares wide.
 ```
 
-The first is the world the page's own prose teaches in. A task, a practice
-problem or a project step can have a variant for each world, written inside
-a wrapper, with a blank line after the opening tag and before the closing
-one:
+A key is small letters and digits joined by hyphens, and the reader sees it
+with a capital and spaces: `sea-floor` is "Sea floor". The first world is the
+one the page's own prose teaches in. A task, a practice problem or a project
+step can have a variant for each world, written inside a wrapper, with a
+blank line after the opening tag and before the closing one:
 
 ````markdown
 <div class="dl-world" data-world="planets">
@@ -579,17 +578,50 @@ giants = [142984, 120536, 51118, 49528]
 ```
 
 </div>
+
+<div class="dl-world" data-world="sea-floor">
+
+…
+
+</div>
 ````
 
-A cell inside a variant adds its world to its id after two hyphens, so
-switching worlds never overwrites saved work. Each variant cell carries its
-own blocks. Prose and demonstration cells outside every variant are shown
-whatever the world.
+Variants with nothing but blank lines between them are one task, once per
+world. Everything inside is ordinary markdown.
 
-The page shows the worlds on offer near the top, each with its line, and
-remembers the reader's choice for that page. Changing it swaps the variants.
-A downloaded or printed copy has the chosen world, or all of them, with a
-heading for each.
+- **Cell ids.** A cell inside a variant adds its world to its id after two
+  hyphens, so switching worlds never overwrites saved work.
+- **Blocks.** Each variant cell carries its own solution, inputs, predict and
+  hint blocks, inside the same variant. A block cannot belong to a cell in
+  another world, or cross between a variant and the shared page, since it
+  shows and hides with its cell. The same goes for a cell of the reader's
+  own tests.
+- **Shared content.** Prose and demonstration cells outside every variant
+  show whatever the world.
+- **A missing world.** A task without a variant for the reader's world shows
+  the variant in the page's own world, or, failing that, the first one
+  written.
+
+**What the reader sees.** A box under the page's title lists the worlds, each
+with its line, and remembers the choice for that page in the browser.
+Changing it swaps the variants at once. Each variant of a task counts from the
+same cell number, so the cell after the task has the same number whichever
+world is on show. Running every cell above, the surprises at the end of the
+page, the progress count and the notebook export all follow the world on
+show. The saved record carries the choice as `world`.
+
+**Without JavaScript** every variant shows, each under its world's name. A printed page has the chosen world, with its name
+above each variant. A downloaded page keeps every variant and the chooser.
+
+**Solutions.** The build checks a page with worlds once per world, running
+the cells a reader in that world would run: the shared cells and that world's
+variants. A solution that uses a name from another world's cell fails.
+
+**What the build refuses:** a variant on a page with no `worlds:`, a world the
+page does not list, an opening tag that shares its line with other text, a
+variant inside another, a variant with no `</div>`, two variants for the same
+world side by side, a cell in a variant whose id does not end in its world,
+and a block or a cell of tests in a different world from its cell.
 
 A world the reader makes up for themselves (OOP's "your own world") is a
 variant with a neutral prompt and no solution. An inputs block there gives a
