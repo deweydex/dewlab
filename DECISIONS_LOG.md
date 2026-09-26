@@ -4980,7 +4980,7 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 ---
 
-**7.248 — 37 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
+**7.248 — 39 more videos from the list, on 36 pages that had none.** Josh, having watched every channel on the list: "we can certainly fill in some gaps". The same rules as 7.246, applied to the pages it left empty, searching every title in `planning/video-library/all-videos.csv` rather than only the picks.
 
 Two kinds of fit. Some pages have a twin in another course (`repeating-yourself` and `doing-it-again`, `making-decisions` and `choosing-a-path`, `sorting-a-hand-of-cards` and `putting-things-in-order`), and take the same video, since a reader only meets one of the pair. The rest get a video aimed at one section: Cramer's rule for "One formula for every pair", gradient descent and curve fitting for the two derivative projects, point-to-line distance for "Did the ball hit the player?", Russell's paradox for "Where the picture stops helping". The Tantacrul critique 7.246 left out now goes on `critique-and-reflection`.
 
