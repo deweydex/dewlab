@@ -281,7 +281,7 @@ It takes two looks. The first look was at index 3, Niamh, halfway between 0 and
 7. `(low + high) // 2` finds the middle, and `//` rounds down, as on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
 Priya comes after Niamh, so the left half, Aoife to Niamh, was
-removed, and `low` became 4. The second look was halfway between 4 and 7,
+skipped, and `low` became 4. The second look was halfway between 4 and 7,
 at index 5, and that was Priya.
 
 Three names change at every look, and that is a lot to hold in your
@@ -376,7 +376,7 @@ that is not true, calmly, like the oven converter on
 Follow the looks. The first was Kwame. Aoife comes before Kwame in the
 alphabet, so the search kept the left half: Siobhán, Tomasz and Aoife.
 So far, Aoife is still in the part kept. The second look was Tomasz. Aoife comes before Tomasz
-too, so the search removed Tomasz and everything after him, and
+too, so the search skipped Tomasz and everything after him, and
 Aoife went with them. In a sorted list, every name after Tomasz would
 come later in the alphabet than Tomasz. In this list, that is not
 true.

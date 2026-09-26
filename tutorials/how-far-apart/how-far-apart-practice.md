@@ -176,8 +176,8 @@ function stops at $c^2$ and never takes the square root. The fix:
 ```
 
 with `import math` at the top of the cell. The first test passed
-because $1^2 = 1$ and $\sqrt{1} = 1$. For a distance of 1, the square
-root changes nothing. Schlomo chose the smallest test he could think
+because $1^2 = 1$ and $\sqrt{1} = 1$. For a distance of 1, it makes no
+difference whether we take the square root. Schlomo chose the smallest test he could think
 of, and it happened to be that one length.
 
 </details>

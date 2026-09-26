@@ -245,7 +245,7 @@ id: your-turn-6
 
 ## Multiplying polynomials
 
-Multiplication of polynomials takes more steps. To multiply $(2x + 3)(x + 4)$,
+It takes more steps to multiply polynomials. To multiply $(2x + 3)(x + 4)$,
 we multiply each term of the first polynomial by every term of the
 second, and then add the results. This is called *expanding the
 brackets*. For two terms times two terms, many people use the *FOIL
@@ -384,8 +384,8 @@ builds on the others.
 
 The deeper lesson is about *representation*: the way we choose to store
 something as data. We chose to store polynomials as lists, and that
-turned abstract algebra into work with lists. Addition became addition
-of list items. Multiplication became a loop inside a loop. The algebra
+turned abstract algebra into work with lists. To add polynomials, we add
+list items. To multiply them, we use a loop inside a loop. The algebra
 did not change, but we looked at it in a new way.
 
 Next, in

@@ -326,8 +326,8 @@ double_and_print(5)
 ```
 
 Only one line appears. `double_and_return(5)` did calculate 10, and it
-returned 10. But nothing on that line used the value, so Python lost
-it. `double_and_print(5)` showed 10 on the screen, because `print`
+returned 10. But nothing on that line used the value, so Python did
+nothing with it. `double_and_print(5)` showed 10 on the screen, because `print`
 puts text on the screen.
 
 Now let's keep what each function returns, and look at it. What do

@@ -154,7 +154,7 @@ keeps only the last. It does not catch c. Its mean is a whole number, so
 such as `[1, 2]`, catches c. So `[10, 20, 30]` and `[1, 2]` together leave
 only a.
 
-Nobody has caught the version that passes everything yet, but that does
+The tests have not caught the version that passes everything. That does
 not prove it is right.
 Each test is a question, and a good set asks different questions: a
 middle case, an edge, a case where two ways of being wrong would give
@@ -442,7 +442,8 @@ print(with_border(6))
 It gives a `NameError`, because `edge` exists only inside `with_border`.
 That is a help, not a nuisance. Many functions can each have a variable
 called `total` or `edge`, and none of them clashes with another.
-Information goes in through parameters, and leaves through `return`.
+Information goes in only through parameters, and leaves only through
+`return`.
 
 ## Looking back
 

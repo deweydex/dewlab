@@ -82,7 +82,7 @@ id: checking-the-guarantee-2
 
 It returns `0`. When nothing is left to make, no tokens are needed.
 
-The function finds every other amount by trying a token, then asking
+The function finds the answer for every other amount by trying a token, then asking
 the same question about a smaller amount. Every chain of questions ends
 at `0`. This case is the base case: the case the function answers
 without calling itself. Without it, the function would keep asking about

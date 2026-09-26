@@ -96,8 +96,8 @@ It is the very last line of `book`: *End of the Project Gutenberg EBook
 of The Time Machine, by H. G. Wells*. Project Gutenberg put that closing
 line before its END marker, not after it, so our slice kept it. Nothing
 is broken. The cell did exactly what we asked. The marker was just not
-quite where we assumed. So always check a cleaned text,
-and do not only trust it. One line of 14 words makes no real difference to
+quite where we assumed. So check a cleaned text.
+Do not just trust it. One line of 14 words makes no real difference to
 a chain built from more than 32,000 words, so we leave it in.
 
 ## Too many words for a grid

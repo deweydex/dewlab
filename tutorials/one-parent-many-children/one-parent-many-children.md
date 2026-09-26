@@ -65,7 +65,7 @@ What will the first line print?
 
 It prints `Grog (health 7)`, then `Grog (health 9)`. The first line,
 `class Troll(Character):`, says "a troll is a character, plus something
-different". This is *inheritance*. We build a new class on an existing
+different". This is *inheritance*, which builds a new class on an existing
 one. The new class keeps everything the existing class does, and changes
 or adds only what is different.
 

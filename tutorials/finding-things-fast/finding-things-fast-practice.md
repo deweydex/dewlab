@@ -232,9 +232,9 @@ print(binary_search(steps, 6100))
 
 It prints 3, then −1, then −1. The first look is always the middle,
 index 3, and that is 12000, so the first search is lucky. For 9000, the
-search sees 12000, which is bigger, and removes the right half,
+search sees 12000, which is bigger, and skips the right half,
 where 9000 really is. For 6100, the second look is 10400, which is
-bigger, so it removes 6100 at index 2 along with it.
+bigger, so it skips 6100 at index 2 along with it.
 
 The list is in the order of the days, not in order of size, so binary
 search's promise does not hold. `linear_search(steps, 9000)` gives 4,
@@ -392,7 +392,7 @@ for port in ports:
 2. What are `low` and `high` when the loop stops?
 3. Was the port at that index ever looked at?
 
-**Think about:** it is true that one port is left when `low` and
+**Think about:** Schlomo is right that one port is left when `low` and
 `high` meet. Which step did his loop leave out for that last port?
 
 </details>
@@ -527,7 +527,7 @@ print(binary_search(league, 310))
 
 `binary_search` promises to work on a list sorted smallest first. Its
 first look is 480. 310 is smaller, so it keeps the left half, which in
-this list holds the bigger scores, and 310 is removed.
+this list holds the bigger scores, and 310 is skipped.
 
 One way is to change the list: `league[::-1]` is the list backwards,
 smallest first, and there `binary_search` works. The index it gives is

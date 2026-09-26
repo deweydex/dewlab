@@ -431,15 +431,15 @@ here.
 2. A short chord subtracts two distances that are nearly the same.
    Each distance is a float, with a tiny error, as on
    [How a computer stores a number](tutorial:how-a-computer-stores-a-number#when-rounding-errors-add-up).
-   The subtraction leaves only that tiny error, and dividing by a tiny
+   When we subtract them, only that tiny error is left, and dividing by a tiny
    $2h$ makes it large.
 
 The first error falls as the step shrinks, and the second one rises.
 They balance somewhere near $10^{-5}$ or $10^{-6}$. At $10^{-6}$ the
 error is less than a billionth of a metre a second. At $10^{-15}$ the
-answer is wrong by about 0.36, over 3%, as on
-[Getting closer](tutorial:getting-closer#when-the-floats-run-out)
-again. The floats have run out. So `derivative_at` uses $10^{-6}$ by
+answer is wrong by about 0.36, over 3%. As on
+[Getting closer](tutorial:getting-closer#when-the-floats-run-out),
+the floats have run out. So `derivative_at` uses $10^{-6}$ by
 default. It is a good step for rules whose values are of ordinary
 size. It still makes a chord, not a limit, so its answer is close, not
 exact.

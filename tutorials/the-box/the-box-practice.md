@@ -79,8 +79,7 @@ first box and `margin-top: 20px` on the second?
 
 The gap is `30px`, half the height of the grey square. This is *margin
 collapse*. The bottom margin of the first box meets the top margin of
-the
-second, and they do not add up. The larger of the two sets the gap, and
+the second, and they do not add up. The larger of the two sets the gap, and
 here both are `30px`.
 
 One fix is to give one margin the whole gap, and remove the other:

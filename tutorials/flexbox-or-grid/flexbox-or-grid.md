@@ -100,7 +100,8 @@ So with flexbox, the content decides how much room each box gets. With grid, the
 
 ## Which one to reach for
 
-Both tools can do many of the same jobs. Still, each one suits some
+Both tools can do many of the same jobs, so often either one is
+fine. Still, each one suits some
 jobs best:
 
 | Job | Often done with | Why |

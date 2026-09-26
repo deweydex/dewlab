@@ -566,5 +566,5 @@ someone who debugs for a living.
 
 Schafer, C. (2015). *Python Tutorial: Using Try/Except Blocks for Error
 Handling*. <https://www.youtube.com/watch?v=NIWwJbo-9_8>. It shows how to
-handle the errors this page teaches you to read on purpose, instead of
+handle, on purpose, the errors this page teaches you to read, instead of
 rewriting the line that raised them.

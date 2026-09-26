@@ -95,8 +95,8 @@ sit inside their element. It has four common values:
 
 Oftentimes, when we put `text-align: center` on a box, we expect the box
 itself to move to the middle. It does not. The box stays where it is,
-and only the lines of text inside it move. To centre the box itself is a
-different job. We meet it in [A readable width, centred on the
+and only the lines of text inside it move. We centre the box itself in a
+different way, in [A readable width, centred on the
 page](tutorial:the-container).
 
 ## Now in your own site

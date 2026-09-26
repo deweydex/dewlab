@@ -505,7 +505,7 @@ print(0.1 + 0.2 == 0.3)
 ```
 
 Python says `0.30000000000000004`, and `False`. That looks like a
-mistake, but it comes from the space that Python's decimals live in.
+mistake, but it is not. It comes from the space that Python's decimals live in.
 
 A float is kept in binary too. After the point, binary columns are worth
 a half, a quarter, an eighth, and so on. Some numbers can be made from

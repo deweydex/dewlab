@@ -15,8 +15,8 @@ There are three kinds of problem:
 - a change in your own site, which you commit
 
 Each problem has a folded answer. Some also have a hint, folded before
-the answer. Try the problem first. You learn more from a mistake, and its
-reason, than from reading the answer.
+the answer. Try the problem first. You learn more from a mistake, once you
+see why it happened, than from reading the answer.
 
 The previews on this page load images from `picsum.photos`, a site that
 gives out stand-in images. You need to be online to see them. A preview

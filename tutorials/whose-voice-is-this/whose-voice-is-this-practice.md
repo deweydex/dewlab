@@ -73,8 +73,8 @@ and again.
    is more repetitive.
 
 **Think about:** why is it not fair to compare the numbers of different
-followers on their own? And is a division by the number of uses enough to
-make it fair?
+followers on their own? And if we divide by the number of uses, is that
+enough to make it fair?
 
 </details>
 
@@ -93,7 +93,7 @@ make her less repetitive? Not necessarily. She uses the word 604 times,
 and Dewey uses it only 53 times. Her book is about children from start
 to finish, so the word meets many more neighbours.
 
-Division looks like the fix. For Dewey, $38 / 53 \approx 0.72$. For
+Dividing by the uses looks like the fix. For Dewey, $38 / 53 \approx 0.72$. For
 Montessori, $230 / 604 \approx 0.38$. But that is not a fair test either.
 The more times anybody uses a word, the more its followers repeat,
 because only so many words can sensibly come next. Anybody who writes
@@ -162,7 +162,7 @@ only in Montessori. So two books on a related subject share less than
 half of their words. Most of the words each writer uses never appear in
 the other's book.
 
-The cleaning of the scan mattered here. Before `clean_scan`, about 1,700 more
+It mattered here that we cleaned the scan. Before `clean_scan`, about 1,700 more
 words counted as "only in Dewey". They were halves of words the printer
 had split at the end of a line, such as `environ-`.
 

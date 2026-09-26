@@ -334,7 +334,7 @@ print("All tests pass.")
 
 The smallest limit goes first, and each `elif` only runs when every
 check above it was False. The tests are at the ends of the bands, because
-a `<` in place of `<=` would appear there.
+a `<` in place of `<=` would give a wrong answer there.
 
 </details>
 
@@ -363,8 +363,8 @@ With `elif`, the three checks belong to one question, and Python stops at
 the first True answer. That is the difference between three separate
 choices and one choice with three paths.
 
-So Schlomi's idea does miss nothing. But a grade needs exactly one
-answer, and her three `if` lines gave three.
+So Schlomi is right that nothing is missed. That is the problem. A grade
+needs exactly one answer, and her three `if` lines gave three.
 
 </details>
 

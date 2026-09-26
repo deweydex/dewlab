@@ -119,8 +119,8 @@ $\frac{3}{5} = 0.6$.
 
 Many people remember the table with the memory aid SOH-CAH-TOA: Sine is
 Opposite over Hypotenuse, Cosine is Adjacent over Hypotenuse, Tangent is
-Opposite over Adjacent. It helps you remember. The idea behind it is
-that a right-angled triangle is a piece of a circle.
+Opposite over Adjacent. It helps you remember, but it is not the idea.
+The idea is that a right-angled triangle is a piece of a circle.
 
 ### Going backwards
 

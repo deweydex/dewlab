@@ -191,7 +191,7 @@ print(len(first_match | second_match))
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are two, two and seven. Bríd and Dara played only the first match. Fiona
+The answers are two, two and seven. Bríd and Dara played only the first match. Fiona
 and Gráinne played only the second. Seven different players took part
 in all: the five from the first match, and the two new ones.
 

@@ -642,7 +642,7 @@ The roots are 0 m, where the ball is kicked, and 26 m, where it lands.
 (Python prints the first as `-0.0`: a float 0 that keeps a minus sign
 from the division.)
 Each is where one bracket of $0.025x(26 - x)$ is 0. The parabola's
-two sides are mirror images, so its top is halfway between them, at 13 m, as on
+two sides are mirror images, so its top is halfway between the roots, at 13 m, as on
 [The top of the curve](tutorial:the-top-of-the-curve#halfway-between-the-roots).
 
 </details>
@@ -731,7 +731,7 @@ for centimetres in range(0, 2601):
 print(place_so_far, round(highest_so_far, 4))
 ```
 
-It prints `13.0 4.225`, the answer from problem 13. A count in
+It prints `13.0 4.225`, the answer from problem 13. Counting in
 whole centimetres also avoids adding 0.01 again and again, which would
 add a small float error at every step.
 

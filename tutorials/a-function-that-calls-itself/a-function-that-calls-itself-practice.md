@@ -367,8 +367,7 @@ print(sum_nested_by_loop(archive))    # 2465
 ```
 
 Yes, it gives the same 2,465 KB. The loop opens the zip files in a
-different order from the recursion, but the order does not change a sum, so the sum
-is the same.
+different order from the recursion, but the order does not change a sum.
 
 </details>
 
@@ -413,7 +412,7 @@ holidays = [
 
 <details class="dl-answer"><summary>answer</summary>
 
-It is called 4 times: once for "Holidays" itself, and one for each folder inside it,
+It is called 4 times: once for "Holidays" itself, and once for each folder inside it,
 "kerry", "paris" and "louvre". A photo never makes a call. So the number
 of calls is 1 more than the number of folders, however many photos
 there are.

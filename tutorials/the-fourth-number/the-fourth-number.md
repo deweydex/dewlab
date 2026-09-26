@@ -217,7 +217,7 @@ to get the ball's orbit instead?
 Dividing by $z$ is not a multiplication, so no matrix can do it. But a
 matrix can *arrange* for it. Here is the arrangement. After the
 multiplication, every point is divided by its own fourth number,
-$w$. So far $w$ has been 1 throughout, and a division by 1 changes
+$w$. So far $w$ has been 1 throughout, and dividing by 1 changes
 nothing. Now watch what this matrix does to $w$:
 
 $$P = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix}$$
@@ -332,7 +332,7 @@ Reading the printout:
   always removed. That is how a renderer avoids ever dividing by a depth of zero.
 - The range is shared unevenly. Depths 1 to 2 use half of it, and 10
   to 20 use a twentieth. Nearby things get the finest depth steps.
-  This helps, because near the camera you would most easily notice two
+  Near the camera is also where you would most easily notice two
   surfaces, one just behind the other, drawn in the wrong order.
 
 Here is the cube through two lenses, a wide one and a narrow one, with

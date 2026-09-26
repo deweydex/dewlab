@@ -130,7 +130,7 @@ before.
 
 The second developer found and fixed the request. That is semantic
 analysis. It deals with why the site is slow, and not only with how the
-slowness feels. Both developers may have been asked to stop the same
+slowness feels. Both developers may have been asked to fix the same
 complaint. Only one of them removed its cause.
 
 </details>

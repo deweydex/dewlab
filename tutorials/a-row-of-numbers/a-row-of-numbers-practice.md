@@ -37,7 +37,7 @@ print(len(playlist))
 
 <details class="dl-answer"><summary>answer</summary>
 
-They show `Linger`, then `Salty Dog`, then `4`.
+The cell prints `Linger`, then `Salty Dog`, then `4`.
 
 Index 1 is the second song, because the first is at index 0. Index −1
 is the last song, whatever the length of the list. And `len` counts

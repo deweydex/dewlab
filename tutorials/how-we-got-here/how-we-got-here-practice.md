@@ -212,8 +212,8 @@ language usually quicker to find and fix mistakes in?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A compiled program was translated before it ran, so no time is spent on
-translation while it runs, and the compiler could look at the whole
+A compiled program was translated before it ran, so no time is spent
+translating while it runs, and the compiler could look at the whole
 program to make it faster. An interpreted program is translated as it
 runs, which takes time, but there is no extra step before you see what a
 changed line does. When you are hunting a bug, that is worth a great

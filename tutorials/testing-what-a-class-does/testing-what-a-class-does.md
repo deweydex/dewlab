@@ -234,8 +234,7 @@ runs every test it can find. Now the fix, in `rise`:
 Make that change in the cell above, and run it again. The new test
 passes. When you write the failing test first, it does two things. It
 shows the bug is real, and it shows that the fix made it pass, not a
-lucky run. The
-test then stays, so the bug cannot quietly come back.
+lucky run. The test then stays, so the bug cannot quietly come back.
 
 ## Close enough
 

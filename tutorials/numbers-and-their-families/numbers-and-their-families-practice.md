@@ -304,7 +304,7 @@ exactly when the number is below 1: $3^{-2} = \frac{1}{9}$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-When we multiply powers, we add their exponents, and a logarithm *is* an
+It is true because we add exponents when we multiply powers, and a logarithm *is* an
 exponent.
 
 Say $a = 10^x$ and $b = 10^y$. Then $ab = 10^{x+y}$, so the log of the

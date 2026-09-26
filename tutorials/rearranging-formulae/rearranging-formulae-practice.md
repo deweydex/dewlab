@@ -60,7 +60,7 @@ Multiply both sides by 100. Then divide both sides by $R$ and by $T$.
 
 $C = \frac{5(F - 32)}{9}$.
 
-Subtract 32 first, because the addition of 32 was the last operation done (the
+Subtract 32 first, because adding 32 was the last operation done (the
 outermost one). Then undo the multiplication by $\frac{9}{5}$: multiply
 by 5 and divide by 9.
 
@@ -246,7 +246,7 @@ values, does that prove it is correct?
 
 No. It is strong evidence, but it is not a proof. Compare
 [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth).
-There, a check of four rows *was* a proof, because there were only four
+There, checking four rows *was* a proof, because there were only four
 cases.
 
 Here there are infinitely many possible inputs. So a check can only fail

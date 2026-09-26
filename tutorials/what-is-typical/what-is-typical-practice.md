@@ -434,7 +434,7 @@ print(round(statistics.stdev(response_ms), 2))     # 1041.38
 ```
 
 `pstdev` matches yours, because both divide by $n$. The `p` stands for
-population. The population is the whole group we care about. `stdev`
+population. It means the list is the whole group we care about. `stdev`
 divides by $n - 1 = 10$ instead of 11, so its answer is a little
 bigger. It is meant for a sample, a few values picked from a bigger
 group, where dividing by $n$ would tend to give too small an answer.

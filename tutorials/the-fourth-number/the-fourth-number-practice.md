@@ -93,7 +93,7 @@ point after dividing by $w$?
 <details class="dl-answer"><summary>answer</summary>
 
 $(2, 1, 4, 4)$. The last row copies $z$ into $w$, and nothing else
-changes. A division by $w = 4$ gives $(0.5, 0.25)$ on the screen, with
+changes. Dividing by $w = 4$ gives $(0.5, 0.25)$ on the screen, with
 the third and fourth numbers both becoming $1$. That is the same
 $(2 / 4, 1 / 4)$ the plain perspective divide would give.
 

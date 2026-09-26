@@ -129,8 +129,8 @@ hint: The function already takes n as its argument, so this is three calls. Prin
 ## Watching it settle
 
 Three printed numbers tell you that the answer gets better. They do not
-show you *how* it gets better. That is the most important thing on this
-page.
+show you *how* it gets better, and how it gets better is the most
+important thing on this page.
 
 So this version does not throw a batch of darts and report one number.
 It keeps a *running estimate*. After every single dart, it records the

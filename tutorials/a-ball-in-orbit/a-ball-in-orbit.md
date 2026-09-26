@@ -220,8 +220,8 @@ Read them left to right along the top row, then the bottom. The ball
 starts on the right. It swings round the back, getting smaller and
 higher. It comes out on the left, and then sweeps across the front,
 large and low. Every frame is the same three lines of arithmetic with a
-different angle in them. A moving picture is only this. The same
-drawing is done again and again, with one number changing each time.
+different angle in them. A moving picture is the same
+drawing, done again and again, with one number changing each time.
 
 ### Your turn
 
@@ -349,7 +349,7 @@ hint: An if right after ball_position, before project. Compare z with 0.1.
 Look back at the flip-book, and at the animation after it. Nothing in
 either of them knows what a ball is. Each frame knows three numbers,
 one division for each of two of them, and a size scaled by the third.
-Then it does the same thing again with a new angle. That is most of what a 3D
+The next frame does the same with a new angle. That is most of what a 3D
 game engine does, for many thousands of points at a time, sixty times
 a second. The next tutorial, [The rotation matrix: turning a cube in
 3D](tutorial:turning-a-cube), gives it something with edges to draw,

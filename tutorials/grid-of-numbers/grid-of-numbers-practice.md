@@ -38,8 +38,8 @@ $a_{12} = 7$ (row 1, column 2). $a_{23} = 6$ (row 2, column 3). $a_{32} = 5$
 (row 3, column 2).
 
 In Python these are `A[0][1]`, `A[1][2]` and `A[2][1]`. Maths notation
-counts rows and columns from 1, and Python counts from 0. People confuse
-the two more than anything else in this section.
+counts rows and columns from 1, and Python counts from 0. The most common
+mistake in this section is to confuse the two.
 
 </details>
 
@@ -283,7 +283,7 @@ it, do you get the same as if you transpose it and then scale it?
 3. Think about what each operation does. Scaling multiplies every entry
    by the same number. Transposing moves each entry to a mirrored
    position, but it never combines two entries.
-4. Can a move and a multiplication ever affect each other?
+4. Can moving an entry and multiplying it ever affect each other?
 
 **Think about:** which of the four operations in this tutorial (add,
 scale, the shape check, transpose) combine two different numbers into

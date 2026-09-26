@@ -231,7 +231,7 @@ two equal circles.
 That difference is the whole argument for the method. The formula gets
 harder to find for two circles of different sizes. It gets much harder
 for three circles. For a blob of any shape, there is no formula at all.
-The eight lines of the loop stay the same. Change the condition, and they
+The eight lines of the loop work for any shape. Change the condition, and they
 measure a different shape, with no new mathematics.
 
 </details>

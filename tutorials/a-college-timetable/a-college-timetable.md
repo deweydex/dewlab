@@ -266,7 +266,7 @@ Try that rule on paper first, with two made-up sessions:
   between 11:00 and 12:00.
 - Session A runs 09:00 to 11:00. Session C runs 11:00 to 13:00. Does A
   start before C ends? 09:00 is before 13:00, so yes. Does C start before
-  A ends? 11:00 is before 11:00? No. 11:00 is not before itself. One
+  A ends? No, because 11:00 is not before itself. One
   condition fails, so A and C do not overlap. They are back to back.
 
 That second check stops a normal, fully booked day from being reported

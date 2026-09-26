@@ -376,7 +376,7 @@ none of the pieces defines, the linker says so:
 undefined reference to `draw_digt'
 ```
 
-Python does both jobs itself. Before a cell runs, Python compiles
+Python does both jobs itself, as it goes. Before a cell runs, Python compiles
 it, and a SyntaxError is Python's version of a compiler error. While the
 cell runs, Python looks up each name at the moment it is used, and a
 NameError is Python's version of a linker's "undefined reference". So
@@ -485,7 +485,7 @@ information about one line.
 | `SyntaxError` | code that is not valid Python; nothing in the cell runs |
 | `IndentationError` | the spaces at the start of a line are not what Python expected |
 | `str()`, `int()`, `float()` | turn a number into text; turn text into a whole number, or into a float |
-| compiler, linker | tools that check a program before it runs; Python does their jobs itself |
+| compiler, linker | tools that check a program before it runs; Python does their jobs itself, as it goes |
 | failed and responsible | the line where Python stopped, and the line that caused it |
 
 That is the end of Unit 1. Next is its practice page, and after it the

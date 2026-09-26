@@ -436,7 +436,7 @@ print(round(100 * kept, 1), "cm")
 ```
 
 The ball still keeps about 33% of its height, and reaches 32.8 cm.
-Schlomo had a reason. For one or two small changes, adding the
+Schlomo's idea was reasonable. For one or two small changes, adding the
 percentages gives a close answer. But each bounce loses 20% of a height
 that has already shrunk. So the losses multiply. They do not add.
 

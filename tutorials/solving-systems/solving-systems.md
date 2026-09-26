@@ -254,8 +254,8 @@ size.
 Grant Sanderson (3Blue1Brown) (2016). *Essence of Linear Algebra, Chapter 7:
 Inverse Matrices, Column Space and Null Space.*
 <https://www.youtube.com/watch?v=uQhTuRlWMxw>. This video is not about
-elimination. It gives the clearest picture of what a system of equations
-asks, in geometry, and of what goes wrong when the determinant is zero.
+elimination. It gives the clearest geometric picture of what a system of equations
+asks, and of what goes wrong when the determinant is zero.
 
 Kalid Azad (BetterExplained). *Linear Algebra Guide.*
 <https://betterexplained.com/articles/linear-algebra-guide/>. This guide builds

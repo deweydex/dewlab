@@ -182,7 +182,7 @@ own. An operation that works on each column of bits separately is called
 
 On [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
 `format(n, "b")` gave a number in binary. If we put `04` in front of the `b`,
-it asks for at least four digits, with zeros filled in on the left. That
+`format` gives at least four digits, with zeros filled in on the left. That
 keeps the columns lined up.
 
 | | 8 | 4 | 2 | 1 |
@@ -321,7 +321,7 @@ def parity_bit(bits):
 
 Then run the tests. Until the gap is filled, the function always gives 0,
 so expect the first test to stop with an `AssertionError`. The test is
-telling you that the function does not keep its promise.
+telling you that the function does not keep its promise yet.
 
 ```python exec
 id: bits-toolkit-tests

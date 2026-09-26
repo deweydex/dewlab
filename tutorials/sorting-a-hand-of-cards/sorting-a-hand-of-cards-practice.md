@@ -519,7 +519,7 @@ answer might weigh:
   $\frac{n^2}{2}$ comparisons in the worst case, so any of them can
   show why a better sort is worth having.
 
-An answer can pick one, say who it is for, and say what the choice
+A full answer picks one, says who it is for, and says what the choice
 costs.
 
 </details>

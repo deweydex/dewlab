@@ -31,7 +31,7 @@ This page and the five pages after it answer questions like these.
 A *matrix* is a grid of numbers, arranged in rows and columns. We will
 build matrices from plain Python lists of lists, and we will write every
 operation ourselves before any library does it for us. A library such as
-NumPy would be faster to use. Our own code is slower, but we can watch
+NumPy would be faster to use. It is slower to write the code ourselves, but we can watch
 the arithmetic happen, so we do not have to trust that it did.
 
 On this page we:
@@ -383,7 +383,7 @@ them. The whole series takes about an hour, and it is worth watching.
 
 Downey, A. B. (2015). *Think Python: How to Think Like a Computer Scientist*
 (2nd ed.). Green Tea Press. <https://greenteapress.com/wp/think-python-2e/>.
-Chapter 10 covers lists, which is what we build a matrix from here.
+Chapter 10 covers lists, and on this page we build a matrix from lists.
 
 Python Software Foundation. *5. Data Structures — Nested List
 Comprehensions.* <https://docs.python.org/3/tutorial/datastructures.html>.

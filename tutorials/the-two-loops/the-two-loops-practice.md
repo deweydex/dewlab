@@ -143,8 +143,8 @@ and `git commit -m "..."`, and then closed the terminal?
 <details class="dl-answer"><summary>answer</summary>
 
 `git commit` records only the changes that `git add` has chosen. When
-Sam ran it, nothing had been chosen yet, so Git made no commit. `no
-changes added to commit` means this. Then `git add` chose the file,
+Sam ran it, nothing had been chosen yet, so Git made no commit, and it
+said `no changes added to commit`. Then `git add` chose the file,
 but nothing recorded it. So `git push` had no new commit to send, and it
 said `Everything up-to-date`. GitHub already had every commit Sam had
 made.
@@ -232,8 +232,7 @@ message. Your "Update the footer" commit is at the top. Further down
 are older commits: the starter's own, if you pressed **Fork**, or one
 first commit, if you pressed **Use this template**. Click it to see
 exactly what changed: the old line in red, marked `-`, and the new line
-in green,
-marked `+`. This is the same view of changed lines that a pull request
+in green, marked `+`. This is the same view of changed lines that a pull request
 shows, from [Issues and pull requests](tutorial:issues-and-pull-requests).
 
 </details>

@@ -84,7 +84,7 @@ What will the last line show?
 
 The numbers have no quotes around them. Python works with numbers
 directly. Text needs quotes, and numbers do not. And `100 / 4` gives
-`25.0`, not `25`. Division with `/` always gives a number with a decimal
+`25.0`, not `25`. Dividing with `/` always gives a number with a decimal
 point, even when the answer is whole. The next page explains why Python
 keeps two kinds of number.
 

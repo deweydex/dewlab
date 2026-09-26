@@ -291,8 +291,8 @@ plt.ylabel("height in metres")
 
 The graph is an upside-down U. It starts at 0, rises to a top of 20
 metres after 2 seconds, and comes back to 0 after 4 seconds. The ball
-lands then, and `ball_height(4)` is 0. The page
-[The top of the curve](tutorial:the-top-of-the-curve) is about the top.
+lands then, and `ball_height(4)` is 0. [The top of the curve](tutorial:the-top-of-the-curve)
+looks at the highest point.
 
 The graph is not the ball's path. The ball goes straight up and down,
 and the graph spreads its heights out along a line of time. This

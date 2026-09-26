@@ -383,7 +383,7 @@ print(my_backpack)
 The error is
 `AttributeError: 'NoneType' object has no attribute 'append'`.
 
-`pick_up` is a procedure, so it returns `None`. So the first
+`pick_up` is a procedure. It returns `None`. So the first
 `my_backpack = pick_up(...)` line makes `my_backpack` point at `None`,
 and the key is lost with the list. On the next line, `pick_up` is handed
 `None`, and `None` has no `append`.
@@ -492,7 +492,7 @@ is more than a colour part can hold.
 
 `brighten` finds `factor` in the space of the call to `brightener` it
 was made in. That space stays as long as `twenty_percent` needs
-it, because `twenty_percent` is a closure.
+it. That makes `twenty_percent` a closure.
 
 </details>
 

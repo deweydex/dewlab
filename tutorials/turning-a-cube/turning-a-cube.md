@@ -214,8 +214,8 @@ and it would go all the way round the camera, behind it, and come back.
 
 The ball's orbit in [the last
 tutorial](tutorial:a-ball-in-orbit#a-ball-in-orbit) was the other order.
-Its circle had its centre 5 units ahead of the camera. Each point was
-2 units from the origin, turned, and then moved out 5. So the order decides
+Its circle had its centre 5 units ahead of the camera. The ball was a
+point 2 units from the origin, turned, and then moved out 5. So the order decides
 where the centre of the circle is. Turn and then move, and the circle
 goes round a centre out in front. Move and then turn, and the circle
 goes round the camera.
@@ -289,8 +289,7 @@ turned to the front and a cube's faces are all alike. Halfway between,
 at 45°, it is at its widest, with two faces showing. A game does
 exactly this, sixty times a second. It uses the same eight columns,
 multiplied by a slightly different matrix each time, then divided and
-drawn. When
-a game feels smooth, that is because it manages sixty of these every
+drawn. When a game feels smooth, that is because it manages sixty of these every
 second. When it stutters, it has fallen behind.
 
 Here are the pages turned for you. `FuncAnimation` did the same job for

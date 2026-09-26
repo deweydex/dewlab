@@ -230,7 +230,7 @@ made for a superstition, and it has stayed ever since.
 
 Rosenhouse, J. (2009). *The Monty Hall Problem: The Remarkable Story of
 Math's Most Contentious Brain Teaser*. Oxford University Press. This
-whole book is about the three doors, and on the many versions where the answer
+whole book is about the three doors, and about the many versions where the answer
 changes.
 
 Hamming, R. W. (1950). Error detecting and error correcting codes.

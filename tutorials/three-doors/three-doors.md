@@ -218,7 +218,7 @@ two times in three. Switching turns every wrong first guess into a win.
 
 ## A host who is not paying attention
 
-Does the host's knowledge really make switching better? If it is,
+Does the host's knowledge really make switching better? If it does,
 then a host who knows nothing should make the advantage disappear. We
 can test that with a simulation.
 

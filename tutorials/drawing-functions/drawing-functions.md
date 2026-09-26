@@ -356,8 +356,8 @@ ax.set_title("Cubics")
 The curve $x^3 - 4x$ turns twice. The curve $x^3$ is flat for a moment
 at 0, but it keeps going up, so it never turns.
 
-There is a general pattern here. **A curve can turn at most one time
-fewer than its highest power.**
+There is a general pattern here. **The number of turns is at most one
+less than the highest power.**
 
 | Function | Highest power | Turns at most |
 |---|---|---|
@@ -463,8 +463,8 @@ for value in [1, 5, -3, 0]:
     print(f"{value} -> double -> {double(value)} -> halve -> {halve(double(value))}")
 ```
 
-Every value ends where it started. An inverse always makes this round
-trip. It is also a test we can run for ourselves.
+Every value ends where it started. This round trip is what "inverse"
+means. It is also a test we can run for ourselves.
 
 The picture of an inverse is a mirror image. The inverse swaps inputs
 and outputs, so it swaps the two axes. The graph flips across the

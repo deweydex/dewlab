@@ -181,8 +181,8 @@ of degree 10? Can it be done with fewer?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It does about 55 for the powers alone. To calculate `x ** i` by hand
-takes $i$ multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
+It does about 55 for the powers alone. By hand, each `x ** i` takes
+$i$ multiplications, and $0 + 1 + 2 + \ldots + 10 = 55$.
 
 A method called Horner's method does it with 10:
 
@@ -323,7 +323,7 @@ $121 \times 11 = 1331$.
 
 The right side: $1 + 30 + 300 + 1000 = 1331$. They agree.
 
-Evaluation at 10 has a nice side effect. The coefficients appear as the
+Evaluating at 10 has a nice side effect. The coefficients appear as the
 digits of the answer, as long as none of them is 10 or more. So
 $11^2 = 121$ and $11^3 = 1331$ are rows of Pascal's triangle, written as
 numbers. At $11^5 = 161051$ the pattern breaks, because the

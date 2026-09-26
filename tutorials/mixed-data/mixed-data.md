@@ -284,7 +284,7 @@ comparison flipped, including its boundary.
 
 If you wrote `temperature < 80` there, a temperature of exactly 80
 (with a failed fan or a high load) would make neither `warn` nor
-`quiet` true. This kind of rewrite most often causes this bug.
+`quiet` true. This is the bug this kind of rewrite most often causes.
 
 </details>
 
@@ -365,8 +365,8 @@ $\dfrac{6 - |7 - t|}{36}$ counts the ways to make each total $t$: one
 way to make 2, six ways to make 7, and one way to make 12.
 
 With 10,000 rolls, the two usually agree to about two decimal places.
-With 100 rolls, they do not. Try it with both. When you see it, it
-convinces you more than any explanation of sampling error.
+With 100 rolls, they do not. Try it with both. Watching it happen will
+convince you more than any explanation of sampling error.
 
 </details>
 

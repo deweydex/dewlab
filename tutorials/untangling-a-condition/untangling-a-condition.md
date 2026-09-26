@@ -420,7 +420,8 @@ def refuse_booking(is_under_12, with_adult, has_paid):
 ```
 
 Can you say, in one sentence, when a booking is refused? Pause and try
-before you read on. Most people cannot, at first. This section shows how. Let's untangle it, one law at a time, and check each step with
+before you read on. Most people cannot, at first. Let's untangle it,
+one law at a time, and check each step with
 `same_rule` before we take the next. Order matters here, so we work from the
 outside in.
 

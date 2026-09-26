@@ -272,7 +272,7 @@ A *conditional probability* is the probability of an event B when we know that a
 
 $$P(B|A) = \frac{P(A \text{ and } B)}{P(A)}$$
 
-Here is one worked number. Two cards are drawn without replacement. Let A be "the first card is a heart" and B be "the second card is a heart". Then $P(A \text{ and } B) = \frac{13}{52} \times \frac{12}{51}$ and $P(A) = \frac{13}{52}$. Division gives $P(B|A) = \frac{12}{51}$, the same answer as before.
+Here is one worked number. Two cards are drawn without replacement. Let A be "the first card is a heart" and B be "the second card is a heart". Then $P(A \text{ and } B) = \frac{13}{52} \times \frac{12}{51}$ and $P(A) = \frac{13}{52}$. If we divide, we get $P(B|A) = \frac{12}{51}$, the same answer as before.
 
 We only meet the idea here, without going deeper. It is still worth knowing. A rule called Bayes' theorem is built on conditional probability, and machine learning uses it all the time.
 

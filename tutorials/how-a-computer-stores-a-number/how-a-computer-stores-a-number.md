@@ -65,8 +65,8 @@ quarter, an eighth, and so on. A tenth cannot be built from those
 exactly. In binary it repeats for ever, the way a third does in decimal.
 
 A float keeps 53 binary digits of a number. That is about 16 decimal
-digits. So Python stops 0.1 after 53 binary digits, and keeps the
-nearest fraction it can. Every float is really a fraction whose bottom
+digits. So Python cannot keep 0.1 exactly. It keeps the
+nearest fraction it can, with 53 binary digits. Every float is really a fraction whose bottom
 number is a power of 2. We can ask Python for that fraction with
 `.as_integer_ratio()`, which returns the top and the bottom as whole
 numbers.

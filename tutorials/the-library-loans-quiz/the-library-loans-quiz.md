@@ -112,8 +112,7 @@ other. Create a table called `book_author_tbl` with these columns:
 This table has no key of its own, so there is no `book_author_id`. One
 row of `book_author_tbl` means "this book has this author," and that
 pair identifies the row. A separate key would add nothing. Make
-`book_id`
-and `author_id` *together* the table's primary key, with `PRIMARY KEY
+`book_id` and `author_id` *together* the table's primary key, with `PRIMARY KEY
 (book_id, author_id)` as a line of its own inside the `CREATE TABLE`,
 after the two columns. Each column keeps the name of the key it points
 at, the same as any other foreign key.

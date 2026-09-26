@@ -240,7 +240,7 @@ else:
 ```
 
 A test that checks for a failure is as important as a test that checks
-that it works. Most people skip it.
+that it works. Most people skip the first kind.
 
 </details>
 

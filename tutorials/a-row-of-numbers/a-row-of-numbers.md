@@ -651,7 +651,7 @@ for i in range(1, len(ireland)):
         print(1950 + i, "fell from", ireland[i - 1], "to", ireland[i])
 ```
 
-Life expectancy went down in fifteen years. The last two, 2020 and 2021, are the years of the
+Life expectancy went down in fifteen of the years. The last two, 2020 and 2021, are the years of the
 COVID-19 pandemic. A single year can dip for many reasons, such as a bad
 flu season, but the long rise is still the main pattern.
 

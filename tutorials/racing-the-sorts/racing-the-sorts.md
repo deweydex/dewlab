@@ -521,7 +521,7 @@ Second, and this may surprise you, insertion sort is not twice as fast
 as selection sort, although it made half as many comparisons. It is
 often a little slower. Each time insertion sort compares, it also moves
 a value one place, and moving takes time too. Selection sort moves a
-value only once per round.
+value only once per round. Our count included the comparisons, but not the moves.
 
 `sorted()` wins for two reasons. It uses a cleverer method,
 called Timsort, which needs about 8,600 comparisons for 1,000 random

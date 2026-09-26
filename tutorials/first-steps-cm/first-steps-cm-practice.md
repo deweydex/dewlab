@@ -94,7 +94,7 @@ different? Is either of them wrong?
 Each run throws different random darts, so each estimate is a little
 different. Neither is wrong. Both are estimates, and with more darts, they
 land closer together, and closer to 3.14159…. [Monte Carlo simulation](tutorial:counting-darts)
-finds how close, and how fast.
+shows how close they get, and how fast.
 
 </details>
 

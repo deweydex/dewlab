@@ -14,8 +14,8 @@ Before you start each problem, ask two questions:
 1. Does the order matter?
 2. Can the same thing be chosen more than once?
 
-Your two answers tell you which formula to use. The formula is the hard
-part of these problems. The arithmetic after it is the easy part.
+Your two answers tell you which formula to use. The hard part of these
+problems is to choose the formula. The arithmetic after it is the easy part.
 
 ## Tools
 

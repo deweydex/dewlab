@@ -511,7 +511,7 @@ Run your cell, then run the tests below. Each `assert` checks one part
 of the promise, and stays quiet when it holds. We write `== True` and
 `== False` so that a function which returns nothing at all fails the
 test. Until you write your `return` line, expect the first test to stop
-with an `AssertionError`, because nothing keeps the promise.
+with an `AssertionError`, because the promise is not kept yet.
 
 ```python exec
 id: choosing-between-2
@@ -556,7 +556,7 @@ We joined them because they are one question asked two ways. "How many
 minutes of video fit?" is an inequality, and a phone answers it with
 `if`. The number line works for both, and the code checks the algebra.
 When each subject needs the other, neither one is a topic you learn once
-and forget.
+and never use again.
 
 </details>
 

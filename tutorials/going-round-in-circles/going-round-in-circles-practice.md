@@ -103,8 +103,8 @@ angle into radians first:
 print(math.sin(math.radians(30)))
 ```
 
-This gives `0.49999999999999994`, which is $\frac{1}{2}$ apart from
-a float's rounding error.
+This gives `0.49999999999999994`, which is $\frac{1}{2}$ with a
+float's tiny rounding error.
 
 </details>
 
@@ -302,7 +302,7 @@ print(math.tan(math.radians(45)))
 At $45^\circ$ the line out to the point rises as far as it runs, so the
 tangent is exactly 1. The angle in radians, $\frac{\pi}{4}$, has
 endless digits, and the float is not quite exact, so its tangent is not
-either.
+exact either.
 `close_enough(math.tan(math.radians(45)), 1)` is `True`.
 
 </details>

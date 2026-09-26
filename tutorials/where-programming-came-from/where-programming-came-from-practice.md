@@ -438,9 +438,9 @@ which mistakes. Drafts in each person's handwriting would help too.
 
 It can matter for two reasons. People who are left out of a story can be
 left out of a subject. The six ENIAC programmers were not invited to its
-dedication in 1946. And a program is more than its formulas. The programming part is to
-turn a formula into an exact order of operations, with names for every
-stored number, whoever did it. So Schlomi and Schlomo can each be
+dedication in 1946. And a program is more than its formulas. Whoever
+turned the formulas into an exact order of operations, with names for
+every stored number, did the programming. So Schlomi and Schlomo can each be
 describing a real part. The formulas and the program are two different
 things.
 

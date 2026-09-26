@@ -379,8 +379,8 @@ is not yours, one of the 17 tickets that are not yours has gone, and
 your chance on the second draw goes up to $\frac{3}{19}$.
 
 Schlomi's answer would fit a raffle where each drawn ticket
-goes back in the drum before the next draw. Her move
-belongs to a different space.
+goes back in the drum before the next draw. Her move works,
+but it belongs to a different space.
 
 </details>
 

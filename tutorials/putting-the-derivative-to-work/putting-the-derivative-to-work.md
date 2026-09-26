@@ -448,7 +448,7 @@ print("slope where the left walk ended:", round(derivative_at(valley_rule, left_
 
 From $-2$ the walk ends at about $-1.301$, and that valley is lower,
 0.49 against 2.93. The walk from 2 found a bottom, but not the lowest
-one.
+one, because a walk downhill only knows the slope where it stands.
 
 A machine-learning model is trained this way, on a huge scale. Its
 error depends on millions of numbers, and the training program

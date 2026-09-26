@@ -345,7 +345,8 @@ rounding, very close to 0, as on
 because `abs` of a complex number is its distance from 0 on the plane.
 
 In $\mathbb{C}$, every quadratic has two roots, counting a repeated
-root twice.
+root twice. So two roots, one root and "no real roots" are all one
+case in this bigger space.
 
 ### Your turn
 

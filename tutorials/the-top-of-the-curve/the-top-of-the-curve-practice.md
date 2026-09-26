@@ -224,7 +224,7 @@ The search prints frame `14`, at a height of about 10.996 m, and
 They differ a little, and each gives what it measures. The true top is at 1.4286
 seconds, between frame 14 and frame 15, and the game never draws that
 moment. So the highest ball a player sees is 4 mm lower than the real
-top. For a game, that is close enough. For a program that must know the true
+top. For a game, that is close enough. A program that must know the true
 top, such as one that checks whether the ball clears a bar, should
 use the formula.
 

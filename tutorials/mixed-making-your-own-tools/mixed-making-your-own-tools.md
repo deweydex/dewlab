@@ -415,7 +415,7 @@ print(close_enough(tb_to_gib(1), tb_to_gib_directly(1)))
 ```
 
 Both routes give about 931.3, and `close_enough` says `True`. Many
-people are surprised by this with a new drive. The box says 1 TB, and
+people are surprised by this when they buy a new drive. The box says 1 TB, and
 Windows says about 931 GB. Nothing is missing. The two are counting in
 different units, and Windows writes GB where it means GiB. The second route's number is the two steps of the first route
 multiplied together. Two scalings, composed, make one scaling.
@@ -585,7 +585,7 @@ convert(5, "km", "kg")
 The first three lines show the Moon's distance in km, about 384,500, the
 rover's mass, about 2,260 pounds, and −40.0, where the two temperature
 scales meet. The last line stops with
-`AssertionError: convert does not know km to kg`, The promise names
+`AssertionError: convert does not know km to kg`. The promise names
 its own domain. A distance cannot become a weight.
 
 If someone swaps the units, `convert(42.2, "km", "miles")` still works.

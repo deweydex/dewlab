@@ -155,8 +155,8 @@ about a command it does not know?
 
 <details class="dl-answer"><summary>one answer</summary>
 
-It should say that it prints that the text is not a command, and returns
-`True`, so the game continues. That is the refusal a caller most needs to know about,
+It should say that `run_choice` prints a message saying the text is not a
+command, and returns `True`, so the game continues. That is the refusal a caller most needs to know about,
 since players type something unexpected all the time.
 
 </details>

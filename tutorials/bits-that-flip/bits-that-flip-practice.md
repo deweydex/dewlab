@@ -394,7 +394,7 @@ $(c \oplus k_1) \oplus k_2 = c \oplus (k_1 \oplus k_2)$. So Schlomo's
 two keys behave exactly like one key, and a thief who finds that one key
 has undone both.
 
-Schlomo had a reason. With many locks, locking twice does make them
+It was a reasonable idea. Locking twice often does make a lock
 stronger. With XOR, the second lock joins the first. This is one answer.
 Yours might also say what *would* help, such as a longer key.
 
@@ -421,7 +421,7 @@ print(same_rule(xor_from_and_or, xor, 2))    # True
 ```
 
 With De Morgan's first law, `not (a and b)` is `not a or not b`, so you
-could also write `(a or b) and (not a or not b)`. That writes the same rule a
+could also write `(a or b) and (not a or not b)`. That is the same rule, written a
 third way.
 
 </details>

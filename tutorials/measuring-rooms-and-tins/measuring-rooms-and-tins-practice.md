@@ -50,7 +50,7 @@ print(rectangle_area(3, 3))
 
 `14`, `10` and `9`.
 
-Round the frame, it is $5 + 2 + 5 + 2 = 14$ cm. The frame covers
+The distance round the frame is $5 + 2 + 5 + 2 = 14$ cm. The frame covers
 $5 \times 2 = 10$ cm². The tile is a square, so its area is $3^2 = 9$ cm².
 The first answer is a length, in cm, and the other two are areas, in cm².
 
@@ -303,7 +303,7 @@ print("ball_volume keeps its promise.")
 2. What unit would `radius ** 2` give, if the radius is in cm?
 3. Is a volume in cm² or cm³?
 
-**Think about:** how a check of the units finds this line before any
+**Think about:** how checking the units finds this line before any
 test runs.
 
 </details>

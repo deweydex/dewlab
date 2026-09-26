@@ -137,8 +137,7 @@ moment, in the same way as two dart-throwing runs in
 But the settings are always on the same side of the line. Average
 arrivals are either below capacity, or not. That alone decides whether
 the server clears the queue over a long enough run, or the queue grows
-forever. The
-rule predicts the *shape* that every run will take in the end. It does not
+forever. The rule predicts the *shape* that every run will take in the end. It does not
 predict the exact path any one run takes to get there.
 
 </details>
