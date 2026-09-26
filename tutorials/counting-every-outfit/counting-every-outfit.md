@@ -1,7 +1,7 @@
 ---
 title: "Counting every outfit: lists of outcomes"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   every-outfit-one-by-one:
     covers: [MIT-5.1]
@@ -285,27 +285,49 @@ def all_pairs(first, second):
     return pairs
 ```
 
-Run the toolkit cell, then the tests. Until you write the body,
-`all_pairs` returns nothing at all, `None`, so expect the first test
-to stop with an `AssertionError`.
+Run the toolkit cell. Until you write the body, `all_pairs` returns
+nothing at all, `None`. How does your `all_pairs` compare with one way
+to write it? The table below runs the same calls on yours and on a
+solution, side by side. Where a row is different, try that call on its
+own.
 
-```python exec
-id: counting-every-toolkit-tests
-assert all_pairs(["H", "T"], [1, 2]) == [("H", 1), ("H", 2), ("T", 1), ("T", 2)]
-assert len(all_pairs(tops, trousers)) == len(tops) * len(trousers)
-assert len(all_pairs(range(10), range(10))) == 100
-assert all_pairs([], [1, 2, 3]) == []          # no first choice: 0 × 3 = 0
-print("all_pairs keeps its promise.")
+```inputs
+for: counting-every-toolkit
+all_pairs(["H", "T"], [1, 2])
+len(all_pairs(tops, trousers))    # the number of pairs...
+len(tops) * len(trousers)         # ...and the counting principle
+len(all_pairs(range(10), range(10)))
+all_pairs([], [1, 2, 3])          # no first choice: 0 × 3 = 0
+```
+
+```solution
+for: counting-every-toolkit
+def all_pairs(first, second):
+    """Return every pair (a, b) with a from first and b from second.
+
+    The result is a list of tuples. All the pairs with the first value
+    of first come first, then all the pairs with the next, and so on.
+    all_pairs(["H", "T"], [1, 2]) is
+    [("H", 1), ("H", 2), ("T", 1), ("T", 2)].
+    """
+    pairs = []
+    for a in first:
+        for b in second:
+            pairs.append((a, b))
+    return pairs
 ```
 
 ```hint
-Which test does the error point at? Try
+for: counting-every-toolkit
+after: 3 runs
+Which row is different? Try
 `print(all_pairs(["H", "T"], [1, 2]))` on its own. What does your
 version give?
 ```
 
 ```hint
-after: 12 errors
+for: counting-every-toolkit
+after: 8 runs
 title: some steps
 1. Start with an empty list, `pairs = []`.
 2. A loop over `first`, and inside it a loop over `second`.
@@ -313,7 +335,7 @@ title: some steps
    round brackets: one for `append`, one for the pair.
 4. After both loops, and not inside them, `return pairs`.
 
-**Think about:** why does the last test give an empty list, and why is
+**Think about:** why does the last row give an empty list, and why is
 that the answer we want?
 ```
 
@@ -332,7 +354,7 @@ def all_pairs(first, second):
 
 </details>
 
-The second test is the counting principle, written as a test. The cells
+The second and third rows are the counting principle, side by side. The cells
 from here on use `all_pairs`. If you have not written it yet, copy the
 answer above into the stub and run it.
 
