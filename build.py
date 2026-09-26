@@ -6315,6 +6315,9 @@ DEWMINI_ASSET_FILES = (
     # Imported by both of the two above, so a bundle without it has an
     # engine that cannot start.
     "module-watch.js",
+    # Imported by pyodide-engine.js: what a cell's widgets hold, and its
+    # sliders.
+    "cell-widgets.js",
     # Imported by dewmini.js for its Library search — the one idea of
     # word matching every search box shares.
     "search-words.js",
@@ -6726,8 +6729,10 @@ def render_course_cards() -> str:
     course files: the title, the status badge, the QQI code, and the
     `card:` text. What `pages/home.md` used to hand-write six times over,
     now the `[[course-cards]]` generated block — so adding a course is a
-    course file and one line in the index, and the front page follows."""
-    return "".join(
+    course file and one line in the index, and the front page follows.
+    One `.dl-course-list` column rather than a `.dl-module-grid`: a
+    course's card text is too long for two columns at the page's width."""
+    return '<div class="dl-course-list">' + "".join(
         render_card(PageCard(
             url=f"{course.id}.html",
             heading=course.title,
@@ -6737,7 +6742,7 @@ def render_course_cards() -> str:
             wide=False,
         ))
         for course in course_card_order()
-    )
+    ) + "</div>"
 
 
 def write_course_page(

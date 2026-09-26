@@ -2281,7 +2281,14 @@ p code, li code {
 
 .dl-module-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+}
+/* The front page's course cards: one column, since a course's card text
+   runs to several lines and two columns at this width wrap every badge. */
+.dl-course-list {
+  display: grid;
   gap: 0.9rem;
   margin: 1rem 0 0;
 }
@@ -2306,6 +2313,7 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-module-card p { margin: 0 0 0.65rem; font-size: 0.86rem; color: var(--dl-muted); }
+.dl-module-card > :last-child { margin-bottom: 0; }
 .dl-module-card-badge {
   display: inline-flex;
   align-items: center;
@@ -2320,7 +2328,9 @@ p code, li code {
   color: var(--dl-muted);
 }
 .dl-module-card-badge[data-status="beta"] { border-color: var(--dl-orange); color: var(--dl-orange); }
-.dl-module-card-wide { grid-column: span 2; }
+/* The whole row, not `span 2`: where only one column fits, a span of two
+   adds a second, implicit one and squeezes the cards beside it. */
+.dl-module-card-wide { grid-column: 1 / -1; }
 .dl-attribution {
   margin-top: 3rem;
   color: var(--dl-muted);
@@ -2941,9 +2951,6 @@ p code, li code {
   .dl-crumbs, .dl-corner-identity .dl-crumbtrail { display: none; }
   .dl-page { padding-left: 1rem; padding-right: 1rem; }
   .dl-chrome { margin-inline: -1rem; padding-inline: 1rem; }
-
-  .dl-module-grid { grid-template-columns: 1fr; }
-  .dl-module-card-wide { grid-column: auto; }
 
   .dl-masthead-actions { gap: 0.35rem; }
   .dl-toggle-label { display: none; }
