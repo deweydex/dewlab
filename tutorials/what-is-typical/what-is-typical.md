@@ -650,8 +650,6 @@ def mean(values):
     return total(values) / len(values)
 
 
-
-
 def std_dev(values):
     """Return the standard deviation of values, a list of at least one number.
 
