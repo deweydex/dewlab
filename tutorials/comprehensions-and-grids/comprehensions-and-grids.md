@@ -400,7 +400,8 @@ print(row)
 What will it print?
 
 - [0, 0, 0, 0]
-  - `copy` is a copy, so changing it leaves `row` alone.
+  - `copy` is a copy, so changing it leaves `row` alone. There is
+    [a closer look at this](tutorial:two-names-one-list).
 - [255, 0, 0, 0]
   - `copy` and `row` are two names for the same list.
 - An error

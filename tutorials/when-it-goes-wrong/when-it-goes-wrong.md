@@ -37,7 +37,8 @@ print(count_letters("BANANA"))
 What will it print?
 
 - {'B': 1, 'A': 3, 'N': 2}
-  - Each letter is counted as the loop goes.
+  - Each letter is counted as the loop goes. There is
+    [a closer look at this](tutorial:a-total-that-starts-again).
 - {'A': 1}
   - `counts = {}` runs every time round, so each letter starts again.
 - An error

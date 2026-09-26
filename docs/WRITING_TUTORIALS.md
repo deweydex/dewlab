@@ -103,6 +103,12 @@ other idea is so natural to hold. It never says the reader held it. A
 predict block on another page links here from the option that shows the
 misconception.
 
+It sits in the course file straight after the page it serves, in every
+course that lists that page, and in the `closer-looks` group of
+`planning/curriculum/topic-groups.yaml`. A link from its home page, in a
+predict note or a sentence where the idea arises, is how a reader finds it;
+nothing on the page points at the reader's own answer.
+
 ---
 
 <a id="choosing-a-context"></a>
