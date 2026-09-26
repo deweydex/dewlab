@@ -170,6 +170,8 @@ Six of the 36 outcomes add up to 7: 1 and 6, 2 and 5, and so on, up to
 6 and 1. So $P(\text{7}) = \frac{6}{36} = \frac{1}{6}$, about 0.167.
 Only one outcome, 6 and 6, adds up to 12, so $P(12) = \frac{1}{36}$.
 
+<img src="sum-of-seven.svg" alt="A grid of 6 rows for the red die and 6 columns for the blue die, with the sum of the two written in each of the 36 squares. The six squares with a sum of 7 are shaded, and they make a line from the top right corner to the bottom left corner. Only the bottom right corner, 6 and 6, has a sum of 12.">
+
 This is why "each outcome equally likely" matters. The sums 2 to 12 are
 not equally likely, so we cannot say $P(7) = \frac{1}{11}$. The pairs
 are equally likely, so we count pairs.

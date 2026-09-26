@@ -99,6 +99,14 @@ were Ireland, the number would be millions.
 
 </details>
 
+<aside class="dl-note" id="circles-practice-note-polish">
+
+**Polish in Ireland.** In the 2022 census, 123,968 people said they
+speak Polish at home. After English and Irish, Polish is the language
+most often spoken at home in Ireland.
+
+</aside>
+
 **4. Predict.** An office has 30 computers. 18 are on the Wi-Fi, 15 are
 plugged in with an Ethernet cable, and 7 use both. How many are on the
 network at least one way? How many are on neither? Find it on

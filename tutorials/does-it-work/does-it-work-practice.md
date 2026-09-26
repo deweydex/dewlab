@@ -268,6 +268,15 @@ would have failed on 41 km, among others.
 
 </details>
 
+<aside class="dl-note" id="does-it-practice-note-marathon">
+
+**Why 42.195?** Early marathons had no fixed length. At the 1908
+Olympic Games in London, the course ran from Windsor to the stadium at
+White City: 26 miles and 385 yards, which is 42.195 km. In 1921 that
+became the official length of a marathon.
+
+</aside>
+
 **9. Explain.** An image app has a function to double a picture's
 width. It has a bug, but its test passes. Why does the test pass? Write
 a better test.

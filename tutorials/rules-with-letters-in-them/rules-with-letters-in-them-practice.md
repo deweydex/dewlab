@@ -476,6 +476,17 @@ screens, are drawn with these four weights.
 
 </details>
 
+<aside class="dl-note" id="rules-with-practice-note-truetype">
+
+**Three points or four.** Font files draw curves in two ways. Adobe's
+PostScript Type 1 fonts, from the 1980s, use curves with four points,
+as in this problem. Apple's TrueType fonts, first released in 1991, use
+curves with three points, as on the tutorial page. A three-point curve
+can always be written exactly as a four-point one. A four-point curve
+often needs several three-point curves to copy it closely.
+
+</aside>
+
 **16. Explain.** Schlomo, who is also learning Python, checks the claim
 $(x + 1)^3 = x^3 + 1$ at $x = 0$, and it is true. "So it is an
 identity," he says. What

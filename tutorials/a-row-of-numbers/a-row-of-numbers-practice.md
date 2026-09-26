@@ -82,6 +82,16 @@ the third file, at a new value. Nothing else in the list moves.
 
 </details>
 
+<aside class="dl-note" id="row-practice-note-docx">
+
+**The x in .docx.** Word files ended in .doc until Microsoft Office
+2007. The new format added an x, for XML, a way of writing data as
+text with labels. Inside, a .docx file is a zip file that holds XML
+files and pictures. If you rename a copy to end in .zip, you can open
+it and look.
+
+</aside>
+
 **4. Explain.** A maths book writes a sequence as $a_1, a_2, a_3, \dots$.
 In Python, the same values are in a list `a`. Which index gives $a_1$?
 Which index gives $a_n$? Say why in a sentence.

@@ -359,6 +359,8 @@ Here $d$ is the distance between the centres. The ball has a radius
 of 10 pixels and the player 25. They are 50 apart now, and
 $10 + 25 = 35$. So they do not touch yet.
 
+<img src="gap-between-circles.svg" alt="Two circles: a large one for the player, and a small one for the ball, up and to the right. A straight line joins their centres. Along it, the first 25 is inside the player, the next 15 is a gap between the two edges, drawn dashed, and the last 10 is inside the ball. Beside them: the centres are 50 apart, the two radii add to 25 + 10 = 35, and 50 − 35 = 15 is a gap between the edges, so they do not touch.">
+
 Each frame, the ball moves 3 pixels left and 4 down, straight at the
 player. In which frame do they first touch? Guess, then run it. The
 cell uses your `distance`, so write that first.

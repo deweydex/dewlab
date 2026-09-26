@@ -317,6 +317,16 @@ Both give about 5.0265, and the check agrees at every second from 0 to
 
 </details>
 
+<aside class="dl-note" id="rules-for-practice-note-valentia">
+
+**Balloons from Kerry.** Met Éireann fills real weather balloons. Twice
+a day, at Valentia Observatory near Cahersiveen in County Kerry, it
+releases a balloon of helium that rises to heights of up to 30 km. The
+instruments it carries measure the temperature, the damp in the air
+and the wind on the way.
+
+</aside>
+
 **10. Explain.** Schlomo, who is learning Python too, says: "The slope
 of $x \times x$ should be the slope of $x$ times the slope of $x$, which
 is $1 \times 1 = 1$." But $x \times x$ is $x^2$, whose slope is $2x$.

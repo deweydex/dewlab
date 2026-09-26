@@ -242,6 +242,14 @@ differs. If you write `0.0` in the docstring, it matches.
 
 </details>
 
+<aside class="dl-note" id="code-other-practice-note-doctest">
+
+**Who wrote doctest.** Tim Peters wrote `doctest`, and it became part
+of Python in version 2.1, in 2001. He also wrote the Zen of Python, the
+sayings from the tutorial page.
+
+</aside>
+
 **7. Make.** A weather station's code turns a board's 10-bit reading
 from its TMP36 chip into °C. This chip reads 1.5 °C high, so when asked,
 the function takes that away. Review it with the checklist, then

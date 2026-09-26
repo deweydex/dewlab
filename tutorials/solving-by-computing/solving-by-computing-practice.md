@@ -463,6 +463,16 @@ needs a first guess close enough, which it gets from a small table.
 
 </details>
 
+<aside class="dl-note" id="solving-by-practice-note-quake">
+
+**A famous line in a game.** The game Quake III Arena, from 1999,
+needed $\frac{1}{\sqrt{x}}$ many times a second, for its lighting. Its
+code makes a rough first guess with a strange number, `0x5f3759df`,
+and then takes one Newton step, which needs no division. One step
+brings the answer within about 0.2% of the true value.
+
+</aside>
+
 ## Where to read more
 
 Stand-up Maths (2018). *How to find a square root.*

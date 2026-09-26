@@ -449,6 +449,17 @@ order.
 
 </details>
 
+<aside class="dl-note" id="racing-practice-note-knuth">
+
+**A hexadecimal dollar.** Knuth's gaps are in his books, The Art of
+Computer Programming. He pays \$2.56 to the first person to find each
+error in them. That is 256 cents, and 256 is 100 in hexadecimal, so he
+calls it one hexadecimal dollar. Since 2008 he has sent certificates
+from a made-up bank, the Bank of San Serriffe, in place of real
+cheques.
+
+</aside>
+
 **14. Make.** Add Shell sort to the picture from the page. Count all
 three sorts on random lists of 100, 200, and so on up to 1,000 values,
 and plot the three lines. What shape is the Shell sort line?

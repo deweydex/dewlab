@@ -109,6 +109,8 @@ and two folders. It does not look inside the folders. A list that holds
 lists is called a *nested list*, and each list inside another is one
 *level* deeper.
 
+<img src="holidays-folders.svg" alt="The Holidays folder drawn the way a file browser shows it, one item to a line, with each level further to the right. Level 1, directly inside Holidays, holds sunset.jpg, a folder called kerry, cake.jpg, and a folder called paris. These four are shaded, and they are what len counts. Inside kerry, at level 2, are kerry-1.jpg, kerry-2.jpg and kerry-3.jpg. Inside paris are paris-1.jpg, a folder called louvre, and paris-2.jpg. Inside louvre, at level 3, are louvre-1.jpg and louvre-2.jpg. There are 9 photos in all.">
+
 To look inside, a loop has to tell a folder from a photo.
 `isinstance(item, list)` gives `True` when `item` is a list, and `False`
 when it is anything else. Here is a loop that counts a folder by its
@@ -251,6 +253,8 @@ Five calls start, for 4, 3, 2, 1 and 0. Here is what happens, in order.
 4. Now the call for 1 can finish: $1 \times 1 = 1$. Then 2 finishes
    with $2 \times 1 = 2$, then 3 with $3 \times 2 = 6$, then 4 with
    $4 \times 6 = 24$.
+
+<img src="calls-that-wait.svg" alt="Five boxes in a staircase, each one lower and further right than the one before: factorial_shown(4), then factorial_shown(3), (2), (1) and (0). An arrow marked waits for runs down from each box to the next. Beside each box is what it gives back, and when it starts and finishes. The call for 0 is the base case: it gives back 1, starts 5th and finishes 1st. The call for 1 gives back 1 × 1 = 1. The call for 2 gives back 2 × 1 = 2. The call for 3 gives back 3 × 2 = 6. The call for 4 gives back 4 × 6 = 24: it starts 1st and finishes 5th.">
 
 The call for 4 starts first and finishes last. While the call for 0
 runs, four other calls are waiting, each at the same line. Each one has

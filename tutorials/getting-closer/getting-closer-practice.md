@@ -286,6 +286,18 @@ and 3.5 goes up to 4. This is called banker's rounding. The value at
 
 </details>
 
+<aside class="dl-note" id="getting-closer-practice-note-ties">
+
+**Even inside the chip.** Rounding a half to the even neighbour is not
+only Python's choice for `round`. IEEE 754, the standard for floats
+that nearly every computer follows, uses the same rule by default. When
+the exact result of a sum falls halfway between two floats, it goes to
+the even one. If halves always went up, a long run of sums would drift
+upwards. Going to the even neighbour sends halves up about as often as
+down.
+
+</aside>
+
 **11. Another way.** On
 [Doubling and halving](tutorial:doubling-and-halving#how-long-to-double),
 a count grew by the same percent once a year. Say savings grow by 4% a

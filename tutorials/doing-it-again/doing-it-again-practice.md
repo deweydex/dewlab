@@ -130,6 +130,16 @@ had 1,418 mm.
 
 </details>
 
+<aside class="dl-note" id="doing-it-practice-note-rain">
+
+**East and west.** Met Éireann says that most of the east of Ireland
+gets 750 to 1,000 mm of rain in a year, and the west usually gets 1,000
+to 1,400 mm. In many mountain areas it is more than 2,000 mm. The
+made-up year in the cell, 1,418 mm, is at the wet end of the west's
+range.
+
+</aside>
+
 **6. Fix.** Schlomo, who is learning Python too, wants the size of a
 folder: the sizes of its four files, in megabytes (MB), added up. His
 code prints a different number. Find why, and change it.

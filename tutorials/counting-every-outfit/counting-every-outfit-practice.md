@@ -80,6 +80,17 @@ fewer than 20.
 
 </details>
 
+<aside class="dl-note" id="counting-every-practice-note-uuu">
+
+**The first word.** At 3 in the morning on 27 May 1961, in a lab in the
+United States, Heinrich Matthaei added a strand of RNA made only of the
+letter U to an extract of bacteria. The bacteria's machinery built a
+chain of just one building block, phenylalanine. So the codon UUU means
+phenylalanine. Matthaei and Marshall Nirenberg had read the first word
+of the genetic code. (RNA uses the letter U where DNA uses T.)
+
+</aside>
+
 **4. Explain.** You toss a 10c coin and a 20c coin. Why are
 `("H", "T")` and `("T", "H")` two different outcomes?
 

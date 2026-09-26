@@ -362,6 +362,16 @@ a faulty one.
 
 </details>
 
+<aside class="dl-note" id="true-false-practice-note-saturn">
+
+**Votes inside a rocket.** The computer that steered the Saturn V
+rocket towards the Moon was built by IBM, and it voted inside itself.
+It had three copies of its logic, and each job passed through seven
+stages. At every stage, a vote kept the answer that at least two copies
+gave. So one faulty part at any stage did not change the result.
+
+</aside>
+
 **13. Fix.** Schlomi, who is learning Python too, wrote this cell to
 print the truth table of an umbrella rule. It stops with an error
 instead. She had a reason. `umbrella` is a function, and functions
