@@ -7,6 +7,15 @@ around it.
 
 ---
 
+## Which course should I take?
+
+If you are in a class, the one your teacher tells you: the courses match the
+modules your college enrols you in. If you are choosing on your own,
+[Studying here](https://deweydex.github.io/dewlab/studying.html) says what
+each course is for. Two of them, Programming and Maths, Integrated and the
+Dewey Track, teach the same two modules in different ways, and that page says
+how they differ.
+
 ## Do I need to know Python, or maths, already?
 
 No. Tutorials start from nothing and build up. If a tutorial expects
@@ -20,12 +29,15 @@ start.
 
 ## Does getting something wrong count against me?
 
-No. Nothing here is scored, and nobody sees your answers. A wrong answer
-tells you something about the method, not about you. That is as true of the
-practice-page problems as it is of the tutorials themselves.
+No. Nothing here is scored, nothing marks you right or wrong, and nobody sees
+your answers. A mistake tells you something about the method, not about you.
+That is as true of the practice-page problems as it is of the tutorials
+themselves.
 
-Some cells offer a `check()` that helps you compare your result with the
-expected one. That feedback is there for you, not for anyone else.
+Some cells have a table of cases under them. When you ask, it shows what
+your code gives for each case beside what one solution gives. It never says
+which is right: where the two differ, that is something to look at, and you
+decide what it means.
 
 ## What if I do not finish a tutorial in one sitting?
 
@@ -38,9 +50,10 @@ there for that.
 
 No, not on its own. Your work is saved in the browser you were using, not to
 an account, so it stays on that machine. Clearing your browser data will also
-clear it. If you want a copy you can move or keep, Settings has an export
-button that saves one to a file. Loading a copy replaces the matching cell
-edits and notes, so export the current version first if you want to keep it.
+clear it. If you want a copy you can move or keep, the **Notes** panel has
+**Export a copy**, which saves one to a file, and **Load a copy**, which brings
+it back. Loading a copy replaces the matching cell edits and notes, so export
+the current version first if you want to keep it.
 
 ## Can I skip ahead, or go back to something earlier?
 
@@ -65,12 +78,13 @@ The reset button on a cell restores the code the tutorial started with and
 clears the cell's visible result. It replaces your edits in that one cell.
 It does not clear the values Python already holds from running earlier cells.
 
-**Restart Python**, in Settings, starts a fresh Python session while keeping
-your code in the editors. Earlier cells may need to run again before a later
-cell can use their values.
+**Restart Python**, in the **Python** panel, starts a fresh Python session
+while keeping your code in the editors. Earlier cells may need to run again
+before a later cell can use their values.
 
-**Start again**, also in Settings, restores the tutorial's cells and clears
-your notes after confirmation. It leaves cells you added yourself in place.
+**Start again**, in the **Notes** panel, restores the tutorial's cells and
+clears your notes, after asking you first. It leaves cells you added yourself
+in place.
 
 ## I found a mistake in a tutorial. What do I do?
 
@@ -89,9 +103,9 @@ computer.
 ## What happens to my work once the course is over?
 
 It stays exactly where it already was: saved in your browser, on your own
-device, for as long as you keep it there. Settings can also save a copy
-that outlasts this site — one file, as an HTML page, a PDF, or a Jupyter
-notebook. `FOR_STUDENTS.md` says more, under "Taking a tutorial with you".
+device, for as long as you keep it there. **Settings**, under **Imports &
+Exports**, can also save a copy that outlasts this site: one file, as an HTML
+page, a PDF, or a Jupyter notebook. `FOR_STUDENTS.md` says more, under "Taking a tutorial with you".
 
 ## A tutorial feels too hard, or too easy. Is that normal?
 

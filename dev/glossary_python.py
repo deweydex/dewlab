@@ -157,7 +157,7 @@ def display(name: str, obj, owner) -> str | None:
     plain = signature.replace(parameters=parameters,
                               return_annotation=inspect.Signature.empty)
     # A reader calls the course's own helpers by their bare names, since
-    # every cell already has them: `check(...)`, never `tutorial_tools.check`.
+    # every cell already has them: `show(...)`, never `tutorial_tools.show`.
     if name.split(".")[0] in OWN_MODULES:
         name = name.split(".", 1)[1]
     return f"{name}{plain}"

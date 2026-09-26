@@ -32,3 +32,8 @@ entries:
   - term: divide and conquer
     kind: concept
     definition: Divide and conquer is a way to solve a problem by splitting it into smaller pieces, solving the pieces, and combining the answers. Binary search is the first example of it here.
+  - term: "random.randint()"
+    python: random.randint
+    kind: function
+    definition: Gives back a whole number chosen at random, from the first number to the second, both included.
+    example: "random.randint(1, 100)"

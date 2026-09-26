@@ -2,290 +2,261 @@
 title: "How programming languages came to be — Practice"
 practice_for: how-we-got-here
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 ---
 
 # How programming languages came to be — Practice
 
-On this page we practise reading binary, hexadecimal and ASCII, and we
-look back at the history and the paradigms. Each answer is folded away
-under its problem. Try the problem first, then open the answer.
-
-Try the conversion questions by hand before you use the cell to check
-them. The aim is that you can read the notation yourself, without Python
-reading it for you.
+Problems on binary, hexadecimal and ASCII, on the history and the
+paradigms, and three from earlier pages. Try the conversions by hand
+before you use the cell to check them: the aim is that you can read the
+notation yourself, without Python reading it for you.
 
 ## Tools
 
-Run this cell before you start. It builds the same tools as the
-tutorial, plus `to_hex`, which writes a number in hexadecimal.
+Run this cell first. It builds the tutorial's two tools.
 
 ```python exec
 id: tools-1
 def to_binary(n):
     if n == 0:
         return "0"
-    digits = []
+    text = ""
     while n > 0:
-        digits.append(str(n % 2))
+        text = str(n % 2) + text
         n = n // 2
-    return "".join(reversed(digits))
-
+    return text
 
 def from_binary(text):
     total = 0
-    for character in text:
-        total = total * 2 + int(character)
+    for digit in text:
+        total = total * 2 + int(digit)
     return total
 
-
-def to_hex(n):
-    return format(n, "X")
-
-
-print(to_binary(72), from_binary("01001000"), to_hex(72), chr(72))
+print(to_binary(72), from_binary("01001000"), hex(72), chr(72))
 ```
 
-## Reading the Notation
+## 1. Binary to base 10
 
-**1.** Change these binary numbers to base 10: `1010`, `11111111`,
-`10000000`, `01000001`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-10, 255, 128, 65.
-
-255 is the largest number that eight bits can hold. That is why so many
-limits in computing are 255. And 65 is the ASCII code for a capital A.
-
-</details>
-
-**2.** Change these to binary: 5, 16, 100, 200.
+Change these binary numbers to base 10 by hand, then check: `1101`,
+`10000`, `11111`, `10101010`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-101, 10000, 1100100, 11001000.
+13, 16, 31, 170. `11111` is 31, not 32: a row of ones is always one less
+than the next power of two. That is why a byte holds 0 to 255, and not 0
+to 256.
 
 </details>
 
-**3.** Change these to hex: 15, 16, 255, 4096.
+## 2. Base 10 to binary
+
+Change these to binary by hand, then check: 6, 12, 100, 255.
 
 <details class="dl-answer"><summary>answer</summary>
 
-F, 10, FF, 1000.
-
-Notice that 16 in hex is `10`. This is for the same reason that ten in
-decimal is `10`: you have run out of single digits, so you carry one to
-the next place.
+110, 1100, 1100100, 11111111. 12 is 6 moved one place to the left:
+doubling a number in binary adds a 0 on the end, the way multiplying by
+ten does in base 10.
 
 </details>
 
-**4.** Change `FF`, `A0` and `7E` from hex to binary, without going
-through base 10.
+## 3. Base 10 to hex
+
+Change these to hexadecimal: 15, 16, 255, 256, 4095.
 
 <details class="dl-answer"><summary>answer</summary>
 
-`11111111`, `10100000`, `01111110`.
-
-Each hex digit is exactly four binary digits, so you can change one
-digit at a time: F is 1111, A is 1010, 7 is 0111, E is 1110.
-
-This direct match is the whole reason hexadecimal exists.
+F, 10, FF, 100, FFF. FF is eight binary digits, one byte, and FFF is
+twelve.
 
 </details>
 
-**5.** Decode `01001000 01001001` as ASCII.
+## 4. Hex to binary, straight
+
+Change `FF`, `A0` and `7E` from hex to binary, without going through
+base 10.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The codes are 72 and 73, which are `H` and `I`. The message is "HI".
+`11111111`, `10100000`, `01111110`. Each hex digit becomes four binary
+digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
+1110. No base 10 is needed, which is the whole point of hex.
 
 </details>
 
-**6.** Decode the hex `43 4F 44 45` as ASCII.
+## 5. Two letters
+
+Decode `01001000 01001001` as ASCII.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The codes are 67, 79, 68 and 69, which spell "CODE".
+72 and 73, which are H and I: `HI`.
 
 </details>
 
-**7.** Why do computers use binary, and not base 10?
+## 6. A colour
+
+The web colour `#FF7F50` is two hex digits each for red, green and blue.
+What are the three in base 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Because a transistor works best with two states: on or off, high
-voltage or low. Base 2 matches those two states exactly.
-
-Base 10 would need each part to tell apart ten different voltage levels,
-every time. That is harder to build and harder to keep stable, and it
-gains nothing.
+255, 127 and 80: a colour called coral.
 
 </details>
 
-**8.** Why does hexadecimal exist, given that computers do not use it?
+## 7. Reading hex without int
+
+Can you write `read_hex(text)`, which gives the value of a hex string like
+`"2A"`, without `int(text, 16)`? `digits.index(character)` gives where a
+character is in the string `digits`.
+
+```python exec
+id: reading-hex-without-int-1
+def read_hex(text):
+    digits = "0123456789ABCDEF"
+    return 0
+```
+
+```inputs
+guess: yes
+read_hex("2A")
+read_hex("FF")
+read_hex("100")
+```
+
+```hint
+It is `from_binary` with 16 in place of 2. At each digit, multiply the
+total so far by 16, and add the digit's value.
+```
+
+```solution
+def read_hex(text):
+    digits = "0123456789ABCDEF"
+    total = 0
+    for character in text:
+        total = total * 16 + digits.index(character)
+    return total
+---
+`total * 16 + digit` is how to read a number in any base: move everything
+up one place, then add the new digit. Change the 16 and the digits, and
+the same function reads base 7.
+```
+
+## 8. Why binary
+
+Why do computers use binary, and not base 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It exists only for people. `11111111` and `11111011` are hard to tell
-apart at a glance. `FF` and `FB` are easy.
-
-One hex digit is exactly four binary digits, so changing between them
-follows a fixed rule, and nothing is lost. Hexadecimal is binary written
-shorter, for whoever has to read it.
+Because the hardware has two states. A transistor is on or off, high
+voltage or low, and base 2 matches that exactly. A circuit that had to
+tell ten voltage levels apart would be harder to build and easier to
+fool. Base 10 is about people's fingers, not about machines.
 
 </details>
 
-## The History
+## 9. Why hex
 
-**9.** What did Ada Lovelace do, and why is it significant that the machine was never built?
+Why does hexadecimal exist, when computers do not use it?
+
+<details class="dl-answer"><summary>answer</summary>
+
+For people. One hex digit is exactly four binary digits, so a byte is two
+hex digits, and a long binary pattern becomes short enough to read and
+copy without losing count. It is binary, written shorter.
+
+</details>
+
+## 10. Lovelace
+
+What did Ada Lovelace do, and why does it matter that the machine was
+never built?
 
 <details class="dl-answer"><summary>answer</summary>
 
 She wrote a step-by-step method for the Analytical Engine to work out a
-sequence of numbers, using loops and conditional branching. She wrote it
-in notes added to a translation, and the notes ended up longer than the
-paper itself.
-
-The fact that the machine was never built is the point: **a program does
-not need a working machine to exist.** A program is a list of exact
-instructions. That is true whether or not anything can carry them out
-yet.
+sequence of numbers, with loops and conditional branching, in notes to a
+translation that ended up longer than the paper. That the machine was
+never built is the point: a program does not need a working machine to
+exist. It is a list of exact instructions, whether or not anything can
+carry them out yet.
 
 </details>
 
-**10.** Put these in order, and say what each one made easier: machine
-code, high-level languages, assembly language.
+## 11. In order
+
+Put these in order, and say what each one made easier: high-level
+languages, machine code, assembly language.
 
 <details class="dl-answer"><summary>answer</summary>
 
-1. Machine code (1940s): binary patterns that the hardware runs
-   directly. There is nothing between you and the circuits.
-2. Assembly (1950s): short names like `ADD` and `MOV` in place of binary.
-   An assembler turns them back into binary. This is the first time a
-   program's job is to write another program.
-3. High-level languages (1957 onwards): code that reads like English or
-   maths. A compiler or an interpreter translates it, and it is no
-   longer tied to one kind of machine.
+1. Machine code, in the 1940s: binary the hardware runs directly.
+2. Assembly, in the 1950s: short names like `ADD` in place of binary,
+   turned back into binary by an assembler.
+3. High-level languages, from 1957: code that reads like English or
+   mathematics, no longer tied to one kind of machine.
 
-Each step made things easier for people. The hardware never needed any
-of them.
+Each step made things easier for people. The hardware never needed any of
+them.
 
 </details>
 
-**11.** What was the problem with assembly that high-level languages solved?
+## 12. Compiled or interpreted
+
+Why does a compiled program usually run faster? And why is an interpreted
+language usually quicker to find and fix mistakes in?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Assembly was tied to one kind of machine. Its instruction names matched
-that machine's own instructions, so a program written for one computer
-would not run on another. Every program had to be rewritten for each new
-machine.
+A compiled program was translated before it ran, so no time goes on
+translating while it runs, and the compiler could look at the whole
+program to make it faster. An interpreted program is translated as it
+runs, which takes time, but there is no step between changing a line and
+seeing what it does. When you are hunting a bug, that is worth a great
+deal.
 
 </details>
 
-**12.** What is the difference between a compiler and an interpreter?
+## 13. The overnight batch
+
+A bank processes the day's payments overnight, in one large batch. Which
+language from the table would you expect to find doing that job? Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A compiler translates the whole program into machine code before it
-runs. The result is something the machine can run on its own. An
-interpreter reads the program and runs it line by line, as it goes.
-
-C is usually compiled. Python is usually interpreted, although, to be
-exact, it first translates your code into bytecode and then interprets
-that.
+COBOL, and a surprising amount of this work still runs on it. It was built
+in 1959 for business data, banks took it up early, and code that has
+worked, and been checked, for decades is not replaced without a very good
+reason. Software lasts much longer than the reasons it was written.
 
 </details>
 
-**13.** Why does a compiled program usually run faster? And why is an
-interpreted program usually quicker to debug, that is, to find and fix
-its mistakes?
+## 14. Which paradigm
+
+Which paradigm is each closest to? What told you?
+
+- (a) `total = 0`, then a loop adding each price to it
+- (b) `sum(price for price in prices)`
+- (c) `basket.add(4.50)`, then `basket.total()`
+- (d) `apply_to_all(double, prices)`
 
 <details class="dl-answer"><summary>answer</summary>
 
-A compiled program has already been translated, so no time goes on
-translating while it runs. Also, the compiler could see the whole
-program at once, so it could make the whole program faster.
-
-An interpreted program is translated while it runs, and that takes time.
-But there is no compile step between writing a line and seeing what it
-does. You change something and run it straight away, and when you are
-looking for a bug, that is worth a great deal.
+(a) Procedural: a variable changed step by step. (b) Declarative: it says
+what the answer is. (c) Object-oriented: the basket keeps its prices, and
+adding and totalling are things it does. (d) Functional: a function,
+`double`, is handed to another function as a value.
 
 </details>
 
-**14.** A bank processes all of the day's payments overnight, in one
-large batch. Which language from the table would you expect to find
-doing that job? Why?
+## 15. Back to a loop
 
-<details class="dl-answer"><summary>answer</summary>
-
-COBOL, and a surprising amount of this work still runs on COBOL. It was
-built in 1959 for business data processing, and banks took it up early.
-Code that works, and has been checked for forty years, is not something
-anyone replaces without a very good reason.
-
-This is a fact about the industry as much as about the language:
-software lasts much longer than the reasons it was written.
-
-</details>
-
-## Paradigms
-
-**15.** Which paradigm is each of these closest to? What told you?
-
-- (a) `total = 0` then a loop adding to it
-- (b) `reduce(lambda a, b: a + b, prices, 0)`
-- (c) `cart.add(4.50)` then `cart.total()`
-- (d) `[p * 2 for p in prices]`
-
-<details class="dl-answer"><summary>answer</summary>
-
-(a) Procedural: step-by-step instructions that change something as they
-go.
-
-(b) Functional: it describes the change to make, with no loop written
-out, and no variable is updated.
-
-(c) Object-oriented: the data and the operations on it are kept together,
-and the object remembers its data between calls.
-
-(d) A comprehension. Its style is declarative: you say what the result
-is, and Python works out how to build it.
-
-</details>
-
-**16.** Which of these paradigms does Python support?
-
-<details class="dl-answer"><summary>answer</summary>
-
-All of them. That is unusual, and it is part of why Python is used for
-teaching.
-
-Most languages push you firmly towards one paradigm. Python lets you
-choose. That is a freedom, and also a responsibility. A program that
-mixes all four without a plan is harder to read than one that sticks to
-one.
-
-</details>
-
-**17.** Is any of the four paradigms correct?
-
-<details class="dl-answer"><summary>answer</summary>
-
-No. They are habits of thought. Which one suits depends on the problem,
-and on who else has to read the code.
-
-- A procedural loop is clearer for a beginner.
-- A functional version is clearer once you are used to it.
-- An object-oriented design helps when there is data to keep track of
-  between steps, and gets in the way when there is not.
-
-</details>
-
-**18.** Rewrite this in the procedural style:
-`doubled = [n * 2 for n in numbers]`.
+Rewrite `doubled = [n * 2 for n in numbers]` in the procedural style.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -295,54 +266,198 @@ for n in numbers:
     doubled.append(n * 2)
 ```
 
-This takes three lines in place of one, and does exactly the same thing.
-Which one is better depends on who is reading it.
+Three lines in place of one, doing the same thing. Which is better depends
+on who is reading it.
 
 </details>
 
-## Putting It Together
+## 16. Is one of them right
 
-**19.** Write `crack_the_vault(groups)`. Each entry in `groups` is a
-pair: the base (`"bin"` or `"hex"`), and the code. The function should
-give back the decoded message.
+Is any of the four paradigms the right one?
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def crack_the_vault(groups):
-    letters = []
-    for base, code in groups:
-        number = from_binary(code) if base == "bin" else int(code, 16)
-        letters.append(chr(number))
-    return "".join(letters)
+No. They are habits of thought. A procedural loop is clearer for a
+beginner; a declarative line is clearer once you are used to it; an
+object helps when there is data to keep track of between steps, and gets
+in the way when there is not. A program that mixes all four without a plan
+is harder to read than one that keeps to one.
+
+</details>
+
+## 17. The first two bytes
+
+A file's first two bytes are `50 4B` in hex. What are they as characters,
+and what might they tell you about the file?
+
+<details class="dl-answer"><summary>answer</summary>
+
+80 and 75, which are P and K. `PK` starts every ZIP file: they are the
+initials of Phil Katz, who wrote the ZIP format in 1989. Many formats
+start with a few fixed bytes like these, a *magic number*, and software
+often reads them to decide what a file is, without trusting its name.
+
+</details>
+
+## 18. The other way
+
+<div class="dl-world" data-world="secret-messages">
+
+Can you write `to_hex_message(text)`, which gives back each character's
+ASCII code as two hex digits, the way the 1958 memory dump was written?
+`hex(n)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
+
+```python exec
+id: the-other-way-1--secret-messages
+def to_hex_message(text):
+    return []
 ```
 
-The line that sets `number` makes a choice in one line: use
-`from_binary` if the base is `"bin"`, and `int(code, 16)` if not.
-This one-line form, `a if condition else b`, gives `a` when the
-condition is true and `b` when it is not. It is the same choice as an
-`if` and `else` from
-[Making decisions with if, elif and else](tutorial:making-decisions),
-written on one line.
+```inputs
+guess: yes
+to_hex_message("HI")
+to_hex_message("CODE")
+to_hex_message("")
+```
 
-The function is the two earlier decoders joined together, with a check
-to decide which one applies. This shape is common, and worth noticing.
-When two functions differ in only one step, they can usually become one
-function, with an extra input that picks the step.
+```solution
+def to_hex_message(text):
+    groups = []
+    for character in text:
+        groups.append(hex(ord(character))[2:].upper())
+    return groups
+---
+`ord()` gives the code, and `hex()` writes it in hex. For capital letters,
+the codes are 65 to 90, so two hex digits are always enough.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you write `row_to_hex(row)`, which turns a row of eight pixels, `#`
+and `.`, into the two hex digits a game would store it as?
+`hex(n)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
+
+```python exec
+id: the-other-way-1--pixel-art
+def row_to_hex(row):
+    return ""
+```
+
+```inputs
+guess: yes
+row_to_hex("##..##..")
+row_to_hex("#..#....")
+row_to_hex("........")
+```
+
+```hint
+First turn the row into binary digits, 1 for `#` and 0 for `.`. Then
+`from_binary` gives the number, and `hex()` writes it.
+```
+
+```solution
+def from_binary(text):
+    total = 0
+    for digit in text:
+        total = total * 2 + int(digit)
+    return total
+
+def row_to_hex(row):
+    bits = ""
+    for pixel in row:
+        if pixel == "#":
+            bits = bits + "1"
+        else:
+            bits = bits + "0"
+    text = hex(from_binary(bits))[2:].upper()
+    return "0" * (2 - len(text)) + text
+---
+`"##..##.."` is `CC`, and a dark row is `00`. Without the last line, it
+would be `0`, one digit, and a program reading two digits a row would lose
+its place.
+```
+
+</div>
+
+## 19. From earlier: a key that is missing
+
+From *Dictionaries: looking things up by name* and *Finding bugs in
+bigger programs*.
+
+```python exec
+id: from-earlier-a-key-that-is-missing-1
+counts = {"A": 1}
+print(counts.get("B") + 1)
+```
+
+```predict
+What will it do?
+
+- Print 1
+  - A missing count is 0, and 0 + 1 is 1.
+- Stop with a KeyError
+  - B is not a key.
+- Stop with a TypeError
+  - `.get()` gives None, and None + 1 is not allowed.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `TypeError`: `.get()` with no default gives `None`, and `None + 1` has
+no meaning. The mistake is the missing default, `.get("B", 0)`, and the
+error turns up a step later, on the `+`.
 
 </details>
 
-**20.** A file's first two bytes are `50 4B` in hex. What are they as
-characters? What might that tell you about the file?
+## 20. From earlier: a test that asks the wrong thing
 
-<details class="dl-answer"><summary>answer</summary>
+From *Designing and testing good functions* and *Sorting a list*.
 
-They are 80 and 75, which are `P` and `K`.
+```python exec
+id: from-earlier-a-test-that-asks-the-wrong-thing-1
+assert [3, 1, 2].sort() == [1, 2, 3]
+print("passed")
+```
 
-`PK` marks the start of a ZIP file. The letters are the initials of Phil
-Katz, who wrote the original ZIP format in 1989. Many file formats start
-with a few fixed bytes like these, called a magic number. A lot of
-software works out what kind of file it has by reading those bytes. It
-does not trust the file's name or extension.
+```predict
+What will it do?
+
+- Print passed
+  - The list sorted is [1, 2, 3].
+- Stop with an AssertionError
+  - `.sort()` gives back None.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It stops with an `AssertionError`. `.sort()` sorts its list and gives
+back `None`, and `None` is not `[1, 2, 3]`. The test is right to fail, and
+it is the test that is wrong: `sorted([3, 1, 2])` is what it meant.
+
+</details>
+
+## 21. From earlier: how many
+
+From *Dictionaries: looking things up by name*.
+
+```python exec
+id: from-earlier-how-many-1
+counts = {}
+for letter in "HELLO":
+    counts[letter] = counts.get(letter, 0) + 1
+print(counts["L"])
+```
+
+```predict
+type: number
+
+What will it print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+2. The loop counts each letter as it meets it, and there are two Ls.
 
 </details>

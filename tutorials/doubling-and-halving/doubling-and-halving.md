@@ -75,15 +75,19 @@ away, where the calls stop.
 ```question
 id: doubling-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Binary search looks at the middle of a list and throws away the half
 where the target cannot be. What must be true of the list first?
 
 - It must hold numbers, not words.
+  - Words can be searched this way too, in alphabetical order.
 - It must be sorted.
+  - Throwing away half only works if you know which half the target is in.
 - It must have an even number of values.
+  - An odd length has a middle value too.
 - It must be shorter than 1,000 values.
+  - The longer the list, the more halving saves.
 ```
 
 ## A rumour that doubles
@@ -306,15 +310,19 @@ estimate of 20.
 ```question
 id: doubling-add-3
 type: multiple-choice
-correct: 3
+answer: 3
 
 About how many doublings take 1 to a trillion, which is a thousand
 billion?
 
 - about 13
+  - 2 to the 13 is about 8,000.
 - about 30
+  - 2 to the 30 is about a billion, a thousand times too few.
 - about 40
+  - 2 to the 10 is about a thousand, so 40 doublings is a thousand four times over.
 - about 1,000
+  - This adds 1 a thousand times, rather than doubling.
 ```
 
 ## How long to double?

@@ -76,14 +76,18 @@ type: fill-in-the-blank
 ```question
 id: typical-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Your toolkit's `total` adds up a list. What is `total([3, 5, 10])`?
 
 - 3
+  - 3 is the first value, and also how many values there are.
 - 10
+  - 10 is the largest value.
 - 18
+  - 3 + 5 + 10 = 18.
 - 150
+  - 3 × 5 × 10 = 150: multiplying, where `total` adds.
 ```
 
 ## Share it out equally: the mean

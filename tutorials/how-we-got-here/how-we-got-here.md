@@ -1,16 +1,17 @@
 ---
 title: "How programming languages came to be"
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   before-there-were-computers:
     covers: [PDP-LO1]
   the-only-language-the-machine-understands:
-    covers: [PDP-LO1]
-    touches: [MIT-1.4]
+    covers: [PDP-LO1, MIT-1.4]
   assembly-and-why-hexadecimal-exists:
-    covers: [PDP-LO1]
-    touches: [MIT-1.4]
+    covers: [PDP-LO1, MIT-1.4]
   languages-people-can-read:
     covers: [PDP-LO1, PDP-LO3]
   the-same-problem-four-ways:
@@ -19,245 +20,472 @@ covers:
 
 # How programming languages came to be
 
-This is the last page of the series, so it is a good moment to look
-back. You have written programs that store values, make decisions and
-repeat steps. You have written your own functions, kept data in lists and
-dictionaries, searched and sorted, and learned to read an error message.
+Here is a number, written two ways. What will the cell print?
 
-Back in [Variables, data types and text](tutorial:storing-and-computing),
-you also met binary and hexadecimal: two ways of writing numbers that
-seemed to come from nowhere. Where did they come from? This page tells
-that story.
+```python exec
+id: one-number-two-ways-1
+print(0b101010)
+print(0b101010 == 42)
+```
 
-It is also a short history of programming, the thing you have been
-learning to do. Many parts of programming look like strange choices at first. Almost
-every one of them was a decision somebody made for a reason, and the
-reasons still hold today.
+```predict
+What will the first line print?
 
-We will travel forwards in time:
+- 101010
+  - It prints what is written after the 0b.
+- 42
+  - 0b means the digits are binary, and Python shows the number in base 10.
+- An error
+  - A number cannot start with 0b.
+```
 
-1. a program written before there was a machine to run it
-2. the patterns of on and off that early computers read
-3. the languages we use now
+It prints 42, and then `True`. `0b101010` is *binary*, the way a computer
+stores 42, and Python shows it the way people write it. Underneath every
+program on every page so far, everything was patterns like that one.
 
-At each stop, someone has left a message written in the notation of that
-time. The only way to read each message is to write the code that
-translates it.
+This is the last page of the series, and it looks back: at a program
+written before there was a machine to run it, at the on-and-off patterns
+the first computers read, and at the languages that made those patterns
+bearable. Almost every part of programming that looks like a strange
+choice was a decision somebody made for a reason, and the reasons still
+hold. At each stop, something has been left in the notation of its time,
+and the only way to read it is to write the code that translates it.
 
-## Before There Were Computers
+## Before there were computers
 
 By 1843, Charles Babbage had designed a machine called the Analytical
-Engine. It was mechanical, made of gears and cards, with no electricity.
-It was never finished in his lifetime.
+Engine. It was mechanical, made of gears and cards, with no electricity,
+and it was never finished in his lifetime.
 
 **Ada Lovelace** was translating a paper about the machine into English.
 The paper was by an Italian engineer, Luigi Menabrea, and it was written
-in French. Lovelace added notes of her own. One of them described, step
-by step, how the Engine could work out a sequence of numbers, using loops
-and conditional branching. (Conditional branching means choosing which
-step to do next, depending on a result, as `if` and `else` do in
-Python.) Her notes were longer than the
-paper she was translating.
+in French. Lovelace added notes of her own, and one of them set out, step
+by step, how the Engine could work out a sequence of numbers, with loops
+and with conditional branching: choosing which step to do next, depending
+on a result, as `if` and `else` do. Her notes were longer than the paper
+she was translating.
 
-Most historians say this makes her the first computer programmer. She
-wrote her program more than a century before there was an electronic
-computer to run it.
+Most historians call her the first computer programmer. She wrote her
+program more than a century before there was an electronic computer to run
+it. **A program does not need a working machine to exist.** It is a list of
+exact instructions. The rest of this page is about how those instructions
+get carried out, and it turns out to be a story about making them easier
+for people to write, again and again, for a hundred and eighty years.
 
-What can we take from this? It is an idea, and not a fact to memorise:
-**a program does not need a working machine, or electricity, to exist.**
-A program is a list of exact instructions. The rest of this page is about
-how those instructions get carried out. It turns out to be a story about
-making instructions easier for people to write, again and again, for a
-hundred and eighty years.
+## The only language the machine understands
 
-## The Only Language the Machine Understands
+ENIAC, built in 1945, had no programming language at all. Engineers
+programmed it by moving cables between boards and setting switches. A few
+years later, machines could read their instructions from memory, but the
+instructions were still patterns of on and off. *Machine code* is the
+computer's own language: instructions the hardware runs directly. In
+machine code, every instruction, number and letter is written in binary.
 
-ENIAC, built in 1945, had no programming language at all. To program it,
-engineers rewired it by hand: they moved cables between boards and set
-switches. A few years later, people built machines that could read their
-instructions from memory. That was a huge step forward, but the
-instructions were still only patterns of on and off.
+We count in *base 10*, decimal, with ten digits, 0 to 9, probably because
+we have ten fingers. Each position in a number is worth a power of 10, so
+42 means 4 tens and 2 ones. *Binary* is base 2: it has two digits, 0 and
+1, and each position is worth a power of 2: 1, 2, 4, 8, 16, 32, and so on.
 
-*Machine code* is the computer's own language: instructions the hardware
-runs directly, with nothing in between. In machine code every
-instruction, every number and every letter is written in binary, base 2.
+    101010  =  1 × 32 + 0 × 16 + 1 × 8 + 0 × 4 + 1 × 2 + 0 × 1  =  42
 
-Why binary? It is not a question of style. A transistor, or a vacuum
-tube in ENIAC's time, works best with two states: on or off, high
-voltage or low. Base 2 matches those two states exactly. Base 10, which
-we use because we have ten fingers, does not. (ENIAC itself still counted
-in base 10, with a ring of ten on-off circuits for each digit. The machines that
-came after it moved to binary, because two states are simpler to build
-and more reliable.)
+Why binary? A transistor, or a vacuum tube in ENIAC's day, works best with
+two states: on or off, high voltage or low. Base 2 matches those exactly.
+(ENIAC itself still counted in base 10, with a ring of ten circuits for
+each digit. The machines after it moved to binary, because two states are
+simpler to build and more reliable.)
 
-The cell below builds two tools that we will need: `to_binary` and
-`from_binary`. You met these ideas in
-[Variables, data types and text](tutorial:storing-and-computing). Here they
-are as functions you can use.
-
-You know almost everything in this cell already: `def`, `return`, `if`,
-`while`, `for` and a list. One line is new. In `to_binary`,
-`reversed(digits)` puts the digits in the opposite order, because the
-loop finds the last digit first. Then `"".join(...)` joins them into one
-string. Run the cell, and after that you can use `to_binary` and `from_binary` the same
-way you use `print()`.
+`bin()` writes a number in binary, and these two functions do the
+conversions by hand. Before you run it, what will `to_binary(72)` print?
 
 ```python exec
 id: the-only-language-the-machine-understands-1
+print(bin(42))
+
 def to_binary(n):
-    """Convert a whole number to a binary string, with no '0b' in front."""
+    """Give back n, a whole number, as a string of binary digits."""
     if n == 0:
         return "0"
-    digits = []
+    text = ""
     while n > 0:
-        digits.append(str(n % 2))
+        text = str(n % 2) + text
         n = n // 2
-    return "".join(reversed(digits))
-
+    return text
 
 def from_binary(text):
-    """Convert a binary string back to a whole number."""
+    """Give back the whole number a string of binary digits stands for."""
     total = 0
-    for character in text:
-        total = total * 2 + int(character)
+    for digit in text:
+        total = total * 2 + int(digit)
     return total
-
 
 print(to_binary(72))
 print(from_binary("01001000"))
 ```
 
-How does `from_binary` work? It moves along the string, one digit at a
-time. At each digit, it doubles the total so far, then adds the new
-digit. You do the same thing in base 10 without thinking about it, with
-ten in place of two.
+`to_binary` finds the last digit first, `n % 2`, so it puts each new digit
+at the front. `from_binary` goes the other way: at each digit, it doubles
+the total so far and adds the new digit. You do the same in base 10
+without thinking, with ten in place of two.
 
 ### Your turn
 
-Imagine that an operator from the 1940s has left a message. It is
-written in *ASCII*, a standard code that gives each character a number.
-(The message is made up: ASCII came later, in 1963.) Each group of eight
-binary digits is the code for one letter. For example, `01001000` is 72,
-and 72 is the code for `H`.
+Try these by hand first, and write your working as comments. Then check
+each one with the functions above.
 
-The function `chr()` turns a number into the character it stands for.
-How might you write `decode_binary_message(groups)`? For each group:
-
-1. Change the group into a number with `from_binary`.
-2. Turn that number into a character with `chr`.
-3. Join the characters together.
-
-Then remove the `#` from the last line, and run the cell.
-
-Before you write the loop, you can try one group on its own:
-`chr(from_binary("01001000"))` gives `H`.
+1. What is binary `11001` in base 10?
+2. How do you write 100 in binary?
 
 ```python exec
 id: your-turn-1
-message_1945 = [
-    "01001000",
-    "01000101",
-    "01001100",
-    "01001100",
-    "01001111",
-]
+# 1. Binary 11001 = ?
+#    Working:
 
-def decode_binary_message(groups):
-    # Your code here.
-    pass
+# 2. 100 in binary = ?
+#    Working:
 
-
-# print(decode_binary_message(message_1945))
+# Check:
 ```
 
-## Assembly, and Why Hexadecimal Exists
+<details class="dl-answer"><summary>answer</summary>
 
-Writing binary by hand is tiring, and it is very easy to make mistakes.
-`01001000` and `01001100` differ in only one digit, and you have to count
-to find it. People found two answers to this problem, and both were
-about making life easier for people. The machines did not need either of
+`11001` is 16 + 8 + 1 = 25. 100 is 64 + 32 + 4, which is `1100100`.
+
+</details>
+
+<div class="dl-world" data-world="secret-messages">
+
+An operator from the 1940s has left a message, written in *ASCII*: a code
+that gives each character a number. (The message is made up: ASCII came
+later, in 1963.) Each group of eight binary digits is one letter's code:
+`01001000` is 72, and 72 is `H`, which `chr(72)` gives. Can you write
+`decode_binary(groups)`?
+
+```python exec
+id: your-turn-2--secret-messages
+message_1945 = ["01001000", "01000101", "01001100", "01001100", "01001111"]
+
+def decode_binary(groups):
+    return ""
+```
+
+```inputs
+guess: yes
+decode_binary(message_1945)
+decode_binary(["01001000", "01001001"])
+decode_binary([])
+```
+
+```hint
+For each group: `from_binary` turns it into a number, and `chr()` turns
+the number into a character. Add each character to a string.
+```
+
+```solution
+message_1945 = ["01001000", "01000101", "01001100", "01001100", "01001111"]
+
+def from_binary(text):
+    total = 0
+    for digit in text:
+        total = total * 2 + int(digit)
+    return total
+
+def decode_binary(groups):
+    text = ""
+    for group in groups:
+        text = text + chr(from_binary(group))
+    return text
+---
+HELLO. The groups are all eight digits long, so every letter takes the
+same space, and the message can be cut into letters without a separator.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Early games kept their pictures as rows of binary digits, one bit for each
+pixel: 1 lit, 0 dark. Can you write `draw_binary(rows)`, which gives back
+the picture as rows of `#` and `.`?
+
+```python exec
+id: your-turn-2--pixel-art
+sprite = ["00011000", "00111100", "01111110", "11111111", "00011000", "00011000"]
+
+def draw_binary(rows):
+    return []
+
+for line in draw_binary(sprite):
+    print(line)
+```
+
+```inputs
+guess: yes
+draw_binary(["101", "010"])
+draw_binary(sprite)
+draw_binary([])
+```
+
+```hint
+For each row, build a line: `#` for each `"1"`, and `.` for each `"0"`.
+Append each line to a list, and give the list back.
+```
+
+```solution
+sprite = ["00011000", "00111100", "01111110", "11111111", "00011000", "00011000"]
+
+def draw_binary(rows):
+    lines = []
+    for row in rows:
+        line = ""
+        for bit in row:
+            if bit == "1":
+                line = line + "#"
+            else:
+                line = line + "."
+        lines.append(line)
+    return lines
+
+for line in draw_binary(sprite):
+    print(line)
+---
+A tree. Eight pixels a row, one bit each, is one byte a row: the whole
+picture is six bytes, which mattered when a machine had a few thousand of
 them.
+```
 
-*Assembly language* gives each machine instruction a short name that a
-person can read, such as `ADD`, `MOV` or `JMP`, in place of a binary
-pattern. An *assembler* is a program that turns those names back into
-the binary the hardware needs. This is the first time in our story that
-a program's job is to write another program.
+</div>
 
-Hexadecimal, base 16, became the usual short way to write binary. It
-works because one hex digit is exactly four binary digits: `1111` is
-`F`, `1010` is `A`, and any eight-digit binary byte is exactly two hex
-characters. (Some early machines used octal, base 8, for the same job.
-Hexadecimal became the standard in the 1960s, along with the eight-digit
-byte.)
+## Assembly, and why hexadecimal exists
 
-That is the whole reason hexadecimal exists. It is binary, written
-shorter, for the person reading it. It is not a separate number system
-with ideas of its own.
+Writing binary by hand is tiring, and easy to get wrong: `01001000` and
+`01001100` differ in one digit, and you have to count to find it. People
+found two answers, and both were for people. The machines needed neither.
 
-What do you think `hex_to_binary("48")` will print? Run the cell to
-check.
+*Assembly language* gives each machine instruction a short name, such as
+`ADD`, `MOV` or `JMP`, in place of a binary pattern. An *assembler* is a
+program that turns those names back into binary. It is the first time in
+this story that a program's job is to write another program.
+
+*Hexadecimal*, base 16, became the usual short way to write binary. It
+uses the digits 0 to 9 and then the letters A to F, for ten to fifteen.
+One hex digit is exactly four binary digits: `1111` is `F`, and `1010` is
+`A`. So an eight-digit byte is exactly two hex digits. (Some early machines
+used base 8 for the same job. Hexadecimal became the standard in the
+1960s, along with the eight-digit byte.) That is the whole reason it
+exists: binary, written shorter, for the person reading it.
 
 ```python exec
 id: assembly-and-why-hexadecimal-exists-1
-def to_hex(n):
-    """Convert a whole number to an uppercase hex string, with no '0x' in front."""
-    return format(n, "X")
-
-
-def hex_to_binary(text):
-    """Convert a hex string to a binary string, going through base 10."""
-    return to_binary(int(text, 16))
-
-
-print(to_hex(255))
-print(hex_to_binary("FF"))
-print(hex_to_binary("48"))
+print(hex(255))
+print(0x48)
+print(int("48", 16))
+print(to_binary(int("48", 16)))
 ```
 
-Now compare that last line with the first group of the message in the
-previous section. The message had `01001000`, and the cell printed
-`1001000`. Where did the first zero go?
-
-It was never part of the number. `to_binary` writes only the digits the
-number needs, the same way nobody writes 72 as 072. The message used
-groups of eight digits so that every letter took the same space, and
-`H` needed only seven, so it got a zero in front. `48` in hex, `1001000`
-and `01001000` are the same number, written three ways. All of them are
-the letter `H`.
+`hex()` writes a number in hex, with `0x` in front. `0x48` is a number
+written in hex, and `int("48", 16)` reads hex from a string. The last line
+prints `1001000`. The message above had `01001000`: the zero in front was
+never part of the number, the way nobody writes 72 as 072. `48` in hex,
+72, `1001000` and `01001000` are one number written four ways, and all of
+them are H.
 
 ### Your turn
 
-Here is a memory dump from 1958, and this time it is in hex. (A memory
-dump is a copy of what was stored in a computer's memory.)
+<div class="dl-world" data-world="secret-messages">
 
-1. Change each group into a number with `int(group, 16)`.
-2. Turn each number into a character with `chr`.
-3. Join the characters together, and remove the `#` from the last line
-   to print the result.
+Here is a memory dump from 1958: a copy of what was in a computer's
+memory, and this time it is in hex. Can you write `decode_hex(groups)`?
 
 ```python exec
-id: your-turn-2
+id: your-turn-3--secret-messages
 memory_dump_1958 = ["43", "4F", "44", "45"]
 
-def decode_hex_message(groups):
-    # Your code here.
-    pass
-
-
-# print(decode_hex_message(memory_dump_1958))
+def decode_hex(groups):
+    return ""
 ```
 
-## Languages People Can Read
+```inputs
+guess: yes
+decode_hex(memory_dump_1958)
+decode_hex(["48", "49"])
+```
 
-Assembly was still tied to one kind of machine. Its instruction names
-matched that machine's own instructions, so a program written for one
-computer would not run on another. Nobody enjoyed rewriting every program
-for every new machine.
+```solution
+memory_dump_1958 = ["43", "4F", "44", "45"]
 
-The next step was the *high-level language*. A high-level language is a
-way of writing code that reads more like English or maths. Software
-translates it into machine code, so a person does not have to.
+def decode_hex(groups):
+    text = ""
+    for group in groups:
+        text = text + chr(int(group, 16))
+    return text
+---
+CODE. Two hex digits a letter, where binary took eight: the same bytes,
+four times shorter to write.
+```
+
+Then the vault: each entry is a pair, the base it is written in and the
+code. You have written both halves already. Can you put them into one
+function, with an `if` to choose between them?
+
+```python exec
+id: your-turn-4--secret-messages
+vault = [
+    ["hex", "54"], ["hex", "48"], ["hex", "45"], ["bin", "00100000"],
+    ["hex", "46"], ["hex", "49"], ["hex", "52"], ["hex", "53"], ["hex", "54"],
+    ["bin", "00100000"], ["hex", "50"], ["hex", "52"], ["hex", "4F"],
+    ["hex", "47"], ["hex", "52"], ["hex", "41"], ["hex", "4D"], ["hex", "4D"],
+    ["hex", "45"], ["hex", "52"],
+]
+
+def crack_the_vault(pairs):
+    return ""
+```
+
+```inputs
+guess: yes
+crack_the_vault(vault)
+crack_the_vault([["bin", "01001000"], ["hex", "49"]])
+```
+
+```hint
+`for base, code in pairs:` takes each pair apart. If the base is `"bin"`,
+use `from_binary`; if it is `"hex"`, use `int(code, 16)`. Then `chr()`.
+```
+
+```solution
+vault = [
+    ["hex", "54"], ["hex", "48"], ["hex", "45"], ["bin", "00100000"],
+    ["hex", "46"], ["hex", "49"], ["hex", "52"], ["hex", "53"], ["hex", "54"],
+    ["bin", "00100000"], ["hex", "50"], ["hex", "52"], ["hex", "4F"],
+    ["hex", "47"], ["hex", "52"], ["hex", "41"], ["hex", "4D"], ["hex", "4D"],
+    ["hex", "45"], ["hex", "52"],
+]
+
+def from_binary(text):
+    total = 0
+    for digit in text:
+        total = total * 2 + int(digit)
+    return total
+
+def crack_the_vault(pairs):
+    text = ""
+    for base, code in pairs:
+        if base == "bin":
+            number = from_binary(code)
+        else:
+            number = int(code, 16)
+        text = text + chr(number)
+    return text
+---
+THE FIRST PROGRAMMER: somebody from the first section of this page. The
+two binary entries are 32, the code for a space.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Games kept their sprites in hex, two hex digits for each row of eight
+pixels. Can you write `draw_hex(rows)`, which gives back the picture as
+rows of `#` and `.`? Each row has to become eight binary digits, zeros in
+front included.
+
+```python exec
+id: your-turn-3--pixel-art
+invader = ["18", "3C", "7E", "DB", "FF", "24", "5A", "A5"]
+
+def draw_hex(rows):
+    return []
+
+for line in draw_hex(invader):
+    print(line)
+```
+
+```inputs
+guess: yes
+draw_hex(["FF", "81"])
+draw_hex(invader)
+```
+
+```hint
+`to_binary(int(row, 16))` gives the binary digits, without the zeros in
+front. `"0" * (8 - len(bits)) + bits` puts them back. Then draw each bit,
+as you did with binary.
+```
+
+```solution
+invader = ["18", "3C", "7E", "DB", "FF", "24", "5A", "A5"]
+
+def to_binary(n):
+    if n == 0:
+        return "0"
+    text = ""
+    while n > 0:
+        text = str(n % 2) + text
+        n = n // 2
+    return text
+
+def draw_hex(rows):
+    lines = []
+    for row in rows:
+        bits = to_binary(int(row, 16))
+        bits = "0" * (8 - len(bits)) + bits
+        line = ""
+        for bit in bits:
+            if bit == "1":
+                line = line + "#"
+            else:
+                line = line + "."
+        lines.append(line)
+    return lines
+
+for line in draw_hex(invader):
+    print(line)
+---
+An invader, eight bytes. Without the zeros in front, `"18"` would be
+`11000`, five pixels wide, and the picture would lean to the left.
+```
+
+Web pages still write colours in hex: `#1E90FF` is two hex digits each
+for red, green and blue. Can you write `rgb(colour)`, which gives back the
+three as numbers?
+
+```python exec
+id: your-turn-4--pixel-art
+def rgb(colour):
+    return [0, 0, 0]
+```
+
+```inputs
+guess: yes
+rgb("#1E90FF")
+rgb("#FFD700")
+rgb("#000000")
+```
+
+```hint
+`colour[1:3]` is the red pair. Which slices are the green and the blue?
+```
+
+```solution
+def rgb(colour):
+    return [int(colour[1:3], 16), int(colour[3:5], 16), int(colour[5:7], 16)]
+---
+`[30, 144, 255]`, the blue called dodger blue, and `[255, 215, 0]`, gold.
+Three bytes fit in six hex digits, with no doubt about where one ends.
+```
+
+</div>
+
+## Languages people can read
+
+Assembly was still tied to one kind of machine: its instruction names
+matched that machine's own, so a program for one computer would not run
+on another. Nobody enjoyed rewriting every program for every new machine.
+
+The next step was the *high-level language*: code that reads more like
+English or mathematics, which software translates into machine code, so a
+person does not have to.
 
 | Year | Language | What it was for |
 |---|---|---|
@@ -267,194 +495,196 @@ translates it into machine code, so a person does not have to.
 | 1972 | C | Systems programming, close to the hardware |
 | 1991 | Python | General purpose, readable, and what you are writing now |
 
-There are two ways to turn a high-level language into something a
-machine can run. The difference between them shapes how it feels to work
-in the language.
+There are two ways to turn a high-level language into something a machine
+can run. A *compiler* translates the whole program into machine code
+*before* it runs, into a file the machine can run on its own. C works this
+way. An *interpreter* reads the program and runs it *as it goes*. Python
+works this way. To be exact, Python first translates your code into an
+in-between form called bytecode, and interprets that, but from where you
+sit, it behaves like an interpreted language.
 
-A *compiler* translates the whole program into machine code *before* it
-runs. The result is a file that the machine can run on its own. C works
-this way.
+A compiled program usually runs faster than an interpreted one, and an
+interpreted language is usually quicker to try things in while you are
+writing. **Can you see how each follows from the difference above?**
 
-An *interpreter* reads the program and runs it line by line, *as it
-goes*, with no separate translation step. Python works this way. To be
-exact, Python first translates your code into an in-between form called
-bytecode, and then interprets that. So it is a mix of the two. But from
-where you sit, it behaves like an interpreted language.
+## The same problem, four ways
 
-Here is a question to think about before you read on. A compiled program
-usually runs faster than an interpreted one. An interpreted language is
-usually quicker to test and fix while you are writing it. Both facts come
-from the difference above. **Can you see how each one follows from it?**
-
-## The Same Problem, Four Ways
-
-A *paradigm* is a way of organising a program. It is a set of habits
-about where the logic goes and what the pieces are. Most languages
-encourage one paradigm. Some, including Python, let you use several.
-
-All four pieces of code below do the same thing: they double every
-number in a list. The first one uses only a loop and a list, like the
-ones you have written. The other three use some Python this series has
-not taught: `map` and `lambda`, a `class`, and a list comprehension. So
-do not worry about every word. Run the cell, then compare the four.
-What is different about each one?
+A *paradigm* is a way of organising a program: a set of habits about
+where the logic goes and what the pieces are. Most languages encourage
+one, and Python allows several. All four of these double every number in
+a list. The last uses a `class`, which this series has not taught; you do
+not need to write one, only to see what it keeps together.
 
 ```python exec
 id: the-same-problem-four-ways-1
 numbers = [1, 2, 3, 4, 5]
 
 # Procedural: step-by-step instructions that change something as they go.
-doubled_procedural = []
+doubled = []
 for n in numbers:
-    doubled_procedural.append(n * 2)
-print("Procedural:", doubled_procedural)
+    doubled.append(n * 2)
+print("Procedural:     ", doubled)
 
-# Functional: describe the transformation, not the loop that applies it.
-doubled_functional = list(map(lambda n: n * 2, numbers))
-print("Functional:", doubled_functional)
+# Declarative: say what the answer is, not how to build it.
+print("Comprehension:  ", [n * 2 for n in numbers])
 
+# Functional: functions are values, and one can be handed to another.
+def double(n):
+    return n * 2
 
-# Object-oriented: keep the data and the things you do to it together.
+def apply_to_all(rule, values):
+    return [rule(value) for value in values]
+
+print("Functional:     ", apply_to_all(double, numbers))
+
+# Object-oriented: keep the data, and what you do with it, together.
 class NumberList:
     def __init__(self, values):
         self.values = values
 
     def doubled(self):
-        return [v * 2 for v in self.values]
-
+        return [value * 2 for value in self.values]
 
 print("Object-oriented:", NumberList(numbers).doubled())
-
-# Comprehension: compact and declarative, and very common in Python.
-doubled_scripting = [n * 2 for n in numbers]
-print("Comprehension:", doubled_scripting)
 ```
 
-- The procedural version says *how* to build the answer, step by step.
-- The functional version says *what* the answer is.
-- The object-oriented version says *what kind of thing* has the answer.
-- The comprehension says the same as the functional version, in fewer
-  characters.
+The procedural version says *how*, step by step. The comprehension says
+*what*. The functional version treats `double` as a value, handed to
+another function, as `sorted()` was handed a `key=`. And the
+object-oriented version makes a new kind of thing, a `NumberList`, that
+carries its values and knows how to double them: `self` is the particular
+list being asked. None of them is right and the others wrong. They are
+habits of thought, and which suits depends on the problem, and on who will
+read the code. The object-oriented course builds classes properly.
 
-None of them is right and the others wrong. They are habits of thought.
-Which one suits depends on the problem, and on who else has to read your
-code.
-
-### Your turn
-
-Here are three snippets, and each one adds up a shopping basket. For each
-one:
-
-1. Which paradigm is it closest to?
-2. What exact feature of the code told you? This is the part that
-   matters most.
-
-Fill in the blanks in the comments.
+For each of these, which paradigm is it closest to, and what told you?
 
 ```python exec
-id: your-turn-3
+id: the-same-problem-four-ways-2
+prices = [4.50, 2.20, 7.00]
+
 # Snippet 1
 total = 0
-for price in [4.50, 2.20, 7.00]:
+for price in prices:
     total = total + price
 print(total)
-# This is ___________ because ___________
-
 
 # Snippet 2
-from functools import reduce
-total = reduce(lambda running, price: running + price, [4.50, 2.20, 7.00], 0)
-print(total)
-# This is ___________ because ___________
-
+print(sum(price for price in prices))
 
 # Snippet 3
-class ShoppingCart:
+class Basket:
     def __init__(self):
-        self.items = []
+        self.prices = []
 
     def add(self, price):
-        self.items.append(price)
+        self.prices.append(price)
 
     def total(self):
-        return sum(self.items)
+        return sum(self.prices)
 
-
-cart = ShoppingCart()
-cart.add(4.50)
-cart.add(2.20)
-cart.add(7.00)
-print(cart.total())
-# This is ___________ because ___________
+basket = Basket()
+basket.add(4.50)
+basket.add(2.20)
+basket.add(7.00)
+print(basket.total())
 ```
 
-## The Vault
+<details class="dl-answer"><summary>one way to answer</summary>
 
-Here is one last message, and this one mixes both notations. Each entry
-is a pair: the base it is written in, and the code.
+1 is procedural: a running total, changed step by step. 2 is declarative:
+it says the answer is the sum of the prices, and leaves the loop to
+Python. 3 is object-oriented: the basket holds its prices, and adding to
+it and totalling it are things the basket does. What told you is the
+point: a changing variable, a description of the answer, a thing that
+carries its own data.
 
-You have already written the logic for this twice. This time, the two
-go into one function, with a check to decide which one applies to each
-pair.
+</details>
 
-```python exec
-id: your-turn-4
-vault_message = [
-    ("hex", "54"), ("hex", "48"), ("hex", "45"),
-    ("bin", "00100000"),
-    ("hex", "46"), ("hex", "49"), ("hex", "52"), ("hex", "53"), ("hex", "54"),
-    ("bin", "00100000"),
-    ("hex", "50"), ("hex", "52"), ("hex", "4F"), ("hex", "47"), ("hex", "52"),
-    ("hex", "41"), ("hex", "4D"), ("hex", "4D"), ("hex", "45"), ("hex", "52"),
+## Looking back
+
+Two ideas run through this page. Every step, from assembly to Python, was
+about making things easier for people: the hardware never needed any of
+them, and needs binary, as it always has. And a notation is a tool with a
+purpose: hexadecimal is a choice made to help people read, not a fact
+about computers. Which step do you think made the biggest difference to
+what a person could build?
+
+This is the end of the series. Here is something to make with all of it,
+with a low floor and no ceiling. Take it as far as you like.
+
+<div class="dl-world" data-world="secret-messages">
+
+**Break a classmate's cipher.** Each of you codes a paragraph of English,
+a few sentences long, with a cipher of your own, and swaps it. Then write a
+program that cracks the other's without the key. The floor: a Caesar shift,
+cracked by counting letters and guessing that the most common is E. Higher
+up: a key where every letter can stand for any other, cracked by matching
+the order of frequencies to English's, E, T, A, O, I, N, and fixing the
+rest by hand, one word at a time.
+
+```python challenge
+# Paste your classmate's coded paragraph here.
+coded = "WKLV LV D PHVVDJH IURP WKH IURQW OLQH"
+
+counts = {}
+for character in coded:
+    if character.isupper():
+        counts[character] = counts.get(character, 0) + 1
+
+def how_often(letter):
+    return counts[letter]
+
+print(sorted(counts, key=how_often, reverse=True))
+# Guess which letter is E. What shift, or what key, does that suggest?
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+**Make a pixel-art animation.** An animation is a list of pictures, the
+frames, shown one after another. The floor: two frames of a sprite, one
+with its eyes open and one with them shut, printed one under the other.
+Higher up: frames made by a rule, such as a sprite moving one pixel to the
+right each frame, a picture growing from its middle, or a palette that
+cycles its colours.
+
+```python challenge
+# Each frame is a picture: a list of rows.
+frames = [
+    ["..##..", ".#..#.", "..##.."],
+    ["..##..", ".####.", "..##.."],
 ]
 
-def crack_the_vault(groups):
-    # For each (base, code) pair:
-    #   "bin" converts with from_binary
-    #   "hex" converts with int(code, 16)
-    # Then chr() the result, and join everything together.
-    pass
-
-
-# print(crack_the_vault(vault_message))
+for number, frame in enumerate(frames):
+    print("Frame", number)
+    for row in frame:
+        print(row)
+    print()
+# Can a function make the frames for you, from a rule?
 ```
 
-When your function is ready, remove the `#` from the last line and run
-the cell. If your answer is right, the message describes somebody from
-the first section of this page.
+</div>
 
-## Reflection
+The mixed problems, [Mixed problems: programming](tutorial:mixed-programming),
+go back over the whole series, with no label on which page each problem
+needs.
 
-You have travelled a long way on this page:
+## Where to read more
 
-- from a program written on paper in 1843
-- through the on-and-off patterns that a 1945 machine read
-- past the short notation invented so that people could bear to read
-  those patterns
-- into languages that let you say what you mean
-- and out into four different views of how a program should be
-  organised
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
-Two ideas run through all of it.
-
-**Every step was about making things easier for people.** The hardware
-never needed assembly, or hexadecimal, or Python. It needs binary, and it
-always has. Everything above binary exists because a person had to
-write it, read it, or fix it at three in the morning.
-
-**Notation is a tool with a purpose.** Hexadecimal is a choice made to
-help people read, and not a fact about computers. Knowing why that
-choice was made is more useful than knowing the conversion table.
-
-Which step on this page do you think made the biggest difference to what
-a person could build? Why? You could answer in a few sentences.
-
-## Where to Read More
-
-Computerphile (2016). *Computer Science's Wonder Woman: Ada Lovelace.*
+Computerphile (2016). *Computer Science's Wonder Woman: Ada Lovelace*.
 <https://www.youtube.com/watch?v=wnHHzBY1SPQ>. The fuller story of the
 translator's note that got longer than the paper it was translating.
 
-Ben Eater. *Build an 8-Bit Computer.* <https://eater.net/8bit>. Everything
-this page only describes — machine code, binary, and an instruction set —
+Khan Academy. *The Binary Number System*.
+<https://www.khanacademy.org/computing/computers-and-internet/xcae6f4a7ff015e7d:digital-information/xcae6f4a7ff015e7d:binary-numbers/v/the-binary-number-system>.
+Slower, worked ground through binary, for anyone who wants a second example
+before trying the conversions.
+
+Eater, B. *Build an 8-Bit Computer*. <https://eater.net/8bit>. Everything
+this page only describes, machine code, binary and an instruction set,
 built by hand, one logic gate at a time, on video.

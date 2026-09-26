@@ -257,8 +257,8 @@ class="dl-hint dl-hint-staged">` fold carrying `data-cell` and a canonical
 `data-after` (`errors:5`, `same-errors:3 minutes:2`, …), and reads an
 optional `expect:` line into the manifest. `tutorial_tools.run_cell_report()`
 runs the cell like `run_cell()` and returns a JSON report — `ok`, the
-exception's type and first line, whether `check()` passed, whether `expect`
-holds — which `executeCell()` feeds into per-cell counters
+exception's type and first line, whether a SQL query came back empty,
+whether `expect` holds — which `executeCell()` feeds into per-cell counters
 (`noteAttempt()`), tests each fold's terms against (`triggerHolds()`), and
 reveals at most one fold per run (`maybeRevealHint()`).
 
@@ -273,6 +273,42 @@ fills the table and marks rows that differ, without a verdict. Before
 writing a page, `check_solutions()` runs its cells and every solution in a
 separate Python, through that same `compare()`, and stops the build if a
 solution raises.
+
+**The predict block** (#313) is drawn above its cell by `render_cell()`
+(`render_predict()`), since a guess comes before the run. The runtime
+compares the guess with the cell's printed output after each run, without a
+verdict, feeds two new staged-hint signals (`unsure`, `guess-differed`),
+and lists the reader's surprises in a `.dl-surprises` section the build
+appends to any page with a prediction.
+
+**Worlds** (#315) let a task come once per world. `build.py` finds each
+`<div class="dl-world">` variant in the source (`world_spans()`), holds its
+cells to ids ending in their world and its blocks to its cells' world,
+converts the markdown inside, and puts a chooser under the title
+(`place_worlds()`). The runtime's `applyWorld()` shows one variant of each
+task and remembers the choice per page (`dewlab:world:<id>`); running the
+cells above, the surprises, the progress count and the notebook export take
+only the cells on show (`visibleCells()`). `check_solutions()` runs a page
+once per world.
+
+**A closer's challenge** (#316) is starter code the reader takes away.
+`render_challenge()` shows it read-only, with a link to
+`compose/notebook.html` (Python) or `compose/workspace.html` (HTML, CSS and
+JS) carrying the starter in its address, `#challenge=` and a JSON object.
+The Notebook's `openChallengeFromAddress()` and the Workspace's
+`takeChallengeFromAddress()` open it as a new tab or site named after the
+page, never over one, and clear the address. A downloaded page has neither,
+so the runtime's `initChallenges()` swaps the link for a Save button.
+
+**Questions** (#314) are a predict block without a run. `render_question()`
+writes a ```` ```question ```` fence's options with the page's own answer
+marked (`data-answer`) and each option's note hidden beside them; nothing
+reaches the reader until they press **Show the page's answer**, when
+`revealAnswer()` marks the page's option, shows the note for theirs, and
+says when the two are the same. Its options and notes follow the predict
+block's rule (`options_and_notes()`). No string on a page says right or
+wrong: `check()` is gone from `tutorial_tools.py`, and with it the
+`failed checks` hint signal.
 
 Everything a cell can call beyond ordinary Python is defined once in
 `tutorial_tools.py` and listed in `__all__`; `docs/WRITING_TUTORIALS.md`'s

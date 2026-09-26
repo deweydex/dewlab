@@ -63,16 +63,20 @@ remainder after taking out whole weeks, is {1}.
 ```question
 id: doing-it-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A loop over `[False, True]` sits inside another loop over
 `[False, True]`. The inner loop prints one line each time round. How
 many lines are printed in all?
 
 - 2
+  - This counts the outer loop only.
 - 3
+  - This adds the loops, 2 + 1, rather than multiplying.
 - 4
+  - The inner loop runs twice for each of the outer loop's two turns: 2 × 2.
 - 8
+  - This is 2 × 2 × 2, as if there were three loops.
 ```
 
 ## A ball that bounces
@@ -193,15 +197,19 @@ Where each line sits matters too.
 ```question
 id: doing-it-running-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Someone moves `travelled = 100` inside the loop, just above the line
 that adds. What does the last line print now?
 
 - After five bounces: 638 cm
+  - This is the old total, when `travelled = 100` ran once, before the loop.
 - After five bounces: 166 cm
+  - Each time round, `travelled` starts again at 100, so only the last bounce is added: 100 + 2 × 33.
 - After five bounces: 100 cm
+  - The addition still runs after the reset each time round.
 - An error, because `travelled` is made twice
+  - Python lets a name be given a new value as often as you like.
 ```
 
 Each time round, the loop would set `travelled` back to 100, so at the
@@ -399,13 +407,16 @@ time round.
 ```question
 id: doing-it-pi-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 A running total starts at 0. What should a running product start at?
 
 - 0
+  - Anything times 0 is 0, so the product would stay 0.
 - 1
+  - 1 is the number that changes nothing when you multiply by it.
 - The first value in the list
+  - This works too, if the loop then starts from the second value.
 ```
 
 It starts at 1. Adding 0 changes nothing, so a total starts at 0.

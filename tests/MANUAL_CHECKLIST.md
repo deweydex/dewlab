@@ -64,7 +64,7 @@ machine that is not the one this was built on.
 - [ ] Safari and Firefox, not just Chrome.
 - [ ] Keyboard only, no mouse: can you reach every cell, run it, and open the
       texture panel?
-- [ ] A screen reader on the status bar and on a check() verdict.
+- [ ] A screen reader on the status bar and on a comparison table.
 
 ## Phase 1 — build script
 

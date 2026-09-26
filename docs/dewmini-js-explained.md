@@ -391,6 +391,13 @@ decided.
   interpreter); "Restart & run all" calls `restartPython()` first, a real
   `engine.restart()` that also clears Jedi's cache and the mounted
   filesystem handle. See DECISIONS_LOG.md 7.108.
+- **"How does a tutorial's challenge arrive?"** (#316) —
+  `openChallengeFromAddress()`, called at the end of `init()` and on
+  `hashchange`. It reads `#challenge=` and a JSON object from the address,
+  clears it, and opens the starter with `openNotebook()` as a new tab named
+  after the page, numbered if that name is taken, or returns with
+  `showNotebook()` to the tab an earlier visit made if it still holds the
+  starter unchanged.
 - **"How does an imported `.ipynb`'s source turn into a string?"** —
   `handleImportFile()`'s comment on why source can arrive as either a
   plain string or an array of lines, and `splitLines()` for the reverse

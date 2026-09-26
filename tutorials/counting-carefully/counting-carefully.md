@@ -170,13 +170,16 @@ $$C(52, 5) = \frac{52!}{5! \cdot 47!} = 2{,}598{,}960$$
 ```question
 id: permutation-or-combination
 type: multiple-choice
-correct: 2
+answer: 2
 
 Quick check: a raffle draws 3 winning numbers from a barrel, one at a time. Every winner gets the same prize, whatever order their number came out in. Which counts this situation correctly?
 
 - A permutation, because the numbers come out one at a time.
+  - Drawing one at a time is how it happens, but the prize does not depend on the order.
 - A combination, because the prize does not depend on the order the numbers came out in.
+  - Only which numbers win matters, not the order they came out in.
 - A count with repeats allowed, because a number could be drawn more than once.
+  - Once drawn, a number is out of the barrel, so it cannot come out again.
 ```
 
 ### Your turn

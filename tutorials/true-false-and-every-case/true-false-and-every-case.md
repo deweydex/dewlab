@@ -65,15 +65,19 @@ outside that range, so `between(36, 0, 35)` gives {False|True}.
 ```question
 id: true-false-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 One byte is 8 bits, and holds 256 different values. How many different
 values can 3 bits hold?
 
 - 3
+  - 3 is the number of bits, not the number of values they can hold.
 - 6
+  - This adds 2 for each bit; each bit doubles the count instead.
 - 8
+  - Each bit doubles the count: 2 × 2 × 2.
 - 9
+  - This is 3 × 3, as if each bit had three settings.
 ```
 
 ## True and false are values
@@ -243,14 +247,17 @@ on the bits of numbers, and see how it catches a mistake in a message.
 ```question
 id: true-false-xor-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 You flip the bottom switch, and then the top switch. The light started
 off. What is it now?
 
 - On, because two flips add up
+  - Each flip changes the light, so two flips change it twice.
 - Off, because the second flip undoes the first
+  - Each flip changes the light: off to on, then on to off.
 - It depends on which switch was flipped first
+  - Either switch changes the light when it is flipped, so the order makes no difference.
 ```
 
 ## How many rows?

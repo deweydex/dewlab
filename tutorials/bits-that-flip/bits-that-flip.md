@@ -48,15 +48,19 @@ On this page we:
 ```question
 id: bits-warm-up-1
 type: multiple-choice
-correct: 1
+answer: 1
 
 From [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros):
 what does `to_binary(6)` give?
 
 - `"110"`
+  - 6 is 4 + 2: a 1 for the fours, a 1 for the twos, and a 0 for the ones.
 - `"0110"`
+  - The same value with a leading zero; `to_binary` does not add one.
 - `"011"`
+  - These are the same digits written backwards, ones place first.
 - `"6"`
+  - This is the number in decimal, not in binary.
 ```
 
 ```question

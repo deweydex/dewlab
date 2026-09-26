@@ -34,7 +34,7 @@ the answer was yes. So each step brings 0, 1 or 2 new arrivals.
 The function below does this with a short form we have not used much
 yet. `sum(1 for _ in range(2) if random.random() < arrival_prob)` works
 like a list comprehension from
-[Lists: keeping many values in order](tutorial:lists-and-sequences). It
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids). It
 makes a 1 for each of the two checks that comes up yes, and `sum` adds
 up the 1s.
 

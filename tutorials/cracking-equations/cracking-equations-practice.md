@@ -230,7 +230,7 @@ twice, and the third misses it. One number tells the three cases apart.
 </details>
 
 **12.** Can you write `verify_roots(a, b, c, roots)`? It should
-substitute each root back and report PASS or FAIL.
+substitute each root back and show what each one gives.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -239,14 +239,15 @@ def verify_roots(a, b, c, roots, tolerance=1e-9):
     """Check each root by substitution."""
     for r in roots:
         value = a * r * r + b * r + c
-        verdict = "PASS" if abs(value) < tolerance else "FAIL"
-        print(f"  x = {r:<20} gives {value:<25} {verdict}")
+        near = "zero, within the tolerance" if abs(value) < tolerance else "not zero"
+        print(f"  x = {r:<20} gives {value:<25} {near}")
 ```
 
 You need the tolerance. Many quadratics come out exactly: $x^2 - 4x + 3$
 gives 3.0 and 1.0, and both substitute to exactly zero. But
 $3x^2 - 7x + 2$ gives a root of 0.3333333333333333, which substitutes to
-`2.2e-16`. An exact test for zero would mark that correct answer wrong.
+`2.2e-16`. An exact test for zero would say that 0.3333333333333333 is
+not a root, when it is one, give or take rounding.
 
 The interesting case is $x^2 - 200000x + 1$, from the next problem. Its
 small root substitutes to about `1.1e-6`. That is far too large to be

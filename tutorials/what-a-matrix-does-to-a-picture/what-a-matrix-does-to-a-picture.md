@@ -1,7 +1,7 @@
 ---
 title: "Matrix transformations: what a matrix does to a picture"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
 covers:
   where-do-the-corners-go:
     covers: [CMPS-LO4]
@@ -218,9 +218,21 @@ hint: (1, 0) is on the unmoved bottom edge — where does the picture say it goe
 your_guess = [[1, 0], [0, 1]]
 ```
 
+```inputs
+multiply(your_guess, square)
+```
+
+```solution
+your_guess = [[1, 0.5], [0, 1]]
+---
+A shear: each point moves right by half its height, so the top of the
+square slides over and the bottom stays where it was.
+```
+
 ```python exec
 id: guess-the-matrix-3
-check(multiply(your_guess, square), mystery)
+print(multiply(your_guess, square))
+print(mystery)
 ```
 
 ## Reflection

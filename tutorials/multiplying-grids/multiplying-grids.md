@@ -1,7 +1,7 @@
 ---
 title: "Matrix multiplication: rows times columns"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
 covers:
   the-dot-product-first:
     touches: [CMPS-LO4]
@@ -50,7 +50,7 @@ with $5$, and $3$ with $6$. Each pair is printed in round brackets.
 The *dot product* of `a` and `b` is the number we get when we multiply
 each pair and then add up the results: $1(4) + 2(5) + 3(6)$. You met
 the dot product in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
 ### Your turn
 
@@ -223,7 +223,9 @@ hint: Ones down the main diagonal, zeros everywhere else.
 
 ```python exec
 id: the-matrix-that-does-nothing-2
-check(multiply(C, I3), C)
+print(multiply(C, I3))
+print(multiply(I3, C))
+print(C)
 ```
 
 This matrix is called the *identity matrix*. The identity matrix is a

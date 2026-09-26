@@ -75,15 +75,19 @@ To undo it, we first {add 50|divide by 100|subtract 50}.
 ```question
 id: solving-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 The list `[6, 5, 1]` stands for $6 + 5x + x^2$, lowest power first.
 What does `evaluate([6, 5, 1], 2)` give?
 
 - 13
+  - This counts x only once; the 1 belongs to x², so it gives 1 × 2 × 2.
 - 16
+  - 6 + 5 × 2 leaves out the x² part: 1 × 2² adds 4 more.
 - 20
+  - 6 + 5 × 2 + 1 × 2²: 6 + 10 + 4.
 - 32
+  - The three parts are 6, 5 × 2 and 1 × 2²; this total is more than all three together.
 ```
 
 ## When are two servers equally fast?

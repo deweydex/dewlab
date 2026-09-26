@@ -4,431 +4,769 @@ practice_across:
   - first-steps
   - storing-and-computing
   - making-decisions
+  - reading-an-error-message
   - repeating-yourself
+  - writing-your-own-functions
   - lists-and-sequences
+  - comprehensions-and-grids
+  - looking-things-up-by-name
   - finding-things
   - putting-things-in-order
   - building-reusable-tools
+  - when-it-goes-wrong
+  - how-we-got-here
 year: "2026-2027"
-version: 2026.08.23.1
+version: 2026.09.26.1
 ---
 
 # Mixed problems: programming
 
-Every problem here needs more than one tutorial. None of them says which, and that is the point: knowing that a problem wants a loop with a condition inside it, or a sort followed by a search, is a different skill from being able to write either.
+Every problem here needs more than one page of the series, and none of
+them says which. That is the point: seeing that a problem wants a loop
+with a decision inside it, or a count followed by a sort, is a different
+skill from being able to write either.
 
-Answers are hidden, and most have more than one good one. Where a problem has a decision in it, the answer says what was decided and why rather than pretending there was only one route.
+Most problems have more than one good answer. Where a problem hides a
+decision, the solution says what it decided and why, rather than
+pretending there was only one route. Try each problem before you open
+anything under it.
 
-## Tools
+## 1. Even, odd and zero
+
+Can you write `parity_counts(numbers)`, which gives back a list of three
+counts: how many are even, how many odd, and how many are zero?
 
 ```python exec
-id: tools-1
-def show(label, value):
-    print(f"{label:<28}{value}")
-
-
-show("this is a scratchpad", "change anything here")
-```
-
-## Warm-Up
-
-**1.** Write a function that takes a list of numbers and returns how many are even, how many odd, and how many zero.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+id: even-odd-and-zero-1
 def parity_counts(numbers):
-    """(even, odd, zero) counts. Zero is counted as even, and again as zero."""
-    even = sum(1 for n in numbers if n % 2 == 0)
-    odd = len(numbers) - even
-    zero = numbers.count(0)
-    return even, odd, zero
+    return [0, 0, 0]
 ```
 
-The decision hiding in the question: is zero even, or is it its own category? Mathematically it is even, because it divides by two with nothing left over. That leaves two fair answers, and each one costs something.
+```inputs
+guess: yes
+parity_counts([1, 2, 3, 4])
+parity_counts([0, 0, 5])
+parity_counts([])
+```
 
-- Count zero as even, and count it again as zero, as the code above does. Then "even" means even. But the three numbers add up to more than the length of the list whenever the list holds a zero.
-- Count zero only as zero, and leave it out of the even count. Then the three numbers add up to the length of the list. But "even" now means "even and not zero".
+```solution
+def parity_counts(numbers):
+    """Give back [even, odd, zero]. Zero counts as even, and again as zero."""
+    even = 0
+    zero = 0
+    for number in numbers:
+        if number % 2 == 0:
+            even = even + 1
+        if number == 0:
+            zero = zero + 1
+    return [even, len(numbers) - even, zero]
+---
+The question hides a decision: is zero even, or a category of its own? It
+is even, since it divides by 2 with nothing left over. Counting it twice,
+as here, keeps "even" meaning even, and makes the three counts add up to
+more than the length. Counting it only as zero does the opposite. Either
+is fair, once the docstring says which.
+```
 
-A question that does not say what to do about zero is a question you have to answer yourself and write down.
+## 2. Above the average
 
-</details>
+Can you write `above_average(marks)`, which gives back the marks above the
+average, and an empty list for no marks?
 
-**2.** Given a list of exam marks, return the marks that are above the average.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: above-the-average-1
 def above_average(marks):
-    if not marks:
+    return []
+```
+
+```inputs
+guess: yes
+above_average([4, 8, 15, 16, 23, 42])
+above_average([5, 5, 5])
+above_average([])
+```
+
+```solution
+def above_average(marks):
+    """Give back the marks above the average. No marks gives []."""
+    if len(marks) == 0:
         return []
     average = sum(marks) / len(marks)
-    return [m for m in marks if m > average]
+    return [mark for mark in marks if mark > average]
+---
+Two passes, unavoidably: the average needs every mark before any can be
+compared with it. An empty list gives `[]` rather than an error, because
+"which marks are above average" has an answer for no marks, even though
+"what is the average" does not.
 ```
 
-Two passes, unavoidably: you cannot know the average until you have seen everything.
+## 3. The second largest
 
-The empty case returns an empty list rather than raising, because "which marks are above average" has a sensible answer for no marks and "what is the average" does not.
+Can you write `second_largest(numbers)`? Decide first what `[5, 5, 3]`
+should give: 5 or 3.
 
-</details>
-
-**3.** Write a function that returns the second-largest number in a list.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. What should `[5, 5, 3]` give — 5 or 3? The question does not say, so decide before writing anything.
-2. Getting the distinct values first makes that decision visible in the code rather than hidden in it.
-3. Sorting descending puts the answer at index 1.
-4. A list of one distinct value has no second largest. What comes back then?
-
-**Think about:** why this problem is really two problems, and which one the specification forgot to answer.
-
-**Try this next:** write `second_smallest`. Can you write one function that does both, taking a direction?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: the-second-largest-1
 def second_largest(numbers):
-    """The second-largest distinct value, or None if there is not one."""
-    distinct = sorted(set(numbers), reverse=True)
-    return distinct[1] if len(distinct) > 1 else None
+    return None
 ```
 
-`[5, 5, 3]` is the case worth deciding about. With `set`, the answer is 3; without it, 5. Both are reasonable readings of "second largest" and they disagree, so the docstring has to say which.
+```inputs
+guess: yes
+second_largest([3, 9, 4])
+second_largest([5, 5, 3])
+second_largest([7])
+```
 
-Sorting is n log n where a single pass tracking the top two is n. For a list you can see the end of, the sort is the better code.
+```hint
+Build a list of the different values first, with each one once. Then sort
+it, largest first. What should come back when there is only one value?
+```
 
-</details>
+```solution
+title: with what you've met so far
+def second_largest(numbers):
+    """The second-largest different value, or None if there is none."""
+    different = []
+    for number in numbers:
+        if number not in different:
+            different.append(number)
+    different = sorted(different, reverse=True)
+    if len(different) < 2:
+        return None
+    return different[1]
+---
+This reads "second largest" as the second-largest *different* value, so
+`[5, 5, 3]` gives 3. Reading it the other way gives 5. Both are fair, and
+they disagree, so the docstring has to say which.
+```
 
-## Loops and Decisions Together
+```solution
+title: a shorter way you'll meet later
+def second_largest(numbers):
+    """The second-largest different value, or None if there is none."""
+    different = sorted(set(numbers), reverse=True)
+    if len(different) < 2:
+        return None
+    return different[1]
+---
+`set()` keeps one of each value, with no order, which is why it is sorted
+after.
+```
 
-**4.** FizzBuzz: print the numbers 1 to 100, but `Fizz` for multiples of 3, `Buzz` for multiples of 5, and `FizzBuzz` for both.
+## 4. FizzBuzz
 
-<details class="dl-answer"><summary>answer</summary>
+Can you write `fizzbuzz(n)`, which gives back `"Fizz"` for a multiple of 3,
+`"Buzz"` for a multiple of 5, `"FizzBuzz"` for a multiple of both, and the
+number as a string otherwise?
 
-```python
-for n in range(1, 101):
+```python exec
+id: fizzbuzz-1
+def fizzbuzz(n):
+    return str(n)
+```
+
+```inputs
+guess: yes
+fizzbuzz(3)
+fizzbuzz(5)
+fizzbuzz(15)
+fizzbuzz(7)
+```
+
+```solution
+def fizzbuzz(n):
     if n % 15 == 0:
-        print("FizzBuzz")
+        return "FizzBuzz"
     elif n % 3 == 0:
-        print("Fizz")
+        return "Fizz"
     elif n % 5 == 0:
-        print("Buzz")
-    else:
-        print(n)
+        return "Buzz"
+    return str(n)
+---
+The order is the whole problem. Test for 15 last, and 15 is caught first
+by `n % 3 == 0`, and gives `Fizz`.
 ```
 
-The order is the whole problem. Test for 15 first, or a multiple of fifteen matches `n % 3` and prints `Fizz`.
+## 5. Threes and fives
 
-An alternative that avoids the ordering trap entirely:
+How many whole numbers below 1,000 can be divided by 3 or by 5? Can you
+set `count` and `total`?
 
-```python
-word = ("Fizz" if n % 3 == 0 else "") + ("Buzz" if n % 5 == 0 else "")
-print(word or n)
+```python exec
+id: threes-and-fives-1
+count = 0
+total = 0
+
+print(count, total)
 ```
 
-`word or n` uses the fact that an empty string is falsy. Neat, and slightly harder to read — which is a real trade rather than a clear win.
-
-</details>
-
-**5.** Count how many numbers below 1,000 are divisible by 3 or 5, and add them up.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Build the list of numbers below 1000 divisible by 3 or by 5, and count it.
-2. Now do it without a loop. The multiples of 3 are 3, 6, 9 … — that is 3 times the whole numbers up to 333, and you know the sum of 1 to n.
-3. Do the same for the multiples of 5.
-4. Adding those two totals counts some numbers twice. Which ones, and what do you do about them?
-
-**Think about:** the numbers counted twice are exactly the multiples of 15. Where have you seen "add both, subtract the overlap" before?
-
-**Try this next:** the same question with a limit of a billion. The loop takes a while; the formula does not.
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-466 numbers, adding to 233,168.
-
-```python
-hits = [n for n in range(1, 1000) if n % 3 == 0 or n % 5 == 0]
-print(len(hits), sum(hits))
+```inputs
+count
+total
 ```
 
-Worth doing a second way, without a loop: the multiples of 3 sum to $3 \times \frac{333 \times 334}{2}$, the multiples of 5 to $5 \times \frac{199 \times 200}{2}$, and the multiples of 15 have been counted twice and come off once. That gives 233,168 as well, in no time at all for any limit you like.
+```solution
+count = 0
+total = 0
+for number in range(1, 1000):
+    if number % 3 == 0 or number % 5 == 0:
+        count = count + 1
+        total = total + number
+print(count, total)
+---
+466 numbers, adding up to 233,168. There is a way with no loop: the
+multiples of 3 add up to 3 × (1 + 2 + … + 333), the multiples of 5 to
+5 × (1 + … + 199), and the multiples of 15 have been counted twice, so
+they come off once. Add both, take away the overlap: the same idea as the
+union of two sets.
+```
 
-Inclusion–exclusion turning up in a programming exercise is the same idea as the union of two sets, not a coincidence.
+## 6. Two discounts
 
-</details>
+A shop takes 10% off orders over €50, and a further €5 off with a loyalty
+card. Can you write `to_pay(total, loyalty)`?
 
-**6.** A shop gives 10% off orders over €50, and a further €5 off if the customer has a loyalty card. Write a function returning the price to pay.
+```python exec
+id: two-discounts-1
+def to_pay(total, loyalty):
+    return total
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+guess: yes
+to_pay(60, False)
+to_pay(60, True)
+to_pay(50, True)
+to_pay(3, True)
+```
 
-```python
-def to_pay(total, loyalty=False):
-    """The price after the over-fifty discount and the loyalty deduction."""
+```solution
+def to_pay(total, loyalty):
+    """The price after 10% off over €50, then €5 off with a loyalty card.
+
+    Exactly €50 is not over €50. The price never goes below 0.
+    """
     if total > 50:
         total = total * 0.9
     if loyalty:
         total = max(0, total - 5)
     return round(total, 2)
+---
+Three decisions the question did not make. Is €50 "over 50"? Taken as no.
+Does the €5 come off before or after the 10%? After, which costs the
+customer more. Can the price go below zero? No. Real specifications are
+like this, and a docstring is what turns a guess into a decision somebody
+can correct.
 ```
 
-Three decisions the question did not make. Is €50 exactly "over 50"? Taken as no. Does the loyalty fiver come off before or after the percentage? Taken as after, which is worse for the customer. Can the total go below zero? Guarded, because a shop that pays you is not what anybody meant.
+## 7. The longest word, however it is written
 
-Real specifications are like this. Writing the assumptions in the docstring is what turns a guess into a decision somebody can correct.
+Can you write `longest_word(sentence)`, which gives back the longest word
+in capitals, with any punctuation left off?
 
-</details>
-
-**7.** Write a function that takes a sentence and returns the longest word, ignoring punctuation and case.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: the-longest-word-however-it-is-written-1
 def longest_word(sentence):
-    """The longest word, ties going to the first. None for no words."""
-    cleaned = [w.strip(".,!?;:'\"()").lower() for w in sentence.split()]
-    words = [w for w in cleaned if w]
-    if not words:
-        return None
-    longest = words[0]
-    for word in words:
-        if len(word) > len(longest):
-            longest = word
-    return longest
+    return ""
 ```
 
-Three tutorials in one function: a loop, a decision inside it, and a list built by filtering. The `if w` at the end of the comprehension drops anything that was entirely punctuation, which `split` will hand you from a sentence containing " — ".
+```inputs
+guess: yes
+longest_word("Meet me, at the bridge!")
+longest_word("a bb cc")
+longest_word("... !!")
+```
 
-</details>
+```hint
+`.upper()` puts the sentence in capitals, and `.split()` cuts it into
+words. In a word in capitals, `character.isupper()` is `True` for the
+letters, and `False` for punctuation.
+```
 
-## Search and Sort
+```solution
+def longest_word(sentence):
+    """The longest word, in capitals, without punctuation. Ties go to the first."""
+    best = ""
+    for word in sentence.upper().split():
+        letters = ""
+        for character in word:
+            if character.isupper():
+                letters = letters + character
+        if len(letters) > len(best):
+            best = letters
+    return best
+---
+BRIDGE. A loop, a decision inside it, a string built up, and a best so
+far: four pages in one function. A "word" that is only punctuation cleans
+to nothing, so it never wins.
+```
 
-**8.** Given a sorted list of a million numbers and 10,000 numbers to look up, how would you do it, and how much faster is that than the obvious way?
+## 8. The three commonest words
+
+Can you set `top` to the three most common words in this sentence, most
+common first?
+
+```python exec
+id: the-three-commonest-words-1
+sentence = "the cat sat on the mat and the dog sat on the cat"
+top = []
+
+print(top)
+```
+
+```inputs
+top
+```
+
+```hint
+Count the words into a dictionary. Then sort its keys with a `key=`
+function that gives each word's count, largest first, and take a slice.
+```
+
+```solution
+sentence = "the cat sat on the mat and the dog sat on the cat"
+counts = {}
+for word in sentence.split():
+    counts[word] = counts.get(word, 0) + 1
+
+def how_often(word):
+    return counts[word]
+
+top = sorted(counts, key=how_often, reverse=True)[:3]
+print(top)
+---
+`['the', 'cat', 'sat']`. cat, sat and on are all used twice. The sort is
+stable, so they stay in the order they were first counted, and on misses
+out. A different tie rule would give a different third word.
+```
+
+## 9. Anagrams
+
+Two words are *anagrams* if they use the same letters, as LISTEN and SILENT
+do. Can you write `same_letters(a, b)`?
+
+```python exec
+id: anagrams-1
+def same_letters(a, b):
+    return False
+```
+
+```inputs
+guess: yes
+same_letters("LISTEN", "SILENT")
+same_letters("LOOP", "POLO")
+same_letters("LOOP", "PLOP")
+```
+
+```solution
+title: with what you've met so far
+def count_letters(word):
+    counts = {}
+    for letter in word:
+        counts[letter] = counts.get(letter, 0) + 1
+    return counts
+
+def same_letters(a, b):
+    return count_letters(a) == count_letters(b)
+---
+Two dictionaries are equal when they have the same keys with the same
+values, whatever order the pairs were added in.
+```
+
+```solution
+title: another way
+def same_letters(a, b):
+    return sorted(a) == sorted(b)
+---
+Sorting both puts the same letters in the same order, if they are the same
+letters.
+```
+
+## 10. Ten thousand lookups
+
+You have a sorted list of a million numbers, and 10,000 numbers to look up
+in it. How would you do it, and how much faster is that than the obvious
+way?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Binary search each one: 10,000 × 20 = 200,000 comparisons.
-
-Linear search each one: 10,000 × 500,000 on average = five billion. Twenty-five thousand times slower.
-
-If the list were *not* already sorted, sorting it first costs about 20 million comparisons — still repaid many times over by 10,000 lookups. The break-even is around 40 lookups.
-
-</details>
-
-**9.** Write a function that finds the two numbers in a list adding to a given target.
-
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
-
-1. Write the obvious version first: check every pair. Count how many pairs that is for a list of n.
-2. Now think about what you are asking for each number. For 7 and a target of 10, you want to know whether 3 is present.
-3. You have already seen every number before it. What if you kept them?
-4. Testing membership of a `set` takes the same time whether it holds ten numbers or ten million.
-
-**Think about:** the second version does not compute anything faster. It changes the question from a search into a lookup.
-
-**Try this next:** find three numbers that add to a target. Can the same trick apply, and what does it cost now?
+Binary search each one: about 10,000 × 20 = 200,000 comparisons. Linear
+search each one: about 10,000 × 500,000 = five billion, twenty-five
+thousand times slower. If the list were not sorted, sorting it first would
+cost about twenty million comparisons, and 10,000 lookups would still
+repay it many times over.
 
 </details>
 
-<details class="dl-answer"><summary>answer</summary>
+## 11. A pair that adds up
 
-The obvious way checks every pair, which is n²:
+Can you write `pair_summing_to(numbers, target)`, which gives back two
+numbers from the list that add up to `target`, or `None`?
 
-```python
+```python exec
+id: a-pair-that-adds-up-1
+def pair_summing_to(numbers, target):
+    return None
+```
+
+```inputs
+guess: yes
+pair_summing_to([2, 7, 11, 15], 9)
+pair_summing_to([3, 5, 8], 100)
+pair_summing_to([], 5)
+```
+
+```solution
+title: with what you've met so far
 def pair_summing_to(numbers, target):
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
             if numbers[i] + numbers[j] == target:
-                return numbers[i], numbers[j]
+                return [numbers[i], numbers[j]]
     return None
+---
+Every pair, one loop inside another: for n numbers, about n²/2 pairs.
 ```
 
-The good way remembers what it has seen, and is n:
-
-```python
+```solution
+title: a faster way
 def pair_summing_to(numbers, target):
-    seen = set()
-    for n in numbers:
-        if target - n in seen:
-            return target - n, n
-        seen.add(n)
+    seen = {}
+    for number in numbers:
+        if target - number in seen:
+            return [target - number, number]
+        seen[number] = True
     return None
+---
+One pass. For each number, it asks whether the number that would complete
+it has been seen already, which is a dictionary lookup, not a search. The
+arithmetic is the same: the question changed.
 ```
 
-The second is the same question asked differently, not cleverer arithmetic. Instead of "do any two of these add up", it asks "have I already seen the number that would complete this one", which is a lookup rather than a search.
+## 12. By surname
 
-</details>
+Can you set `by_surname` to these names sorted by the last word of each?
 
-**10.** Sort a list of names by surname, given full names as `"Ada Lovelace"`.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: by-surname-1
 names = ["Ada Lovelace", "Alan Turing", "Grace Hopper", "Karen Sparck Jones"]
-print(sorted(names, key=lambda name: name.split()[-1]))
+by_surname = []
+
+print(by_surname)
 ```
 
-`['Grace Hopper', 'Karen Sparck Jones', 'Ada Lovelace', 'Alan Turing']`.
+```inputs
+by_surname
+```
 
-Taking the last word is a guess about names, and it is wrong for double-barrelled surnames, for names written family-name-first, and for anybody with one name. It works for this list. Whether that is good enough depends on whose list it is, and "surname" is not a property every name in the world has.
+```solution
+names = ["Ada Lovelace", "Alan Turing", "Grace Hopper", "Karen Sparck Jones"]
 
-</details>
+def surname(name):
+    return name.split()[-1]
 
-**11.** Merge two sorted lists into one sorted list, without sorting the result.
+by_surname = sorted(names, key=surname)
+print(by_surname)
+---
+Hopper, Jones, Lovelace, Turing. Taking the last word is a guess about
+names: it is wrong for Sparck Jones, whose surname is two words, for names
+written family name first, and for anybody with one name. It works for
+most of this list. "Surname" is not something every name in the world has.
+```
 
-<details class="dl-answer"><summary>answer</summary>
+## 13. Merging two sorted lists
 
-```python
+Can you write `merge(a, b)`, which gives back one sorted list from two
+sorted lists, without sorting the result?
+
+```python exec
+id: merging-two-sorted-lists-1
 def merge(a, b):
-    result, i, j = [], 0, 0
+    return []
+```
+
+```inputs
+guess: yes
+merge([1, 4, 9], [2, 3, 10])
+merge([], [5])
+merge([2, 2], [2])
+```
+
+```hint
+Keep an index into each list. Each time round, take the smaller of the two
+front elements, and move that list's index on. When one list runs out,
+the rest of the other goes on the end.
+```
+
+```solution
+def merge(a, b):
+    result = []
+    i = 0
+    j = 0
     while i < len(a) and j < len(b):
         if a[i] <= b[j]:
-            result.append(a[i]); i += 1
+            result.append(a[i])
+            i = i + 1
         else:
-            result.append(b[j]); j += 1
+            result.append(b[j])
+            j = j + 1
     return result + a[i:] + b[j:]
+---
+This is the heart of *merge sort*: split a list until every piece has one
+element, then merge the pieces back up, which takes about n log n steps
+instead of n². `<=`, not `<`, keeps it stable: equal elements keep the
+order they came in.
 ```
 
-This merge walk is the heart of merge sort, which [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order) mentions as one of the faster sorts: split the list until every piece has one item, then merge back up. That is how you get n log n instead of n².
+## 14. Where the None came from
 
-`<=` rather than `<` keeps it stable: equal items keep the order they came in.
+This program stops. Which line failed, and which line is responsible?
 
-</details>
+```python exec
+id: where-the-none-came-from-1
+def average(values):
+    print(sum(values) / len(values))
 
-## Putting Several Together
 
-**12.** Write a program that reads a list of daily temperatures and reports: the warmest and coldest days, the average, how many days were above average, and the longest run of consecutive days above average.
+def report(name, values):
+    return name + ": " + str(round(average(values), 1))
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Take the four easy parts first — warmest, coldest, average, and how many are above it.
-2. For the longest run, imagine walking the list with two numbers in your head: how long the current streak is, and the best you have seen.
-3. What happens to the current streak when a day is above average? When it is not?
-4. When do you compare the current streak against the best?
-
-**Think about:** why the "best so far" has to be updated inside the loop rather than after it.
-
-**Try this next:** report *when* the longest run started, not just how long it was. What extra do you have to remember?
-
-</details>
+print(report("row 1", [30, 90, 250]))
+```
 
 <details class="dl-answer"><summary>answer</summary>
 
-```python
-def report(temperatures):
-    """A summary of a list of daily readings."""
-    if not temperatures:
-        return "no readings"
-    average = sum(temperatures) / len(temperatures)
-
-    longest = run = 0
-    for t in temperatures:
-        run = run + 1 if t > average else 0
-        longest = max(longest, run)
-
-    return {
-        "warmest day": temperatures.index(max(temperatures)) + 1,
-        "coldest day": temperatures.index(min(temperatures)) + 1,
-        "average": round(average, 2),
-        "days above": sum(1 for t in temperatures if t > average),
-        "longest run above": longest,
-    }
-```
-
-The run counter is the only part that is not a one-liner, and it is the pattern worth taking away: keep a current run and a best-so-far, reset the current one whenever the streak breaks. The same three lines find the longest run of anything.
+It prints 123.33… and then stops with a `TypeError`, in `report`: `round`
+cannot round `None`. The line responsible is the `print` inside
+`average`, which should be a `return`. `average` shows its answer and then
+gives back `None`, so the number never reaches `report`.
 
 </details>
 
-**13.** Write a number-guessing game where the *computer* guesses your number between 1 and 100, and report how many guesses it needs.
+## 15. A list that will not empty
 
-<details class="dl-answer"><summary>answer</summary>
+```python exec
+id: a-list-that-will-not-empty-1
+def start_again(items):
+    items = []
 
-```python
-def guess(secret):
-    """How many halvings it takes to find a number from 1 to 100."""
-    low, high, tries = 1, 100, 0
-    while low <= high:
-        tries += 1
-        middle = (low + high) // 2
-        if middle == secret:
-            return tries
-        if middle < secret:
-            low = middle + 1
+row = [1, 2, 3]
+start_again(row)
+print(row)
+```
+
+```predict
+What will it print?
+
+- []
+  - The function emptied the list.
+- [1, 2, 3]
+  - `items = []` gave the name `items` a new list, inside the function.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`[1, 2, 3]`. `items = []` gives the local name a new, empty list, and
+leaves the caller's list alone. Changing a list in place, as `append()`
+does, would have been seen by the caller. Giving a name a new value never
+is. Two pages, scope and two names for one list, meet in two lines.
+
+</details>
+
+## 16. Any base
+
+Can you write `to_base(n, base)`, which writes a whole number in any base
+from 2 to 16, with the digits `0123456789ABCDEF`?
+
+```python exec
+id: any-base-1
+def to_base(n, base):
+    digits = "0123456789ABCDEF"
+    return ""
+```
+
+```inputs
+guess: yes
+to_base(42, 2)
+to_base(255, 16)
+to_base(42, 8)
+to_base(0, 2)
+```
+
+```hint
+It is `to_binary` with `base` in place of 2. `n % base` is the last digit,
+and `digits[n % base]` writes it.
+```
+
+```solution
+def to_base(n, base):
+    digits = "0123456789ABCDEF"
+    if n == 0:
+        return "0"
+    text = ""
+    while n > 0:
+        text = digits[n % base] + text
+        n = n // base
+    return text
+---
+`101010`, `FF` and `52`. One function covers binary, hex and every base
+between: the base is a parameter, not a new program.
+```
+
+## 17. A week of steps
+
+Can you write `report(steps)`, which gives back a dictionary with the day
+of the most steps and of the fewest, counting from day 1, how many days
+were above the average, and the longest run of days above it in a row?
+
+```python exec
+id: a-week-of-steps-1
+def report(steps):
+    return {}
+
+week = [4200, 8100, 9000, 3000, 7600, 8800, 9100, 2000]
+print(report(week))
+```
+
+```inputs
+guess: yes
+report(week)
+report([5000])
+```
+
+```hint
+The run needs two numbers as the loop goes: the current run, and the best
+so far. When a day is above the average, the current run grows. When it is
+not, it goes back to 0. Compare it with the best every time round.
+```
+
+```solution
+def report(steps):
+    average = sum(steps) / len(steps)
+    run = 0
+    longest = 0
+    above = 0
+    for day in steps:
+        if day > average:
+            run = run + 1
+            above = above + 1
         else:
-            high = middle - 1
-    return None
+            run = 0
+        longest = max(longest, run)
+    return {
+        "most": steps.index(max(steps)) + 1,
+        "fewest": steps.index(min(steps)) + 1,
+        "above average": above,
+        "longest run": longest,
+    }
 
-
-print(max(guess(n) for n in range(1, 101)))
+week = [4200, 8100, 9000, 3000, 7600, 8800, 9100, 2000]
+print(report(week))
+---
+Day 7 has the most and day 8 the fewest; five days are above the average
+of 6,475; the longest run is three. The current run and the best so far is
+the pattern worth taking away: the same lines find the longest run of
+anything.
 ```
 
-Seven, at worst. Binary search is the strategy, applied to a number nobody wrote down. Run it over all hundred numbers and the average comes out at about 5.8.
+## 18. Sorted, and the same things
 
-</details>
+Can you write `is_sorted(items)`, and `same_items(a, b)`, which says
+whether two lists hold the same elements in any order?
 
-**14.** Write a function that checks whether a list is sorted, and one that checks whether it is a permutation of another list.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```python exec
+id: sorted-and-the-same-things-1
 def is_sorted(items):
-    return all(items[i] <= items[i + 1] for i in range(len(items) - 1))
+    return False
 
+def same_items(a, b):
+    return False
+```
+
+```inputs
+guess: yes
+is_sorted([1, 2, 2, 5])
+is_sorted([3, 1])
+is_sorted([])
+same_items([3, 1, 2], [1, 2, 3])
+same_items([1, 1], [1])
+```
+
+```solution
+title: with what you've met so far
+def is_sorted(items):
+    for i in range(len(items) - 1):
+        if items[i] > items[i + 1]:
+            return False
+    return True
 
 def same_items(a, b):
     return sorted(a) == sorted(b)
+---
+These two together are how to test a sort. Its answer must be sorted *and*
+hold what went in. `is_sorted` alone accepts a sort that gives back `[]`
+every time, and `same_items` alone accepts one that does nothing.
 ```
 
-These two together are how you test a sorting function properly. The output must be sorted *and* contain exactly what went in — checking only the first accepts a function that returns `[]` every time, and checking only the second accepts one that does nothing at all.
+```solution
+title: a shorter way you'll meet later
+def is_sorted(items):
+    return all(items[i] <= items[i + 1] for i in range(len(items) - 1))
 
-Two obvious properties, and neither alone is worth anything.
+def same_items(a, b):
+    return sorted(a) == sorted(b)
+---
+`all()` is `True` when every value it is given is true.
+```
 
-</details>
+## 19. The missing number
 
-**15.** A list contains every number from 1 to n except one. Find the missing number, using as little work as possible.
+A list holds every whole number from 1 to `n` except one. Can you write
+`missing(numbers, n)`, doing as little work as you can?
 
-<details class="dl-hint"><summary>stuck? here are some steps</summary>
+```python exec
+id: the-missing-number-1
+def missing(numbers, n):
+    return 0
+```
 
-1. Three approaches are all correct here: sort and look for the gap, build a set and test each candidate, or use arithmetic. Try to think of all three before reading on.
-2. You know something about the list that you have not used yet — what its contents *should* have been.
-3. The sum of 1 to n has a formula, n(n + 1)/2. It is the trick behind the Gauss story in [Repeating steps with loops](tutorial:repeating-yourself).
-4. What is the difference between the sum it should be and the sum it is?
+```inputs
+guess: yes
+missing([1, 2, 4, 5], 5)
+missing([2, 3], 3)
+missing([], 1)
+```
 
-**Think about:** the arithmetic version uses knowledge about the data, and the other two only use what they can see in it. That is usually where the good answer lives.
+```hint
+You know what the list *should* add up to: 1 + 2 + … + n is n(n + 1)/2,
+from [Repeating steps with loops](tutorial:repeating-yourself). What is
+the difference between that and what it does add up to?
+```
 
-**Try this next:** now two numbers are missing. The sum tells you what they add to. What second fact would pin them down?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
+```solution
 def missing(numbers, n):
     return n * (n + 1) // 2 - sum(numbers)
+---
+One pass, no sorting. Sorting and looking for the gap works too, and so
+does checking each number from 1 to n. The sum uses something you *know*
+about the data, not only what you can see in it, and that is usually where
+the good answer is.
 ```
 
-One pass, no sorting, no extra memory. The sum of 1 to n is known, so the gap between that and the actual total is the missing number.
+## 20. Somebody else's function
 
-Sorting and looking for the break also works, at n log n. Building a set of what is present and testing each candidate also works, at n and a copy of the list. The arithmetic version is the one that uses something you *know* about the data rather than only what you can see in it — which is usually where the good answer is.
-
-</details>
-
-**16.** You are handed somebody else's function. It works. What would you check before using it in your own code?
+You are handed somebody else's function. It works. What would you check
+before you use it in your own code?
 
 <details class="dl-answer"><summary>answer</summary>
 
-What it does with nothing — an empty list, a zero, an empty string.
-
-Whether it changes its arguments, or only reads them.
-
-Whether it is the same every time, or depends on something outside itself.
-
-What it does with input it was not designed for: a negative where a count was expected, text where a number was.
-
-None of these is about whether the code is *right* on the cases it was written for. They are about what happens at the edges, which is where the code you did not write meets the data you did not expect.
+What it does with nothing: an empty list, a zero, an empty string. Whether
+it changes what it is given, or only reads it. Whether it gives the same
+answer every time. And what it does with input it was not designed for: a
+negative where a count was expected, text where a number was. None of this
+is about whether it is right on the cases it was written for. It is about
+the edges, where code you did not write meets data you did not expect.
 
 </details>

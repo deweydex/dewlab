@@ -9,6 +9,11 @@ You do not need to install anything, and you do not need an account. The Python
 runs on your own computer, inside the browser tab. Nothing is scored, and
 nobody sees your answers.
 
+Two pages on the site come first. [Studying here](https://deweydex.github.io/dewlab/studying.html)
+helps you choose a course, and says what to try when you are stuck.
+[Reading helpers](https://deweydex.github.io/dewlab/reading-helpers.html)
+shows how to make a page bigger, have it translated, or hear it read aloud.
+
 ---
 
 ## The reading page
@@ -24,13 +29,25 @@ rather than a wall of text you did not write.
 
 The cells on one page share their variables from top to bottom, so a cell near
 the end can use something a cell near the start set up. Each page starts fresh,
-though, so nothing carries over from one tutorial to the next.
+though, so a variable from one tutorial is not there on the next. The Dewey
+Track has one exception: a toolkit of functions you wrote on earlier pages
+comes with you, and a line on each page says what it holds.
 
 If a code box has no Run button, it is there to be read rather than run. That
 is the only difference, and it is meant to be visible at a glance.
 
 Some cells have a small **?** beside them. That is a hint, tucked out of the
 way until you want it.
+
+Near the end of a page there is often a challenge, with its first few lines
+of code already written. **Open it in the Notebook** (or the Workspace, for
+a web page) opens that code there, next to your own work and never over it.
+A downloaded page has a **Save it as a file** button instead.
+
+Some pages offer their tasks in more than one world: the planets, the sea
+floor, pixel art. A box under the title lists them. Choose the one you like,
+and the tasks change to match. You can change it at any time, and the page
+keeps your work in each world separately.
 
 Every cell has a **reset** button. It restores the code the tutorial started
 with and clears the cell's visible result. Only that one cell changes —
@@ -174,7 +191,9 @@ already know what you want to practise.
 
 On the contents page, a small badge next to a tutorial you have opened shows
 how many of its cells you have run, turning red only if a cell's last run
-failed. It is read from your own browser, and you can turn it off in Notes.
+failed. It is read from your own browser. To turn it off, open **Settings**,
+then **Behavior**, and choose **off** beside *Show progress on the tutorials
+list*.
 
 ---
 
@@ -196,7 +215,12 @@ it keeps failing, a small fold may appear under it, with a line like *Let's
 slow down a moment…*. Open it when you want to. Inside is a question about
 what you can see, and later a few steps. It is never the answer. Nothing
 about how many times you ran the cell is shown to you or sent anywhere.
-You can turn these hints off in Python.
+To turn these hints off, open **Settings**, then **Behavior**, and choose
+**off** beside *Hints as you work*.
+
+Where a page asks you to guess what a cell will print, **I'm not sure yet**
+is always one of the choices. It opens the cell's first hint straight away,
+and you can still run the cell and see.
 
 ---
 
@@ -209,14 +233,13 @@ rather than one.
 
 Each problem has two hidden sections you can open. The first is a hint: a
 few steps, something to think about, and a related problem to try. The second
-is the full answer, with every step shown.
+is a worked answer, with every step shown.
 
-We are not trying to hide the right answer. What we are learning is the steps
-that get us there. Try the hint first. Getting an answer wrong along the way
-is a normal part of trying, not a failure. It usually teaches you more than
-reading the answer straight away. After reading an answer, you could try the
-problem again with the answer closed. The answer is always there when you
-want to check your work.
+What we are learning is the steps, so the answer is never hidden from you.
+Try the hint first. An attempt that goes a different way from the answer is
+part of the work, and it usually teaches you more than reading the answer
+straight away. After reading an answer, you could try the problem again with
+the answer closed.
 
 ---
 

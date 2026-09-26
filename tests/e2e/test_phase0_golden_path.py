@@ -242,29 +242,20 @@ def test_plt_show_renders_the_figure_rather_than_warning(page):
     assert height > 50, "the figure decoded to a real image"
 
 
-def test_pandas_and_a_check_cell_share_one_namespace_and_render_correctly(page):
-    """One run of pandas-table followed by tools-show-check covers the
-    dataframe render, the shared namespace across cells, show()/show_table()
-    rendering, check-pass/check-fail rendering, and a check cell's own
-    bare-bool suppression — all from the same two cells."""
+def test_pandas_and_a_show_cell_share_one_namespace_and_render_correctly(page):
+    """One run of pandas-table followed by tools-show covers the dataframe
+    render, the shared namespace across cells, and show()/show_table()
+    rendering, all from the same two cells. (check() went in #314.)"""
     output = run(page, "pandas-table")
     assert "<table" in output
     assert "Ireland" in output
     assert "Kenya" not in output, "the filter should have excluded Kenya"
 
-    output = run(page, "tools-show-check")
+    output = run(page, "tools-show")
     assert "<table" in output, "the later cell could not see df"
     assert "show() renders anything" in output
     assert "First three rows" in output
-    assert "dl-check-pass" in output
-    assert "dl-check-fail" in output
-    assert output.count("dl-check-pass") == 2, "0.1 + 0.2 should pass against 0.3"
-
-    last_class = page.eval_on_selector(
-        output_selector("tools-show-check"),
-        "el => el.lastElementChild.className",
-    )
-    assert "dl-check" in last_class, f"cell ended with {last_class!r}"
+    assert "dl-check" not in output
 
 
 def test_an_error_shows_the_students_line_and_does_not_stop_the_page(page):

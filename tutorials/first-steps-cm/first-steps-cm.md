@@ -1,91 +1,84 @@
 ---
 title: "Running Python in a cell"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
 ---
 
 # Running Python in a cell
 
-In Computational Methods, we use Python to work with matrices, run
-simulations and test algorithms. Every page has *cells*. A cell is a
-small box of Python code that you can change and run, right on the page.
-This page shows how a cell works, and what to do when one does not do
-what you expect.
+Here is something this course builds. Press **Run**, and it throws 100,000
+darts at a square, one at a time, and uses the ones that land inside a
+circle to work out π. You do not need to read the code yet.
 
-Everything on this page runs in your own browser. Nothing installs, and
-nothing you type leaves the computer in front of you. If you break a
-cell and cannot fix it, its **reset** button brings back the code the
-page started with.
+```python exec
+id: a-trailer-1
+import random
 
-If you have already done
-[Algorithms, pseudocode and your first Python](tutorial:first-steps) in
-your programming class, most of this page will look familiar. The
-section on what to do when a cell fails is still worth a read.
+inside = 0
+for dart in range(1, 100001):
+    x = random.random()
+    y = random.random()
+    if x * x + y * y <= 1:
+        inside = inside + 1
+    if dart in [10, 100, 1000, 10000, 100000]:
+        print(dart, "darts: pi is about", 4 * inside / dart)
+```
 
-## Running your first cell
+What happens to the estimate as the darts go up? Run it again: are the
+numbers the same? You will build this yourself in
+[Monte Carlo simulation: estimating π with random darts](tutorial:counting-darts),
+and find out why more darts help, and how much.
+
+That is Computational Methods: Python on problems too big, or too
+tedious, to do by hand. It turns pictures with matrices, writes text from
+the words of a book, simulates chance and queues, and races algorithms.
+On most pages the tasks come in worlds, and you choose one on each page:
+photos and filters, sprites, starships and space scenes; living systems,
+queues and the way things spread; mazes, maps, collections and puzzles.
+The page remembers your choice.
+
+Everything runs in the box above: a *cell*. This page is about how cells
+work, and what to do when one does not do what you expect.
+
+## How a cell works
 
 To run a cell, press its **Run** button, or hold Ctrl and press Enter.
-Whatever the code produces appears under the cell.
+Everything runs in this browser, on the computer in front of you: nothing
+installs, and nothing you type leaves it. What will appear under this
+cell?
 
 ```python exec
 id: first-run
-hint: Change 3 to another number and run it again.
-for step in range(3):
-    print("step", step)
-```
-
-Did three lines appear? This cell uses a *loop*. A loop is a line, or a
-group of lines, that Python repeats. We learn how loops work in
-[Repeating steps with loops](tutorial:repeating-yourself). For now, try
-the hint: change the 3 to another number, and run the cell again. What
-changes?
-
-The area under a cell shows two kinds of thing:
-
-- anything the code prints with `print()`
-- the value of the last line, if that line is an expression
-
-An *expression* is a piece of code that has a value, such as `2 + 3`.
-Some lines are instructions instead. An instruction, such as
-`total = 5`, does a job, but it has no value to show.
-
-The next cell has no `print()`. Its only line is an expression, so the
-cell shows its value. `**` means "to the power of". What do you think
-`2 ** 10` is? Run the cell to check.
-
-```python exec
-id: last-expression
+print("Running Python in a cell")
 2 ** 10
 ```
 
-## A little arithmetic
+```predict
+What will the last line under the cell be?
 
-Python works as a calculator. These are its arithmetic operators:
-
-| Operator | What it does | Example | Result |
-|---|---|---|---|
-| `+` | adds | `22 + 4` | `26` |
-| `-` | subtracts | `22 - 4` | `18` |
-| `*` | multiplies | `22 * 4` | `88` |
-| `/` | divides | `22 / 4` | `5.5` |
-| `//` | divides, then rounds down to a whole number | `22 // 4` | `5` |
-| `%` | gives the remainder after dividing | `22 % 4` | `2` |
-| `**` | raises to a power | `2 ** 3` | `8` |
-
-The last three may be new to you. What do you think each line of the
-next cell will show? Run it to check.
-
-```python exec
-id: a-little-arithmetic-1
-print(17 / 5)
-print(17 // 5)
-print(17 % 5)
+- 1024
+  - The last line is worked out, and its value is shown.
+- 2 ** 10
+  - Python shows the line as it is written.
+- Nothing
+  - Only `print()` shows anything.
 ```
 
-5 goes into 17 three times, with 2 left over. `/` gives 3.4. `//`
-gives the 3, and `%` gives the 2. The `%` operator is called *modulo*. It is useful more
-often than you might expect. For example, `10 % 2` is 0, and that tells
-us 10 is even.
+The area under a cell shows two kinds of thing:
+
+- anything the code prints with `print()`;
+- the value of the last line, if that line is an expression.
+
+An *expression* is a piece of code that has a value, such as `2 ** 10`,
+which is 2 to the power of 10. Some lines are instructions instead. An
+instruction, such as `total = 5`, does a job, but has no value to show.
+Change the last line to `total = 2 ** 10`, and run it again: the printed
+line appears, and nothing else.
+
+The arithmetic operators, including `//` and `%`, which later pages use a
+great deal, are in
+[Algorithms, pseudocode and your first Python](tutorial:first-steps#a-few-more-things-python-can-do).
+It is worth reading that section before the next page.
 
 ## Reading code that is not a cell
 
@@ -98,45 +91,39 @@ for value in [1, 2, 3]:
     total = total + value
 ```
 
-How can you tell the difference? Look for the **Run** button. A block
-with no Run button is an *illustration*: code for you to read. It is
-real code, and you are welcome to copy it into a cell to try it.
+How can you tell the difference? Look for the **Run** button. A block with
+no Run button is an *illustration*: code for you to read. It is real code,
+and you are welcome to copy it into a cell to try it.
 
-## When a cell does not do what you expect
+{{include: setup/when-a-cell-does-not-do-what-you-expect.md}}
 
-A cell can fail when nothing is wrong with the site. Here are three
-things to try, in this order.
+## Looking back
 
-**Reset the cell.** The reset button next to Run brings back the code
-the page started with. If the cell works again after that, the problem
-was in an edit, not in the page.
+The trailer gives a different estimate every time it runs. Is it still an
+answer? What would make you trust it more?
 
-**Run the cells above it.** A later cell often uses something that an
-earlier cell made. The cells on a page share their work, so the order
-you run them in matters. The small **⋯** button beside Run opens "Run
-this cell and all above". It runs every cell before this one, from the
-top of the page.
+A challenge: change the dart game to find the chance that a dart lands
+below the line from one corner of the square to the other, where
+`x + y <= 1`. Before you run it, what should the chance be?
 
-**Reload the page.** This starts Python again, fresh. It does not
-delete anything you have saved. Your work is kept in this browser, on
-this device.
+```python challenge
+import random
 
-When a cell stops with an error, Python shows an error message. The
-section "Reading a Traceback" in
-[Reading an error message](tutorial:reading-an-error-message#reading-a-traceback)
-shows what an error message tells you, line by line.
-
-If none of the three things explains it, click the small circle beside
-a cell's hint. It opens a report with your code and the cell's last
-output already in it, so there is nothing to copy. The line at the
-bottom of every page does the same for the whole page.
+darts = 100000
+below = 0
+for dart in range(darts):
+    x = random.random()
+    y = random.random()
+    # Count the darts where x + y <= 1.
+print(below / darts)
+```
 
 ## Where to go next
 
-This page is about the cells. The Python inside them comes from seven
-Programming Foundations pages, which come next in this series. You may
-be doing them in your programming class at the same time. The later
-pages in this course use all seven:
+This page is about the cells. The Python inside them comes from eight
+Programming Foundations pages, which come next in this series. You may be
+doing them in your programming class at the same time. The later pages in
+this course use all eight:
 
 1. [Variables, data types and text](tutorial:storing-and-computing):
    giving a value a name, and putting numbers into text.
@@ -148,20 +135,25 @@ pages in this course use all seven:
    `while`, and a loop inside a loop.
 5. [Writing your own functions](tutorial:writing-your-own-functions):
    `def` and `return`. Nearly every matrix page asks you to write one.
-6. [Lists: keeping many values in order](tutorial:lists-and-sequences):
-   lists, comprehensions, and a grid stored as a list of lists.
-7. [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name):
+6. [Lists and looping over them](tutorial:lists-and-sequences): many
+   values under one name, and a loop that goes through them.
+7. [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids):
+   a loop on one line, and a grid stored as a list of lists.
+8. [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name):
    the tool behind the text-generation pages.
 
-## Where to Read More
+## Where to read more
 
-Python Software Foundation. *The Python Tutorial — An Informal Introduction
-to Python.* <https://docs.python.org/3/tutorial/introduction.html>. The
-official walk through what a first program does — printing, arithmetic, and
-the difference between an instruction and an expression — for anyone who
-wants the same ground covered a second way.
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
 
-Khan Academy. *Intro to Python Fundamentals.*
+Python Software Foundation. *The Python Tutorial*, section 3.1, "Using
+Python as a Calculator". <https://docs.python.org/3/tutorial/introduction.html>.
+The official walk through a first program: printing, arithmetic, and the
+difference between an instruction and an expression, for anyone who wants
+the same ground covered a second way.
+
+Khan Academy. *Intro to Python Fundamentals*.
 <https://www.khanacademy.org/computing/intro-to-python-fundamentals>. A
-slower course through the same first ideas, with its own practice problems,
-if one cell was not enough.
+slower course through the same first ideas, with its own practice
+problems, if one cell was not enough.

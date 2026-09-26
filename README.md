@@ -47,11 +47,13 @@ follow them to a different computer, and clearing browser data will clear it.
 
 **A reading surface a learner can adjust.** A dock in each top corner holds
 the page's controls. The left holds Reference and Where You Are, a trail
-from every tutorial down to this page's own sections. The right holds five
-panels — Notes, Report, Python, Appearance, and Imports & Exports — where
-theme, typeface, text size, line width and link colour live. Panels are
-resizable and stay open while a reader moves through a series; on a phone,
-everything collapses into one launcher at the bottom of the screen.
+from every tutorial down to this page's own sections. The right holds three
+panels: Notes, Python, and Settings, whose Appearance, Behavior, and
+Imports & Exports tabs hold the theme, typeface, text size, line width and
+link colour, the hints and progress switches, and the downloads. Give
+Feedback is a circle of its own in the bottom corner. Panels are resizable
+and stay open while a reader moves through a series; on a phone, everything
+collapses into one launcher at the bottom of the screen.
 
 **Practice beside every tutorial.** Each tutorial has a practice page of
 problems, with hints and answers behind folds so a stuck learner gets a route

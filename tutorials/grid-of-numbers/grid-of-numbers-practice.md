@@ -12,7 +12,7 @@ even the arithmetic ones. Then use the cells to check your work.
 
 Some cells on this page use list comprehensions, such as
 `[row[2] for row in A]`. You met these in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
 ## Reading a matrix
 

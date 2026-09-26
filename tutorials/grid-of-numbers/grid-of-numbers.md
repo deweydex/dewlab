@@ -1,7 +1,7 @@
 ---
 title: "Matrices: adding, scaling and transposing a grid of numbers"
 year: "2026-2027"
-version: 2026.08.24.1
+version: 2026.09.26.1
 covers:
   a-grid-that-draws-a-picture:
     touches: [CMPS-LO1, MIT-6.3]
@@ -71,7 +71,7 @@ The last line builds the text for one row. The part inside the brackets,
 `ramp[value] for value in row`, works like a list comprehension: it
 makes one character for each number in the row. `"".join(...)` glues
 those characters into a single string. Comprehensions are in
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 
 Every image on a screen works in the same way. It is a grid of numbers,
 with a rule that turns each number into something you can see.
@@ -323,17 +323,38 @@ and the result.
 **Try this next:** transpose the transpose. What comes back, and why?
 ```
 
+```inputs
+transpose([[1, 2, 3], [4, 5, 6]])
+transpose([[1, 2], [3, 4], [5, 6]])
+transpose([[7]])                 # a single number
+transpose([[1, 2, 3]])           # one row
+```
+
+```solution
+def transpose(m):
+    result = []
+    for i in range(len(m[0])):
+        new_row = []
+        for row in m:
+            new_row.append(row[i])
+        result.append(new_row)
+    return result
+---
+Row `i` of the result collects position `i` from every row of `m`.
+```
+
 This operation is called the *transpose*. The transpose of a matrix
 swaps its rows and its columns. The transpose of $A$ is written $A^T$.
 
 A *symmetric* matrix is a matrix that is equal to its own transpose. If
 you swap its rows and columns, nothing changes. Try your `transpose` on
-this one:
+this one. Are the two lines the same?
 
 ```python exec
 id: turning-it-sideways-the-transpose-3
 S = [[1, 4, 7], [4, 2, 5], [7, 5, 3]]
-check(transpose(S), S)
+print(transpose(S))
+print(S)
 ```
 
 ## Reflection

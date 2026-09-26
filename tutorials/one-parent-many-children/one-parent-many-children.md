@@ -448,7 +448,8 @@ Write a few sentences about this page, whenever you are ready.
 you think of another kind of account a bank might offer? Which of these
 two things would its class need to do?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

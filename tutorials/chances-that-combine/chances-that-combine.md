@@ -62,15 +62,19 @@ rolling an even number is {1/2|1/3|1/6}.
 ```question
 id: chances-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Two of four friends will play the first game of table tennis. How many
 different pairs could play first? The order of the two does not matter.
 
 - 4
+  - This counts the friends, not the pairs of them.
 - 6
+  - Each of the 4 could pair with 3 others, 12 in all, and each pair is counted twice.
 - 12
+  - This counts each pair twice, once in each order.
 - 16
+  - This is 4 times 4, which pairs each friend with themselves too.
 ```
 
 ## Two sixes at once
@@ -251,13 +255,16 @@ and it needs the same care: the two groups must not overlap.
 ```question
 id: chances-or-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 One fair die is rolled. What is the chance that it shows a 1 or a 2?
 
 - $\frac{1}{36}$, because $\frac{1}{6} \times \frac{1}{6}$
+  - Multiplying is for two things that both happen, like two rolls.
 - $\frac{2}{6}$, because $\frac{1}{6} + \frac{1}{6}$
+  - A 1 and a 2 cannot both happen on one roll, so the chances add.
 - $\frac{1}{6}$, because it is one roll
+  - This counts one of the two faces, not both.
 ```
 
 A die cannot show 1 and 2 at once, so the addition rule works:

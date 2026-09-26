@@ -1,15 +1,25 @@
 title: Programming and Design Principles
 code: 5N2927 · QQI Level 5
 status: beta
-card: This is the programming half of the integrated course, on its own. It runs
-  from a first cell to reusable tools, then a project built in a team.
-description: 'This module is Programming and Design Principles (5N2927) on its own,
-  without the maths. The tutorials are the same pages the integrated course uses,
-  in the same order, so a class taking only this module can start here.
+card: >-
+  For a class taking Programming and Design Principles on its own. You go
+  from a first cell to tools of your own, then build a project with a team.
+  Choose the world your tasks are set in, like secret messages or pixel art.
+description: >-
+  This is Programming and Design Principles (5N2927) on its own, without the
+  maths. The pages are the ones the integrated course uses, in the same
+  order, so a class taking only this module can start here.
 
 
-  Two series carry it: programming foundations, from a first cell to reusable tools,
-  and working in a team, which is how the module is assessed.'
+  Two series carry it. Programming Foundations goes from a first cell to
+  tools of your own: numbers and names, decisions, loops, functions, lists,
+  searching and sorting, and reading an error message. Working in a Team is
+  how the module is assessed: a project you plan, build and look back on with
+  others.
+
+
+  The tasks come in worlds you choose, page by page, such as secret messages
+  and pixel art. Pick the one that makes you curious.
 contents:
 - title: Programming Foundations
   tutorials:
@@ -20,7 +30,9 @@ contents:
   - repeating-yourself
   - writing-your-own-functions
   - lists-and-sequences
+  - comprehensions-and-grids
   - looking-things-up-by-name
+  - a-program-of-your-own
   - finding-things
   - putting-things-in-order
   - building-reusable-tools
@@ -28,5 +40,6 @@ contents:
   - how-we-got-here
 - title: Working in a Team
   tutorials:
+  - from-cells-to-a-program
   - critique-and-reflection
   - the-team-project

@@ -101,9 +101,9 @@ class TestSignatures:
         assert gp.display("list.append", list.append, list) == "list.append(object, /)"
 
     def test_the_courses_own_helpers_show_their_bare_names(self):
-        obj, owner = gp.resolve("tutorial_tools.check")
-        shown = gp.display("tutorial_tools.check", obj, owner)
-        assert shown.startswith("check(")
+        obj, owner = gp.resolve("tutorial_tools.show_table")
+        shown = gp.display("tutorial_tools.show_table", obj, owner)
+        assert shown.startswith("show_table(")
         assert ":" not in shown, "type hints are left out"
 
     def test_a_third_party_library_gets_no_signature(self):

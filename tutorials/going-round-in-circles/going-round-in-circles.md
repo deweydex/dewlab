@@ -71,15 +71,19 @@ circumference, $C = {2}\pi r$.
 ```question
 id: going-round-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 How far is the point $(0.6, 0.8)$ from $(0, 0)$? Pythagoras gives
 $\sqrt{0.6^2 + 0.8^2}$.
 
 - 1.4
+  - This adds 0.6 and 0.8, rather than squaring them first.
 - 0.2
+  - This takes 0.6 from 0.8.
 - 1
+  - 0.36 + 0.64 is 1, and the square root of 1 is 1.
 - 0.48
+  - This multiplies 0.6 by 0.8.
 ```
 
 ## A turn in 360 pieces
@@ -136,15 +140,19 @@ the top, $(0, 1)$. Where does half a turn take us?
 ```question
 id: going-round-half-turn
 type: multiple-choice
-correct: 2
+answer: 2
 
 Start at $(1, 0)$ on the unit circle, and turn $180^\circ$
 anticlockwise. Where are you?
 
 - $(0, -1)$
+  - That is a quarter turn clockwise, or three quarters anticlockwise.
 - $(-1, 0)$
+  - Half a turn takes you to the opposite side of the circle.
 - $(1, 1)$
+  - (1, 1) is not on the unit circle: it is further than 1 from the centre.
 - $(0, 0)$
+  - (0, 0) is the centre, not a point on the circle.
 ```
 
 For angles in between, we need a name for each coordinate. For a point

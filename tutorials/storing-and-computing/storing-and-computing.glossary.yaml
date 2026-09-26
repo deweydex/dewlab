@@ -67,33 +67,28 @@ entries:
       Asks the person using the program to type something, and gives back
       what they typed. The result is always a str, even when it looks like
       a number.
-  - term: base 10
-    kind: concept
-    definition: >
-      Base 10, or decimal, is the number system we use every day. It has
-      ten digits, 0 to 9, and each position is worth a power of 10.
-  - term: binary
-    kind: concept
-    definition: >
-      Binary is base 2, the number system computers use. It has two digits,
-      0 and 1, and each position is worth a power of 2. Python writes it
-      with a 0b in front: 0b101010.
-  - term: hexadecimal
-    kind: concept
-    definition: >
-      Hexadecimal is base 16. It uses the digits 0 to 9 and the letters A
-      to F. One hex digit matches exactly four binary digits. Python writes
-      it with a 0x in front: 0x2A.
-  - term: "bin()"
-    python: bin
+  - term: "len()"
+    python: len
     kind: function
-    definition: Changes a number into its binary form, as text.
-    example: "bin(42)  # '0b101010'"
-  - term: "hex()"
-    python: hex
+    definition: >
+      Gives the length of a string: how many characters it has, spaces
+      included. Later it counts the elements of a list the same way.
+    example: 'len("meet at noon")  # 12'
+  - term: ".upper()"
+    python: str.upper
     kind: function
-    definition: Changes a number into its hexadecimal form, as text.
-    example: "hex(42)  # '0x2a'"
+    definition: Gives the same text with every small letter changed to a capital.
+    example: '"noon".upper()  # "NOON"'
+  - term: "ord()"
+    python: ord
+    kind: function
+    definition: Gives the number the computer stores for a character.
+    example: 'ord("A")  # 65'
+  - term: "chr()"
+    python: chr
+    kind: function
+    definition: Turns a number into the character it stands for. It undoes ord().
+    example: 'chr(67)  # "C"'
   - term: f-string
     kind: concept
     definition: >

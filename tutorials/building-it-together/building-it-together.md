@@ -64,13 +64,16 @@ written for {people|computers|Python}.
 ```question
 id: building-it-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 You are about to refactor a function. What comes first?
 
 - tests that record what it does now
+  - Tests first record what the function does now, so a change that alters it shows up.
 - new names for everything in it
+  - Renaming is part of refactoring, but with no tests nothing tells you if a rename broke something.
 - deleting its comments
+  - Comments are sometimes the only record of why the code is as it is.
 ```
 
 ## The brief

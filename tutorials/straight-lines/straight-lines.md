@@ -71,14 +71,18 @@ $x$ is its voltage. At 0.75 volts it reads {25} °C.
 ```question
 id: straight-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 After `point = (3, 7)`, what is `point[1]`?
 
 - 3
+  - Counting starts at 0, so `point[0]` is 3.
 - (3, 7)
+  - `point` on its own is the whole pair; `[1]` picks one item.
 - 7
+  - Counting from 0, index 1 is the second item.
 - an `IndexError`
+  - The pair has indexes 0 and 1, so 1 is inside it.
 ```
 
 ## How steep is a ramp?
@@ -469,14 +473,18 @@ wall again, from the other side.
 ```question
 id: straight-general-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 What is the slope of the line $2x + 4y - 8 = 0$?
 
 - 2
+  - 2 is the number with x before rearranging, and y has a 4 with it.
 - −0.5
+  - Rearranged, 4y = −2x + 8, so y = −0.5x + 2.
 - 0.5
+  - The size is the same, but moving 2x to the other side makes it negative.
 - −8
+  - −8 is the number on its own; it moves the line, and does not tilt it.
 ```
 
 ## Parallel and perpendicular

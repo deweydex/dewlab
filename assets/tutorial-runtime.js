@@ -2076,6 +2076,7 @@ function buildCells(manifest) {
     cells.push(cell);
     renderCellRunLine(cell);
     initCompare(cell, spec);
+    initPredict(cell);
 
     runBtn.addEventListener("click", () => runCell(cell));
     if (resetBtn) {
@@ -2162,9 +2163,9 @@ const questions = [];
 /* Fisher-Yates, in place. Shared by a multiple-choice question's own
  * option buttons and a fill-in-the-blank gap's own <option> elements —
  * both are "show these DOM nodes in a different order," and the node
- * doing the moving carries its own correctness with it either way
- * (data-correct, data-expected), so shuffling never has to touch which
- * one is right. */
+ * doing the moving carries its own mark with it either way
+ * (data-answer, data-expected), so shuffling never has to touch which
+ * one is the page's answer. */
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -2173,61 +2174,185 @@ function shuffle(list) {
   return list;
 }
 
-/* The one feedback message every question shows, right or not —
- * .dl-check/.dl-check-pass/.dl-check-fail are check()'s own classes
- * (tutorial_tools.py's _check_html), reused rather than duplicated so a
- * question reads as the same kind of thing a reader already met inside
- * a cell, not a second feature with its own voice. */
-function renderQuestionFeedback(question, passed) {
-  const css = passed ? "dl-check-pass" : "dl-check-fail";
-  const mark = passed ? "✓" : "✗";
-  const heading = passed ? "That’s right." : "Not quite yet.";
+/* What a question shows when the reader asks for the page's answer
+ * (#314). Never a verdict: the page's own option is marked "the page's
+ * answer" beside the reader's choice, with the note for the option they
+ * chose; for a fill-in-the-blank, the page's word sits after each gap.
+ * When the reader's choice is the page's, the page may say so. No colour
+ * means right or wrong. Shared by a live click (showPageAnswer(), which
+ * also records that it was asked and saves) and restoreSaved() (which
+ * redraws what the reader had already asked to see). */
+function revealAnswer(question) {
   question.feedbackEl.hidden = false;
-  question.feedbackEl.innerHTML =
-    `<div class="dl-check ${css}"><span class="dl-check-mark">${mark}</span><span>${heading}</span></div>`;
-}
-
-/* A fill-in-the-blank gap is correct when a select's chosen <option>
- * carries data-correct, or a typing box's trimmed value matches the
- * word the build wrote onto it (data-expected) — case-sensitive and
- * exact, the same as check()'s own fallback comparison for anything
- * that is not a number, an array or a table. */
-function gapIsCorrect(gap) {
-  if (gap.tagName === "SELECT") {
-    const chosen = gap.options[gap.selectedIndex];
-    return !!chosen && chosen.dataset.correct === "true";
-  }
-  return gap.value.trim() === gap.dataset.expected;
-}
-
-/* The pass/fail computation and its redraw, with no side effect beyond
- * the DOM — shared by a live Check click (checkQuestion(), below, which
- * also records that this question has now been checked and saves) and
- * restoreSaved() (which is redrawing a check the reader already made,
- * not making a new one, and has no reason to schedule another save
- * moments after the record it just read back in). */
-function evaluateQuestion(question) {
-  let passed;
   if (question.type === "multiple-choice") {
     const selected = question.options.find((option) => option.classList.contains("is-selected"));
-    if (!selected) return;
-    passed = selected.dataset.correct === "true";
+    for (const option of question.options) {
+      const isAnswer = option.dataset.answer === "true";
+      option.classList.toggle("is-page-answer", isAnswer);
+      if (isAnswer && !option.querySelector(".dl-question-page-label")) {
+        const label = document.createElement("span");
+        label.className = "dl-question-page-label";
+        label.textContent = "the page’s answer";
+        option.appendChild(label);
+      }
+    }
+    for (const note of question.feedbackEl.querySelectorAll(".dl-question-note")) {
+      note.hidden = !selected || note.dataset.option !== selected.dataset.option;
+    }
+    question.feedbackEl.querySelector(".dl-question-same").hidden =
+      !selected || selected.dataset.answer !== "true";
   } else {
-    passed = true;
     for (const gap of question.gaps) {
-      const correct = gapIsCorrect(gap);
-      gap.classList.toggle("is-correct", correct);
-      gap.classList.toggle("is-incorrect", !correct);
-      if (!correct) passed = false;
+      const word = gap.tagName === "SELECT"
+        ? [...gap.options].find((option) => option.dataset.answer === "true")?.textContent
+        : gap.dataset.expected;
+      let shown = gap.nextElementSibling;
+      if (!shown || !shown.classList.contains("dl-question-page-word")) {
+        shown = document.createElement("span");
+        shown.className = "dl-question-page-word";
+        gap.after(shown);
+      }
+      shown.textContent = ` (the page: ${word})`;
     }
   }
-  renderQuestionFeedback(question, passed);
 }
 
-function checkQuestion(question) {
-  evaluateQuestion(question);
+function showPageAnswer(question) {
+  revealAnswer(question);
   question.checked = true;
   scheduleSave();
+}
+
+/* World variants (#315). A page whose tasks come in several worlds has a
+ * chooser under its title (build.py's render_world_chooser()) and, for
+ * each task, one `.dl-world` per world, side by side in a group
+ * (`data-world-group`). The reader's choice is kept per page, under
+ * `dewlab:world:<id>`. Each variant's cells have their own ids, so
+ * switching never touches saved work; it only decides what shows, what
+ * Run all runs, and what the surprises and the notebook export list. */
+const WORLD_PREFIX = "dewlab:world:";
+let currentWorld = null;
+
+function worldChoices() {
+  return [...document.querySelectorAll('.dl-world-chooser input[name="dl-world"]')];
+}
+
+function worldName(key) {
+  const input = worldChoices().find((choice) => choice.value === key);
+  return input?.parentElement.querySelector(".dl-world-name")?.textContent || key;
+}
+
+function readWorld() {
+  try {
+    return localStorage.getItem(pageKey(WORLD_PREFIX));
+  } catch {
+    return null;
+  }
+}
+
+function writeWorld(key) {
+  try {
+    localStorage.setItem(pageKey(WORLD_PREFIX), key);
+  } catch {
+    /* Storage refused: the choice lasts until the page closes. */
+  }
+}
+
+function inHiddenWorld(element) {
+  return !!element.closest(".dl-world[hidden]");
+}
+
+function visibleCells() {
+  return cells.filter((cell) => !inHiddenWorld(cell.element));
+}
+
+function applyWorld(key) {
+  const offered = worldChoices().map((input) => input.value);
+  currentWorld = offered.includes(key) ? key : offered[0];
+  for (const input of worldChoices()) input.checked = input.value === currentWorld;
+  const groups = new Map();
+  for (const variant of document.querySelectorAll(".dl-world")) {
+    const group = variant.dataset.worldGroup;
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(variant);
+  }
+  for (const variants of groups.values()) {
+    /* The chosen world's variant; for a task without one, the variant in
+     * the world the page teaches in, and failing that the first written. */
+    const shown = variants.find((v) => v.dataset.world === currentWorld)
+      || variants.find((v) => v.dataset.world === offered[0])
+      || variants[0];
+    for (const variant of variants) variant.hidden = variant !== shown;
+  }
+  document.documentElement.dataset.dlWorld = currentWorld;
+}
+
+function initWorlds() {
+  const chooser = document.querySelector(".dl-world-chooser");
+  if (!chooser) return;
+  chooser.hidden = false;
+  document.documentElement.classList.add("dl-worlds-on");
+  applyWorld(readWorld());
+  chooser.addEventListener("change", (event) => {
+    const input = event.target.closest('input[name="dl-world"]');
+    if (!input) return;
+    applyWorld(input.value);
+    writeWorld(currentWorld);
+    updateSurprises();
+    updateProgressSummary();
+    scheduleSave();
+  });
+}
+
+/* Code, what a cell printed, and maths stay as they are when a reader asks
+ * the browser to translate the page (#317): a translated `print` would no
+ * longer run, and a translated formula would not say the same thing. The
+ * prose around them translates as usual. */
+function keepCodeFromTranslation(root = document) {
+  for (const el of root.querySelectorAll("pre, code, .dl-editor, .dl-output, .dl-math")) {
+    el.setAttribute("translate", "no");
+  }
+}
+
+/* A closer's challenge (#316). The build's link carries the starter in its
+ * address and opens the Notebook or the Workspace, which do the rest. A
+ * downloaded page has neither beside it, so there the link gives way to a
+ * button that saves the starter as a file: a .py for the Notebook's, and
+ * one .html page, with its CSS and JavaScript inside it, for the
+ * Workspace's. */
+function challengeStarter(box) {
+  const link = box.querySelector(".dl-challenge-open");
+  const at = link.href.indexOf("#challenge=");
+  return JSON.parse(decodeURIComponent(link.href.slice(at + "#challenge=".length)));
+}
+
+function challengeFile(box) {
+  const starter = challengeStarter(box);
+  if (box.dataset.target === "notebook") {
+    return { name: `${starter.name}.py`, type: "text/x-python", text: `${starter.code}\n` };
+  }
+  const text = "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n"
+    + `<title>${escapeHtml(starter.page || starter.name)}</title>\n`
+    + `<style>\n${starter.css}\n</style>\n</head>\n<body>\n${starter.html}\n`
+    + `<script>\n${starter.js}\n</script>\n</body>\n</html>\n`;
+  return { name: `${starter.name}.html`, type: "text/html", text };
+}
+
+function initChallenges(manifest) {
+  if (!manifest.standalone) return;
+  for (const box of document.querySelectorAll(".dl-challenge")) {
+    box.querySelector(".dl-challenge-open").hidden = true;
+    const save = box.querySelector(".dl-challenge-save");
+    save.hidden = false;
+    save.addEventListener("click", () => {
+      const file = challengeFile(box);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob([file.text], { type: file.type }));
+      link.download = file.name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  }
 }
 
 function buildQuestions() {
@@ -2248,6 +2373,7 @@ function buildQuestions() {
           for (const other of options) other.classList.remove("is-selected");
           option.classList.add("is-selected");
           checkBtn.disabled = false;
+          if (question.checked) revealAnswer(question);
           scheduleSave();
         });
       }
@@ -2260,7 +2386,7 @@ function buildQuestions() {
       checkBtn.disabled = false;
     }
 
-    checkBtn.addEventListener("click", () => checkQuestion(question));
+    checkBtn.addEventListener("click", () => showPageAnswer(question));
     questions.push(question);
   }
 }
@@ -2992,6 +3118,7 @@ function lastDividerFor(anchor) {
 
 function mountCustomCellAfter(afterNode, id, type, code, anchor) {
   const host = createCustomCellElement(id, type);
+  keepCodeFromTranslation(host);
   host.dataset.anchor = anchor;
   const divider = createCustomInsertDivider(anchor);
   afterNode.insertAdjacentElement("afterend", divider);
@@ -3265,10 +3392,24 @@ function splitLines(text) {
 function downloadAsIpynb() {
   const notebookCells = [];
   for (const host of document.querySelectorAll(".dl-cell")) {
+    // The chosen world's variants only (#315), as the page shows them.
+    if (inHiddenWorld(host)) continue;
     const id = host.dataset.cellId;
     const cell = cells.find((c) => c.id === id) || customCells.find((c) => c.id === id);
     if (!cell) continue;
     const isText = cell.type === "text";
+    const guess = cell.predict ? readGuess(cell) : null;
+    if (guess || cell.predict?.sure === "unsure") {
+      /* A guess written before the cell ran travels with it, the way it
+       * sat above it on the page (#313). */
+      const sure = { sure: "sure", hunch: "a hunch", unsure: "not sure yet" }[cell.predict.sure];
+      notebookCells.push({
+        cell_type: "markdown",
+        metadata: {},
+        source: [`**My guess, before running:** ${guess ? guess.text : "none"}`
+          + (sure ? ` (${sure})` : "")],
+      });
+    }
     notebookCells.push({
       cell_type: isText ? "markdown" : "code",
       metadata: {},
@@ -3280,7 +3421,10 @@ function downloadAsIpynb() {
     setStatus("No cells to export yet.", "error");
     return;
   }
-  notebookCells.unshift({ cell_type: "markdown", metadata: {}, source: [`# ${document.title}`] });
+  const heading = currentWorld
+    ? [`# ${document.title}\n`, "\n", `World: ${worldName(currentWorld)}`]
+    : [`# ${document.title}`];
+  notebookCells.unshift({ cell_type: "markdown", metadata: {}, source: heading });
 
   const notebook = {
     nbformat: 4,
@@ -4008,6 +4152,7 @@ async function executeCell(cell) {
   cell.lastRunMs = performance.now() - startedAt;
   cell.ranOrder = ++runSequenceCounter;
   noteAttempt(cell, report, previousCode);
+  notePrediction(cell, report);
   maybeRevealHint(cell, report);
   renderCellRunLine(cell);
   saveNow();
@@ -4170,16 +4315,201 @@ function renderComparison(cell, result) {
   });
 }
 
+/* The predict block (#313). Above a cell, the reader writes a guess and
+ * says how sure they are. After a run, the guess and what the cell printed
+ * sit side by side. A match may be confirmed; a mismatch is never called
+ * wrong, and neither is any option. "I'm not sure yet" opens the cell's
+ * first hint and offers two ways on. The cells where a guess and the
+ * output differed, and the ones marked not sure, are listed at the end of
+ * the page (updateSurprises()). */
+function initPredict(cell) {
+  const el = document.querySelector(`.dl-predict[data-cell="${CSS.escape(cell.id)}"]`);
+  if (!el) return;
+  cell.predict = {
+    el,
+    type: el.dataset.type,
+    tolerance: el.dataset.tolerance !== undefined ? Number(el.dataset.tolerance) : 0,
+    sure: null,
+    outcome: null,
+  };
+  for (const input of el.querySelectorAll(".dl-predict-options input, .dl-predict-value")) {
+    input.addEventListener(input.type === "radio" ? "change" : "input", scheduleSave);
+  }
+  for (const btn of el.querySelectorAll(".dl-predict-sure-btn")) {
+    btn.addEventListener("click", () => setSure(cell, btn.dataset.sure, { chosen: true }));
+  }
+  el.querySelector(".dl-predict-guess-now").addEventListener("click", () => {
+    el.querySelector(".dl-predict-options input, .dl-predict-value")?.focus();
+  });
+  el.querySelector(".dl-predict-run").addEventListener("click", () => runCell(cell));
+}
+
+function readGuess(cell) {
+  const { el, type } = cell.predict;
+  if (type === "choice") {
+    const chosen = el.querySelector(".dl-predict-options input:checked");
+    if (!chosen) return null;
+    const text = chosen.closest("label").querySelector(".dl-predict-option-text").textContent;
+    return { option: Number(chosen.value), text: text.trim() };
+  }
+  const value = el.querySelector(".dl-predict-value").value.trim();
+  return value ? { option: null, text: value } : null;
+}
+
+function writeGuess(cell, guess) {
+  if (!guess) return;
+  const { el, type } = cell.predict;
+  if (type === "choice") {
+    const radio = el.querySelector(`.dl-predict-options input[value="${Number(guess.option)}"]`);
+    if (radio) radio.checked = true;
+  } else if (typeof guess.text === "string") {
+    el.querySelector(".dl-predict-value").value = guess.text;
+  }
+}
+
+function setSure(cell, sure, { chosen = false } = {}) {
+  const p = cell.predict;
+  p.sure = sure;
+  for (const btn of p.el.querySelectorAll(".dl-predict-sure-btn")) {
+    btn.setAttribute("aria-pressed", String(btn.dataset.sure === sure));
+  }
+  const route = p.el.querySelector(".dl-predict-unsure");
+  route.hidden = sure !== "unsure";
+  if (sure === "unsure" && chosen) {
+    /* The reader asked, so the first hint opens whatever the Settings
+     * toggle says: it is the one that asks a question, not the answer. */
+    const first = cell.hints[0];
+    if (first) {
+      first.revealed = true;
+      showStagedHint(cell, first, { arriving: true });
+      first.el.open = true;
+    }
+    route.querySelector(".dl-predict-hint-open").hidden = !first;
+    cell.attempts.unsure += 1;
+    maybeRevealHint(cell, {});
+  }
+  if (chosen) {
+    scheduleSave();
+    updateSurprises();
+  }
+}
+
+function normaliseText(text) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+/* Whether a guess and the output say the same thing. A number is compared
+ * with the last number the cell printed, within the block's tolerance;
+ * anything else with the whole output or its last line, ignoring only
+ * spacing: case counts, since `SEA` and `sea` are different answers.
+ * Anything this cannot see as the same (9.70 beside 9.7 in a text guess)
+ * is simply shown side by side for the reader to judge. */
+function guessMatches(p, guess, output) {
+  if (!output) return false;
+  if (p.type === "number") {
+    const value = Number(guess.text.replace(/,/g, ""));
+    const numbers = output.replace(/,/g, "").match(/-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/gi);
+    if (Number.isNaN(value) || !numbers) return false;
+    const printed = Number(numbers[numbers.length - 1]);
+    return Math.abs(value - printed) <= p.tolerance + 1e-9 * Math.max(1, Math.abs(printed));
+  }
+  const lines = output.split("\n").map((line) => line.trim()).filter(Boolean);
+  const said = normaliseText(guess.text);
+  return said === normaliseText(output) || said === normaliseText(lines[lines.length - 1] || "");
+}
+
+function notePrediction(cell, report) {
+  const p = cell.predict;
+  if (!p) return;
+  const guess = readGuess(cell);
+  if (!guess && p.sure !== "unsure") {
+    p.outcome = null;
+  } else {
+    const output = cell.outputEl.innerText.trim();
+    const match = guess ? guessMatches(p, guess, output) : false;
+    p.outcome = {
+      guess: guess ? guess.text : null,
+      option: guess ? guess.option : null,
+      output: output.slice(0, 300),
+      errored: !report.ok,
+      match,
+    };
+    if (guess && !match) cell.attempts.guessDiffered += 1;
+  }
+  renderPrediction(cell);
+  updateSurprises();
+}
+
+function renderPrediction(cell) {
+  const p = cell.predict;
+  const after = p.el.querySelector(".dl-predict-after");
+  const o = p.outcome;
+  after.hidden = !o;
+  if (!o) return;
+  after.querySelector(".dl-predict-your").textContent = o.guess ?? "no guess";
+  after.querySelector(".dl-predict-output").textContent = o.errored
+    ? "an error: see under the cell"
+    : (o.output || "nothing");
+  after.querySelector(".dl-predict-match").hidden = !o.match;
+  for (const note of after.querySelectorAll(".dl-predict-note")) {
+    note.hidden = Number(note.dataset.option) !== o.option;
+  }
+  after.querySelector(".dl-predict-which").hidden = o.match && p.sure !== "unsure";
+}
+
+function predictionRecord(cell) {
+  const p = cell.predict;
+  if (!p) return undefined;
+  return { guess: readGuess(cell), sure: p.sure, outcome: p.outcome };
+}
+
+function restorePrediction(cell, saved) {
+  if (!cell.predict || !saved) return;
+  writeGuess(cell, saved.guess);
+  if (saved.sure) setSure(cell, saved.sure);
+  cell.predict.outcome = saved.outcome || null;
+  renderPrediction(cell);
+}
+
+function updateSurprises() {
+  const section = document.querySelector(".dl-surprises");
+  if (!section) return;
+  const list = section.querySelector(".dl-surprises-list");
+  list.replaceChildren();
+  /* Only the chosen world's (#315): a surprise in a variant the reader has
+   * switched away from would link to a cell they cannot see. */
+  for (const cell of visibleCells()) {
+    const p = cell.predict;
+    if (!p) continue;
+    const differed = !!(p.outcome && p.outcome.guess !== null && !p.outcome.match);
+    if (!differed && p.sure !== "unsure") continue;
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#dl-predict-${cell.id}`;
+    link.textContent = cell.element.querySelector(".dl-cell-pill-num")?.textContent || cell.id;
+    const printed = p.outcome
+      ? (p.outcome.errored ? "an error" : (p.outcome.output.split("\n").pop() || "nothing"))
+      : "";
+    const said = differed
+      ? `: you guessed ${p.outcome.guess}, and it printed ${printed}.`
+      : ": you were not sure yet.";
+    item.append(link, document.createTextNode(said));
+    list.appendChild(item);
+  }
+  section.hidden = list.children.length === 0;
+}
+
 function freshAttempts() {
   return {
     runs: 0,          // runs since the counters were last cleared
     errors: 0,        // of those, how many raised
     sameErrors: 0,    // consecutive runs ending in the same error as the one before
     unchanged: 0,     // consecutive runs of code identical to the run before
-    checkFails: 0,    // consecutive runs in which a check() failed
     emptyResults: 0,  // consecutive runs where a SQL query came back with no rows
     firstRunAt: null, // when the first counted run happened, for `minutes`
     lastErrorKey: null,
+    unsure: 0,        // times the reader said "I'm not sure yet" (#313)
+    guessDiffered: 0, // runs after which a written guess and the output differed
   };
 }
 
@@ -4216,7 +4546,6 @@ function noteAttempt(cell, report, previousCode) {
     a.sameErrors = 0;
     a.lastErrorKey = null;
   }
-  if (report.check) a.checkFails = report.check.passed ? 0 : a.checkFails + 1;
   a.emptyResults = report.empty === true ? a.emptyResults + 1 : 0;
 }
 
@@ -4226,9 +4555,10 @@ function triggerHolds(terms, a) {
     "same-errors": a.sameErrors,
     "unchanged": a.unchanged,
     "runs": a.runs,
-    "check-fails": a.checkFails,
     "empty-results": a.emptyResults,
     "minutes": a.firstRunAt == null ? 0 : (Date.now() - a.firstRunAt) / 60000,
+    "unsure": a.unsure ?? 0,
+    "guess-differed": a.guessDiffered ?? 0,
   };
   return Object.entries(terms).every(([key, count]) => (value[key] ?? 0) >= count);
 }
@@ -4376,9 +4706,14 @@ function clearCellRunning(cell, previousLabel) {
   cell.runBtn.classList.remove("dl-btn-stop");
   const runIcon = cell.runBtn.querySelector(".dl-btn-icon");
   if (runIcon) runIcon.innerHTML = "&#9654;"; // ▶, back from Stop's ■
+  /* A run can now start before Python has booted (the comparison's
+   * button, the predict block's "Run it and see"), when the label it
+   * captured was the boot's "Loading…"; once Python is ready, the label
+   * is "Run" whatever was captured. */
   setBtnLabel(
     cell.runBtn,
-    previousLabel === "Running…" || previousLabel === "Stop" ? "Run" : previousLabel,
+    pyodideReady || previousLabel === "Running…" || previousLabel === "Stop"
+      ? "Run" : previousLabel,
   );
 }
 
@@ -4474,7 +4809,7 @@ async function runCellBatch(list, { reset, emptyMessage, describe }) {
 }
 
 async function runAllCells() {
-  await runCellBatch(cells, {
+  await runCellBatch(visibleCells(), {
     reset: true,
     emptyMessage: "No cells to run.",
     describe: (n) => `Running ${n} cell${n === 1 ? "" : "s"}…`,
@@ -4482,9 +4817,10 @@ async function runAllCells() {
 }
 
 async function runAbove(id) {
-  const idx = cells.findIndex((c) => c.id === id);
+  const shown = visibleCells();
+  const idx = shown.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(0, idx + 1);
+  const slice = shown.slice(0, idx + 1);
   await runCellBatch(slice, {
     reset: true,
     emptyMessage: "No cells above this one to run.",
@@ -4493,9 +4829,10 @@ async function runAbove(id) {
 }
 
 async function runBelow(id) {
-  const idx = cells.findIndex((c) => c.id === id);
+  const shown = visibleCells();
+  const idx = shown.findIndex((c) => c.id === id);
   if (idx === -1) return;
-  const slice = cells.slice(idx);
+  const slice = shown.slice(idx);
   await runCellBatch(slice, {
     reset: false,
     emptyMessage: "No cells here or below to run.",
@@ -4849,6 +5186,7 @@ function saveNow() {
     "tutorial-slug": currentManifest.slug,
     "tutorial-version": currentManifest.version,
     saved_at: new Date().toISOString(),
+    ...(currentWorld ? { world: currentWorld } : {}),
     notes: notesEl ? notesEl.value : "",
     highlights: highlights.map((h) => ({ ...h })),
     cells: cells.map((cell) => ({
@@ -4860,6 +5198,7 @@ function saveNow() {
       attempts: cell.attempts,
       hints_shown: cell.hints.filter((hint) => hint.revealed).map((hint) => hint.index),
       guesses: cellGuesses(cell),
+      prediction: predictionRecord(cell),
     })),
     // A site editor's own preview and console are cheap to rebuild — no
     // Pyodide, no network — so unlike a cell's output_html, nothing here
@@ -4976,8 +5315,10 @@ function restoreSaved() {
       }
     }
     if (Array.isArray(saved.guesses)) restoreGuesses(cell, saved.guesses);
+    if (saved.prediction) restorePrediction(cell, saved.prediction);
     restored.push(cell.id);
   }
+  updateSurprises();
 
   const droppedHighlights = [];
   if (Array.isArray(record.highlights)) {
@@ -5051,14 +5392,12 @@ function restoreSaved() {
           if (typeof saved.selected[index] === "string") gap.value = saved.selected[index];
         });
       }
-      // Recomputed, not merely redisplayed: a gap's own correctness can
-      // only be read once its saved value is back in the control, and
-      // this is also what redraws the pass/fail classes on each gap the
-      // way they looked when the reader last pressed Check. evaluateQuestion(),
-      // not checkQuestion() — this is redrawing a check already made, not
-      // making a new one, and question.checked is set just below either way.
+      // Redrawn once the saved choice is back in the controls, so the
+      // note shown is the one for the reader's own choice. revealAnswer(),
+      // not showPageAnswer(): this redraws what the reader already asked
+      // to see, and needs no fresh save.
       if (saved.checked) {
-        evaluateQuestion(question);
+        revealAnswer(question);
         question.checked = true;
       }
     }
@@ -5324,7 +5663,7 @@ function progressCounts(entries) {
 
 function liveProgressCounts() {
   return progressCounts(
-    cells.map((cell) => ({
+    visibleCells().map((cell) => ({
       started: !!cell.outputEl.innerHTML,
       errored: !!cell.outputEl.querySelector(".dl-error"),
     }))
@@ -5973,9 +6312,12 @@ const textureState = initTexture((dark) => {
 });
 initSegKeyboardNav();
 
+// Before the cells are built, so a hidden world's editors start hidden.
+initWorlds();
 buildCells(currentManifest);
 buildToolkitLine(currentManifest);
 buildQuestions();
+initChallenges(currentManifest);
 buildSiteEditors(currentManifest);
 wireDiagramWidthSliders();
 buildAppCells(currentManifest);
@@ -5984,6 +6326,7 @@ if (currentManifest.appCells && currentManifest.appCells.length) {
 }
 initProgressSection();
 initCustomCellsSection();
+keepCodeFromTranslation();
 initExecutionSection();
 initRunStatsToggle();
 initStagedHintsToggles();

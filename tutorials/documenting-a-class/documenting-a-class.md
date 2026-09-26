@@ -70,7 +70,7 @@ and keeps it there, for `help()`, an editor or a reader to find.
 
 ### Your turn
 
-1. The cell below holds the `Polynomial` class from [A class with many methods: building a polynomial class](tutorial:one-class-many-methods). Write a class docstring that
+1. The cell below holds a `Polynomial` class, which stores a polynomial as a list of its coefficients. Write a class docstring that
    says what one `Polynomial` object represents.
 2. Call `help()` on `Polynomial` to check it.
 
@@ -293,7 +293,8 @@ last section, we found a docstring that no longer matched its code. Have
 you ever read code with a comment or docstring like that? If so, what did
 you do about it?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

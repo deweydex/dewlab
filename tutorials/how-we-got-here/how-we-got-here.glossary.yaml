@@ -40,20 +40,43 @@ entries:
       A paradigm is a way of organising a program: a set of habits about
       where the logic goes and what the pieces are. Some languages,
       including Python, let you use several.
-  - term: procedural, functional, object-oriented
+  - term: procedural, declarative, functional, object-oriented
     kind: concept
     definition: >
-      These are three paradigms. Procedural code says how to build the
-      answer, step by step. Functional code says what the answer is.
-      Object-oriented code keeps the data and the things you do to it
-      together.
-  - term: "chr()"
-    python: chr
-    kind: function
-    definition: Turns a number into the character it stands for.
-    example: 'chr(72)  # "H"'
+      These are four paradigms. Procedural code says how to build the
+      answer, step by step. Declarative code says what the answer is.
+      Functional code treats functions as values, handed to other
+      functions. Object-oriented code keeps the data and the things you do
+      with it together.
   - term: ASCII
     kind: concept
     definition: >
       ASCII is a standard code that gives each text character a number.
       For example, 72 is the code for H.
+  - term: base 10
+    kind: concept
+    definition: >
+      Base 10, or decimal, is the number system we use every day. It has
+      ten digits, 0 to 9, and each position is worth a power of 10.
+  - term: binary
+    kind: concept
+    definition: >
+      Binary is base 2, the number system computers use. It has two digits,
+      0 and 1, and each position is worth a power of 2. Python writes it
+      with a 0b in front: 0b101010.
+  - term: hexadecimal
+    kind: concept
+    definition: >
+      Hexadecimal is base 16. It uses the digits 0 to 9 and the letters A
+      to F. One hex digit matches exactly four binary digits. Python writes
+      it with a 0x in front: 0x2A.
+  - term: "bin()"
+    python: bin
+    kind: function
+    definition: Changes a number into its binary form, as text.
+    example: "bin(42)  # '0b101010'"
+  - term: "hex()"
+    python: hex
+    kind: function
+    definition: Changes a number into its hexadecimal form, as text.
+    example: "hex(42)  # '0x2a'"

@@ -1,7 +1,7 @@
 ---
 title: "Systems of equations: solving them with matrices"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   a-system-you-can-already-solve:
     touches: [CMPS-LO4]
@@ -126,7 +126,7 @@ one column at a time.
 
 The cell below uses the third move twice. It takes 2 × row 1 away from
 row 2, and row 1 away from row 3. Each line uses a list comprehension,
-from [Lists: keeping many values in order](tutorial:lists-and-sequences),
+from [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
 to work out all four numbers in the new row at once. What will the first
 number in each new row be?
 
@@ -189,9 +189,24 @@ hint: Row 2 is -3y - z = -9. Once you know z, that's one equation in one unknown
 # z, then y, then x
 ```
 
+```inputs
+z
+y
+x
+```
+
+```solution
+z = -21 / -7
+y = (-9 + z) / -3
+x = (row1[3] - row1[1] * y - row1[2] * z) / row1[0]
+---
+Back up the staircase: the last row gives `z`, row 2 then has one
+unknown left, and row 1 has one after that.
+```
+
 ```python exec
 id: reading-off-the-answer-2
-check([x, y, z], [1, 2, 3])
+print(x, y, z)
 ```
 
 ## Checking your work

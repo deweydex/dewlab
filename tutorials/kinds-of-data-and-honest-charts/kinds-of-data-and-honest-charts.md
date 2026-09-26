@@ -70,15 +70,19 @@ type: fill-in-the-blank
 ```question
 id: kinds-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 Seven friends' bus journeys take 12, 15, 15, 18, 20, 25 and 60 minutes.
 What is the median journey?
 
 - 15 minutes
+  - 15 is the most common journey, the mode, not the middle one.
 - 18 minutes
+  - Seven journeys in order: the fourth is in the middle.
 - 23.6 minutes
+  - 23.6 is the mean, 165 ÷ 7, pulled up by the 60-minute journey.
 - 60 minutes
+  - 60 is the longest journey, not the middle one.
 ```
 
 ## Four kinds of data
@@ -130,15 +134,19 @@ move is the same, and the space is different.
 ```question
 id: kinds-four-kinds-1
 type: multiple-choice
-correct: 1
+answer: 1
 
 A football team's shirts have numbers on the back: 1, 7, 9, 10 and so
 on. What kind of data is a shirt number?
 
 - nominal: the number is a name, and adding two of them means nothing
+  - A 10 is not more of anything than a 7: the number names a player, the way a word would.
 - ordinal: a 10 is higher than a 7
+  - The numbers can be put in order, but a 10 on a shirt is not ahead of a 7 in anything.
 - discrete: it is a whole number
+  - It is a whole number, but nothing is being counted with it.
 - continuous: it is a number
+  - It is written in digits, but nothing is being measured with it.
 ```
 
 A number is not always numerical data. A shirt number, a phone number

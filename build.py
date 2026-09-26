@@ -169,14 +169,11 @@ CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
 # A ```question fence's own header: flat headers, the same loop
 # CARD_HEADER_RE's own caller (parse_card) already uses, then ordinary
 # markdown.
-QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|correct)\s*:\s*(.*)$")
+QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|answer|correct)\s*:\s*(.*)$")
 QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # One flat level of {...} — a gap with no "|" is a typing box, one with
 # "|" a dropdown, the first item either way the expected answer.
 GAP_RE = re.compile(r"\{([^{}]*)\}")
-# "- an option" / "* an option" / "+ an option" — the same three markers
-# Python-Markdown's own sane_lists extension accepts.
-OPTION_LINE_RE = re.compile(r"^[ \t]*[-*+]\s+(.*\S)\s*$")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
 # (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
 # purpose, but a separate pair of constants: site fences and app fences
@@ -197,12 +194,18 @@ TRIGGER_KEYS = {
     "identical-errors": "same-errors",
     "unchanged runs": "unchanged", "unchanged run": "unchanged", "unchanged": "unchanged",
     "runs": "runs", "run": "runs",
-    "failed checks": "check-fails", "failed check": "check-fails",
-    "check-fails": "check-fails", "failed-checks": "check-fails",
     "empty results": "empty-results", "empty result": "empty-results",
     "empty-results": "empty-results", "empty-result": "empty-results",
     "minutes": "minutes", "minute": "minutes",
+    # The predict block's two moments (#313): the reader says they are not
+    # sure yet, and a guess and the output differ. Either may be written
+    # bare, meaning once.
+    "unsure": "unsure", "not sure": "unsure",
+    "guess differed": "guess-differed", "guesses differed": "guess-differed",
+    "guess-differed": "guess-differed",
 }
+# Signals that read naturally with no number: `after: unsure`.
+BARE_TRIGGERS = {"unsure", "not sure", "guess differed", "guess-differed"}
 TRIGGER_TERM_RE = re.compile(
     r"^(?:(?P<n1>\d+)\s+(?P<k1>[a-z][a-z -]*[a-z])|(?P<k2>[a-z][a-z-]*)\s*:\s*(?P<n2>\d+))$"
 )
@@ -215,7 +218,19 @@ INPUTS_HEADER_RE = re.compile(r"^\s*(for|guess)\s*:\s*(.*)$")
 DEFAULT_SOLUTION_TITLE = "One way to do it"
 # A line holding only `---` ends a solution's code and starts its notes.
 SOLUTION_NOTES_RE = re.compile(r"^---[ \t]*$", re.MULTILINE)
+# The ```predict block (#313): a guess written before the cell runs.
+PREDICT_HEADER_RE = re.compile(r"^\s*(for|type|tolerance)\s*:\s*(.*)$")
+PREDICT_TYPES = ("choice", "number", "text")
+# An option starts at the left margin; an indented bullet under it is its
+# note; an indented plain line carries on whichever came last (#314).
+PREDICT_OPTION_RE = re.compile(r"^[-*+]\s+(.*\S)\s*$")
+NOTE_LINE_RE = re.compile(r"^[ \t]+[-*+]\s+(.*\S)\s*$")
 INCLUDE_RE = re.compile(r"\{\{\s*include\s*:\s*(?P<path>[^}]+?)\s*\}\}")
+# A line holding only {{include: setup/x.md}}, in a page's prose. Markdown
+# includes are expanded before anything else reads the page, so an included
+# heading, cell or block is the page's own; a .py include stays for a cell.
+PROSE_INCLUDE_RE = re.compile(
+    r"^\{\{\s*include\s*:\s*(?P<path>[^}]+?\.md)\s*\}\}[ \t]*$", re.MULTILINE)
 TIGHT_LIST_RE = re.compile(
     r"(?m)^(?P<prose>(?![ \t]*(?:[-*+]|\d+[.)])\s)(?![ \t]*#)(?![ \t]*>)[^\n]*\S[^\n]*)\n"
     r"(?P<item>[ \t]*(?:[-*+]|\d+[.)])\s+\S)"
@@ -245,7 +260,24 @@ MARKDOWN_WRAPPER_RE = re.compile(
     r'<details class="(?:dl-hint|dl-answer|dl-why)">'
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
     r'|<aside class="dl-note" id="[^"]+">'
+    r'|<div class="dl-world" data-world="[a-z0-9-]+">'
 )
+# A closer's challenge (#316): the language of each starter fence, and where
+# each kind opens, relative to the site root, with its button's words.
+CHALLENGE_LANGS = ("python", "html", "css", "js")
+CHALLENGE_TARGETS = {
+    "notebook": ("compose/notebook.html", "Open it in the Notebook"),
+    "workspace": ("compose/workspace.html", "Open it in the Workspace"),
+}
+# A link the build writes before it knows how deep the page sits; write()
+# turns it into the page's own way back to the site root.
+ROOT_HREF = 'href="dlroot:'
+# A task's variant for one world (#315): the opening tag on a line of its
+# own, a world key from the page's `worlds:` frontmatter, and a matching
+# `</div>` further down. See world_spans().
+WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
+WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
 # A run of one or more adjacent card placeholders — see place_page_cards().
 # Whitespace only between them: inside an md_in_html wrapper (the home
 # page's dl-hero) adjacent cards come out one newline apart, not two.
@@ -277,6 +309,11 @@ class Cell:
     # they test; `tested_by` is the other end, set on that cell.
     tests_for: str | None = None
     tested_by: str | None = None
+    predict: "Predict | None" = None
+    # The world variant this cell sits in (#315), and which run of adjacent
+    # variants that is: None for a cell every reader sees.
+    world: str | None = None
+    world_group: int | None = None
 
     @property
     def toolkit_reference(self) -> str:
@@ -308,6 +345,26 @@ class Solution:
 
 
 @dataclass
+class PredictOption:
+    """One option of a choice prediction, and the note naming the thinking
+    that leads to it. Neither is ever marked right or wrong."""
+
+    text: str
+    note: str = ""
+
+
+@dataclass
+class Predict:
+    """A ```predict fence: the reader's guess, written before the cell runs."""
+
+    cell: str
+    type: str
+    prompt: str
+    options: list[PredictOption] = field(default_factory=list)
+    tolerance: float | None = None
+
+
+@dataclass
 class Case:
     """One line of an ```inputs fence: an expression, and what it is for."""
 
@@ -322,6 +379,17 @@ class Inputs:
     cell: str
     cases: list[Case]
     guess: bool = False
+
+
+@dataclass
+class Challenge:
+    """A page closer's challenge (#316): a ```python challenge fence, which
+    opens in the Notebook, or adjacent ```html/css/js challenge fences, one
+    starter the Workspace opens as a site. `parts` maps each language to
+    its starter code."""
+
+    target: str
+    parts: dict[str, str]
 
 
 @dataclass
@@ -352,16 +420,20 @@ class Question:
     multiple-choice, each entry in `options` are raw markdown, converted at render time
     (render_question()) rather than here — the same split parse_hint()/
     render_staged_hint() already make, so the checks below read source
-    text, not converted HTML. `correct` is a multiple-choice option's
-    1-based position in `options`; unused (0) for fill-in-the-blank,
-    where the expected answer for each {...} gap is read straight out
-    of `prompt` at render time instead."""
+    text, not converted HTML. `answer` is the 1-based position in
+    `options` of the page's own answer (the `answer:` line), shown to a
+    reader only when they ask for it, and never called right (#314); unused
+    (0) for fill-in-the-blank, where the page's word for each {...} gap is
+    read straight out of `prompt` at render time instead. `notes` holds,
+    per option, the line naming the thinking that leads to it, or "" for
+    an option without one."""
 
     id: str
     type: str
     prompt: str
     options: list[str] = field(default_factory=list)
-    correct: int = 0
+    answer: int = 0
+    notes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -720,23 +792,40 @@ def loosen_tight_lists(body: str) -> str:
     return body
 
 
+def _included_text(rel: str, path: Path) -> str:
+    """The contents of an included file, named relative to the repository."""
+    rel = rel.strip()
+    target = (ROOT / rel).resolve()
+    if not str(target).startswith(str(ROOT)):
+        fail(path, f"include escapes the repository: {rel}")
+    if not target.is_file():
+        fail(path, f"include names a file that does not exist: {rel}")
+    return target.read_text().strip("\n")
+
+
 def expand_includes(code: str, path: Path) -> str:
     """Replace {{include: setup/x.py}} with the contents of that file.
 
     De-duplicates the source, not the runtime: the expanded cell still
     executes on every page load.
     """
+    return INCLUDE_RE.sub(lambda match: _included_text(match.group("path"), path), code)
 
-    def one(match: re.Match) -> str:
-        rel = match.group("path").strip()
-        target = (ROOT / rel).resolve()
-        if not str(target).startswith(str(ROOT)):
-            fail(path, f"include escapes the repository: {rel}")
-        if not target.is_file():
-            fail(path, f"include names a file that does not exist: {rel}")
-        return target.read_text().strip("\n")
 
-    return INCLUDE_RE.sub(one, code)
+def expand_prose_includes(body: str, path: Path) -> str:
+    """Replace a line holding only {{include: setup/x.md}} with that file.
+
+    For prose two pages share word for word, such as what to do when a cell
+    fails. The included markdown becomes part of the page before it is
+    parsed, so its headings, cells and blocks are the page's own. It is
+    not expanded again: an include inside an include is left as written.
+    """
+    body = PROSE_INCLUDE_RE.sub(lambda match: _included_text(match.group("path"), path), body)
+    for match in INCLUDE_RE.finditer(body):
+        if match.group("path").strip().endswith(".md"):
+            fail(path, f"{match.group(0)} shares its line with other text; a markdown "
+                       "include has to be a line of its own")
+    return body
 
 
 def parse_cell(body: str, path: Path, cell_type: str = "python") -> Cell:
@@ -824,6 +913,60 @@ def _split_solution(text: str) -> tuple[str, str]:
     if not match:
         return text, ""
     return text[:match.start()], text[match.end():]
+
+
+def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
+    """A ```predict fence: `for:`, `type:` and `tolerance:`, then the
+    question, then for a choice the options as a list at the left margin.
+    An indented bullet under an option is its note (options_and_notes()).
+    `type:` defaults to `choice` when there is a list and `text` when
+    there is not."""
+    lines = body.split("\n")
+    header = _block_header(lines, PREDICT_HEADER_RE)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a predict fence has no exec cell above it and no `for:` "
+                   "line naming one")
+    first_option = next((i for i, line in enumerate(lines) if PREDICT_OPTION_RE.match(line)),
+                        None)
+    kind = (header.get("type") or ("choice" if first_option is not None else "text")).lower()
+    if kind not in PREDICT_TYPES:
+        fail(path, f"the prediction for cell {cell!r} says `type: {kind}` — one of "
+                   f"{', '.join(PREDICT_TYPES)}")
+    options: list[PredictOption] = []
+    prompt_lines = lines
+    if kind == "choice":
+        if first_option is None:
+            fail(path, f"the prediction for cell {cell!r} is a choice with no options — "
+                       "list them with `- ` at the left margin")
+        prompt_lines = lines[:first_option]
+        texts, notes, stray = options_and_notes(lines[first_option:])
+        if stray:
+            fail(path, f"the prediction for cell {cell!r} has a line after its "
+                       f"options that is neither an option nor indented under one: "
+                       f"{stray[0].strip()!r}")
+        options = [PredictOption(text=text, note=note) for text, note in zip(texts, notes)]
+        if len(options) < 2:
+            fail(path, f"the prediction for cell {cell!r} offers one option — a "
+                       "choice needs at least two")
+    tolerance = None
+    if "tolerance" in header:
+        if kind != "number":
+            fail(path, f"the prediction for cell {cell!r} has a tolerance, which only "
+                       "a `type: number` prediction uses")
+        try:
+            tolerance = float(header["tolerance"])
+        except ValueError:
+            fail(path, f"the prediction for cell {cell!r} says `tolerance: "
+                       f"{header['tolerance']}` — write a number")
+        if tolerance < 0:
+            fail(path, f"the prediction for cell {cell!r} has a negative tolerance")
+    prompt = "\n".join(prompt_lines).strip("\n")
+    if not prompt.strip():
+        fail(path, f"the prediction for cell {cell!r} asks no question")
+    for text in [prompt] + [o.text for o in options] + [o.note for o in options]:
+        no_footnotes_in(text, path, f"the prediction for cell {cell!r}")
+    return Predict(cell=cell, type=kind, prompt=prompt, options=options, tolerance=tolerance)
 
 
 def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
@@ -939,6 +1082,9 @@ def parse_trigger(text: str, path: Path) -> str:
     for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
         if not raw:
             continue
+        if raw in BARE_TRIGGERS:
+            terms.append(f"{TRIGGER_KEYS[raw]}:1")
+            continue
         match = TRIGGER_TERM_RE.match(raw)
         if not match:
             fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
@@ -949,7 +1095,8 @@ def parse_trigger(text: str, path: Path) -> str:
         if canonical is None:
             fail(path, f"a hint's after: line names a signal the runtime does not "
                        f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, failed checks, empty results, minutes")
+                       f"unchanged runs, runs, empty results, minutes, "
+                       f"unsure, guess differed")
         if count < 1:
             fail(path, f"a hint's after: count must be at least 1, not {count}")
         terms.append(f"{canonical}:{count}")
@@ -1089,6 +1236,95 @@ def render_solution(solution: Solution, maths: list[Math]) -> str:
     )
 
 
+def _inline(text: str) -> str:
+    """Markdown for one line of a block, as inline HTML: a single
+    paragraph's own <p> unwrapped, as a question's option is."""
+    converted = convert_prose_with_math(text)
+    if converted.startswith("<p>") and converted.endswith("</p>") and converted.count("<p>") == 1:
+        return converted[len("<p>"):-len("</p>")]
+    return converted
+
+
+def render_predict(prediction: Predict) -> str:
+    """The guess a ```predict fence becomes, drawn above its cell (#313).
+
+    The question, then a way to answer it (radio buttons for a choice, a
+    box for a number or a sentence), then how sure the reader is: sure, a
+    hunch, or not sure yet. Nothing here, and nothing the runtime adds
+    after a run, calls an answer right or wrong. Each option's note waits
+    in a hidden list until the cell has run, when the page shows the note
+    for the option the reader chose."""
+    safe_cell = html.escape(prediction.cell, quote=True)
+    tolerance = (f' data-tolerance="{prediction.tolerance:g}"'
+                 if prediction.tolerance is not None else "")
+    if prediction.type == "choice":
+        choices = "".join(
+            f'<label class="dl-predict-option"><input type="radio" '
+            f'name="dl-predict-{safe_cell}" value="{index}"> '
+            f'<span class="dl-predict-option-text">{_inline(option.text)}</span></label>'
+            for index, option in enumerate(prediction.options)
+        )
+        answer = (f'<div class="dl-predict-options" role="radiogroup" '
+                  f'aria-label="Your guess">{choices}</div>')
+    else:
+        mode = ' inputmode="decimal"' if prediction.type == "number" else ""
+        answer = (f'<input type="text" class="dl-predict-value"{mode} '
+                  'aria-label="Your guess" placeholder="Your guess">')
+    notes = "".join(
+        f'<div class="dl-predict-note" data-option="{index}" hidden>{_inline(option.note)}</div>'
+        for index, option in enumerate(prediction.options) if option.note
+    )
+    sure = "".join(
+        f'<button type="button" class="dl-predict-sure-btn" data-sure="{key}" '
+        f'aria-pressed="false">{label}</button>'
+        for key, label in (("sure", "Sure"), ("hunch", "A hunch"),
+                           ("unsure", "I\u2019m not sure yet"))
+    )
+    return (
+        f'<div class="dl-predict" id="dl-predict-{safe_cell}" data-cell="{safe_cell}" '
+        f'data-type="{prediction.type}"{tolerance}>'
+        f'<div class="dl-predict-prompt">{convert_prose_with_math(prediction.prompt)}</div>'
+        f"{answer}"
+        '<div class="dl-predict-sure" role="group" aria-label="How sure are you?">'
+        '<span class="dl-predict-sure-label">How sure are you?</span>'
+        f"{sure}</div>"
+        '<div class="dl-predict-unsure" hidden>'
+        "<p>That is a good place to start. "
+        '<span class="dl-predict-hint-open" hidden>The first hint under the cell '
+        "is open now. </span>Two ways on:</p>"
+        '<button type="button" class="dl-btn dl-predict-guess-now">Make a guess now</button> '
+        '<button type="button" class="dl-btn dl-predict-run">Run it and see</button>'
+        "</div>"
+        '<p class="dl-predict-footer">Guess first, or just run it.</p>'
+        '<div class="dl-predict-after" hidden aria-live="polite">'
+        '<div class="dl-predict-sides">'
+        '<div><span class="dl-predict-side-label">Your guess</span>'
+        '<span class="dl-predict-your"></span></div>'
+        '<div><span class="dl-predict-side-label">What the cell printed</span>'
+        '<span class="dl-predict-output"></span></div>'
+        "</div>"
+        '<p class="dl-predict-match" hidden>Your guess and the output match.</p>'
+        f"{notes}"
+        '<p class="dl-predict-which" hidden>Which line explains what you saw?</p>'
+        "</div>"
+        "</div>"
+    )
+
+
+# The end of a page with predict blocks (#313): the cells where the
+# reader's guess and the output differed, and the ones they were not sure
+# about. The runtime fills the list, and shows the section once it has
+# something in it.
+SURPRISES_HTML = (
+    '<section class="dl-surprises" hidden aria-labelledby="dl-surprises-heading">'
+    '<h2 id="dl-surprises-heading">Your surprises</h2>'
+    "<p>The cells where your guess and the output differed, and the ones you "
+    "were not sure about yet. They are worth a second look.</p>"
+    '<ul class="dl-surprises-list"></ul>'
+    "</section>"
+)
+
+
 def render_inputs(block: Inputs, has_solution: bool) -> str:
     """The comparison table an ```inputs fence becomes (#312).
 
@@ -1157,20 +1393,52 @@ def place_cell_blocks(page_html: str, solutions: list[Solution], inputs_blocks: 
     return page_html
 
 
-def _split_multiple_choice(text: str) -> tuple[str, list[str]]:
-    """The prompt, and the options under it: the prose before the first
-    list is the question, the list is the options. The first line that
-    reads as a bullet starts the options; every bullet line from there
-    on is one option, in source order, whatever else sits between them."""
+def options_and_notes(lines: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """A list of options, as a question or a prediction writes them, read
+    into (options, notes, stray lines). An option is a bullet at the left
+    margin. An indented bullet under it is its note: the thinking that
+    leads to it. An indented plain line carries on whichever came last,
+    option or note, so a long option can wrap. Anything else is returned
+    as stray, for the caller to refuse or ignore."""
+    options: list[str] = []
+    notes: list[str] = []
+    stray: list[str] = []
+    last = None
+    for line in lines:
+        option = PREDICT_OPTION_RE.match(line)
+        note = NOTE_LINE_RE.match(line)
+        if option:
+            options.append(option.group(1))
+            notes.append("")
+            last = "option"
+        elif note and options:
+            notes[-1] = f"{notes[-1]} {note.group(1)}".strip()
+            last = "note"
+        elif options and line.strip() and line[:1].isspace():
+            if last == "note":
+                notes[-1] = f"{notes[-1]} {line.strip()}"
+            else:
+                options[-1] = f"{options[-1]} {line.strip()}"
+        elif line.strip():
+            stray.append(line)
+    return options, notes, stray
+
+
+def _split_multiple_choice(text: str) -> tuple[str, list[str], list[str]]:
+    """The prompt, the options under it, and each option's note: the prose
+    before the first list is the question, the list is the options. The
+    first bullet at the left margin starts the options, read by
+    options_and_notes(): a margin bullet is an option, an indented bullet
+    its note (#314), an indented plain line a wrapped continuation."""
     lines = text.split("\n")
     start = len(lines)
     for index, line in enumerate(lines):
-        if OPTION_LINE_RE.match(line):
+        if PREDICT_OPTION_RE.match(line):
             start = index
             break
     prompt = "\n".join(lines[:start]).strip()
-    options = [m.group(1) for line in lines[start:] for m in [OPTION_LINE_RE.match(line)] if m]
-    return prompt, options
+    options, notes, _ = options_and_notes(lines[start:])
+    return prompt, options, notes
 
 
 def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
@@ -1192,7 +1460,7 @@ def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
 
 
 def parse_question(body: str, path: Path) -> Question:
-    """Read `id:`, `type:` and `correct:` off the top of a ```question
+    """Read `id:`, `type:` and `answer:` off the top of a ```question
     fence — the same header loop parse_cell() and parse_hint() use.
     Everything after the header lines is the question's own markdown:
     the prompt (and, for multiple-choice, the options after it) or the
@@ -1221,19 +1489,22 @@ def parse_question(body: str, path: Path) -> Question:
     no_footnotes_in(text, path, f"question {question_id!r}")
 
     if question_type == "multiple-choice":
-        prompt, options = _split_multiple_choice(text)
+        prompt, options, notes = _split_multiple_choice(text)
         if not prompt:
             fail(path, f"question {question_id!r} has options but no question above them")
         if len(options) < 2:
             fail(path, f"question {question_id!r} has fewer than two options")
-        raw_correct = header.get("correct")
-        if not raw_correct:
-            fail(path, f"question {question_id!r} is multiple-choice and has no `correct:` line")
-        if not raw_correct.isdigit() or not (1 <= int(raw_correct) <= len(options)):
-            fail(path, f"question {question_id!r}'s `correct: {raw_correct}` does not "
+        # `answer:` names the page's own answer; `correct:`, its older
+        # spelling, still reads the same.
+        key = "answer" if "answer" in header else "correct"
+        raw_answer = header.get(key)
+        if not raw_answer:
+            fail(path, f"question {question_id!r} is multiple-choice and has no `answer:` line")
+        if not raw_answer.isdigit() or not (1 <= int(raw_answer) <= len(options)):
+            fail(path, f"question {question_id!r}'s `{key}: {raw_answer}` does not "
                        f"name one of its {len(options)} options")
         return Question(id=question_id, type=question_type, prompt=prompt,
-                         options=options, correct=int(raw_correct))
+                         options=options, answer=int(raw_answer), notes=notes)
 
     _check_balanced_gaps(text, path, question_id)
     if not GAP_RE.search(text):
@@ -1242,22 +1513,24 @@ def parse_question(body: str, path: Path) -> Question:
 
 
 def render_question(question: Question) -> str:
-    """The markup `buildQuestions()` (tutorial-runtime.js) binds a Check
-    button and its feedback to.
+    """The markup `buildQuestions()` (tutorial-runtime.js) binds a
+    "Show the page's answer" button and its feedback to.
 
-    Correctness lives in the markup itself, on the option or gap it
-    belongs to (`data-correct="true"`, or a typing gap's own
-    `data-expected`), rather than in a separate manifest entry: a reader
-    who opens the page's source can read the answer, which is the right
-    trade for a self-check and the wrong one for an exam. Marking the
-    answer instead of its position is also what lets the runtime shuffle
-    the options it draws without a second, parallel record of which one
-    moved where.
+    Nothing here is a verdict (#314). The page's own answer lives in the
+    markup, on the option or gap it belongs to (`data-answer="true"`, or a
+    typing gap's own `data-expected`), and the reader sees it only when
+    they ask, beside their own choice: never "right", never "not yet". A
+    reader who opens the page's source can read it, which is the right
+    trade for a question to think with and the wrong one for an exam.
+    Marking the answer instead of its position is also what lets the
+    runtime shuffle the options it draws without a second, parallel record
+    of which one moved where. Each option's note waits hidden in the
+    feedback slot, and the runtime shows the one for the reader's choice.
 
-    Both types share the same outer shell (a prompt, a Check button, a
-    closed feedback slot) and differ only in what sits between: a column
-    of option buttons for multiple-choice, or the prompt's own sentence
-    with each {...} gap already turned into a real control for
+    Both types share the same outer shell (a prompt, the button, a closed
+    feedback slot) and differ only in what sits between: a column of
+    option buttons for multiple-choice, or the prompt's own sentence with
+    each {...} gap already turned into a real control for
     fill-in-the-blank.
     """
     safe_id = html.escape(question.id, quote=True)
@@ -1270,11 +1543,15 @@ def render_question(question: Question) -> str:
             # inline content sitting on a button, not a block of its own.
             if option_html.startswith("<p>") and option_html.endswith("</p>"):
                 option_html = option_html[len("<p>"):-len("</p>")]
-            correct_attr = ' data-correct="true"' if position == question.correct else ""
+            answer_attr = ' data-answer="true"' if position == question.answer else ""
             option_items.append(
                 f'<button type="button" class="dl-question-option" '
-                f'data-option="{position}"{correct_attr}>{option_html}</button>'
+                f'data-option="{position}"{answer_attr}>{option_html}</button>'
             )
+        notes_html = "".join(
+            f'<div class="dl-question-note" data-option="{position}" hidden>{_inline(note)}</div>'
+            for position, note in enumerate(question.notes, start=1) if note
+        )
         options_html = (
             '<div class="dl-question-options" role="group" '
             f'aria-label="Choose one">{"".join(option_items)}</div>'
@@ -1284,7 +1561,7 @@ def render_question(question: Question) -> str:
             choices = [c.strip() for c in raw.split("|")] if "|" in raw else None
             if choices is not None:
                 option_tags = "".join(
-                    (f'<option data-correct="true">{html.escape(choice)}</option>' if i == 0
+                    (f'<option data-answer="true">{html.escape(choice)}</option>' if i == 0
                      else f"<option>{html.escape(choice)}</option>")
                     for i, choice in enumerate(choices)
                 )
@@ -1315,21 +1592,107 @@ def render_question(question: Question) -> str:
         for index, raw in enumerate(gaps):
             prompt_html = prompt_html.replace(f"dlgap{index}z", gap_widget(raw))
         options_html = ""
+        notes_html = ""
+    reveal = ("Show the page\u2019s answer" if question.type == "multiple-choice"
+              else "Show the page\u2019s words")
     return (
         f'<div class="dl-question" id="dl-question-{safe_id}" '
         f'data-question-id="{safe_id}" data-question-type="{question.type}">'
         f'<div class="dl-question-prompt">{prompt_html}</div>'
         f"{options_html}"
-        '<button type="button" class="dl-btn dl-question-check" disabled>Check</button>'
-        '<div class="dl-question-feedback" hidden></div>'
+        f'<button type="button" class="dl-btn dl-question-check" disabled>{reveal}</button>'
+        '<div class="dl-question-feedback" hidden>'
+        f'<p class="dl-question-same" hidden>You chose the same as the page.</p>{notes_html}</div>'
         "</div>"
     )
 
 
+@dataclass
+class WorldSpan:
+    """One world's variant of a task (#315): where it starts and ends in the
+    source, its world, and the run of adjacent variants it belongs to."""
+
+    start: int
+    end: int
+    world: str
+    group: int
+
+
+def page_worlds(meta: dict, path: Path) -> dict[str, str]:
+    """The worlds a page offers, from its `worlds:` frontmatter: each key, in
+    order, with its one line. The first is the world the page teaches in."""
+    worlds = meta.get("worlds")
+    if worlds is None:
+        return {}
+    if not isinstance(worlds, dict) or not worlds:
+        fail(path, "`worlds:` lists each world as `key: one line saying what it is`")
+    for key, line in worlds.items():
+        if not isinstance(key, str) or not WORLD_KEY_RE.match(key):
+            fail(path, f"world {key!r} in `worlds:` is not a key like `sea-floor`: "
+                       "lower-case letters and digits, joined by hyphens")
+        if not isinstance(line, str) or not line.strip():
+            fail(path, f"world {key!r} in `worlds:` has no line saying what it is")
+    return {key: line.strip() for key, line in worlds.items()}
+
+
+def world_name(key: str) -> str:
+    """A world's key as a reader sees it: `sea-floor` is "Sea floor"."""
+    words = key.replace("-", " ")
+    return words[:1].upper() + words[1:]
+
+
+def world_spans(body: str, path: Path, worlds: dict[str, str]) -> list[WorldSpan]:
+    """Find each `<div class="dl-world" data-world="…">` variant in a page's
+    source, and the `</div>` that closes it (#315).
+
+    Fences are blanked out first, so a `</div>` inside a code example is
+    not taken for the end of a variant. A `<div>` the variant holds is
+    counted, so its own `</div>` is not either. Variants separated by
+    nothing but blank lines are one group: the same task, once per world."""
+    masked = FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
+    spans: list[WorldSpan] = []
+    open_span: tuple[int, str] | None = None
+    depth = 0
+    offset = 0
+    for line in masked.splitlines(keepends=True):
+        opening = WORLD_OPEN_RE.match(line.rstrip("\n"))
+        if opening:
+            world = opening.group("world")
+            if open_span is not None:
+                fail(path, f"the {world!r} variant starts inside the "
+                           f"{open_span[1]!r} one — close each with </div> first")
+            if not worlds:
+                fail(path, "this page has world variants and no `worlds:` in its "
+                           "frontmatter to say which worlds it offers")
+            if world not in worlds:
+                fail(path, f"a variant is for world {world!r}, which is not in "
+                           f"this page's `worlds:` ({', '.join(worlds)})")
+            open_span, depth = (offset, world), 1
+        elif open_span is not None:
+            depth += len(re.findall(r"<div\b", line)) - line.count("</div>")
+            if depth <= 0:
+                start, world = open_span
+                end = offset + len(line)
+                previous = spans[-1] if spans else None
+                # The source, not the masked copy: a cell between two variants
+                # is blank in the mask, and it ends the group.
+                joined = previous is not None and not body[previous.end:start].strip()
+                group = previous.group if joined else (previous.group + 1 if previous else 0)
+                if joined and any(s.world == world and s.group == group for s in spans):
+                    fail(path, f"two {world!r} variants of the same task sit side by "
+                               "side — a task has one variant per world")
+                spans.append(WorldSpan(start=start, end=end, world=world, group=group))
+                open_span = None
+        offset += len(line)
+    if open_span is not None:
+        fail(path, f"the {open_span[1]!r} variant has no </div> to close it")
+    return spans
+
+
 def extract_blocks(
-    body: str, path: Path,
+    body: str, path: Path, spans: list[WorldSpan] | None = None,
 ) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
-           list[AppCell], list[Solution], list[Inputs]]:
+           list[AppCell], list[Solution], list[Inputs], list[Challenge]]:
     """Pull every fence out, leaving a comment placeholder markdown will keep.
 
     An `exec` fence becomes a cell; a `python toolkit-reference` fence
@@ -1341,8 +1704,10 @@ def extract_blocks(
     becomes a `Question`; an `html app`/
     `css app`/`js app` fence becomes one pane of an `AppCell`, grouped
     the same way by its `app:` name; a `solution` or `inputs` fence
-    becomes a block attached to its cell (#312); any other fence becomes
-    an illustrative, read-only block.
+    becomes a block attached to its cell (#312), and a `predict` fence
+    one that leaves no placeholder, since render_cell() draws it above
+    its cell (#313); any other fence becomes an illustrative, read-only
+    block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1354,6 +1719,7 @@ def extract_blocks(
     app_cells: list[AppCell] = []
     solutions: list[Solution] = []
     inputs_blocks: list[Inputs] = []
+    predictions: list[Predict] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
     current_site: SiteEditor | None = None
@@ -1362,17 +1728,35 @@ def extract_blocks(
     current_app: AppCell | None = None
     last_app_pane_end = -1
     references: list[tuple[str, str]] = []
+    challenges: list[Challenge] = []
+    last_challenge_end = -1
+    # Each attached block, the cell it names, and the world variant it sits
+    # in, checked against its cell's once every cell is known (#315).
+    placed: list[tuple[str, str, str | None]] = []
+
+    def world_at(position: int) -> WorldSpan | None:
+        return next((span for span in spans or [] if span.start <= position < span.end), None)
 
     def one(match: re.Match) -> str:
         nonlocal current_site, last_site_pane_end, current_app, last_app_pane_end
+        nonlocal last_challenge_end
         info = match.group("info").strip().split()
         indent = match.group("indent")
+        span = world_at(match.start())
+        world = span.world if span else None
         if "exec" in info:
             cell_type = info[0] if info[0] != "exec" else "python"
             if cell_type not in CELL_TYPES:
                 fail(path, f"an exec cell's fence starts with {cell_type!r}, "
                            f"not one of {sorted(CELL_TYPES)}")
-            cells.append(parse_cell(match.group("body"), path, cell_type))
+            cell = parse_cell(match.group("body"), path, cell_type)
+            if span:
+                cell.world, cell.world_group = span.world, span.group
+                if not cell.id.endswith(f"--{span.world}"):
+                    fail(path, f"cell {cell.id!r} sits in the {span.world!r} variant, so "
+                               f"its id ends in `--{span.world}`, the way switching "
+                               "worlds keeps each world's saved work apart")
+            cells.append(cell)
             return f"{indent}<!--dewlab-cell-{len(cells) - 1}-->"
         if "toolkit-reference" in info:
             if info[0] != "python":
@@ -1384,15 +1768,44 @@ def extract_blocks(
             hint.index = hints_per_cell.get(hint.cell, 0)
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
+            placed.append(("hint", hint.cell, world))
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
         if info and info[0] == "solution":
             solutions.append(parse_solution(match.group("body"), path,
                                             cells[-1].id if cells else None))
+            placed.append(("solution", solutions[-1].cell, world))
             return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
+        if info and info[0] == "predict":
+            predictions.append(parse_predict(match.group("body"), path,
+                                             cells[-1].id if cells else None))
+            placed.append(("predict block", predictions[-1].cell, world))
+            return ""
         if info and info[0] == "inputs":
             inputs_blocks.append(parse_inputs(match.group("body"), path,
                                               cells[-1].id if cells else None))
+            placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
+        if len(info) >= 2 and info[1] == "challenge":
+            language = info[0]
+            if language not in CHALLENGE_LANGS:
+                fail(path, f"a challenge fence starts with {language!r}, not one of "
+                           f"{', '.join(CHALLENGE_LANGS)}")
+            code = match.group("body").strip("\n")
+            target = "notebook" if language == "python" else "workspace"
+            # html, css and js starters side by side are one site.
+            adjacent = (
+                target == "workspace" and challenges
+                and challenges[-1].target == "workspace"
+                and not body[last_challenge_end:match.start()].strip()
+            )
+            last_challenge_end = match.end()
+            if adjacent:
+                if language in challenges[-1].parts:
+                    fail(path, f"a challenge has two {language} starters side by side")
+                challenges[-1].parts[language] = code
+                return ""
+            challenges.append(Challenge(target=target, parts={language: code}))
+            return f"{indent}<!--dewlab-challenge-{len(challenges) - 1}-->"
         if len(info) >= 2 and info[1] == "site":
             language = info[0]
             if language not in SITE_LANGS:
@@ -1496,6 +1909,22 @@ def extract_blocks(
         if cell.inputs is not None:
             fail(path, f"cell {cell.id!r} has two inputs blocks — put every case in one")
         cell.inputs = block
+    for prediction in predictions:
+        cell = by_id.get(prediction.cell)
+        if cell is None:
+            fail(path, f"a prediction names a cell this tutorial does not have: "
+                       f"{prediction.cell!r}")
+        if cell.predict is not None:
+            fail(path, f"cell {cell.id!r} has two predict blocks — one guess per cell")
+        cell.predict = prediction
+    def where(world: str | None) -> str:
+        return f"in the {world!r} variant" if world else "outside every world variant"
+
+    for kind, cell_id, world in placed:
+        cell = by_id.get(cell_id)
+        if cell is not None and cell.world != world:
+            fail(path, f"a {kind} {where(world)} belongs to cell {cell_id!r}, which is "
+                       f"{where(cell.world)} — a block shows and hides with its cell's world")
     for cell in cells:
         if not cell.tests_for:
             continue
@@ -1503,6 +1932,9 @@ def extract_blocks(
         if target is None or target is cell:
             fail(path, f"cell {cell.id!r} says `tests: {cell.tests_for}`, and this "
                        "tutorial has no other cell with that id")
+        if target.world != cell.world:
+            fail(path, f"cell {cell.id!r} tests {target.id!r}, and the two are in "
+                       f"different worlds ({where(cell.world)}, {where(target.world)})")
         if target.tested_by:
             fail(path, f"cells {target.tested_by!r} and {cell.id!r} both say they test "
                        f"{target.id!r} — one cell of tests per cell")
@@ -1525,7 +1957,7 @@ def extract_blocks(
                 fail(path, f"two cells share the id {pane.id!r}")
             seen.add(pane.id)
     return (rewritten, cells, blocks, hints, site_editors, questions, app_cells,
-            solutions, inputs_blocks)
+            solutions, inputs_blocks, challenges)
 
 
 def extract_math(body: str, found: list[Math] | None = None) -> tuple[str, list[Math]]:
@@ -1641,7 +2073,8 @@ def render_cell(cell: Cell, number: int, page: str = "", version: str = "") -> s
         name_markup = f'<span class="dl-cell-name">{html.escape(cell.name)}</span>'
     type_label = "SQL" if cell.type == "sql" else "Python"
     return (
-        f'<div class="dl-cell" data-cell-id="{safe_id}">'
+        (render_predict(cell.predict) if cell.predict else "")
+        + f'<div class="dl-cell" data-cell-id="{safe_id}">'
         '<div class="dl-cell-head">'
         '<span class="dl-cell-pill">'
         f'<span class="dl-cell-pill-num">Cell {number}</span>'
@@ -1705,6 +2138,47 @@ def render_code_block(block: CodeBlock) -> str:
     lang = html.escape(block.language, quote=True)
     attr = f' data-lang="{lang}"' if lang else ""
     return f'<pre class="dl-static"{attr}><code>{html.escape(block.code)}</code></pre>'
+
+
+def render_challenge(challenge: Challenge, page: str, title: str) -> str:
+    """A closer's challenge (#316): its starter, read-only, and a link that
+    opens it in the Notebook or the Workspace as a new file named after the
+    page. The starter travels in the link's own address (`#challenge=`, a
+    JSON object), so opening it needs nothing from this page but the click,
+    and the Notebook or Workspace decides where it goes: a new tab, never
+    over one. On a downloaded page, with neither beside it, the runtime
+    swaps the link for the hidden Save button (initChallenges())."""
+    where, label = CHALLENGE_TARGETS[challenge.target]
+    payload: dict[str, str] = {"name": page, "page": title}
+    if challenge.target == "notebook":
+        payload["code"] = challenge.parts["python"]
+    else:
+        payload.update({lang: challenge.parts.get(lang, "") for lang in ("html", "css", "js")})
+    href = f"dlroot:{where}#challenge=" + urllib.parse.quote(
+        json.dumps(payload, ensure_ascii=False), safe="")
+    starters = "".join(
+        render_code_block(CodeBlock(language=lang, code=challenge.parts[lang]))
+        for lang in CHALLENGE_LANGS if lang in challenge.parts
+    )
+    return (
+        f'<div class="dl-challenge" data-target="{challenge.target}">{starters}'
+        '<p class="dl-challenge-actions">'
+        f'<a class="dl-btn dl-challenge-open" href="{html.escape(href, quote=True)}" '
+        f'target="_blank" rel="noopener">{label}</a>'
+        '<button type="button" class="dl-btn dl-challenge-save" hidden>Save it as a file</button>'
+        "</p></div>"
+    )
+
+
+def place_challenges(body_html: str, challenges: list[Challenge], page: str,
+                     title: str) -> str:
+    """Swap each challenge's placeholder for render_challenge()'s block."""
+    for index, challenge in enumerate(challenges):
+        placeholder = f"<!--dewlab-challenge-{index}-->"
+        if placeholder not in body_html:
+            raise BuildError(f"a challenge on {page!r} was lost during markdown conversion")
+        body_html = body_html.replace(placeholder, render_challenge(challenge, page, title))
+    return body_html
 
 
 def render_site_editor(editor: SiteEditor, index: int) -> str:
@@ -2139,12 +2613,12 @@ def place_blocks(
     function runs from `load()`, before the file has become a `Tutorial`
     object with a `.slug` of its own (`page` is `id_of(path)`).
     """
-    for index, cell in enumerate(cells):
+    for index, (cell, number) in enumerate(zip(cells, cell_numbers(cells))):
         placeholder = f"<!--dewlab-cell-{index}-->"
         if placeholder not in page_html:
             raise BuildError(f"cell {cell.id!r} was lost during markdown conversion")
         page_html = page_html.replace(
-            placeholder, render_cell(cell, index + 1, page, version)
+            placeholder, render_cell(cell, number, page, version)
         )
     for index, block in enumerate(blocks):
         page_html = page_html.replace(f"<!--dewlab-code-{index}-->", render_code_block(block))
@@ -2166,6 +2640,78 @@ def place_blocks(
     for index, item in enumerate(maths):
         page_html = page_html.replace(f"dlmath{index}z", render_math(item))
     return page_html
+
+
+def cell_numbers(cells: list[Cell]) -> list[int]:
+    """The number on each cell's pill, "Cell 3". A reader sees one world's
+    variant of a task at a time (#315), so each variant in a run of them
+    counts from the same number, and the cell after the run follows the
+    longest variant."""
+    numbers: list[int] = []
+    upcoming = 1
+    group: int | None = None
+    base = 0
+    counts: dict[str, int] = {}
+    for cell in cells:
+        if cell.world_group != group:
+            if group is not None:
+                upcoming = base + max(counts.values())
+            group, base, counts = cell.world_group, upcoming, {}
+        if group is None:
+            numbers.append(upcoming)
+            upcoming += 1
+        else:
+            numbers.append(base + counts.get(cell.world, 0))
+            counts[cell.world] = counts.get(cell.world, 0) + 1
+    return numbers
+
+
+def render_world_chooser(worlds: dict[str, str]) -> str:
+    """The worlds a page offers, as a choice near its top (#315). Hidden
+    until the runtime wires it, so a page without JavaScript shows every
+    variant, each under its world's name, and no control that does
+    nothing."""
+    choices = "".join(
+        '<label class="dl-world-choice">'
+        f'<input type="radio" name="dl-world" value="{html.escape(key, quote=True)}">'
+        f'<span class="dl-world-name">{html.escape(world_name(key))}</span>'
+        f'<span class="dl-world-line">{_inline(line)}</span></label>'
+        for key, line in worlds.items()
+    )
+    return (
+        '<fieldset class="dl-world-chooser" hidden>'
+        "<legend>Choose a world for this page</legend>"
+        f'<div class="dl-world-choices">{choices}</div>'
+        '<p class="dl-world-note">The tasks follow your choice. You can change it '
+        "at any time, and your work in each world is saved separately.</p>"
+        "</fieldset>"
+    )
+
+
+def place_worlds(body_html: str, spans: list[WorldSpan], worlds: dict[str, str],
+                 path: Path) -> str:
+    """Give each variant its group and its world's name, and put the chooser
+    under the page's title (#315). Variants reach here in source order, the
+    order world_spans() found them, since code examples were placeholders
+    when the markdown was converted and cannot hold a real variant."""
+    if not spans:
+        return body_html
+    if body_html.count('<div class="dl-world"') != len(spans):
+        fail(path, "a `<div class=\"dl-world\">` tag shares its line with other text — "
+                   "put each opening tag on a line of its own")
+    found = iter(spans)
+
+    def label(match: re.Match) -> str:
+        span = next(found)
+        return (f'<div class="dl-world" data-world="{span.world}" '
+                f'data-world-group="{span.group}">'
+                f'<p class="dl-world-label">{html.escape(world_name(span.world))}</p>')
+
+    body_html = WORLD_DIV_RE.sub(label, body_html)
+    chooser = render_world_chooser(worlds)
+    if "</h1>" in body_html:
+        return body_html.replace("</h1>", "</h1>\n" + chooser, 1)
+    return chooser + "\n" + body_html
 
 
 def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
@@ -4083,12 +4629,20 @@ if timed:
     signal.signal(signal.SIGALRM, alarm)
 
 
+missing = None  # the first package a cell asked for and this Python lacks
+
+
 async def run(code, name):
+    global missing
     tt._begin(name, tt._RecordingSink(), code)
     if timed:
         signal.alarm(job["seconds"])
     try:
         await tt._run_code(code, tt._page_globals, name)
+    except ModuleNotFoundError as exc:
+        # The cell stopped at its import, so whatever it would have made
+        # after that is missing for every solution below it.
+        missing = missing or f"{type(exc).__name__}: {exc}"
     except BaseException:
         pass  # a cell that fails as written is the page's own business
     finally:
@@ -4113,6 +4667,8 @@ async def main():
             finally:
                 if timed:
                     signal.alarm(0)
+            if missing:
+                result["missingModule"] = missing
             report.append({"cell": cell["id"], "result": result})
     sys.__stdout__.write(json.dumps(report))
 
@@ -4136,16 +4692,40 @@ def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
     Any other error an input raises is an outcome, and the table shows it.
 
     A Python without a package the page imports (a contributor's machine
-    without pandas, say) is noted and skipped, not failed: that says
-    nothing about the solution."""
-    last = max((i for i, c in enumerate(tutorial.cells) if c.solutions), default=None)
-    if last is None:
-        return
+    without pandas, say, or the publish job, which installs only
+    requirements-build.txt) is noted and skipped, not failed: that says
+    nothing about the solution. That holds when the import is in a cell
+    above the solution, too: once a cell stops at a missing package,
+    every solution below it is noted and skipped, since the names that
+    cell would have made are missing as well.
+
+    A page with world variants (#315) runs once per world, with the cells
+    a reader in that world would run: every cell outside a variant, and
+    that world's variants. Each world's solutions are checked in its own
+    run, and the solutions outside every variant in the first."""
+    worlds = list(dict.fromkeys(cell.world for cell in tutorial.cells if cell.world))
+    for position, world in enumerate(worlds or [None]):
+        seen = [cell for cell in tutorial.cells if cell.world in (None, world)]
+
+        def checked(cell: Cell) -> bool:
+            return bool(cell.solutions) and (
+                cell.world == world or (cell.world is None and position == 0))
+
+        last = max((i for i, cell in enumerate(seen) if checked(cell)), default=None)
+        if last is not None:
+            _run_solutions(tutorial, toolkit, seen[: last + 1], checked)
+
+
+def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], checked) -> None:
+    """One separate Python for check_solutions(): the cells in `seen`, in
+    order, each followed by its solutions where `checked(cell)` says so."""
     cells = []
-    for cell in tutorial.cells[: last + 1]:
+    for cell in seen:
         if cell.type != "python":
             continue
         cells.append({"id": cell.id, "code": cell.code})
+        if not checked(cell):
+            continue
         cases = [{"expr": case.expr, "label": case.label}
                  for case in (cell.inputs.cases if cell.inputs else [])]
         # Every solution, not only the first one the comparison uses. Each
@@ -4176,6 +4756,14 @@ def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
         if problem and problem.startswith("ModuleNotFoundError"):
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            continue
+        if result.get("missingModule"):
+            # A cell above it stopped at an import, so the names it would
+            # have made are missing too, and a NameError here would blame
+            # the solution for this Python's missing package.
+            print(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
+                  f"{result['missingModule']}", file=sys.stderr)
             continue
         if problem:
             fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
@@ -4515,8 +5103,11 @@ def load(path: Path) -> Tutorial:
     build.py builds starts here.
     """
     meta, body = split_frontmatter(path.read_text(), path)
+    body = expand_prose_includes(body, path)
+    worlds = page_worlds(meta, path)
+    spans = world_spans(body, path, worlds)
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,
-     solutions, inputs_blocks) = extract_blocks(body, path)
+     solutions, inputs_blocks, challenges) = extract_blocks(body, path, spans)
     stripped, maths = extract_math(stripped)
     stripped = loosen_tight_lists(stripped)
     converted, toc = to_html(stripped)
@@ -4524,7 +5115,11 @@ def load(path: Path) -> Tutorial:
     converted = place_cell_blocks(converted, solutions, inputs_blocks, cells, maths)
     body_html = place_blocks(converted, cells, blocks, maths, site_editors, questions, app_cells,
                               page=id_of(path), version=str(meta.get("version", "")))
+    body_html = place_challenges(body_html, challenges, id_of(path), str(meta.get("title", "")))
+    body_html = place_worlds(body_html, spans, worlds, path)
     body_html, notes = extract_notes(body_html, path)
+    if any(cell.predict for cell in cells):
+        body_html += SURPRISES_HTML
     anchors = (
         set(ID_RE.findall(body_html))
         | {c.id for c in cells}
@@ -4965,6 +5560,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     actual HTML file a browser can open.
     """
     up = "../" * tutorial.depth
+    body_html = body_html.replace(ROOT_HREF, f'href="{up}')
     manifest: dict[str, object] = {
         # `id` is the page's key for everything the runtime saves; `slug`
         # is the same string under the name the runtime's older readers
@@ -4994,6 +5590,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
                            for case in c.inputs.cases]} if c.inputs else {})
             | ({"guess": True} if c.inputs and c.inputs.guess else {})
             | ({"tests": c.tested_by} if c.tested_by else {})
+            | ({"predict": c.predict.type} if c.predict else {})
             for c in tutorial.cells
         ],
     }
@@ -5694,22 +6291,26 @@ SITE_PAGES: dict[str, tuple[str, str, str]] = {
     "home": ("index", "", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
     "about": ("about", "about", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
     "features": ("features", "features", '<a class="dl-nav-up" href="index.html">Home</a>'),
+    "studying": ("studying", "studying here", '<a class="dl-nav-up" href="index.html">Home</a>'),
+    "reading-helpers": ("reading-helpers", "reading helpers",
+                        '<a class="dl-nav-up" href="index.html">Home</a>'),
 }
 
 
 def write_page(shell: str, name: str) -> Path:
-    """One of the site's own pages — the home page, About, or the features
-    page — from `pages/<name>.md`, read through `read_page()`.
+    """One of the site's own pages — the home page, About, the features
+    page, Studying here or Reading helpers — from `pages/<name>.md`, read
+    through `read_page()`.
 
     A page is a hand-written markdown file with a `title` and nothing else
     in its frontmatter: no course, no version, no cells. `read_page()`
     converts its body the way a tutorial's prose converts, fills any
     `[[name]]` marker (`GENERATED_BLOCKS` — the live search box, the
     course cards) and any ```card fence, and this function only assembles
-    the shell around what it returns. The three pages differ in their
-    file name, the crumb in the corner and the one link the bottom nav
-    offers, which is what `SITE_PAGES` holds; everything else is the same,
-    and was written out three times before this function existed.
+    the shell around what it returns. The pages differ in their file
+    name, the crumb in the corner and the one link the bottom nav offers,
+    which is what `SITE_PAGES` holds; everything else is the same, and was
+    written out once per page before this function existed.
 
     Every word on these pages is student-facing: the plain-language rules
     in PEDAGOGICAL_STYLE_GUIDE.md#plain-language apply.
@@ -6757,6 +7358,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         if topics_page is not None:
             written.append(topics_page)
         written.append(write_page(shell, "about"))
+        written.append(write_page(shell, "studying"))
+        written.append(write_page(shell, "reading-helpers"))
         written.append(write_editor_page(shell))
         written.extend(write_redirects(written))
 

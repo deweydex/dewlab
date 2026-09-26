@@ -3218,6 +3218,44 @@ function applyImportedCells(imported, sourceLabel) {
   updateStatus(`Loaded ${imported.length} cell${imported.length === 1 ? "" : "s"} from ${sourceLabel} into a new tab.`, "ok");
 }
 
+/* A page's challenge (#316) arrives in the address the page's link opened:
+ * `#challenge=` and a JSON object, {name, page, code}. It opens as a new tab
+ * named after the page, beside the reader's other tabs and never over one.
+ * The same starter opened again goes back to the tab it made, if that tab
+ * still holds it unchanged; otherwise it gets a tab of its own. The address
+ * is cleared at once, so a reload does not open it a second time. */
+function openChallengeFromAddress() {
+  if (!location.hash.startsWith("#challenge=")) return;
+  const raw = location.hash.slice("#challenge=".length);
+  history.replaceState(null, "", location.pathname + location.search);
+  let starter;
+  try {
+    starter = JSON.parse(decodeURIComponent(raw));
+  } catch {
+    updateStatus("That challenge link could not be read. Copy the starter from the page instead.", "error");
+    return;
+  }
+  if (!starter || typeof starter.code !== "string") return;
+  const name = notebookNameFor(starter.name || "Challenge");
+  // "a-challenge", or the "a-challenge 2" it became beside a tab of that name.
+  const madeHere = (label) => label === name
+    || (label.startsWith(`${name} `) && /^\d+$/.test(label.slice(name.length + 1)));
+  const same = notebooks.find((nb) => madeHere(nb.name) && nb.cells.length === 1
+    && nb.cells[0].content === starter.code);
+  if (same) {
+    showNotebook(same.id);
+  } else {
+    const taken = new Set(notebooks.map((nb) => nb.name));
+    let unique = name;
+    for (let n = 2; taken.has(unique); n += 1) unique = `${name} ${n}`;
+    openNotebook(makeNotebook(unique, [{
+      id: generateId(), type: CELL_TYPES.PYTHON, content: starter.code, style: "",
+      output: "", error: false, collapsed: false,
+    }]));
+  }
+  updateStatus(`The challenge from "${starter.page || starter.name}" is in its own tab.`, "ok");
+}
+
 /* A tab name from whatever the import was called — the file's own name
  * without its extension, trimmed to something a tab can actually show. */
 function notebookNameFor(sourceLabel) {
@@ -4399,6 +4437,10 @@ async function init() {
   maybeHighlightExample();
   trackChromeHeight();
   observeThemeChanges();
+  openChallengeFromAddress();
+  // A challenge link followed while the Notebook is already open in this
+  // tab changes only the address, and the page does not reload.
+  window.addEventListener("hashchange", openChallengeFromAddress);
 }
 
 document.addEventListener("DOMContentLoaded", init);

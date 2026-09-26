@@ -240,8 +240,9 @@ readings[readings["evening"] > 14]
 `id` is how saved progress finds this cell again. Write it in small letters and
 hyphens. The usual shape is `<section-slug>-<n>`: `filter-evening-1` is the
 first cell under a heading whose slug is `filter-evening`. A cell inside a
-world variant adds its world after two hyphens: `your-turn-1--planets`
-([Worlds](#worlds)). It must be unique within the tutorial, and it should stay the same when you edit the cell. That is
+world variant adds its world after two hyphens, `your-turn-1--planets`, and
+the build fails without it ([Worlds](#worlds)). An id must be unique within
+the tutorial, and it should stay the same when you edit the cell. That is
 what lets you fix a typo without wiping what students have written. Once a
 tutorial has been in front of a class, a cell id is the key somebody's saved
 work lives under, and renaming one throws that work away. The editor warns
@@ -300,9 +301,10 @@ own:
   | `3 identical errors` | three runs in a row have ended in the same error |
   | `2 unchanged runs` | the reader has run the very same code twice more |
   | `8 runs` | the cell has run eight times |
-  | `3 failed checks` | a `check()` in the cell has failed on three runs in a row |
   | `2 empty results` | a `sql exec` cell's query has come back with no rows, two runs in a row |
   | `2 minutes` | two minutes have passed since the first run |
+  | `unsure` | the reader has said "I'm not sure yet" in the cell's predict block |
+  | `guess differed` | a run has ended with the reader's guess and the output different |
 
   Join several with a comma or `and`: `3 identical errors and 2 minutes`.
   Every term must hold. The `errors:5` spelling works too, if you prefer
@@ -329,8 +331,7 @@ It is evaluated after every run of that cell, in the page's own
 namespace. Once it holds, no further hint appears for the cell. Anything
 that goes wrong evaluating it counts as "not yet", so a name the reader
 has not defined is fine. The reader never sees the expression, and it
-never affects the run itself. A `check()` in the cell does the same job
-for the `failed checks` signal.
+never affects the run itself.
 
 A cell may also carry a `name:` line, a short label shown beside its
 identity pill — a handle a reader can point at ("the `filter-evening`
@@ -379,10 +380,7 @@ a prediction, a hint, or a challenge. Write it after its cell. With a
 may follow it in any order, and every block uses the same `key: value`
 header lines a cell does.
 
-**Status.** `hint`, `solution`, `inputs`, the comparison and a cell of the
-reader's own tests are live. `predict` goes live with #313 and `challenge`
-with #316; until then, each of those builds as a plain code block, so a page
-can be written against it now.
+**Status.** Every block here is live.
 
 ### solution
 
@@ -412,7 +410,10 @@ same function the button calls. A solution that raises an error stops the
 build, and so does an input the solution side cannot even name: a
 `NameError` or `SyntaxError` there is a typo in the page. Any other error an
 input raises is an outcome, and the table shows it. A machine without a
-package the page imports (pandas, say) gets a note, not a failure. Each cell
+package the page imports (pandas, say) gets a note, not a failure, and so
+does every solution below a cell that stopped at that import: the publish
+job installs only `requirements-build.txt`, so a page that draws with
+matplotlib is checked by the test job, not by the publish job. Each cell
 gets 20 seconds, so a deliberate endless loop earlier on the page is a cell
 that fails, not a build that hangs.
 
@@ -481,26 +482,40 @@ type: choice
 Before you run it: do the four planets reach round the Earth?
 
 - Yes, easily
-  Four whole planets sounds like a lot of planet.
+  - Four whole planets sounds like a lot of planet.
 - Nearly, but not quite
 - Not even halfway
 ```
 ````
 
 `type:` is `choice`, `number` or `text`. For a choice, the list is the
-options, and an indented line under an option is its note: one line naming
-the thinking that leads to it, with a link to a closer-look page if there is
-one. No option is marked right. For a number, `tolerance:` says how close
+options, each a bullet at the left margin. An indented bullet under an
+option is its note: one line naming the thinking that leads to it, with a
+link to a closer-look page if there is one. An indented plain line carries
+on the option (or note) above it, so a long one can wrap. No option is
+marked right. For a number, `tolerance:` says how close
 counts as the same, for an estimate. The prose before the list, or the
 whole body for `number` and `text`, is the question.
 
 The reader also says how sure they are: *sure*, *a hunch*, or *I'm not
-sure yet*. "I'm not sure yet" opens the cell's first hint. After the run,
-the guess and the output sit side by side; for printed output the cell is
-the answer key, so you write nothing more. Guesses save with the cell, and
-the end of the page lists the reader's surprises: the cells where the guess
-and the output differed, and the ones marked "not sure". Two hint signals
-go with it: `unsure` and `guess differed`.
+sure yet*. "I'm not sure yet" opens the cell's first hint straight away, so
+make that the hint that asks a question, and offers two ways on: make a
+guess now, or run it and see.
+
+After the run, the guess and what the cell printed sit side by side; for
+printed output the cell is the answer key, so you write nothing more. A
+number is compared with the last number the cell printed, within
+`tolerance:` (0 unless you say). Anything else is compared with the whole
+output or its last line, ignoring spacing but not case. When they say the
+same thing, the page says so. When they differ, it says nothing about it,
+shows the note for the option the reader chose, and asks "Which line
+explains what you saw?"
+
+Guesses save with the cell, and go into the notebook export above their
+cell. The end of the page lists the reader's surprises: the cells where the
+guess and the output differed, and the ones marked "not sure". Two hint
+signals go with it, `unsure` and `guess differed`, and either can be
+written with no number: `after: unsure`.
 
 Two to four on a page, where the misconceptions are. A page that asks for a
 guess before every cell teaches readers to skip them.
@@ -512,9 +527,9 @@ attempt](#hints-that-wait-for-an-attempt) is a block like the others.
 
 ### challenge
 
-The starter code for a page closer's challenge, which opens in the
-Notebook as a new file named after the page, beside the reader's other
-files and never over one:
+The starter code for a page closer's challenge. It is not a cell: the page
+shows it read-only, with a button that opens it in the Notebook, ready to
+work on:
 
 ````markdown
 ```python challenge
@@ -524,16 +539,27 @@ changes = [5, -3, -4, 6, -10, 2]
 ````
 
 `html challenge`, `css challenge` and `js challenge` open in the Workspace.
-In a downloaded copy, with no Notebook to open, the starter is offered as a
-file to save.
+Fences for two or three of them side by side, with nothing but blank lines
+between, are one site; a part left out opens empty.
+
+- **Where it goes.** A new tab in the Notebook, or a new site in the
+  Workspace, named after the page's id (`running-totals`). It sits beside
+  what the reader already has and never replaces it: a tab of that name
+  already there makes this one `running-totals 2`. Opening the same starter
+  again goes back to the tab it made, as long as that tab still holds it
+  unchanged.
+- **How it gets there.** The button is a link that carries the starter in
+  its own address, so the page does not have to stay open.
+- **Offline.** A downloaded page has no Notebook beside it, so the button
+  saves the starter as a file named after the page instead: a Python file,
+  or one HTML page with its CSS and JavaScript inside it.
+- The build refuses a language other than these four, and two starters for
+  the same language side by side.
 
 ---
 
 <a id="worlds"></a>
 ## Worlds
-
-**Status.** Agreed syntax, live with #315. Until then, a world's `<div>`
-builds, but its contents are shown without being converted.
 
 A page's frontmatter lists the worlds it offers, each with one line saying
 what it is:
@@ -545,10 +571,11 @@ worlds:
   pixels: Pixel art on a grid five squares wide.
 ```
 
-The first is the world the page's own prose teaches in. A task, a practice
-problem or a project step can have a variant for each world, written inside
-a wrapper, with a blank line after the opening tag and before the closing
-one:
+A key is small letters and digits joined by hyphens, and the reader sees it
+with a capital and spaces: `sea-floor` is "Sea floor". The first world is the
+one the page's own prose teaches in. A task, a practice problem or a project
+step can have a variant for each world, written inside a wrapper, with a
+blank line after the opening tag and before the closing one:
 
 ````markdown
 <div class="dl-world" data-world="planets">
@@ -566,17 +593,50 @@ giants = [142984, 120536, 51118, 49528]
 ```
 
 </div>
+
+<div class="dl-world" data-world="sea-floor">
+
+…
+
+</div>
 ````
 
-A cell inside a variant adds its world to its id after two hyphens, so
-switching worlds never overwrites saved work. Each variant cell carries its
-own blocks. Prose and demonstration cells outside every variant are shown
-whatever the world.
+Variants with nothing but blank lines between them are one task, once per
+world. Everything inside is ordinary markdown.
 
-The page shows the worlds on offer near the top, each with its line, and
-remembers the reader's choice for that page. Changing it swaps the variants.
-A downloaded or printed copy has the chosen world, or all of them, with a
-heading for each.
+- **Cell ids.** A cell inside a variant adds its world to its id after two
+  hyphens, so switching worlds never overwrites saved work.
+- **Blocks.** Each variant cell carries its own solution, inputs, predict and
+  hint blocks, inside the same variant. A block cannot belong to a cell in
+  another world, or cross between a variant and the shared page, since it
+  shows and hides with its cell. The same goes for a cell of the reader's
+  own tests.
+- **Shared content.** Prose and demonstration cells outside every variant
+  show whatever the world.
+- **A missing world.** A task without a variant for the reader's world shows
+  the variant in the page's own world, or, failing that, the first one
+  written.
+
+**What the reader sees.** A box under the page's title lists the worlds, each
+with its line, and remembers the choice for that page in the browser.
+Changing it swaps the variants at once. Each variant of a task counts from the
+same cell number, so the cell after the task has the same number whichever
+world is on show. Running every cell above, the surprises at the end of the
+page, the progress count and the notebook export all follow the world on
+show. The saved record carries the choice as `world`.
+
+**Without JavaScript** every variant shows, each under its world's name. A printed page has the chosen world, with its name
+above each variant. A downloaded page keeps every variant and the chooser.
+
+**Solutions.** The build checks a page with worlds once per world, running
+the cells a reader in that world would run: the shared cells and that world's
+variants. A solution that uses a name from another world's cell fails.
+
+**What the build refuses:** a variant on a page with no `worlds:`, a world the
+page does not list, an opening tag that shares its line with other text, a
+variant inside another, a variant with no `</div>`, two variants for the same
+world side by side, a cell in a variant whose id does not end in its world,
+and a block or a cell of tests in a different world from its cell.
 
 A world the reader makes up for themselves (OOP's "your own world") is a
 variant with a neutral prompt and no solution. An inputs block there gives a
@@ -633,43 +693,25 @@ alone, and `\$99` is an escaped literal.
 
 ---
 
-## Checking an answer
-
-`check()` compares what a student produced against what you expected and shows a
-pass or a not-yet:
-
-```python
-check(readings["morning"].mean(), 10.85)
-```
-
-It is forgiving in the ways that matter for beginners. Floats compare with a
-tolerance, so `check(0.1 + 0.2, 0.3)` passes — a student meeting floating point
-for the first time should not be told their correct answer is wrong. Arrays and
-DataFrames compare element by element instead of raising. Lists report which
-position differs. And `True` is not equal to `1`, whatever Python thinks,
-because it is not the answer they meant.
-
-Nothing is scored, recorded or sent anywhere. `check` exists so that a student
-working alone at eleven at night gets an answer to "did I get that right?".
-
----
-
 ## Questions
 
-A quick check a student answers without writing any code — multiple choice, or a
+A question a student answers without writing any code: multiple choice, or a
 sentence with a word or two missing. Write it as a ```` ```question ```` fence:
 
 ````markdown
 ```question
-id: right-angle
+id: which-angle
 type: multiple-choice
-correct: 2
+answer: 2
 
-Which of these is a right angle?
+Which of these is a square corner?
 
 - 45 degrees
+  - Half a square corner: the diagonal of a square meets its side at 45°.
 - 90 degrees
+  - A quarter of a whole turn, like the corner of a page.
 - 180 degrees
+  - A half turn: the two sides point opposite ways, in one straight line.
 ```
 ````
 
@@ -679,14 +721,24 @@ way renaming a cell's id would. `type:` is `multiple-choice` or
 `fill-in-the-blank`, spelled out in full rather than abbreviated, so a question
 is readable without a reference card. Everything after the header lines is
 ordinary markdown, LaTeX included: for a multiple-choice question, the prose
-before the list is the prompt and the list is the options, in the order a
-student sees them.
-`correct:` names the right one by its position in that list, starting at 1 —
-that line, and only that line, is what a student's browser could read if they
-opened the page's source, which is the trade this format makes: right for a
-quick check, wrong for anything that has to keep its answer secret.
+before the list is the prompt and the list is the options.
 
-A fill-in-the-blank question has no `correct:` line. Write the sentence with
+The options follow the same rule as a predict block's. An option is a bullet at
+the left margin. A bullet indented under it is that option's note: one line
+naming the thinking that leads to it, written for every option, the page's own
+included. An indented line that is not a bullet carries on the option or note
+above it, so a long option can wrap.
+
+`answer:` names the page's own answer by its position in the list, starting at
+1. (`correct:`, its older spelling, still builds.) The runtime shuffles the
+options. Once a student has picked one, **Show the page's answer** marks the
+page's, shows the note for the option they chose, and, if the two are the same,
+says so. Nothing on it says right or wrong. The student can pick again, and the
+note follows their choice. The answer is in the page's source, which is the
+trade this format makes: fine for a question to think with, no use for one that
+has to keep its answer secret.
+
+A fill-in-the-blank question has no `answer:` line. Write the sentence with
 each missing word in curly brackets:
 
 ````markdown
@@ -699,8 +751,7 @@ A cell's own {id} is the key its saved code is stored under.
 ````
 
 That word becomes a typing box. Offer a short list instead, separated by `|`,
-and it becomes a dropdown — the first item is the one a student is being
-checked against:
+and it becomes a dropdown — the first item is the page's word:
 
 ````markdown
 ```question
@@ -711,16 +762,18 @@ An angle of 90 degrees is a {right angle|straight angle|acute angle}.
 ```
 ````
 
-A question with several gaps checks them all together, with one Check button
-for the whole sentence.
+A question with several gaps has one **Show the page's words** button for the
+whole sentence. Each gap then shows the page's word beside it, and what the
+student wrote stays as they wrote it.
 
-Like `check()`, a question is formative: right or not-yet, no score, nothing
-sent anywhere. Unlike a cell, it needs no Python and downloads nothing extra —
-a page whose only interactive content is a question never loads Pyodide.
+Like a predict block, a question is there to think with: no score, no verdict,
+nothing sent anywhere. Unlike a cell, it needs no Python and downloads nothing
+extra — a page whose only interactive content is a question never loads
+Pyodide.
 
-If a check calls for a picture in place of an option, or a graded, secret
-answer, this is not that: see "Checking an answer" above for the first, and
-dewmark (a separate program, for exams) for the second.
+A question whose answer a run would show belongs in a predict block instead,
+above the cell that shows it. A graded, secret answer is not this format's job
+at all: that is dewmark, a separate program, for exams.
 
 ---
 
@@ -814,6 +867,21 @@ The build pastes the file in. Worth being clear about what that does and does
 not buy you: it removes the duplication from your source, not from the student's
 browser. Every page is its own Python session, so an included setup cell runs
 again on every page.
+
+Prose that two pages share word for word works the same way, with a
+markdown file. A line holding nothing but the include pulls it into the page:
+
+````markdown
+{{include: setup/when-a-cell-does-not-do-what-you-expect.md}}
+````
+
+The build puts the file's markdown in place before it reads the page, so an
+included heading gets its anchor and joins the page's contents, and an
+included cell or block is the page's own. An include that shares its line
+with other words fails the build, and an include inside an included file is
+left as written. `first-steps` and `first-steps-cm` share their section on
+what to do when a cell fails this way: edit
+`setup/when-a-cell-does-not-do-what-you-expect.md`, and both change.
 
 ### A toolkit the reader carries from page to page
 
@@ -1218,7 +1286,6 @@ Beyond ordinary Python, a cell can use:
 |---|---|
 | `show(*values, label=None)` | Render something mid-cell, rather than only at the end. |
 | `show_table(frame, max_rows=20, caption=None)` | Render a DataFrame as a table. Long frames are truncated, and say so. |
-| `check(actual, expected, tolerance=None, label=None)` | Pass or not-yet feedback, as above. |
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
 | `button(label, on_click)` | A button that calls your function, appending output below itself. |

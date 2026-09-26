@@ -78,13 +78,16 @@ which is {15} comparisons.
 ```question
 id: racing-warm-up-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 Which numbers can `random.randint(1, 10)` give?
 
 - 1 to 9
+  - This follows `range(1, 10)`, which stops before 10; `randint` includes its last number.
 - 0 to 10
+  - This adds 0, and `randint` starts where it is told to: 1.
 - 1 to 10, both ends included
+  - Both ends are included: 1, 10 and everything between.
 ```
 
 ## Lists to race on
@@ -182,14 +185,17 @@ the comparisons.
 ```question
 id: racing-ten-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A list of 1,000 random values takes insertion sort about 250,000
 comparisons. About how many would a list of 2,000 take?
 
 - 500,000
+  - Doubling fits work that grows with the length of the list; insertion sort's grows with its square.
 - 250,002
+  - This adds a little for the longer list, as if the extra values cost almost nothing.
 - 1,000,000
+  - Twice the values, and each is compared with about twice as many: 2 × 2 = 4 times the work.
 ```
 
 ## A picture of the race
@@ -597,15 +603,18 @@ speed on one track. Here is what the races found.
 ```question
 id: racing-where-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 A catalogue keeps 6,000 planets in order of their distance. Each week,
 five new planets are added at the end. Which sort of ours does the
 least work on the new list?
 
 - selection sort, because it always does the same work
+  - Selection sort does the same work on any list, so the order the list is already in does not help it.
 - insertion sort, because the list is nearly in order
+  - The 6,000 old planets are already in order, so insertion sort passes each with one comparison, and only the new five move.
 - Shell sort, because it is fastest on random lists
+  - Shell sort is quick on random lists, but this list is almost in order.
 ```
 
 ### Your turn

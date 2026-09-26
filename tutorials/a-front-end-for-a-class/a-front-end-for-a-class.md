@@ -334,7 +334,8 @@ real menu loop on your own computer, or the practice page's version
 here. If you were going to give this program to somebody else, what
 would you add to it next?
 
-Double-click this cell to write your thoughts:
+You could write your thoughts in **Your notes**, in the **Notes** panel at
+the top right of the page.
 
 ## Where to Read More
 

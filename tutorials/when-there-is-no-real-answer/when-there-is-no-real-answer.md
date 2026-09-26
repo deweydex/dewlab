@@ -69,14 +69,17 @@ has {no|one|two} real roots.
 ```question
 id: no-real-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 $3 - 5$ has no answer in the natural numbers, $\mathbb{N}$. Which is the
 smallest space where it has one?
 
 - the natural numbers, $\mathbb{N}$
+  - The answer is −2, and no natural number is below 0.
 - the integers, $\mathbb{Z}$
+  - The integers go below 0, and −2 is one of them.
 - the rational numbers, $\mathbb{Q}$
+  - −2 is rational too, but the integers already hold it, and they sit inside the rationals.
 ```
 
 ## A question with no answer here

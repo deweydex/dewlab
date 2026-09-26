@@ -59,28 +59,36 @@ the second from
 ```question
 id: choosing-warm-up-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 What does Python give for `7 // 2`?
 
 - `3.5`
+  - This is `7 / 2`, ordinary division.
 - `3`
+  - `//` divides and keeps only the whole number part.
 - `4`
+  - This rounds 3.5 up, and `//` never rounds up.
 - `1`
+  - This is `7 % 2`, the remainder.
 ```
 
 ```question
 id: choosing-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 The last line of an error says `NameError: name 'temprature' is not defined`.
 What is the most likely cause?
 
 - The number in `temprature` is too big for Python to hold.
+  - A number too big would give a different error; a `NameError` is about a name.
 - The name was typed differently here from where it was made.
+  - The last line names the name Python could not find, spelled as it was typed here.
 - Python cannot compare the numbers in this cell.
+  - A comparison problem gives a `TypeError`, not a `NameError`.
 - The cell has to be run a second time.
+  - Running again gives the same error, until the name is made or spelled the same way.
 ```
 
 ## Pictures on a number line
@@ -120,13 +128,16 @@ with $\le$ and $\ge$.
 ```question
 id: choosing-number-line-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 Which of these is true for a chip at exactly 80 °C?
 
 - $t < 80$
+  - 80 is not less than 80, so this is False for 80 itself.
 - $t \ge 80$
+  - Greater than or equal to includes 80 itself: the filled circle.
 - $t > 80$
+  - 80 is not greater than 80: this is the empty circle.
 ```
 
 Now a small puzzle. Do $t > 79$ and $t \ge 80$ draw the same picture?
@@ -383,13 +394,16 @@ information. What happens when is part of the meaning.
 ```question
 id: choosing-elif-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 What does `fan_speed_for(70)` give?
 
 - `"high"`, because `70 < 70` is False, and `70 < 85` is True
+  - Python checks each condition in turn, and 70 < 85 is the first that is True.
 - `"low"`, because 70 is the limit for "low"
+  - 70 is not less than 70, so the first condition is False.
 - `"full"`, because no condition fits
+  - The `elif` for below 85 fits 70, so Python never reaches `else`.
 ```
 
 Now let's put the same checks in a different order. This cell has a

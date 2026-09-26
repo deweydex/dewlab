@@ -30,7 +30,7 @@ Three things to keep in mind as you go:
 - A cell that gives an error has told you something about a line, not
   about you. One of the questions below is *meant* to go wrong.
 - If a word is new, it is in bold the first time it appears, and the
-  Reference panel on the right has all of them.
+  Reference panel, on the left, has all of them.
 
 ## A Road of Posts
 
@@ -164,13 +164,16 @@ of this series.
 ```question
 id: why-dividing-works-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 A post 2 units tall stands at depth 8. How tall is it on the screen?
 
 - 2 units
+  - This keeps the post's own height, as if depth made no difference on the screen.
 - 0.25 units
+  - Height divided by depth: 2 divided by 8.
 - 4 units
+  - This divides the depth by the height, the other way round.
 ```
 
 ## Reflection

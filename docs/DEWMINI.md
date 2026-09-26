@@ -134,7 +134,6 @@ copied:
 |---|---|
 | `show(*values, label=None)` | Show one or more values in the middle of a cell, not just at the end |
 | `show_table(frame, max_rows=20, caption=None)` | Show a DataFrame or Series as a table |
-| `check(actual, expected, tolerance=None, label=None)` | A quick right / not-yet check; floats are compared within a small tolerance |
 | `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value`. **See the note below.** |
 | `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
 | `button(label="Go", on_click=None, id=None)` | A button that calls a function when pressed. **See the note below.** |
@@ -220,6 +219,12 @@ to it, double-click its name to rename it, and the **×** closes it. It
 asks first if there is anything in it. The row of tabs appears once you
 have more than one notebook, so a single notebook looks as it always
 did.
+
+A tutorial's challenge can open here too. Its **Open it in the Notebook**
+button brings the starter code in as a new tab named after the page. It
+never replaces a tab you have: if one already has that name, the new one is
+numbered. Opening the same challenge again goes back to its tab, as long as
+you have not changed it.
 
 One thing is worth knowing. **Every tab shares one Python session.** A
 variable you make in one notebook is visible in another. That is

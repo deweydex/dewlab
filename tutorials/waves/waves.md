@@ -61,14 +61,18 @@ and the second from
 ```question
 id: waves-warm-up-1
 type: multiple-choice
-correct: 3
+answer: 3
 
 A whole turn is $360^\circ$. How many radians is it?
 
 - 360
+  - 360 is the count in degrees; radians measure a turn by the circle's own radius.
 - $\pi$
+  - π radians is half a turn, 180°.
 - $2\pi$
+  - The whole way round a circle of radius 1 is 2π long: 2π radians.
 - 1
+  - 1 radian is the angle whose arc is as long as the radius, about 57°.
 ```
 
 ```question
@@ -258,15 +262,18 @@ milliseconds.
 ```question
 id: waves-period-1
 type: multiple-choice
-correct: 2
+answer: 2
 
 The tide at Dublin comes in and goes out about twice a day: one repeat
 takes about 12 hours 25 minutes. What is its period, and roughly what
 is its frequency?
 
 - period 2 per day; frequency 12 hours 25 minutes
+  - These are swapped: a period is a length of time, and a frequency counts repeats in a time.
 - period 12 hours 25 minutes; frequency about 2 per day
+  - The period is how long one repeat takes; the frequency is how many repeats fit in a day.
 - period and frequency are both 12 hours 25 minutes
+  - A frequency counts repeats, and 12 hours 25 minutes is a length of time.
 ```
 
 ## A tool for waves

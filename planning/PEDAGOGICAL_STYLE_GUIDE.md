@@ -46,7 +46,7 @@ page follows from them.
 **No verdicts.** The site never tells a reader they are right or wrong.
 It shows what their code did and, when they ask, what a solution does
 with the same inputs. A mismatch is information about a line, not a
-judgement of a person. `check()` and its ticks are being retired for this
+judgement of a person. `check()` and its ticks were retired for this
 reason (#314).
 
 <a id="mistakes"></a>

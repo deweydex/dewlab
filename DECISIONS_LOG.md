@@ -4765,3 +4765,149 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **7.233 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
 
 *Cost to change: two small functions in `compose/dewminiweb.js`; switching to a single file means inlining the CSS and JS in `pageFile()`.*
+
+---
+
+**7.234 — The predict block: a guess written before the run, set beside the output, never marked.** The predict issue (#313), part of #306, building on 7.232.
+
+**Why.** The pages ask for a prediction about 230 times, almost always as "What do you think…? Run the cell to check" in one breath, so the guess stays in the reader's head. The `question` fence met a wrong choice with "Not quite yet." A written guess turns the output into an answer to the reader's own question.
+
+**What a reader sees.** Above the cell, the question, a way to answer (options, a number, or a few words) and how sure they are: *sure*, *a hunch* or *I'm not sure yet*. "Guess first, or just run it": skipping is always allowed. After the run, their guess and what the cell printed sit side by side. If they say the same thing, the page says so. If not, it says nothing about it, shows the note for the option they chose (the thinking that leads there, with a link to a closer look where one exists), and asks "Which line explains what you saw?" No option is ever labelled right or wrong.
+
+**"I'm not sure yet"** opens the cell's first hint at once, whatever the Settings toggle says (the reader asked, and the first hint is the one that asks a question), and offers two ways on: make a guess now, or run it and see.
+
+**Matching.** A number is compared with the last number the cell printed, within the block's `tolerance:` (0 by default), commas ignored. Anything else is compared with the whole output or its last line, spacing ignored and case kept, because `SEA` and `sea` are different answers. Anything else (9.70 beside 9.7 in a text guess) is the reader's to judge.
+
+**Surprises.** A page with a prediction ends with a section listing the cells where a guess and the output differed, and the ones marked not sure, each linked back. Predictions save with the cell (the record's `prediction`), so the JSON export carries them, and the notebook export writes a guess as a markdown cell above its code.
+
+**Signals.** Two new staged-hint signals, `unsure` and `guess differed`, written bare (`after: unsure`) or with a count, so an author can hang a hint on either moment in the syntax they already know.
+
+**A block that follows its cell, drawn above it.** Every block follows its cell in the source (7.231); `render_cell()` draws the prediction above, since the guess comes first.
+
+*Cost to change: the matching rules live in `guessMatches()`; the record gains `prediction`, which an older page ignores. #314 converts the `question` fences and retires `check()`.*
+
+---
+
+**7.235 — `check()` is retired, and a question shows the page's answer only when the reader asks, beside their own.** The verdict issue (#314), part of #306, building on 7.232 and 7.234.
+
+**Why.** Mistakes are part of the process, and a site that answers every attempt with a pass or a "Not quite yet." feels like it is always checking. The comparison (7.232) and the predict block (7.234) already put the reader's result beside another one without a verdict. This entry takes the verdict out everywhere else.
+
+**What went.** `check()`, its comparison and its markup (`_compare`, `_check_html`) are gone from `tutorial_tools.py`, with "That's right." and "Not quite yet." and the pass and fail styles. The `failed checks` hint signal is gone too: the build now rejects it as a term it does not know. `expect:` stays, as it was, an internal signal only: it stops further hints once it holds, and the reader never sees it.
+
+**Where the calls went.** The `check()` calls on thirteen pages each became what the task was asking for. Where the task was a function to write (the matrices and graphics pages: `transpose`, `inverse`, `rotate_x`, `rotation_y` and others), a `solution` block and an `inputs` block. Where it was a guess about a value (`working-with-tables`), a predict block. Where the point was to see two numbers agree (`multiplying-grids`, `putting-the-derivative-to-work`, some practice pages), the cell prints both and the prose says what to look for. Tasks that asked the reader to print PASS or FAIL themselves (`cracking-equations`, its practice page, `expressions-come-alive`) now ask for both values side by side, and a question about what they show. A few sentences that told the reader their answer was right ("If the two columns match, your derivative is right.") now say what the match shows. Pages that teach testing, where a test prints PASS or FAIL about the reader's *code* (`building-reusable-tools`), keep it. The two database quizzes print what the checker found ("Found author_tbl and book_tbl, with every column this task names.") and hang their hints on `expect:` and a count of runs.
+
+**Questions stay questions.** The issue asked for the multiple-choice questions to become predict blocks. They have not. A predict block belongs to a cell and is answered by its run, and most of the 95 questions (the warm-ups, the questions about an idea) have no cell whose output answers them. So the `question` fence keeps its place and takes the predict block's manners. Every option now has a note, the page's own included, naming the thinking that leads to it. Nothing happens when a reader picks an option. **Show the page's answer** marks the page's option, shows the note for the reader's, and says "You chose the same as the page." when they match. The reader can pick again, and the note follows. A fill-in-the-blank question's button is **Show the page's words**, and each gap gets the page's word beside it, leaving what the reader typed alone. `answer:` names the page's option; `correct:`, the older spelling, still builds. A question whose answer a run would show is a predict block's job, and new pages should use one.
+
+**One rule for options and notes.** 7.231 wrote an option's note as an indented line under it. That misreads a long option that wraps, and one already had: the second line of the BASIC question on `many-languages-one-idea` was being cut off. Now an option is a bullet at the left margin, a bullet indented under it is its note, and an indented line that is not a bullet carries on the option or note above it. `options_and_notes()` applies this to predict blocks and questions alike, so an author learns it once.
+
+**Two answers reworded.** A practice answer that opened "Not quite." now opens "Not on this list.", and "Nothing appears. That is correct" on `recipes-are-algorithms` now reads "Nothing appears, and nothing should." Prose that calls *code* wrong ("Each of these runs, and each one is wrong") stays, because it judges a program, not a reader.
+
+**Ids.** No question id or cell id changed, so saved answers and saved code still match. The twelve pages whose cells changed have a new `version:`.
+
+*Cost to change: the reveal lives in `revealAnswer()`; the note rule in `options_and_notes()`. Bringing back a verdict would mean restoring `check()` and the two strings, which this entry argues against.*
+
+---
+
+**7.236 — The world switcher: one task, a variant per world, chosen per page.** The world-switcher issue (#315), part of #306, building the syntax 7.231 agreed.
+
+**What a reader sees.** A box under the page's title lists the worlds the page offers, each with its line from the frontmatter. The reader picks one, and each task shows that world's variant. The choice is kept in the browser for that page (`dewlab:world:<id>`) and can change at any time. Each variant's cells have their own ids, so a reader who tries the planets and then the sea floor keeps both.
+
+**One number per task.** Every variant of a task counts from the same cell number, and the cell after it follows the longest variant, so "Cell 4" is the same cell whichever world is on show. The surprises list names a cell by the number on its pill for the same reason.
+
+**What follows the world.** Running the cells above or below a cell, the surprises, the progress count and the notebook export take only the cells on show. A reader in the pixels world who runs everything above should not get an error from a planets cell they cannot see. The saved record carries the choice as `world`, so the JSON export says which world the work was in.
+
+**A task in one world only** shows the page's own world's variant, then the first written. An author can add worlds one task at a time without a gap on the page.
+
+**Without JavaScript** the chooser stays hidden and every variant shows under its world's name, so nothing is lost. A printed page has the chosen world, with its name. A downloaded page keeps every variant and the chooser, which works offline.
+
+**The build holds the contract.** A cell in a variant must end in `--<world>`; a block (solution, inputs, predict, hint) and a cell of tests must be in the same world as their cell, since they show and hide with it. `world_spans()` reads the source with fences blanked, so a `</div>` in an HTML example does not close a variant. `check_solutions()` runs a page once per world, with the cells a reader in that world would run, so a solution that leans on another world's names fails at build time.
+
+**Names from keys.** A world's name is its key with a capital and spaces (`sea-floor` is "Sea floor"). That keeps the agreed frontmatter, one line per world, and a name worth more than that can come later without changing a page.
+
+*Cost to change: the grouping and fallback live in `applyWorld()`; the build's rules in `world_spans()` and `extract_blocks()`. A world's name that differs from its key would need a richer `worlds:` form, read by `page_worlds()`.*
+
+---
+
+**7.237 — A closer's challenge opens in the Notebook or the Workspace, ready to work on.** The challenge-links issue (#316), part of #306, building the syntax 7.231 agreed.
+
+**The block.** A ```` ```python challenge ```` fence is starter code for the Notebook; ```` ```html challenge ````, ```` ```css challenge ```` and ```` ```js challenge ```` fences side by side are one site for the Workspace. The page shows the starter read-only, since it is not a cell, with one button: **Open it in the Notebook**, or **in the Workspace**.
+
+**The link carries the starter.** The button is an ordinary link to `compose/notebook.html` or `compose/workspace.html`, with the starter in its address (`#challenge=` and a JSON object). Nothing has to pass between two open pages, the tutorial can be closed, and the link works without the tutorial's JavaScript. A starter is a few lines, so the address stays short.
+
+**Never over the reader's work.** The Notebook opens it as a new tab, and the Workspace as a new site, named after the page's id. A tab of that name already there makes this one `running-totals 2`. The same starter opened twice goes back to the tab it made, if that tab still holds it unchanged, so a reader who clicks twice does not get two copies. Both clear the address at once, so a reload does not open it again, and both listen for the address changing, since following the link in a tab that already shows the Notebook does not reload the page.
+
+**Offline.** A downloaded page has no Notebook beside it. There the runtime hides the link and shows **Save it as a file**, which saves `running-totals.py`, or one `running-totals.html` with the CSS and JavaScript inside it, since a single file is what opens from a student's disk.
+
+*Cost to change: the address format is read in three places, `render_challenge()` writing it and `openChallengeFromAddress()` and `takeChallengeFromAddress()` reading it; a change to one is a change to all three.*
+
+---
+
+**7.238 — What a student reads first: choosing a course, studying here, and reading helpers.** The student-docs issue (#317), part of #306.
+
+**Two site pages, not only a guide on GitHub.** `studying.html` ("Studying here") says what each course is for and how the integrated course and the Dewey Track differ, and says plainly that in a class the teacher decides. It then gives the habits the revision is built on: guess before you run, come back after a gap, try the "from earlier" problems, and, when stuck, the hint, "I'm not sure yet", an earlier page, the Reference, then a person, in that order. `reading-helpers.html` covers dewlab's own Appearance settings and the browser's translation, read-aloud and Edge's Immersive Reader. Both are site pages (`pages/`), linked from the home page and About, because a student meets the site on 2 October, not the repository. `FOR_STUDENTS.md` and the FAQ link to them rather than repeating them.
+
+**Translation leaves code alone.** The reading-helpers page says translation leaves the code, a cell's output and the maths as they are. Nothing made that true, so the runtime now marks them `translate="no"` (`keepCodeFromTranslation()`). A translated `print` would not run.
+
+**Directions to controls, checked against the page.** The page has three corner panels (Notes, Python, Settings) and a feedback circle. Hints and the contents-page badge are switched in Settings → Behavior, and Export a copy and Start again are in Notes, Restart Python in Python. The FAQ, the guide, the README and three tutorials said otherwise in places, and now agree. The eight "Double-click this cell to write your thoughts" lines on the OOP pages pointed at nothing; they now point at Your notes. "Each page starts fresh" is true except for the Dewey Track's toolkit, and now says so.
+
+**Course cards.** Each card says who the course is for, what you do in it, which worlds it offers, and ends as an invitation; no time estimates. Descriptions no longer repeat their cards, and Database Methods and Web Authoring have one. The worlds named are the ones #306 plans; the content issues bring them to the pages.
+
+*Cost to change: the two pages are `pages/studying.md` and `pages/reading-helpers.md`, listed in `SITE_PAGES`; the course text is in `courses/*.yaml`.*
+
+---
+
+**7.239 — Programming Foundations, part 2: the lists page splits, a project page arrives, and the series ends by making something.** The content issue (#319), part of #306, applying the page rules of #318.
+
+**The split keeps the old id for the first half.** "Lists and looping over them" stays `lists-and-sequences`, so the twenty-odd links to it from other pages keep working, and the new second half is `comprehensions-and-grids`. Links that meant comprehensions, grids or the dot product now point at the new page. The slicing picture stays with slicing, drawn from the page's own `letters` list, and aliasing has a section of its own with a predict block. The dot product and sequences-as-functions went to the second page, because they need comprehensions and a function passed as a value.
+
+**Binary and hexadecimal live in one place.** They moved from `storing-and-computing` to `how-we-got-here`, where the history already explained why they exist. MIT-1.4 is now claimed there, and the glossary entries moved with the teaching. `len()`, `.upper()`, `ord()` and `chr()` stay early, in `storing-and-computing`, and `.split()` is introduced where a list of words first appears.
+
+**A project page, with no solutions.** "A program of your own" follows the dictionaries page: three starting points with a low floor and room to grow, a plan, a Release-1 checklist and reflection questions. It asks nothing a solution could answer, so it has none, and no practice page.
+
+**Tests the reader writes start at `building-reusable-tools`.** Every task there and after has a `tests:` cell beside it, as 7.232's stages said. `assert` and `raise` are taught on that page, and printing an error message is shown failing: the caller gets `None` and the error surfaces a line later.
+
+**What the history page keeps of other languages' ideas.** `map`, `lambda` and `reduce` are cut; functional style is shown with a function handed to another function, which the reader has already met in `sorted(key=)`. One small `class` stays, to be read and not written, because recognising object-oriented code is part of PDP-LO3 and the OOP course builds classes properly.
+
+*Cost to change: a page's id is part of the key its saved work lives under (7.12); after 2 October, renaming `comprehensions-and-grids` or `a-program-of-your-own` loses that work.*
+
+---
+
+**7.240 — From cells to a program: `input()` is written in advance on the page, and the team project is set in the worlds.** The content issue (#320), part of #306.
+
+**A cell cannot wait for typing, so the page says so and writes the typing down.** `input()` needs somebody at a keyboard, and a cell running in Pyodide has no way to pause for one; the existing pages commented `input()` lines out. The new page, "From cells to a program", keeps the programs whole instead. Each keeps its answers in a list, `typed`, and a four-line `ask()` takes the next one and prints it beside its prompt, so the output reads like a session at a keyboard. The page says in the same breath that on a computer the whole of `ask` becomes `ask = input`. A reader sees `while True`, `break` and a validation loop run from start to end, and the typed list doubles as a test: change it, and the program meets different answers. A second point follows: the deciding is kept apart from the asking (`first_valid(answers, low, high)`), which is what lets a `tests:` cell check it.
+
+**`main()` is called plainly on the page.** The runtime names the page namespace `__dewlab__` (7.97), so `if __name__ == "__main__":` in a cell would skip `main()` and print nothing. The cell calls `main()`, and the guard is shown as what goes at the end of a file, with the reason.
+
+**The team project brief asks for a game or tool in one of the worlds,** with a worked Release 1 (a two-room text adventure), and drops ideas that need what the course never teaches: renaming files, a dataset with plots. What is handed in, and when, is left to the teacher; the page keeps the process advice and the reflection questions. Its interface agreement and review checklist point at the templates on the new page.
+
+**Reflections go in Your notes.** `critique-and-reflection` points at "A program of your own" as the work to look back on, and its answers leave the cells of Python comments for the Notes panel, since the block model has no text block yet.
+
+*Cost to change: `from-cells-to-a-program` is a new id; renaming it after 2 October loses the work saved under it (7.12).*
+
+---
+
+**7.241 — A page can include shared prose, and Computational Methods opens with a trailer.** The first-steps-cm issue (#321), part of #306.
+
+**Markdown includes.** `{{include: setup/x.py}}` already pasted shared code into a cell. A line holding only `{{include: setup/x.md}}` now pastes shared markdown into a page, before the page is read, so an included heading gets its anchor and an included cell is the page's own (`expand_prose_includes()`). The issue asked for `first-steps` and `first-steps-cm` to share their section on what to do when a cell fails, as an include rather than a copy, and two copies had already drifted: one said the report circle sits "beside a cell's hint", the other "on a cell's bar". The shared file is `setup/when-a-cell-does-not-do-what-you-expect.md`. An include that shares its line with other words fails the build with a clear message, rather than leaving `{{include: …}}` on the page; includes do not nest. The authoring editor shows the include line as written, not what it pulls in.
+
+**The trailer.** `first-steps-cm` opens by running something the course builds: 100,000 darts estimating π, in plain Python, so it runs on the first click with no package to load. Of the three the issue offered, a spinning wireframe or a matrix-flipped photo would need matplotlib or an image on the first click, and the first run of a page should not be its slowest. The page then says what the course does and which worlds it offers. Its copy of `first-steps`' arithmetic is cut, and a line points Computational Methods readers, who never see `first-steps`, to its operators section, since the next pages use `%`.
+
+*Cost to change: two pages read the shared section; a change to it is a change to both, which is the point.*
+
+---
+
+**7.242 — The first half of the OOP course grows one class, in the reader's world, and the debugging page moves up.** The OOP rebuild, part 1 (#322), part of #306.
+
+**Four worlds, one class that grows.** `BankAccount`, pasted into cell after cell, is gone from `objects-and-classes`, `the-moves-you-already-know`, `the-tools-around-your-code`, `keeping-details-inside-an-object` and `one-class-many-methods`. Each page offers a game world, an ocean expedition, a solar system, or the reader's own, and teaches in one of them, in turn: game, solar system, game, ocean, solar system. Three pages end with a milestone that is the next version of one class in the reader's world: `__init__` and `__str__` first; then one rule kept by a method, with the field it protects made private and a getter; then a method that answers a question, used by another method, and a class attribute. The versions live once, in `setup/oop/<world>-<n>.py`, and each milestone's solution and the next milestone's starter include the same file, so the chain cannot drift. Reader code is not carried from page to page: toolkit cells were built for functions and have not been tried with classes or worlds, so the your-own world asks the reader to copy their class from the page before.
+
+**Each version keeps its rules, and leaves one door open.** From the encapsulation page on, no class goes back to public fields and an unguarded method. But each world's class keeps one rule that another method can go around: `heal(-50)` in the game, `rise(-500)` in the ocean, `burn(-50)` for the probe. The milestone notes ask the reader about it. That gap is left on purpose, for part 2 (#323), where the testing page needs a real bug to find.
+
+**The opening is the problem a class solves.** `objects-and-classes` starts from a list of dictionaries in which a misspelt key quietly makes a new field and a rule is broken elsewhere. The old "five hundred variable names" argument ignored that readers already know dictionaries. Class attributes moved to `one-class-many-methods`, where a value shared by every planet has a reason to exist.
+
+**`the-moves-you-already-know` is a labelling page.** A fill-in-the-blank question labels each line of a method as storing, sequence, selection or iteration. Storing is now taught, not assumed; tuples are gone. The page's new point is where a value is stored inside a class: on `self`, where it lasts between calls, or in a plain name, where it vanishes when the method ends. A cell that forgets `self.` and prints 0 shows it.
+
+**`the-tools-around-your-code` teaches debugging, and comes third.** It had two cells and no task. It now reads tracebacks through two method calls, where a class's bugs live: first a slip on the bottom line, then a caller that passes the wrong value, so the error shows one call further in than the mistake. Then it prints what a method holds, for bugs that raise nothing. It moves from fifth to third, so the reader has these tools before the milestones start to grow; FOOP-LO5 needs nothing before it. Merging it with the testing page, the issue's other option, would have put debugging after five pages of classes.
+
+**`Polynomial` moves to a project page of its own.** In `one-class-many-methods` it was the one class outside banking, and the one most likely to make a reader anxious about the mathematics rather than the code; a `Planet` with the minutes light takes to reach it teaches the same idea. But a polynomial class, built a method at a time, makes a good project for a class, so it has its own page, `a-polynomial-class`, straight after, and the page before says a reader may go on to inheritance instead. It follows a thrown ball, and its stages are `evaluate`, `degree` (where the trailing zero in `[1, 2, 0]` is the trap), an `__init__` that keeps two rules (no zero at the top; a copy of the caller's list, since the caller's list is another name for the same one), a `__str__` that writes `-5x^2 + 20x + 1.5`, `add`, which returns a new polynomial that keeps the same rules, and, for readers who have met the power rule, `derivative`, which finds that the ball is highest at 2 seconds. The stages include the class as it stands from `setup/polynomial/`, so each starter is the stage before's answer. It has no worlds: it is the one page in the course set in mathematics, by design.
+
+*Cost to change: `the-tools-around-your-code` now sits third in `courses/fundamentals-of-oop.yaml`, `topic-groups.yaml` and the mixed page's list; moving it again means all three. The `setup/oop/` files are read by two pages each.*

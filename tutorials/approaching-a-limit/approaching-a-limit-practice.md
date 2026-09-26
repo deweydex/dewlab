@@ -209,7 +209,7 @@ $9.8t$.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Zero. That is right: at the instant the ball is let go, it has not
+Zero, and it makes sense: at the instant the ball is let go, it has not
 started moving.
 
 Its *acceleration*, how fast its speed is changing, is not zero. It is

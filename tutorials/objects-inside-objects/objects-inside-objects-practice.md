@@ -70,8 +70,8 @@ With Alice's and Ben's accounts, this returns `225.0`.
 
 `average_balance()` calls `self.total_balance()`, and does not repeat its
 loop. A method can build on another method of the same object.
-[A class with many methods: building a polynomial class](tutorial:one-class-many-methods)
-looked at the same idea, with `constant_term()` and `self.evaluate(0)`.
+[A class with many methods: giving one class more to do](tutorial:one-class-many-methods)
+looked at the same idea, with `describe()` and `self.light_minutes()`.
 
 </details>
 

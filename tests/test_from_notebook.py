@@ -277,6 +277,7 @@ class TestTheOutputActuallyBuilds:
         # all) the build always writes alongside it.
         alongside = {"index.html", "features.html", "all-tutorials.html",
                      "all-notes.html", "tree.html", "about.html", "editor.html",
+                     "studying.html", "reading-helpers.html",
                      "fixtures.html", "search-index.json", "routes.json",
                      "reference-index.json"}
         pages = [path for path in written if path.name not in alongside]

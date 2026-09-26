@@ -2,230 +2,373 @@
 title: "Sequence, selection and iteration inside a class — Practice"
 practice_for: the-moves-you-already-know
 year: "2026-2027"
-version: 2026.09.05.1
+version: 2026.09.26.1
 ---
 
 # Sequence, selection and iteration inside a class — Practice
 
-The answers are hidden in folds under each problem. Several problems ask
-you to predict what a piece of code prints. Try to answer before you
-run anything. Being wrong and finding out why teaches you more than
-being right by luck.
+Problems on the four moves inside a class, and three from earlier pages.
+Try each problem before you open anything under it, and run the cells to
+test your guesses.
 
-## The handful of moves
+## 1. A loop that chooses when to stop
+
+This method burns a probe's fuel in steps of 10 kg:
+
+```python
+def burn_all(self):
+    burns = 0
+    while self.fuel >= 10:
+        self.fuel = self.fuel - 10
+        burns = burns + 1
+    return burns
+```
+
+```question
+id: a-loop-that-chooses-1
+type: fill-in-the-blank
+
+- `burns = 0` is {storing|sequence|selection|iteration}.
+- `while self.fuel >= 10:` is {iteration|storing|sequence|selection}.
+- `self.fuel = self.fuel - 10` is {storing|sequence|selection|iteration}.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+A `while` line has a condition in it, like an `if`, so it can look like
+selection. But its job is to repeat: it runs its lines again and again,
+and the condition only decides when to stop. That makes it iteration.
+`self.fuel = self.fuel - 10` stores on the object, so the fuel stays
+burnt after the method ends.
+
+</details>
+
+## 2. Two names that look alike
 
 ```python exec
-id: the-handful-of-moves-1
-amounts = [40, -5, 25, 10]
-total = 0
+id: two-names-that-look-alike-1
+class Room:
+    def __init__(self, name):
+        self.name = name
+        self.visits = 0
 
-for amount in amounts:
-    if amount >= 0:
-        total = total + amount
+    def enter(self):
+        self.visits = self.visits + 1
+        visits = 100
 
-print(total)
+hall = Room("Hall")
+hall.enter()
+hall.enter()
+print(hall.visits)
 ```
 
-**1.** In the cell above, change `>=` to `>`, so that `0` itself no
-longer counts. Predict the new output before you run it. Does it change?
+```predict
+What will it print?
 
-<details class="dl-answer"><summary>answer</summary>
-
-No. It still prints `75`. None of the amounts in the list is exactly
-`0`, so changing `>= 0` to `> 0` does not change which amounts pass the
-check.
-
-</details>
-
-**2.** Add `0` to the `amounts` list, and keep `> 0` in place. Run the
-cell again. What happens to the total, and why?
-
-<details class="dl-answer"><summary>answer</summary>
-
-It stays `75`. `0 > 0` is `False`, so the new `0` fails the check and is
-skipped. It never reaches `total` at all. (With `>= 0` it would be
-added, but adding `0` changes nothing, so the total would still be
-`75`.)
-
-</details>
-
-**3.** Label each line below with the move it uses: sequence,
-selection or iteration.
-
-```python
-prices = [12, 0, 8]        # line A
-count = 0                  # line B
-for price in prices:       # line C
-    if price > 0:           # line D
-        count = count + 1  # line E
+- 2
+  - `visits = 100` stores in a plain name, which vanishes when `enter` ends.
+- 100
+  - The last line of `enter` sets the visits to 100.
+- 102
+  - The two visits are added to 100.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>why</summary>
 
-Every line runs in sequence. That is true of every program, all the
-time. On top of that, line C is iteration: it repeats once for each
-price. Line D is selection: it chooses whether line E runs. Lines A, B
-and E are each a single step, with nothing to repeat or choose. All
-three store a value.
+`2`. `visits` and `self.visits` are two different names. `visits = 100`
+stores 100 in a plain name, inside one call of `enter`, and it is gone
+when the call ends. Only `self.visits` stays with the room.
 
 </details>
 
-**4.** Write a cell that counts how many numbers in `[3, -1, 4, -2, 5]`
-are negative. Use the same shape as the first cell on the tutorial page:
-store a starting value, then repeat.
-
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-numbers = [3, -1, 4, -2, 5]
-negative_count = 0
-
-for number in numbers:
-    if number < 0:
-        negative_count = negative_count + 1
-
-print(negative_count)
-```
-
-It prints `2`. The shape is the same as the running total. Store a
-starting value. Repeat once for each number. Choose whether to act on
-this one.
-
-</details>
-
-## The same moves, inside a class
+## 3. The same question twice
 
 ```python exec
-id: the-same-moves-inside-a-class-1
-class Basket:
-    def __init__(self):
-        self.items = []
+id: the-same-question-twice-1
+class Planet:
+    def __init__(self, name, moons):
+        self.name = name
+        self.moons = moons
 
-    def add(self, name, price):
-        if price >= 0:
-            self.items.append((name, price))
+    def moons_wider_than(self, km):
+        count = 0
+        for width in self.moons:
+            if width > km:
+                count = count + 1
+        return count
 
-
-basket = Basket()
-basket.add("bread", 2.50)
-basket.add("milk", 1.80)
-basket.add("mistake", -5)
-
-print(basket.items)
+jupiter = Planet("Jupiter", [3643, 3122, 5268, 4821])
+print(jupiter.moons_wider_than(3000))
+print(jupiter.moons_wider_than(3000))
 ```
 
-**5.** Add a third valid item to `basket` above. Choose any name and a
-positive price. Predict `basket.items` before you run it.
+```predict
+What will the second line print?
 
-<details class="dl-answer"><summary>answer</summary>
-
-Your item appears as a third tuple in the list, after bread and milk.
-Items appear in the order you called `add()`. The selection inside
-`add()` still refuses a negative price, whatever the item's name is.
-
-</details>
-
-**6.** Here is a `Counter` class with a broken `add()` method. Which
-move is missing, and what goes wrong without it?
-
-```python
-class Counter:
-    def __init__(self):
-        self.total = 0
-
-    def add(self, amount):
-        self.total + amount
+- 4
+  - Each call starts `count` from 0 again.
+- 8
+  - The second call adds to the first call's count.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+<details class="dl-answer"><summary>why</summary>
 
-Storing is missing. `self.total + amount` works out a new number, then
-throws it away. Nothing stores it back into `self.total`, so the total
-stays at `0`. The line needs to read
-`self.total = self.total + amount`. That is the same storing move as
-`total = total + amount` in the first cell on the tutorial page.
-
-</details>
-
-**7.** In your own words, what changes about selection when it moves
-from a plain function into a method? What stays the same?
-
-<details class="dl-answer"><summary>answer</summary>
-
-What stays the same: it is still an `if` choosing between two paths.
-
-What changes: the condition and its effect can now use `self`, this
-particular object's own data, such as its own list. In a plain function
-they can use only what the caller passed in.
+`4`, both times. `count = 0` is the first line of the method, so every
+call starts from 0. That is why `count` is a plain name and not
+`self.count`. If it lived on the object, what would the second call
+print?
 
 </details>
 
-## One method, several moves
+## 4. The narrowest moon
+
+Can you give `Planet` a `narrowest_moon()` method?
 
 ```python exec
-id: one-method-several-moves-1
-class Basket:
-    def __init__(self):
-        self.items = []
+id: the-narrowest-moon-1
+class Planet:
+    def __init__(self, name, moons):
+        self.name = name
+        self.moons = moons
 
-    def add(self, name, price):
-        if price >= 0:
-            self.items.append((name, price))
-
-    def total(self):
-        running_total = 0
-        for name, price in self.items:
-            running_total = running_total + price
-        return running_total
-
-
-basket = Basket()
-basket.add("bread", 2.50)
-basket.add("milk", 1.80)
-
-print(basket.total())
+jupiter = Planet("Jupiter", [3643, 3122, 5268, 4821])
+print(jupiter.narrowest_moon())
 ```
 
-**8.** Add `basket.add("cheese", 3.20)` before the `print()` line.
-Predict the new total before you run it.
+```inputs
+Planet("Jupiter", [3643, 3122, 5268, 4821]).narrowest_moon()
+Planet("Mars", [22, 12]).narrowest_moon()
+Planet("Earth", [3475]).narrowest_moon()
+```
 
-<details class="dl-answer"><summary>answer</summary>
+```solution
+title: with what you've met so far
+class Planet:
+    def __init__(self, name, moons):
+        self.name = name
+        self.moons = moons
 
-`7.5`, which is `2.50 + 1.80 + 3.20`. Each time `total()` is called, it
-runs its loop again over whatever is in `self.items` at that moment.
-This time the cheese is included.
+    def narrowest_moon(self):
+        best = self.moons[0]
+        for width in self.moons:
+            if width < best:
+                best = width
+        return best
+
+jupiter = Planet("Jupiter", [3643, 3122, 5268, 4821])
+print(jupiter.narrowest_moon())
+---
+3122: Europa. The same shape as `widest_moon()`, with `<` in place of `>`.
+```
+
+```solution
+title: a shorter way
+class Planet:
+    def __init__(self, name, moons):
+        self.name = name
+        self.moons = moons
+
+    def narrowest_moon(self):
+        return min(self.moons)
+
+jupiter = Planet("Jupiter", [3643, 3122, 5268, 4821])
+print(jupiter.narrowest_moon())
+---
+`min()` runs the loop for you.
+```
+
+## 5. Deepest, too soon
+
+This `deepest()` method has one line in the wrong place.
+
+```python exec
+id: deepest-too-soon-1
+class Logbook:
+    def __init__(self, submarine, depths):
+        self.submarine = submarine
+        self.depths = depths
+
+    def deepest(self):
+        best = self.depths[0]
+        for depth in self.depths:
+            if depth > best:
+                best = depth
+            return best
+
+log = Logbook("Nautilus", [120, 340, 85])
+print(log.deepest())
+```
+
+```predict
+What will it print?
+
+- 120
+  - `return` is inside the loop, so the method stops on the first depth.
+- 340
+  - The loop looks at every depth before it returns.
+- 85
+  - `best` ends as the last depth in the list.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`120`. `return best` is indented under the `for`, so it is one of the
+lines that repeat. It runs with the first depth, and a `return` ends the
+method there. Take four spaces away from the front of it, so it starts in
+the same column as `for`, and it runs once, after the loop: 340. No line
+moved. The indent changed which lines repeat.
 
 </details>
 
-**9.** Write a `count()` method for `Basket` that returns how many items
-it holds. Use iteration, the same way `total()` does.
+## 6. How heavy is the backpack?
 
-<details class="dl-answer"><summary>answer</summary>
+Can you give `Backpack` a `total_weight()` method that adds every weight
+in it?
+
+```python exec
+id: how-heavy-1
+class Backpack:
+    def __init__(self, owner, weights):
+        self.owner = owner
+        self.weights = weights
+
+ada = Backpack("Ada", [2, 5, 1, 3])
+print(ada.total_weight())
+```
+
+```inputs
+Backpack("Ada", [2, 5, 1, 3]).total_weight()
+Backpack("Grace", []).total_weight()
+Backpack("Alan", [4]).total_weight()
+```
+
+```solution
+title: with what you've met so far
+class Backpack:
+    def __init__(self, owner, weights):
+        self.owner = owner
+        self.weights = weights
+
+    def total_weight(self):
+        total = 0
+        for weight in self.weights:
+            total = total + weight
+        return total
+
+ada = Backpack("Ada", [2, 5, 1, 3])
+print(ada.total_weight())
+---
+11 kg. An empty backpack gives 0, because the loop never runs and `total`
+stays as it started. There is no selection here: every weight counts.
+```
+
+```solution
+title: a shorter way
+class Backpack:
+    def __init__(self, owner, weights):
+        self.owner = owner
+        self.weights = weights
+
+    def total_weight(self):
+        return sum(self.weights)
+
+ada = Backpack("Ada", [2, 5, 1, 3])
+print(ada.total_weight())
+```
+
+## 7. A fifth move?
+
+A class gives a program `self`, `__init__` and methods. Does it give it a
+fifth move, beside storing, sequence, selection and iteration?
+
+<details class="dl-answer"><summary>one answer</summary>
+
+Not a fifth move. What a class adds is a second place to store: on the
+object, through `self`, where a value lasts from one method call to the
+next and every method can reach it. The code inside each method is still
+built from the same four moves.
+
+</details>
+
+## 8. From earlier: a slip in a name
+
+From *Classes and objects*.
+
+```python exec
+id: from-earlier-a-slip-in-a-name-1
+class Character:
+    def __init__(self, name, health):
+        self.name = name
+        self.health = health
+
+grace = Character("Grace", 8)
+grace.heath = 3
+print(grace.health)
+```
+
+```predict
+What will it print?
+
+- 8
+  - `heath` is a new field, so `health` is unchanged.
+- 3
+  - The line sets Grace's health to 3.
+- An error
+  - A `Character` has no field called `heath`.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+`8`. Storing on an object under a new name makes a new field, quietly,
+the way a misspelt key made a new entry in a dictionary. A slip in a
+method's name, such as `grace.take_damge(5)`, stops with an error
+instead.
+
+</details>
+
+## 9. From earlier: printed, not returned
+
+From *Writing your own functions*.
+
+```python exec
+id: from-earlier-printed-not-returned-1
+def double(n):
+    print(n * 2)
+
+result = double(4)
+print(result)
+```
+
+```predict
+What will the last line print?
+
+- None
+  - `double` prints its answer, but returns nothing.
+- 8
+  - `double(4)` is 8.
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+The cell shows `8`, then `None`. The `8` comes from the `print()` inside
+`double`. The function has no `return`, so `result` is `None`. A method is
+the same: `heaviest()` has to `return` its answer for a caller to use it.
+
+</details>
+
+## 10. From earlier: a loop that counts
+
+From *Repeating steps with loops*. How many lines does this print, and
+what is the last one?
 
 ```python
-def count(self):
-    item_count = 0
-    for name, price in self.items:
-        item_count = item_count + 1
-    return item_count
+for step in range(2, 11, 3):
+    print(step)
 ```
-
-The shape is the same as `total()`. Store a starting value, repeat once
-for each item, and change the stored value each time.
-`len(self.items)` would do the same job in one call. The loop is here
-to practise the storing-then-repeating pattern from this tutorial.
-
-</details>
-
-**10.** In your own words, what does object oriented programming add
-to the four moves on the tutorial page?
 
 <details class="dl-answer"><summary>answer</summary>
 
-It adds a place to put them: inside a class, reached through `self`.
-Each object then keeps its own copy of whatever it stores. It does not
-add a fifth move. Every method in every tutorial from here on is still
-built from the same four.
+Three lines: 2, 5 and 8. `range(2, 11, 3)` starts at 2, adds 3 each time,
+and stops before it reaches 11.
 
 </details>
-

@@ -564,6 +564,55 @@ steps the way the base feature was:
   and marks a row that differs with `.dl-compare-differ` and the word
   "different". A guess column's boxes save with the cell
   (`cellGuesses()`/`restoreGuesses()`, the record's `guesses`).
+- **"What does the predict block above a cell do?"** — `initPredict()`,
+  called from `buildCells()` for a cell whose `.dl-predict` the build drew
+  above it (build.py's `render_predict()`). `setSure()` records how sure
+  the reader is; "I'm not sure yet" reveals and opens the cell's first
+  staged hint whatever the Settings toggle says, and counts an `unsure`
+  signal. After every run, `executeCell()` calls `notePrediction()`, which
+  compares the guess with the cell's printed output (`guessMatches()`:
+  the last number within the tolerance, or the whole output or last line
+  with spacing ignored and case kept), counts `guess differed`, and
+  `renderPrediction()` shows the two side by side with the chosen option's
+  note. `updateSurprises()` fills the page's `.dl-surprises` list. The
+  record's `prediction` holds guess, sureness and outcome
+  (`predictionRecord()`/`restorePrediction()`), and `downloadAsIpynb()`
+  writes a guess as a markdown cell above its code.
+- **"What happens when a reader answers a question?"** — `buildQuestions()`
+  shuffles a multiple-choice question's options (each carries its own
+  `data-answer`, so nothing records where the page's answer moved to) and
+  enables the button once one is picked. `showPageAnswer()` calls
+  `revealAnswer()`, which labels the page's option, shows only the note
+  for the reader's choice, and shows "You chose the same as the page."
+  when they match; a fill-in-the-blank question gets the page's word
+  beside each gap instead. Neither says right or wrong (#314). Once shown,
+  a new choice re-runs `revealAnswer()`, and a reload restores the choice
+  and the reveal from the saved record.
+- **"Why doesn't the browser translate the code?"** (#317) —
+  `keepCodeFromTranslation()` marks every `pre`, `code`, `.dl-editor`,
+  `.dl-output` and `.dl-math` on the page `translate="no"`, once the cells
+  are built, and again for each cell a reader adds. A translated `print`
+  would not run, and a translated formula would not say the same thing;
+  the prose around them translates as usual. `pages/reading-helpers.md`
+  tells a reader so.
+- **"What does a challenge's button do on a downloaded page?"** (#316) —
+  `initChallenges()`. On the hosted site the build's link does it all, and
+  the runtime leaves it alone. On a downloaded page (`manifest.standalone`)
+  it hides the link and shows the Save button, which reads the starter back
+  out of the link's own address (`challengeStarter()`) and saves it with
+  `challengeFile()`: a `.py`, or one `.html` page with the CSS and
+  JavaScript inside it.
+- **"How does the world chooser work?"** (#315) — `initWorlds()`, called
+  before `buildCells()` so a hidden world's editors start hidden, unhides
+  the build's `.dl-world-chooser` and calls `applyWorld()` with the choice
+  saved under `dewlab:world:<id>` (`readWorld()`/`writeWorld()`), or the
+  page's first world. `applyWorld()` groups the `.dl-world` variants by
+  `data-world-group` and shows one per group: the chosen world's, else the
+  page's own world's, else the first. `visibleCells()` is what running the
+  cells above or below, `updateSurprises()`, `liveProgressCounts()` and
+  `downloadAsIpynb()` use, and `saveNow()` records the choice as `world`.
+  A surprise names its cell by the pill's own number, since two variants
+  share one.
 - **"How does a hint decide to appear under a cell?"** — the staged-hints
   block after `executeCell()`: `noteAttempt()` updates a cell's counters
   from the run's report, `triggerHolds()` tests a fold's `data-after`

@@ -1,7 +1,10 @@
 ---
 title: "Reading an error message"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   three-kinds-of-wrong:
     covers: [PDP-LO9]
@@ -17,70 +20,66 @@ covers:
 
 # Reading an error message
 
-By now, you have written code that did not work. Everyone has, all the
+This cell has a mistake in it. Before you run it, can you find it? Then run
+it, and read everything that comes back.
+
+```python exec
+id: a-first-error-1
+shift = 3
+message = "HELLO"
+print(mesage)
+```
+
+The last line of what comes back says `NameError: name 'mesage' is not
+defined`, and then, most likely, `Did you mean: 'message'?`. Python read
+the whole program, ran the first two lines, and stopped at the third,
+because nothing called `mesage` exists. It says which line, which name,
+and even what you probably meant.
+
+By now you have written code that did not work. Everybody does, all the
 time, and it never stops happening. What changes with experience is how
-long it takes to find out why.
+long it takes to find out why, and most of that is reading the message.
+The message puts its most useful line at the bottom, writes in a style you
+have not met yet, and sometimes points a little to the side of the real
+problem. This page is about all three.
 
-That is what this page is about, and it may be the most useful hour in
-the whole series. An error message is your computer trying to help you.
-Most people never learn to read one. They see a wall of red text, feel a
-moment of panic, and start changing things at random.
-
-The red text describes what happened, and where. It is hard to read at
-first, for three reasons:
-
-1. It is written in an unfamiliar style.
-2. It puts the most useful line at the bottom.
-3. It often points a little to the side of the real problem.
-
-We can learn to handle all three.
-
-So on this page, we break things on purpose. Most cells below are meant
-to fail. Reading the failure is the exercise. Every cell uses only what
-we have met so far: variables, types, arithmetic, strings, `print`,
-`input`, and `if`, `elif` and `else`.
-
-We might feel frustrated here, or unsure what to do next. That is
-something to expect, not something to fix. Every profession with this
-much left to discover feels this way sometimes, and so does every real
-attempt to learn something new. We do not always want to stop something
-from breaking. Sometimes we need it to break, to see how it works.
+So here we break things on purpose. Most cells below are meant to fail, and
+reading the failure is the exercise. Every cell uses only what we have met
+so far: names, types, arithmetic, text, `print`, `input`, and `if`, `elif`
+and `else`.
 
 An error here is a fact about this line, on this run. It is not a fact
 about whether you can learn to program.
 
-## Three Kinds of Wrong
+## Three kinds of wrong
 
-Before we look at the messages, it helps to know that there are three
-kinds of error. Each kind fails in a different way, and we find each
-kind in a different way. Knowing which kind you have will save you a lot
-of time.
+There are three kinds of error, and each fails in a different way, so
+knowing which kind you have saves a lot of time.
 
-A *syntax error* is code that is not valid Python at all. It is like a
-sentence with no verb. Python notices it before it runs a single line,
-so nothing happens. That is frustrating, but it is also the best case,
-because you find out straight away.
+A *syntax error* is code that is not valid Python at all, like a sentence
+with no verb. Python notices it before it runs a single line, so nothing
+happens. That is annoying, and it is also the best case, because you find
+out straight away.
 
-A *runtime error* is valid Python that tries to do something
-impossible, such as dividing by zero, or turning the word `"hello"` into
-a number. The program runs until it reaches that line. Then it stops,
-and it tells you exactly where it stopped.
+A *runtime error* is valid Python that tries to do something impossible,
+such as dividing by zero, or turning the word `"hello"` into a number. The
+program runs until it reaches that line, then stops, and says where.
 
-A *logical error* is valid code that runs to the end with no complaint
-and gives you the wrong answer. Many people call it a logic error. Nothing
-is red. Nothing stops. This is the dangerous kind, and we come back to it
-at the end of the page.
+A *logical error* is valid code that runs to the end with no complaint,
+and gives a different answer from the one you meant. Many people call it a
+logic error. Nothing is red, and nothing stops. This is the dangerous kind,
+and it has the last section of the page to itself.
 
 | Kind | What happens | Who catches it |
 |---|---|---|
 | syntax error | nothing runs | Python, before it starts |
 | runtime error | the program stops partway | Python, while it runs |
-| logical error | the program finishes with a wrong answer | only you |
+| logical error | the program finishes with an answer you did not mean | only you |
 
-## Errors Python Catches Before It Starts
+## Errors Python catches before it starts
 
-Run this cell. It will not work, and that is the point. Read what comes
-back before you read on.
+This cell will not work, and that is the point. Run it, and read what
+comes back before you read on.
 
 ```python exec
 id: errors-python-catches-before-it-starts-1
@@ -168,7 +167,7 @@ so: *'(' was never closed*, pointing at the opening bracket. That is a
 big improvement. Older versions of Python, and other languages, will
 not always do this for you.
 
-## Errors That Happen While It Runs
+## Errors that happen while it runs
 
 A runtime error is different in one important way: Python could read
 every line. The program starts, does some work, and stops when it
@@ -204,47 +203,67 @@ the one you typed. It is right more often than not.
 
 ### Your turn
 
-Each cell below raises one of the errors above. For each one:
-
-1. Before you run it, decide which error it will raise.
-2. Run it. Were you right?
-3. If not, work out what you expected the values to be.
+Each cell below raises one of the errors in the table. Before you run each
+one, write which error you think it will raise in the comment at its end.
+Then run it. Where it raised a different one, what did you expect the
+values to be?
 
 ```python exec
 id: runtime-your-turn-1
 number = "10"
 print(number + 2)
+# I think it raises:
 ```
 
 ```python exec
 id: runtime-your-turn-2
 count = int("not a number")
 print(count)
+# I think it raises:
 ```
 
 ```python exec
 id: runtime-your-turn-3
-print(total_marks)
+secret = "OTTER"
+print(secert)
+# I think it raises:
 ```
 
 ```python exec
 id: runtime-your-turn-4
-bill = 60
-people = 0
-print("Each person pays", bill / people)
+pixels = 640 * 480
+columns = 0
+print("Rows:", pixels / columns)
+# I think it raises:
 ```
 
 Look at the second one. `int("10")` works, and `int("not a number")`
-does not, but both are strings. The type is fine, and the content is
-not. That is exactly the difference between `TypeError` and
-`ValueError`, and it is the pair people mix up most.
+does not, but both are strings. What does this one print?
+
+```python exec
+id: runtime-the-fix-1
+number = "10"
+print(int(number) + 2)
+```
+
+```predict
+type: number
+
+What will it print?
+```
+
+It prints 12: `int()` turns the text into a number first, and then `+`
+adds. The first cell above stopped because `"10" + 2` asks `+` to join text
+to a number, and that is a `TypeError`: the type is the trouble. In the
+second cell the type is fine, a string, and the content is not: that is a
+`ValueError`. It is the pair people mix up most.
 
 Where does a `ValueError` like this come from in a real program? Most
 often from `input()`. It always gives back a string, and the person
 typing can type anything at all. `int(input("How old are you? "))`
 works well until somebody types `thirty`.
 
-## Reading a Traceback
+## Reading a traceback
 
 When a runtime error stops a program, Python prints a report. That
 report is a *traceback*: the record of how the program got to the place
@@ -316,91 +335,151 @@ print("You earned", pay)
 # The line that is responsible:
 ```
 
-## When Nothing Looks Wrong
+## When nothing looks wrong
 
-Every error so far has announced itself. What about this one? It finds
-the average of three marks.
+Every error so far has announced itself. What about this one? It finds the
+middle of a line on a screen, between the pixel at 100 and the pixel at
+300.
 
 ```python exec
 id: when-nothing-looks-wrong-1
-first = 80
-second = 90
-third = 70
-average = first + second + third / 3
-print("Average:", average)
+left = 100
+right = 300
+middle = left + right / 2
+print("The middle is at", middle)
 ```
 
-There is no red text, and no traceback. A number came out. But is it
-right? Work out the average of 80, 90 and 70 yourself.
+```predict
+type: number
 
-The average is 80, and the program says about 193. Python did exactly
-what the line says. Division happens before addition, so only `third`
-was divided by 3. The line needs brackets around the addition:
-`(first + second + third) / 3`.
+What will it print?
+```
 
-Nothing will tell you this, except knowing what the answer should be.
+There is no red text, and no traceback. A number came out. Is it the
+middle? Halfway between 100 and 300 is 200, and the program says 250.
 
-**This is why we check answers we already know.** Before you trust a
-program on numbers you cannot check, give it numbers you can check. The
-average of 80, 90 and 70 is 80. If your program says 193, you have found
-something. This habit is often worth more than any tool for finding
-mistakes.
+Python did exactly what the line says. Division happens before addition,
+so only `right` was divided by 2. The line needs brackets:
+`(left + right) / 2`. Nothing will tell you this, except knowing what the
+answer should be.
+
+**So we try answers we already know.** Before you trust a program on
+numbers you cannot check, give it numbers you can check. If it says 250
+where you know the answer is 200, you have found something. This habit is
+often worth more than any tool for finding mistakes.
 
 ### Your turn
 
-This program converts a temperature from Celsius to Fahrenheit. It runs,
-and it is wrong.
+This program runs, and gives a different answer from the one it was meant
+to give. Can you find out where, with an answer you already know?
 
-1. Water boils at 100 °C, which is 212 °F. What does the program say?
-2. Can you find the mistake?
-3. Fix it, and run it again. Does it give 212 now?
-4. Try one more value you know: 0 °C is 32 °F.
+<div class="dl-world" data-world="secret-messages">
+
+It is meant to move the letter X three places along, which should give A:
+X, Y, Z, then round to A. What does it give?
 
 ```python exec
-id: when-nothing-looks-wrong-2
-celsius = 100
-fahrenheit = celsius + 32 * 9 / 5
-print(celsius, "C is", fahrenheit, "F")
+id: when-nothing-looks-wrong-2--secret-messages
+letter = "X"
+shift = 3
+position = ord(letter) - ord("A")
+moved = position + shift % 26
+print(chr(moved + ord("A")))
 ```
 
-## Reflection
+```inputs
+chr(moved + ord("A"))
+```
 
-There are three kinds of wrong, and we find each one in a different way.
+```hint
+Which happens first, `+` or `%`? What is `3 % 26`?
+```
 
-**Syntax errors** stop the program before it starts. Read the line
-number, look just before the marked spot, and expect an unclosed bracket
-to be reported late.
+```solution
+letter = "X"
+shift = 3
+position = ord(letter) - ord("A")
+moved = (position + shift) % 26
+print(chr(moved + ord("A")))
+---
+`%` happens before `+`, the same as `*` and `/`, so the line worked out
+`3 % 26`, which is 3, and never went back round after Z. The brackets
+make the remainder apply to the whole sum.
+```
 
-**Runtime errors** stop the program partway through. Read the traceback
-from the bottom. The last line says what happened. The lines above say
-where. And the line that failed is not always the line that is
-responsible.
+</div>
 
-**Logical errors** do not stop the program at all. Only one thing will
-find them for you: checking against an answer you already know. That is
-a habit you build, more than a technique you learn.
+<div class="dl-world" data-world="pixel-art">
 
-There is one more thing to say, and it is about the feeling more than
-the technique. An error message is the most exact and most patient help
-you will get from anything all day. It gives an exact place, an exact
-kind of error, and often a description of the fix. It is not a
-telling-off. Reading one calmly is a real skill. You can practise it on
-purpose, the way this page did: by breaking things when nothing is at
-stake.
+It is meant to find a pixel's brightness, the average of its red, green
+and blue. For red 90, green 120 and blue 210, the average is 140. What does
+it give?
 
-In a few sentences: which of the three kinds do you expect to give you
-the most trouble? What could you do while you write code to catch it
-earlier?
+```python exec
+id: when-nothing-looks-wrong-2--pixel-art
+red = 90
+green = 120
+blue = 210
+brightness = red + green + blue / 3
+print(brightness)
+```
 
-Later, our programs grow. They repeat steps, keep lists of values, and
-split their work into named pieces. The same three kinds of wrong turn
-up there too, with a few new errors and longer tracebacks.
-[Finding bugs in bigger programs](tutorial:when-it-goes-wrong) picks
-them up once we have those tools.
+```inputs
+brightness
+```
 
-## Where to Read More
+```hint
+Try the numbers yourself: 90 + 120 + 210 is 420, and 420 divided by 3 is
+140. Which part of the line did Python divide?
+```
+
+```solution
+red = 90
+green = 120
+blue = 210
+brightness = (red + green + blue) / 3
+print(brightness)
+---
+Only `blue` was divided, so the program said 280, which is not even a
+possible brightness. The brackets make Python add first.
+```
+
+</div>
+
+## Looking back
+
+Which of the three kinds of wrong do you expect to give you the most
+trouble? What could you do while you write code, rather than after, to
+catch it earlier?
+
+A challenge: this program has one error of each kind in it. Can you find
+all three? One stops it before it starts, one stops it partway, and one
+lets it finish with an answer nobody meant.
+
+```python challenge
+# One syntax error, one runtime error and one logical error.
+width = 64
+height = 48
+pixels = width * height
+print("Pixels:" pixels)
+bytes_needed = pixels * 3
+print("Kilobytes:", bytes_needed / 1024)
+average_side = width + height / 2
+print("Average side:", average_side)
+print("Colours:", colours)
+```
+
+An error message is the most exact and most patient help you will get from
+anything all day: an exact place, an exact kind, and often the fix.
+Reading one calmly is a skill you can practise on purpose, the way this
+page did: by breaking things when nothing is at stake. Later, our programs
+repeat steps, keep lists and split their work into named pieces, and
+[Finding bugs in bigger programs](tutorial:when-it-goes-wrong) picks the
+three kinds up again there.
+
+## Where to read more
 
 Corey Schafer (2015). *Python Tutorial: Using Try/Except Blocks for Error
 Handling.* <https://www.youtube.com/watch?v=NIWwJbo-9_8>. Where the errors
-this page teaches you to read get handled deliberately, rather than fixed
+this page teaches you to read get handled on purpose, rather than fixed
 by rewriting the line that raised them.

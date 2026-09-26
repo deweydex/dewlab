@@ -36,12 +36,21 @@ entries:
       operators. "and" needs both sides True, "or" needs at least one, and
       "not" turns True into False and False into True. Python works them
       out in this order: not, then and, then or.
-  - term: selection structures
+  - term: ".isupper(), .islower()"
+    python: str.isupper
+    kind: function
+    definition: >
+      .isupper() is True when a string's letters are all capitals, and
+      .islower() when they are all small letters. A space or a digit is
+      neither.
+    example: '"Q".isupper()  # True'
+  - term: selection
     kind: concept
-    definition: Selection structures are code that chooses which lines to run, such as if, elif and else.
-  - term: sequential execution
-    kind: concept
-    definition: Sequential execution is running every line from top to bottom, every time. A program with no selection structures runs this way.
+    definition: >
+      Selection is a program choosing which lines to run, with if, elif and
+      else. With sequence, running lines one after another, and repetition,
+      running them again in a loop, it is one of the three building blocks
+      of every program.
   - term: "natural numbers, integers, rationals, reals (N, Z, Q, R)"
     kind: concept
     definition: >

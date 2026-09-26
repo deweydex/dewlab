@@ -331,5 +331,50 @@ function applyTheme() {
 new MutationObserver(applyTheme).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 darkQuery.addEventListener("change", applyTheme);
 
+/* A page's challenge (#316) arrives in the address the page's link opened:
+ * `#challenge=` and a JSON object, {name, page, html, css, js}. It becomes
+ * a new site named after the page, beside the reader's others and never
+ * over one; the same starter opened again goes back to the site it made,
+ * if that site still holds it unchanged. The address is cleared at once,
+ * so a reload does not open it a second time. */
+function takeChallengeFromAddress() {
+  if (!location.hash.startsWith("#challenge=")) return;
+  const raw = location.hash.slice("#challenge=".length);
+  history.replaceState(null, "", location.pathname + location.search);
+  let starter;
+  try {
+    starter = JSON.parse(decodeURIComponent(raw));
+  } catch {
+    return;
+  }
+  if (!starter || typeof starter.name !== "string") return;
+  const parts = { html: starter.html || "", css: starter.css || "", js: starter.js || "" };
+  // "a-challenge", or the "a-challenge 2" it became beside a site of that name.
+  const madeHere = (label) => label === starter.name
+    || (label.startsWith(`${starter.name} `) && /^\d+$/.test(label.slice(starter.name.length + 1)));
+  const same = state.sites.find((s) => madeHere(s.name)
+    && s.html === parts.html && s.css === parts.css && s.js === parts.js);
+  if (same) {
+    state.active = same.id;
+  } else {
+    const taken = new Set(state.sites.map((s) => s.name));
+    let name = starter.name;
+    for (let n = 2; taken.has(name); n += 1) name = `${starter.name} ${n}`;
+    const site = { ...newSite(name), ...parts };
+    state.sites.push(site);
+    state.active = site.id;
+  }
+  writeState(state);
+}
+
+takeChallengeFromAddress();
 renderList();
 openSite(state.active);
+// A challenge link followed while the Workspace is already open in this tab
+// changes only the address, and the page does not reload.
+window.addEventListener("hashchange", () => {
+  if (!location.hash.startsWith("#challenge=")) return;
+  takeChallengeFromAddress();
+  renderList();
+  openSite(state.active);
+});

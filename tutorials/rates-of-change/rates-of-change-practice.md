@@ -23,7 +23,8 @@ The cell below defines two helpers:
   the numerical one, at four points.
 
 The last line shows how to use `compare_slopes`, with $x^2$ and its derivative
-$2x$. If the two columns match, your derivative is right.
+$2x$. Where the two columns match, your derivative agrees with the slope
+the numbers give.
 
 ```python exec
 id: tools-1

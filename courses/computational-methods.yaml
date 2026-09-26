@@ -1,9 +1,26 @@
 title: Computational Methods
 code: 5N0554 · QQI Level 5
 status: beta
-card: We work through matrices, simulation, algorithms and debugging, in Python.
-description: This module is Computational Methods and Problem Solving (5N0554).
-  We work through matrices, simulation, algorithms and debugging, in Python.
+card: >-
+  For anyone ready to use Python on bigger problems. You turn pictures with
+  matrices, generate text, simulate queues and chance, and race
+  algorithms. Choose the world your tasks are set in, from mazes to
+  starships.
+description: >-
+  This is Computational Methods and Problem Solving (5N0554). It is for
+  anyone who wants to see what a program can do with a real problem, and it
+  starts with the Python you will need.
+
+
+  After the Python come matrices, and the pictures they move and turn on a
+  screen; text generated from the words of a book; simulations of chance,
+  queues and a model that corrects itself; algorithms that search and make
+  change; and finding where a program went wrong.
+
+
+  The tasks come in worlds you choose, page by page: photos and filters,
+  sprites and pixel art, starships and space scenes, living systems and
+  crowds, mazes and networks. Pick the one that makes you curious.
 contents:
 - title: Python fundamentals
   tutorials:
@@ -14,6 +31,7 @@ contents:
   - repeating-yourself
   - writing-your-own-functions
   - lists-and-sequences
+  - comprehensions-and-grids
   - looking-things-up-by-name
 - title: Matrices
   tutorials:

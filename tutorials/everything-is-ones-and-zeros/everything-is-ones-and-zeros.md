@@ -79,15 +79,19 @@ your toolkit gained `digit_at`. `digit_at(2026, 1)` gives {2}.
 ```question
 id: everything-is-warm-up-2
 type: multiple-choice
-correct: 1
+answer: 1
 
 On [Four questions for any puzzle](tutorial:four-questions), the same `*`
 did two different jobs. What does `print(2 * "na")` show?
 
 - `nana`
+  - `*` with text and a whole number repeats the text.
 - `4`
+  - This multiplies 2 by 2, as if `"na"` were a number.
 - `na 2`
+  - This puts the two side by side, as `print("na", 2)` would.
 - nothing: Python cannot multiply text
+  - Python can repeat text with `*`, though it cannot multiply two pieces of text.
 ```
 
 ## Counting with two digits
@@ -202,15 +206,19 @@ print(0b1011011)
 ```question
 id: everything-is-segments-guess
 type: multiple-choice
-correct: 3
+answer: 3
 
 The last line's pattern, `1011011`, lights segments g, e, d, b and a.
 Which digit is that?
 
 - 1
+  - A 1 lights only the two segments on the right.
 - 7
+  - A 7 lights the top and the two on the right, with no middle.
 - 2
+  - g, e, d, b and a: the top, upper right, middle, lower left and bottom make a 2.
 - 9
+  - A 9 lights the upper left segment, f, and the lower right, c.
 ```
 
 Eight bits together are called a *byte*. The smallest byte is
@@ -446,14 +454,18 @@ green light together look orange to our eyes.
 ```question
 id: everything-is-colour-guess
 type: multiple-choice
-correct: 3
+answer: 3
 
 Using the same idea, what colour is `#0088FF`?
 
 - a bright red
+  - Red is the first pair, `00` here: none at all.
 - a dark orange
+  - Orange needs a lot of red, and `00` is none.
 - a sky blue
+  - No red, some green (`88`) and full blue (`FF`).
 - a pale grey
+  - A grey has all three pairs equal.
 ```
 
 The next cell draws a few colours side by side. The square brackets
@@ -581,7 +593,7 @@ text that appears when a move is not allowed.
 
 ## Where to read more
 
-The dewlab page [Variables, data types and text](tutorial:storing-and-computing)
+The dewlab page [How programming languages came to be](tutorial:how-we-got-here)
 meets binary and hexadecimal from another direction, with a small
 converter to build.
 

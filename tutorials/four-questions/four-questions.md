@@ -82,15 +82,19 @@ at the table assumes them.
 ```question
 id: four-q-square-97
 type: multiple-choice
-correct: 4
+answer: 4
 
 You are on square 97 and you roll a 6. There is no square 103. What
 happens?
 
 - You move to square 103.
+  - Some families play this way, where you only need to reach 100 or beyond.
 - You stay on square 97.
+  - Some families play this way: you need the exact number to finish.
 - You move to 100, then back 3 squares, to 97.
+  - Some families play this way: bounce back off 100.
 - It depends on the rules your family plays by.
+  - The board does not say; the rules you agree on decide.
 ```
 
 People play this in different ways. In some homes you need the exact
@@ -171,14 +175,17 @@ triangle's angles do not add up to 180°.
 ```question
 id: four-q-lift
 type: multiple-choice
-correct: 2
+answer: 2
 
 You are on floor 3 of a building and you go down 5 floors. In which
 building is that possible?
 
 - A building whose lowest floor is the ground floor, floor 0.
+  - With floor 0 at the bottom, 3 − 5 floors is below the lowest floor.
 - A building with two floors of car park under the ground, floors −1 and −2.
+  - Floors −1 and −2 give the building room to go 5 floors down from 3.
 - Neither: 3 − 5 has no answer.
+  - 3 − 5 is −2 with negative numbers; whether the building has a floor −2 is the question.
 ```
 
 ## A recipe
@@ -216,14 +223,17 @@ same thing to you as it did to the writer.
 ```question
 id: four-q-swap-steps
 type: multiple-choice
-correct: 1
+answer: 1
 
 Which step could move to the very start of the recipe, and still give
 the same pancakes?
 
 - Step 4, heat the pan.
+  - Heating the pan does not touch the batter, so it can happen first.
 - Step 3, whisk until smooth.
+  - Whisking needs the ingredients already in the bowl.
 - Step 5, pour in the batter.
+  - Pouring needs a hot pan and a smooth batter.
 ```
 
 A list of steps like this one, clear enough to follow exactly and in

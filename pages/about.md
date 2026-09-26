@@ -24,13 +24,16 @@ trigonometry, say — in one place. That one is useful when you are practising
 a single topic rather than working through in order.
 
 Most tutorials come with a practice page. It holds more problems on the same
-idea, and the answer usually sits right below each one. We are not trying to
-hide the right answer. What we are learning is the steps that get us there.
+idea, each with a hint and a worked answer you can open when you want them.
+What we are learning is the steps, so the answer is never hidden from you.
 
 The [dewlab Notebook](compose/notebook.html) is an open Python notebook with
 no tutorial attached. Open it when you just want to try something out.
 
-New here, or stuck on something?
+New here, or stuck on something? [Studying here](studying.html) helps you
+choose a course and says what to try when you are stuck.
+[Reading helpers](reading-helpers.html) shows how to make a page bigger, have
+it translated, or hear it read aloud.
 [Using dewlab](https://github.com/deweydex/dewlab/blob/main/docs/FOR_STUDENTS.md)
 walks through the reading page, and the
 [FAQ](https://github.com/deweydex/dewlab/blob/main/docs/FAQ.md) answers the

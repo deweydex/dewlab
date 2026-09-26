@@ -1,7 +1,10 @@
 ---
 title: "Writing your own functions"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.26.1
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   defining-a-function:
     covers: [PDP-LO8]
@@ -20,79 +23,78 @@ covers:
 
 # Writing your own functions
 
-We have already used several functions that Python gives us: `print()`,
-`input()`, `int()`, `str()` and `range()`. Each one has a name. Each one
-takes something inside its brackets and does a job with it. Some of them
-also give something back: `int("42")` gives back the number 42.
+Here is a small program with a secret in it. What will appear under the
+cell when you run it?
 
-Our programs are getting longer, and some pieces of them do the same job
-more than once. On this page we write our own functions, so that we can
-name a piece of code once and use it as often as we like.
+```python exec
+id: defining-a-function-1
+def secret():
+    print("The password is OTTER")
+```
 
-On this page we:
+```predict
+What will appear under the cell?
 
-- write functions with `def`, and give them values to work with
-- send an answer back with `return`, and see how that is different from
-  printing it
-- look at a function as a machine that turns an input into an output
-- build a function out of other functions
-- see where a variable lives: inside a function, or outside it
+- The password is OTTER
+  - The `print` line is right there in the cell.
+- Nothing
+  - `def` gives the steps a name. It does not run them.
+- secret
+  - This is what you would see if Python printed the name.
+```
 
-## Defining a Function
+Nothing appears. `def` teaches Python a new name, `secret`, and what the
+name means. It does not run the lines under it. They run only when we
+*call* the function, with its name and a pair of brackets:
 
-Suppose we want to greet three people. We could write three `print`
-lines that are almost the same. Then, if we want to change the greeting,
-we have to change it in three places.
+```python exec
+id: defining-a-function-2
+secret()
+secret()
+```
 
-A *function* is a named block of code. We define it once. Then we can
-*call* it, which means run it, whenever we need it, and give it
-different values each time.
+We have used functions Python gives us from the start: `print()`, `int()`,
+`len()`, `range()`. Each has a name, takes something inside its brackets,
+and does one job. On this page we write our own, so that a piece of code
+we need again, like the Caesar shift, gets a name we can call as often as
+we like.
+
+## Defining a function
+
+A *function* is a named block of code. We define it once, then call it
+whenever we need it, with different values each time.
 
 ```python exec
 id: functions-reusable-algorithms-1
 def greet(name):
     print("Hello, " + name + "!")
 
-# Now we can call it as many times as we want
 greet("Ada")
 greet("Grace")
 greet("Alan")
 ```
 
-Here is what each part does:
+Try adding a fourth call with your own name, and run it again.
 
-- The `def` keyword defines a function. Here the function's name is
-  `greet`. The line ends with a colon, like an `if` or a `for` line.
-- `name` is a *parameter*. A parameter is a placeholder for a value we
-  give the function when we call it.
-- The indented code under `def` is the *function body*. It runs each
-  time we call the function.
-- In `greet("Ada")`, the value `"Ada"` is the *argument*. An argument is
-  the actual value we pass in. Python puts it into the parameter `name`.
+<details class="dl-answer"><summary>What each line does</summary>
 
-What do you think the next cell prints? Run it to check.
+- `def greet(name):` defines a function called `greet`. The line ends with
+  a colon, like an `if` or a `for` line. Nothing is printed yet.
+- The indented `print` line runs each time the function is called, not
+  when it is defined.
+- `greet("Ada")` calls the function. Python puts `"Ada"` into `name`, and
+  runs the indented line.
 
-```python exec
-id: defining-a-function-1
-def cheer():
-    print("Well done!")
-    print("Keep going!")
-```
+</details>
 
-It prints nothing at all. A `def` teaches Python a new name and what the
-name means. It does not run the body. The body runs only when we call
-the function, with its name and a pair of brackets. This function has no
-parameters, so the brackets stay empty:
+`name` is a *parameter*: a placeholder for a value the function will be
+given. The indented code under `def` is the *function body*. And the value
+in a call, like `"Ada"`, is the *argument*: the actual value passed in,
+which Python puts into the parameter.
 
-```python exec
-id: defining-a-function-2
-cheer()
-cheer()
-```
-
-A function can have more than one parameter. We put commas between them,
-and pass the same number of arguments, in the same order. Look at the
-last line of the next cell. What do you think it prints?
+A function can have more than one parameter, with commas between them, and
+we pass the same number of arguments, in the same order. What will the last
+line of this cell print?
 
 ```python exec
 id: defining-a-function-3
@@ -100,35 +102,90 @@ def describe_pet(pet_name, animal):
     print(pet_name + " is a " + animal + ".")
 
 describe_pet("Rex", "dog")
-describe_pet("Tom", "cat")
 describe_pet("dog", "Rex")
 ```
 
-Python matches arguments to parameters by their position. The first
-argument goes into the first parameter, and the second into the second.
-Python does not know that "Rex" sounds like a name and "dog" sounds like
-an animal, so the last line prints `dog is a Rex.`
+```predict
+type: text
+
+What will the last line print?
+```
+
+Python matches arguments to parameters by their position: the first
+argument goes into the first parameter. It does not know that "Rex" sounds
+like a name, so the last line prints `dog is a Rex.`
 
 ### Your turn
 
-1. In the cell below, write a function `print_times_table(number)`. It
-   prints the times table for `number`, from 1 times `number` up to 10
-   times `number`, one line each. Use a `for` loop inside the function.
-2. Call it for 7, and then for 12.
+<div class="dl-world" data-world="secret-messages">
+
+Can you write a function `print_code_table(shift)`, which prints every
+letter of the alphabet beside the letter a Caesar shift moves it to? Then
+call it with a shift of 3, and again with 13.
 
 ```python exec
-id: your-turn-1
-# Your print_times_table function
+id: your-turn-1--secret-messages
+# Your print_code_table function
 
-# Call it for 7 and 12
+# Call it with 3, then 13
 ```
 
-## Giving a Value Back: return
+```hint
+The loop from [Repeating steps with loops](tutorial:repeating-yourself)
+that printed the table for a shift of 3 goes inside the function. Where
+did it use the number 3?
+```
 
-A function can also *return* a value. To return a value means to send it
-back to the code that called the function. Most useful functions return
-a value, so that we can keep working with it. What do you think the next
-cell prints?
+```solution
+def print_code_table(shift):
+    for position in range(26):
+        letter = chr(position + ord("A"))
+        moved = chr((position + shift) % 26 + ord("A"))
+        print(letter, moved)
+
+print_code_table(3)
+print_code_table(13)
+---
+The 3 became the parameter `shift`, so one function prints the table for
+any shift.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you write a function `draw_square(size)`, which prints a square of `#`,
+`size` pixels wide and `size` tall? Then call it with 3, and again with 5.
+
+```python exec
+id: your-turn-1--pixel-art
+# Your draw_square function
+
+# Call it with 3, then 5
+```
+
+```hint
+One loop, `size` times round, printing a row. `"#" * size` is a row.
+```
+
+```solution
+def draw_square(size):
+    for row in range(size):
+        print("#" * size)
+
+draw_square(3)
+draw_square(5)
+---
+Everything that changes from one square to the next is the parameter,
+`size`.
+```
+
+</div>
+
+## Giving a value back: return
+
+A function can also *return* a value: send it back to the code that called
+it. Most useful functions return a value, so we can keep working with it.
 
 ```python exec
 id: functions-reusable-algorithms-2
@@ -140,14 +197,11 @@ print(result)
 print(square(12))
 ```
 
-The `return` statement sends the value back to the caller. The call
-`square(7)` then stands for the value 49, in the same way that
-`int("42")` stands for 42. We can store the result, print it, or use it
-in more calculations.
+The call `square(7)` then stands for the value 49, the same way `int("42")`
+stands for 42. We can store it, print it, or use it in more calculations.
 
-A `return` also ends the function straight away. Any lines after it in
-the body do not run. Here is a function with two `return` lines. Which
-one runs for `larger(5, 5)`?
+A `return` also ends the function straight away: any lines after it do not
+run. Which `return` runs for `larger(5, 5)`?
 
 ```python exec
 id: giving-a-value-back-1
@@ -161,35 +215,96 @@ print(larger(10, 2))
 print(larger(5, 5))
 ```
 
-For `larger(10, 2)`, the test `a > b` is True, so the function returns
-10 and stops. It never reaches `return b`. For `larger(5, 5)`, the test
-is False, so the function goes on to the last line and returns `b`,
-which is 5.
+For `larger(10, 2)`, `a > b` is `True`, so the function returns 10 and
+stops. For `larger(5, 5)`, it is `False`, so the function goes on to the
+last line and returns `b`, which is 5.
 
 ### Your turn
 
-1. Write a function called `celsius_to_fahrenheit`. It takes a
-   temperature in Celsius and returns the same temperature in Fahrenheit.
-   To convert, multiply by 9, divide by 5, then add 32. You can plan it
-   in pseudocode first, in the comment lines at the top of the first
-   cell.
-2. Test it in the second cell with a few values you can check. What
-   should 0 and 100 give?
+From here on, a task's cases come with a column for your own guess. Before
+you compare your function with a solution, write what you think each call
+gives.
+
+<div class="dl-world" data-world="secret-messages">
+
+Can you write `encode(message, shift)`, which returns the message with
+every capital letter moved `shift` places along, and anything else, a
+space or a full stop, left as it is?
 
 ```python exec
-id: your-turn-2
-# Pseudocode:
-#
-
-# Your function
+id: your-turn-2--secret-messages
+def encode(message, shift):
+    ...
 ```
+
+```inputs
+guess: yes
+encode("HELLO", 3)
+encode("ZOO", 1)
+encode("HI THERE", 13)    # with a space
+encode("", 5)             # an empty message
+```
+
+```hint
+Start with an empty accumulator, `coded = ""`. Go through the message one
+character at a time. A capital gets the shift; anything else is added as it
+is. What does the function return at the end?
+```
+
+```solution
+def encode(message, shift):
+    coded = ""
+    for character in message:
+        if character.isupper():
+            position = ord(character) - ord("A")
+            coded = coded + chr((position + shift) % 26 + ord("A"))
+        else:
+            coded = coded + character
+    return coded
+---
+Every piece of this is from an earlier page: the shift, the `if`, the loop,
+the accumulator. The function gives them one name.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A checkerboard is `#` where the column and the row add up to an even
+number, and `.` where they add up to an odd one. Can you write
+`checker(x, y)`, which returns the pixel for column `x` and row `y`?
 
 ```python exec
-id: your-turn-3
-# Test it
+id: your-turn-2--pixel-art
+def checker(x, y):
+    ...
 ```
 
-## Return or Print?
+```inputs
+guess: yes
+checker(0, 0)
+checker(1, 0)
+checker(3, 5)
+checker(-1, 0)     # a column off the left edge
+```
+
+```hint
+`(x + y) % 2` is 0 when the sum is even. Which pixel goes with which?
+```
+
+```solution
+def checker(x, y):
+    if (x + y) % 2 == 0:
+        return "#"
+    return "."
+---
+It returns the pixel rather than printing it, so another function can use
+it to build a whole picture. That is the next section.
+```
+
+</div>
+
+## Return or print?
 
 A function that prints a value and a function that returns a value can
 look the same when we run them. They are not the same, and mixing them
@@ -244,11 +359,8 @@ store it, or use it in a bigger calculation.
 
 ### Your turn
 
-1. Before you run the cell, predict what happens. Is it a number, or
-   an error?
-2. Run it. If there is an error, which line does it point to, and what
-   type of value does it complain about?
-3. Change `add_postage` so that the last line works and prints 48.
+Before you run this cell, is it going to print a number, or stop with an
+error? Then, can you change `add_postage` so that the last line prints 48?
 
 ```python exec
 id: your-turn-4
@@ -259,28 +371,37 @@ total = add_postage(20) * 2
 print(total)
 ```
 
-## Functions as Input-Output Machines
-
-In mathematics, a function is a rule that gives *exactly one output* for
-each input. For example, $f(x) = x^2$ takes 3 and gives 9. It takes -3
-and also gives 9. The important property is this: the same input always
-gives the same output.
-
-Our Python functions can work the same way. Look again at `square`:
-
-```python
-def square(n):
-    return n ** 2
+```inputs
+total
 ```
 
-This code defines a rule that gives exactly one output for each input.
-It is a mathematical function, written in code. An algorithm can be seen
-in the same way: a set of steps that takes an input and produces an
-output.
+```hint
+What does `add_postage(20)` give back? Can `None` be multiplied by 2?
+```
 
-Not every Python function is a mathematical function. Some depend on
-things outside the function. Others use random numbers. What do you
-think this cell prints? Look at the two calls: they have the same input.
+```solution
+def add_postage(price):
+    return price + 4
+
+total = add_postage(20) * 2
+print(total)
+---
+With `print`, the function showed 24 and gave back `None`, so `None * 2`
+stopped with a `TypeError`. With `return`, the call stands for 24, and the
+last line can use it.
+```
+
+## Functions as input-output machines
+
+In mathematics, a function is a rule that gives *exactly one output* for
+each input. $f(x) = x^2$ takes 3 and gives 9, and takes −3 and also gives
+9. The same input always gives the same output. `square` is a rule like
+that, written in code, and so is `encode`: the same message and shift
+always give the same code.
+
+Not every Python function works this way. Some depend on things outside the
+function. What do you think this cell prints? The two calls have the same
+input.
 
 ```python exec
 id: functions-as-input-output-machines-1
@@ -294,49 +415,107 @@ discount_rate = 0.25
 print(with_discount(50))
 ```
 
-The same input, 50, gave two different outputs, 45.0 and 37.5. The
-answer depends on `discount_rate`, a variable outside the function. So
-we cannot know what `with_discount(50)` gives by looking at the call.
+The same input, 50, gave 45.0 and then 37.5. The answer depends on
+`discount_rate`, a variable outside the function, so we cannot know what
+`with_discount(50)` gives by looking at the call. A *pure function* is one
+whose output depends only on its inputs. Pure functions are the easiest to
+understand, to test and to trust. `with_discount` becomes pure if the rate
+is passed in: `def with_discount(price, rate):`.
 
-A *pure function* is a function whose output depends only on its inputs.
-Pure functions are the easiest to understand, to test and to trust, so
-they are worth aiming for. Here, we can make `with_discount` pure by
-passing the rate in as a second parameter:
-`def with_discount(price, rate):`.
-
-In mathematics, the inputs a function is meant to take are called its
-*domain*. The domain of `square` is every number. What about a function
-that divides by its input? Its domain is every number except 0. When we
-write a function, it is worth asking which inputs make sense for it.
+In mathematics, the inputs a function is meant to take are its *domain*.
+The domain of `square` is every number. A function that divides by its
+input has every number except 0. When we write a function, it is worth
+asking which inputs make sense for it.
 
 ### Your turn
 
-A function that undoes another function is called its *inverse*. For
-example, taking the square root undoes squaring a positive number.
+A function that undoes another is called its *inverse*. Taking the square
+root undoes squaring a positive number.
 
-1. Write `fahrenheit_to_celsius(fahrenheit)`, the inverse of your
-   `celsius_to_fahrenheit`. To convert, subtract 32, multiply by 5, then
-   divide by 9.
-2. Test it: `fahrenheit_to_celsius(212)` should give 100.
-3. What do you expect `fahrenheit_to_celsius(celsius_to_fahrenheit(37))`
-   to give? Run it to check.
+<div class="dl-world" data-world="secret-messages">
 
-```python exec
-id: your-turn-5
-# Your fahrenheit_to_celsius function
-```
+Can you write `decode(message, shift)`, the inverse of `encode`? It should
+move each capital letter `shift` places back. Can you do it by calling
+`encode`?
 
 ```python exec
-id: your-turn-6
-# Test it
+id: your-turn-5--secret-messages
+def decode(message, shift):
+    ...
 ```
 
-## Functions That Use Other Functions
+```inputs
+guess: yes
+decode("KHOOR", 3)
+decode(encode("OTTER", 5), 5)
+decode("URYYB", 13)
+```
 
-In the last step of that Your turn, the answer of one function became the
-argument of another. A function can also call another function inside
-its own body. Look at `sum_of_squares`. How many times does it call
-`square`?
+```hint
+Moving back 3 places is moving forward −3 places. What does
+`encode(message, -shift)` do?
+```
+
+```solution
+def encode(message, shift):
+    coded = ""
+    for character in message:
+        if character.isupper():
+            position = ord(character) - ord("A")
+            coded = coded + chr((position + shift) % 26 + ord("A"))
+        else:
+            coded = coded + character
+    return coded
+
+def decode(message, shift):
+    return encode(message, -shift)
+---
+`decode` is one line, because `encode` already does the work. (This
+solution brings its own `encode` with it, in case yours is not finished.) And
+`decode(encode("OTTER", 5), 5)` gives back `OTTER`: the inverse undoes
+the function.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Mirroring a picture left to right sends column 0 to the last column, and
+the last to column 0. For a picture `width` pixels wide, can you write
+`mirror(x, width)`, which returns the column that `x` moves to?
+
+```python exec
+id: your-turn-5--pixel-art
+def mirror(x, width):
+    ...
+```
+
+```inputs
+guess: yes
+mirror(0, 8)
+mirror(7, 8)
+mirror(mirror(3, 8), 8)
+```
+
+```hint
+In a picture 8 wide, the columns are 0 to 7. Column 0 goes to 7, and
+column 1 to 6. What do the two numbers in each pair add up to?
+```
+
+```solution
+def mirror(x, width):
+    return width - 1 - x
+---
+Mirroring twice puts every column back where it was, so `mirror` is its
+own inverse: `mirror(mirror(3, 8), 8)` is 3 again.
+```
+
+</div>
+
+## Functions that use other functions
+
+A function can call another function inside its own body. How many times
+does `sum_of_squares` call `square`?
 
 ```python exec
 id: functions-that-use-other-functions-1
@@ -353,47 +532,107 @@ print(sum_of_squares(3, 4))
 print(hypotenuse(3, 4))
 ```
 
-`sum_of_squares` calls `square` twice. Then `hypotenuse` uses
+`sum_of_squares` calls `square` twice. `hypotenuse` then uses
 `sum_of_squares`, and takes the square root with `** 0.5`. This is
-Pythagoras' theorem: in a right-angled triangle with sides 3 and 4, the
-longest side is 5.
+Pythagoras' theorem: in a triangle with a square corner and sides 3 and 4,
+the longest side is 5.
 
-Each function does one small job. We can test each one on its own, and
-then build bigger functions out of the ones we trust. If we find a
-mistake in `square`, we fix it in one place, and every function that
-uses it is fixed too.
-
-A function can also return more than one value. We put a comma between
-the values, and the code that calls it can store them in two variables
-at once:
-
-```python
-def example():
-    return 10, 20
-
-a, b = example()   # a gets 10, b gets 20
-```
+Each function does one small job, so we can test each one on its own, then
+build bigger ones out of the ones we trust. If we find a mistake in
+`square`, we fix it in one place, and every function that uses it is fixed
+too.
 
 ### Your turn
 
-1. In the first cell, write two functions: `circle_area(radius)` and
-   `circle_circumference(radius)`. Use 3.14159 for $\pi$. The area is
-   $\pi r^2$, and the circumference is $2 \pi r$.
-2. Write a third function, `circle_info(radius)`. It calls the other two,
-   and returns *both* the area and the circumference.
-3. In the second cell, test it with a radius you can check by hand.
+<div class="dl-world" data-world="secret-messages">
+
+A code-breaker who does not know the shift can try all 26. Can you write
+`try_every_shift(message)`, which prints each shift beside the message
+decoded with it, using your `decode`? Try it on `"WKLV LV D VHFUHW"`.
 
 ```python exec
-id: your-turn-7
-# Your three circle functions
+id: your-turn-7--secret-messages
+def try_every_shift(message):
+    ...
+
+try_every_shift("WKLV LV D VHFUHW")
 ```
+
+```solution
+def encode(message, shift):
+    coded = ""
+    for character in message:
+        if character.isupper():
+            position = ord(character) - ord("A")
+            coded = coded + chr((position + shift) % 26 + ord("A"))
+        else:
+            coded = coded + character
+    return coded
+
+def decode(message, shift):
+    return encode(message, -shift)
+
+def try_every_shift(message):
+    for shift in range(26):
+        print(shift, decode(message, shift))
+
+try_every_shift("WKLV LV D VHFUHW")
+---
+One line of the 26 reads as English: shift 3, `THIS IS A SECRET`. The
+function is three lines because `decode` and `encode` do the rest.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you write `draw_checkerboard(width, height)`, which returns a whole
+checkerboard as one piece of text, using your `checker` for each pixel?
+`"\n"` in a string starts a new line.
 
 ```python exec
-id: your-turn-8
-# Test circle_info
+id: your-turn-7--pixel-art
+def draw_checkerboard(width, height):
+    ...
+
+print(draw_checkerboard(8, 4))
 ```
 
-## Scope: Where Variables Live
+```inputs
+draw_checkerboard(4, 2)
+draw_checkerboard(1, 1)
+```
+
+```hint
+An accumulator, `picture = ""`. One loop for the rows, and inside it one
+for the columns, adding `checker(x, y)` for each pixel. After each row,
+add `"\n"`.
+```
+
+```solution
+def checker(x, y):
+    if (x + y) % 2 == 0:
+        return "#"
+    return "."
+
+def draw_checkerboard(width, height):
+    picture = ""
+    for y in range(height):
+        for x in range(width):
+            picture = picture + checker(x, y)
+        picture = picture + "\n"
+    return picture
+
+print(draw_checkerboard(8, 4))
+---
+It returns the picture instead of printing it, so a caller can print it,
+store it, or change it first. `checker` decides each pixel;
+`draw_checkerboard` only puts them in order.
+```
+
+</div>
+
+## Scope: where variables live
 
 A variable's *scope* is the part of the program where that variable
 exists. A variable we create inside a function has *local scope*: it
@@ -447,7 +686,7 @@ set_count()
 print("outside:", count)
 ```
 
-The line `count = 10` inside the function made a *new*, local variable
+The line `count = 10` inside the function made a new, local variable
 called `count`. The global `count` is still 0. Giving a name a value
 inside a function never changes a variable outside it. If we want a
 function to change a value, the clear way is to return the new value,
@@ -473,28 +712,40 @@ id: your-turn-10
 # Call both, then print the global total
 ```
 
-## Reflection
+## Looking back
 
-On this page we wrote our own functions. We defined them with `def`,
-gave them parameters, and called them with arguments. We sent answers
-back with `return`, and saw that returning a value and printing it are
-two different things. We saw a function as a machine that turns inputs
-into outputs, built functions out of other functions, and found that the
-variables inside a function stay inside it.
+Which is easier to test: a function that prints its answer, or one that
+returns it? Think of the comparison tables on this page. Could they have
+shown your answer if the function had only printed it?
 
-From now on, when we solve a problem, we will often put the solution
-inside a function, so that we can use it again. This is the start of
-*modular programming*. Modular programming means building large
-programs out of small pieces, each one tested on its own.
+A challenge: `try_every_shift` prints 26 lines, and you pick out the English
+one by eye. Can you make the computer pick? One way: English text is full of
+E's, so the shift whose decoding has the most E's is probably the right one.
 
-Next, in [Lists: keeping many values in order](tutorial:lists-and-sequences), we keep
-many values together in one list, and write functions that work with
-them.
+```python challenge
+# Which shift gives the decoding with the most E's?
+def encode(message, shift):
+    coded = ""
+    for character in message:
+        if character.isupper():
+            coded = coded + chr((ord(character) - ord("A") + shift) % 26 + ord("A"))
+        else:
+            coded = coded + character
+    return coded
 
-Which do you find easier to test: a function that prints its answer, or
-one that returns it? Why?
+message = "WKH HDJOH KDV ODQGHG DW WKUHH"
+best_shift = 0
+# Try every shift, count the E's, and keep the best.
+print(best_shift, encode(message, -best_shift))
+```
 
-## Where to Read More
+From now on, when we solve a problem, we often put the solution inside a
+function, so we can use it again. Building large programs out of small,
+tested pieces is called *modular programming*. Next,
+[Lists and looping over them](tutorial:lists-and-sequences) keeps
+many values together, and our functions start to work on whole lists.
+
+## Where to read more
 
 Python Software Foundation. *The Python Tutorial — Defining Functions.*
 <https://docs.python.org/3/tutorial/controlflow.html#defining-functions>.

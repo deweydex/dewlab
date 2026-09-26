@@ -81,15 +81,18 @@ numbers, because the stop number is left out.
 ```question
 id: row-warm-up-2
 type: multiple-choice
-correct: 2
+answer: 2
 
 `add_reading(readings, value)` puts a value at the end of `readings`
 with `append`. After `today = [14.2, 14.8]` and
 `add_reading(today, 15.1)`, what does `today` hold?
 
 - `[14.2, 14.8]`
+  - This is what you would see if the function worked on a copy of the list.
 - `[14.2, 14.8, 15.1]`
+  - `append` changes the list itself, and `today` names that same list.
 - `None`
+  - `None` is what `add_reading` gives back; the list it changed is still `today`.
 ```
 
 ## A week in one name
@@ -293,14 +296,17 @@ neighbours, or a second list.
 ```question
 id: row-by-index-2
 type: multiple-choice
-correct: 3
+answer: 3
 
 A cell loops `for i in range(len(week)):` and uses `week[i + 1]`. What
 happens on the last time round?
 
 - It gives the first value again.
+  - This is what you would see if the positions went round in a circle, as some languages allow.
 - It gives the last value.
+  - `week[i + 1]` looks one place ahead, so on the last time round it looks past the end.
 - It stops with an `IndexError`.
+  - On the last time round, `i + 1` is one past the last position, and nothing is there.
 ```
 
 ## Building a new list in a loop
@@ -709,4 +715,4 @@ The practice page is next. After it,
 stand for a whole list, and finds three different answers.
 
 For more on lists, the integrated course has
-[Lists: keeping many values in order](tutorial:lists-and-sequences).
+[Lists and looping over them](tutorial:lists-and-sequences).
