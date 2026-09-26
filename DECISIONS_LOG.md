@@ -5062,3 +5062,21 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Outcomes.** CMPS-LO3 and LO13 as the main ones; LO7, because the formula and the loop are two ways to get answers from one model; LO11 touched, since checking a simulation against a known answer is validation, but not against the real world, which the air-resistance challenge only points at. The comparison with the darts page (ten times the steps for one more decimal place, against a hundred times the darts) is deliberate: it is the first time the series compares two numerical methods by cost.
 
 *Cost to change: `stepping-forward-in-time` is a new id, and its cell ids become a contract once a class has used it. Moving it within the series is one line in `courses/computational-methods.yaml`.*
+
+---
+
+**7.254 — Say it directly: a style rule against clever framing, and a sweep of every page.** Josh, 26 September 2026, after a review of the recent pull requests: "those gerunds and weird indirect framing are just not the same as simple friendly prose… lets see if we can get rid of all those!"
+
+**What the review found.** Five readers, each given a different group of recent pages (Programming Foundations, both halves of OOP, the long Dewey Track pages, and the newest merges), found the same drift on their own. Sentences had not grown longer: the recent groups average 12.5 to 14 words, against a site median of 12.4, and dashes were nearly gone. The drift was in how sentences were built. Colons carried the main point where dashes used to (about 130 to 170 mid-sentence colons in each OOP half). Paragraphs ended on a saying ("'has a' bends where 'is a' breaks"). Verbs became nouns ("the deciding… kept apart from the asking"). Sentences put the point last ("What changes is where…") or had no verb at all. Planning words reached students ("This one has no top"). Quiet verdicts slipped past the #376 sweep ("not yet", "a fair answer", "the tests are the judge"). Each reads well to a native speaker and asks a second-language reader to read twice.
+
+**The rule.** `PEDAGOGICAL_STYLE_GUIDE.md#say-it-directly`: somebody or something does something, in that order. It lists the eight shapes with an example of each from a real page, and a line joins the checklist. The quiet verdicts join `#no-verdicts`, and the phrasal verbs that kept coming back (*work out*, *give back*, *go through*, *reach in*, *throw away*, *out of order*) join `#plain-language`. Length was left alone: 7.244 still holds, and the long Dewey Track pages are long mostly because of their guess-run-explain cycles.
+
+**One stock line.** "One way through; yours may differ and work as well." sat in 75 answer folds on 29 pages: an idiom with a semicolon in it. It is now "Here is one answer. Yours may be different and work too." everywhere.
+
+**A fact the review turned up.** Four pages (the shared "When a cell does not do what you expect" section, `first-steps-cm-practice`, `four-questions` and the FAQ) said Reset brings back the starter code. Reset (↺) clears the output; Clear (↻) puts the code back (`build.py`, `dl-btn-reset` and `dl-btn-clear`). 7.249 fixed the same sentence on `working-with-tables` and missed these.
+
+**The sweep.** Every current page in `tutorials/` was read by one of eight readers against the rule, who rewrote only the sentences that break it. Code, frontmatter, headings' wording (their slugs are `covers:` keys), cell ids and frozen releases were not touched; Title Case headings became sentence case. No `version:` bump, since no cell changed.
+
+**Left for later.** Four sideline sections on long Dewey Track pages could move to a context page (7.208): the Timsort aside in `racing-the-sorts`, "Three weights for a curve" in `rules-with-letters-in-them`, the Pascal detour in `machines-that-take-a-number`, and the $x^2$ against $2^x$ race in `drawing-a-rule`. The data-copy note is written by hand on 10 pages in 5 wordings, and its runtime strings in `assets/tutorial-runtime.js` and `assets/tutorial_tools.py` need the same plain rewrite and a vendor rebuild. Glossary files were not swept.
+
+*Cost to change: none for the rule. The sweep is prose only; a rewritten sentence can be changed back by hand.*
