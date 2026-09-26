@@ -138,8 +138,8 @@ $3 + 2(1) - 2 = 3$, not $2$. The third equation fails, so these numbers do
 not solve the system, even though they make the first two true.
 
 A solution has to make every equation true. If you check only some of
-them, especially the ones that look easiest, you can miss an answer that
-does not work. (The real solution to this system is the one with fractions,
+them, especially the ones that look easiest, you may not notice that an
+answer is wrong. (The real solution to this system is the one with fractions,
 from problem 2.)
 
 </details>

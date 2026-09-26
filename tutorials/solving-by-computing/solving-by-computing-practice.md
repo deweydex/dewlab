@@ -438,7 +438,7 @@ flat. It is still your job to ask whether it is a top or a bottom.
 
 **15. Explain.** Some computer chips divide by using Newton's method.
 To find $\frac{1}{3}$, they look for the root of $\frac{1}{x} - 3$, and
-the Newton step for that rule comes to $2g - 3g^2$, which needs no
+the Newton step for that rule simplifies to $2g - 3g^2$, which needs no
 division at all. Try it from 0.3, and then from 1. What happens, and
 why?
 

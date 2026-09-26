@@ -312,7 +312,7 @@ id: your-turn-3
 
 Why would anybody want this?
 
-When we draw anything that goes round and comes back against time, we
+When we draw anything that goes round and comes back, with time along the bottom, we
 get a wave. Each of these is something going round in a circle, drawn
 flat: daylight through the year, the tides, a spinning motor, a sound,
 an alternating current.
