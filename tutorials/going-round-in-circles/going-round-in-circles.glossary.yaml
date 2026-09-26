@@ -88,3 +88,9 @@ entries:
       On a flat plane, a triangle's three angles add up to 180°. On a ball
       they add up to more. A triangle from the North Pole to the equator,
       a quarter of the way round, has three right angles: 270°.
+  - term: orbit
+    kind: concept
+    definition: >
+      An orbit is the path of a planet round the Sun, or of a moon round a
+      planet. The eight planets' orbits are very nearly circles, so a point
+      on a circle, turning at a steady speed, is a close model of one.

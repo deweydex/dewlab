@@ -51,18 +51,18 @@ entries:
       Runs each line starting with >>> in a docstring and compares the
       result with the line under it. It reports every example that does
       not match.
-    example: 'doctest.run_docstring_examples(pace, globals(), name="pace")'
+    example: 'doctest.run_docstring_examples(sensor_celsius, globals(), name="sensor_celsius")'
   - term: magic number
     kind: concept
     definition: >
       A magic number is a number in code with no name to say what it
-      means, like the 1.23 in price * 1.23.
+      means, like the 50 in 100 * volts - 50.
   - term: named constant
     kind: concept
     definition: >
       A named constant is a name for a value that never changes while the
       program runs. PEP 8 writes it in capitals, at the top of the file.
-    example: "VAT_RATE = 0.23"
+    example: "VOLTS_AT_ZERO_C = 0.5"
   - term: linter
     kind: concept
     definition: >

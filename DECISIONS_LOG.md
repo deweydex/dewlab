@@ -4684,7 +4684,7 @@ Renaming any of these would strand work a student already has. The code keeps it
 - **Unit 1 builds a digit display, not a bill splitter.** Josh: "What about something like making a 7 pixel display or small 7 by 4 display for numbers". It comes in two stages: a seven-segment display, then a small pixel font. `//` and `%` find a pixel's row and column and a number's digits, and `2 ** 7` counts the segment patterns. `split_bill` leaves the toolkit.
 - **Schlomo and Schlomi.** Schlomo comes from Josh's 2017 handouts, where he has a reasonable idea that doesn't work. The track gives Fix and Explain problems to him and Schlomi, so the reader tests somebody else's reasoning first. Neither is ever the joke, and neither is always right.
 - **Choose your project.** Josh: "we don't have to pick one of these we can have a variety of projects and examples that the student can choose between". Where one idea has several good uses, the page offers two to four short projects. The first is Unit 9, where the derivative finds the bottom of a letter's curve (typographic overshoot), an edge in an image, a line of best fit, or a minimum by gradient descent.
-- **Headings, cell ids and toolkit names may change.** Josh: "No one has used these yet so no need to worry about getting rid of old stuff". This holds until the track leaves beta. `waves` is also in the MIT–PDP course, so it keeps its headings and ids.
+- **Headings, cell ids and toolkit names may change.** Josh: "No one has used these yet so no need to worry about getting rid of old stuff". This holds until the track leaves beta. `waves` was thought to be in the MIT–PDP course, so it kept its headings and ids in the rewrite; in fact that course lists `sine-and-cosine-waves`, so `waves` is as free as the rest.
 - **The letter is unsigned** until Josh has read it. A comment in the file says to sign it again.
 - **The tagline** says "maths".
 
@@ -4759,3 +4759,9 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 **Not done here.** `check()`, `expect:` and the `failed checks` signal stay until #314 retires them. The predict block is #313.
 
 *Cost to change: `compare()` and `render_inputs()` are the two places the comparison's meaning lives; the saved record gains `guesses`, which an older page ignores.*
+
+---
+
+**7.233 — A Workspace download is a page that links its own CSS and JS.** 7.225 left this for Josh: a downloaded site opened unstyled, because the HTML pane holds only the body and the saved `.html` had no `<link>` or `<script src>`. Issue #350 offered three fixes: one self-contained file, three linked files, or a zip. The Workspace keeps three files, and the `.html` becomes a whole page that links the other two by name. Web Authoring teaches that a page is made of separate files joined by these two tags, so the download shows the reader how their own site fits together rather than hiding it inside one file. Load files strips the frame again, so a site can go out and come back unchanged. An e2e test (`test_a_downloaded_page_links_its_css_and_js_and_loads_back`) covers both directions.
+
+*Cost to change: two small functions in `compose/dewminiweb.js`; switching to a single file means inlining the CSS and JS in `pageFile()`.*

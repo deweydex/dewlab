@@ -4,10 +4,12 @@
 # Track. pseudocode was introduced on recipes-are-algorithms; structured
 # walkthrough, test suite and step_through on does-it-work; code review,
 # reviewer and refactoring on code-other-people-can-read, so none is
-# repeated here. route_length, hits_player and random_throw are starter
-# code for the projects, not Python names and not toolkit functions, so
-# they have no entry. random.uniform is used once in a starter cell and
-# not taught, so it is left out.
+# repeated here. hits_player, random_throw, glyph_of and number_rows are
+# starter code for the projects, not Python names and not toolkit
+# functions, so they have no entry. random.uniform and the pandas calls
+# in the planet starter are used once and not taught, so they are left
+# out. The page no longer has a rubric: it ends with questions for
+# looking back, so "rubric" has no entry.
 entries:
   - term: design
     kind: concept
@@ -42,8 +44,3 @@ entries:
     definition: >
       A definition of done is a short list, agreed at the start, of what
       must be true before any piece of work counts as finished.
-  - term: rubric
-    kind: concept
-    definition: >
-      A rubric is a table that says what a piece of work is judged on, and
-      what each level of it looks like.

@@ -27,25 +27,25 @@ covers:
 
 In 1843, a woman in London published a program for a machine that did
 not exist. The machine was never finished, and nobody ran her program for
-more than a hundred years. What did it do? And what would it look like
-if we wrote it today, in the Python you have been writing all along?
+more than a hundred years. When people finally did run it, they found a
+bug in it. What did her program do? And what would it look like if we
+wrote it today, in the Python you have been writing all along?
+
+I think this is one of the strangest stories in computing: the first
+program came a century before a computer that could run it.
 
 On this page we:
 
-- meet the Analytical Engine, a computer made of gears
-- read Ada Lovelace's notes, and retell her program in Python
-- meet the people who programmed the first electronic computers
+- meet a computer made of gears, and retell Lovelace's program in Python
+- meet the first programmers of an electronic computer
 - see why Grace Hopper wanted a program that writes programs
-- follow BASIC into schools and homes, and JavaScript onto the web
-- arrive at Python, and put every date on a timeline you can run
+- follow BASIC, JavaScript and Python, and put every date on a timeline
 
-> **The space we're in.** This page is history, and history has rules of
-> its own. Every date and name here was checked against at least one
-> careful source, and where historians still argue, we say so. The Python
-> on this page is a modern retelling: it does what the old programs did,
-> in today's words. One thing usually goes unsaid: every tool you use was
-> made by people, for reasons, and those reasons explain a lot of what
-> seems strange about programming.
+> **The space we're in.** This page is history. Every date and name
+> here was checked against at least one careful source, and where
+> historians still argue, we say so. The Python is a modern retelling of
+> what the old programs did. One thing usually goes unsaid: the reasons
+> people had for a tool explain a lot of what seems strange about it.
 
 ## Warm-up
 
@@ -95,16 +95,39 @@ row of the pattern. Babbage saw that a card could say "add" or "divide"
 in the same way that it said "lift this thread".
 
 Babbage worked on the design for the rest of his life, but the money to
-build it never came. When he died in 1871, only a small trial piece of
-the mill had been made. It is in the Science Museum in London today.
+build it never came. When he died in 1871, only a small trial piece had
+been made. It is in the Science Museum in London today.
+
+<aside class="dl-note" id="where-prog-note-ludgate">
+
+**A second engine, designed in Dublin.** Percy Ludgate, born in
+Skibbereen, County Cork, in 1883, was a clerk in Dublin. At night he
+designed a calculating machine that could follow a program, without
+knowing about Babbage's engine, and he published it in 1909. His
+machine multiplied directly, where Babbage's built multiplication from
+adding. As far as anyone knows, only these two mechanical machines of
+this kind were ever designed. Trinity College Dublin gives a prize in
+his name each year.
+
+</aside>
 
 ## Ada Lovelace's notes
 
 In 1842, an Italian engineer, Luigi Menabrea, published a paper in
 French about Babbage's engine. Ada Lovelace translated it into English.
 She was 27, and she had spent 1840 and 1841 studying advanced maths by
-letter with Augustus De Morgan, the De Morgan of the warm-up. (His page
-promised that we would meet her later in the course. Here she is.)
+letter with Augustus De Morgan, the De Morgan of the warm-up.
+
+<aside class="dl-note" id="where-prog-note-boole">
+
+**Every `if` has an Irish address.** In 1847, De Morgan and George Boole
+each published a book on logic. Two years later, Boole became the first
+professor of mathematics at Queen's College Cork, now University
+College Cork. There, in 1854, he published The Laws of Thought, which
+treats true and false as values you can calculate with. That is why
+Python's type for `True` and `False` is called `bool`.
+
+</aside>
 
 Lovelace did not only translate. She added seven notes of her own,
 lettered A to G, and together they were about three times as long as
@@ -136,7 +159,7 @@ them in a book published in 1713, after his death. Seki Takakazu found the
 same numbers in Japan, and his work was published a year earlier.
 
 Each Bernoulli number is found from the ones before it. That makes them
-a good job for a machine: a loop, with a list that grows. The only
+a job that suits a machine: a loop, with a list that grows. The only
 trouble is that they are fractions, and floats would round them, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
 Python has a module for exact fractions. What do you expect each line
@@ -201,12 +224,12 @@ for hers, ours in [(1, 2), (3, 4), (5, 6), (7, 8)]:
 ```
 
 Her $B_7$ is $-\frac{1}{30}$. Much later, people who ran her table on
-modern computers found one line where the two numbers of a division
-were the wrong way round. That one swap makes the table give
-$-\frac{25621}{630}$ where it should give $-\frac{1}{30}$. It may have
-been the printer's mistake and not hers. Either way, it is often called
-the oldest bug on record, and it tells us something reassuring: the
-first program had a bug too.
+modern computers found one line, operation 4, where the two numbers of
+a division had been swapped. That one swap makes the table give
+$-\frac{25621}{630}$ in place of $-\frac{1}{30}$. It may have been the
+printer's slip and not hers. Either way, it is often called the oldest
+bug on record, and it tells us something I find comforting: the first
+program ever published had a bug too.
 
 Why did anyone want these numbers? Bernoulli wrote that, with his
 table, he found the sum of the tenth powers of the numbers from 1 to
@@ -222,7 +245,9 @@ for number in range(1, 1001):
 print(total(tenth_powers))
 ```
 
-Your loop agrees with Bernoulli, digit for digit. He did it by hand.
+Your loop agrees with Bernoulli, all 32 digits. He did it by hand, with
+his table, in under eight minutes. I find that harder to believe than
+anything the computer did.
 
 ### Your turn
 
@@ -234,19 +259,20 @@ Your loop agrees with Bernoulli, digit for digit. He did it by hand.
 
 ## Six programmers and a wall of cables
 
-A hundred years later, the machines became electronic. ENIAC, built in
-the United States, was shown to the public at the University of
-Pennsylvania on 15 February 1946. It had no
-programming language. To give it a new program, people moved cables and
-set switches by hand.
+A hundred years later, the machines became electronic. ENIAC, built at
+the University of Pennsylvania in the United States, was shown to the
+public on the evening of 14 February 1946. It had no programming
+language. To give it a new program, people moved cables and set
+switches by hand.
 
 The first people to program it were six women: Betty Snyder, Jean
 Jennings, Kay McNulty, Marlyn Wescoff, Frances Bilas and Ruth
 Lichterman. They learned the machine from its wiring diagrams. Kay
-McNulty was born in 1921 in Creeslough, County Donegal. She spoke only
-Irish when her family moved to Philadelphia in 1924, and she went on to
-take a degree in mathematics. None of the six was named in the press
-release when ENIAC was shown to the public.
+McNulty was born in 1921 in Creeslough, County Donegal. When her family
+moved to Philadelphia in 1924, she spoke only Irish, and she went on to
+take a degree in mathematics. None of the six was invited to ENIAC's
+formal dedication, or to the dinner that followed. In 2017, Dublin City
+University named its computing building after her: the McNulty Building.
 
 ## A program that writes programs
 
@@ -255,9 +281,10 @@ still a long list of numbers. Writing it was slow, and one wrong digit
 could break it.
 
 Grace Hopper, an American mathematician, had an idea that many people
-at the time did not believe in: the
-computer itself could do the translating. Between 1951 and 1952 she
-wrote the A-0 system for the UNIVAC I. It took short names for pieces of
+at the time did not believe in: the computer itself could do the
+translating. She said later that people told her computers could only
+do arithmetic. Between 1951 and 1952 she wrote the A-0 system for the
+UNIVAC I. It took short names for pieces of
 code that were kept in a library, and it put the machine's program
 together from them. It is often called the first compiler, the kind of
 tool you met on
@@ -278,8 +305,7 @@ each made for a different kind of user:
 | 1957 | FORTRAN, by John Backus's team at IBM | scientists and engineers: its name is short for FORmula TRANslating |
 | 1959 | COBOL, by a committee that met at the Pentagon | business records: it drew on FLOW-MATIC, and Hopper advised the committee |
 
-They were built for different people, so they look different. The next
-page looks at more differences like this.
+They were built for different people, so they look different.
 
 ## BASIC: a language for beginners
 
@@ -305,22 +331,22 @@ recognise the loop? It is the running total from
 [Doing it again](tutorial:doing-it-again#a-running-total).
 
 Then BASIC went home. Microsoft's first product, in 1975, was a BASIC
-for the Altair, an early computer sold as a kit. In December 1981 the
-BBC Micro was launched, with BBC BASIC written by Sophie Wilson, and it
-went into many schools in Britain. The ZX Spectrum and the
-Commodore 64 followed in 1982, both with BASIC built in. Switch on a
-Commodore 64 and the screen said `READY.`, waiting for a line of BASIC.
-For many people, that was where their first program was written.
+for the Altair, a computer sold as a kit. The BBC Micro, with BBC BASIC
+written by Sophie Wilson, arrived in December 1981, and the ZX Spectrum
+and the Commodore 64 in 1982. Switch on a Commodore 64 and the screen
+said `READY.`, waiting for a line of BASIC.
 
 ## The web, JavaScript and Python
 
 In March 1989, Tim Berners-Lee, working at CERN in Switzerland, wrote a
 proposal for a system that linked documents together. It became the
-World Wide Web, and the first website went online on 6 August 1991.
+World Wide Web. By Christmas 1990 he had written the first web browser
+and the first web server, and on 6 August 1991 he told the rest of the
+internet how to use them.
 
-Early web pages could show text and links, but they could not run a
-program of their own. In May 1995, Brendan Eich at Netscape wrote the first version of a
-language for the browser in about ten days. It was called Mocha, then
+Early web pages could not run a program of their own. In May 1995,
+Brendan Eich at Netscape wrote the first version of a language for the
+browser in about ten days. It was called Mocha, then
 LiveScript, and in December 1995 it was named *JavaScript*. It shipped
 in Netscape Navigator 2.0 in 1996, and today every web browser runs it.
 
@@ -373,9 +399,8 @@ plt.yticks([])
 plt.xlabel("year")
 ```
 
-`sorted` puts pairs in order by their first item, the year, and it would
-look at the second item only if two years were the same. The picture
-shows something a list hides. For a hundred years after Note G, there is
+`sorted` puts pairs in order by their first item, the year. The
+picture shows something a list hides. For a hundred years after Note G, there is
 nothing: the ideas waited for machines that could run them. After 1946,
 the events come closer and closer together.
 
@@ -383,25 +408,24 @@ the events come closer and closer together.
 
 1. Add `(1989, "Berners-Lee's proposal for the web")` anywhere in the
    list, and run the cell again. Where does it land?
-2. Add a pair for the year you ran your first line of Python.
-3. Which gap between two events in the list is the longest? Write a
+2. Add `(1909, "Ludgate's machine, Dublin")`, from the note on
+   Babbage's engine. Does the empty century still look empty?
+3. Add a pair for the year you ran your first line of Python.
+4. Which gap between two events in the list is the longest? Write a
    loop that finds it.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-This page told the history as a story of people and machines, with a
-few programs you could run. The usual way is a list of generations:
-first-generation machine code, then assembly, then high-level languages,
-and so on, with a table of dates to learn.
-
-The generations list is short and tidy, it is what many exams ask for,
-and it puts the big steps in order.
+This page told the history as a story of people and machines. The
+usual way is a list of generations: machine code, then assembly, then
+high-level languages, with dates to learn. That list is short and tidy,
+and it is what many exams ask for.
 
 We chose people because each step was somebody's answer to a real
-problem: a loom's cards, a mistake-prone list of numbers, students who
-were not scientists. Knowing the problem makes the tool make sense. The
-cost is that this page left out many languages and many people, and
-does not give you a neat list of generations.
+problem: a loom's cards, a list of numbers that broke at one slip,
+students who were not scientists. Knowing the problem makes the tool
+make sense. The cost is that this page left out many languages and many
+people, and gives no neat list of generations.
 
 </details>
 
@@ -429,14 +453,16 @@ does not give you a neat list of generations.
 
 ## Where to read more
 
-[How programming languages came to be](tutorial:how-we-got-here), in
-the Programming and Design Principles course, tells a shorter version
-of this story with a different focus: machine code, assembly, and why
-hexadecimal exists. It has codes to crack along the way.
+[How programming languages came to be](tutorial:how-we-got-here)
+tells a shorter version of this story, with machine code, assembly, and
+codes to crack along the way.
 
 Stephen Wolfram (2015). *Untangling the Tale of Ada Lovelace.*
 <https://writings.stephenwolfram.com/2015/12/untangling-the-tale-of-ada-lovelace/>.
 A careful read of her letters.
 
-The practice page is next. On the page after it, one small task is
-written in four of the languages you met here.
+Percy Ludgate (1909). "On a proposed analytical machine". Scientific
+Proceedings of the Royal Dublin Society, volume 12, pages 77 to 91.
+
+The practice page is next. After it, one small task is written in four
+of the languages you met here.

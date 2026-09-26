@@ -1080,9 +1080,9 @@ class TestLoadToolkit:
              "mine": None},
             {"tutorial": "two", "cell": "b", "mine": None,
              "reference": "from math import sqrt\nprint('loading')\nclass Point:\n    pass\n"
-                          "def split_bill(total, people):\n    return total / people\nrate = 0.1"})
-        assert result["names"] == ["to_binary", "Point", "split_bill"]
-        assert result["entries"][1]["names"] == ["Point", "split_bill"]
+                          "def split_evenly(total, parts):\n    return total / parts\nrate = 0.1"})
+        assert result["names"] == ["to_binary", "Point", "split_evenly"]
+        assert result["entries"][1]["names"] == ["Point", "split_evenly"]
         assert "loading" not in capsys.readouterr().out
         assert tt._current is None
 
@@ -1101,10 +1101,10 @@ class TestLoadToolkit:
 
     def test_a_page_that_reuses_a_name_does_not_break_the_toolkit(self):
         self.load({"tutorial": "one", "cell": "a", "mine": None,
-                   "reference": "RATE = 10\ndef tip(total):\n    return total * RATE / 100"})
+                   "reference": "RATE = 10\ndef margin(total):\n    return total * RATE / 100"})
         assert tt._page_globals["RATE"] == 10
         tt._page_globals["RATE"] = "a page's own RATE"
-        assert tt._page_globals["tip"](50) == 5
+        assert tt._page_globals["margin"](50) == 5
 
     def test_a_later_entry_sees_the_earlier_ones(self):
         self.load(
@@ -1120,49 +1120,49 @@ class TestLoadToolkit:
 
     REFERENCE = (
         "RATE = 10\n"
-        "def split_bill(total, people):\n    return total / people\n"
-        "def tip(total):\n    return total * RATE / 100\n"
+        "def split_evenly(total, parts):\n    return total / parts\n"
+        "def margin(total):\n    return total * RATE / 100\n"
         "def hello():\n    return 'hi'\n"
     )
 
     @pytest.mark.parametrize("stub_body", [
-        '"""Split a bill evenly."""\n    ...',
+        '"""Split a total evenly."""\n    ...',
         "pass",
         "raise NotImplementedError",
         '"""Not yet."""\n    raise NotImplementedError("write me")',
     ])
     def test_an_untouched_stub_takes_the_reference_function(self, stub_body):
-        mine = f"def split_bill(total, people):\n    {stub_body}\n"
+        mine = f"def split_evenly(total, parts):\n    {stub_body}\n"
         result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
                             "mine": mine})
         entry = result["entries"][0]
         assert entry["used"] == "mine" and not entry["fell_back"]
-        assert tt._page_globals["split_bill"](10, 4) == 2.5
-        # tip and hello are not in the reader's code at all.
+        assert tt._page_globals["split_evenly"](10, 4) == 2.5
+        # margin and hello are not in the reader's code at all.
         assert entry["from_reference"] == [
-            {"name": "split_bill", "why": "unwritten"},
-            {"name": "tip", "why": "unwritten"},
+            {"name": "split_evenly", "why": "unwritten"},
+            {"name": "margin", "why": "unwritten"},
             {"name": "hello", "why": "unwritten"}]
         # A reference function calls the reference's own helpers.
-        assert tt._page_globals["tip"](50) == 5
+        assert tt._page_globals["margin"](50) == 5
 
     def test_per_function_the_readers_written_ones_stay_theirs(self):
-        mine = ("def split_bill(total, people):\n    return 'mine'\n"
-                "def tip(total):\n    ...\n"
+        mine = ("def split_evenly(total, parts):\n    return 'mine'\n"
+                "def margin(total):\n    ...\n"
                 "hello = lambda: 'mine too'\n")
         result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
                             "mine": mine})
-        assert tt._page_globals["split_bill"](1, 1) == "mine"
+        assert tt._page_globals["split_evenly"](1, 1) == "mine"
         assert tt._page_globals["hello"]() == "mine too"
-        assert tt._page_globals["tip"](50) == 5
-        assert result["entries"][0]["from_reference"] == [{"name": "tip", "why": "unwritten"}]
-        assert result["names"] == ["split_bill", "tip", "hello"]
+        assert tt._page_globals["margin"](50) == 5
+        assert result["entries"][0]["from_reference"] == [{"name": "margin", "why": "unwritten"}]
+        assert result["names"] == ["split_evenly", "margin", "hello"]
 
     def test_a_version_that_raises_names_every_reference_function(self):
         result = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,
-                            "mine": "def split_bill(total, people):\n    return 0\n1 / 0"})
+                            "mine": "def split_evenly(total, parts):\n    return 0\n1 / 0"})
         assert [(f["name"], f["why"]) for f in result["entries"][0]["from_reference"]] == [
-            ("split_bill", "raised"), ("tip", "raised"), ("hello", "raised")]
+            ("split_evenly", "raised"), ("margin", "raised"), ("hello", "raised")]
 
     def test_nothing_saved_counts_as_unwritten_and_the_reference_mode_says_nothing(self):
         unsaved = self.load({"tutorial": "one", "cell": "c", "reference": self.REFERENCE,

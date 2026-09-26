@@ -8,10 +8,11 @@ version: 2026.09.24.1
 # Where programming came from: from Lovelace to Python — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them, and each is one
+way through: yours may go another way.
 
 Your toolkit is loaded on this page, including `total` from
 [Doing it again](tutorial:doing-it-again), `combinations` from
@@ -145,9 +146,10 @@ our 2, 4, 6, 8: add 1 to her number to get ours.
 
 </details>
 
-**6. Fix.** This is the tutorial's function with one mistake. As with
-Lovelace's own table, the two numbers of one division have been swapped.
-Run it, compare the results with the tutorial's table, and repair it.
+**6. Fix.** This is the tutorial's function with one change. As in
+the printed table of Note G, the two numbers of one division have been
+swapped. Run it, compare the results with the tutorial's table, and
+swap them back.
 
 ```python exec
 id: where-prog-practice-fix-bernoulli
@@ -166,8 +168,10 @@ print(bernoulli_swapped(5))
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The first number, $B_0 = 1$, is right. Which is the first wrong one?
-2. $B_1$ should be $-\frac{1}{2}$, and here it is $-2$: upside down.
+1. The first number, $B_0 = 1$, matches the tutorial. Which is the
+   first number that differs?
+2. The tutorial's $B_1$ is $-\frac{1}{2}$, and here it is $-2$: upside
+   down.
 3. Which line makes each new number? Which two things does it divide?
 
 **Think about:** why a single swap spoils every number after it, not
@@ -177,16 +181,16 @@ only one.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The last line of the loop divides `m + 1` by `weighted_sum`. It should
-divide `weighted_sum` by `m + 1`:
+The last line of the loop divides `m + 1` by `weighted_sum`. The
+tutorial's version divides `weighted_sum` by `m + 1`:
 
 ```python
         numbers.append(-weighted_sum / (m + 1))
 ```
 
-The swapped version gives $B_1 = -2$ where it should give
-$-\frac{1}{2}$. Every later number is built from the ones before it, so
-one wrong number spoils all the rest. That is why the swap in Note G's
+The swapped version gives $B_1 = -2$ in place of $-\frac{1}{2}$.
+Every later number is built from the ones before it, so one number that
+is off spoils all the rest. That is why the swap in Note G's
 table matters: her $B_7$ comes out as $-\frac{25621}{630}$ in place of
 $-\frac{1}{30}$.
 
@@ -290,7 +294,7 @@ the "numbers" are in it.
 
 <details class="dl-answer"><summary>answer</summary>
 
-There are many good answers. A music app keeps each note as numbers: a
+There are many answers. A music app keeps each note as numbers: a
 pitch is a frequency, such as 440 for the A on
 [Waves](tutorial:waves), and a length is a time. A photo is a grid of
 colours, each three numbers, as on
@@ -324,9 +328,11 @@ id: where-prog-practice-stretch
 # Your working for problems 13 to 17
 ```
 
-**13. Fix.** This cell should print the gap in years between each event
-in the timeline and the next one. It stops with an error. Read the last
-line of the error, then repair the loop.
+**13. Fix.** Schlomo, who is learning Python too, wants the gap in
+years between each event in the timeline and the next one. His plan is
+a fair one: go through every position, and subtract this year from the
+next. The cell stops with an error. Read the last line of the error,
+then change the loop.
 
 ```python exec
 id: where-prog-practice-fix-gaps
@@ -340,8 +346,8 @@ for position in range(len(in_order)):
 
 The error is an `IndexError: list index out of range`. On the last time
 round, `position` is 9, the last place in the list, and there is no
-place 10 after it. There is one fewer gap than there are events, so the
-loop should stop one earlier:
+place 10 after it. Ten events have only nine gaps between them, so the
+loop needs to stop one place earlier:
 
 ```python
 for position in range(len(in_order) - 1):
@@ -417,22 +423,26 @@ first items are equal.
 
 </details>
 
-**16. Explain.** Some historians say Note G was mostly Babbage's work,
-since he gave Lovelace the formulas. Others say the table and the ideas
-in her notes were hers. What would you need to see to decide? Why might
-it matter who wrote it?
+**16. Explain.** Schlomi, who is learning Python too, has been reading
+about Note G. "Babbage gave her the formulas," she says, "so the program
+was mostly his." Schlomo has read the same books. "The table and the
+ideas in her notes were hers," he says. Historians have argued both
+ways. What would you need to see to decide? Why might it matter who
+wrote it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A good answer looks for evidence, not for a side to take. The letters
+One way in is to look for evidence before taking a side. The letters
 between Lovelace and Babbage show who sent what to whom, and who found
 which mistakes. Drafts in each person's handwriting would help too.
 
-It can matter for two reasons. People who are left out of a story can
-be left out of a subject: the six ENIAC programmers were not named in
-the press release in 1946. And a program is more than its formulas. Turning a formula into
-an exact order of operations, with names for every stored number, is
-the programming part, whoever did it.
+It can matter for two reasons. People who are left out of a story can be
+left out of a subject: the six ENIAC programmers were not invited to its
+dedication in 1946. And a program is more than its formulas. Turning a
+formula into an exact order of operations, with names for every stored
+number, is the programming part, whoever did it. So Schlomi and Schlomo can both
+be partly right: the formulas and the program are two different
+things.
 
 </details>
 
@@ -443,7 +453,8 @@ way would you have taught it, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
-There is no one right answer. A good answer weighs a few things:
+There is more than one answer worth giving. Here are some things an
+answer might weigh:
 
 - A list of generations is short, it is tidy, and it is what many
   exam questions ask about. It shows the big steps at a glance.

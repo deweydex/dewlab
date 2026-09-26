@@ -38,7 +38,7 @@ entries:
     definition: >
       This writes a straight line as a rule: multiply x by the slope m, then
       add c. It can write every straight line except a vertical one.
-    example: "fare = 1.5 * km + 4"
+    example: "time_ms = 2 * thousands + 8   # server A"
   - term: y-intercept
     kind: concept
     definition: >

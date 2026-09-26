@@ -69,3 +69,10 @@ entries:
     definition: >
       The graph of y = tan θ repeats every 180°. It has no top and no bottom,
       and no value at 90° or 270°, where the cosine is 0.
+  - term: alternating current (AC)
+    kind: concept
+    definition: >
+      Alternating current is electric current that pushes one way along a
+      wire, then the other, again and again. In Ireland it swings 50 times
+      a second, and the voltage in a socket follows a sine wave.
+    example: "wave(230 * math.sqrt(2), 50, time)   # the socket's voltage"

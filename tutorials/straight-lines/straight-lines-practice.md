@@ -2,16 +2,16 @@
 title: "Straight lines: slope and gradient — Practice"
 practice_for: straight-lines
 year: "2026-2027"
-version: 2026.09.24.1
+version: 2026.09.26.1
 ---
 
 # Straight lines: slope and gradient — Practice
 
 Each problem says what kind it is. **Predict** means guess first, then
-run. **Make** means write something new. **Fix** means find one mistake
-in code that looks fine. **Explain** means answer in words. **Another
-way** means reach the same place by a second route. The answers are
-folded away until you open them.
+run. **Make** means write something new. **Fix** means find why code
+that looks fine does something else, and change it. **Explain** means
+answer in words. **Another way** means reach the same place by a second
+route. The answers are folded away until you open them.
 
 Your toolkit is loaded on this page, including `slope` and
 `line_through` from the tutorial, `close_enough` from
@@ -122,8 +122,9 @@ checks it with `slope`: both numbers are about 0.0667.
 
 </details>
 
-**6. Fix.** Here is someone's version of `slope`. Run it, see which
-test fails, and fix the function.
+**6. Fix.** Schlomo, who is learning Python too, wrote his own
+`slope`. Run it, see which test fails, and change the function so that
+both pass.
 
 ```python exec
 id: straight-practice-fix-slope
@@ -141,16 +142,18 @@ print("slope_again keeps its promise.")
 <details class="dl-answer"><summary>answer</summary>
 
 The second test fails: `slope_again((0, 0), (10, 1))` gives 10, not
-0.1. The function divides the run by the rise, which is the right
-formula turned upside down. The fix is
+0.1. The function divides the run by the rise: the slope formula turned
+upside down. The fix is
 
 ```python
     return (y2 - y1) / (x2 - x1)
 ```
 
 The first test passed because a line at 45 degrees has the same rise
-and run, and $\frac{1}{1}$ upside down is still 1. A test where the
-rise and the run are equal can never catch this mistake.
+and run, and $\frac{1}{1}$ upside down is still 1. Schlomo's idea of
+testing a 45-degree line first is a reasonable one, and it is also the
+one line a swap like this can hide behind. A test where the rise and
+the run differ catches it.
 
 </details>
 
@@ -178,20 +181,21 @@ crosses $y = x$.
 
 </details>
 
-**8. Predict.** Three paths on a park map run along these lines:
+**8. Predict.** A game's level editor has three corridors, drawn as
+lines on its map:
 
-- path A: $y = 2x + 1$
-- path B: $y = 2x - 3$
-- path C: $y = -0.5x + 4$
+- corridor A: $y = 2x + 1$
+- corridor B: $y = 2x - 3$
+- corridor C: $y = -0.5x + 4$
 
 Which pairs are parallel, and which are perpendicular? Decide, then run
 this.
 
 ```python
-path_slopes = {"A": 2, "B": 2, "C": -0.5}
+corridor_slopes = {"A": 2, "B": 2, "C": -0.5}
 for first, second in [("A", "B"), ("A", "C"), ("B", "C")]:
-    product_of_slopes = path_slopes[first] * path_slopes[second]
-    print(first, second, path_slopes[first] == path_slopes[second], product_of_slopes)
+    product_of_slopes = corridor_slopes[first] * corridor_slopes[second]
+    print(first, second, corridor_slopes[first] == corridor_slopes[second], product_of_slopes)
 ```
 
 <details class="dl-answer"><summary>answer</summary>
@@ -284,8 +288,9 @@ $-\frac{a}{b} = -\frac{3}{-6} = 0.5$.
 
 </details>
 
-**12. Fix.** This version of `line_through` passes its first test and
-fails its second. Find the mistake.
+**12. Fix.** Schlomi, who is learning Python too, wrote her own
+`line_through`. It passes its first test and fails its second. What is
+different about the second line, and what needs to change?
 
 ```python exec
 id: straight-practice-fix-line
@@ -296,8 +301,8 @@ def line_through_again(p, q):
     c = y1 + m * x1
     return (m, c)
 
-m, c = line_through_again((0, 4), (10, 19))
-assert close_enough(m * 10 + c, 19), "the taxi"
+m, c = line_through_again((0, 8), (10, 28))
+assert close_enough(m * 10 + c, 28), "server A"
 m, c = line_through_again((2, 3), (6, 11))
 assert close_enough(m * 6 + c, 11), "a second line"
 print("line_through_again keeps its promise.")
@@ -313,10 +318,11 @@ is
     c = y1 - m * x1
 ```
 
-The taxi test passed because its first point has $x_1 = 0$, so
+The server A test passed because its first point has $x_1 = 0$, so
 $m x_1$ is 0, and adding it or taking it away gives the same answer.
-Putting both points back into the line, as the tutorial's tests did,
-would have caught it at once.
+Schlomi's test was a sensible first test, since server A is the line
+she knew best. Putting both points back into the line, as the
+tutorial's tests did, would have caught it at once.
 
 </details>
 
@@ -410,8 +416,8 @@ breaks when a $b$ is 0.
 
 </details>
 
-**15. Make.** A cycling club made up this profile of a hill climb, as
-(distance along the road in km, height in m) pairs:
+**15. Make.** A phone's GPS app records a hill climb, as (distance
+along the road in km, height in m) pairs. These numbers are made up:
 
 ```python
 climb = [(0, 20), (1.0, 60), (1.5, 110), (2.5, 150), (3.0, 240)]
