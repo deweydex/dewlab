@@ -1,7 +1,13 @@
 ---
 title: "Sets: building them from sorted lists"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  exoplanets: Planets around other stars, and the ways they were found.
+  book-characters: The people in six novels, chapter by chapter.
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+datasets: [dinosaur-finds, exoplanets, book-characters]
 covers:
   making-a-set:
     covers: [MIT-2.1]
@@ -11,120 +17,230 @@ covers:
     covers: [MIT-2.2]
   set-language-and-notation:
     covers: [MIT-2.1]
-  sets-in-practice:
+  sets-in-the-worlds:
     covers: [MIT-2.2]
 ---
 
 # Sets: building them from sorted lists
 
-A *set* is a collection of different elements, where the order does not
-matter and no element appears twice. In maths we write a set inside curly
-brackets. So $\{3, 1, 4, 1, 5\}$ is the same set as $\{1, 3, 4, 5\}$. The
-second 1 is a repeat, so it does not count, and the order of the elements
-makes no difference.
+Two teams dig in the same valley. Each team writes down every dinosaur
+bone it finds, one line for each bone. (The notebooks are made up. The
+dinosaurs are real.)
 
+```python exec
+id: sets-two-digs
+dig_one = ["Allosaurus", "Stegosaurus", "Allosaurus", "Diplodocus", "Stegosaurus", "Allosaurus"]
+dig_two = ["Diplodocus", "Camarasaurus", "Allosaurus", "Diplodocus"]
+
+print(len(dig_one) + len(dig_two), "lines in the two notebooks")
+print(len(set(dig_one + dig_two)), "different dinosaurs")
+```
+
+```predict
+type: number
+
+The notebooks have 10 lines between them. How many different dinosaurs
+did the two teams find?
+```
+
+Python's `set()` removed every repeat in one step. A *set* is a
+collection of different elements, where the order does not matter and no
+element appears twice. In maths we write a set inside curly brackets, so
+$\{3, 1, 4, 1, 5\}$ is the same set as $\{1, 3, 4, 5\}$.
+
+On this page we build our own sets, so you can see what `set()` does.
 Sets give us a language for three kinds of question:
 
-- **membership**: is 7 in this set?
-- **relationships**: what do these two sets have in common?
-- **operations**: what do we get when we combine these two sets?
+- **membership**: is Diplodocus in this set?
+- **relationships**: which dinosaurs did both teams find?
+- **operations**: what do we get when we put two sets together?
 
-On this page we build all of this ourselves, using sorted lists to hold
-the sets. Two earlier pages help us.
-[Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order)
-gives us sorted data, and the binary search from
-[Searching a list: linear and binary search](tutorial:finding-things)
-lets us find an element quickly.
-
-On this page we:
-
-- turn any list into a set, stored as a sorted list
-- check whether an element is in a set
-- combine two sets in four different ways, with one pattern
-- learn the symbols mathematicians use for sets
-- look at where sets are used in real programs
+The rest of this series uses that language.
+[Venn diagrams](tutorial:venn-diagrams) draws sets as circles.
+[Logic](tutorial:logic-and-truth) finds the same rules in true and false.
+And in probability, an *event*, such as "the dice show a double", is a
+set of outcomes.
 
 ## Why sorted lists?
 
-Python has its own `set` type. On this page we build our own sets
-instead, as sorted lists with no repeats. There are two reasons.
+Python has its own `set` type. We build ours as sorted lists with no
+repeats, for two reasons.
 
-First, it lets us practise algorithms we already know. We find an
-element in a sorted list with a binary search. To combine two sorted
-lists, we use a pattern called a merge, which we meet below. These
-patterns appear again and again in programming.
+First, it uses algorithms we already know. Finding an element in a sorted
+list is the binary search from
+[Searching a list](tutorial:finding-things). Combining two sorted lists
+uses a pattern called a merge, which we meet below.
 
-Second, it shows that Python's `set` is not magic. Once you have built
-the set operations yourself, you know what they do. Python's `set` gives
-the same results. Inside, it uses a different and faster method, called
-hashing, but the operations are the same ones we build here.
+Second, once you have built the operations yourself, you know what they
+do. Python's `set` gives the same results. Inside, it uses a different
+and faster method, called hashing.
 
 ## Making a set
 
-The first job is to take a list that might have repeats and might not be
-sorted. From it, we make a sorted list with no repeats.
+The first job is to take a list that might have repeats, and might not be
+in order, and make a sorted list with no repeats.
 
-One way is to sort the list first. In a sorted list, any repeats sit
-next to each other. So then we walk along the list and leave out each
-item that is the same as the one before it.
+One way is to sort the list first. In a sorted list, any repeats sit next
+to each other. Then we walk along the list and skip each item that
+is the same as the one before it.
 
-### Your turn
-
-Can you write a function `make_set(items)` that returns a sorted list
-with no repeats? Here is the idea in pseudocode:
-
-**Pseudocode:**
-```
+```text
 SORT the items
-CREATE empty result list
-FOR each item in sorted items:
-    IF result is empty OR item is different from the last element in result:
+CREATE an empty result list
+FOR each item in the sorted items:
+    IF result is empty OR item is different from the last item in result:
         APPEND item to result
 RETURN result
 ```
 
-```python exec
-id: your-turn-1
-# Your make_set function
-```
-
-Then test it. The comments in the next cell say what each call should
-give.
+Can you write `make_set(items)` from that plan?
 
 ```python exec
-id: your-turn-2
-# Test cases
-# make_set([3, 1, 4, 1, 5, 9, 2, 6, 5, 3]) should give [1, 2, 3, 4, 5, 6, 9]
-# make_set([1, 1, 1]) should give [1]
-# make_set([]) should give []
-# make_set([5, 3, 1]) should give [1, 3, 5]
+id: sets-make-set
+def make_set(items):
+    """Return a sorted list of the different items, with no repeats."""
+    # Your code here
+
+
+print(make_set(dig_one))
 ```
+
+```inputs
+make_set([3, 1, 4, 1, 5, 9, 2, 6, 5, 3])
+make_set([1, 1, 1])
+make_set([])
+make_set(dig_one + dig_two)
+```
+
+```hint
+`sorted(items)` gives a new list in order. Look at each item in turn,
+and keep it only when it is different from the last item you kept. What
+should happen with the very first item, when nothing has been kept yet?
+```
+
+```solution
+def make_set(items):
+    """Return a sorted list of the different items, with no repeats."""
+    result = []
+    for item in sorted(items):
+        if len(result) == 0 or item != result[-1]:
+            result.append(item)
+    return result
+
+
+print(make_set(dig_one))
+---
+Sorting puts repeats next to each other, so one comparison with the last
+item kept is enough. `len(result) == 0` has to come first, because on an
+empty list `result[-1]` would stop with an IndexError. And `or` never looks
+at its right side when the left side is already true.
+```
+
+A set compares its elements exactly. What happens when one team writes
+its dinosaurs with a small letter?
+
+```python exec
+id: sets-capitals
+print(make_set(["stegosaurus", "Allosaurus", "Stegosaurus", "Allosaurus"]))
+```
+
+```predict
+How many elements will this set have?
+
+- 2
+  - A set has no repeats, and stegosaurus is Stegosaurus, however it is written.
+- 3
+  - To Python, a small s and a capital S are different letters.
+- 4
+  - Nothing here is an exact repeat.
+```
+
+<details class="dl-answer"><summary>What it shows</summary>
+
+Three: `['Allosaurus', 'Stegosaurus', 'stegosaurus']`. A small `s` and a
+capital `S` are different letters, so the two spellings are different
+elements. The capitals also come first, because Python sorts every capital
+letter before every small one. Real data often has this problem. You can
+make the text match before it goes into a set, with `.lower()` or
+`.title()`.
+
+</details>
 
 ## Membership testing
 
-Is a particular element in the set? Our sets are sorted, so we can use
-binary search to find out. Our binary search returns the item's
-position, or -1 when the item is missing. For a set, we want a plain yes or no:
-`True` or `False`.
+Is a particular element in the set? Our sets are sorted, so a binary
+search can answer quickly. The binary search on
+[Searching a list](tutorial:finding-things) returned a position, or -1
+when the item was missing. For a set we want a plain `True` or `False`.
 
-### Your turn
-
-How might you write a function `is_member(s, item)`? It should return
-`True` if `item` is in the set `s`, and `False` if it is not. The set is
-sorted, so use the binary search method.
+Can you write `is_member(s, item)`, with a binary search?
 
 ```python exec
-id: your-turn-3
-# Your is_member function
+id: sets-is-member
+def is_member(s, item):
+    """Return True if item is in the sorted set s, and False if it is not."""
+    # Your code here
+
+
+found = ["Allosaurus", "Camarasaurus", "Diplodocus", "Stegosaurus"]
+print(is_member(found, "Diplodocus"))
+print(is_member(found, "Tyrannosaurus"))
 ```
 
-```python exec
-id: your-turn-4
-# Test it
-s = make_set([3, 1, 4, 1, 5, 9, 2, 6])
-print(is_member(s, 5))    # True
-print(is_member(s, 7))    # False
-print(is_member(s, 1))    # True
+```inputs
+is_member(found, "Diplodocus")
+is_member(found, "Tyrannosaurus")
+is_member([], "Allosaurus")
+is_member([1, 3, 5, 7], 7)
+is_member([1, 3, 5, 7], 0)
+```
+
+```hint
+Keep two positions, `low` and `high`, the first and last places the item
+could be. Look at the item in the middle. If it is smaller than the one
+you want, everything to its left is smaller too, so the search can move
+`low` past it. When `low` passes `high`, there is nowhere left to look.
+```
+
+```solution
+def is_member(s, item):
+    """Return True if item is in the sorted set s, and False if it is not."""
+    low = 0
+    high = len(s) - 1
+    while low <= high:
+        middle = (low + high) // 2
+        if s[middle] == item:
+            return True
+        if s[middle] < item:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return False
+
+
+found = ["Allosaurus", "Camarasaurus", "Diplodocus", "Stegosaurus"]
+print(is_member(found, "Diplodocus"))
+print(is_member(found, "Tyrannosaurus"))
+---
+It is the search from Searching a list, returning `True` where that
+returned a position, and `False` where it returned -1. It works on words
+as well as numbers, because Python can put words in order too.
+```
+
+```question
+id: sets-how-many-looks
+type: multiple-choice
+answer: 1
+
+A set has 1,000 elements. At most, about how many elements does
+`is_member` look at before it can say an item is not there?
+
+- About 10
+  - Each look halves what is left: 1,000, 500, 250, and so on, down to 1.
+- About 500
+  - A search from the front needs half the set, on average.
+- 1,000
+  - A search from the front needs every element, to be sure.
 ```
 
 ## Set operations: the merge pattern
@@ -134,53 +250,42 @@ There are three main ways to combine two sets:
 - The *union* of two sets holds every element that is in either set, or
   in both.
 - The *intersection* holds only the elements that are in both sets.
-- The *difference* of a and b holds the elements that are in a but are
-  not in b.
+- The *difference* of a and b holds the elements that are in a but not
+  in b.
 
-We can build all three with one pattern. It is the same pattern that
-merge sort uses. We mentioned merge sort on the sorting page. It is a
-faster sort that works by combining two sorted lists into one, again
-and again. The step that combines them is called a *merge*.
+We can build all three with one pattern, the one merge sort uses. Merge
+sort is a faster sort that combines two sorted lists into one, again and
+again, and that combining step is called a *merge*.
 
-Both of our sets are sorted. So we walk through the two of them at the
-same time, with two pointers. A *pointer* here is an index variable, `i`
-for set a and `j` for set b, that marks our place in each list. At each
-step we compare the two current elements:
+Both of our sets are sorted. So we walk along both lists at the same
+time, with two pointers. A *pointer* here is an index, `i` for set a
+and `j` for set b, that marks our place in each list. At each step we
+compare the two current elements:
 
 - If they are equal, the element goes in the union and in the
-  intersection. Move both pointers forward.
+  intersection. Both pointers move forward.
 - If one is smaller, that element goes in the union, but not in the
-  intersection. Move its pointer forward.
-- When one list runs out, the elements left in the other list go in the
-  union.
+  intersection. Its pointer moves forward.
+- When one list ends, the rest of the other goes in the union.
 
 We call this the *merge walk*. The picture shows it step by step.
 
 ![Five steps walking two sorted lists. Each step shows where both pointers
-sit, the comparison that makes, and which pointer moves as a result. The
-last steps show what is left over in b, and the union they
-build.](merge-walk.svg)
+sit, the comparison that makes, and which pointer moves as a result. Then
+what is left over in b, and the union they build.](merge-walk.svg)
 
-The three rules above are the only three things that can happen at one
-comparison. Each step is the same: look at where the two pointers are,
-keep something, then move one pointer or both. Neither pointer ever goes
-backwards.
+Neither pointer ever goes backwards. So if set a has $n$ elements and set
+b has $m$, there are at most $n + m$ steps. For two sets of 1,000
+elements, that is at most 2,000 steps. Checking every element of a
+against every element of b would take $n \times m$ steps, which is
+1,000,000. The merge walk is an $O(n + m)$ algorithm.
 
-How much work is that? Say set a has $n$ elements and set b has $m$.
-Each step moves at least one pointer forward, so there are at most
-$n + m$ steps. For two sets of 1,000 elements, that is at most 2,000
-steps. If we checked every element of a against every element of b, it
-would take $n \times m$ steps, which is 1,000,000. So the merge walk is an
-$O(n + m)$ algorithm.
-
-Here is the merge walk written out for union. What do you expect it to
-print for these two sets? Run it to check.
+Here is the merge walk written out for union.
 
 ```python exec
-id: set-operations-the-merge-pattern-1
-# The merge-walk pattern, demonstrated for union
+id: sets-union
 def union(a, b):
-    """Return a sorted list of all elements that are in a or b (or both)."""
+    """Return a sorted list of the elements in a or b, or both."""
     result = []
     i = 0
     j = 0
@@ -195,7 +300,7 @@ def union(a, b):
         else:
             result.append(b[j])
             j = j + 1
-    # Append any remaining elements
+    # One list has run out. Everything left in the other one goes in.
     while i < len(a):
         result.append(a[i])
         i = i + 1
@@ -204,98 +309,227 @@ def union(a, b):
         j = j + 1
     return result
 
-# Test
-a = make_set([3, 1, 4, 1, 5])
-b = make_set([5, 7, 2, 8, 1])
+
+a = [1, 3, 4, 5]
+b = [1, 2, 5, 7, 8]
 print("a:", a)
 print("b:", b)
 print("union:", union(a, b))
 ```
+
+```predict
+What will the last line print?
+
+- union: [1, 2, 3, 4, 5, 7, 8]
+  - Every element of either set, once each, in order.
+- union: [1, 3, 4, 5, 1, 2, 5, 7, 8]
+  - The two sets, one after the other.
+- union: [1, 5]
+  - The elements the two sets share.
+```
+
+Try changing the equal case so that it appends `a[i]` twice. What happens
+to the union, and why?
+
+<details class="dl-answer"><summary>What each part does</summary>
+
+- The first `while` runs as long as both pointers are still inside their
+  lists. Each time round it compares one element from each.
+- The three cases are the three bullets above: equal, a's smaller, b's
+  smaller. Each appends one element and moves at least one pointer.
+- When one list ends, the last two loops copy what is left of the
+  other. Only one of them does anything, because the list that ended has
+  nothing left.
+
+</details>
 
 ### Your turn
 
-The *symmetric difference* of a and b holds the elements that are in a
-or in b, but not in both.
+Using `union()` as your guide, can you write the other three? For each,
+ask two questions: which elements do we keep when `a[i] == b[j]`, and
+which when one is smaller?
 
-1. Write `intersection(a, b)`: the elements that are in *both* a and b.
-2. Write `difference(a, b)`: the elements that are in a but *not* in b.
-3. Write `symmetric_difference(a, b)`: the elements that are in a or b,
-   but *not* in both.
-4. Run the test cell to check all of them.
-
-Use `union()` as your guide. What changes in the merge walk for each
-operation? Which elements do we keep when `a[i] == b[j]`? Which do we
-keep when `a[i] < b[j]`?
+The *symmetric difference* of a and b holds the elements that are in a or
+in b, but not in both. The tasks use the two digs, as sets:
 
 ```python exec
-id: your-turn-5
-# Your intersection function
+id: sets-the-digs-as-sets
+first_dig = ["Allosaurus", "Diplodocus", "Stegosaurus"]
+second_dig = ["Allosaurus", "Camarasaurus", "Diplodocus"]
 ```
 
 ```python exec
-id: your-turn-6
-# Your difference function
+id: sets-intersection
+def intersection(a, b):
+    """Return a sorted list of the elements in both a and b."""
+    # Your code here
+
+
+print(intersection(first_dig, second_dig))
+```
+
+```inputs
+intersection([1, 3, 4, 5], [1, 2, 5, 7, 8])
+intersection([1, 2, 3], [4, 5, 6])
+intersection([], [1, 2])
+intersection(first_dig, second_dig)
+```
+
+```hint
+Only the equal case keeps anything. When one element is smaller, it
+cannot be in both, so its pointer moves forward and nothing is kept.
+When one list ends, is anything left that could be in both?
+```
+
+```solution
+def intersection(a, b):
+    """Return a sorted list of the elements in both a and b."""
+    result = []
+    i = 0
+    j = 0
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            result.append(a[i])
+            i = i + 1
+            j = j + 1
+        elif a[i] < b[j]:
+            i = i + 1
+        else:
+            j = j + 1
+    return result
+
+
+print(intersection(first_dig, second_dig))
+---
+It is the same walk as `union()`. Only the equal case appends, and
+nothing is copied at the end. Once one list ends, nothing left in the
+other can be in both.
 ```
 
 ```python exec
-id: your-turn-7
-# Your symmetric_difference function
+id: sets-difference
+def difference(a, b):
+    """Return a sorted list of the elements in a that are not in b."""
+    # Your code here
+
+
+print(difference(first_dig, second_dig))
+```
+
+```inputs
+difference([1, 3, 4, 5], [1, 2, 5, 7, 8])
+difference([1, 2, 5, 7, 8], [1, 3, 4, 5])
+difference([1, 2, 3], [])
+difference(first_dig, second_dig)
+```
+
+```hint
+An element of a goes in when it is smaller than the current element of b,
+because b has gone past it without finding it. What should happen to the
+rest of a when b ends?
+```
+
+```solution
+def difference(a, b):
+    """Return a sorted list of the elements in a that are not in b."""
+    result = []
+    i = 0
+    j = 0
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            i = i + 1
+            j = j + 1
+        elif a[i] < b[j]:
+            result.append(a[i])
+            i = i + 1
+        else:
+            j = j + 1
+    while i < len(a):
+        result.append(a[i])
+        i = i + 1
+    return result
+
+
+print(difference(first_dig, second_dig))
+---
+The loop at the end copies again, but only for a. Anything left in b when
+a ends is not in a, so it cannot be in a's difference. The first two
+inputs give different answers, because for difference the order of the
+two sets matters.
 ```
 
 ```python exec
-id: your-turn-8
-# Test all operations
-a = make_set([3, 1, 4, 1, 5, 9, 2, 6])
-b = make_set([5, 7, 2, 8, 1, 8])
-print("a:", a)
-print("b:", b)
-print("union:", union(a, b))
-print("intersection:", intersection(a, b))
-print("difference (a-b):", difference(a, b))
-print("difference (b-a):", difference(b, a))
-print("symmetric_difference:", symmetric_difference(a, b))
+id: sets-symmetric-difference
+def symmetric_difference(a, b):
+    """Return a sorted list of the elements in exactly one of a and b."""
+    # Your code here
+
+
+print(symmetric_difference(first_dig, second_dig))
 ```
 
-### Verification
+```inputs
+symmetric_difference([1, 3, 4, 5], [1, 2, 5, 7, 8])
+symmetric_difference([1, 2], [1, 2])
+symmetric_difference(first_dig, second_dig)
+```
 
-The four operations are connected to each other. We can use these
-connections to test our functions. For any sets a and b:
+```hint
+Two ways work. It is the union's walk, except that the equal case keeps
+nothing. Or it is built from functions you already have: what is in a
+and not b, together with what is in b and not a.
+```
 
-- `symmetric_difference(a, b)` should equal `difference(union(a, b), intersection(a, b))`
-- `union(a, b)` should equal `union(intersection(a, b), symmetric_difference(a, b))`
-- `len(union(a, b))` should equal `len(a) + len(b) - len(intersection(a, b))`
+```solution
+def symmetric_difference(a, b):
+    """Return a sorted list of the elements in exactly one of a and b."""
+    result = []
+    i = 0
+    j = 0
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            i = i + 1
+            j = j + 1
+        elif a[i] < b[j]:
+            result.append(a[i])
+            i = i + 1
+        else:
+            result.append(b[j])
+            j = j + 1
+    return result + a[i:] + b[j:]
 
-Look at the last one. In words, it says: to count the elements in the
-union, add the sizes of the two sets, then take away the elements they
-share, because we counted those twice. In maths we write the size of a
-set $A$ as $|A|$, so the rule is:
+
+print(symmetric_difference(first_dig, second_dig))
+---
+It is the union's walk, and the equal case keeps nothing. The last line
+copies what is left of both lists at once. Only one of `a[i:]` and
+`b[j:]` has anything in it. The other way is one line,
+`union(difference(a, b), difference(b, a))`. It is easier to check, and
+it walks the lists three times.
+```
+
+The four functions are connected, and the connections make good tests.
+For any sets a and b:
+
+- `symmetric_difference(a, b)` equals `difference(union(a, b), intersection(a, b))`
+- `len(union(a, b))` equals `len(a) + len(b) - len(intersection(a, b))`
+
+Look at the second one. To count the elements in the union, add the sizes
+of the two sets, then subtract the elements they share, because they
+were counted twice. In maths we write the size of a set $A$ as $|A|$:
 
 $$|A \cup B| = |A| + |B| - |A \cap B|$$
 
-For example, take $A = \{1, 3, 4, 5\}$ and $B = \{1, 2, 5, 7, 8\}$. They
-share 1 and 5, so the union has $4 + 5 - 2 = 7$ elements:
-$\{1, 2, 3, 4, 5, 7, 8\}$.
-
-This is the *inclusion-exclusion principle*. Does it look familiar? It
-is the same idea as the general addition rule from
-[Probability: simple, compound and conditional](tutorial:what-are-the-chances),
-where we took away $P(A \text{ and } B)$ so that we did not count the
-overlap twice.
-
-The next cell checks the first and the last connection, on the sets a
-and b from your test cell.
+This is the *inclusion-exclusion principle*. It appears again in
+probability, where the chance of "A or B" subtracts the chance of both,
+for the same reason.
 
 ```python exec
-id: verification-1
-# Verify the relationships
-print("sym_diff:", symmetric_difference(a, b))
-print("union - intersection:", difference(union(a, b), intersection(a, b)))
-print("Match:", symmetric_difference(a, b) == difference(union(a, b), intersection(a, b)))
-
-print()
-print("|a| + |b| - |a & b| =", len(a) + len(b) - len(intersection(a, b)))
-print("|a | b| =", len(union(a, b)))
-print("Match:", len(a) + len(b) - len(intersection(a, b)) == len(union(a, b)))
+id: sets-check-the-connections
+a = make_set([3, 1, 4, 1, 5, 9, 2, 6])
+b = make_set([5, 7, 2, 8, 1, 8])
+print(symmetric_difference(a, b) == difference(union(a, b), intersection(a, b)))
+print(len(a), "+", len(b), "-", len(intersection(a, b)), "=", len(union(a, b)))
 ```
 
 ## Set language and notation
@@ -315,89 +549,279 @@ $A = \{1, 2, 3\}$ and $B = \{2, 3, 4\}$.
 
 A set A is a *subset* of a set B when every element of A is also in B.
 Every set is a subset of itself. Some books write $\subset$ for "is a
-subset of". Other books keep $\subset$ for a subset that is smaller than
-the whole set, so check which one your book means.
+subset of", and others keep $\subset$ for a subset smaller than the whole
+set, so check which one your book means. The *empty set* has no elements
+at all.
 
-The *empty set* is the set with no elements at all. We write it
-$\emptyset$ or $\{\}$.
-
-### Your turn
-
-1. Write `is_subset(a, b)`. It returns `True` if every element of a is
-   also in b.
-2. Write `is_equal(a, b)`. It returns `True` if the two sets contain
-   exactly the same elements.
-3. Run the test cell.
-
-Then think about two questions. How does `is_subset` relate to
-`intersection`? How does `is_equal` relate to `is_subset`?
+Can you write `is_subset(a, b)`, using a function you already have?
 
 ```python exec
-id: your-turn-9
-# Your is_subset and is_equal functions
+id: sets-is-subset
+def is_subset(a, b):
+    """Return True if every element of a is also in b."""
+    # Your code here
+
+
+print(is_subset(["Allosaurus"], second_dig))
+print(is_subset(first_dig, second_dig))
 ```
+
+```inputs
+is_subset([1, 3], [1, 2, 3, 4])
+is_subset([1, 5], [1, 2, 3, 4])
+is_subset([], [1, 2])
+is_subset([1, 2], [1, 2])
+```
+
+```hint
+If every element of a is also in b, what is the intersection of a and b?
+```
+
+```solution
+def is_subset(a, b):
+    """Return True if every element of a is also in b."""
+    return intersection(a, b) == a
+
+
+print(is_subset(["Allosaurus"], second_dig))
+print(is_subset(first_dig, second_dig))
+---
+When a is a subset of b, the intersection is all of a. The empty set is a
+subset of every set, because its intersection with anything is empty,
+which is itself. A merge walk of its own could stop at the first element
+of a that b does not have. The one-line version says what a subset is.
+```
+
+Two sets are *equal* when each is a subset of the other. For our sorted
+sets that is the same as `a == b`. Python's own sets keep no order, and
+`==` on them checks the same thing.
+
+## Sets in the worlds
+
+Now the functions answer questions about real data. Choose a world at
+the top of the page. Each one asks its own question, with the functions
+you have written.
+
+<div class="dl-world" data-world="dinosaurs">
+
+The file `dinosaur-finds.csv` has one row for each dinosaur fossil find
+in the Paleobiology Database, with the country it was found in. The
+Jurassic ran from 201.4 to 145 million years ago, and the Cretaceous from
+145 to 66. Which countries have fossils from both?
 
 ```python exec
-id: your-turn-10
-# Test them
-print(is_subset([1, 3], [1, 2, 3, 4]))    # True
-print(is_subset([1, 5], [1, 2, 3, 4]))    # False
-print(is_equal(make_set([1, 2, 3]), make_set([3, 1, 2])))    # True
+id: sets-in-the-worlds--dinosaurs
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+
+jurassic = finds[(finds.oldest_mya <= 201.4) & (finds.youngest_mya >= 145)]
+cretaceous = finds[(finds.oldest_mya <= 145) & (finds.youngest_mya >= 66)]
+jurassic_countries = make_set(jurassic["country_code"].tolist())
+cretaceous_countries = make_set(cretaceous["country_code"].tolist())
+print(len(jurassic_countries), "countries with Jurassic finds")
+print(len(cretaceous_countries), "with Cretaceous finds")
+
+# Which countries have both? Which have only Jurassic finds?
 ```
 
-## Sets in practice
+```solution
+{{include: setup/sets/functions.py}}
 
-Sets are more than abstract mathematics. Here are three places where
-programs use them:
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
 
-- **A search engine.** To find pages that match "python AND sorting",
-  it takes the intersection of two sets: the pages that contain
-  "python", and the pages that contain "sorting".
-- **A social media app.** To suggest new friends, it might take the
-  union of your friends' friend lists, then take away the people you
-  already know.
-- **A spell checker.** It checks whether each word is a member of the
-  set of known words.
+jurassic = finds[(finds.oldest_mya <= 201.4) & (finds.youngest_mya >= 145)]
+cretaceous = finds[(finds.oldest_mya <= 145) & (finds.youngest_mya >= 66)]
+jurassic_countries = make_set(jurassic["country_code"].tolist())
+cretaceous_countries = make_set(cretaceous["country_code"].tolist())
 
-### Your turn
+both = intersection(jurassic_countries, cretaceous_countries)
+print(len(both), "countries have both")
+print(difference(jurassic_countries, cretaceous_countries))
+---
+With the copy saved on {{snapshot: dinosaur-finds}}, 23 countries have
+both. Seven have only Jurassic finds: CH, KG, LS, NA, PL, VE and ZW,
+which are Switzerland, Kyrgyzstan, Lesotho, Namibia, Poland, Venezuela
+and Zimbabwe. A find counts for a period only when the whole age of its
+rock is inside it. `keep_default_na=False` is there for Namibia. Its code
+is NA, which pandas otherwise reads as a missing value, and Namibia would
+quietly vanish from the set. These are the countries where people have
+dug and published, which is not the same as where dinosaurs lived.
+```
 
-Can you think of one more practical use of sets?
+</div>
 
-1. Describe it in a sentence or two, as a comment.
-2. Build a small example of it with your set functions.
+<div class="dl-world" data-world="exoplanets">
+
+The file `exoplanets.csv` has one row for each planet found around
+another star, with the year it was announced and the method that found
+it. Is every method used before 2000 still in use? Which methods are new
+since 2020?
 
 ```python exec
-id: your-turn-11
-# Your practical set example
+id: sets-in-the-worlds--exoplanets
+planets = await load_csv("exoplanets.csv")
+
+early = make_set(planets[planets.discovered < 2000]["method"].tolist())
+recent = make_set(planets[planets.discovered >= 2020]["method"].tolist())
+print(early)
+print(len(recent), "methods since 2020")
+
+# Is early a subset of recent? Which methods are only in recent?
 ```
 
-## Reflection
+```solution
+{{include: setup/sets/functions.py}}
 
-We have built a complete set library ourselves. It can make a set, test
-membership, and find the union, intersection, difference and symmetric
-difference of two sets. It can also test for a subset and for equal
-sets. Every one of these rests on sorted lists and the merge walk.
+planets = await load_csv("exoplanets.csv")
 
-Each part connects to earlier work. A sort prepares the data, binary
-search makes membership fast, and the merge step from merge sort drives
-all the set operations.
+early = make_set(planets[planets.discovered < 2000]["method"].tolist())
+recent = make_set(planets[planets.discovered >= 2020]["method"].tolist())
+print(is_subset(early, recent))
+print(difference(recent, early))
+---
+Before 2000 there were only two methods, Pulsar Timing and Radial
+Velocity, and both are still in use, so `early` is a subset of `recent`.
+Seven are new since then, Transit among them, which has found most of
+the planets known today. A subset question with a yes answer is worth
+checking both ways: `is_subset(recent, early)` is `False`.
+```
 
-Next, [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
-looks at true and false statements, which follow rules much like these
-set operations. After that,
-[Venn diagrams: drawing sets and their overlaps](tutorial:venn-diagrams)
-draws sets as pictures.
+</div>
 
-Which connection between sets and earlier material did you find most
-satisfying?
+<div class="dl-world" data-world="book-characters">
+
+The file `book-characters.csv` counts how often each main character is
+named in each chapter of six novels. *Pride and Prejudice* has 61
+chapters. Is everyone named in the first chapter named again in the last?
+
+```python exec
+id: sets-in-the-worlds--book-characters
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+
+first = make_set(pride[pride.chapter == 1]["character"].tolist())
+last = make_set(pride[pride.chapter == 61]["character"].tolist())
+print(first)
+print(last)
+
+# Is first a subset of last? Who is in the last chapter and not the first?
+```
+
+```solution
+{{include: setup/sets/functions.py}}
+
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+
+first = make_set(pride[pride.chapter == 1]["character"].tolist())
+last = make_set(pride[pride.chapter == 61]["character"].tolist())
+print(is_subset(first, last))
+print(difference(last, first))
+---
+Yes. All five people named in chapter 1 are named again in chapter 61.
+The last chapter adds Darcy, Lady Catherine, Miss Bingley, Mrs Bennet and
+Wickham. Mrs Bennet is the surprise. She speaks in most of chapter 1, and
+is never named in it, only "his wife" and "his lady". The data counts
+names, not people, and so does any set built from it.
+```
+
+</div>
+
+<div class="dl-world" data-world="games-of-chance">
+
+Roll two dice. Each outcome is a pair, the first die and the second, so
+`(4, 3)` and `(3, 4)` are different outcomes. An event, such as "a
+double", is a set of outcomes. Python can sort pairs, so `make_set` works
+on them too. Which outcomes are a double *and* add up to 8? How many are
+a double *or* add up to 8?
+
+```python exec
+id: sets-in-the-worlds--games-of-chance
+outcomes = []
+for first in range(1, 7):
+    for second in range(1, 7):
+        outcomes.append((first, second))
+
+doubles = []
+eights = []
+for pair in outcomes:
+    if pair[0] == pair[1]:
+        doubles.append(pair)
+    if pair[0] + pair[1] == 8:
+        eights.append(pair)
+doubles = make_set(doubles)
+eights = make_set(eights)
+print(len(outcomes), "outcomes;", len(doubles), "doubles;", len(eights), "add up to 8")
+
+# The outcomes in both? How many in either?
+```
+
+```solution
+{{include: setup/sets/functions.py}}
+
+outcomes = []
+for first in range(1, 7):
+    for second in range(1, 7):
+        outcomes.append((first, second))
+
+doubles = []
+eights = []
+for pair in outcomes:
+    if pair[0] == pair[1]:
+        doubles.append(pair)
+    if pair[0] + pair[1] == 8:
+        eights.append(pair)
+doubles = make_set(doubles)
+eights = make_set(eights)
+print(intersection(doubles, eights))
+print(len(union(doubles, eights)))
+---
+Only `(4, 4)` is in both. The union has 10 outcomes, and
+inclusion-exclusion says so without listing them: 6 doubles, plus 5 ways
+to make 8, minus the 1 counted twice. Out of 36 equally likely outcomes,
+that is a chance of 10 in 36.
+[What are the chances?](tutorial:what-are-the-chances) continues from there.
+```
+
+</div>
+
+## Looking back
+
+Every set on this page was kept sorted. Which of the operations would
+still give the right answer on lists that were not sorted, and which
+would quietly give a wrong one?
+
+A challenge: Python's own `set` does all of this with `|`, `&` and `-`.
+How much faster is it? Time `set()` against your `make_set` on a list of
+100,000 random numbers.
+
+```python challenge
+import random
+import time
+
+numbers = []
+for count in range(100000):
+    numbers.append(random.randint(1, 50000))
+
+start = time.perf_counter()
+python_set = set(numbers)
+print(len(python_set), "different numbers, in", round(time.perf_counter() - start, 4), "seconds")
+
+# Paste your make_set here, and time it on the same list.
+```
+
+The next page, [Venn diagrams](tutorial:venn-diagrams), draws these sets
+as circles, and counts what is in each part.
 
 ## Where to read more
 
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
 Khan Academy. *Intersection and Union of Sets.*
-<https://www.youtube.com/watch?v=jAfNg3ylZAI>. It introduces the same two
-operations this page builds with a merge walk, from the mathematics side.
+<https://www.youtube.com/watch?v=jAfNg3ylZAI>. The same two operations
+this page builds with a merge walk, introduced from the mathematics side.
 
 Python Software Foundation. *The Python Tutorial — Sets.*
-<https://docs.python.org/3/tutorial/datastructures.html#sets>. It covers
-the built-in `set` that this page avoids on purpose. Read it to compare,
-once you have built your own.
+<https://docs.python.org/3/tutorial/datastructures.html#sets>. The
+built-in `set` this page builds its own version of, for comparison once
+you have built yours.

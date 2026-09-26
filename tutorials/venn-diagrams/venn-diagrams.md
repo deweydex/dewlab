@@ -1,7 +1,12 @@
 ---
 title: "Venn diagrams: drawing sets and their overlaps"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
+worlds:
+  games-of-chance: Dice, cards and coins, and the games people play with them.
+  dinosaurs: Dinosaurs and their fossils, what has been found, where, and how old it is.
+  book-characters: The people in six novels, chapter by chapter.
+datasets: [dinosaur-finds, book-characters]
 covers:
   two-circles-from-real-sets:
     covers: [MIT-2.3]
@@ -9,66 +14,44 @@ covers:
     covers: [MIT-2.3]
   three-sets-which-is-where-it-earns-its-place:
     covers: [MIT-2.3]
-  the-same-laws-in-a-different-notation:
+  outside-a-set:
     covers: [MIT-2.3]
 ---
 
 # Venn diagrams: drawing sets and their overlaps
 
-You have probably seen two overlapping circles with numbers in them.
-You may even have filled one in at school. A *Venn diagram* is a picture
-of sets: each set is a circle, and the circles overlap where the sets
-share elements.
-
-This page is short, and the diagram itself is not the main point. The
-main point is that at some size, a set expression no longer fits in
-your head. When that happens, a picture helps.
-
-In [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
-we built union, intersection and difference ourselves. In
-[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
-we met Python's own `set` type, with `|` for union, `&` for intersection
-and `-` for difference. Everything on this page is drawn from those
-operations. A Venn diagram is a plot of things you can already compute.
-There are no new operations here.
-
-On this page we:
-
-- draw a two-circle diagram from real sets
-- match each region of the diagram to an operation we know
-- move to three sets, where the picture starts to help
-- see De Morgan's laws again, on the diagram
-- find the point where circles stop working
-
-## Two circles, from real sets
-
-Here are two sets of students: the ones who own a bike, and the ones who
-own a car. The function `draw_two()` counts how many students are in
-each region, and then draws the circles.
+Roll two dice. There are 36 outcomes, from `(1, 1)` to `(6, 6)`. Two
+events are sets of them: "a double", and "the dice add up to 8". This
+cell collects both, and draws them as two circles.
 
 ```python exec
-id: two-circles-from-real-sets-1
+id: venn-two-events
 import matplotlib.pyplot as plt
 
-bike = {"Aoife", "Ben", "Cara", "Dara", "Eoin"}
-car = {"Cara", "Dara", "Fiona", "Gearoid"}
+outcomes = set()
+for first in range(1, 7):
+    for second in range(1, 7):
+        outcomes.add((first, second))
+
+doubles = set()
+eights = set()
+for pair in outcomes:
+    if pair[0] == pair[1]:
+        doubles.add(pair)
+    if pair[0] + pair[1] == 8:
+        eights.add(pair)
 
 
 def draw_two(left, right, left_name, right_name):
+    """Draw two overlapping circles, with how many elements are in each part."""
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.add_patch(plt.Circle((-0.5, 0), 1.3, fill=False, linewidth=2))
     ax.add_patch(plt.Circle((0.5, 0), 1.3, fill=False, linewidth=2))
-
-    only_left = left - right
-    only_right = right - left
-    both = left & right
-
-    ax.text(-1.3, 0, str(len(only_left)), ha="center", fontsize=16)
-    ax.text(0, 0, str(len(both)), ha="center", fontsize=16)
-    ax.text(1.3, 0, str(len(only_right)), ha="center", fontsize=16)
+    ax.text(-1.3, 0, str(len(left - right)), ha="center", fontsize=16)
+    ax.text(0, 0, str(len(left & right)), ha="center", fontsize=16)
+    ax.text(1.3, 0, str(len(right - left)), ha="center", fontsize=16)
     ax.text(-1.3, 1.5, left_name, ha="center")
     ax.text(1.3, 1.5, right_name, ha="center")
-
     ax.set_xlim(-2.4, 2.4)
     ax.set_ylim(-1.8, 2.1)
     ax.set_aspect("equal")
@@ -76,113 +59,164 @@ def draw_two(left, right, left_name, right_name):
     return fig
 
 
-draw_two(bike, car, "bike", "car")
+draw_two(doubles, eights, "a double", "adds up to 8")
+print(len(doubles), "doubles,", len(eights), "ways to make 8, and in both:", len(doubles & eights))
 ```
 
-There are three numbers, and every one of them came from a set
-operation. Nobody placed them by hand.
+```predict
+type: number
 
-Remember this idea. The diagram is output. It is drawn from
-the sets, so it cannot disagree with them. If you change the data, the
-picture changes with it.
+There are 6 doubles, and 5 ways to make 8. How many outcomes are in
+both, where the circles overlap?
+```
 
-What do you think the diagram will look like for two sets with no
-students in common? What about one set that sits completely inside the
-other? Run the next two cells to check.
+A *Venn diagram* is a picture of sets. Each set is a circle, and the
+circles overlap where the sets share elements. Every number in this one
+came from a set operation. Nobody placed them by hand, so the picture
+always agrees with the sets. Change the sets, and the picture changes
+with them.
+
+With two sets you can often keep the picture in your head. With three, the
+diagram helps a lot. This page ends where it stops helping at all.
+
+## Python's own sets
+
+On [Sets: building them from sorted lists](tutorial:sets-as-sorted-lists)
+we built every operation ourselves. Now we use Python's own `set`,
+which does the same jobs with shorter names:
+
+| On the sets page | Python's `set` |
+|---|---|
+| `make_set(items)` | `set(items)` |
+| `is_member(s, x)` | `x in s` |
+| `union(a, b)` | `a \| b` |
+| `intersection(a, b)` | `a & b` |
+| `difference(a, b)` | `a - b` |
+| `symmetric_difference(a, b)` | `a ^ b` |
+| `is_subset(a, b)` | `a <= b` |
+
+A Python set keeps no order, so use `sorted()` to print one neatly.
+`s.add(x)` adds one element.
+
+## Two circles, from real sets
+
+What do you think the diagram looks like for two events that cannot
+happen together? And for one event that sits completely inside another?
 
 ```python exec
-id: two-circles-from-real-sets-2
-# Sets that do not overlap at all.
-draw_two({"Aoife", "Ben"}, {"Cara", "Dara", "Eoin"}, "cyclists", "drivers")
+id: venn-no-overlap
+# A double, and an odd total: a double always adds up to an even number.
+odd_totals = set()
+for pair in outcomes:
+    if (pair[0] + pair[1]) % 2 == 1:
+        odd_totals.add(pair)
+draw_two(doubles, odd_totals, "a double", "an odd total")
 ```
 
 ```python exec
-id: two-circles-from-real-sets-3
-# One set entirely inside the other.
-draw_two({"Aoife", "Ben", "Cara"}, {"Aoife", "Ben"}, "students", "first years")
+id: venn-inside
+# Double sixes, and doubles.
+draw_two({(6, 6)}, doubles, "double six", "a double")
 ```
 
-The picture changed, but the code did not. Sometimes the middle number
-goes to zero, or one of the outer numbers does. The drawing has not gone
-wrong. The diagram tells you something true about the sets.
+The same code drew both pictures. When the middle number is 0, or one
+of the outer numbers is, the diagram is telling you something true about
+the sets. A double and an odd total never happen together, and every
+double six is a double.
 
 ## The regions have names you already know
 
-Each region of the diagram matches an operation from the sets page:
+Each part of the two-circle diagram matches an operation:
 
 | Region | Operation | Python |
 |---|---|---|
-| Only in the left circle | difference | `bike - car` |
-| The overlap | intersection | `bike & car` |
-| Only in the right circle | difference the other way | `car - bike` |
-| All three regions together | union | `bike \| car` |
-
-Can you predict who is in each region, from the two sets above? Run the
-cell to check.
+| Only in the left circle | difference | `doubles - eights` |
+| The overlap | intersection | `doubles & eights` |
+| Only in the right circle | difference the other way | `eights - doubles` |
+| All three parts together | union | `doubles \| eights` |
 
 ```python exec
-id: the-regions-have-names-you-already-know-1
-bike = {"Aoife", "Ben", "Cara", "Dara", "Eoin"}
-car = {"Cara", "Dara", "Fiona", "Gearoid"}
-
-print("bike - car :", sorted(bike - car))
-print("bike & car :", sorted(bike & car))
-print("car - bike :", sorted(car - bike))
-print("bike | car :", sorted(bike | car))
+id: venn-regions
+print("doubles - eights :", sorted(doubles - eights))
+print("doubles & eights :", sorted(doubles & eights))
+print("eights - doubles :", sorted(eights - doubles))
+print("doubles | eights :", len(doubles | eights), "outcomes")
 ```
 
-We have not defined anything new here. The diagram gives each operation
-from the sets page a place on the picture.
+```predict
+type: number
+
+How many outcomes are a double *or* add up to 8? The last line prints it.
+```
+
+<details class="dl-answer"><summary>Why not 11?</summary>
+
+6 doubles and 5 eights make 11, and `(4, 4)` is in both, so it was
+counted twice. The union has 10. This is inclusion-exclusion, from the sets
+page, $|A \cup B| = |A| + |B| - |A \cap B| = 6 + 5 - 1$. The diagram
+shows it without the formula. Add the three numbers, and the middle is
+only counted once.
+
+</details>
 
 ### Your turn
 
-Use the two sets above. How would you write an expression for each of
-these groups?
-
-1. The people who own exactly one of the two: a bike or a car, but not
-   both.
-2. The people who own neither. For this one you need the whole class,
-   which is `{"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"}`.
-   The cell stores it as `everyone`.
-3. Run each expression, and check that the result matches the diagram.
+The diagram does not show the outcomes in neither circle. Can you
+set `exactly_one` to the outcomes in exactly one of the two events, and
+`neither` to the outcomes in neither?
 
 ```python exec
-id: your-turn-1
-everyone = {"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona", "Gearoid", "Hannah"}
+id: venn-exactly-one-and-neither
+exactly_one = set()
+neither = set()
 
-# exactly_one = ...
-# neither = ...
+print(len(exactly_one), "in exactly one;", len(neither), "in neither")
 ```
 
-The first group is exclusive or. You met it in
-[Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
-as a fact about true and false. Python writes it `^` for sets too, for
-the same reason.
+```inputs
+sorted(exactly_one)
+len(neither)
+```
+
+```hint
+Exactly one is everything in either circle except the middle. For
+neither, start from every outcome, `outcomes`, and remove everything
+in either circle.
+```
+
+```solution
+exactly_one = doubles ^ eights
+neither = outcomes - (doubles | eights)
+
+print(len(exactly_one), "in exactly one;", len(neither), "in neither")
+---
+9 in exactly one, and 26 in neither. With the 1 in the middle, 9 + 1 + 26
+is 36. Every outcome is somewhere, once. `^` is *exclusive or*. It means
+one or the other, not both. It appears again on the next page, as a fact
+about true and false.
+```
 
 ## Three sets, which is where it earns its place
 
-With two sets, you can keep the picture in your head. You can find
-`bike - car` without drawing anything.
-
-With three sets, that stops working. Here are three sets of students:
-the ones who know Python, the ones who know SQL, and the ones who know
-JavaScript.
+Now three events: a double, a total of at least 8, and an even number on
+the first die.
 
 ```python exec
-id: three-sets-which-is-where-it-earns-its-place-1
-import matplotlib.pyplot as plt
-
-python = {"Aoife", "Ben", "Cara", "Dara", "Eoin", "Fiona"}
-sql = {"Cara", "Dara", "Eoin", "Gearoid", "Hannah"}
-javascript = {"Dara", "Eoin", "Fiona", "Hannah", "Iarla"}
+id: venn-three-events
+at_least_8 = set()
+first_even = set()
+for pair in outcomes:
+    if pair[0] + pair[1] >= 8:
+        at_least_8.add(pair)
+    if pair[0] % 2 == 0:
+        first_even.add(pair)
 
 
 def draw_three(a, b, c, names):
+    """Draw three overlapping circles, with how many elements are in each part."""
     fig, ax = plt.subplots(figsize=(6, 5.5))
-    centres = [(-0.6, 0.35), (0.6, 0.35), (0, -0.7)]
-    for (x, y) in centres:
+    for (x, y) in [(-0.6, 0.35), (0.6, 0.35), (0, -0.7)]:
         ax.add_patch(plt.Circle((x, y), 1.2, fill=False, linewidth=2))
-
     regions = {
         (-1.25, 0.75): a - b - c,
         (1.25, 0.75): b - a - c,
@@ -194,10 +228,8 @@ def draw_three(a, b, c, names):
     }
     for (x, y), members in regions.items():
         ax.text(x, y, str(len(members)), ha="center", va="center", fontsize=15)
-
     for (x, y), name in zip([(-1.5, 1.75), (1.5, 1.75), (0, -2.2)], names):
         ax.text(x, y, name, ha="center", fontsize=11)
-
     ax.set_xlim(-2.6, 2.6)
     ax.set_ylim(-2.6, 2.3)
     ax.set_aspect("equal")
@@ -205,141 +237,352 @@ def draw_three(a, b, c, names):
     return fig
 
 
-draw_three(python, sql, javascript, ["Python", "SQL", "JavaScript"])
+draw_three(doubles, at_least_8, first_even, ["a double", "at least 8", "first die even"])
 ```
 
-Now there are seven regions. Each one is a different combination of in
-or out for each circle. Try to hold all seven in your head at once. Most people cannot, and there is no reason they should.
+Now there are seven regions, one for each way of being in or out of each
+circle. Try holding all seven in your head at once. Most people cannot,
+and there is no reason they should.
 
-Here is a question that is awkward in symbols but easy on the picture:
-who knows Python or SQL, but not JavaScript? Before you run the cell,
-which regions of the diagram do you think hold those people?
+Here is a question that is awkward in symbols and easy on the picture:
+which outcomes are a double or at least 8, but have an odd first die?
+Before you run the cell, which regions hold them?
 
 ```python exec
-id: three-sets-which-is-where-it-earns-its-place-2
-print(sorted((python | sql) - javascript))
+id: venn-double-or-high-but-odd
+print(sorted((doubles | at_least_8) - first_even))
 ```
 
-Find those four people on the diagram. They are in the two top regions,
-and in the region between those two, and nowhere in the bottom circle.
-Now try to convince yourself of the same answer from the expression
-alone. Which way was easier?
+Find them on the diagram: the top two regions, the region between them,
+and nothing in the bottom circle. That is 2 + 5 + 1 = 8 outcomes. Now
+try to convince yourself of the same answer from the expression alone.
+Which way was quicker?
+
+Here are two expressions that look different. Do they give the same set?
+The diagram can tell you before Python does.
+
+```python exec
+id: venn-two-expressions
+first = (doubles & at_least_8) | (doubles & first_even)
+second = doubles & (at_least_8 | first_even)
+print(first == second)
+```
+
+```predict
+Will it print True or False?
+
+- True
+  - Both are the doubles that are also in at least one of the other two circles.
+- False
+  - The first combines two overlaps, the second only one.
+```
+
+<details class="dl-answer"><summary>Why they match</summary>
+
+`True`. Shade each one on the diagram. Both are the parts of the doubles
+circle that are also inside at least one of the other two. It is the
+distributive law, $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$, with
+$\cap$ as multiplication and $\cup$ as addition, as in
+$a(b + c) = ab + ac$.
+
+</details>
 
 ### Your turn
 
-Here are two expressions that look different. Do they give the same set?
+Choose a world at the top of the page. Each one has three sets of its
+own, and a question the diagram can answer.
 
-1. Look at the diagram, and predict the answer. Write your prediction as
-   a comment.
-2. Remove the `#` from the `print` line, and run the cell to check.
+<div class="dl-world" data-world="games-of-chance">
+
+Toss three coins. Each outcome is three letters, such as `"HHT"`. There
+are three events: the first coin is heads, at least two are heads, and
+all three are the same. Two regions will be empty. Can you say why
+before you draw it? Then set `answer` to the outcomes with at least two
+heads that are not all the same.
 
 ```python exec
-id: your-turn-2
-first = (python & sql) | (python & javascript)
-second = python & (sql | javascript)
+id: venn-your-world--games-of-chance
+tosses = set()
+for a in "HT":
+    for b in "HT":
+        for c in "HT":
+            tosses.add(a + b + c)
 
-# Your prediction as a comment, then:
-# print(first == second)
+first_heads = set()
+two_heads = set()
+all_same = set()
+for toss in tosses:
+    if toss[0] == "H":
+        first_heads.add(toss)
+    if toss.count("H") >= 2:
+        two_heads.add(toss)
+    if toss[0] == toss[1] == toss[2]:
+        all_same.add(toss)
+
+draw_three(first_heads, two_heads, all_same, ["first is heads", "two or more heads", "all the same"])
+answer = set()
 ```
 
-## The same laws, in a different notation
+```inputs
+sorted(answer)
+```
 
-In [Logic: truth tables, XOR and De Morgan's laws](tutorial:logic-and-truth)
-we proved De Morgan's laws by looping over four rows. Here they are
-again, on sets. As you read the output, picture the two-circle diagram:
-which region does each line describe?
+```solution
+tosses = set()
+for a in "HT":
+    for b in "HT":
+        for c in "HT":
+            tosses.add(a + b + c)
+
+first_heads = set()
+two_heads = set()
+all_same = set()
+for toss in tosses:
+    if toss[0] == "H":
+        first_heads.add(toss)
+    if toss.count("H") >= 2:
+        two_heads.add(toss)
+    if toss[0] == toss[1] == toss[2]:
+        all_same.add(toss)
+
+answer = two_heads - all_same
+print(sorted(answer))
+---
+`['HHT', 'HTH', 'THH']`. The two empty regions are "first is heads and
+all the same, but not two heads", and "two heads and all the same, but
+the first is tails". Both are impossible. All the same with a head first
+is HHH, which has three heads, and all the same with two heads is HHH
+again. The empty regions show this. TTH and THT are in no
+circle at all.
+```
+
+</div>
+
+<div class="dl-world" data-world="dinosaurs">
+
+The Triassic ran from 251.9 to 201.4 million years ago, the Jurassic
+from 201.4 to 145, and the Cretaceous from 145 to 66. For each period,
+this cell collects the countries with a dinosaur find from it, and draws
+the three. Can you set `answer` to the countries with Triassic or
+Jurassic finds, and none from the Cretaceous?
 
 ```python exec
-id: the-same-laws-in-a-different-notation-1
-everyone = set(range(1, 13))
-a = {1, 2, 3, 4, 5, 6}
-b = {5, 6, 7, 8, 9}
+id: venn-your-world--dinosaurs
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
 
+
+def countries(oldest, youngest):
+    """The countries with a find whose rock is wholly inside this span of time."""
+    inside = finds[(finds.oldest_mya <= oldest) & (finds.youngest_mya >= youngest)]
+    return set(inside["country_code"])
+
+
+triassic = countries(251.9, 201.4)
+jurassic = countries(201.4, 145)
+cretaceous = countries(145, 66)
+draw_three(triassic, jurassic, cretaceous, ["Triassic", "Jurassic", "Cretaceous"])
+answer = set()
+```
+
+```inputs
+sorted(answer)
+```
+
+```solution
+finds = await load_csv("dinosaur-finds.csv", keep_default_na=False)
+
+
+def countries(oldest, youngest):
+    """The countries with a find whose rock is wholly inside this span of time."""
+    inside = finds[(finds.oldest_mya <= oldest) & (finds.youngest_mya >= youngest)]
+    return set(inside["country_code"])
+
+
+triassic = countries(251.9, 201.4)
+jurassic = countries(201.4, 145)
+cretaceous = countries(145, 66)
+answer = (triassic | jurassic) - cretaceous
+print(sorted(answer))
+---
+With the copy saved on {{snapshot: dinosaur-finds}}, it prints ten
+codes, from CH (Switzerland) to ZW (Zimbabwe). One of them is not a
+country. O2 is the North Sea, where a *Plateosaurus* bone was found in a
+rock core drilled far beneath the sea floor. Nine countries have finds
+from all three periods, and 29 from the Cretaceous only, partly because
+more rock of that age is at the surface, where people can find it.
+```
+
+</div>
+
+<div class="dl-world" data-world="book-characters">
+
+A set can hold chapter numbers. This cell collects the chapters of *Pride
+and Prejudice* that name Lydia, Mr Bingley and Wickham, and draws the
+three. Can you set `answer` to the chapters that name Wickham or Lydia,
+but not Mr Bingley?
+
+```python exec
+id: venn-your-world--book-characters
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+
+
+def chapters_naming(name):
+    """The chapters of Pride and Prejudice that name this character."""
+    return set(pride[pride.character == name]["chapter"])
+
+
+lydia = chapters_naming("Lydia")
+bingley = chapters_naming("Mr Bingley")
+wickham = chapters_naming("Wickham")
+draw_three(lydia, bingley, wickham, ["Lydia", "Mr Bingley", "Wickham"])
+answer = set()
+```
+
+```inputs
+sorted(answer)
+```
+
+```solution
+characters = await load_csv("book-characters.csv")
+pride = characters[(characters.book == "pride-and-prejudice") & (characters.mentions > 0)]
+
+
+def chapters_naming(name):
+    """The chapters of Pride and Prejudice that name this character."""
+    return set(pride[pride.character == name]["chapter"])
+
+
+lydia = chapters_naming("Lydia")
+bingley = chapters_naming("Mr Bingley")
+wickham = chapters_naming("Wickham")
+answer = (wickham | lydia) - bingley
+print(sorted(answer))
+---
+It prints fifteen chapters, from 14 to 52. Most are late in the book, when
+Lydia runs away with Wickham and Mr Bingley is away from Netherfield. Five
+chapters name none of the three: 19, 22, 28, 30 and 31, which are Mr
+Collins's proposal, Charlotte's engagement, and Elizabeth's visit to
+Hunsford.
+```
+
+</div>
+
+## Outside a set
+
+Every outcome is either in a set or not. The set of everything *not* in
+a set is its *complement*. Here, that is every outcome of the two dice
+that is not in the set. Two laws link "not" with "or" and "and". Picture
+the two-circle diagram as you read each pair. Which region does each line
+describe?
+
+```python exec
+id: venn-de-morgan
 def complement(s):
-    return everyone - s
+    """Every outcome of two dice that is not in s."""
+    return outcomes - s
 
 
-print("not (A or B):        ", sorted(complement(a | b)))
-print("(not A) and (not B): ", sorted(complement(a) & complement(b)))
+print(len(complement(doubles | eights)), "are not (a double or an 8)")
+print(len(complement(doubles) & complement(eights)), "are (not a double) and (not an 8)")
 print()
-print("not (A and B):       ", sorted(complement(a & b)))
-print("(not A) or (not B):  ", sorted(complement(a) | complement(b)))
+print(len(complement(doubles & eights)), "are not (a double and an 8)")
+print(len(complement(doubles) | complement(eights)), "are (not a double) or (not an 8)")
 ```
 
-The two lines in each pair are the same.
-
-The logic page proved this by checking four rows. That proof is
-complete, because there are only four cases. The diagram gives a
-different kind of proof. You can *see* that the region outside both
-circles is the same region as the overlap of the two outsides. Once you
-have seen it, you do not need to check.
-
-Neither proof is better than the other. They are the same claim in two
-notations, and that is why it helps to have both. If the truth table
-version did not make sense to you, this one might. And they are one
-fact, not two facts to learn.
+The two lines in each pair are the same: 26, the region outside both
+circles, and 35, everything but the middle. On the diagram you can *see*
+that the region outside both circles is the overlap of the two outsides.
+The next page, [Logic](tutorial:logic-and-truth), gives the two laws
+their name, and proves them a different way, by checking every case of
+true and false. They are one fact in two notations. Use whichever makes
+sense to you first to understand the other.
 
 ## Where the picture stops helping
 
-There is one more thing, and it is the most interesting idea on the
-page.
-
-Three circles give seven regions. That is every combination of in and
-out for three sets, apart from "in none of them", which is the space
-outside all the circles. In general, $n$ sets need $2^n - 1$ regions
-inside the circles. For three sets that is $2^3 - 1 = 7$. How many
-regions do you expect four sets to need? Run the cell to check.
+Three circles give seven regions, one for each way of being in or out
+of three sets, apart from "in none of them", which is the space outside. In
+general, $n$ sets need $2^n - 1$ regions inside the circles. How many do
+you expect four sets to need?
 
 ```python exec
-id: where-the-picture-stops-helping-1
+id: venn-how-many-regions
 for n in (2, 3, 4, 5):
-    print(f"{n} sets need {2 ** n - 1} regions")
+    print(n, "sets need", 2 ** n - 1, "regions")
 ```
 
 Four sets need fifteen regions, and four circles cannot make them. This
-is a fact about circles on a flat page. It is not a weakness of the
-drawing code. No arrangement of four circles produces all fifteen
-regions. Diagrams for four sets do exist, but they use ovals or stranger
-shapes, and they get much harder to read. Then they no longer help.
+is a fact about circles on a flat page, not about the drawing code. No
+arrangement of four circles makes all fifteen. Diagrams for four sets do
+exist, with ovals or stranger shapes, but they are much harder to read.
 
-Meanwhile, the set operations keep working perfectly, for four sets or
-for forty.
+The set operations still work for four sets, or forty. Only the picture
+stops at three.
 
-Every way of showing an idea stops working at some point. A Venn diagram
-helps a lot with three sets and not at all with four, and it is still a
-good tool. You need to know which of the two cases you are in.
+## Looking back
 
-## Reflection
+Four sets need fifteen regions, and circles cannot draw them. If a
+question needed four sets, how would you show somebody the answer
+without a diagram?
 
-A Venn diagram is a plot of set operations you already had. It is not a
-new notation to learn. It helps at the point where the expressions no
-longer fit in your head.
+A challenge: draw the Venn diagram for three events from a game you
+know. The starter code draws one for a deck of cards. Change the events,
+or the game.
 
-Here are three things to remember:
+```python challenge
+import matplotlib.pyplot as plt
 
-- **It is drawn from the data**, so it cannot lie about the data. Change
-  the sets, and the picture changes.
-- **Two sets rarely need it, and three often do.** Three sets is the
-  size where it becomes useful.
-- **It stops working at four**, because of a fact about circles, not
-  because the drawing is bad. The set operations continue to work.
 
-Think of three overlapping groups that you belong to. In a few
-sentences, say which regions of their diagram have people in them, and
-which are empty.
+def draw_three(a, b, c, names):
+    fig, ax = plt.subplots(figsize=(6, 5.5))
+    for (x, y) in [(-0.6, 0.35), (0.6, 0.35), (0, -0.7)]:
+        ax.add_patch(plt.Circle((x, y), 1.2, fill=False, linewidth=2))
+    regions = {
+        (-1.25, 0.75): a - b - c, (1.25, 0.75): b - a - c, (0, -1.45): c - a - b,
+        (0, 0.85): (a & b) - c, (-0.75, -0.4): (a & c) - b, (0.75, -0.4): (b & c) - a,
+        (0, 0.0): a & b & c,
+    }
+    for (x, y), members in regions.items():
+        ax.text(x, y, str(len(members)), ha="center", va="center", fontsize=15)
+    for (x, y), name in zip([(-1.5, 1.75), (1.5, 1.75), (0, -2.2)], names):
+        ax.text(x, y, name, ha="center", fontsize=11)
+    ax.set_xlim(-2.6, 2.6)
+    ax.set_ylim(-2.6, 2.3)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    return fig
+
+
+ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+deck = set()
+for suit in ["clubs", "diamonds", "hearts", "spades"]:
+    for rank in ranks:
+        deck.add((rank, suit))
+
+hearts = {card for card in deck if card[1] == "hearts"}
+pictures = {card for card in deck if card[0] in ["J", "Q", "K"]}
+red = {card for card in deck if card[1] in ["hearts", "diamonds"]}
+draw_three(hearts, pictures, red, ["hearts", "picture cards", "red"])
+```
+
+The next page, [Logic](tutorial:logic-and-truth), finds the same rules
+in true and false.
 
 ## Where to read more
 
+Everything here is covered elsewhere too, often in a form that will suit you
+better than this one.
+
 Khan Academy. *Visualising Set Operations Using Venn Diagrams.*
-<https://www.youtube.com/watch?v=c6TY6fVUlDQ>. It shows the same
-two-circle pictures this page draws from real data, but drawn by hand.
+<https://www.youtube.com/watch?v=c6TY6fVUlDQ>. The same two-circle
+pictures this page draws from real data, drawn by hand instead.
 
 Khan Academy. *Properties of Set Operations Using Venn Diagrams.*
-<https://www.youtube.com/watch?v=lWjmbch870g>. It shades De Morgan's laws
-on a diagram, as this page does near its end.
+<https://www.youtube.com/watch?v=lWjmbch870g>. De Morgan's laws shaded on
+a diagram, which is where this page ends up.
 
 Up and Atom (2019). *Russell's Paradox: A Ripple in the Foundations of
-Mathematics.* <https://www.youtube.com/watch?v=xauCQpnbNAM>. Think of a
-set of all sets that do not contain themselves. Does it contain itself?
-Jade Tan-Holmes tells how this question shook mathematics. The video is
-about fourteen minutes long.
+Mathematics.* <https://www.youtube.com/watch?v=xauCQpnbNAM>. A set of all
+sets that do not contain themselves: does it contain itself? Jade
+Tan-Holmes tells how this question shook mathematics. About fourteen
+minutes.

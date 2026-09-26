@@ -1,115 +1,114 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# event is not repeated here: sets-as-sorted-lists introduces it, and
+# complement comes from venn-diagrams, both earlier in this series.
 entries:
+  - term: simulate
+    kind: concept
+    definition: >
+      To simulate a random event is to write code that makes it happen
+      many times, at random, and to count the results.
+  - term: trial
+    kind: concept
+    definition: >
+      A trial is one run of a random event, such as one roll of two dice
+      in a simulation.
+  - term: outcome
+    kind: concept
+    definition: >
+      An outcome is one possible result of a random event, such as (3, 4)
+      on two dice.
   - term: probability
     kind: concept
     definition: >
       Probability is a number from 0 to 1 that measures how likely an
       event is. 0 means impossible, and 1 means certain.
-  - term: outcome
-    kind: concept
-    definition: >
-      An outcome is one possible result of a random event, such as
-      rolling a 4 on a die.
-  - term: event
-    kind: concept
-    definition: >
-      An event is a group of outcomes we are interested in, such as
-      rolling an even number.
-  - term: favourable outcome
-    kind: concept
-    definition: >
-      A favourable outcome is an outcome that makes the event happen.
-  - term: "P(A), basic probability"
+  - term: "P(A), when outcomes are equally likely"
     kind: formula
     definition: >
-      When every outcome is equally likely, P(A) is the number of
-      favourable outcomes divided by the total number of outcomes. It is a
-      number between 0 (impossible) and 1 (certain).
-    example: "P(heads) = 1 / 2"
-  - term: simulate
-    kind: concept
-    definition: >
-      To simulate a random event is to write code that makes the event
-      happen many times, at random, and count the results.
-  - term: trial
-    kind: concept
-    definition: >
-      A trial is one run of a random event, such as one flip of a coin in
-      a simulation.
-  - term: compound event
-    kind: concept
-    definition: >
-      A compound event is an event made by joining two or more events with
-      words such as "or", "and" and "not".
-  - term: complement rule
-    kind: formula
-    definition: >
-      The complement of an event A is the event that A does not happen.
-      Its probability is 1 - P(A).
-    example: "P(no rain) = 1 - 0.3 = 0.7"
-  - term: mutually exclusive
-    kind: concept
-    definition: >
-      Two events are mutually exclusive when they cannot both happen at
-      the same time, such as rolling a 2 and rolling a 5 on one die.
-  - term: "addition rule (P(A or B))"
-    kind: formula
-    definition: >
-      For mutually exclusive events, P(A or B) = P(A) + P(B). If the
-      events can overlap, subtract the overlap: P(A) + P(B) - P(A and B).
-  - term: independent events
-    kind: concept
-    definition: >
-      Two events are independent when one happening does not change the
-      probability of the other. Two flips of a coin are independent.
-  - term: "multiplication rule (P(A and B))"
-    kind: formula
-    definition: >
-      For independent events, P(A and B) = P(A) x P(B). If the events are
-      not independent, the second probability must take the first event
-      into account.
-    example: "P(two aces in a row) = 4/52 * 3/51"
-  - term: without replacement
-    kind: concept
-    definition: >
-      Drawing without replacement means we do not put an item back before
-      the next draw. So the first draw changes what is left for the
-      second.
+      When every outcome is equally likely, the probability of an event A
+      is the number of outcomes in A divided by the number of all
+      outcomes.
+    example: "P(total is 7) = 6 / 36 = 1 / 6"
   - term: law of large numbers
     kind: concept
     definition: >
       The law of large numbers says that the more trials we run, the
-      closer the proportion we see usually gets to the true probability.
-  - term: module
+      closer the share we see usually comes to the probability. It comes
+      slowly: ten times closer needs about a hundred times the trials.
+  - term: compound event
     kind: concept
     definition: >
-      A module is a collection of ready-made Python functions, such as
-      random or math. We load one with import.
-  - term: import
-    python: import
-    kind: keyword
-    definition: Loads a module, so that the program can use its functions.
-    example: "import random"
-  - term: "random.choice()"
-    python: random.choice
-    kind: function
-    definition: Picks one item at random from a list.
-    example: 'random.choice(["heads", "tails"])'
-  - term: "random.shuffle()"
-    python: random.shuffle
-    kind: function
-    definition: Shuffles a list. It changes the list itself and gives back nothing.
-    example: "random.shuffle(deck)"
-  - term: "conditional probability, P(B|A)"
+      A compound event is an event made from others with "and", "or" and
+      "not": the intersection, union and complement of their sets.
+  - term: "P(A or B)"
     kind: formula
     definition: >
-      A conditional probability is the probability of an event B when we
-      know that another event A has happened. It can differ from P(B)
-      alone, because A can change what is still possible.
-    example: "P(B|A) = P(A and B) / P(A)"
-  - term: Monte Carlo simulation
+      The chance that A or B happens is P(A) + P(B) - P(A and B): the
+      overlap is taken away once, since adding counts it twice. It is
+      inclusion-exclusion with probabilities.
+    example: "P(double or high) = 1/6 + 1/6 - 1/18 = 5/18"
+  - term: mutually exclusive
     kind: concept
     definition: >
-      Monte Carlo simulation is a way to estimate an answer by simulating
-      a random process many times and counting the results. People use it
-      when an exact calculation is too complicated.
+      Two events are mutually exclusive when they cannot both happen,
+      such as a total of 2 and a total of 12. For them, P(A or B) is
+      P(A) + P(B).
+  - term: independent
+    kind: concept
+    definition: >
+      Two events are independent when knowing that one happened does not
+      change the chance of the other. Then, and only then, P(A and B) is
+      P(A) x P(B), which is how to check it.
+    example: "first die is 6, and total is 7: 1/36 = 1/6 * 1/6"
+  - term: without replacement
+    kind: concept
+    definition: >
+      Drawing without replacement means an item drawn is not put back, so
+      the first draw changes what the second can be.
+    example: "P(two aces) = 4/52 * 3/51"
+  - term: conditional probability, P(B | A)
+    kind: formula
+    definition: >
+      The chance of B when we know A happened, read "B given A". It counts
+      inside the smaller group where A happened: P(A and B) / P(A).
+      P(B | A) and P(A | B) can be very different.
+    example: "P(sick | positive) = 99 / 10,098"
+  - term: natural frequencies
+    kind: concept
+    definition: >
+      Natural frequencies give a chance as a count of people or cases,
+      such as 99 of 10,098 positive tests, rather than as a percentage.
+      They make conditional probabilities much easier to follow.
+  - term: Bayes' theorem
+    kind: formula
+    definition: >
+      The rule that turns P(A | B) into P(B | A). Counting a million
+      people through a medical test, as a table, is the rule written as a
+      count.
+  - term: "random.randint()"
+    python: random.randint
+    kind: function
+    definition: Picks a whole number at random between two numbers, including both.
+    example: "random.randint(1, 6)  # one roll of a die"
+  - term: "random.random()"
+    python: random.random
+    kind: function
+    definition: >
+      Gives a random number from 0 up to, but not including, 1. It is
+      below 0.99 on 99% of calls.
+    example: "random.random() < 0.99"
+  - term: "random.sample()"
+    python: random.sample
+    kind: function
+    definition: >
+      Draws several different items from a list at random, without
+      replacement.
+    example: "random.sample(deck, 2)"
+  - term: Fraction
+    python: fractions.Fraction
+    kind: function
+    definition: >
+      Keeps a number as an exact fraction, so 1/6 stays 1/6 rather than
+      0.16666666666666666.
+    example: "Fraction(6, 36)  # 1/6"
