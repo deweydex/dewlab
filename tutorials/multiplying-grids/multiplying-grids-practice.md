@@ -12,7 +12,7 @@ worlds:
 # Matrix multiplication: rows times columns — Practice
 
 Problems on dot products, shapes and products, and three from earlier
-pages. Work each one out by hand before you run anything. Your own
+pages. Find each answer by hand before you run anything. Your own
 `dot`, `multiply` and the functions from the earlier pages are already
 loaded.
 
@@ -23,25 +23,25 @@ id: dot-1
 print(dot([2, -3, 1], [4, 0, -2]))
 ```
 
-**1.** Work out `dot([1, 2, 3], [1, 2, 3])`. What does the dot product
+**1.** Find `dot([1, 2, 3], [1, 2, 3])`. What does the dot product
 of a list with itself tell you?
 
 <details class="dl-answer"><summary>answer</summary>
 
-$1 + 4 + 9 = 14$: the sum of the squares. Its square root is the length
+It is $1 + 4 + 9 = 14$, the sum of the squares. Its square root is the length
 of the arrow from $(0, 0, 0)$ to $(1, 2, 3)$, its *magnitude*, so a
 dot product with itself measures how long a vector is.
 
 </details>
 
-**2.** Work out `dot([1, 1], [1, -1])`. Draw the two arrows from
+**2.** Find `dot([1, 1], [1, -1])`. Draw the two arrows from
 $(0, 0)$. What do you notice?
 
 <details class="dl-answer"><summary>answer</summary>
 
 $1 - 1 = 0$, and the two arrows are at right angles. Two vectors whose
-dot product is 0 are *orthogonal*: at right angles, for arrows in a
-plane or in space.
+dot product is 0 are *orthogonal*. For arrows in a plane or in space,
+that means at right angles.
 
 </details>
 
@@ -59,12 +59,12 @@ what shape is the result?
 
 <details class="dl-answer"><summary>answer</summary>
 
-- 2×3 by 3×4: yes, 2×4. The inner numbers match; the outer ones give
+- 2×3 by 3×4: yes, 2×4. The inner numbers match. The outer ones give
   the shape.
 - 3×2 by 3×2: no. Two columns on the left, three rows on the right.
-- 4×1 by 1×3: yes, 4×3, twelve entries from seven.
-- 1×4 by 4×1: yes, 1×1, a single number: the dot product, written as a
-  matrix.
+- 4×1 by 1×3: yes, 4×3. The 7 numbers you start with make 12 entries.
+- 1×4 by 4×1: yes, 1×1. This single number is the dot product, written
+  as a matrix.
 
 </details>
 
@@ -84,7 +84,7 @@ What is the bottom-right entry of the product, row 2 of `A` dotted with
 column 2 of `B`? It is the last number printed.
 ```
 
-**4.** Work out the top-left and bottom-right entries of `multiply(A, B)`
+**4.** Find the top-left and bottom-right entries of `multiply(A, B)`
 by hand.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -94,7 +94,7 @@ Top left: $2(1) + 0(0) + 1(3) = 5$. Bottom right: $-1(4) + 3(-2) + 2(1)
 
 </details>
 
-**5.** A layer of a neural network works out $\mathbf{y} = W\mathbf{x} +
+**5.** A layer of a neural network calculates $\mathbf{y} = W\mathbf{x} +
 \mathbf{b}$, with $W = \begin{bmatrix} 0.2 & 0.8 \\ -0.5 & 0.3 \\ 0.1 &
 0.6 \end{bmatrix}$, $\mathbf{x} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$
 and $\mathbf{b} = \begin{bmatrix} 0.1 \\ -0.2 \\ 0.3 \end{bmatrix}$. What
@@ -102,9 +102,9 @@ is $\mathbf{y}$?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. $W$ is 3×2 and $\mathbf{x}$ is 2×1: what shape is $W\mathbf{x}$?
+1. $W$ is 3×2 and $\mathbf{x}$ is 2×1. What shape is $W\mathbf{x}$?
 2. Each entry is one row of $W$ dotted with $[1, 2]$.
-3. Then add $\mathbf{b}$, entry by entry: matrix addition, from the
+3. Then add $\mathbf{b}$, entry by entry, as in matrix addition on the
    first page.
 
 **Think about:** $\mathbf{x}$ has 2 entries and $\mathbf{b}$ has 3. Why
@@ -116,9 +116,9 @@ is that not a problem?
 
 $W\mathbf{x} = \begin{bmatrix} 1.8 \\ 0.1 \\ 1.3 \end{bmatrix}$, so
 $\mathbf{y} = \begin{bmatrix} 1.9 \\ -0.1 \\ 1.6 \end{bmatrix}$. Only the
-inner numbers must agree, the columns of $W$ and the length of
-$\mathbf{x}$; $\mathbf{b}$ matches the output, which is a different
-layer's size.
+inner numbers must agree: the columns of $W$ and the length of
+$\mathbf{x}$. $\mathbf{b}$ matches the output, which can have a
+different length.
 
 </details>
 
@@ -137,8 +137,8 @@ $A(BC)$?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`RS` is `[[7, -2], [19, -4]]` and `SR` is `[[5, 10], [-2, -2]]`:
-different in every entry. But the grouping never matters: $(AB)C =
+`RS` is `[[7, -2], [19, -4]]` and `SR` is `[[5, 10], [-2, -2]]`. They
+differ in every entry. But the grouping never matters. $(AB)C =
 A(BC)$, because both do $C$ first, then $B$, then $A$. Multiplication is
 *associative*. That is why a chain of moves can be multiplied into one
 matrix ahead of time, in any grouping.
@@ -165,8 +165,8 @@ multiply(identity(2), R) == R
 ```
 
 ```hint
-Row `i` has a 1 in position `i` and 0 everywhere else: `1 if i == j else
-0` for each `j`.
+Row `i` has a 1 in position `i` and 0 everywhere else. For each `j`,
+that is `1 if i == j else 0`.
 ```
 
 ```solution
@@ -177,8 +177,8 @@ def identity(n):
 
 print(identity(3))
 ---
-One comprehension inside another: a row for each `i`, and in it, a
-number for each `j`.
+The outer comprehension makes a row for each `i`. The inner one fills
+it with a number for each `j`.
 ```
 
 **8.** $A$ is $m \times n$ and $B$ is $n \times m$, so both $AB$ and $BA$
@@ -187,7 +187,7 @@ exist. Are they the same shape?
 <details class="dl-answer"><summary>answer</summary>
 
 $AB$ is $m \times m$ and $BA$ is $n \times n$. Unless $m = n$, they
-cannot be equal, without looking at a single entry.
+cannot be equal. You can tell without looking at a single entry.
 
 </details>
 
@@ -230,9 +230,10 @@ turn = [[0, -1], [1, 0]]
 print(multiply(turn, wide))
 print(multiply(wide, turn))
 ---
-`[[0, -1], [2, 0]]` and `[[0, -2], [1, 0]]`: different. Widen and then
-turn, and the sprite ends up tall; turn and then widen, and it ends up
-wide. A stretch in one direction does not commute with a turn.
+The two products are `[[0, -1], [2, 0]]` and `[[0, -2], [1, 0]]`. If you
+widen and then turn, the sprite is tall. If you turn and then widen, it
+is wide. A stretch in one direction and a turn give a different picture
+in each order.
 ```
 
 </div>
@@ -242,7 +243,7 @@ wide. A stretch in one direction does not commute with a turn.
 A space station's ring is drawn as a circle of points. Squashing it to
 half height makes an ellipse, the way a ring looks seen at an angle.
 Then the view turns 90°. Can you make the one matrix for "squash, then
-turn", and say what shape the ring ends up?
+turn", and say what shape the ring becomes?
 
 ```python exec
 id: multiply-world--starships
@@ -254,7 +255,7 @@ turn = [[0, -1], [1, 0]]
 ```
 
 ```hint
-The first move goes on the right: `multiply(turn, squash)`. Draw the
+Put the first move on the right, as in `multiply(turn, squash)`. Draw the
 ring and the moved ring with `draw_shapes`.
 ```
 
@@ -268,9 +269,10 @@ both = multiply(turn, squash)
 print(both)
 draw_shapes([ring, transform_all(both, ring)])
 ---
-`[[0, -0.5], [1, 0]]`: the squashed ring, wider than tall, turned to
-stand taller than wide. Its second column, where "up" goes, has length
-a half: the squash, carried through the turn.
+The matrix is `[[0, -0.5], [1, 0]]`. The squash makes the ring wider
+than tall, and the turn stands it up, taller than wide. Its second
+column, where "up" goes, has length a half. That is the squash, carried
+through the turn.
 ```
 
 </div>
@@ -303,7 +305,8 @@ three_steps = multiply(step, multiply(step, step))
 x, y = transform(three_steps, (1, 0))
 print(round(x, 6), round(y, 6))
 ---
-$(0, 1)$, a quarter of the way round: three 30° turns make one 90° turn.
+The planet is at $(0, 1)$, a quarter of the way round. Three 30° turns
+make one 90° turn.
 A simulation that moves a planet with the same small matrix at every
 step builds up the orbit the same way, one multiplication at a time.
 ```
@@ -318,7 +321,7 @@ order? Try it on `R` and `S`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-No: $(RS)^T = S^T R^T$, the other way round. `transpose(multiply(R, S))`
+No. $(RS)^T = S^T R^T$, the other way round. `transpose(multiply(R, S))`
 equals `multiply(transpose(S), transpose(R))`. A row of $R$ with a
 column of $S$ becomes, after transposing, a row of $S^T$ with a column
 of $R^T$.
@@ -330,7 +333,7 @@ $(0, 0)$ to $(0, 0)$. Does every product of matrices too?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Yes: the product is two moves, and each leaves $(0, 0)$ where it is.
+Yes. The product is two moves, and each leaves $(0, 0)$ where it is.
 
 </details>
 
@@ -340,7 +343,7 @@ two 100×100 matrices?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Each of the 9 entries is a dot product of 3 pairs: 27. For 100×100, it
+Each of the 9 entries is a dot product of 3 pairs, so 27. For 100×100, it
 is $100 \times 100 \times 100 = 1{,}000{,}000$. Double the size and the
 work goes up eight times, which is why the NumPy page at the end of the
 series times one.

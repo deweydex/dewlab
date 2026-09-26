@@ -39,18 +39,17 @@ Turning back is a quarter turn clockwise. Where does that send "right",
 $(1, 0)$, and "up", $(0, 1)$? Those are its columns.
 ```
 
-`[[0, 1], [-1, 0]]` turns it back: "right" goes to "down", $(0, -1)$,
-and "up" goes to "right". Doing the turn and then the turn back is doing
-nothing, so `multiply(back, turn)` is the identity. A matrix that undoes
+`[[0, 1], [-1, 0]]` turns it back. "Right" goes to "down", $(0, -1)$,
+and "up" goes to "right". The turn and then the turn back leave the F
+where it started, so `multiply(back, turn)` is the identity. A matrix that undoes
 another is its *inverse*. Every move so far has felt as if it could be
-undone. Can every one? This page finds a single number that says.
+undone. Can every one? This page finds a single number that tells you.
 
 ## Measuring the F
 
 Here is a function that measures the area inside a shape from its
-corners, with the *shoelace formula*: for each pair of neighbouring
-corners, cross-multiply, $x_1 y_2 - x_2 y_1$; add them all up; halve the
-total. The total keeps its sign. It is positive when the corners go
+corners, with the *shoelace formula*. For each pair of neighbouring
+corners, find $x_1 y_2 - x_2 y_1$. Add these up, and halve the total. The total keeps its sign. It is positive when the corners go
 round anticlockwise, as the F's do, and negative when they go round
 clockwise.
 
@@ -72,7 +71,7 @@ print("the F:", area(F))
 The F covers 8 squares: a stem of 5, a top arm of 2, a middle arm of 1.
 `(i + 1) % len(shape)` is the next corner, going back to the first after
 the last. Now measure the F after five moves. Before you run it, guess
-each one: which grow, which shrink, and which stay 8?
+which grow, which shrink, and which stay at 8.
 
 ```python exec
 id: measuring-the-f-2
@@ -100,16 +99,16 @@ What will the flipped F's area be?
 ```
 
 The stretch doubles the area, the shear and the turn leave it at 8, and
-the mix multiplies it by 5. The flip gives $-8$: the same size, but its
-corners now go round clockwise, because the F has been turned over like
-a mirror image. The sign is not a mistake to hide; it says the picture
-has been flipped.
+the mix multiplies it by 5. The flip gives $-8$. The size is the same, but
+the corners now go round clockwise, because the F has been turned over
+like a mirror image. The minus sign tells you the picture has been
+flipped.
 
 ## One number from four
 
-Each move multiplies the area by a factor: 2, 1, 1, $-1$ and 5. Can the
-factor be worked out from the four numbers of the matrix, without
-drawing anything? Here they are side by side.
+Each move multiplies the area by a factor: 2, 1, 1, $-1$ and 5. Can we
+find the factor from the four numbers of the matrix, without drawing
+anything? Here they are side by side.
 
 | Move | $a$ | $b$ | $c$ | $d$ | factor |
 |---|---|---|---|---|---|
@@ -122,17 +121,17 @@ drawing anything? Here they are side by side.
 A first guess is $a \times d$, the two numbers on the diagonal. It works
 for the stretch, the shear and the flip. The turn breaks it: $0 \times 0
 = 0$, but the turned F still covers 8 squares. And the mix: $2 \times 3
-= 6$, but the factor is 5. Something with $b$ and $c$ in it is missing,
-and it is 1 in both cases: for the turn, $b \times c = -1$, and for the
-mix, $b \times c = 1$. Take it away:
+= 6$, but the factor is 5. Something with $b$ and $c$ in it is missing.
+For the turn, $b \times c = -1$, and the guess is 1 too small. For the
+mix, $b \times c = 1$, and the guess is 1 too big. Subtract $b \times c$:
 
 $$ad - bc$$
 
-For the turn, $0 - (-1) = 1$; for the mix, $6 - 1 = 5$. This number is
-the *determinant* of the matrix, written $\det$: the factor by which the
-matrix multiplies every area, with a minus sign when it flips the
-picture over. Can you write `det(m)`? It comes with you, with `inverse`
-below.
+For the turn, $0 - (-1) = 1$. For the mix, $6 - 1 = 5$. This number is
+the *determinant* of the matrix, written $\det$. It is the factor by
+which the matrix multiplies every area, with a minus sign when it flips the
+picture over. Can you write `det(m)`? It comes with you to the later
+pages, along with `inverse` below.
 
 ```python exec
 id: matrix-det-inverse
@@ -168,7 +167,7 @@ def inverse(m):
     return [[m[1][1] / d, -m[0][1] / d], [-m[1][0] / d, m[0][0] / d]]
 ```
 
-Write `det` first; `inverse` comes in a later section.
+Write `det` first. `inverse` comes in a later section.
 
 ```inputs
 det([[2, 0], [0, 1]])
@@ -204,10 +203,9 @@ def inverse(m):
 formula read like the maths.
 ```
 
-The shear changed the F's shape more than any move in the gallery, and
-it did not change its area at all: its determinant is $1 \times 1 - 1
-\times 0 = 1$. The picture alone does not make that obvious; the number
-says it at once.
+The shear changed the F's shape a lot, but it did not change its area
+at all. Its determinant is $1 \times 1 - 1 \times 0 = 1$. The picture
+does not make that obvious, but the number shows it at once.
 
 ## When the F collapses
 
@@ -225,24 +223,23 @@ draw_shapes([F, collapsed])
 
 Every corner lands on one straight line through $(0, 0)$, the line $y =
 x / 2$. The F has no width left at all. A matrix with determinant 0 is
-*singular*: it squashes the whole plane onto a line, or to a single
+*singular*. It squashes the whole plane onto a line, or to a single
 point.
 
 ## Undoing a transformation
 
-The *inverse* of a matrix $A$, written $A^{-1}$, is the matrix that
-undoes it: $A^{-1} A = I$. For a 2×2 matrix there is a formula:
+The inverse of a matrix $A$ is written $A^{-1}$. It undoes $A$, so
+$A^{-1} A = I$. For a 2×2 matrix there is a formula:
 
 $$A^{-1} = \frac{1}{\det(A)} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
 
 Swap $a$ and $d$, change the signs of $b$ and $c$, and divide everything
 by the determinant. The determinant is under the fraction line, so when
-it is 0, there is no inverse. The algebra says what the collapsed F
-showed: once a picture is flat, there is no way to get back the width it
-lost, because many different pictures flatten to the same line.
+it is 0, there is no inverse. The algebra agrees with the collapsed F.
+Once a picture is flat, there is no way to recover the width it lost, because many different pictures flatten to the same line.
 
 Now write `inverse` in the toolkit cell above, using `det`, and run it
-again. Then check it here: does the inverse of the turn turn the F back?
+again. Then check it here. Does the inverse of the turn turn the F back?
 
 ```python exec
 id: undoing-a-transformation-1
@@ -265,7 +262,7 @@ This cell is meant to fail, with your own `ValueError`: a determinant of
 
 ## Which ones can be undone?
 
-Five matrices. For each, work out the determinant in your head, and
+Here are five matrices. For each, find the determinant in your head, and
 decide whether it can be undone. Then run the cell.
 
 ```python exec
@@ -290,9 +287,9 @@ type: fill-in-the-blank
 - M5, `[[1, 0.5], [2, 1]]`, {cannot|can} be undone: $1 \times 1 - 0.5 \times 2 = 0$.
 ```
 
-M1 and M4 can be undone; M2, M3 and M5 cannot. When one column is a
+M1 and M4 can be undone. M2, M3 and M5 cannot. When one column is a
 multiple of the other, "right" and "up" land on the same line, and so
-does everything built from them: the determinant is 0.
+does everything built from them. The determinant is 0.
 
 ## Your world
 
@@ -383,8 +380,8 @@ print([[round(v, 9) for v in row] for row in turn_by(-30)])
 print(round(det(step), 9))
 ---
 The same matrix. A turn has determinant $\cos^2\theta + \sin^2\theta =
-1$, so its inverse needs no dividing: it swaps the diagonal and changes
-the signs of $\pm\sin\theta$, which is the turn by $-\theta$. A turn can
+1$, so its inverse needs no dividing. It swaps the diagonal and changes
+the signs of $\pm\sin\theta$, which gives the turn by $-\theta$. A turn can
 always be undone, since it never changes an area.
 ```
 
@@ -405,9 +402,9 @@ print(det(shadow_of))
 ```
 
 ```hint
-What is the determinant? And look at the shadow: two different corners
-of the F, $(1, 2)$ and $(2, 0)$, land on the same point. Can a rebuild
-know which one it came from?
+What is the determinant? Look at the shadow too. Two different corners
+of the F, $(1, 2)$ and $(2, 0)$, land on the same point. Could you tell,
+from the shadow, which corner it came from?
 ```
 
 ```solution
@@ -419,10 +416,10 @@ shadow_of = [[1, 0.5], [0, 0]]
 print(det(shadow_of))
 print(transform(shadow_of, (1, 2)), transform(shadow_of, (2, 0)))
 ---
-No: the determinant is 0, and the shadow lies flat on the line $y = 0$.
+No. The determinant is 0, and the shadow lies flat on the line $y = 0$.
 $(1, 2)$ and $(2, 0)$ both land on $(2, 0)$, so from the shadow alone
 there is no telling which corner made it. A shadow keeps the width and
-loses the height, and nothing can bring it back.
+loses the height, and no matrix can restore it.
 ```
 
 </div>
@@ -452,8 +449,8 @@ B = [[0, -1], [1, 0]]
 print(det(multiply(A, B)), det(A), det(B))
 ```
 
-The next page, [Solving systems](tutorial:solving-systems), uses the
-same question from the other end: given where a point landed, where did
+The next page, [Solving systems](tutorial:solving-systems), asks the
+same question from the other end. Given where a point landed, where did
 it start?
 
 ## Where to read more

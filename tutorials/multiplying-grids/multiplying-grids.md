@@ -22,7 +22,7 @@ covers:
 # Matrix multiplication: rows times columns
 
 On the last page, one matrix moved the F. Here are two moves, one after
-the other: a shear, and then a quarter turn.
+the other. First a shear, and then a quarter turn.
 
 ```python exec
 id: one-move-after-another-1
@@ -42,7 +42,7 @@ a lean and a shrink in one step.
 
 ## One move after another
 
-The last page gave a way to find any matrix: decide where "right",
+The last page gave a way to find any matrix. Decide where "right",
 $(1, 0)$, and "up", $(0, 1)$, go, and write those in as its columns. So
 follow those two points through both moves.
 
@@ -90,7 +90,7 @@ of $TS$ is one row of $T$ paired with one column of $S$: multiply the
 matching numbers, and add.
 
 That pairing is the *dot product*. For two lists of the same length, it
-multiplies each pair and adds up the results: the dot product of
+multiplies each pair and adds up the results. The dot product of
 $[1, 2, 3]$ and $[4, 5, 6]$ is $1 \times 4 + 2 \times 5 + 3 \times 6 =
 32$. You met it in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
@@ -106,7 +106,7 @@ print(list(zip([1, 2, 3], [4, 5])))
 What will the second line print, when one list is shorter?
 
 - [(1, 4), (2, 5), (3, None)]
-  - The missing number is filled in with nothing.
+  - Python adds None for the missing number.
 - [(1, 4), (2, 5)]
   - zip stops when the shorter list runs out.
 - An error
@@ -191,7 +191,7 @@ def multiply(a, b):
         result.append(new_row)
     return result
 ---
-A list of lists stores rows, so a column of `b` is awkward to reach;
+A list of lists stores rows, so a column of `b` is awkward to reach.
 `transpose` turns the columns into rows. `multiply(turn, shear)` gives
 `[[0, -1], [1, 1]]`, the matrix found by following the two points.
 ```
@@ -201,8 +201,8 @@ id: where-the-rule-comes-from-1
 print(multiply(turn, shear))
 ```
 
-The rule, written out: the entry in row $i$, column $j$ of $AB$ is row
-$i$ of $A$ dotted with column $j$ of $B$,
+Here is the rule in symbols. The entry in row $i$, column $j$ of $AB$ is
+row $i$ of $A$ dotted with column $j$ of $B$.
 
 $$c_{ij} = \sum_{k} a_{ik} \, b_{kj}$$
 
@@ -245,17 +245,17 @@ Will the two products be the same?
   - Leaning and then turning leans along a different edge from turning and then leaning.
 ```
 
-Different matrices, and different pictures. Lean the F and then turn
-it, and it leans one way; turn it first and then lean it, and the lean
-acts on the turned F, along a different edge. For matrices, $AB$ and
-$BA$ are usually different, which is why the order of writing them
-matters: $TS$ means $S$ first.
+The matrices are different, and so are the pictures. Lean the F and then
+turn it, and it leans one way. Turn it first and then lean it, and the
+lean acts on the turned F, along a different edge. For matrices, $AB$
+and $BA$ are usually different, so the order of writing them matters.
+$TS$ means $S$ first.
 
 ## Every corner at once
 
 `transform_all` moves one point at a time. Multiplication can move them
 all together. Put the F's corners side by side as the columns of one
-matrix: the x's along the top row, the y's along the bottom.
+matrix, with the x's along the top row and the y's along the bottom.
 
 ```python exec
 id: every-corner-at-once-1
@@ -265,15 +265,14 @@ moved = multiply(turn, corners)
 print(moved)
 ```
 
-`corners` is 2×10: one column for each corner. `multiply(turn,
-corners)` is 2×10 too, and each of its columns is one corner, moved. A
-2×2 matrix times a 2×10 matrix: this is the layout the graphics pages
-later in the course use, so that one multiplication moves every corner
-of a shape.
+`corners` is 2×10, with one column for each corner. `multiply(turn,
+corners)` is 2×10 too, and each of its columns is one corner, moved. The
+graphics pages later in the course use this layout, so that one
+multiplication moves every corner of a shape.
 
 That needs the shapes to fit. An $m \times n$ matrix times an $n \times
-p$ matrix makes an $m \times p$ one: the two inner numbers, the columns
-of the first and the rows of the second, must match. What happens if
+p$ matrix makes an $m \times p$ one. The two inner numbers must match.
+They are the columns of the first matrix and the rows of the second. What happens if
 they do not?
 
 ```python exec
@@ -324,8 +323,8 @@ mirror = [[-1, 0], [0, 1]]
 ```
 
 ```hint
-"swap, then mirror" is `multiply(mirror, swap)`: the move that happens
-first goes on the right. Read the columns of the answer to name it.
+"swap, then mirror" is `multiply(mirror, swap)`. The move that happens
+first is written on the right. Read the columns of the answer to name it.
 ```
 
 ```solution
@@ -348,7 +347,7 @@ a grid counts its rows downwards and points count upwards.)
 
 <div class="dl-world" data-world="starships">
 
-A ship docks in three moves: it turns 90°, shrinks to half size as it
+A ship docks in three moves. It turns 90°, shrinks to half size as it
 flies off, and leans for speed with a shear. Can you make the one matrix
 for all three, in that order, and check it on the ship?
 
@@ -361,7 +360,7 @@ lean = [[1, 0.3], [0, 1]]
 ```
 
 ```hint
-The first move goes on the right: `multiply(lean, multiply(shrink,
+The first move is written on the right: `multiply(lean, multiply(shrink,
 turn))`. Check it against `transform_all` applied three times.
 ```
 
@@ -380,9 +379,9 @@ one_by_one = transform_all(lean, transform_all(shrink, transform_all(turn, ship)
 print(transform_all(all_three, ship) == one_by_one)
 draw_shapes([ship, one_by_one])
 ---
-`[[0.15, -0.5], [0.5, 0.0]]`, and the two ways agree. Three moves, four
-numbers. A game with a thousand ships can work out each ship's matrix
-once and move all its corners with it, however many moves went into it.
+`[[0.15, -0.5], [0.5, 0.0]]`, and the two ways agree. Three moves become four
+numbers. A game with 1,000 ships can find each ship's matrix once, and
+move all its corners with it, however many moves went into it.
 ```
 
 </div>
@@ -390,7 +389,7 @@ once and move all its corners with it, however many moves went into it.
 <div class="dl-world" data-world="space-scenes">
 
 The sky turns about 15° an hour. Multiply the one-hour turn by itself
-six times: is the result the six-hour turn, a quarter turn?
+six times. Is the result the six-hour turn, a quarter turn?
 
 ```python exec
 id: multiply-your-world--space-scenes
@@ -432,10 +431,10 @@ for hour in range(6):
 print([[round(value, 6) for value in row] for row in six_hours])
 ---
 `[[0.0, -1.0], [1.0, 0.0]]`, the quarter turn, up to rounding. Turning
-by 15° six times is turning by 90°: for turns, multiplying the matrices
-adds the angles. So two turns can be done in either order, since 15 + 90
-and 90 + 15 are the same turn: one of the few pairs of moves where the
-order does not matter.
+by 15° six times is turning by 90°. For turns, multiplying the matrices
+adds the angles. So two turns can be done in either order, because
+15 + 90 and 90 + 15 are the same turn. For most pairs of moves, the
+order does matter.
 ```
 
 </div>
@@ -447,7 +446,7 @@ another. Can you say, in your own words, why an entry of $AB$ is a row
 of $A$ with a column of $B$, and not a row with a row?
 
 A challenge: the shear `[[1, 1], [0, 1]]` leans the F. Multiply it by
-itself: what does `multiply(shear, shear)` do? And the shear ten times?
+itself. What does `multiply(shear, shear)` do? And the shear ten times?
 Predict each before you run it.
 
 ```python challenge
@@ -464,8 +463,8 @@ shear = [[1, 1], [0, 1]]
 print(multiply(shear, shear))
 ```
 
-The next page, [Undoing it](tutorial:undoing-it), asks the question
-every move raises: can it be taken back?
+The next page, [Undoing it](tutorial:undoing-it), asks whether a
+move can always be undone.
 
 ## Where to read more
 
