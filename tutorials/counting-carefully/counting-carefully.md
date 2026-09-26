@@ -368,7 +368,7 @@ The last line asks which gives more passwords: 12 lowercase letters, or
 8 characters from all 72?
 
 - Twelve lowercase letters win: True
-    - Length is the power. Four more characters multiply the count by 26 four times.
+  - Length is the power. Four more characters multiply the count by 26 four times.
 - Twelve lowercase letters win: False
   - 72 choices a character is nearly three times 26.
 ```

@@ -47,7 +47,7 @@ print("stdev   ", round(statistics.stdev(data), 4))
 
 The mean is $\frac{36}{7} \approx 5.14$, the median 5, and the mode 8.
 Sorted, the values are 2, 3, 4, 5, 6, 8, 8, and the fourth of seven is
-the middle. The mode is the largest of the three here. The commonest
+the middle. The mode is the largest of the three here. The most common
 value need not be anywhere near the centre.
 
 </details>
@@ -129,7 +129,7 @@ They always add up to zero, because the mean is exactly the point where
 the distances above and below cancel. Squaring makes every distance
 positive, and gives large distances more weight. Taking each distance
 without its minus sign would work too, and gives the
-*mean absolute deviation*. It is a perfectly good measure, and harder
+*mean absolute deviation*. It is a perfectly good measure, but harder
 to use in algebra.
 
 </details>
@@ -255,7 +255,7 @@ draw it.
 
 <div class="dl-world" data-world="exoplanets">
 
-Do the two commonest ways of finding planets find the same kind of
+Do the two most common ways of finding planets find the same kind of
 planet? Compare the median radius of the planets found by transit with
 those found by radial velocity, the wobble of their star.
 
@@ -372,7 +372,7 @@ Darcy has a mean of 6.8, a median of 5 and a mode of 0, since he is not
 named at all in 11 of the 61 chapters. Elizabeth is named in every
 chapter, with a mean of 12.3, a median of 11, and two modes, 10 and 14.
 `statistics.mode` would give only the first of a tie, so `multimode`
-shows both. Darcy's commonest count is none at all, and yet, of the
+shows both. Darcy's most common count is none at all, and yet, of the
 twelve people in the data, only Elizabeth is named more often. So a mode
 can be true and unhelpful at once.
 ```
@@ -382,7 +382,7 @@ can be true and unhelpful at once.
 <div class="dl-world" data-world="games-of-chance">
 
 Roll a die ten times and count the sixes. Do that 10,000 times. Which
-number of sixes is commonest? Draw the counts, then compare them with
+number of sixes is the most common? Draw the counts, then compare them with
 the binomial formula from the tutorial, with $p = \frac{1}{6}$.
 
 ```python exec
@@ -430,7 +430,7 @@ for k in range(5):
     expected = 10_000 * math.comb(10, k) * (1 / 6) ** k * (5 / 6) ** (10 - k)
     print(k, "sixes:", counts[k], "rolled,", round(expected), "expected")
 ---
-One six is commonest, about 3,230 times in 10,000, then two, then none.
+One six is the most common, about 3,230 times in 10,000, then two, then none.
 The shape is lopsided, unlike the coins' symmetric hump, because $p$ is
 not a half. With ten rolls and a chance of $\frac{1}{6}$, the counts
 gather near $10 \times \frac{1}{6} \approx 1.7$ and fall slowly to the

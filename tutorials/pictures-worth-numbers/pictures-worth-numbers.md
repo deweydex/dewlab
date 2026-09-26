@@ -247,7 +247,7 @@ Change one there, and every chart that uses the function changes too.
 ## How a chart can mislead
 
 A chart can be made from true numbers and still leave a false picture.
-The commonest ways are few, and once you know them, you see them
+The most common ways are few, and once you know them, you see them
 everywhere.
 
 ### A bar that does not start at zero
@@ -284,7 +284,7 @@ drawn?
 
 It is four times as tall, for a difference of 6%. The length of a bar
 shows its value, so a bar chart must start at zero. A line chart need
-not. Its meaning is in how steeply it rises and falls, and forcing it to
+not. It shows how steeply something rises and falls, and forcing it to
 zero can flatten a real change until it disappears. Plotting libraries
 often choose the axis that fills the frame, so the truncated chart is
 the one you get if you do nothing.
@@ -632,7 +632,7 @@ own time.
 
 Roll three dice and add them. Count every one of the $6^3 = 216$
 outcomes, with no simulation at all, and draw a bar for each total.
-Which totals are commonest?
+Which totals are the most common?
 
 ```python exec
 id: charts-your-world--games-of-chance
@@ -670,7 +670,7 @@ plt.bar(list(totals.keys()), list(totals.values()))
 plt.xlabel("total of three dice")
 plt.ylabel("outcomes, of 216")
 ---
-10 and 11 are commonest, with 27 outcomes each. 3 and 18 have one each.
+10 and 11 are the most common, with 27 outcomes each. 3 and 18 have one each.
 Two dice made a triangle. Three already make a rounded hump, the start of
 the bell in the central limit theorem, and this time we counted it
 exactly rather than simulated it.

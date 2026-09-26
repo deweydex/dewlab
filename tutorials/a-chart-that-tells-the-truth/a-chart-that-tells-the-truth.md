@@ -122,7 +122,7 @@ print(characters.head())
 Design a game with dice or cards, play it thousands of times, and chart
 who wins. Some questions: is it fair, and how many games does it take to
 tell? Some ways to lie about it: a hundred games presented as proof; a
-rule that sounds like a boundary and hides the commonest result, like
+rule that sounds like a boundary and hides the most common result, like
 "7 or more"; the lucky run cut out of a long record.
 
 ```python exec

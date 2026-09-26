@@ -48,7 +48,7 @@ collection of different elements, where the order does not matter and no
 element appears twice. In maths we write a set inside curly brackets, so
 $\{3, 1, 4, 1, 5\}$ is the same set as $\{1, 3, 4, 5\}$.
 
-On this page we build our own sets, so you can see how `set()` works.
+On this page we build our own sets, so you can see what `set()` does.
 Sets give us a language for three kinds of question:
 
 - **membership**: is Diplodocus in this set?
@@ -593,8 +593,8 @@ of a that b does not have. The one-line version says what a subset is.
 ```
 
 Two sets are *equal* when each is a subset of the other. For our sorted
-sets that is the same as `a == b`, and for Python's own sets, which keep
-no order, it is the only way to say it.
+sets that is the same as `a == b`. Python's own sets keep no order, and
+`==` on them checks the same thing.
 
 ## Sets in the worlds
 

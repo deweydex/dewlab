@@ -552,8 +552,8 @@ version, without running anything?
 A challenge: four cards lie on a table, showing `A`, `K`, `4` and `7`.
 Each has a letter on one side and a number on the other. The rule says: "if a
 card has a vowel on one side, it has an even number on the other." Which
-cards must you turn over to check the rule? Most people pick the A and the
-4. Can you write a program that tries every possible hidden side, to check?
+cards must you turn over to check the rule? The most common choice is the A
+and the 4. Can you write a program that tries every possible hidden side, to check?
 
 ```python challenge
 cards_showing = ["A", "K", "4", "7"]

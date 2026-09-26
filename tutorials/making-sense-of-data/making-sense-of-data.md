@@ -451,7 +451,7 @@ print(len(radii) - len(small_enough), "planets larger than 25 Earth radii are le
 What shape will the histogram have?
 
 - One hump, around the mean
-    - The data gathers around the mean.
+  - The data gathers around the mean.
 - Two humps, one of small planets and one of large
   - There might be two different kinds of planet.
 - Tallest at the left, falling away to the right
@@ -503,7 +503,7 @@ A *box plot* draws them. The box runs from the 25th to the 75th
 percentile, with a line at the median. The whiskers reach to the
 data that is not far from the box, and anything beyond them is drawn as
 a dot. Box plots are good for comparing groups side by side. Here are
-the planets' distances from us, for each of the four commonest ways of
+the planets' distances from us, for each of the four most common ways of
 finding them:
 
 ```python exec
@@ -566,7 +566,7 @@ type: number
 Which number of heads will appear most often?
 ```
 
-Five heads is commonest, about a quarter of the time, and the counts
+Five heads is the most common, about a quarter of the time, and the counts
 fall on both sides. [Counting](tutorial:counting-carefully) explains why.
 There are
 $2^{10} = 1{,}024$ equally likely ways ten flips can land, and $C(10, 5)
@@ -760,7 +760,7 @@ for player in range(10_000):
 print("The longest wait:", max(waits), "rolls")
 print("mean", round(mean(waits), 2), " median", median(waits), " mode", mode(waits))
 ---
-The mean is about 6, the median 4, and the mode 1. The commonest wait
+The mean is about 6, the median 4, and the mode 1. The most common wait
 is one roll, and yet the typical player waits several, and a few wait
 thirty or more. The waits are skewed, with a long tail of unlucky
 players. "Six rolls on average" is true. "Most players start within six

@@ -278,7 +278,7 @@ plt.ylabel("share found by transit")
 Almost no planets were found by transit before 2004. Then the share
 climbs unevenly to more than 0.9 in 2014 and 2016, Kepler's years, and
 has been between about 0.5 and 0.8 since. The y axis runs from 0 to 1
-because a share can only be in that range. If the library chose, it
+because a share can only be in that range. If the library chose the range, it
 would stretch the wiggles after 2016 to fill the frame.
 ```
 
@@ -454,7 +454,7 @@ Why is the chart nearly useless, and what would fix it?
 The well-and-negative bar is so tall that the other three are
 invisible, and they are what matters. There are two fixes. One is a
 log scale, which shows all four, clearly labelled. The other is to remove
-the 989,901 people who tested negative and did not need to, and draw only
+the 989,901 well people who tested negative, and draw only
 the positives, 99 against 9,999. Deciding what a chart does not show is
 part of making it, as long as you say so.
 

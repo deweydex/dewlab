@@ -597,7 +597,7 @@ plt.ylabel("chance of at least one six")
 
 A line chart with dots fits, because $n$ is in order, and the dots show that
 only whole numbers of rolls exist. The y axis should run from 0 to 1,
-the whole range a chance can take. If the library chose, it would
+the whole range a chance can take. If the library chose the range, it would
 make the curve look steeper than it is. The chance climbs quickly at
 first, then more and more slowly, and never reaches 1.
 

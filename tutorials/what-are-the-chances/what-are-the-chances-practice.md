@@ -401,7 +401,7 @@ below = [roll for roll in outcomes if roll[0] + roll[1] < 7]
 print(Fraction(len(above), 36), Fraction(len(below), 36))
 ---
 You win 7 times in 12, which is 21 of the 36 outcomes. The rule gives
-you all of the 7s, the commonest total, and the two sides are otherwise
+you all of the 7s, the most common total, and the two sides are otherwise
 mirror images. Here is one fair rule. Above 7 wins for you, below 7 for
 me, each $\frac{15}{36}$, and a 7 means roll again. An unfair game that
 looks fair usually hides its advantage in a case like this, which sounds

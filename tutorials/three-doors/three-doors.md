@@ -395,8 +395,9 @@ left that one. Three doors work the same way, with smaller numbers.
 
 ## What you have now
 
-You now have a puzzle where the answer that looks right is not, and a
-way to settle such questions that does not depend on who argues best.
+You now have a puzzle where the first answer most people give does not
+match the games. You also have a way to settle such questions that does
+not depend on who argues best.
 
 The simulation convinced us, and the three cases explained why. We
 need both. A number with no argument behind it is a fact you have to

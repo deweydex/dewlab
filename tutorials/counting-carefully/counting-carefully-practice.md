@@ -173,8 +173,8 @@ There are 56 committees, and 336 ways to fill the posts.
 
 The posts are a permutation, $P(8, 3) = 8 \times 7 \times 6 = 336$. A
 committee has no posts, so each committee of 3 was counted once for each
-of its $3! = 6$ orders: $336 \div 6 = 56 = C(8, 3)$. A combination is a
-permutation divided by $r!$.
+of its $3! = 6$ orders: $336 \div 6 = 56 = C(8, 3)$. The number of combinations
+is the number of permutations divided by $r!$.
 
 </details>
 
