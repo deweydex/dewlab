@@ -1,0 +1,11 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# This closer look is the first page to say that / is Python's sign for
+# dividing. how-many-fit says it again.
+entries:
+  - term: "/"
+    kind: operator
+    definition: >
+      Divides the first number by the second. It is the sign for dividing
+      in Python.
+    example: "40 / Fraction(1, 2)"

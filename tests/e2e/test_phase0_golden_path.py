@@ -331,6 +331,40 @@ def test_the_settings_panel_switches_theme_font_and_width(page):
     assert page.input_value("#dl-texture-width") == "56"
 
 
+def test_patterns_in_pictures_show_when_asked_for_or_with_high_contrast(page):
+    # A generated picture carries its pattern layer always; the setting only
+    # decides whether it is seen (DECISIONS_LOG 7.279).
+    page.evaluate("""() => {
+        const ns = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(ns, "svg");
+        svg.id = "patterned";
+        const layer = document.createElementNS(ns, "rect");
+        layer.setAttribute("class", "dl-pattern");
+        layer.setAttribute("width", "20");
+        layer.setAttribute("height", "20");
+        svg.appendChild(layer);
+        document.body.appendChild(svg);
+    }""")
+
+    def layer_display():
+        return page.eval_on_selector("#patterned .dl-pattern", "el => getComputedStyle(el).display")
+
+    _open_settings_tab(page, "appearance")
+    assert layer_display() == "none"
+
+    page.click("#dl-settings-accessibility .dl-seg[data-texture=patterns] button[data-value=on]")
+    assert page.get_attribute("html", "data-patterns") == "on"
+    assert layer_display() != "none"
+
+    page.click("#dl-settings-accessibility .dl-seg[data-texture=patterns] button[data-value=off]")
+    assert page.get_attribute("html", "data-patterns") is None
+    assert layer_display() == "none"
+
+    page.click("#dl-settings-accessibility .dl-seg[data-texture=contrast] button[data-value=high]")
+    assert layer_display() != "none"
+    page.click("#dl-settings-accessibility .dl-seg[data-texture=contrast] button[data-value=normal]")
+
+
 def test_no_chrome_height_is_published_when_nothing_sits_above_the_page(page):
     """The status line and anchored jumps measure from this. With no bar
     above the page it has to read as zero, not the stylesheet's default —

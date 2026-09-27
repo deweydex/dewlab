@@ -1,0 +1,72 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: scientific notation
+    kind: concept
+    definition: >
+      Scientific notation writes a number as a front number times a power
+      of ten, like 7.3 × 10³. The front number has exactly one digit, not
+      0, before the point. The power counts how many places the point
+      moves.
+  - term: multiplying in scientific notation
+    kind: formula
+    definition: >
+      We multiply the front numbers and add the powers: (2 × 10³) × (3 ×
+      10²) = 6 × 10⁵. Adding the powers is the rule for joining two stacks.
+      If the front number is 10 or more, we move the point one place and
+      add 1 to the power.
+  - term: "e, as in 2.59e10"
+    kind: concept
+    definition: >
+      The e in 2.59e10 is Python's short way to write "times ten to the
+      power". So 2.59e10 means 2.59 × 10¹⁰. Python prints a very big number
+      in this way itself.
+    example: "print(5.9722e24)   # 5.9722e+24"
+  - term: ":.2e"
+    kind: operator
+    definition: >
+      Writes a number in scientific notation, with 2 digits after the
+      point. The number's name goes before the colon, inside f"{ }".
+      Change the 2 to get more digits or fewer.
+    example: 'f"{mass:.2e}"   # 5.97e+24'
+  - term: mass
+    kind: concept
+    definition: >
+      Mass is how much stuff is in a thing. We measure it in kilograms
+      (kg).
+  - term: nanometre
+    kind: concept
+    definition: >
+      A nanometre (nm) is 10⁻⁹ metres, a billionth of a metre. Many viruses
+      are between 20 and 300 nm across.
+  - term: volume
+    kind: concept
+    definition: >
+      Volume is the amount of space a thing fills. We can measure it in
+      cubic metres.
+  - term: density
+    kind: concept
+    definition: >
+      Density is how much mass is in each cubic metre of a thing. The
+      Earth's density is about 5513 kg in each cubic metre. The mass of a
+      thing is its volume times its density.
+  - term: light-minute
+    kind: concept
+    definition: >
+      A light-minute is the distance light travels in one minute, about
+      1.8 × 10⁷ km. It is a distance, even though its name has a time in
+      it.
+  - term: astronomical unit
+    kind: concept
+    definition: >
+      An astronomical unit (AU) is the average distance from the Earth to
+      the Sun. It is about 1.496 × 10⁸ km.
+  - term: light-day
+    kind: concept
+    definition: >
+      A light-day is the distance light travels in one day. It is about
+      2.59 × 10¹⁰ km, or about 173 AU.
+  - term: light-year
+    kind: concept
+    definition: >
+      A light-year is the distance light travels in one year. Like a
+      light-minute, it is a distance, not a time.

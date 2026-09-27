@@ -1,0 +1,38 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: power
+    kind: concept
+    definition: >
+      A power is a short way to write a number multiplied by itself. 2⁵
+      means five 2s multiplied together: 2 × 2 × 2 × 2 × 2. We say "two to
+      the power of five".
+  - term: base
+    kind: concept
+    definition: >
+      The base is the big number in a power, like the 2 in 2⁵. It is the
+      number being multiplied.
+  - term: exponent
+    kind: concept
+    definition: >
+      The exponent is the small raised number in a power, like the 5 in
+      2⁵. It counts how many times the base appears in the multiplying.
+      It is a count, so 2³ is 2 × 2 × 2 = 8, not 2 × 3.
+  - term: long way
+    kind: concept
+    definition: >
+      The long way writes a power with every number in it: 2 × 2 × 2. The
+      short way writes the same power as 2³. The two ways mean exactly the
+      same thing.
+  - term: golden beads
+    kind: concept
+    definition: >
+      The golden beads are counting beads from Montessori classrooms. There
+      is a single bead, a bar of 10, a square of 100 and a cube of 1000.
+      Each shape is ten of the shape before it, so they show 10¹, 10² and
+      10³.
+  - term: "**"
+    kind: operator
+    definition: >
+      Finds a power in Python. Python cannot write a small raised number,
+      so it uses two stars. 2 ** 3 means 2³.
+    example: "2 ** 3   # 8"

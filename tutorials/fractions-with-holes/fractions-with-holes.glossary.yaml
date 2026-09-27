@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: algebra
+    kind: concept
+    definition: >
+      Algebra is the part of maths that uses letters for numbers. A letter
+      works in the same way as a shape like ♡. In algebra, a × b is often
+      written ab.
+  - term: algebraic fraction
+    kind: concept
+    definition: >
+      An algebraic fraction is a fraction with a letter or a shape in it,
+      like 1/a or 2/♡. It adds, multiplies and divides in the same way as
+      a fraction with numbers.
+  - term: "1/a + 1/b"
+    kind: formula
+    definition: >
+      To add 1/a and 1/b, cut both into slices of the same size. Then the
+      whole has a × b slices. So 1/a + 1/b = (b + a)/(a × b).

@@ -396,7 +396,7 @@ The edge of a cube has a usual way too: edge(8) is $8^{1/3}$.
 
 The page *Undoing a square: square roots, the side of a square* had one more
 sign: $\sqrt{9}$. It is
-called the *square root* of 9, and it is side(9). So halfway(9),
+called the *square root*{.term} of 9, and it is side(9). So halfway(9),
 side(9), $9^{1/2}$ and $\sqrt{9}$ are four names for one number, 3.
 You can keep writing halfway when it feels calmer.
 

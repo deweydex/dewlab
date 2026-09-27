@@ -1,0 +1,32 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: area
+    kind: concept
+    definition: >
+      The area of a shape is how much flat space it covers. We count it in
+      small squares. A square with a side of 3 has an area of 3 × 3 = 9.
+  - term: diagonal
+    kind: concept
+    definition: >
+      A diagonal is a line from one corner of a square to the opposite
+      corner. The diagonal of one small square is side(2), about 1.414.
+  - term: digit
+    kind: concept
+    definition: >
+      A digit is one of the ten signs 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9. We
+      write every number with digits. 1.414 has four digits.
+  - term: Decimal()
+    kind: function
+    python: decimal.Decimal
+    definition: >
+      Makes a decimal that Python multiplies exactly, the way you would on
+      paper. Write the number in quotes, so Python keeps its digits exactly
+      as you wrote them. The line from decimal import Decimal comes first.
+    example: 'Decimal("1.414") * Decimal("1.414")'
+  - term: surd
+    kind: concept
+    definition: >
+      A surd is a number like side(2), whose digits never end and never
+      repeat. No fraction is ever exactly equal to it. √2 is a surd, and so
+      is √8, which is 2 × √2.
+    example: "print(2 ** 0.5)   # side(2): 1.4142135623730951"

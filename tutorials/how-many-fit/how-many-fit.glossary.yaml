@@ -1,0 +1,26 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "divided by, ÷"
+    kind: concept
+    definition: >
+      Divided by is written ÷. 10 ÷ 2 asks how many 2s fit in 10. The
+      answer is 5.
+  - term: partner, reciprocal
+    kind: concept
+    definition: >
+      The partner of a fraction is the fraction turned over. The partner
+      of 2/3 is 3/2. Its usual name is the reciprocal. A fraction times
+      its partner is always 1.
+  - term: dividing by a fraction
+    kind: formula
+    definition: >
+      To divide by a fraction, multiply by its partner. 2 ÷ 2/3 is the
+      same as 2 × 3/2. Both are 3.
+  - term: ZeroDivisionError
+    kind: keyword
+    python: ZeroDivisionError
+    definition: >
+      ZeroDivisionError is the error Python shows when you divide by 0. No
+      number of empty slices makes a pizza. So there is no answer to
+      print.
+    example: "print(1 / 0)"

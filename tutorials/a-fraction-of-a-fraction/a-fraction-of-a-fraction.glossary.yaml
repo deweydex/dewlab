@@ -1,0 +1,27 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: column
+    kind: concept
+    definition: >
+      A column is a tall strip, from the top to the bottom. A square cut
+      into 3 columns has 3 tall strips.
+  - term: row
+    kind: concept
+    definition: >
+      A row is a wide strip, from one side to the other. A square cut
+      into 2 rows has 2 wide strips.
+  - term: of
+    kind: concept
+    definition: >
+      Between two numbers, of means times. Half of 10 is 1/2 × 10, which
+      is 5. Half of a half is 1/2 × 1/2, which is 1/4.
+  - term: multiplying fractions
+    kind: formula
+    definition: >
+      To multiply two fractions, multiply the tops together. Then
+      multiply the bottoms together. 2/3 × 3/4 = 6/12, which is 1/2.
+  - term: "*"
+    kind: operator
+    definition: >
+      Multiplies. It is the times sign in Python.
+    example: "Fraction(2, 3) * Fraction(3, 4)"

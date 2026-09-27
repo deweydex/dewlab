@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: negative number
+    kind: concept
+    definition: >
+      A negative number is a number below zero, like −3. We say "minus
+      three". On a thermometer, −3 is three degrees below zero.
+  - term: "negative power, ♡⁻ᵃ = 1/♡ᵃ"
+    kind: formula
+    definition: >
+      A negative power is one over the power: ♡⁻³ is 1/♡³. It comes from a
+      division where the bottom has more hearts, like ♡²/♡⁵. The minus sign
+      says that the hearts are on the bottom.
+    example: "10 ** -2   # 0.01"
+  - term: decimal
+    kind: concept
+    definition: >
+      A decimal is a number with a point in it, like 0.01. It is another
+      way to write a fraction. The places after the point count tenths,
+      then hundredths.

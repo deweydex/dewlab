@@ -16,7 +16,7 @@ hearts on the top and 5 hearts on the bottom.
 $$\frac{\heartsuit^2}{\heartsuit^5} = \frac{\heartsuit \times \heartsuit}{\heartsuit \times \heartsuit \times \heartsuit \times \heartsuit \times \heartsuit}$$
 
 In *Dividing powers: crossing out pairs*, we crossed out a heart on the
-top with a heart on the bottom. To *cross out* is to draw a line
+top with a heart on the bottom. To *cross out*{.term} is to draw a line
 through something. In the picture, every pair is crossed out.
 
 <img src="cancel-two-over-five.svg" alt="A fraction made of hearts. On the top, 2 hearts. On the bottom, 5 hearts. The 2 hearts on the top and the first 2 hearts on the bottom are crossed out, in pairs. 3 hearts on the bottom are not crossed out.">

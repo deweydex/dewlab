@@ -159,6 +159,15 @@
   }
 }
 
+/* Patterns in pictures (DECISIONS_LOG 7.279). A generated picture can
+ * carry a copy of each tinted area filled with stripes or dots
+ * (dev/graphics/palette.py, add_patterns), so a reader who cannot tell
+ * the tints apart can still tell the parts apart. The copy is hidden
+ * unless the reader asks for it, or chooses high contrast. */
+.dl-pattern { display: none; }
+:root[data-patterns="on"] .dl-pattern,
+:root[data-contrast="high"] .dl-pattern { display: inline; opacity: 0.55; }
+
 :root[data-motion="reduced"] *,
 :root[data-motion="reduced"] *::before,
 :root[data-motion="reduced"] *::after {
