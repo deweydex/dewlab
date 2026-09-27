@@ -1,7 +1,7 @@
 ---
 title: "The perceptron: a model that learns from its mistakes"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.27.1
 covers:
   a-model-that-starts-out-wrong:
     covers: [CMPS-LO7]
@@ -12,6 +12,13 @@ covers:
     covers: [CMPS-LO11]
   what-the-model-learned:
     covers: [CMPS-LO7]
+  your-world:
+    touches: [CMPS-LO7, CMPS-LO11]
+worlds:
+  living-systems: Tracks in the snow, a bird's footprint or a fox's pawprint.
+  queues-and-crowds: People seen from above, in a row at a counter or in a single-file queue.
+  spread: A disease on a map, along a road or out in four directions from a town.
+  space-and-physics: Meteor streaks on a camera, falling to the left or to the right.
 ---
 
 # The perceptron: a model that learns from its mistakes
@@ -69,6 +76,12 @@ In the code, `predict()` does those three steps. `zip(weights, pixels)`
 pairs each weight with its pixel, as in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 The last line returns 1 if the total is above zero, and 0 if it is not.
+
+Steps 1 and 2 are the *dot product* from
+[Matrix multiplication: rows times columns](tutorial:multiplying-grids).
+The weights and the pixels are two lists of the same length, each pair
+is multiplied, and the results are added up. So the whole model is one
+row of weights, times the picture as a column, plus the bias.
 
 What do you think the model will say for each picture, with every weight
 at zero?
@@ -195,11 +208,14 @@ it made 21 corrections.
 After that, every epoch changes nothing. Every example in `train` is
 already correct, so `error` is zero every time, and no weight moves.
 
-This loop is the *simulation*. A simulation runs a model again and
-again, and lets each run change what the next run sees. The model itself
-is nine numbers and a rule. When we run that rule over and over, and let
-each pass change the next one, a fixed formula starts to behave like
-learning.
+This loop is called *training*: it fits the model to the examples. It
+has something in common with the simulations in this series. It runs
+one rule again and again, and lets each pass change the next. But a
+simulation's result is a picture of what might happen, such as a queue
+or an estimate of π. Training's result is the model itself: nine
+weights and a bias that now make good decisions. The model is nine
+numbers and a rule. Training is what turns that fixed formula into
+something that behaves like learning.
 
 ### Your turn
 
@@ -339,6 +355,358 @@ these units, one feeding the next, and a smoother rule than "above zero
 or not". It also needs a way to divide the blame for a mistake among
 all those layers. And a single perceptron like ours has a hard limit.
 It cannot learn some patterns at all, however many examples it sees.
+
+## Your world
+
+Can the same model learn to tell apart two other shapes? Each world
+below has its own pair, and the cell makes twenty messy pictures of
+them, with two pixels flipped in each. It also keeps every other
+picture with two flips as a test. Can you write
+`train_perceptron(examples, learning_rate=0.5, epochs=10)`? It runs the
+training loop from this page on `examples`, starting from zero, and
+returns the weights and the bias.
+
+<div class="dl-world" data-world="living-systems">
+
+Tracks in fresh snow: a bird's footprint, three toes shaped like a Y, or a fox's pawprint, four pads at the corners.
+
+```python exec
+id: your-world-1--living-systems
+BIRD = [1, 0, 1,
+        0, 1, 0,
+        0, 1, 0]    # a bird's footprint: label 1
+
+FOX = [1, 0, 1,
+       0, 0, 0,
+       1, 0, 1]    # a fox's pawprint: label 0
+
+random.seed(1)
+world_train = []
+for _ in range(10):
+    world_train.append((noisy(BIRD, 2), 1))
+    world_train.append((noisy(FOX, 2), 0))
+random.shuffle(world_train)
+
+world_seen = [pixels for pixels, label in world_train]
+world_test = []
+for shape, label in [(BIRD, 1), (FOX, 0)]:
+    for spots in combinations(range(9), 2):
+        pixels = list(shape)
+        for i in spots:
+            pixels[i] = 1 - pixels[i]
+        if pixels not in world_seen:
+            world_test.append((pixels, label))
+
+
+def score(weights, bias, examples):
+    """How many of the examples the model gets right."""
+    return sum(1 for pixels, label in examples if predict(weights, bias, pixels) == label)
+
+
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    # Your code here.
+```
+
+```hint
+Start with `weights = [0.0] * 9` and `bias = 0.0`. Then the loop from
+"Running it again and again", without the accuracy list. End with
+`return weights, bias`.
+```
+
+```inputs
+score(*train_perceptron(world_train), world_train)
+score(*train_perceptron(world_train), world_test)
+len(world_test)
+```
+
+```solution
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    weights = [0.0] * 9
+    bias = 0.0
+    for _ in range(epochs):
+        for pixels, label in examples:
+            error = label - predict(weights, bias, pixels)
+            for i in range(9):
+                weights[i] += learning_rate * error * pixels[i]
+            bias += learning_rate * error
+    return weights, bias
+---
+Trained, the model gets all 20 training pictures right, and 43 of the 50 it never saw. The two tracks differ in 4 pixels, so two flips can meet in the middle: a picture two flips from the footprint can also be two flips from the pawprint. 4 of the test pictures are like that, and they appear with both labels. No model could get all of those right.
+```
+
+</div>
+
+<div class="dl-world" data-world="queues-and-crowds">
+
+People seen from above: standing in a row along a counter, or waiting one behind the other in a single-file queue.
+
+```python exec
+id: your-world-1--queues-and-crowds
+ROW = [0, 0, 0,
+       1, 1, 1,
+       0, 0, 0]    # people in a row: label 1
+
+QUEUE = [0, 1, 0,
+         0, 1, 0,
+         0, 1, 0]    # people in a single-file queue: label 0
+
+random.seed(1)
+world_train = []
+for _ in range(10):
+    world_train.append((noisy(ROW, 2), 1))
+    world_train.append((noisy(QUEUE, 2), 0))
+random.shuffle(world_train)
+
+world_seen = [pixels for pixels, label in world_train]
+world_test = []
+for shape, label in [(ROW, 1), (QUEUE, 0)]:
+    for spots in combinations(range(9), 2):
+        pixels = list(shape)
+        for i in spots:
+            pixels[i] = 1 - pixels[i]
+        if pixels not in world_seen:
+            world_test.append((pixels, label))
+
+
+def score(weights, bias, examples):
+    """How many of the examples the model gets right."""
+    return sum(1 for pixels, label in examples if predict(weights, bias, pixels) == label)
+
+
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    # Your code here.
+```
+
+```hint
+Start with `weights = [0.0] * 9` and `bias = 0.0`. Then the loop from
+"Running it again and again", without the accuracy list. End with
+`return weights, bias`.
+```
+
+```inputs
+score(*train_perceptron(world_train), world_train)
+score(*train_perceptron(world_train), world_test)
+len(world_test)
+```
+
+```solution
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    weights = [0.0] * 9
+    bias = 0.0
+    for _ in range(epochs):
+        for pixels, label in examples:
+            error = label - predict(weights, bias, pixels)
+            for i in range(9):
+                weights[i] += learning_rate * error * pixels[i]
+            bias += learning_rate * error
+    return weights, bias
+---
+Trained, the model gets 19 of the 20 training pictures right, not all of them, and 46 of the 52 it never saw. The one it misses is a picture that appears in the training set twice, once as a row and once as a queue: two flips from each shape made the same picture. No model could get both copies right. The two shapes differ in only 4 pixels, which is why that can happen.
+```
+
+</div>
+
+<div class="dl-world" data-world="spread">
+
+A disease on a map of towns: spreading along a road, or out from one town in four directions.
+
+```python exec
+id: your-world-1--spread
+ROAD = [0, 0, 0,
+        1, 1, 1,
+        0, 0, 0]    # along a road: label 1
+
+FOUR_WAYS = [0, 1, 0,
+             1, 1, 1,
+             0, 1, 0]    # out in four directions: label 0
+
+random.seed(1)
+world_train = []
+for _ in range(10):
+    world_train.append((noisy(ROAD, 2), 1))
+    world_train.append((noisy(FOUR_WAYS, 2), 0))
+random.shuffle(world_train)
+
+world_seen = [pixels for pixels, label in world_train]
+world_test = []
+for shape, label in [(ROAD, 1), (FOUR_WAYS, 0)]:
+    for spots in combinations(range(9), 2):
+        pixels = list(shape)
+        for i in spots:
+            pixels[i] = 1 - pixels[i]
+        if pixels not in world_seen:
+            world_test.append((pixels, label))
+
+
+def score(weights, bias, examples):
+    """How many of the examples the model gets right."""
+    return sum(1 for pixels, label in examples if predict(weights, bias, pixels) == label)
+
+
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    # Your code here.
+```
+
+```hint
+Start with `weights = [0.0] * 9` and `bias = 0.0`. Then the loop from
+"Running it again and again", without the accuracy list. End with
+`return weights, bias`.
+```
+
+```inputs
+score(*train_perceptron(world_train), world_train)
+score(*train_perceptron(world_train), world_test)
+len(world_test)
+```
+
+```solution
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    weights = [0.0] * 9
+    bias = 0.0
+    for _ in range(epochs):
+        for pixels, label in examples:
+            error = label - predict(weights, bias, pixels)
+            for i in range(9):
+                weights[i] += learning_rate * error * pixels[i]
+            bias += learning_rate * error
+    return weights, bias
+---
+Trained, the model gets all 20 training pictures right, but only 29 of the 45 it never saw. The two shapes differ in only 2 pixels. Two flips, at the top and bottom middle, turn the road into the four directions exactly. 10 of the test pictures could have come from either shape, and they appear with both labels. The model is not careless here: the pictures do not hold enough to tell the two apart.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-and-physics">
+
+A camera's picture of a meteor streak: falling to the left, from top-left to bottom-right, or to the right.
+
+```python exec
+id: your-world-1--space-and-physics
+LEFT = [1, 0, 0,
+        0, 1, 0,
+        0, 0, 1]    # a streak falling to the left: label 1
+
+RIGHT = [0, 0, 1,
+         0, 1, 0,
+         1, 0, 0]    # a streak falling to the right: label 0
+
+random.seed(1)
+world_train = []
+for _ in range(10):
+    world_train.append((noisy(LEFT, 2), 1))
+    world_train.append((noisy(RIGHT, 2), 0))
+random.shuffle(world_train)
+
+world_seen = [pixels for pixels, label in world_train]
+world_test = []
+for shape, label in [(LEFT, 1), (RIGHT, 0)]:
+    for spots in combinations(range(9), 2):
+        pixels = list(shape)
+        for i in spots:
+            pixels[i] = 1 - pixels[i]
+        if pixels not in world_seen:
+            world_test.append((pixels, label))
+
+
+def score(weights, bias, examples):
+    """How many of the examples the model gets right."""
+    return sum(1 for pixels, label in examples if predict(weights, bias, pixels) == label)
+
+
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    # Your code here.
+```
+
+```hint
+Start with `weights = [0.0] * 9` and `bias = 0.0`. Then the loop from
+"Running it again and again", without the accuracy list. End with
+`return weights, bias`.
+```
+
+```inputs
+score(*train_perceptron(world_train), world_train)
+score(*train_perceptron(world_train), world_test)
+len(world_test)
+```
+
+```solution
+def train_perceptron(examples, learning_rate=0.5, epochs=10):
+    """The training loop, as a function: returns the weights and the bias."""
+    weights = [0.0] * 9
+    bias = 0.0
+    for _ in range(epochs):
+        for pixels, label in examples:
+            error = label - predict(weights, bias, pixels)
+            for i in range(9):
+                weights[i] += learning_rate * error * pixels[i]
+            bias += learning_rate * error
+    return weights, bias
+---
+Trained, the model gets all 20 training pictures right, and 38 of the 50 it never saw. The two streaks share the centre and differ in the 4 corners, so two flips from each can meet in the middle. 4 of the test pictures are like that, and appear with both labels. The rest of its misses are its own.
+```
+
+</div>
+
+## Lab bench
+
+Every number the training uses is named at the top of the cell. Change
+them, run it, and see what happens.
+
+```python exec
+id: lab-bench-1
+FLIPS = 3             # pixels switched in each messy picture
+PER_SHAPE = 10        # messy training pictures of each shape
+LEARNING_RATE = 0.5
+EPOCHS = 10
+SEED = 1              # change it for a different set of training pictures
+
+random.seed(SEED)
+lab_train = []
+for _ in range(PER_SHAPE):
+    lab_train.append((noisy(PLUS, FLIPS), 1))
+    lab_train.append((noisy(CROSS, FLIPS), 0))
+random.shuffle(lab_train)
+
+lab_weights, lab_bias = [0.0] * 9, 0.0
+for epoch in range(1, EPOCHS + 1):
+    for pixels, label in lab_train:
+        error = label - predict(lab_weights, lab_bias, pixels)
+        for i in range(9):
+            lab_weights[i] += LEARNING_RATE * error * pixels[i]
+        lab_bias += LEARNING_RATE * error
+    right = sum(1 for pixels, label in lab_train if predict(lab_weights, lab_bias, pixels) == label)
+    print(f"after epoch {epoch}: {right} of {len(lab_train)} training pictures right")
+
+lab_seen = [pixels for pixels, label in lab_train]
+lab_test = []
+for shape, label in [(PLUS, 1), (CROSS, 0)]:
+    for spots in combinations(range(9), FLIPS):
+        pixels = list(shape)
+        for i in spots:
+            pixels[i] = 1 - pixels[i]
+        if pixels not in lab_seen:
+            lab_test.append((pixels, label))
+right = sum(1 for pixels, label in lab_test if predict(lab_weights, lab_bias, pixels) == label)
+print(f"never seen: {right} of {len(lab_test)} right")
+```
+
+Choose one of these questions, or ask one of your own:
+
+1. Set `FLIPS = 4`. The plus and the cross differ in 8 pixels, so four
+   flips from each can now meet in the middle. What happens to the
+   score on the pictures it never saw?
+2. Set `PER_SHAPE = 2`. How well does a model trained on four pictures
+   do on the ones it never saw?
+3. Try five different values of `SEED`. How much does the never-seen
+   score depend on which pictures it trained on?
+4. Does training for 100 epochs, not 10, change the never-seen score?
 
 ## Where to read more
 

@@ -2,13 +2,18 @@
 title: "Monte Carlo simulation: estimating π with random darts — Practice"
 practice_for: counting-darts
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.27.1
+worlds:
+  living-systems: Turtle hatchlings racing to the sea.
+  queues-and-crowds: The riders on a theme-park ride, and their birthdays.
+  spread: A disease passed on at a meeting.
+  space-and-physics: Meteors in the same minute of a shower.
 ---
 
 # Monte Carlo simulation: estimating π with random darts — Practice
 
-The answers are hidden in folds under each problem. Try each problem
-yourself before you open its fold.
+Each answer is hidden until you open it. Write something down first,
+even a guess, and then open the answer to compare.
 
 Every problem here uses the same three steps, with different details:
 
@@ -16,18 +21,34 @@ Every problem here uses the same three steps, with different details:
 2. Decide which points land in the part whose area you want.
 3. Multiply the fraction that landed there by the area you threw at.
 
-The answers set seeds so that your numbers can match. If you do not use
-the same seed, expect your last two digits to be different from the ones
-printed. If your answer is different in the *first* digit, the problem is
-probably in the code, not in your luck.
+Where a problem asks you to write a function, it takes a `seed` and sets
+it first, so your numbers and the answer's can be compared row by row.
+
+## Tools
 
 ```python exec
-id: setup-1
+id: tools-1
 import random
 import math
 
+
 def inside_circle(x, y):
     return x * x + y * y <= 1
+
+
+def estimate_pi(n, seed=0):
+    """Throw n darts at the unit square; return 4 x the fraction inside."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.random()
+        y = random.random()
+        if inside_circle(x, y):
+            hits += 1
+    return 4 * hits / n
+
+
+print(estimate_pi(100))
 ```
 
 ## The same idea, rearranged
@@ -61,80 +82,113 @@ code happen there.
 
 </details>
 
-**2.** Estimate the area under the curve $y = x^2$, between 0 and 1.
-Throw darts at the unit square, and count the darts that fall below the
-curve. The exact answer is $1/3$. How close do you get with 20,000
-darts?
+**2.** Can you write `area_under_square(n, seed)`? It estimates the
+area under the curve $y = x^2$, between 0 and 1, by throwing `n` darts
+at the unit square and counting the ones below the curve. The exact
+answer is $1/3$.
 
 ```python exec
 id: the-same-idea-rearranged-1
-hint: A dart at (x, y) is below the curve when y <= x*x. Everything else is the tutorial's loop with that one comparison swapped in.
+def area_under_square(n, seed):
+    """The share of n darts in the unit square that land below y = x^2."""
+    # Your code here.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-import random
-random.seed(4)
-
-n = 20000
-hits = 0
-for _ in range(n):
-    x, y = random.random(), random.random()
-    if y <= x * x:
-        hits += 1
-
-print(hits / n)        # 0.33685
-print(1 / 3)           # 0.3333...
+```hint
+A dart at `(x, y)` is below the curve when `y <= x * x`. Take `x` first
+and then `y`, each from `random.random()`, as the tutorial did.
 ```
 
-With 20,000 darts, this is off by about 0.0035. That is the accuracy
-the square-root rule predicts, and no better.
+```inputs
+area_under_square(1000, 4)
+area_under_square(20000, 4)
+area_under_square(200000, 4)
+```
 
-Measuring an area this way is called *Monte Carlo integration*, and it is
-the reason the method matters. Nobody needs it for $x^2$, because calculus gives
-$1/3$ exactly, in one line. But some curves have no formula for the area
-under them. For those, calculus cannot give an exact answer, and this
-code still works without any change.
+```solution
+def area_under_square(n, seed):
+    """The share of n darts in the unit square that land below y = x^2."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x, y = random.random(), random.random()
+        if y <= x * x:
+            hits += 1
+    return hits / n
+---
+With 20,000 darts, 0.33685, off by about 0.0035: the accuracy the
+square-root rule predicts, and no better. With 200,000, 0.334715.
+Measuring an area this way is called *Monte Carlo integration*. Nobody
+needs it for $x^2$, because calculus gives $1/3$ in one line. But some
+curves have no formula for the area under them, and this code works on
+them without any change.
+```
 
-</details>
-
-**3.** Estimate the area of the quarter-ellipse where
-$x^2 + (y/0.5)^2 \le 1$, inside the unit square. The exact answer is
-$\pi ab / 4$, with $a = 1$ and $b = 0.5$.
+**3.** Change one line of your function to estimate the area of the
+quarter-ellipse where $x^2 + (y/0.5)^2 \le 1$, inside the unit square.
+The exact answer is $\pi \times 1 \times 0.5 / 4 \approx 0.3927$.
 
 ```python exec
 id: the-same-idea-rearranged-2
-hint: Only the test changes: x*x + (y / 0.5) ** 2 <= 1. Work out the exact value from the formula first, so you have something to compare against.
+def quarter_ellipse(n, seed):
+    """The share of n darts in the unit square inside the quarter-ellipse."""
+    # Your code here.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-import random
-random.seed(5)
-
-n = 20000
-hits = 0
-for _ in range(n):
-    x, y = random.random(), random.random()
-    if x * x + (y / 0.5) ** 2 <= 1:
-        hits += 1
-
-print(hits / n)                  # 0.3917
-print(math.pi * 1 * 0.5 / 4)     # 0.39270
+```hint
+Only the test changes: `x * x + (y / 0.5) ** 2 <= 1`.
 ```
 
-This time the estimate is off by only about 0.001. That is better than
-the last problem, with the same number of darts. Ellipses are not easier.
-This is the same unreliable accuracy that the tutorial's table showed,
-and on this run it happened to give a good result.
+```inputs
+quarter_ellipse(20000, 5)
+round(quarter_ellipse(20000, 5) - math.pi * 0.5 / 4, 4)
+```
+
+```solution
+def quarter_ellipse(n, seed):
+    """The share of n darts in the unit square inside the quarter-ellipse."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x, y = random.random(), random.random()
+        if x * x + (y / 0.5) ** 2 <= 1:
+            hits += 1
+    return hits / n
+---
+0.3917, off by only about 0.001: better than problem 2, with the same
+number of darts. Ellipses are not easier. This is the unreliable
+accuracy the tutorial's table showed, and on this run it happened to
+come out well.
+```
+
+**4.** With 10 darts, the estimate is $4 \times \text{hits} / 10$, and
+`hits` is a whole number from 0 to 10. This cell finds the estimate,
+out of all of those, that is closest to π.
+
+```python exec
+id: the-same-idea-rearranged-3
+closest = min((4 * hits / 10 for hits in range(11)), key=lambda e: abs(e - math.pi))
+print(closest)
+```
+
+```predict
+type: number
+
+What will the cell print?
+```
+
+<details class="dl-answer"><summary>why</summary>
+
+It prints 3.2, from 8 hits. Ten darts can only give 0, 0.4, 0.8 and so
+on, up to 4. No seed, however lucky, can do better than 3.2. More darts
+make the steps between possible answers smaller, and that is one reason
+more darts can get closer.
 
 </details>
 
 ## How much work is enough
 
-**4.** The tutorial said that a hundred thousand darts give roughly two
+**5.** The tutorial said that a hundred thousand darts give roughly two
 correct decimal places. Each extra decimal place costs about a hundred
 times as many darts.
 
@@ -156,7 +210,7 @@ useful for questions that have no better method at all.
 
 </details>
 
-**5.** Now time it, instead of guessing.
+**6.** Now time it, instead of guessing.
 
 1. How long do 100,000 darts take here?
 2. What does that predict for a billion?
@@ -197,46 +251,50 @@ square-root way that the tutorial showed.
 
 ## A shape with no formula
 
-**6.** Two unit circles, one centred at $(0, 0)$ and one at $(1, 0)$,
-overlap. The overlap is shaped like a lens. Estimate its area.
+**7.** Two unit circles, one centred at $(0, 0)$ and one at $(1, 0)$,
+overlap in a shape like a lens. Can you write `lens_area(n, seed)`? It
+throws `n` darts at the rectangle from $x = -1$ to $2$ and $y = -1$ to
+$1$, using `random.uniform`, and estimates the lens's area.
 
 ```python exec
 id: a-shape-with-no-formula-1
-hint: A point is in the lens when it is inside both circles. Choose a rectangle big enough to hold the lens: x from -1 to 2 and y from -1 to 1 will do. Throw darts across it with random.uniform. Remember to multiply by that rectangle's area, not by 1.
+def lens_area(n, seed):
+    """The estimated area where the two circles overlap."""
+    # Your code here.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-```python
-import random
-random.seed(6)
-
-n = 50000
-hits = 0
-for _ in range(n):
-    x = random.uniform(-1, 2)
-    y = random.uniform(-1, 1)
-    if x * x + y * y <= 1 and (x - 1) ** 2 + y * y <= 1:
-        hits += 1
-
-box_area = 3 * 2
-print(hits / n * box_area)     # 1.2259
+```hint
+A point is in the lens when it is inside both circles:
+`x * x + y * y <= 1 and (x - 1) ** 2 + y * y <= 1`. Take `x` first, with
+`random.uniform(-1, 2)`, then `y`. The rectangle's area is 3 × 2.
 ```
 
-The estimate is about 1.226. If you want to check it, the exact answer is
+```inputs
+lens_area(1000, 6)
+lens_area(50000, 6)
+```
+
+```solution
+def lens_area(n, seed):
+    """The estimated area where the two circles overlap."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.uniform(-1, 2)
+        y = random.uniform(-1, 1)
+        if x * x + y * y <= 1 and (x - 1) ** 2 + y * y <= 1:
+            hits += 1
+    box_area = 3 * 2
+    return hits / n * box_area
+---
+50,000 darts give about 1.226. The exact answer is
 $2\cos^{-1}(1/2) - \sin(2\cos^{-1}(1/2)) \approx 1.2284$. That formula
-takes real work to find, and it only works for this one arrangement of
-two equal circles.
+takes real work to find, and it only works for two equal circles this
+far apart. The loop works for any shape: change the condition, and it
+measures a different one.
+```
 
-That difference is the whole argument for the method. The formula gets
-harder to find for two circles of different sizes. It gets much harder
-for three circles. For a blob of any shape, there is no formula at all.
-The eight lines of the loop work for any shape. Change the condition, and they
-measure a different shape, with no new mathematics.
-
-</details>
-
-**7.** Think about the rectangle you throw darts at.
+**8.** Think about the rectangle you throw darts at.
 
 - What goes wrong if the rectangle does not fully contain the shape you
   are measuring?
@@ -262,9 +320,160 @@ notices.
 
 </details>
 
+## Your world
+
+**9.** Darts can measure a chance as well as an area: the share of
+trials in which something happens.
+
+<div class="dl-world" data-world="living-systems">
+
+A turtle lays 100 eggs on a beach. Each hatchling has a chance of 0.02 of reaching the sea and growing up. What is the chance that at least one does? Can you write `chance_any(k, p, trials, seed)`? In each trial it checks `k` hatchlings, each with chance `p`, and it returns the share of trials in which at least one made it.
+
+```python exec
+id: your-world-1--living-systems
+def chance_any(k, p, trials, seed):
+    """The share of trials in which at least one of k chances, each p, comes true."""
+    # Your code here.
+```
+
+```hint
+In each trial, `any(random.random() < p for _ in range(k))` is `True` when at least one of the `k` checks comes true.
+```
+
+```inputs
+chance_any(100, 0.02, 10000, 1)
+chance_any(1, 0.02, 10000, 1)
+chance_any(5, 0.2, 10000, 1)
+```
+
+```solution
+def chance_any(k, p, trials, seed):
+    """The share of trials in which at least one of k chances, each p, comes true."""
+    random.seed(seed)
+    yes = 0
+    for _ in range(trials):
+        if any(random.random() < p for _ in range(k)):
+            yes += 1
+    return yes / trials
+---
+0.8701: at least one hatchling of 100 makes it, in 87 trials in 100. The exact answer is $1 - 0.98^{100} \approx 0.867$. One chance in fifty for each, and still very likely overall: that is how a species with long odds for each young survives.
+```
+
+</div>
+
+<div class="dl-world" data-world="queues-and-crowds">
+
+23 riders queue for a ride. What is the chance that two of them share a birthday? Can you write `chance_shared(people, days, trials, seed)`? In each trial, each person gets a day from 1 to `days` at random, and the function returns the share of trials in which two people got the same day.
+
+```python exec
+id: your-world-1--queues-and-crowds
+def chance_shared(people, days, trials, seed):
+    """The share of trials in which two of the people share a day."""
+    # Your code here.
+```
+
+```hint
+`[random.randint(1, days) for _ in range(people)]` gives each person a day. Two share a day when the set of days is smaller than the list.
+```
+
+```inputs
+chance_shared(23, 365, 10000, 1)
+chance_shared(5, 365, 10000, 1)
+chance_shared(10, 60, 10000, 1)
+```
+
+```solution
+def chance_shared(people, days, trials, seed):
+    """The share of trials in which two of the people share a day."""
+    random.seed(seed)
+    shared = 0
+    for _ in range(trials):
+        days_given = [random.randint(1, days) for _ in range(people)]
+        if len(set(days_given)) < people:
+            shared += 1
+    return shared / trials
+---
+0.5039, and the exact answer is about 0.507: with only 23 riders, two share a birthday about half the time. Most people guess far lower. With 5 riders the chance is about 0.02.
+```
+
+</div>
+
+<div class="dl-world" data-world="spread">
+
+At a meeting, one person has an illness, and each of the 5 people they talk to catches it with a chance of 0.2. What is the chance that at least one of them catches it? Can you write `chance_any(k, p, trials, seed)`? In each trial it checks `k` contacts, each with chance `p`, and it returns the share of trials in which at least one caught it.
+
+```python exec
+id: your-world-1--spread
+def chance_any(k, p, trials, seed):
+    """The share of trials in which at least one of k chances, each p, comes true."""
+    # Your code here.
+```
+
+```hint
+In each trial, `any(random.random() < p for _ in range(k))` is `True` when at least one of the `k` checks comes true.
+```
+
+```inputs
+chance_any(5, 0.2, 10000, 1)
+chance_any(1, 0.2, 10000, 1)
+chance_any(100, 0.02, 10000, 1)
+```
+
+```solution
+def chance_any(k, p, trials, seed):
+    """The share of trials in which at least one of k chances, each p, comes true."""
+    random.seed(seed)
+    yes = 0
+    for _ in range(trials):
+        if any(random.random() < p for _ in range(k)):
+            yes += 1
+    return yes / trials
+---
+0.6782, and the exact answer is $1 - 0.8^5 \approx 0.672$. One contact is caught about one time in five; five contacts, two times in three. Each extra contact adds less than the one before, because the illness only has to pass on once.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-and-physics">
+
+Ten meteors appear during an hour, each in a minute chosen at random. What is the chance that two appear in the same minute? Can you write `chance_shared(people, days, trials, seed)`? In each trial, each of `people` meteors gets a minute from 1 to `days` at random, and the function returns the share of trials in which two got the same minute.
+
+```python exec
+id: your-world-1--space-and-physics
+def chance_shared(people, days, trials, seed):
+    """The share of trials in which two of the people share a day."""
+    # Your code here.
+```
+
+```hint
+`[random.randint(1, days) for _ in range(people)]` gives each meteor a minute. Two share a minute when the set of minutes is smaller than the list.
+```
+
+```inputs
+chance_shared(10, 60, 10000, 1)
+chance_shared(5, 60, 10000, 1)
+chance_shared(23, 365, 10000, 1)
+```
+
+```solution
+def chance_shared(people, days, trials, seed):
+    """The share of trials in which two of the people share a day."""
+    random.seed(seed)
+    shared = 0
+    for _ in range(trials):
+        days_given = [random.randint(1, days) for _ in range(people)]
+        if len(set(days_given)) < people:
+            shared += 1
+    return shared / trials
+---
+0.5526, and the exact answer is about 0.548: with ten meteors in sixty minutes, two share a minute more often than not. It is the same question as two people sharing a birthday: 23 people and 365 days give about a half too.
+```
+
+</div>
+
 ## Thinking it through
 
-**8.** Someone suggests a tidier method. Instead of throwing darts at
+**10.** Someone suggests a tidier method. Instead of throwing darts at
 random, lay a regular grid of points over the square, and count the
 points inside the curve. There is no randomness, no wobble, and the same
 answer every time. Is that better?
@@ -292,7 +501,7 @@ easy to draw. It is not the case where the method is most useful.
 
 </details>
 
-**9.** You run the dart estimate and get 3.19. A colleague runs exactly the
+**11.** You run the dart estimate and get 3.19. A colleague runs exactly the
 same code and gets 3.11. Who has made a mistake?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -314,3 +523,42 @@ different answers means a real bug. Different seeds with different
 answers is normal.
 
 </details>
+
+## From earlier
+
+**12.** From [Comprehensions, grids and
+aliasing](tutorial:comprehensions-and-grids). Can you write
+`estimate_pi_short(n, seed=0)` with a single `sum(1 for ... if ...)`,
+in place of the loop? It should give exactly the tutorial's numbers.
+
+```python exec
+id: from-earlier-1
+def estimate_pi_short(n, seed=0):
+    """estimate_pi, with a comprehension in place of the loop."""
+    # Your code here.
+```
+
+```hint
+`sum(1 for _ in range(n) if ...)` counts the darts that pass the test.
+Draw `x` before `y`, with `random.random() ** 2 + random.random() ** 2
+<= 1`, so the numbers come in the same order as in the loop.
+```
+
+```inputs
+estimate_pi_short(100)
+estimate_pi_short(100000)
+```
+
+```solution
+def estimate_pi_short(n, seed=0):
+    """estimate_pi, with a comprehension in place of the loop."""
+    random.seed(seed)
+    hits = sum(1 for _ in range(n) if random.random() ** 2 + random.random() ** 2 <= 1)
+    return 4 * hits / n
+---
+3.04 and 3.14844, exactly the tutorial's. The same seed and the same
+order of random numbers give the same darts, however the code is
+written. Draw `y` before `x` and the numbers still match, because
+$x^2 + y^2$ is the same whichever comes first. A test that treats `x`
+and `y` differently, such as problem 2's, would change.
+```
