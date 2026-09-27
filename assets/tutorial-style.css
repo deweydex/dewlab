@@ -4779,3 +4779,73 @@ em.term, .term em { font-style: normal; }
   font-size: 0.72rem;
   color: var(--dl-muted);
 }
+
+/* Choose your project (7.282; assets/projects.js). Cards first, each led by
+   its curious question, then the projects side by side in a table. */
+.dl-project-chooser { margin: 1.4rem 0 1.8rem; }
+.dl-project-chooser > h3 { margin-bottom: 0.3rem; }
+.dl-project-note { color: var(--dl-muted); margin: 0 0 0.9rem; }
+.dl-project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.8rem;
+}
+.dl-project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--dl-cell-border);
+  border-radius: 0.6rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  text-decoration: none;
+}
+.dl-project-card:hover,
+.dl-project-card:focus-visible {
+  border-color: var(--dl-orange);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--dl-orange);
+}
+.dl-project-card svg,
+.dl-project-card img { max-width: 100%; height: auto; max-height: 7rem; align-self: center; }
+.dl-project-question { font-size: 1.05rem; line-height: 1.35; }
+.dl-project-title { font-weight: 600; font-size: 0.92rem; color: var(--dl-link); }
+.dl-project-make { font-size: 0.85rem; color: var(--dl-muted); }
+/* The reader's own project: the width of the grid, under it. */
+.dl-project-card-own { margin-top: 0.8rem; border-style: dashed; }
+.dl-project-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+.dl-project-table caption { text-align: left; font-weight: 600; margin-bottom: 0.3rem; }
+.dl-project-table th,
+.dl-project-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.4rem 0.55rem;
+  border-top: 1px solid var(--dl-cell-border);
+}
+.dl-project-table thead th { color: var(--dl-muted); font-weight: 600; border-top: 0; }
+
+/* A project's heading opens and closes it. Closed, only the heading shows. */
+.dl-project-head { margin-bottom: 0.4rem; }
+.dl-project-toggle {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.dl-project-toggle::before {
+  content: "\25BE\00a0";
+  color: var(--dl-muted);
+}
+.dl-project-closed .dl-project-toggle::before { content: "\25B8\00a0"; }
+.dl-project-toggle:focus-visible { outline: 2px solid var(--dl-orange); outline-offset: 2px; }
+.dl-project-closed > :not(.dl-project-head) { display: none; }
+.dl-project-back { margin-top: 1rem; font-size: 0.9rem; }
+@media print {
+  .dl-project-chooser { display: none; }
+  .dl-project-closed > :not(.dl-project-head) { display: revert; }
+  .dl-project-back { display: none; }
+}

@@ -5555,3 +5555,19 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **Course file.** The series "Review Problems" is now "Capstone project", and the course description says what the capstone is.
 
 *Cost to change: small. One page rewritten under its old id, with no cells, so no new cell id becomes a contract.*
+
+---
+
+**7.282 — Choose your project: projects and worlds are two separate dials, and a choose page leads with cards, then a table, with the projects closed until chosen.** Josh, 27 September 2026, deciding the open question on #353 through a set of choices.
+
+**The model.** A world changes a task's setting; a project changes the job an idea does. A page can have either or both. The Dewey Track uses no worlds yet: each page keeps its one context. Projects appear on 9.5 and, next, on each unit's mixed page as a choice of products. Every choose page ends with a project of the reader's own, which has a brief, an empty cell and no solution to compare with.
+
+**The page.** Josh asked for a way to compare the projects that does not make the first one the default, because a reader does not want to scroll past it. The build puts a 2×2 grid of cards just before the first project, each led by its curious question, with what you make and a small picture. The project of your own is a wide card under the grid. Then comes a table with the projects side by side: the question, what you make, the maths and the data. The order is not shuffled. The projects start closed, showing only their headings; a card or a row opens that project and goes to it, and "Try another project" at its end goes back to the cards. What a reader opened, or worked in, stays open. Without JavaScript every project is open and every card is a link.
+
+**Why the heading is the control.** Each project keeps its own `##` heading, and the runtime turns it into the open-and-close button (`assets/projects.js`). The heading's anchor, the page's contents list and the `covers:` keys stay as they were, and the build needs no second title.
+
+**What counts.** One project is expected, more if you like. Nothing after the projects may rely on a particular one: the toolkit and the unit's product use only the shared opening. A project counts towards progress once one of its cells has run, on the page and on the contents page, which now carries each project's cells (`data-projects`). "Run all" and the export leave out a project the reader has not opened.
+
+**9.5.** The page's own table gave way to the generated cards and table, the four projects were wrapped, and a fifth, *A project of your own*, was added. The card pictures are drawn by `dev/graphics/dewey_units_6_10.py` from each project's own data: the page's cubic bowl, its row of pixels, Ireland's life expectancy with its least-squares line, and the walk down the two valleys. The plan's line that each project ends "in its own `check()`" was stale since #314 and now says each ends by setting what it found beside what was expected.
+
+*Cost to change: moderate. The syntax is documented in `docs/WRITING_TUTORIALS.md#choose-your-project`; the build's rules live in `page_projects()` and `project_spans()`, the page's in `assets/projects.js`, and the counting in `liveProgressCounts()` and `totalCounted()`.*

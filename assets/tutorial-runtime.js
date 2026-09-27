@@ -7,6 +7,7 @@ import {
   widgetValues, reconcileSliders, clearSliders, sliderMarkup, restoreSliders, followSlider,
 } from "./cell-widgets.js";
 import { initTermDefinitions, readDefinitionsSetting, writeDefinitionsSetting } from "./term-definitions.js";
+import { initProjects, projectOf, projectInPlay, projectStarted } from "./projects.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -2313,8 +2314,15 @@ function inHiddenWorld(element) {
   return !!element.closest(".dl-world[hidden]");
 }
 
+/* A project (7.282) the reader has neither opened nor worked in is not
+ * on show: "run all" and the export leave it alone. */
+function inProjectNotInPlay(element) {
+  const section = projectOf(element);
+  return !!section && !projectInPlay(section);
+}
+
 function visibleCells() {
-  return cells.filter((cell) => !inHiddenWorld(cell.element));
+  return cells.filter((cell) => !inHiddenWorld(cell.element) && !inProjectNotInPlay(cell.element));
 }
 
 function applyWorld(key) {
@@ -5764,8 +5772,15 @@ function progressCounts(entries) {
 }
 
 function liveProgressCounts() {
+  /* A project's cells count once the reader has run one of them (7.282),
+   * so doing one project of four does not read as a quarter done. */
+  const counted = cells.filter((cell) => {
+    if (inHiddenWorld(cell.element)) return false;
+    const section = projectOf(cell.element);
+    return !section || projectStarted(section);
+  });
   return progressCounts(
-    visibleCells().map((cell) => ({
+    counted.map((cell) => ({
       started: !!cell.outputEl.innerHTML,
       errored: !!cell.outputEl.querySelector(".dl-error"),
     }))
@@ -5804,6 +5819,23 @@ function writeProgressBadges(mode) {
   }
 }
 
+/* A choose-your-project page's total leaves out the projects the reader
+ * has not started (7.282): `data-projects` lists each project's cells. */
+function totalCounted(link, record, total) {
+  let projects;
+  try {
+    projects = JSON.parse(link.dataset.projects || "{}");
+  } catch {
+    return total;
+  }
+  const started = new Set(record.cells.filter((cell) => cell.output_html).map((cell) => cell.task_id));
+  let left = total;
+  for (const ids of Object.values(projects)) {
+    if (!ids.some((id) => started.has(id))) left -= ids.length;
+  }
+  return left;
+}
+
 function renderContentsProgress() {
   for (const badge of document.querySelectorAll(".dl-progress-badge")) badge.remove();
   if (!readProgressBadges()) return;
@@ -5818,6 +5850,7 @@ function renderContentsProgress() {
       record = null;
     }
     if (!record || !Array.isArray(record.cells)) continue;
+    const counted = totalCounted(link, record, total);
     const { done, errored } = progressCounts(
       record.cells.map((cell) => ({ started: !!cell.output_html, errored: !!cell.errored }))
     );
@@ -5825,7 +5858,7 @@ function renderContentsProgress() {
     if (ran === 0) continue;
     const badge = document.createElement("span");
     badge.className = "dl-progress-badge" + (errored ? " dl-progress-badge-errored" : "");
-    badge.textContent = `${ran}/${total}`;
+    badge.textContent = `${ran}/${counted}`;
     link.insertAdjacentElement("afterend", badge);
   }
 }
@@ -6458,6 +6491,8 @@ initContentsProgress();
 trackChromeHeight();
 trackCornerDockHeights();
 announceRestore(restoreSaved());
+// After the restore, so a project the reader already worked in opens.
+initProjects({ pageId: currentManifest.id, onChange: updateProgressSummary });
 refreshHighlightsList();
 updateProgressSummary();
 updateNotesNudge();

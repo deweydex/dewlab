@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import csv
 import io
 import math
 import re
@@ -1680,6 +1681,126 @@ def bisection_squeeze() -> str:
 
 
 # --------------------------------------------------------------------------
+# Unit 9: the choose-a-project cards (DECISIONS_LOG 7.282)
+#
+# Small pictures, one per card, of what each project ends with. No labels:
+# the card's question says what the picture shows, so each is decorative
+# (alt="") and reads at card size.
+# --------------------------------------------------------------------------
+
+TILE_W, TILE_H = 240, 110
+
+
+def _tile_drawing() -> svgwrite.Drawing:
+    return _drawing(TILE_W, TILE_H)
+
+
+def _polyline(drawing, points, *, stroke=INK, width=2.2, dash=None):
+    extra = {"stroke_dasharray": dash} if dash else {}
+    drawing.add(drawing.polyline([(round(x, 2), round(y, 2)) for x, y in points],
+                                 fill="none", stroke=stroke, stroke_width=width,
+                                 stroke_linejoin="round", stroke_linecap="round", **extra))
+
+
+def card_letter() -> str:
+    """The page's cubic bowl (start 130, pulls −60 and −50, end 110) dipping
+    below the baseline, its lowest point marked."""
+    def height(t):
+        return ((1 - t) ** 3 * 130 + 3 * t * (1 - t) ** 2 * -60
+                + 3 * t ** 2 * (1 - t) * -50 + t ** 3 * 110)
+    samples = [(i / 100, height(i / 100)) for i in range(101)]
+    low_t, low = min(samples, key=lambda point: point[1])
+    top, bottom = 130, low
+    drawing = _tile_drawing()
+
+    def at(t, y):
+        return 30 + t * (TILE_W - 60), 12 + (top - y) / (top - bottom) * (TILE_H - 30)
+
+    base_y = at(0, 0)[1]
+    _line(drawing, 14, base_y, TILE_W - 14, base_y, stroke=MUTED, width=1.3, dash="5,4")
+    _polyline(drawing, [at(t, y) for t, y in samples])
+    x, y = at(low_t, low)
+    drawing.add(drawing.circle(center=(round(x, 2), round(y, 2)), r=4.5, fill=INK))
+    return drawing.tostring()
+
+
+def card_edge() -> str:
+    """The page's row of twenty pixels, darker for less bright, with the
+    two biggest differences between neighbours marked: the stroke's edges."""
+    row = [250, 251, 249, 250, 248, 200, 90, 30, 28, 31, 29, 30, 27, 32, 85, 190, 247, 250, 251, 249]
+    differences = [row[i + 1] - row[i] for i in range(len(row) - 1)]
+    edges = sorted(range(len(differences)), key=lambda i: -abs(differences[i]))[:2]
+    drawing = _tile_drawing()
+    size = (TILE_W - 20) / len(row)
+    top = 30
+    for i, value in enumerate(row):
+        drawing.add(drawing.rect(insert=(round(10 + i * size, 2), top), size=(round(size, 2), 44),
+                                 fill=INK, fill_opacity=round((255 - value) / 255, 3),
+                                 stroke=MUTED, stroke_width=0.5))
+    for i in edges:
+        x = 10 + (i + 1) * size
+        _arrow(drawing, x, top + 44 + 28, x, top + 44 + 6, head=7, width=1.8)
+    return drawing.tostring()
+
+
+def card_best_line() -> str:
+    """Ireland's life expectancy, 1990 to 2019, from the course's copy of
+    the Our World in Data file, and its least-squares line."""
+    rows = []
+    with (TUTORIALS.parent / "data" / "life-expectancy.csv").open(newline="") as handle:
+        for record in csv.DictReader(handle):
+            if record["country"] == "Ireland" and 1990 <= int(record["year"]) <= 2019:
+                rows.append((int(record["year"]), float(record["life_expectancy"])))
+    if len(rows) != 30:
+        raise SystemExit(f"life-expectancy.csv: expected 30 Irish years, found {len(rows)}")
+    mean_x = sum(x for x, _ in rows) / len(rows)
+    mean_y = sum(y for _, y in rows) / len(rows)
+    slope = (sum((x - mean_x) * (y - mean_y) for x, y in rows)
+             / sum((x - mean_x) ** 2 for x, _ in rows))
+    low = min(y for _, y in rows) - 0.5
+    high = max(y for _, y in rows) + 0.5
+    drawing = _tile_drawing()
+
+    def at(x, y):
+        return 16 + (x - 1990) / 29 * (TILE_W - 32), 10 + (high - y) / (high - low) * (TILE_H - 20)
+
+    for x, y in rows:
+        px, py = at(x, y)
+        drawing.add(drawing.circle(center=(round(px, 2), round(py, 2)), r=3, fill=INK))
+    ends = [(x, mean_y + slope * (x - mean_x)) for x in (1990, 2019)]
+    _line(drawing, *at(*ends[0]), *at(*ends[1]), width=2.2)
+    return drawing.tostring()
+
+
+def card_downhill() -> str:
+    """The page's two valleys, x⁴ − 3x² + x + 4, and the walk from 2 with
+    rate 0.05, settling at the bottom of the right-hand valley."""
+    def rule(x):
+        return x ** 4 - 3 * x ** 2 + x + 4
+
+    def slope(x):
+        return 4 * x ** 3 - 6 * x + 1
+
+    path = [2.0]
+    for _ in range(30):
+        path.append(path[-1] - 0.05 * slope(path[-1]))
+    if abs(path[-1] - 1.131) > 0.001:
+        raise SystemExit(f"putting-the-derivative-to-work: the walk settled at {path[-1]:.4f}, not 1.131")
+    xs = [-2.0 + i * 0.02 for i in range(201)]
+    low, high = min(rule(x) for x in xs) - 0.3, rule(2.0) + 0.3
+    drawing = _tile_drawing()
+
+    def at(x, y):
+        return 14 + (x + 2) / 4 * (TILE_W - 28), 8 + (high - y) / (high - low) * (TILE_H - 16)
+
+    _polyline(drawing, [at(x, rule(x)) for x in xs], stroke=MUTED, width=2)
+    for x in path[:8] + path[-1:]:
+        px, py = at(x, rule(x))
+        drawing.add(drawing.circle(center=(round(px, 2), round(py, 2)), r=3.6, fill=INK))
+    return drawing.tostring()
+
+
+# --------------------------------------------------------------------------
 # Unit 10: programming, then and now
 # --------------------------------------------------------------------------
 
@@ -1804,6 +1925,10 @@ DIAGRAMS = {
     "rules-for-change/product-rule-rectangle.svg": the_product_rule_rectangle,
     "rules-for-change/rates-that-multiply.svg": rates_that_multiply,
     "solving-by-computing/bisection-squeeze.svg": bisection_squeeze,
+    "putting-the-derivative-to-work/card-letter.svg": card_letter,
+    "putting-the-derivative-to-work/card-edge.svg": card_edge,
+    "putting-the-derivative-to-work/card-best-line.svg": card_best_line,
+    "putting-the-derivative-to-work/card-downhill.svg": card_downhill,
     "code-other-people-can-read/one-list-two-names.svg": one_list_two_names,
     "many-languages-one-idea/from-code-to-running.svg": from_code_to_running,
 }

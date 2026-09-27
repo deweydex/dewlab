@@ -14,13 +14,49 @@ covers:
     touches: [MIT-3.7, MIT-5.12, MIT-4.2]
   project-4-walking-downhill:
     touches: [MIT-3.6, PDP-LO2]
+projects:
+  letter:
+    title: Where does the letter sit?
+    question: Why does a round letter like o hang a little below the line?
+    make: a finder for the bottom of a letter's curve
+    maths: a slope of 0, found by bisection
+    data: the bowl of a letter, drawn as a curve
+    picture: card-letter.svg
+  edge:
+    title: Finding an edge
+    question: How does a photo app see where a dark shape ends?
+    make: an edge finder for a row of pixels and a small picture
+    maths: large slopes, as differences between neighbours
+    data: a pen stroke on paper, as brightness numbers
+    picture: card-edge.svg
+  best-line:
+    title: The best line through data
+    question: How fast has life expectancy in Ireland been rising?
+    make: the line that fits the data best
+    maths: the slope of an error, set to 0 (least squares)
+    data: Ireland's life expectancy, 1990 to 2019
+    picture: card-best-line.svg
+  downhill:
+    title: Walking downhill
+    question: How can a program find the bottom of a curve by feel?
+    make: a walker that steps downhill (gradient descent)
+    maths: stepping against the slope, again and again
+    data: a curve with two valleys
+    picture: card-downhill.svg
+  own:
+    title: A project of your own
+    question: Where does something you care about turn, or change fastest?
+    make: a finder for your own rule or numbers
+    maths: flat or steep, whichever your question needs
+    data: a rule or a list of numbers you choose
+    own: true
 ---
 
 # Putting the derivative to work: choose a project
 
 You have spent three pages building one idea: the *slope*{.term} of a curve at
 a single point. You may ask what it is for. This page answers
-with four short projects, and you choose. A font designer, a photo
+with four short projects, or one of your own, and you choose. A font designer, a photo
 app, a scientist with a table of *data*{.term}, and a program that learns all
 use the same idea, and each project shows one of them. Choose one,
 or do more than one if you like. None of them needs another.
@@ -103,12 +139,7 @@ Steep means "changing fast here".
 Here are the projects. Each takes a few *cells*{.term}, and each ends with a cell
 that sets what we found beside what we expected.
 
-| Project | The question | What it uses |
-|---|---|---|
-| 1. Where does the letter sit? | How far does a round letter dip below the line? | flat: `derivative_at`, `bisect_root` |
-| 2. Finding an edge | Where does a picture change from dark to light? | steep: differences between neighbours |
-| 3. The best line through data | Which line fits Ireland's life expectancy best? | flat: the slope of an error |
-| 4. Walking downhill | How does a program find the bottom of a curve by feel? | flat, found by stepping |
+<div class="dl-project" data-project="letter">
 
 ## Project 1: Where does the letter sit?
 
@@ -186,6 +217,10 @@ run the cells again. Can you make a dip of exactly 2%? Can you make a
 curve with a top and a bottom, like the middle of a letter "s"? Then
 the slope is 0 in two places, and `bisect_root` needs a `low` and
 `high` round each one.
+
+</div>
+
+<div class="dl-project" data-project="edge">
 
 ## Project 2: Finding an edge
 
@@ -286,6 +321,10 @@ neighbours first, so that noise does not look like an edge.
 to 60. Does the rule still find only two edges? What threshold would
 you choose, and why?
 
+</div>
+
+<div class="dl-project" data-project="best-line">
+
 ## Project 3: The best line through data
 
 In the course's Our World in Data file, Ireland's life expectancy at
@@ -380,6 +419,10 @@ line to 1950 to 2023. Is one straight line still a good fit? What do
 2020 and 2021 do to it? What does the picture say that the slope alone
 does not?
 
+</div>
+
+<div class="dl-project" data-project="downhill">
+
 ## Project 4: Walking downhill
 
 Sometimes nobody can solve "slope = 0" at all, because the rule is too
@@ -457,6 +500,37 @@ steps every one of them against its slope, a little at a time.
 **Try this next:** find a start that walks to the left-hand valley,
 and a start between the valleys that walks to the right. Where is the
 line between them?
+
+</div>
+
+<div class="dl-project" data-project="own">
+
+## Project 5: A project of your own
+
+Choose something you care about that rises and falls, or that
+changes suddenly. It could be the temperature over a day, the
+brightness along a line of a photo you took, how many people are in a
+shop hour by hour, or a rule from an earlier page. Then:
+
+1. Write it as a rule, or as a list of numbers.
+2. Decide what you are looking for: a place where it is flat, a top or
+   a bottom, or a place where it is steep, a fast change.
+3. Before you run anything, guess where that place is.
+4. Find it: `derivative_at` and `bisect_root` for a rule, or
+   differences between neighbours for a list.
+5. Write one sentence that says what the place means for the thing you
+   chose.
+
+```python exec
+id: putting-own-1
+# Your rule or your numbers here.
+```
+
+There is no solution to compare with here. Set what you found beside
+your guess from step 3. If they differ, the difference is the most
+interesting part to explain.
+
+</div>
 
 <details class="dl-why"><summary>Why this way?</summary>
 

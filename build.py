@@ -266,6 +266,7 @@ MARKDOWN_WRAPPER_RE = re.compile(
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
     r'|<aside class="dl-note" id="[^"]+">'
     r'|<div class="dl-world" data-world="[a-z0-9-]+">'
+    r'|<div class="dl-project" data-project="[a-z0-9-]+">'
 )
 # A closer's challenge (#316): the language of each starter fence, and where
 # each kind opens, relative to the site root, with its button's words.
@@ -283,6 +284,11 @@ ROOT_HREF = 'href="dlroot:'
 WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
 WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
+# One project of a "choose your project" page (DECISIONS_LOG 7.282): the
+# opening tag on a line of its own, an id from the page's `projects:`
+# frontmatter, and a matching `</div>`. See project_spans().
+PROJECT_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-project" data-project="(?P<project>[^"]*)">[ \t]*$')
+PROJECT_DIV_RE = re.compile(r'<div class="dl-project" data-project="(?P<project>[a-z0-9-]+)">')
 # A run of one or more adjacent card placeholders — see place_page_cards().
 # Whitespace only between them: inside an md_in_html wrapper (the home
 # page's dl-hero) adjacent cards come out one newline apart, not two.
@@ -564,6 +570,9 @@ class Tutorial:
     app_cells: list[AppCell] = field(default_factory=list)
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
+    # A "choose your project" page's projects, each with the ids of the
+    # cells inside it, in source order (7.282). Empty on most pages.
+    project_cells: dict[str, list[str]] = field(default_factory=dict)
     notes: list[Note] = field(default_factory=list)
     # Where this page sits: every course that lists it, in courses/index.yaml
     # order, each with the series and the position. Not from the frontmatter —
@@ -1750,6 +1759,174 @@ def world_spans(body: str, path: Path, worlds: dict[str, str]) -> list[WorldSpan
     if open_span is not None:
         fail(path, f"the {open_span[1]!r} variant has no </div> to close it")
     return spans
+
+
+PROJECT_FIELDS = ("title", "question", "make", "maths", "data")
+
+
+def page_projects(meta: dict, path: Path) -> dict[str, dict]:
+    """A "choose your project" page's projects, from its `projects:`
+    frontmatter (7.282): each id, in order, with its title, the curious
+    question its card leads with, what the reader makes, the maths and the
+    data it uses, and an optional picture. `own: true` marks the project of
+    the reader's own, which gets the wide card under the grid."""
+    projects = meta.get("projects")
+    if projects is None:
+        return {}
+    if not isinstance(projects, dict) or not projects:
+        fail(path, "`projects:` lists each project as `id:` with its title, "
+                   "question, make, maths and data")
+    found: dict[str, dict] = {}
+    for key, fields in projects.items():
+        if not isinstance(key, str) or not WORLD_KEY_RE.match(key):
+            fail(path, f"project {key!r} in `projects:` is not an id like `best-line`: "
+                       "lower-case letters and digits, joined by hyphens")
+        if not isinstance(fields, dict):
+            fail(path, f"project {key!r} in `projects:` needs its fields: "
+                       + ", ".join(PROJECT_FIELDS))
+        for name in PROJECT_FIELDS:
+            if not isinstance(fields.get(name), str) or not fields[name].strip():
+                fail(path, f"project {key!r} in `projects:` has no `{name}:`")
+        picture = fields.get("picture")
+        if picture is not None and not (path.parent / str(picture)).is_file():
+            fail(path, f"project {key!r}'s picture {picture!r} is not in the tutorial's folder")
+        found[key] = {**{name: fields[name].strip() for name in PROJECT_FIELDS},
+                      "picture": picture, "own": bool(fields.get("own"))}
+    own = [key for key, fields in found.items() if fields["own"]]
+    if len(own) > 1:
+        fail(path, f"only one project can be the reader's own; {', '.join(own)} all say `own: true`")
+    if own and own[0] != list(found)[-1]:
+        fail(path, f"the reader's own project, {own[0]!r}, comes last in `projects:`")
+    return found
+
+
+def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str, tuple[int, int]]:
+    """Where each `<div class="dl-project" data-project="…">` starts and
+    ends in a page's source, the way world_spans() finds a variant: fences
+    blanked first, nested `<div>`s counted. Every project in `projects:`
+    has exactly one, in the same order, and each opens with its `##`
+    heading, which the page turns into the project's open-and-close
+    control."""
+    masked = FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
+    spans: dict[str, tuple[int, int]] = {}
+    open_span: tuple[int, str] | None = None
+    depth = 0
+    offset = 0
+    for line in masked.splitlines(keepends=True):
+        opening = PROJECT_OPEN_RE.match(line.rstrip("\n"))
+        if opening:
+            project = opening.group("project")
+            if open_span is not None:
+                fail(path, f"project {project!r} starts inside {open_span[1]!r} — "
+                           "close each with </div> first")
+            if project not in projects:
+                fail(path, f"a project div is for {project!r}, which is not in this "
+                           f"page's `projects:` ({', '.join(projects) or 'none'})")
+            if project in spans:
+                fail(path, f"project {project!r} has two divs; a project has one")
+            open_span, depth = (offset, project), 1
+        elif open_span is not None:
+            depth += len(re.findall(r"<div\b", line)) - line.count("</div>")
+            if depth <= 0:
+                start, project = open_span
+                spans[project] = (start, offset + len(line))
+                open_span = None
+        offset += len(line)
+    if open_span is not None:
+        fail(path, f"project {open_span[1]!r} has no </div> to close it")
+    missing = [key for key in projects if key not in spans]
+    if missing:
+        fail(path, f"`projects:` lists {', '.join(missing)} with no project div in the page")
+    if list(spans) != list(projects):
+        fail(path, "the project divs are not in the order `projects:` lists them")
+    for project, (start, end) in spans.items():
+        inside = body[start:end].split("\n", 1)[1].lstrip("\n")
+        if not inside.startswith("## "):
+            fail(path, f"project {project!r} opens with a `## ` heading, the title a "
+                       "reader opens it by")
+    return spans
+
+
+def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[Cell]) -> dict[str, list[str]]:
+    """Each project's cells, by id, for the progress counts (7.282)."""
+    known = {cell.id for cell in cells}
+    return {
+        project: [found for found in re.findall(r"^id:\s*(\S+)\s*$", body[start:end], re.M)
+                  if found in known]
+        for project, (start, end) in spans.items()
+    }
+
+
+def render_project_chooser(projects: dict[str, dict]) -> str:
+    """A "choose your project" page's cards and comparison table (7.282):
+    a 2×2 grid, each card led by its curious question, the reader's own
+    project as a wide card under it, then the projects side by side. Each
+    card is a link to its project, so without JavaScript it still takes
+    the reader there."""
+    def card(key: str, fields: dict) -> str:
+        # A plain local name, like an author's own <img>: inline_local_svg()
+        # puts an SVG's markup in its place later, decorative (alt="") since
+        # the card's question says what the picture shows.
+        picture = (f'<img class="dl-project-picture" src="{html.escape(str(fields["picture"]))}" alt="">'
+                   if fields["picture"] else "")
+        own = " dl-project-card-own" if fields["own"] else ""
+        return (
+            f'<a class="dl-project-card{own}" href="#project-{key}" data-project="{key}">'
+            f"{picture}"
+            f'<span class="dl-project-question">{_inline(fields["question"])}</span>'
+            f'<span class="dl-project-title">{_inline(fields["title"])}</span>'
+            f'<span class="dl-project-make">You make: {_inline(fields["make"])}</span>'
+            "</a>"
+        )
+
+    grid = "".join(card(key, fields) for key, fields in projects.items() if not fields["own"])
+    own = "".join(card(key, fields) for key, fields in projects.items() if fields["own"])
+    rows = "".join(
+        "<tr>"
+        f'<th scope="row"><a href="#project-{key}" data-project="{key}">{_inline(fields["title"])}</a></th>'
+        f'<td>{_inline(fields["question"])}</td>'
+        f'<td>{_inline(fields["make"])}</td>'
+        f'<td>{_inline(fields["maths"])}</td>'
+        f'<td>{_inline(fields["data"])}</td>'
+        "</tr>"
+        for key, fields in projects.items()
+    )
+    return (
+        '<section class="dl-project-chooser" id="dl-project-chooser" aria-labelledby="dl-project-chooser-title">'
+        '<h3 id="dl-project-chooser-title">Choose a project</h3>'
+        '<p class="dl-project-note">Pick the one you are most curious about. '
+        "One is enough, and you can come back for another.</p>"
+        f'<div class="dl-project-grid">{grid}</div>'
+        f"{own}"
+        '<div class="dl-table-wrap"><table class="dl-project-table">'
+        "<caption>The projects side by side</caption>"
+        "<thead><tr><th scope=\"col\">Project</th><th scope=\"col\">The question</th>"
+        "<th scope=\"col\">You make</th><th scope=\"col\">The maths</th>"
+        "<th scope=\"col\">It uses</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></div>"
+        "</section>"
+    )
+
+
+def place_projects(body_html: str, projects: dict[str, dict], path: Path) -> str:
+    """Give each project its anchor, and put the cards and table just before
+    the first one (7.282)."""
+    if not projects:
+        return body_html
+    if body_html.count('<div class="dl-project"') != len(projects):
+        fail(path, "a `<div class=\"dl-project\">` tag shares its line with other text — "
+                   "put each opening tag on a line of its own")
+    first = True
+
+    def anchor(match: re.Match) -> str:
+        nonlocal first
+        key = match.group("project")
+        chooser = render_project_chooser(projects) + "\n" if first else ""
+        first = False
+        own = ' data-project-own="true"' if projects[key]["own"] else ""
+        return f'{chooser}<div class="dl-project" data-project="{key}" id="project-{key}"{own}>'
+
+    return PROJECT_DIV_RE.sub(anchor, body_html)
 
 
 def extract_blocks(
@@ -4332,9 +4509,13 @@ def progress_attrs(tutorial: Tutorial) -> str:
     than a "0/0"."""
     if not tutorial.cells:
         return ""
+    # A choose-your-project page's projects count only once started (7.282),
+    # so the badge needs to know which cells are whose.
+    projects = (f' data-projects="{html.escape(json.dumps(tutorial.project_cells), quote=True)}"'
+                if tutorial.project_cells else "")
     return (
         f' data-id="{html.escape(tutorial.slug, quote=True)}"'
-        f' data-cells="{len(tutorial.cells)}"'
+        f' data-cells="{len(tutorial.cells)}"{projects}'
     )
 
 
@@ -5328,6 +5509,8 @@ def load(path: Path) -> Tutorial:
     body = expand_snapshot_dates(body, meta, path)
     worlds = page_worlds(meta, path)
     spans = world_spans(body, path, worlds)
+    projects = page_projects(meta, path)
+    projects_at = project_spans(body, path, projects) if projects else {}
     (stripped, cells, blocks, hints, site_editors, questions, app_cells,
      solutions, inputs_blocks, challenges) = extract_blocks(body, path, spans)
     stripped, maths = extract_math(stripped)
@@ -5339,6 +5522,7 @@ def load(path: Path) -> Tutorial:
                               page=id_of(path), version=str(meta.get("version", "")))
     body_html = place_challenges(body_html, challenges, id_of(path), str(meta.get("title", "")))
     body_html = place_worlds(body_html, spans, worlds, path)
+    body_html = place_projects(body_html, projects, path)
     body_html, notes = extract_notes(body_html, path)
     if any(cell.predict for cell in cells):
         body_html += SURPRISES_HTML
@@ -5370,6 +5554,7 @@ def load(path: Path) -> Tutorial:
         anchors=anchors,
         toc=toc,
         notes=notes,
+        project_cells=project_cell_ids(body, projects_at, cells),
     )
 
 
