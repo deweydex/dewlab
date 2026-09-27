@@ -1,5 +1,5 @@
 ---
-title: "Undoing a square: the side of a square"
+title: "Undoing a square: square roots, the side of a square"
 year: "2026-2027"
 version: 2026.09.27.1
 worlds:
@@ -8,7 +8,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Undoing a square: the side of a square
+# Undoing a square: square roots, the side of a square
 
 Here are some beads, laid out in squares. Under each square is the
 number of beads in it, and the number of beads along one side.

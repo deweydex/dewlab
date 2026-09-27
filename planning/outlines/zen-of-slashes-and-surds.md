@@ -258,11 +258,9 @@ Kinds of problem to mix, beyond "simplify this":
 - **Closer to 0, to a half, or to 1?** Estimation before calculation, for
   number sense.
 - **Where does it go on the line?** Placing fractions on a number line.
-- **Spot what happened.** A worked problem by the module's recurring
-  character, who makes the mistakes and takes the blame
-  (`PEDAGOGICAL_STYLE_GUIDE.md#plain-and-alive`). Which step changed the
-  amount? The reader finds it without anyone being wrong but the
-  character.
+- **Spot what happened.** A worked problem by "somebody", or an unnamed
+  worked line (7.271: no recurring character). Which step changed the
+  amount? The reader finds it, and the mistake belongs to no one.
 - **Two paths, one answer.** From worksheet 8, question 5: simplify
   $(z^{12})^{1/6}$ two ways and see they agree.
 - **Looks scary, is simple.** From the mixed challenge: a tangle that
@@ -371,6 +369,11 @@ friendly one enough to want something shorter.
 | $49^{1/2}$ | **halfway(49)**: half of the multiplying | $\heartsuit^{1/2} \cdot \heartsuit^{1/2} = \heartsuit$, from strand B's rule |
 | $\log_{10} 1000$ | **hops(10 → 1000)**: how many ×10 hops from 1 to 1000 | a row of hops, $1 \to 10 \to 100 \to 1000$ |
 | $\log_2 16$ | **folds(16)**: how many folds make 16 pieces | the folded paper from strand B |
+
+**Titles** put the friendly phrase first and the usual term straight
+after the colon (7.271): "Counting hops: logarithms, how many times did
+we multiply?". A reader who searches for the term finds the page, and
+the page itself still shows the sign last.
 
 The friendly names are written in plain text and in Python the same way
 (`side(49)`, `hops(10, 1000)`), so a reader can check one in a cell. The
@@ -511,10 +514,13 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   should still meet the early pages before the rest is written. What
   the pilot should answer: are the steps small enough, does the calm
   check help or annoy, and do readers use the notation switch.
-- **The recurring character.** The style guide allows one who makes the
-  mistakes. This module has none yet, so its "what went differently here"
-  problems use "somebody" or an unnamed worked line. A character would
-  make them warmer.
+- **No recurring character** (7.271). The style guide allows one who
+  makes the mistakes, but this module uses "somebody" or an unnamed
+  worked line instead. The mistake belongs to no one, and there is no
+  name to translate.
+- **Colour words** (open, 7.271). Some pictures tell parts apart only by
+  colour. The pages name the parts by colour, and the pictures carry no
+  pattern. Worth asking again if a reader reports it.
 - **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
   in the site's theme colours, so they read in light, dark and high
   contrast.

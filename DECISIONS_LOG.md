@@ -5361,3 +5361,12 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Checked, and not.** Every cell and number was run in CPython, and the pages were built and viewed in a browser. The cells did not run in the browser, because this environment cannot reach Pyodide. `how-many-fit` has one cell that fails on purpose (`1 / 0`), and its prose says so first.
 
 *Cost to change: the sixteen new page ids and their question ids become a contract once a class has used them. A title is one line in a page's frontmatter. A picture is one entry in `dev/graphics/zen.py`'s `DIAGRAMS`.*
+
+**7.271 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
+
+1. **Strand C titles: the friendly name first, then the search term.** A title opens with the friendly phrase and puts the usual term straight after the colon: "Undoing a square: square roots, the side of a square", "Sides that never end: surds, the square root of 2", "Halfway powers: fractional exponents, two half steps make one", "Counting hops: logarithms, how many times did we multiply?". A reader who searches for "square root" or "logarithm" finds the page, and the scary word is still not the first thing on it. The page bodies are unchanged: inside a page, the sign still comes last (7.254). Later strand C pages follow the same pattern.
+2. **Colour words: left for now.** The pictures keep their theme colours with no pattern, and the prose keeps naming parts by colour. The question stays open in the outline, and it is worth asking again if a reader reports it.
+3. **No recurring character.** "What went differently here?" problems keep using "somebody" or an unnamed worked line. Nobody to like or dislike, nothing to translate, and the mistake belongs to no one. The outline's note that a character "would make them warmer" goes.
+4. **What to write next: all of it.** The rest of strand C (C4, C6, C7), the views from the top (A9, B8), strand B's mixed challenge (B7), the mixed sets, and strands D and E.
+
+*Cost to change: a title is one line in a page's frontmatter, plus the few places another page quotes it.*

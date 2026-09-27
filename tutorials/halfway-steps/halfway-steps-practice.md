@@ -1,5 +1,5 @@
 ---
-title: "Halfway powers: two half steps make one — Practice"
+title: "Halfway powers: fractional exponents, two half steps make one — Practice"
 practice_for: halfway-steps
 year: "2026-2027"
 version: 2026.09.27.1
@@ -9,7 +9,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Halfway powers: two half steps make one — Practice
+# Halfway powers: fractional exponents, two half steps make one — Practice
 
 Small problems on one idea. halfway(♡) is the number that, multiplied
 by itself, gives ♡. Many of these problems come from section 7 of a
