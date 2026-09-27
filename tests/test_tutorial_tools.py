@@ -71,6 +71,90 @@ class TestStreamedOutput:
         assert cell.html.count("dl-stdout") == 2
 
 
+class TestInput:
+    """`input()` stays Python's own. `_begin()` replaces `sys.stdin` with a
+    `_Stdin`, which reads a cell's typed lines, or waits for the reader
+    through whatever the page set with `_set_live_reader()`."""
+
+    @pytest.fixture(autouse=True)
+    def no_reader(self):
+        tt._set_live_reader(None)
+        yield
+        tt._set_live_reader(None)
+
+    @contextmanager
+    def reading(self, stdin):
+        # pytest puts its own sys.stdin back after fixture setup, as with
+        # sys.stdout in streaming(), so the swap `_begin` makes is repeated.
+        saved = sys.stdin
+        sys.stdin = stdin
+        try:
+            with streaming():
+                yield
+        finally:
+            sys.stdin = saved
+
+    def test_typed_lines_are_read_in_order_and_shown_after_their_prompts(self, cell):
+        with self.reading(tt._Stdin(["Ada", "36"])):
+            name = input("Name? ")
+            age = int(input("Age? "))
+        cell.close_stream()
+        assert (name, age) == ("Ada", 36)
+        assert "Name? Ada\nAge? 36\n" in cell.html
+        assert cell.html.count("dl-stdout") == 1
+
+    def test_typed_lines_keep_their_spaces_and_an_empty_line_is_an_empty_string(self, cell):
+        with self.reading(tt._Stdin([" look ", ""])):
+            assert input() == " look "
+            assert input() == ""
+
+    def test_when_the_typed_lines_run_out_input_raises_as_it_would_at_the_end_of_a_file(self, cell):
+        with self.reading(tt._Stdin(["only one"])):
+            input()
+            with pytest.raises(EOFError, match="EOF when reading a line"):
+                input()
+
+    def test_the_live_reader_is_given_the_prompt_and_the_cell(self, cell):
+        asked = []
+
+        def reader(prompt, cell_id):
+            asked.append((prompt, cell_id))
+            return "north"
+
+        tt._set_live_reader(reader)
+        with self.reading(tt._Stdin()):
+            print("You are in a cave.")
+            move = input("Where now? ")
+        cell.close_stream()
+        assert move == "north"
+        assert asked == [("Where now? ", "test-cell")]
+        assert "Where now? north\n" in cell.html
+
+    def test_a_reader_that_gives_nothing_back_is_the_end_of_the_input(self, cell):
+        tt._set_live_reader(lambda prompt, cell_id: None)
+        with self.reading(tt._Stdin()), pytest.raises(EOFError):
+            input("Name? ")
+
+    def test_with_nothing_on_the_page_able_to_wait_input_says_so(self, cell):
+        with self.reading(tt._Stdin()), pytest.raises(EOFError, match="has not let the page wait"):
+            input("Name? ")
+
+    def test_a_stdin_that_may_not_wait_never_asks_the_reader(self, cell):
+        tt._set_live_reader(lambda prompt, cell_id: pytest.fail("asked the reader"))
+        with self.reading(tt._Stdin(live=False)), pytest.raises(EOFError, match="cannot wait"):
+            input()
+
+    def test_begin_replaces_stdin_and_end_puts_it_back(self):
+        sink = tt._RecordingSink()
+        tt._begin("c", sink, typed=["yes"])
+        try:
+            assert isinstance(sys.stdin, tt._Stdin)
+            assert sys.stdin.readline() == "yes\n"
+        finally:
+            tt._end(None)
+        assert sys.stdin is sys.__stdin__
+
+
 class TestRenderValue:
     def test_none_renders_nothing(self, cell):
         tt._render_value(None)
@@ -1237,6 +1321,30 @@ class TestCompareWithASolution:
         assert rows[0]["solution"] == {"shown": "no error"}
         assert rows[2]["yours"] == {"shown": "0"}
         assert rows[2]["solution"] == {"shown": "7"}
+
+    ASKS = ("def ask_shift():\n"
+            "    while True:\n"
+            "        text = input('Shift: ')\n"
+            "        if text.isdigit() and 1 <= int(text) <= 25:\n"
+            "            return int(text)\n")
+
+    def test_typed_lines_start_again_for_each_side_and_each_case(self):
+        import asyncio
+        import json
+
+        exec(self.ASKS, tt._page_globals)
+        inputs = json.dumps([{"expr": "ask_shift()", "label": None}] * 2)
+        typed = json.dumps(["seven", "30", "7"])
+        result = json.loads(asyncio.run(
+            tt.compare(self.ASKS, inputs, "ask_shift()", typed)))
+        for row in result["tests"] + result["rows"]:
+            assert row["yours"] == {"shown": "7"}
+            assert row["solution"] == {"shown": "7"}
+
+    def test_without_typed_lines_input_raises_in_the_table(self):
+        exec(self.ASKS, tt._page_globals)
+        row = self.run(None, ["ask_shift()"])["rows"][0]
+        assert row["yours"]["error"].startswith("EOFError: The comparison cannot wait")
 
     def test_printing_goes_nowhere_and_a_long_value_is_cut(self, capsys):
         rows = self.run("print('from the solution')\n", ["list(range(1000))"])["rows"]

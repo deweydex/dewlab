@@ -159,6 +159,12 @@ Python the moment it is clicked, with no cell running, and the other has to
 read a picked file's bytes; both need Python on the page's own thread. They
 work in a downloaded copy, which runs Python there.
 
+**`input()` waits for you, as it does on a tutorial page.** A cell that
+calls it shows a box after the question. Type your answer, then press
+Enter. Stop ends the wait. If the Notebook could not start its background
+worker, Python runs on the page's own thread, and the browser asks with
+its own small window instead.
+
 `numpy`, `pandas` and `matplotlib` are available without importing
 them, and you can still `import` them if you want. The Notebook keeps that
 import visible on purpose, so a cell you copy somewhere else still makes

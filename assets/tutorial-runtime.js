@@ -10,6 +10,9 @@ import { initTermDefinitions, readDefinitionsSetting, writeDefinitionsSetting } 
 import {
   initMyWords, readMarksSetting, writeMarksSetting, wordFromSelection, sentenceAround, readWords,
 } from "./my-words.js";
+import {
+  createInputBuffer, answerLine, endLine, stillWaiting, askInOutput, askInDialog,
+} from "./input-wait.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -3799,6 +3802,7 @@ async function bootMainThread(manifest) {
   toolsMT = pyodideMT.pyimport("tutorial_tools");
   inspectModuleMT = pyodideMT.pyimport("inspect");
   builtinsModuleMT = pyodideMT.pyimport("builtins");
+  toolsMT._set_live_reader(askInDialog);
   /* A downloaded page cannot fetch data/index.json or the snapshots from
    * disk, so write_standalone() put the ones this page declares in its
    * manifest. A hosted page has neither, and fetches them. */
@@ -3872,6 +3876,8 @@ function queryRowsMT(sql, params) {
 
 let worker = null;
 let interruptBuffer = null;
+let inputBuffer = null; // where input() waits for a typed line (assets/input-wait.js)
+let inputBox = null; // the box a waiting input() put in a cell's output
 let jediReadyWorker = false;
 let nextRequestId = 1;
 const pendingRequests = new Map(); // id -> resolve
@@ -3885,6 +3891,26 @@ function workerRequest(type, payload) {
 }
 
 const openStreams = new Map(); // cellId -> {el, cssClass}
+
+/* input() is waiting in the Worker: a box goes where the cell's printed
+ * text has got to, and Enter sends the line back. */
+function askForLine(cellId, prompt) {
+  const cell = cells.find((c) => c.id === cellId) || customCells.find((c) => c.id === cellId);
+  if (!cell || !inputBuffer || !stillWaiting(inputBuffer)) return;
+  const buffer = inputBuffer;
+  const asked = askInOutput(cell.outputEl, openStreams.get(cellId), prompt, (line) => {
+    inputBox = null;
+    answerLine(buffer, line);
+  });
+  openStreams.set(cellId, asked.stream);
+  inputBox = asked.box;
+}
+
+function stopWaitingForLine() {
+  inputBox?.remove();
+  inputBox = null;
+  if (inputBuffer) endLine(inputBuffer);
+}
 
 /* A widget rendered by Worker-run Python has no way to report itself back:
  * `_MessageSink.append_html()` returns None, so the Python side holds no
@@ -3954,6 +3980,8 @@ function ensureWorker(manifest) {
       jediReadyWorker = true;
     } else if (msg.type === "output") {
       applyOutputEvent(msg.cellId, msg.kind, msg.cssClass, msg.text, msg.markup);
+    } else if (msg.type === "input-request") {
+      askForLine(msg.cellId, msg.prompt);
     } else if (msg.type === "response") {
       const pending = pendingRequests.get(msg.id);
       if (!pending) return;
@@ -3979,6 +4007,8 @@ async function bootWorker(manifest) {
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
     interruptBuffer = new SharedArrayBuffer(4);
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
+    inputBuffer = createInputBuffer();
+    worker.postMessage({ type: "set-input-buffer", buffer: inputBuffer });
   }
   await loadToolkit();
 
@@ -3992,6 +4022,8 @@ function requestInterrupt() {
   if (!interruptBuffer) return;
   /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
   new Int32Array(interruptBuffer)[0] = 2;
+  /* After the interrupt is set, so a waiting input() wakes into it. */
+  stopWaitingForLine();
 }
 
 async function runCellWorker(cell) {
@@ -4334,6 +4366,9 @@ function initCompare(cell, spec) {
     solution: typeof spec.solution === "string" ? spec.solution : null,
     inputs: Array.isArray(spec.inputs) ? spec.inputs : [],
     testsCell: spec.tests || null,
+    /* A ```typed block: what input() reads here, since nobody can type
+     * during a comparison. */
+    typed: Array.isArray(spec.typed) ? JSON.stringify(spec.typed) : null,
   };
   box.querySelector(".dl-btn-compare").addEventListener("click", () => compareCell(cell));
   for (const input of box.querySelectorAll(".dl-compare-guess input")) {
@@ -4355,13 +4390,13 @@ function restoreGuesses(cell, guesses) {
   });
 }
 
-async function compareMainThread(solution, inputs, tests) {
-  return JSON.parse(await toolsMT.compare(solution, inputs, tests));
+async function compareMainThread(solution, inputs, tests, typed) {
+  return JSON.parse(await toolsMT.compare(solution, inputs, tests, typed));
 }
 
 async function compareCell(cell) {
   if (running) return;
-  const { box, solution, inputs, testsCell } = cell.compare;
+  const { box, solution, inputs, testsCell, typed } = cell.compare;
   const status = box.querySelector(".dl-compare-status");
   const button = box.querySelector(".dl-btn-compare");
   button.disabled = true;
@@ -4374,8 +4409,8 @@ async function compareCell(cell) {
       : null;
     const payload = JSON.stringify(inputs);
     const result = currentManifest.standalone
-      ? await compareMainThread(solution, payload, tests)
-      : await workerRequest("compare", { solution, inputs: payload, tests });
+      ? await compareMainThread(solution, payload, tests, typed)
+      : await workerRequest("compare", { solution, inputs: payload, tests, typed });
     renderComparison(cell, result);
     status.textContent = result.solutionError
       ? `The solution could not run here (${result.solutionError}). That is a problem in the page, not in your code.`
@@ -5049,6 +5084,8 @@ async function restartPython() {
     }
     worker = null;
     interruptBuffer = null;
+    stopWaitingForLine();
+    inputBuffer = null;
     jediReadyWorker = false;
     for (const { reject } of pendingRequests.values()) {
       reject(new Error("Python was restarted before this finished."));

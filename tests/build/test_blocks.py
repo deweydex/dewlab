@@ -1,5 +1,5 @@
-"""Blocks attached to a cell (#312): a ```solution fence and an ```inputs
-fence, and a cell of the reader's own tests. Each belongs to the exec cell
+"""Blocks attached to a cell (#312): a ```solution fence, an ```inputs
+fence, a ```typed fence, and a cell of the reader's own tests. Each belongs to the exec cell
 above it, or to the one its `for:` line names. The build renders a solution
 as a closed fold and the inputs as a comparison table, puts what the
 comparison needs in the manifest, and runs every solution before a reader
@@ -30,6 +30,23 @@ Python's own `sum()` is an **accumulator**.
 INPUTS = """```inputs
 total_of([1, 2, 3])
 total_of([])     # an empty list
+```
+"""
+
+ASKING = """```python exec
+id: ask-shift
+def ask_shift():
+    while True:
+        text = input("Shift, 1 to 25: ")
+        if text.isdigit() and 1 <= int(text) <= 25:
+            return int(text)
+```
+"""
+
+TYPED = """```typed
+seven
+30
+7
 ```
 """
 
@@ -87,6 +104,21 @@ class TestRendering:
             assert word not in table.lower()
 
 
+    def test_a_comparison_says_what_it_types_for_input(self, repo):
+        write(repo, ASKING + TYPED + "```inputs\nask_shift()\n```\n")
+        b.build()
+        page = built(repo)
+        assert '<p class="dl-compare-typed">' in page
+        assert "<code>seven</code> <code>30</code> <code>7</code>" in page
+
+    def test_a_typed_block_leaves_nothing_on_the_page_without_a_comparison(self, repo):
+        write(repo, ASKING + TYPED)
+        b.build()
+        page = built(repo).split("dewlab-manifest")[0]
+        assert "dl-compare-typed" not in page
+        assert "seven" not in page
+
+
 class TestManifest:
     def test_the_comparison_travels_with_the_cell(self, repo):
         write(repo, CELL + SOLUTION + INPUTS)
@@ -113,6 +145,11 @@ class TestManifest:
         b.build()
         assert cell_spec(built(repo), "add-up")["tests"] == "my-tests"
 
+    def test_typed_lines_travel_exactly_as_written(self, repo):
+        write(repo, ASKING + "```typed\n\n Attack \n\nquit\n\n```\n")
+        b.build()
+        assert cell_spec(built(repo), "ask-shift")["typed"] == [" Attack ", "", "quit"]
+
     def test_for_attaches_a_block_to_another_cell(self, repo):
         other = "```python exec\nid: another\nx = 1\n```\n"
         write(repo, CELL + other + SOLUTION.replace("```solution\n", "```solution\nfor: add-up\n"))
@@ -137,6 +174,10 @@ class TestMistakes:
         (CELL + "```python exec\nid: t\ntests: nowhere\n```\n", "no other cell"),
         (CELL + "```python exec\nid: t1\ntests: add-up\n```\n"
                 "```python exec\nid: t2\ntests: add-up\n```\n", "one cell of tests"),
+        (TYPED, "a typed fence has no exec cell"),
+        (CELL + "```typed\n\n```\n", "no lines in it"),
+        (CELL + TYPED + TYPED, "two typed blocks"),
+        ("```sql exec\nid: q\nSELECT 1;\n```\n" + TYPED, "only a Python cell"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, match):
         write(repo, body)
@@ -189,6 +230,25 @@ class TestTheBuildRunsEverySolution:
         monkeypatch.setattr(b, "SOLUTION_CELL_SECONDS", 1)
         endless = "```python exec\nid: endless\nwhile True:\n    pass\n```\n"
         write(repo, endless + CELL + SOLUTION + INPUTS)
+        b.build()
+
+    def test_a_solution_that_asks_reads_the_typed_lines(self, repo):
+        solution = ("```solution\ndef ask_shift():\n    while True:\n"
+                    "        text = input('Shift: ')\n"
+                    "        if text.isdigit():\n            return int(text)\n"
+                    "print(ask_shift())\n```\n")
+        write(repo, ASKING + TYPED + solution + "```inputs\nask_shift()\n```\n")
+        b.build()
+
+    def test_a_solution_that_asks_with_nothing_typed_fails_the_build(self, repo):
+        write(repo, ASKING + "```solution\nname = input('Name: ')\n```\n")
+        with pytest.raises(b.BuildError, match="give the cell a ```typed block"):
+            b.build()
+
+    def test_a_cell_that_asks_runs_its_typed_lines_before_a_later_solution(self, repo):
+        asks = ("```python exec\nid: asks\nshift = int(input('Shift: '))\n```\n"
+                "```typed\n7\n```\n")
+        write(repo, asks + CELL + "```solution\nassert shift == 7\n```\n")
         b.build()
 
     def test_a_page_without_solutions_runs_nothing(self, repo, monkeypatch):
