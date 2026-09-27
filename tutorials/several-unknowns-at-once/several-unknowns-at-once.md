@@ -1,7 +1,7 @@
 ---
 title: "Several unknowns at once: simultaneous equations"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   two-facts-two-unknowns:
     covers: [MIT-1.12]
@@ -306,27 +306,23 @@ title: some steps
 divisions, and not after?
 ```
 
-The tests start with the server log. The last one builds two equations
-from an answer we choose, and checks that the tool finds that answer
-again. Until your function is written, the first test stops with an
-error.
+How does your `solve_simultaneous` compare with a solution? The table
+below runs the same calls on your function and on one way to write it,
+side by side. The first row is the server log. The last row builds two
+equations from an answer we choose, $(1.5, 4)$, and asks the tool to
+find that answer again. Where a row is different, try that call on its
+own.
 
-```python exec
-id: several-unknowns-toolkit-tests
-assert solve_simultaneous(1, 1, 230, 12, 5, 2060) == (130, 100)
-assert solve_simultaneous(1, 1, 10, 2, -1, 5) == (5, 5)
-assert solve_simultaneous(2, 4, 10, 1, 2, 5) is None
-
-x, y = solve_simultaneous(3, -2, 3 * 1.5 - 2 * 4, 1, 5, 1.5 + 5 * 4)
-assert close_enough(x, 1.5) and close_enough(y, 4)
-print("solve_simultaneous keeps its promise.")
+```inputs
+for: several-unknowns-toolkit
+solve_simultaneous(1, 1, 230, 12, 5, 2060)                  # the server log
+solve_simultaneous(1, 1, 10, 2, -1, 5)
+solve_simultaneous(2, 4, 10, 1, 2, 5)                       # the determinant is 0
+solve_simultaneous(3, -2, 3 * 1.5 - 2 * 4, 1, 5, 1.5 + 5 * 4)   # built from the answer (1.5, 4)
 ```
 
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too.
-
-```python
+```solution
+for: several-unknowns-toolkit
 def solve_simultaneous(a1, b1, c1, a2, b2, c2):
     """Return the pair (x, y) where a1x + b1y = c1 and a2x + b2y = c2.
 
@@ -341,9 +337,7 @@ def solve_simultaneous(a1, b1, c1, a2, b2, c2):
     return (x, y)
 ```
 
-</details>
-
-In the server-log test, the determinant is $1 \times 5 - 12 \times 1 = -7$,
+In the server log's row, the determinant is $1 \times 5 - 12 \times 1 = -7$,
 the same 7 that elimination divided by, with its sign turned round.
 
 <aside class="dl-note" id="several-unknowns-note-cramer">
@@ -356,8 +350,8 @@ set of points. The practice page asks the same question of a letter.
 
 ## When there is no single answer
 
-If you have not written `solve_simultaneous` yet, open the answer under
-the tests and copy it into the stub.
+If you have not written `solve_simultaneous` yet, open the solution
+under the table and copy it into the stub.
 
 Two people read a backup log to find the size of one photo and one
 song. The first reads that 3 photos and 2 songs made 80 MB. The second

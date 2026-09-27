@@ -9,7 +9,10 @@ symbols, the way a Montessori classroom hands a child fraction circles and
 golden beads before it writes anything down
 (planning/outlines/zen-of-slashes-and-surds.md). These are those things,
 drawn: a pizza cut into equal slices, a wall of fraction bars, a sheet of
-paper folded again and again, and the golden beads.
+paper folded again and again, and the golden beads. Later strands add a
+number line, a grid cut two ways for a fraction of a fraction, rows of
+hearts to count and cancel for the rules of powers, squares and cubes of
+beads for roots, and a line of hops for logarithms.
 
 Same rule as the other generators: every count in a picture is computed
 here from the numbers the page uses, never typed, so a picture cannot show
@@ -21,13 +24,16 @@ from __future__ import annotations
 import argparse
 import math
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import svgwrite
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from palette import FILL_AMBER, FILL_BLUE, INK, MUTED, PANEL, SANS  # noqa: E402
+from palette import (  # noqa: E402
+    FILL_AMBER, FILL_BLUE, FILL_GREEN, INK, MUTED, PANEL, SANS,
+)
 
 TUTORIALS = Path(__file__).resolve().parent.parent.parent / "tutorials"
 
@@ -87,13 +93,16 @@ def _pizza(drawing, cx: float, cy: float, slices: int, shaded: int,
 
 
 def pizza_row(pizzas: list[tuple[int, int]], labels: list[str] | None = None,
-              room_for: int = 1) -> str:
+              room_for: int = 1, between: list[str] | None = None) -> str:
     """A row of pizzas, each (slices, shaded), with a label under each.
 
     `room_for` makes the canvas as wide as that many pizzas and centres
     the row in it. A page scales a picture to its column, so one pizza on
     a canvas of its own is drawn as wide as the page, far bigger than the
     same pizza in a row of four; room for three keeps the sizes close.
+
+    `between` puts a sign in each gap, so a row can read as a sum:
+    ["+", "="] between three pizzas.
     """
     count = len(pizzas)
     slots = max(count, room_for)
@@ -107,6 +116,8 @@ def pizza_row(pizzas: list[tuple[int, int]], labels: list[str] | None = None,
         _pizza(drawing, cx, cy, slices, shaded)
         if labels:
             _label(drawing, labels[place], cx, cy + RADIUS + 22)
+        if between and place < count - 1:
+            _label(drawing, between[place], cx + RADIUS + GAP / 2, cy + 9, size=26)
     return drawing.tostring()
 
 
@@ -248,6 +259,340 @@ def golden_beads() -> str:
     return drawing.tostring()
 
 
+LINE_W = 480
+
+
+def _fraction_text(value: Fraction) -> str:
+    return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+
+def number_line(marks: list[Fraction], end: int = 1, landmarks: bool = True) -> str:
+    """A number line from 0 to `end`, with a dot and a label for each mark.
+
+    The landmarks are 0, one half and 1 (and each whole number up to
+    `end`), drawn as ticks under the line, so a reader can see which one a
+    fraction is closest to. The marks sit above the line.
+    """
+    height = 2 * MARGIN + 86
+    drawing = _drawing(LINE_W + 2 * MARGIN + 20, height)
+    left = MARGIN + 10
+    y = MARGIN + 46
+
+    def x_of(value: Fraction) -> float:
+        return left + float(value) / end * LINE_W
+
+    drawing.add(drawing.line((left, y), (left + LINE_W, y), stroke=INK, stroke_width=2.2))
+    ticks = [Fraction(n) for n in range(end + 1)]
+    if landmarks:
+        ticks += [Fraction(2 * n + 1, 2) for n in range(end)]
+    for tick in sorted(ticks):
+        big = tick.denominator == 1
+        drawing.add(drawing.line((x_of(tick), y - (9 if big else 6)),
+                                 (x_of(tick), y + (9 if big else 6)),
+                                 stroke=INK, stroke_width=2 if big else 1.4))
+        _label(drawing, _fraction_text(tick), x_of(tick), y + 30,
+               fill=INK if big else MUTED)
+    for mark in marks:
+        drawing.add(drawing.circle((x_of(mark), y), 6, fill=FILL_AMBER, stroke=INK,
+                                   stroke_width=1.6))
+        _label(drawing, _fraction_text(mark), x_of(mark), y - 16)
+    return drawing.tostring()
+
+
+GRID = 150          # the side of the square cut two ways
+
+
+def area_grids(grids: list[tuple[int, int, int, int]], labels: list[str]) -> str:
+    """Squares cut one way into columns and the other way into rows.
+
+    Each grid is (columns, shaded columns, rows, shaded rows). The shaded
+    columns are amber, the shaded rows blue, and where they cross is green:
+    the green part is the fraction of a fraction. Half of a third is one
+    cell of six, and the picture shows it without a rule.
+    """
+    count = len(grids)
+    width = 2 * MARGIN + count * GRID + (count - 1) * GAP
+    height = 2 * MARGIN + GRID + 30
+    drawing = _drawing(width, height)
+    for place, (cols, shade_cols, rows, shade_rows) in enumerate(grids):
+        x0 = MARGIN + place * (GRID + GAP)
+        y0 = MARGIN
+        cell_w, cell_h = GRID / cols, GRID / rows
+        for col in range(cols):
+            for row in range(rows):
+                in_col, in_row = col < shade_cols, row < shade_rows
+                fill = (FILL_GREEN if in_col and in_row else FILL_AMBER if in_col
+                        else FILL_BLUE if in_row else PANEL)
+                drawing.add(drawing.rect((x0 + col * cell_w, y0 + row * cell_h),
+                                         (cell_w, cell_h), fill=fill, stroke=INK,
+                                         stroke_width=1.2))
+        drawing.add(drawing.rect((x0, y0), (GRID, GRID), fill="none", stroke=INK,
+                                 stroke_width=2.4))
+        _label(drawing, labels[place], x0 + GRID / 2, y0 + GRID + 22)
+    return drawing.tostring()
+
+
+TOKEN = 30          # a heart's square
+TOKEN_GAP = 6
+
+
+def _token(drawing, x: float, y: float, symbol: str, fill: str,
+           struck: bool = False) -> None:
+    drawing.add(drawing.rect((x, y), (TOKEN, TOKEN), rx=5, fill=fill, stroke=INK,
+                             stroke_width=1.3))
+    _label(drawing, symbol, x + TOKEN / 2, y + TOKEN / 2 + 7, size=19)
+    if struck:
+        drawing.add(drawing.line((x - 3, y + TOKEN + 3), (x + TOKEN + 3, y - 3),
+                                 stroke=INK, stroke_width=2.2))
+
+
+def _run(count: int) -> float:
+    return count * TOKEN + max(count - 1, 0) * TOKEN_GAP
+
+
+def joined_stacks(left: int, right: int, symbol: str = "♡") -> str:
+    """Two stacks written the long way, multiplied, then joined into one.
+
+    The left stack is amber and the right is blue, and the joined row keeps
+    their colours, so a reader can count where each heart came from. The
+    picture prints no sum: the page asks the reader to count, and a label
+    reading "2 + 3 = 5" would give the rule away before they find it.
+    """
+    sign_w = 34
+    width = 2 * MARGIN + _run(left) + sign_w + _run(right) + sign_w + _run(left + right)
+    height = 2 * MARGIN + TOKEN
+    drawing = _drawing(width, height)
+    x, y = MARGIN, MARGIN
+    for _ in range(left):
+        _token(drawing, x, y, symbol, FILL_AMBER)
+        x += TOKEN + TOKEN_GAP
+    _label(drawing, "×", x - TOKEN_GAP + sign_w / 2, y + TOKEN / 2 + 8, size=24)
+    x += sign_w - TOKEN_GAP
+    for _ in range(right):
+        _token(drawing, x, y, symbol, FILL_BLUE)
+        x += TOKEN + TOKEN_GAP
+    _label(drawing, "=", x - TOKEN_GAP + sign_w / 2, y + TOKEN / 2 + 8, size=24)
+    x += sign_w - TOKEN_GAP
+    for index in range(left + right):
+        _token(drawing, x, y, symbol, FILL_AMBER if index < left else FILL_BLUE)
+        x += TOKEN + TOKEN_GAP
+    return drawing.tostring()
+
+
+def cancelled_stacks(top: int, bottom: int, symbol: str = "♡") -> str:
+    """A stack over a stack, written the long way, with pairs crossed out.
+
+    Each heart on the top that has a partner below is crossed out with its
+    partner, since one heart divided by one heart is 1. What is left
+    uncrossed is the answer: on the top when the top had more, on the
+    bottom when the bottom had more, and nothing (so 1) when they matched.
+    """
+    longest = max(top, bottom)
+    width = 2 * MARGIN + _run(longest)
+    height = 2 * MARGIN + 2 * TOKEN + 22
+    drawing = _drawing(width, height)
+    pairs = min(top, bottom)
+    y_top, y_line = MARGIN, MARGIN + TOKEN + 11
+    for index in range(top):
+        _token(drawing, MARGIN + index * (TOKEN + TOKEN_GAP), y_top, symbol,
+               PANEL if index < pairs else FILL_AMBER, struck=index < pairs)
+    drawing.add(drawing.line((MARGIN - 4, y_line), (MARGIN + _run(longest) + 4, y_line),
+                             stroke=INK, stroke_width=2.4))
+    for index in range(bottom):
+        _token(drawing, MARGIN + index * (TOKEN + TOKEN_GAP), y_line + 11, symbol,
+               PANEL if index < pairs else FILL_BLUE, struck=index < pairs)
+    return drawing.tostring()
+
+
+def stacks_of_stacks(inner: int, outer: int, symbol: str = "♡") -> str:
+    """`outer` boxes, each holding a stack of `inner` hearts.
+
+    A power of a power, the long way: (♡²)³ is three boxes of two hearts,
+    and counting every heart gives the exponent 6.
+    """
+    box_pad = 7
+    box_w = _run(inner) + 2 * box_pad
+    width = 2 * MARGIN + outer * box_w + (outer - 1) * 16
+    height = 2 * MARGIN + TOKEN + 2 * box_pad + 26
+    drawing = _drawing(width, height)
+    for box in range(outer):
+        bx = MARGIN + box * (box_w + 16)
+        drawing.add(drawing.rect((bx, MARGIN), (box_w, TOKEN + 2 * box_pad), rx=9,
+                                 fill="none", stroke=INK, stroke_width=1.8))
+        for index in range(inner):
+            _token(drawing, bx + box_pad + index * (TOKEN + TOKEN_GAP), MARGIN + box_pad,
+                   symbol, FILL_AMBER if box % 2 == 0 else FILL_BLUE)
+    _label(drawing, f"{outer} boxes of {inner} = {outer * inner}", width / 2,
+           MARGIN + TOKEN + 2 * box_pad + 22, fill=MUTED)
+    return drawing.tostring()
+
+
+SQ_PITCH = 13       # bead spacing in the bead squares
+
+
+def bead_squares(sides: list[int], leftover: int = 0) -> str:
+    """Squares of beads with 1, 2, 3 … beads on a side, each labelled.
+
+    With `leftover`, one more drawing follows: the largest square that fits
+    in (side² + leftover) beads, and the beads that are left over, which is
+    what a number that is not a square number looks like.
+    """
+    extra = sides[-1] if leftover else None
+    shapes = sides + ([extra] if leftover else [])
+    # A slot is never narrower than its label, so "1 bead" and "4 beads"
+    # under the two smallest squares do not run into each other.
+    widths = [max(n * SQ_PITCH + (SQ_PITCH * (leftover // n + 1) + 6
+                                  if (leftover and i == len(shapes) - 1) else 0), 60)
+              for i, n in enumerate(shapes)]
+    tallest = max(shapes) * SQ_PITCH
+    width = 2 * MARGIN + sum(widths) + (len(shapes) - 1) * GAP
+    height = 2 * MARGIN + tallest + 44
+    drawing = _drawing(width, height)
+    base = MARGIN + tallest
+    x = MARGIN
+    for index, n in enumerate(shapes):
+        is_leftover = leftover and index == len(shapes) - 1
+        bx = x if is_leftover else x + (widths[index] - n * SQ_PITCH) / 2
+        for row in range(n):
+            for col in range(n):
+                drawing.add(drawing.circle(
+                    (bx + col * SQ_PITCH + SQ_PITCH / 2, base - n * SQ_PITCH + row * SQ_PITCH + SQ_PITCH / 2),
+                    BEAD + 0.8, fill=FILL_AMBER, stroke=INK, stroke_width=0.9))
+        if is_leftover:
+            for bead in range(leftover):
+                col, row = divmod(bead, n)
+                drawing.add(drawing.circle(
+                    (x + n * SQ_PITCH + 6 + col * SQ_PITCH + SQ_PITCH / 2,
+                     base - n * SQ_PITCH + row * SQ_PITCH + SQ_PITCH / 2),
+                    BEAD + 0.8, fill=FILL_BLUE, stroke=INK, stroke_width=0.9))
+            _label(drawing, f"{n * n + leftover} beads", x + widths[index] / 2, base + 20)
+            _label(drawing, f"{leftover} left over", x + widths[index] / 2, base + 38, fill=MUTED)
+        else:
+            _label(drawing, f"{n * n} bead" + ("" if n == 1 else "s"), x + widths[index] / 2, base + 20)
+            _label(drawing, f"side {n}", x + widths[index] / 2, base + 38, fill=MUTED)
+        x += widths[index] + GAP
+    return drawing.tostring()
+
+
+def bead_cubes(edges: list[int]) -> str:
+    """Cubes of beads with 1, 2, 3 … beads along each edge.
+
+    Drawn the way the thousand-cube is: a front face of beads, and the top
+    and right faces as grids going back.
+    """
+    pitch = 14
+    depth_of = lambda n: n * pitch * 0.5  # noqa: E731
+    sizes = [n * pitch + depth_of(n) for n in edges]
+    tallest = max(sizes)
+    width = 2 * MARGIN + sum(sizes) + (len(edges) - 1) * GAP
+    height = 2 * MARGIN + tallest + 44
+    drawing = _drawing(width, height)
+    base = MARGIN + tallest
+    x = MARGIN
+    for n, size in zip(edges, sizes):
+        side = n * pitch
+        depth = depth_of(n)
+        shift = depth / n
+        front = (x, base - side)
+        for step in range(n + 1):
+            drawing.add(drawing.line((front[0] + step * pitch, front[1]),
+                                     (front[0] + step * pitch + depth, front[1] - depth),
+                                     stroke=INK, stroke_width=0.9))
+            drawing.add(drawing.line((front[0] + step * shift, front[1] - step * shift),
+                                     (front[0] + side + step * shift, front[1] - step * shift),
+                                     stroke=INK, stroke_width=0.9))
+            drawing.add(drawing.line((front[0] + side + step * shift, front[1] - step * shift),
+                                     (front[0] + side + step * shift, front[1] + side - step * shift),
+                                     stroke=INK, stroke_width=0.9))
+            drawing.add(drawing.line((front[0] + side, front[1] + step * pitch),
+                                     (front[0] + side + depth, front[1] + step * pitch - depth),
+                                     stroke=INK, stroke_width=0.9))
+        drawing.add(drawing.rect(front, (side, side), fill=FILL_BLUE, stroke=INK,
+                                 stroke_width=1.3))
+        for row in range(n):
+            for col in range(n):
+                drawing.add(drawing.circle((front[0] + col * pitch + pitch / 2,
+                                            front[1] + row * pitch + pitch / 2),
+                                           BEAD + 1.2, fill=FILL_AMBER, stroke=INK,
+                                           stroke_width=0.9))
+        _label(drawing, f"{n ** 3} bead" + ("" if n == 1 else "s"), x + size / 2, base + 20)
+        _label(drawing, f"edge {n}", x + size / 2, base + 38, fill=MUTED)
+        x += size + GAP
+    return drawing.tostring()
+
+
+UNIT = 60           # one square of the grid under the tilted square
+
+
+def tilted_squares(grids: list[int]) -> str:
+    """An n-by-n grid of unit squares, with a square drawn corner to corner inside.
+
+    The tilted square joins the middles of the big square's sides, so it
+    covers exactly half the grid: 2 squares of area for n = 2, 8 for n = 4.
+    For n = 2 each side of the tilted square is the diagonal of one unit
+    square, which is where side(2) lives.
+    """
+    sizes = [n * UNIT for n in grids]
+    width = 2 * MARGIN + sum(sizes) + (len(grids) - 1) * GAP
+    height = 2 * MARGIN + max(sizes) + 44
+    drawing = _drawing(width, height)
+    base = MARGIN + max(sizes)
+    x = MARGIN
+    for n, size in zip(grids, sizes):
+        top = base - size
+        half = size / 2
+        corners = [(x + half, top), (x + size, top + half), (x + half, top + size), (x, top + half)]
+        drawing.add(drawing.polygon(corners, fill=FILL_AMBER, stroke=INK, stroke_width=2.6))
+        for step in range(n + 1):
+            drawing.add(drawing.line((x + step * UNIT, top), (x + step * UNIT, top + size),
+                                     stroke=INK, stroke_width=1 if 0 < step < n else 2))
+            drawing.add(drawing.line((x, top + step * UNIT), (x + size, top + step * UNIT),
+                                     stroke=INK, stroke_width=1 if 0 < step < n else 2))
+        area = Fraction(n * n, 2)
+        _label(drawing, f"grid of {n * n}", x + half, base + 20, fill=MUTED)
+        _label(drawing, f"tilted square: {_fraction_text(area)}", x + half, base + 38)
+        x += size + GAP
+    return drawing.tostring()
+
+
+def hop_line(base: int, hops: int, halfway: bool = False) -> str:
+    """1, then base, base², … along a line, with an arc labelled ×base for each hop.
+
+    With `halfway`, each hop gets a stop in its middle too, and two smaller
+    arcs under the line: two half-hops make one whole hop.
+    """
+    stops = hops + 1
+    step_w = 120 if not halfway else 150
+    width = 2 * MARGIN + 40 + hops * step_w
+    height = 2 * MARGIN + (150 if halfway else 104)
+    drawing = _drawing(width, height)
+    left = MARGIN + 20
+    y = MARGIN + 66
+    drawing.add(drawing.line((left - 10, y), (left + hops * step_w + 10, y), stroke=MUTED,
+                             stroke_width=1.2))
+    half_root = math.isqrt(base) if halfway else None
+    for index in range(stops):
+        x = left + index * step_w
+        drawing.add(drawing.circle((x, y), 7, fill=FILL_AMBER, stroke=INK, stroke_width=1.6))
+        _label(drawing, f"{base ** index:,}", x, y + 30)
+        if index < hops:
+            x2 = x + step_w
+            drawing.add(drawing.path(d=f"M {x + 8} {y - 8} Q {(x + x2) / 2} {y - 62} {x2 - 8} {y - 8}",
+                                     fill="none", stroke=INK, stroke_width=1.8))
+            _label(drawing, f"×{base}", (x + x2) / 2, y - 40)
+            if halfway:
+                mid = (x + x2) / 2
+                value = base ** index * half_root
+                drawing.add(drawing.circle((mid, y), 5, fill=FILL_BLUE, stroke=INK,
+                                           stroke_width=1.4))
+                _label(drawing, f"{value:,}", mid, y + 30, fill=MUTED)
+                for a, b in ((x, mid), (mid, x2)):
+                    drawing.add(drawing.path(d=f"M {a + 6} {y + 42} Q {(a + b) / 2} {y + 74} {b - 6} {y + 42}",
+                                             fill="none", stroke=MUTED, stroke_width=1.4))
+                    _label(drawing, f"×{half_root}", (a + b) / 2, y + 76, size=12, fill=MUTED)
+    return drawing.tostring()
+
+
 DIAGRAMS = {
     "one-whole-many-slices/one-pizza.svg": lambda: pizza_row([(1, 0)], room_for=3),
     "one-whole-many-slices/cut-again.svg": lambda: pizza_row(
@@ -270,6 +615,62 @@ DIAGRAMS = {
         [3, 6, 12], shade={3: 2, 6: 4, 12: 8}),
     "the-long-way/folded-paper.svg": lambda: folded_sheets(4),
     "the-long-way/golden-beads.svg": golden_beads,
+
+    # Strand A: slashes
+    "which-is-bigger/same-bottom.svg": lambda: pizza_row(
+        [(8, 3), (8, 5)], ["3 of 8", "5 of 8"], room_for=3),
+    "which-is-bigger/same-top.svg": lambda: pizza_row(
+        [(3, 1), (4, 1), (6, 1)], ["1 of 3", "1 of 4", "1 of 6"]),
+    "which-is-bigger/landmarks.svg": lambda: number_line(
+        [Fraction(1, 4), Fraction(2, 3), Fraction(9, 10)]),
+    "which-is-bigger/empty-line.svg": lambda: number_line([]),
+    "which-is-bigger/two-thirds-in-twelfths.svg": lambda: fraction_wall(
+        [3, 12], shade={3: 2, 12: 8}),
+    "which-is-bigger/three-quarters-in-twelfths.svg": lambda: fraction_wall(
+        [4, 12], shade={4: 3, 12: 9}),
+    "adding-slices/same-size-sum.svg": lambda: pizza_row(
+        [(8, 3), (8, 2), (8, 5)], ["3 of 8", "2 of 8", "5 of 8"], between=["+", "="]),
+    "adding-slices/half-and-third.svg": lambda: pizza_row(
+        [(2, 1), (3, 1)], ["1 of 2", "1 of 3"], between=["+"], room_for=3),
+    "adding-slices/half-in-sixths.svg": lambda: fraction_wall([2, 6], shade={2: 1, 6: 3}),
+    "adding-slices/third-in-sixths.svg": lambda: fraction_wall([3, 6], shade={3: 1, 6: 2}),
+    "adding-slices/into-sixths.svg": lambda: pizza_row(
+        [(6, 3), (6, 2), (6, 5)], ["3 of 6", "2 of 6", "5 of 6"], between=["+", "="]),
+    "taking-slices-away/take-away-same.svg": lambda: pizza_row(
+        [(8, 5), (8, 2), (8, 3)], ["5 of 8", "2 of 8", "3 of 8"], between=["−", "="]),
+    "taking-slices-away/whole-minus-quarter.svg": lambda: pizza_row(
+        [(4, 4), (4, 1), (4, 3)], ["4 of 4", "1 of 4", "3 of 4"], between=["−", "="]),
+    "taking-slices-away/half-minus-third.svg": lambda: pizza_row(
+        [(6, 3), (6, 2), (6, 1)], ["3 of 6", "2 of 6", "1 of 6"], between=["−", "="]),
+    "a-fraction-of-a-fraction/half-of-a-half.svg": lambda: area_grids(
+        [(2, 1, 1, 0), (2, 1, 2, 1)], ["a half", "half of that half"]),
+    "a-fraction-of-a-fraction/half-of-a-third.svg": lambda: area_grids(
+        [(3, 1, 1, 0), (3, 1, 2, 1)], ["a third", "half of that third"]),
+    "a-fraction-of-a-fraction/two-thirds-of-three-quarters.svg": lambda: area_grids(
+        [(4, 3, 1, 0), (4, 3, 3, 2)], ["three quarters", "two thirds of that"]),
+    "how-many-fit/three-pizzas-in-quarters.svg": lambda: pizza_row(
+        [(4, 4), (4, 4), (4, 4)], ["4 quarters", "4 quarters", "4 quarters"]),
+    "how-many-fit/half-in-quarters.svg": lambda: fraction_wall([2, 4], shade={2: 1, 4: 2}),
+
+    # Strand B: powers
+    "joining-two-stacks/join-two-and-three.svg": lambda: joined_stacks(2, 3),
+    "joining-two-stacks/join-four-and-one.svg": lambda: joined_stacks(4, 1),
+    "sharing-out/cancel-five-over-two.svg": lambda: cancelled_stacks(5, 2),
+    "sharing-out/cancel-seven-over-three.svg": lambda: cancelled_stacks(7, 3),
+    "when-everything-cancels/cancel-four-over-four.svg": lambda: cancelled_stacks(4, 4),
+    "more-on-the-bottom/cancel-two-over-five.svg": lambda: cancelled_stacks(2, 5),
+    "more-on-the-bottom/cancel-three-over-four.svg": lambda: cancelled_stacks(3, 4),
+    "a-power-of-a-power/two-in-three-boxes.svg": lambda: stacks_of_stacks(2, 3),
+    "a-power-of-a-power/three-in-two-boxes.svg": lambda: stacks_of_stacks(3, 2),
+
+    # Strand C: undoing a power
+    "the-side-of-a-square/bead-squares.svg": lambda: bead_squares([1, 2, 3, 4, 5]),
+    "the-side-of-a-square/ten-beads.svg": lambda: bead_squares([3], leftover=1),
+    "the-side-of-a-square/bead-cubes.svg": lambda: bead_cubes([1, 2, 3]),
+    "sides-that-never-end/tilted-squares.svg": lambda: tilted_squares([2, 4]),
+    "halfway-steps/halfway-hops.svg": lambda: hop_line(4, 2, halfway=True),
+    "how-many-hops/hops-of-ten.svg": lambda: hop_line(10, 3),
+    "how-many-hops/hops-of-two.svg": lambda: hop_line(2, 4),
 }
 
 

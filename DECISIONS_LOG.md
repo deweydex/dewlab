@@ -5317,3 +5317,67 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not kept.** A Notebook's sliders are not saved across a reload: Python starts afresh then, and running the cell brings the slider back. A tutorial page does keep them (7.264), because its saved output stands for the reader's work on that page.
 
 *Cost to change: small. `cell-widgets.js` is seven functions; the engine adds a map of per-cell state and two exports.*
+
+**7.269 — On the Dewey Track, a test the page writes against the reader's code becomes a comparison with a solution.** Josh, 26 September 2026, deciding the open question on #353: "yeah two is the correct option for sure".
+
+**The question.** Toolkit pages ended with a cell of `assert` lines the page had written, followed by a line such as "The flat-shape tools keep their promises." Schlomo's Fix problems did the same: "the test fails", then a praise line once it passed. #314 retired `check()` because the page decided the answer in advance and reported pass or fail; a page-written assert does the same job. It shows its expected values, and an assert is a real tool, but a reader who meets an `AssertionError` from a test they did not write hears "wrong".
+
+**What changed.** 279 asserts are gone from 66 files. In their place are 74 comparisons, each an `inputs` block (the same calls, with no expected values) and a `solution` block. For a toolkit cell, the solution is its reference fence. The reader presses **Compare with a solution** and sees their answer beside a solution's, row by row. A relation between two calls (`2 * triangle_area(6, 5)` and `rectangle_area(6, 5)`) is two rows side by side, and a loop over hundreds of cases is a few sample rows. Fix problems state the symptom as a fact about the code ("For 18 degrees, this function says `False`"), and their answer folds become solution notes. Every "keeps its promise", "All tests pass" and "checks out" line printed about the reader's work is gone.
+
+**What stays.** There are 141 asserts left, and none of them is the page judging the reader:
+- the ones on `does-it-work` and its practice page, where testing is the lesson;
+- asserts the reader writes, and the model answers to those tasks;
+- asserts in teaching cells that show what `assert` does on the page's own code.
+
+**Found on the way.** The build checks a comparison against the page up to its own cell. Four helper cells that the new tables need were therefore moved above the toolkit cells they serve: `likely-fixed-trials`, `solving-by-bisect-rules`, `solving-by-tank-rule` and `row-is-cold`. Duplicate answer folds that repeated the new solution were removed. Some toolkit hints still appear only after errors, as they did before. An unfinished stub raises none, so those hints now wait for the reader's own code to fail.
+
+`planning/DEWEY_TRACK_PLAN.md` says the same. Nothing in the style guide changed, because `#no-verdicts` already covered this case.
+
+*Cost to change: moderate. The comparisons are ordinary blocks, and bringing a test cell back means writing its expected values again. The deleted test cells' ids were free while the track is in beta.*
+
+---
+
+**7.270 — The Zen of Slashes and Surds grows to twenty pages overnight: fractions, the rules of powers, and the first surds and logarithms.** Josh, 26 September 2026: "there is a lot more to do in this series with different operations with fractions and different types of exponents as well as various things in that direction like logarithms and surds … start work on that tonight while im sleeping". The plan was already written (`planning/outlines/zen-of-slashes-and-surds.md`, 7.254), so the night wrote pages rather than plans.
+
+**What is written.** Sixteen new pages, each with a practice page longer than itself except the closer look:
+- **Strand A (slashes):** `which-is-bigger`, `adding-slices`, `taking-slices-away`, `a-fraction-of-a-fraction`, the closer look `does-multiplying-make-it-bigger`, `how-many-fit` and `fractions-with-holes`.
+- **Strand B (powers):** `joining-two-stacks`, `sharing-out`, `when-everything-cancels`, `more-on-the-bottom` and `a-power-of-a-power`. They follow sections 2 to 6 of the Exponent Rules discovery worksheet, squiggles first.
+- **Strand C (surds and logs):** `the-side-of-a-square`, `sides-that-never-end`, `halfway-steps` and `how-many-hops`. Friendly names come first (side(49), edge(27), halfway(♡), hops(10 → 1000), folds(16)), and √, the fractional exponent and log come only under "The usual way to write it". The word *surd* comes last of all, on `sides-that-never-end`, with its history from al-Khwarizmi's "inaudible" to Latin *surdus*, checked against Wikipedia's page on the nth root.
+
+**How it was written.** `dev/graphics/zen.py` drew every picture first: number lines, squares cut two ways, pizzas with + and = between them, heart tiles joined and crossed out, boxes of hearts, bead squares and cubes, a tilted square for side(2), and hop lines. Six writers then drafted the pages in parallel from one brief (the outline, the style guide, and the four pilot pages as the pattern), each in its own folders. Each page was read in full before it was committed, and every number was run. The reading changed a few things. Two cells gained the `import` they relied on an earlier cell for. "Idea A is not a strange idea" and "The error is the answer" went, as a verdict raised to deny it and a closing saying. Two headings lost the phrasal verb "plug in". The join pictures lost their "2 + 3 = 5" label, which gave the adding rule away before the reader found it.
+
+**Two wordings, now the same on every Zen page.** Each world line reads "Normal numbers, like 3 and 10", and each explain fold is headed "one answer". "Ordinary" and "good" are both on the module's list of words to avoid (the outline's "Language: plainer than plain").
+
+**The pilot pages, swept.** 7.256's say-it-directly sweep left the four pilot pages for a separate read. Seven sentences that kept their main point behind a colon now say it first, and "just", "easy" and "altogether" are gone.
+
+**Placement.** The course lists the pages in outline order under three series, and a new series, "Surds and logs, undoing a power", holds strand C. The closer look sits straight after `a-fraction-of-a-fraction`, which links to it, and it joins the "Closer looks" topic group (7.261). The "from the beginning" topic group lists the rest.
+
+**Open questions, for Josh.**
+1. **Titles in strand C.** The titles avoid the scary words: "Undoing a square: the side of a square", not "Square roots: …"; "Counting hops: how many times did we multiply?", not "Logarithms: …". This keeps 7.254's "the sign comes last" in the title too. But it goes against the style guide's plain titles, which lead with "the term a student would search for". Which should win?
+2. **Colour words.** `a-fraction-of-a-fraction` and the heart-tile pages talk about yellow, blue and green parts. The colours come from the theme, so they hold in dark mode, where they are darker. A reader who cannot tell green from yellow has only the words, though, since the pictures carry no pattern. Should the crossing cells get stripes, and the page say "striped"?
+3. **The recurring character.** There is still none, so "what went differently here" problems use "somebody" or an unnamed worked line.
+4. **Not written yet:** the "view from the top" pages (A9, B8, C7), strand B's mixed challenge (B7), strand C's "stretching the halfway steps" (C4, partly covered on the `halfway-steps` practice page) and "hops that add" (C6), strands D and E, and the mixed sets.
+
+**Checked, and not.** Every cell and number was run in CPython, and the pages were built and viewed in a browser. The cells did not run in the browser, because this environment cannot reach Pyodide. `how-many-fit` has one cell that fails on purpose (`1 / 0`), and its prose says so first.
+
+*Cost to change: the sixteen new page ids and their question ids become a contract once a class has used them. A title is one line in a page's frontmatter. A picture is one entry in `dev/graphics/zen.py`'s `DIAGRAMS`.*
+
+---
+
+**7.271 — Text Generation: a book of your own, and a chain that names the writer of a passage it has never seen.** The content issue (#331), part of #306.
+
+**Books as worlds.** Four more Project Gutenberg books, each with a provenance file in `data/`: *Dracula* (#345), *Dubliners* (#2814), *Irish Fairy Tales* (#2892) and *Treasure Island* (#120). With *The Time Machine* they are the worlds of the first two pages. The issue suggested "a book of myths"; the one tried, *A Book of Myths*, opens with a preface of dated racial theory, so James Stephens's *Irish Fairy Tales* takes its place. The third page's worlds are pairs of writers: Dewey and Montessori, Stoker and Shelley, Stevenson and Doyle.
+
+**`a-chain-reads-a-book`.** A predict asks whether "Project Gutenberg" survives the cleaning (it does, in the closing line before the END marker). The reader writes `strip_gutenberg`, which finds any file's `*** START OF` and `*** END OF` lines, and `chain_from`, and builds a chain from their book. Every sentence the page shows comes with its seed, and the closer asks the reader to make a classmate's sentence again from the book, the seed and the start word.
+
+**`how-much-it-remembers`.** The task "does `order2` have more keys than `order1`?" sat below a cell that had already printed the answer; the cell no longer prints it, and the question is a predict. The reader builds an order-2 chain from their book and finds a stretch it copied (15 of 22 words from *A Painful Case*). The practice measures the copying: with `longest_copied_run`, `order2` copies between 6 and 19 words in a row across five seeds, `order1` 3 to 5, and the share of keys with one follower climbs from about 0.6 to 0.85 to 0.95 from order 1 to 3 in every book.
+
+**`whose-voice-is-this`.** The real task. The last tenth of each book is held back, the chains are built from the rest, and a passage's score is the average probability a chain gives each next word, with 0 for a pair it never saw. Dewey's chain names 124 of his 137 held-back passages of 100 words, and every pair of writers lands near nine in ten; at 20 words, near seven in ten. Perplexity is named as the refined score, with the reason a real model never gives a word a chance of 0. A smoothed log score was tried and left out: add-one smoothing favoured whichever chain was built from the longer book (every *Dracula* passage named correctly, 26 of 75 *Frankenstein* ones). The practice shows why a close call went the wrong way: Montessori's chain has seen "dwelt" once, followed by "in", so it gives "dwelt in" a probability of 1.
+
+**Fixed while checking.** The explanation of the `education` counts said `("is", 57)` where the cell prints 58, and "every form" of the word counted 210 for Montessori; it is 227, once `_education_` (the file's italics) is counted.
+
+**Practice.** All three practice pages move to blocks, with a problem in each world and two from earlier pages.
+
+**Not done.** The issue's "done when" asks that both course files list the pages. The machine-learning course file is #338's; that issue lists these three pages as its first part.
+
+*Cost to change: small. The new ids are cells within existing pages; the world keys and the cell ids ending in a world key become a contract on 2 October.*

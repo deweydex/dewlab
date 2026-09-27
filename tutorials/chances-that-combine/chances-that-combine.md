@@ -1,7 +1,7 @@
 ---
 title: "Chances that combine: and, or, and the birthday problem"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   two-sixes-at-once:
     covers: [MIT-5.8]
@@ -396,26 +396,43 @@ def at_least_one(chance, tries):
     return 1 - never
 ```
 
-Until you fill in your stub, the tests stop with an error. The last
-test uses `round`, because a float is very close to the true value, and
-seldom equal to it.
+How does your `at_least_one` compare with one way to write it? The
+table below runs the same calls on yours and on a solution, side by
+side. Where a row is different, try that call on its own. The last row
+uses `round`, because a float is very close to the true value, and
+not often equal to it.
 
-```python exec
-id: chances-toolkit-tests
-assert at_least_one(0.5, 1) == 0.5
-assert at_least_one(0, 10) == 0
-assert at_least_one(1, 3) == 1
-assert round(at_least_one(1 / 6, 4), 4) == 0.5177
-print("at_least_one keeps its promise.")
+```inputs
+for: chances-toolkit
+at_least_one(0.5, 1)
+at_least_one(0, 10)
+at_least_one(1, 3)
+round(at_least_one(1 / 6, 4), 4)
+```
+
+```solution
+for: chances-toolkit
+def at_least_one(chance, tries):
+    """Return the chance that something happens at least once.
+
+    chance is its probability on one try, from 0 to 1. tries is how
+    many tries there are. The tries must be independent: one try must
+    not change the chance of another.
+    """
+    never = (1 - chance) ** tries
+    return 1 - never
 ```
 
 ```hint
-Which test does the error point at? Try `print(at_least_one(0.5, 1))`
-on its own. What did you expect it to give?
+for: chances-toolkit
+after: 3 runs
+Which row is different? Try `print(at_least_one(0.5, 1))` on its own.
+What did you expect it to give?
 ```
 
 ```hint
-after: 10 errors
+for: chances-toolkit
+after: 8 runs
 title: some steps
 1. On one try, the chance of failing is `1 - chance`.
 2. The tries are independent, so failing on every one of them is that

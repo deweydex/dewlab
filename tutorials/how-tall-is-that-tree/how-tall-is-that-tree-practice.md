@@ -2,7 +2,7 @@
 title: "Solving triangles: how tall is that tree? — Practice"
 practice_for: how-tall-is-that-tree
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 ---
 
 # Solving triangles: how tall is that tree? — Practice
@@ -226,8 +226,11 @@ because $\sin 90^\circ = 1$ is the biggest a sine can be.
 </details>
 
 **9. Fix.** Schlomi, who is learning Python too, wrote her own cosine
-rule, with two tests. The first test passes and the second fails. What
-is different about the second test, and what needs to change?
+rule. For the 3, 4, 5 triangle, with a right angle between the sides 3
+and 4, it gives 5. For sides 5 and 4 with a 60° corner between them,
+the third side is $\sqrt{21}$, about 4.58, and hers gives something
+else. What is different about the second triangle, and what needs to
+change?
 
 ```python exec
 id: how-tall-practice-fix-cosine
@@ -236,28 +239,29 @@ import math
 def third_side(a, b, angle_c):
     """Return the side across from angle_c (in degrees), where sides a and b meet."""
     return math.sqrt(a ** 2 + b ** 2 + 2 * a * b * math.cos(math.radians(angle_c)))
-
-assert close_enough(third_side(3, 4, 90), 5), "a right angle"
-assert close_enough(third_side(5, 4, 60), math.sqrt(21)), "a 60 degree corner"
-print("third_side keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+third_side(3, 4, 90)    # a right angle
+third_side(5, 4, 60)    # a 60 degree corner
+math.sqrt(21)           # ...and the side it should have
+```
 
-The correction must be taken away: $c^2 = a^2 + b^2 - 2ab\cos C$. The
-line should be
+```solution
+import math
 
-```python
+def third_side(a, b, angle_c):
+    """Return the side across from angle_c (in degrees), where sides a and b meet."""
     return math.sqrt(a ** 2 + b ** 2 - 2 * a * b * math.cos(math.radians(angle_c)))
+---
+The correction must be taken away: $c^2 = a^2 + b^2 - 2ab\cos C$.
+
+The right angle gave 5 in both versions, because $\cos 90^\circ = 0$, so the
+correction is 0 whether it is added or taken away. Schlomi started from
+the triangle she knew best, the 3, 4, 5, and a check at a right angle
+alone can never tell the two versions apart. For 60°, her version gives
+about 7.81, and the rule gives $\sqrt{21} \approx 4.58$.
 ```
-
-The first test passed because $\cos 90^\circ = 0$, so the correction is
-0 whether it is added or taken away. Schlomi started from the triangle
-she knew best, the 3, 4, 5, and a test at a right angle alone can never
-tell the two versions apart. For 60°, her version gives about 7.81, and the rule
-gives $\sqrt{21} \approx 4.58$.
-
-</details>
 
 **10. Another way.** In the tutorial, the oak across the river was 28°
 up from spot A and 40° up from spot B, 15 m closer. The sine rule gave

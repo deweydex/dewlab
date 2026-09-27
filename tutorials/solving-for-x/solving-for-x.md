@@ -1,7 +1,7 @@
 ---
 title: "Solving for x: linear and quadratic equations"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   when-are-two-servers-equally-fast:
     covers: [MIT-1.9]
@@ -203,26 +203,43 @@ def solve_linear(a, b):
     return -b / a
 ```
 
-The tests check three known answers. Then the loop checks each answer
-the way this unit always will: it substitutes the answer back. The rule
-$ax + b$ is a polynomial with two coefficients, so `evaluate([b, a], x)`
-calculates it. Until your `solve_linear` is written, this cell stops
-with an error.
+How does your `solve_linear` compare with one way to write it? The
+table below runs the same calls on your function and on a solution,
+side by side. The first three rows are known answers. The rows after
+them check each answer the way this unit always will: they substitute
+the answer back. The rule $ax + b$ is a polynomial with two
+coefficients, so `evaluate([b, a], x)` calculates it, and each of
+those rows is 0, or a float very close to 0. Where a row is different,
+try that call on its own.
 
-```python exec
-id: solving-toolkit-linear-tests
-assert solve_linear(0.8, -7) == 8.75
-assert solve_linear(2, 6) == -3
-assert solve_linear(0, 5) is None
+```inputs
+for: solving-toolkit-linear
+solve_linear(0.8, -7)                          # the servers
+solve_linear(2, 6)
+solve_linear(0, 5)                             # a is 0
+evaluate([-7, 0.8], solve_linear(0.8, -7))     # the servers, substituted back
+evaluate([-12, 2], solve_linear(2, -12))       # the gallery page from Rules with letters in them
+evaluate([-700, 7], solve_linear(7, -700))
+evaluate([-30, 0.6], solve_linear(0.6, -30))
+evaluate([7, 3], solve_linear(3, 7))
+evaluate([4, -2.5], solve_linear(-2.5, 4))
+```
 
-# the servers, the gallery page from Rules with letters in them, and more
-for a, b in [(0.8, -7), (2, -12), (7, -700), (0.6, -30), (3, 7), (-2.5, 4)]:
-    x = solve_linear(a, b)
-    assert close_enough(evaluate([b, a], x), 0), (a, b, x)
-print("solve_linear keeps its promise.")
+```solution
+for: solving-toolkit-linear
+def solve_linear(a, b):
+    """Return the x where a*x + b = 0.
+
+    When a is 0 there is no single answer, so return None.
+    """
+    if a == 0:
+        return None
+    return -b / a
 ```
 
 ```hint
+for: solving-toolkit-linear
+after: 3 runs
 What does `print(solve_linear(2, 6))` show? If it shows `None`, the
 last line of the function is not written yet. It starts with `return`.
 ```
@@ -487,29 +504,53 @@ def solve_quadratic(a, b, c):
     return sorted([(-b - root) / (2 * a), (-b + root) / (2 * a)])
 ```
 
-The tests check the three kinds of answer, then substitute every root
-back in. Until `solve_quadratic` is written, this cell stops with an
-error.
+How does your `solve_quadratic` compare with a solution? The first
+three rows of the table below are the three kinds of answer: two
+roots, one root and none. The next rows substitute every root back in,
+so each list holds a 0, or a float very close to 0, for each root.
+Where a row is different, try that call on its own.
 
-```python exec
-id: solving-toolkit-quadratic-tests
-assert solve_quadratic(1, 3, -40) == [-8, 5], "the sprite sheet"
-assert solve_quadratic(1, -6, 9) == [3]
-assert solve_quadratic(1, -6, 13) == []
+```inputs
+for: solving-toolkit-quadratic
+solve_quadratic(1, 3, -40)                                     # the sprite sheet
+solve_quadratic(1, -6, 9)
+solve_quadratic(1, -6, 13)
+[evaluate([-40, 3, 1], x) for x in solve_quadratic(1, 3, -40)]  # each root, substituted back
+[evaluate([1, 14, -4.9], x) for x in solve_quadratic(-4.9, 14, 1)]
+[evaluate([3, -7, 2], x) for x in solve_quadratic(2, -7, 3)]
+[evaluate([1, -4, 1], x) for x in solve_quadratic(1, -4, 1)]
+[evaluate([9, -6, 1], x) for x in solve_quadratic(1, -6, 9)]
+```
 
-for a, b, c in [(1, 3, -40), (-4.9, 14, 1), (2, -7, 3), (1, -4, 1), (1, -6, 9)]:
-    for x in solve_quadratic(a, b, c):
-        assert close_enough(evaluate([c, b, a], x), 0), (a, b, c, x)
-print("solve_quadratic keeps its promise.")
+```solution
+for: solving-toolkit-quadratic
+import math
+
+
+def solve_quadratic(a, b, c):
+    """Return a list of the real x where a*x**2 + b*x + c = 0, smallest first.
+
+    The list holds 2, 1 or 0 roots. a must not be 0.
+    """
+    discriminant = b ** 2 - 4 * a * c
+    if discriminant < 0:
+        return []
+    if discriminant == 0:
+        return [-b / (2 * a)]
+    root = math.sqrt(discriminant)
+    return sorted([(-b - root) / (2 * a), (-b + root) / (2 * a)])
 ```
 
 ```hint
+for: solving-toolkit-quadratic
+after: 3 runs
 Try `print(solve_quadratic(1, 3, -40))` on its own. Is it a list? Are
 the two roots in order, smallest first?
 ```
 
 ```hint
-after: 10 errors
+for: solving-toolkit-quadratic
+after: 8 runs
 title: some steps
 1. The first line of the body is `discriminant = b ** 2 - 4 * a * c`.
 2. Then `if discriminant < 0:` and, pushed in, `return []`.
@@ -517,7 +558,7 @@ title: some steps
 4. Last, `root = math.sqrt(discriminant)`, and return both roots
    inside `sorted([...])`.
 
-**Think about:** when $a$ is negative, as in the test
+**Think about:** when $a$ is negative, as in the row for
 $-4.9x^2 + 14x + 1$, which of
 $-b + \sqrt{\ }$ and $-b - \sqrt{\ }$ gives the smaller root?
 ```

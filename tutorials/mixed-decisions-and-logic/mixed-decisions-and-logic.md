@@ -167,7 +167,6 @@ assert battery_icon(40) == "low"
 assert battery_icon(41) == "half"
 assert battery_icon(80) == "half"
 assert battery_icon(81) == "full"
-print("All six tests pass.")
 ```
 
 Each test sits at the edge of a band, because mistakes
@@ -364,7 +363,6 @@ assert good_day(10000, 8) == True
 assert good_day(8000, 7) == True       # both edges count
 assert good_day(12000, 6.5) == False   # too little sleep
 assert good_day(5000, 8) == False      # too few steps
-print("good_day keeps its promise.")
 ```
 
 </details>

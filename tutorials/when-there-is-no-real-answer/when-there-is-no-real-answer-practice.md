@@ -2,7 +2,7 @@
 title: "When there is no real answer: complex numbers — Practice"
 practice_for: when-there-is-no-real-answer
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # When there is no real answer: complex numbers — Practice
@@ -283,7 +283,6 @@ for x in solve_quadratic_complex(2, 3, 5):
     left_side = evaluate([5, 3, 2], x)
     print(x, left_side)
     assert left_side == 0, "not a root"
-print("Both roots check out.")
 ```
 
 <details class="dl-answer"><summary>answer</summary>

@@ -1,7 +1,7 @@
 ---
 title: "Untangling a condition: De Morgan's laws"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   two-ways-to-grey-out-a-button:
     touches: [MIT-2.4]
@@ -249,16 +249,33 @@ the moment it finds one row that disagrees, and it stops there. It can only
 say "the same" after the loop has checked every row. That is why
 `return True` sits outside the loop, after it.
 
-Every toolkit function gets tests. An `assert` line checks that something is
-`True`. If it is, nothing happens. If it is not, Python stops with an
-`AssertionError`. What do you expect this cell to print?
+How does this `same_rule` compare with one way to write it? The table
+below runs two calls on the function in your cell and on a solution,
+side by side. If you change the function, run it again and compare. You
+can see what your change does to each row.
 
-```python exec
-id: untangling-toolkit-tests
-assert same_rule(grey_out_a, grey_out_b, 2)
-assert not same_rule(grey_out_a, grey_out_c, 2)
-print("Both tests passed.")
+```inputs
+for: untangling-toolkit
+same_rule(grey_out_a, grey_out_b, 2)    # two ways to write one rule
+same_rule(grey_out_a, grey_out_c, 2)    # two different rules
 ```
+
+```solution
+for: untangling-toolkit
+from itertools import product
+
+def same_rule(rule_a, rule_b, count):
+    """Return True when rule_a and rule_b give the same answer on every row
+    of count True/False inputs. Return False as soon as one row differs."""
+    for row in product([False, True], repeat=count):
+        if rule_a(*row) != rule_b(*row):
+            return False
+    return True
+```
+
+You can also write checks of your own. An `assert` line checks that
+something is `True`. If it is, nothing happens. If it is not, Python stops
+with an `AssertionError`.
 
 ### Your turn
 

@@ -1,7 +1,7 @@
 ---
 title: "Measuring rooms and tins: area, perimeter and volume"
 year: "2026-2027"
-version: 2026.09.25.2
+version: 2026.09.26.1
 covers:
   around-the-edge-perimeter:
     covers: [MIT-1.2]
@@ -341,25 +341,61 @@ def circle_area(radius):
     return math.pi * radius ** 2
 ```
 
-The tests below check each promise against something we already know.
-Until you write all three functions, they stop with an error.
+How do your three functions compare with one way to write them? The
+table below runs the same calls on your functions and on a solution, side
+by side. Where a row is different, try that call on its own.
 
-```python exec
-id: measuring-rooms-toolkit-flat-tests
-assert rectangle_perimeter(4, 3.5) == 15
-assert rectangle_area(4, 3.5) == 14
-assert triangle_area(4, 1.8) == 3.6
-assert 2 * triangle_area(6, 5) == rectangle_area(6, 5)
-assert circle_circumference(1) == 2 * math.pi
-assert circle_area(1) == math.pi
-assert round(circle_area(20)) == 1257
-print("The flat-shape tools keep their promises.")
+```inputs
+for: measuring-rooms-toolkit-flat
+rectangle_perimeter(4, 3.5)
+rectangle_area(4, 3.5)
+triangle_area(4, 1.8)
+2 * triangle_area(6, 5)    # two triangles...
+rectangle_area(6, 5)       # ...make the rectangle round them
+circle_circumference(1)    # 2π
+circle_area(1)             # π
+round(circle_area(20))
+```
+
+```solution
+for: measuring-rooms-toolkit-flat
+import math
+
+
+def rectangle_perimeter(length, width):
+    """Return the distance round a rectangle."""
+    return 2 * (length + width)
+
+
+def rectangle_area(length, width):
+    """Return the area of a rectangle. For a square, give the side twice."""
+    return length * width
+
+
+def triangle_area(base, height):
+    """Return the area of a triangle.
+
+    height is measured at a right angle to the base.
+    """
+    return 0.5 * base * height
+
+
+def circle_circumference(radius):
+    """Return the distance round a circle of this radius."""
+    return 2 * math.pi * radius
+
+
+def circle_area(radius):
+    """Return the area of a circle of this radius."""
+    return math.pi * radius ** 2
 ```
 
 ```hint
-Which line does the error point at? Try `print(triangle_area(4, 1.8))`
-on its own. If it shows `None`, that function still has `...` where its
-`return` line should be.
+for: measuring-rooms-toolkit-flat
+after: 3 runs
+Which row is different? Try `print(triangle_area(4, 1.8))` on its own. If
+it shows `None`, that function still has `...` where its `return` line
+should be.
 ```
 
 ## How much a tin holds: volume
@@ -578,30 +614,84 @@ def sphere_surface_area(radius):
     return 4 * circle_area(radius)
 ```
 
-Floats round very slightly, so some of these tests round both sides
-before comparing them. Until you write your two functions, the tests
-stop with an error. Which tests check Archimedes?
+How do your two functions compare with one way to write them? The
+table below runs the same calls on your tools and on a solution, side
+by side. Where a row is different, try that call on its own. Floats
+round very slightly, so some rows round to 9 decimal places. Which rows
+show Archimedes?
 
-```python exec
-id: measuring-rooms-toolkit-solid-tests
-assert cuboid_volume(10, 10, 10) == 1000
-assert round(cylinder_volume(8, 14)) == 2815
-assert round(2 * cone_volume(2, 4), 9) == round(sphere_volume(2), 9)
-assert round(3 * cone_volume(3, 7), 9) == round(cylinder_volume(3, 7), 9)
-assert round(sphere_volume(3), 9) == round(2 / 3 * cylinder_volume(3, 6), 9)
-assert cube_surface_area(2) == 24
-assert round(cylinder_surface_area(8, 14)) == 1106
-assert cone_surface_area(3, 4) == 24 * math.pi
-assert sphere_surface_area(1) == 4 * math.pi
-print("The solid-shape tools keep their promises.")
+```inputs
+for: measuring-rooms-toolkit-solid
+cuboid_volume(10, 10, 10)
+round(cylinder_volume(8, 14))
+round(2 * cone_volume(2, 4), 9)                  # two cones...
+round(sphere_volume(2), 9)                       # ...hold as much as the sphere
+round(3 * cone_volume(3, 7), 9)                  # three cones...
+round(cylinder_volume(3, 7), 9)                  # ...fill the cylinder
+round(sphere_volume(3), 9)                       # a sphere...
+round(2 / 3 * cylinder_volume(3, 6), 9)          # ...is two thirds of the cylinder round it
+cube_surface_area(2)
+round(cylinder_surface_area(8, 14))
+cone_surface_area(3, 4)                          # 24π
+sphere_surface_area(1)                           # 4π
 ```
 
-The third and fifth tests are Archimedes. In the fifth, a sphere of
-radius 3 fits inside a cylinder of radius 3 and height 6, and fills two
-thirds of it. The tests check that our formulas agree with what
-Archimedes found. They do not show why he was right. The surface-area
-test for the cone uses a cone with radius 3 and height 4, whose slant is
-exactly 5, so its area is $9\pi + 15\pi = 24\pi$.
+```solution
+for: measuring-rooms-toolkit-solid
+import math
+
+
+def cuboid_volume(length, width, height):
+    """Return the volume of a box shape. For a cube, give the side three times."""
+    return length * width * height
+
+
+def cylinder_volume(radius, height):
+    """Return the volume of a cylinder: the base circle times the height."""
+    return circle_area(radius) * height
+
+
+def cone_volume(radius, height):
+    """Return the volume of a cone: a third of the cylinder with the same base and height."""
+    return cylinder_volume(radius, height) / 3
+
+
+def sphere_volume(radius):
+    """Return the volume of a sphere of this radius."""
+    return 4 / 3 * math.pi * radius ** 3
+
+
+def cube_surface_area(side):
+    """Return the total area of the six faces of a cube."""
+    return 6 * side ** 2
+
+
+def cylinder_surface_area(radius, height):
+    """Return the area of a closed cylinder: two circles and the label."""
+    return 2 * circle_area(radius) + circle_circumference(radius) * height
+
+
+def cone_surface_area(radius, height):
+    """Return the area of a cone: the base circle and the sloping side.
+
+    height is straight up from the base to the point, not the slant.
+    """
+    slant = math.sqrt(radius ** 2 + height ** 2)
+    return circle_area(radius) + math.pi * radius * slant
+
+
+def sphere_surface_area(radius):
+    """Return the area of the outside of a sphere: four circles."""
+    return 4 * circle_area(radius)
+```
+
+Rows three and four, and rows seven and eight, are Archimedes. In rows
+seven and eight, a sphere of radius 3 fits inside a cylinder of radius 3
+and height 6, and fills two thirds of it. These rows show that our
+formulas agree with what Archimedes found. They do not show why he was
+right. The surface-area row for the cone uses a cone with radius 3 and
+height 4, whose slant is exactly 5, so its area is
+$9\pi + 15\pi = 24\pi$.
 
 ### Your turn
 
@@ -686,10 +776,10 @@ reason slices the ball into very thin pieces and adds them all up, which
 needs more than this unit has.
 
 We kept the sphere because raindrops, planets and 3D-printed balls
-are spheres, and your toolkit needs it now. So we take
-these two formulas on trust, for the moment. The test with
-Archimedes' two thirds checks that two facts agree. It does not say why
-either one is true.
+are spheres, and your toolkit needs it now. So, for now, we
+use these two formulas without a reason. The rows with Archimedes' two
+thirds show that two facts agree. They do not show why either one is
+true.
 
 </details>
 
@@ -698,7 +788,7 @@ either one is true.
 | The question | On this page |
 |---|---|
 | What is named here? | lengths ($l$, $w$, $h$, $r$), the number $\pi$, and a toolkit function for each shape |
-| What is promised? | each formula, said in words, written in symbols, and checked by a test; bigger tools built from smaller ones |
+| What is promised? | each formula, said in words, written in symbols, and compared with a solution; bigger tools built from smaller ones |
 | What happens when? | the paint steps in order: area, then gaps, then coats, then litres, then tins, rounded up last |
 | What does this space let us do? | m, m² and m³ are different spaces: multiply across them, never add; tins live in $\mathbb{N}$, so we round up |
 

@@ -2,7 +2,7 @@
 title: "Waves: sine, cosine and sound — Practice"
 practice_for: waves
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 ---
 
 # Waves: sine, cosine and sound — Practice
@@ -162,8 +162,9 @@ shape of the coast change it, but it is a useful first model.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, wrote her own wave
-function. The test fails. What does her function do with a quarter of a
-second, and what needs to change?
+function. A quarter of a second into a 1 Hz wave, the wave should be
+at its top, 1. Hers is somewhere else. What does her function do with a
+quarter of a second, and what needs to change?
 
 ```python exec
 id: waves-practice-fix-degrees
@@ -172,24 +173,25 @@ import math
 def sound_wave(amplitude, frequency, time):
     """Return the height of a sine wave at a time in seconds."""
     return amplitude * math.sin(360 * frequency * time)
-
-assert close_enough(sound_wave(1, 1, 0.25), 1), "the top, a quarter through"
-print("sound_wave keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+sound_wave(1, 1, 0.25)    # the top, a quarter through
+```
 
-A whole turn is $360^\circ$, and in degrees Schlomi's idea holds. But
-`math.sin` takes radians, and a whole turn in radians is $2\pi$:
+```solution
+import math
 
-```python
+def sound_wave(amplitude, frequency, time):
+    """Return the height of a sine wave at a time in seconds."""
     return amplitude * math.sin(2 * math.pi * frequency * time)
-```
+---
+A whole turn is $360^\circ$, and in degrees Schlomi's idea holds. But
+`math.sin` takes radians, and a whole turn in radians is $2\pi$.
 
 `math.sin(math.radians(360 * frequency * time))` works too. The first
 version made $360 \div 2\pi \approx 57$ turns where it meant one.
-
-</details>
+```
 
 **7. Predict.** What does this give? Think about how far through its
 repeat the wave is.
@@ -450,24 +452,27 @@ def key_frequency(key):
     return 440 * 2 ** ((key - 49) // 12)
 
 print(key_frequency(49), key_frequency(40))
-assert close_enough(key_frequency(40), 261.63, tolerance=0.01), "middle C"
-print("key_frequency keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+key_frequency(49)    # the 440 Hz A
+key_frequency(40)    # middle C
+```
 
-It prints `440 220.0`, and the test fails. `//` rounds down to a whole
+```solution
+def key_frequency(key):
+    """Return the frequency in Hz of a piano key, where key 49 is the 440 Hz A."""
+    return 440 * 2 ** ((key - 49) / 12)
+
+print(key_frequency(49), key_frequency(40))
+---
+Schlomo's version prints `440 220.0`. `//` rounds down to a whole
 number, so $(40 - 49) \div 12 = -0.75$ becomes −1: a whole octave down,
 to the A at 220 Hz. Every key is pushed down to the nearest A at or
-below it. The power needs the fraction, which is `/`:
+below it. The power needs the fraction, which is `/`.
 
-```python
-    return 440 * 2 ** ((key - 49) / 12)
+Now middle C gives 261.6255653005986. Key 49 alone would never have
+shown this, because $0 // 12$ and $0 / 12$ are both 0. Schlomo's `//`
+is the division he has used most, for pixels and digits, and here it
+quietly rounds the power down.
 ```
-
-Now middle C gives 261.6255653005986, and the test passes. The test at
-key 49 alone would never have found this, because $0 // 12$ and
-$0 / 12$ are both 0. Schlomo's `//` is the division he has used most,
-for pixels and digits, and here it quietly rounds the power down.
-
-</details>

@@ -38,7 +38,7 @@ this.
 There is a surprise in the paper question. Each fold only doubles the
 paper. But after 50 folds, the paper would reach most of the way to the
 Sun. Doubling again and again is called a *power*. Later pages in this
-module are about powers. For now, just notice the surprise.
+module are about powers. For now, notice the surprise.
 
 ## What this module is for
 
@@ -55,7 +55,7 @@ feel normal. (*Zen* is a word for a calm mind.)
 ## Nothing to memorise
 
 We will not memorise anything here. We practise an idea until it feels
-normal and easy to use. That is called *fluency*.
+normal. That is called *fluency*.
 
 Think of the way to a shop you visit every week. You did not learn the
 way from a list. You walked it many times, and now you do not need to
@@ -80,7 +80,7 @@ and nothing is sent anywhere.
 
 ## Calm is the goal
 
-When learning goes well, you feel curious: you want to know what
+When learning goes well, you feel curious. You want to know what
 happens next. Sometimes that feeling slowly changes. You start to feel
 frustrated: annoyed, tired or stuck. It is useful to notice this change.
 It usually means that a step was too big. A smaller step helps more

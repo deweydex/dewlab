@@ -1,7 +1,7 @@
 ---
 title: "Everything is ones and zeros"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   counting-with-two-digits:
     covers: [MIT-1.4]
@@ -368,28 +368,51 @@ def pixel_row(bits, width=4):
     return ones_and_zeros.replace("1", "#").replace("0", ".")
 ```
 
-The next cell tests all three with `assert`. Until `to_hex` is
-finished, expect an error that ends `Unknown format code '?'`. Python
-does not know a format called `?`.
+How do your three tools compare with one way to write them? The table
+below runs the same calls on your tools and on a solution, side by side.
+Until `to_hex` is finished, its rows show `ValueError` in your column.
+Python does not know a format called `?`.
 
-```python exec
-id: everything-is-toolkit-tests
-assert to_binary(13) == "1101"
-assert to_binary(0) == "0"
-assert to_hex(255) == "FF"
-assert to_hex(127) == "7F"
-assert pixel_row(9) == "#..#"
-assert pixel_row(6) == ".##."
-assert pixel_row(1, 8) == ".......#"
-print("All three tools keep their promises.")
+```inputs
+for: everything-is-toolkit
+to_binary(13)
+to_binary(0)
+to_hex(255)
+to_hex(127)
+pixel_row(9)
+pixel_row(6)
+pixel_row(1, 8)    # a row 8 pixels wide
+```
+
+```solution
+for: everything-is-toolkit
+def to_binary(n):
+    """Give the whole number n (0 or more) in binary, as a string of 0s and 1s."""
+    return format(n, "b")
+
+
+def to_hex(n):
+    """Give the whole number n (0 or more) in hexadecimal, as a string, with capital letters."""
+    return format(n, "X")
+
+
+def pixel_row(bits, width=4):
+    """Give a row of pixels as text: # for each 1 bit, . for each 0 bit.
+
+    bits is a whole number from 0 up to 2 ** width - 1. width is how
+    many pixels wide the row is: 4 unless you say otherwise.
+    """
+    ones_and_zeros = to_binary(bits).zfill(width)
+    return ones_and_zeros.replace("1", "#").replace("0", ".")
 ```
 
 ### Your turn
 
-1. Run the tests, and read the last line of anything that goes wrong.
-2. Finish `to_hex`, run the toolkit cell again, then the tests.
-3. Add one test of your own, calculated by hand first. What is 100 in
-   hexadecimal?
+1. Compare before you change anything. Which rows are different, and
+   what does your column show for them?
+2. Finish `to_hex`, run the toolkit cell again, and compare again.
+3. What is 100 in hexadecimal? Find it by hand first, then run
+   `print(to_hex(100))` to see what Python says.
 
 ## A digit drawn in pixels
 

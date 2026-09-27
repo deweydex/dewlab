@@ -1,7 +1,7 @@
 ---
 title: "Racing the sorts: counting steps"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [exoplanets, life-expectancy]
 covers:
   lists-to-race-on:
@@ -378,50 +378,31 @@ def shell_sort(values):
     return items
 ```
 
-The tests are the ones the last page used for your other two sorts,
-with one more: all three sorts must agree on the same random list.
-Until `shell_sort` is written, this cell stops with an error.
+How does your `shell_sort` compare with one way to write it? The table
+below runs the same calls on your tool and on a solution, side by side.
+Most rows are the ones the last page used for your other two sorts.
+`numbers` is the last random list from the race above, 1,000 values
+long. One row shows its first eight values after `shell_sort`.
+`shell_sort` is meant to return a new list, and leave `numbers` as it
+was. The last two rows give the same
+list to your other two sorts, so you can see whether all three agree.
+Where a row is different, try that call on its own.
 
-```python exec
-id: racing-toolkit-tests
-hand = [13, 12, 9, 8, 7, 5, 3, 1]
-assert shell_sort(hand) == [1, 3, 5, 7, 8, 9, 12, 13]
-assert hand == [13, 12, 9, 8, 7, 5, 3, 1], "the original must not change"
-assert shell_sort([]) == []
-assert shell_sort([5]) == [5]
-assert shell_sort([4, 1, 4, 1]) == [1, 1, 4, 4]
-assert shell_sort(["Oisín", "Aoife", "Kwame"]) == ["Aoife", "Kwame", "Oisín"]
-for test_number in range(200):
-    numbers = random_list(random.randint(0, 50))
-    assert shell_sort(numbers) == sorted(numbers), numbers
-numbers = random_list(1000)
-assert shell_sort(numbers) == insertion_sort(numbers) == selection_sort(numbers)
-print("shell_sort keeps its promise.")
+```inputs
+for: racing-toolkit
+shell_sort([13, 12, 9, 8, 7, 5, 3, 1])
+shell_sort([])
+shell_sort([5])
+shell_sort([4, 1, 4, 1])
+shell_sort(["Oisín", "Aoife", "Kwame"])
+shell_sort(numbers)
+numbers[:8]                  # the first eight, after shell_sort
+insertion_sort(numbers)      # the same list, by insertion sort...
+selection_sort(numbers)      # ...and by selection sort
 ```
 
-```hint
-Which test does the error point at? Try `print(shell_sort([3, 1, 2]))`
-on its own. `None` means the function has no `return` yet.
-```
-
-```hint
-after: 12 errors
-title: some steps
-1. Copy the body of `shell_steps`, from `items = values.copy()` down to
-   `return items`, into `shell_sort`, under the docstring.
-2. Take out the line that starts with `print`.
-3. Check that `gap = gap // 2` sits inside the `while gap > 0:` loop,
-   but outside the `for` loop.
-
-**Think about:** what would happen if `gap = gap // 2` were left out?
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and work too. Run the
-tests to see what yours does.
-
-```python
+```solution
+for: racing-toolkit
 def shell_sort(values):
     """Return a new list with the items of values in ascending order,
     found by Shell sort. values itself is not changed.
@@ -444,10 +425,28 @@ def shell_sort(values):
     return items
 ```
 
-</details>
+```hint
+for: racing-toolkit
+after: 3 runs
+Which row is different? Try `print(shell_sort([3, 1, 2]))` on its own.
+`None` means the function has no `return` yet.
+```
 
-If you have not written `shell_sort` yet, open the answer above and
-copy it into the stub. The rest of the page uses it.
+```hint
+for: racing-toolkit
+after: 8 runs
+title: some steps
+1. Copy the body of `shell_steps`, from `items = values.copy()` down to
+   `return items`, into `shell_sort`, under the docstring.
+2. Take out the line that starts with `print`.
+3. Check that `gap = gap // 2` sits inside the `while gap > 0:` loop,
+   but outside the `for` loop.
+
+**Think about:** what would happen if `gap = gap // 2` were left out?
+```
+
+If you have not written `shell_sort` yet, open the solution under the
+table and copy it into the stub. The rest of the page uses it.
 
 Now Shell sort joins the race. Here is its counter, with the same two
 counting lines as `insertion_count`. Guess its count for 1,000 random
@@ -661,7 +660,7 @@ is faster, ask what it was raced on.
 | The question | On this page |
 |---|---|
 | What is named here? | the racers, as functions we can pass to a loop; `comparisons`, a counter inside each sort; the gap |
-| What is promised? | all three sorts promise the same sorted list, and the tests check that they agree; `time.perf_counter()` promises a clock reading |
+| What is promised? | all three sorts promise the same sorted list, and the comparison table shows whether they agree; `time.perf_counter()` promises a clock reading |
 | What happens when? | Shell sort sorts far-apart values first, then nearer ones; the order a list starts in changes insertion sort's work |
 | What does this space let us do? | a random list favours no sort; a nearly sorted list favours insertion sort; C runs faster than Python lines |
 

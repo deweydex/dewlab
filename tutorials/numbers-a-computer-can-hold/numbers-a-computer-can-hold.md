@@ -1,7 +1,7 @@
 ---
 title: "Numbers a computer can hold"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   the-row-and-column-of-a-pixel:
     covers: [PDP-LO4]
@@ -476,27 +476,43 @@ def digit_at(number, place, base=10):
     return number // base ** place % base
 ```
 
-Now test it. Until you write the `return` line, this cell stops with
-an error. The tests are meant to do that.
+How does your `digit_at` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Where a row is different, try that call on its own.
 
-```python exec
-id: numbers-toolkit-tests
-assert digit_at(2026, 0) == 6
-assert digit_at(2026, 3) == 2
-assert digit_at(2026, 4) == 0
-assert digit_at(1234, 0, 60) == 34
-assert digit_at(1234, 1, 60) == 20
-print("digit_at keeps its promise.")
+```inputs
+for: numbers-toolkit
+digit_at(2026, 0)
+digit_at(2026, 3)
+digit_at(2026, 4)
+digit_at(1234, 0, 60)    # 1234 seconds: the seconds
+digit_at(1234, 1, 60)    # 1234 seconds: the minutes
+```
+
+```solution
+for: numbers-toolkit
+def digit_at(number, place, base=10):
+    """Give the digit of a whole number in one place.
+
+    number is a whole number, 0 or more. place counts from 0 on the
+    right: place 0 is the ones, place 1 the tens, and so on. base is how
+    many digits the counting uses: 10 unless you say otherwise, or 60
+    for minutes and seconds.
+    """
+    return number // base ** place % base
 ```
 
 ```hint
-Which line does the error point at, and what did you expect
-`digit_at(2026, 0)` to give? Try `print(digit_at(2026, 0))` on its own
-to see what your version gives now.
+for: numbers-toolkit
+after: 3 runs
+Which row is different, and what did you expect `digit_at(2026, 0)` to
+give? Try `print(digit_at(2026, 0))` on its own to see what your version
+gives now.
 ```
 
 ```hint
-after: 10 errors
+for: numbers-toolkit
+after: 8 runs
 title: some steps
 1. The digit in place 3 of 2026 was `2026 // 10 ** 3 % 10`.
 2. In the function, the number is `number`, the place is `place`, and

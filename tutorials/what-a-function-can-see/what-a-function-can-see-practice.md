@@ -134,7 +134,6 @@ def game_score(enemies, coins, points_per_enemy=3):
 
 assert game_score(10, 4) == 34
 assert game_score(10, 4, points_per_enemy=2) == 24
-print("game_score keeps its promise.")
 ```
 
 A harder level of the game could give a different number of points for
@@ -294,7 +293,6 @@ def thunder_km(seconds, celsius=20):
 
 assert thunder_km(3) == 1.03
 assert thunder_km(3, celsius=0) == 0.99
-print("thunder_km keeps its promise.")
 ```
 
 At 20 °C, 3 seconds means about 1.03 km. On a freezing day the same 3

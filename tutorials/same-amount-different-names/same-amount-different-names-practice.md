@@ -4,14 +4,15 @@ practice_for: same-amount-different-names
 year: "2026-2027"
 version: 2026.09.26.1
 worlds:
-  numbers: Ordinary numbers, like 3 and 12.
+  numbers: Normal numbers, like 3 and 10.
   squiggles: Shapes like ♡ and △, which can stand for any number.
   letters: Letters like n and k, which can stand for any number.
 ---
 
 # Equivalent fractions: the same amount, different names — Practice
 
-Small problems on one idea: the same amount can have many names. Try
+These small problems are about one idea. The same amount can have
+many names. Try
 each problem before you open anything under it. Some problems come with
 numbers, shapes or letters. Choose the way you like in the box under
 the title.
@@ -164,7 +165,7 @@ top and 100 to the bottom?
 No. $\frac{2}{3}$ is more than half: two slices out of three. Adding
 the same number to the top and the bottom changes the amount.
 Multiplying both by the same number does not change it, because it only
-cuts every slice again. Adding feels just as fair. That is why many
+cuts every slice again. Adding feels as fair. That is why many
 people try it.
 
 </details>

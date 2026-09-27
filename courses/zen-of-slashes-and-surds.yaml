@@ -27,8 +27,9 @@ description: >-
   picture you can change, or to check your own work.
 
 
-  The first pages are written, and they will change as people use them.
-  Tell us what works for you and what does not.
+  The pages for fractions, powers, and surds and logarithms are written.
+  They will change as people use them. Tell us what works for you and
+  what does not.
 contents:
 - title: Before we start
   tutorials:
@@ -37,6 +38,24 @@ contents:
   tutorials:
   - one-whole-many-slices
   - same-amount-different-names
+  - which-is-bigger
+  - adding-slices
+  - taking-slices-away
+  - a-fraction-of-a-fraction
+  - does-multiplying-make-it-bigger
+  - how-many-fit
+  - fractions-with-holes
 - title: Powers, the long way and the short way
   tutorials:
   - the-long-way
+  - joining-two-stacks
+  - sharing-out
+  - when-everything-cancels
+  - more-on-the-bottom
+  - a-power-of-a-power
+- title: Surds and logs, undoing a power
+  tutorials:
+  - the-side-of-a-square
+  - sides-that-never-end
+  - halfway-steps
+  - how-many-hops

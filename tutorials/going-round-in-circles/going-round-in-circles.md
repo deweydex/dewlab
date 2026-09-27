@@ -1,7 +1,7 @@
 ---
 title: "Going round in circles: angles, radians and the unit circle"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.26.2
 datasets: [planet-orbits]
 covers:
   a-turn-in-360-pieces:
@@ -296,38 +296,58 @@ def point_on_circle(radius, angle_degrees):
     return (radius * math.cos(angle), radius * math.sin(angle))
 ```
 
-Run the toolkit cell, then the tests. Until the body is written, the
-first test stops with a `TypeError`, because `...` returns `None`.
-The last test walks round a circle of radius 5, a degree at a time, and
-uses your `distance` to check that every point is 5 from the centre.
+Run the toolkit cell. How does your `point_on_circle` compare with
+one way to write it? The table below runs the same calls on your
+function and on a solution, side by side. Until the body is written,
+your column shows `None`, because `...` returns `None`. The last two
+rows walk round a circle of radius 5, a degree at a time, and use your
+`distance` to find the nearest and the furthest of the 361 points from
+the centre.
 
-```python exec
-id: going-round-toolkit-tests
-x, y = point_on_circle(1, 0)
-assert close_enough(x, 1) and close_enough(y, 0), "start on the right"
-x, y = point_on_circle(1, 90)
-assert close_enough(x, 0) and close_enough(y, 1), "a quarter turn: the top"
-x, y = point_on_circle(2, 180)
-assert close_enough(x, -2) and close_enough(y, 0), "half a turn, radius 2"
-for angle in range(361):
-    assert close_enough(distance((0, 0), point_on_circle(5, angle)), 5), angle
-print("point_on_circle keeps its promise.")
+```inputs
+for: going-round-toolkit
+point_on_circle(1, 0)       # start on the right
+point_on_circle(1, 90)      # a quarter turn: the top
+point_on_circle(2, 180)     # half a turn, radius 2
+min(distance((0, 0), point_on_circle(5, angle)) for angle in range(361))   # the nearest point to the centre...
+max(distance((0, 0), point_on_circle(5, angle)) for angle in range(361))   # ...and the furthest: both 5
 ```
 
+```solution
+for: going-round-toolkit
+import math
+
+def point_on_circle(radius, angle_degrees):
+    """Return the point (x, y) on a circle of this radius, centred at (0, 0).
+
+    angle_degrees is measured anticlockwise from the positive x direction.
+    point_on_circle(1, 90) is (0, 1), give or take a tiny rounding error.
+    """
+    angle = math.radians(angle_degrees)
+    return (radius * math.cos(angle), radius * math.sin(angle))
+```
+
+A number such as `6.123233995736766e-17` is $6.1 \times 10^{-17}$. This
+number comes from a float's rounding. It is very close to 0. Where a row is different by more
+than that, try that call on its own.
+
 ```hint
+for: going-round-toolkit
+after: 3 runs
 Try `print(point_on_circle(1, 90))` on its own. What came back? Which
 two things does the function need to give back, and in what brackets?
 ```
 
 ```hint
-after: 10 errors
+for: going-round-toolkit
+after: 8 runs
 title: some steps
 1. Make a name `angle` for `math.radians(angle_degrees)`.
 2. Give back a pair: `radius * math.cos(angle)` first, then
    `radius * math.sin(angle)`, in round brackets.
 
 **Think about:** what would happen if you left out `math.radians`?
-Which test would catch it?
+Which row would show it?
 ```
 
 ## Drawing the clock

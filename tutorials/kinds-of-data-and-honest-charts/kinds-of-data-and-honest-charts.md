@@ -1,7 +1,7 @@
 ---
 title: "Kinds of data, and honest charts"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [life-expectancy]
 covers:
   four-kinds-of-data:
@@ -265,26 +265,48 @@ def frequency_table(values):
     return table
 ```
 
-Run the toolkit cell, then the tests. Until the body is written,
-`frequency_table` returns `None`, so expect the first test to stop
-with an `AssertionError`.
+Run the toolkit cell. How does your `frequency_table` compare with one
+way to write it? The table below runs the same calls on your function
+and on a solution, side by side. Until the body is written,
+`frequency_table` returns `None`, so your column shows `None` in the
+first three rows, and an error in the fourth.
 
-```python exec
-id: kinds-toolkit-tests
-assert frequency_table(["bus", "car", "bus"]) == {"bus": 2, "car": 1}
-assert frequency_table([3, 0, 3, 3]) == {3: 3, 0: 1}
-assert frequency_table([]) == {}
-assert total(frequency_table(journeys).values()) == len(journeys)
-print("frequency_table keeps its promise.")
+```inputs
+for: kinds-toolkit
+frequency_table(["bus", "car", "bus"])
+frequency_table([3, 0, 3, 3])
+frequency_table([])
+total(frequency_table(journeys).values())    # the frequencies, added up...
+len(journeys)                                # ...and the number of journeys
+```
+
+```solution
+for: kinds-toolkit
+def frequency_table(values):
+    """Return a dictionary from each value in values to how often it appears.
+
+    The keys come in the order each value first appears.
+    frequency_table(["bus", "car", "bus"]) is {"bus": 2, "car": 1}.
+    With no values at all, the result is an empty dictionary, {}.
+    """
+    table = {}
+    for value in values:
+        if value in table:
+            table[value] = table[value] + 1
+        else:
+            table[value] = 1
+    return table
 ```
 
 ```hint
-Which test does the error point at? Try
+for: kinds-toolkit
+after: 3 runs
+Which row is different? Try
 `print(frequency_table(["bus", "car", "bus"]))` on its own. What does
 your version give?
 ```
 
-The last test says something true of every frequency table: the
+The last two rows show something true of every frequency table: the
 frequencies add up to the number of values. `.values()` gives the
 values of a dictionary without their keys, and `total` from
 [Doing it again](tutorial:doing-it-again) adds them up. `.keys()` gives
