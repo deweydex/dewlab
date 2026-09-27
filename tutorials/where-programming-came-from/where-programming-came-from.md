@@ -88,7 +88,7 @@ to follow any list of instructions it was given.
 
 The design had two main parts, and both are still inside every
 computer. The *store* held numbers while the machine worked, like the
-*names*{.term} in a Python program. The *mill* did the arithmetic, like the part
+names in a Python program. The *mill* did the arithmetic, like the part
 of a computer that adds and multiplies. The instructions came in on
 punched cards: stiff cards with holes in them.
 
@@ -162,7 +162,7 @@ them in a book published in 1713, after his death. Seki Takakazu found the
 same numbers in Japan, and his work was published a year earlier.
 
 Each Bernoulli number is found from the ones before it. That makes them
-a job that suits a machine: a loop, with a *list*{.term} that grows. The only
+a job that suits a machine: a loop, with a list that grows. The only
 trouble is that they are fractions, and *floats*{.term} would round them, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
 Python has a *module*{.term} for exact fractions. What do you expect each line
@@ -192,8 +192,8 @@ In symbols, for each $m$ from 1 on:
 $$\sum_{k=0}^{m} \binom{m+1}{k} B_k = 0$$
 
 This is a modern way to write the rule, not the one Lovelace's table
-used. It gives the same numbers. The *cell*{.term} uses `combinations` from your
-*toolkit*{.term}. Before you run it, guess: will every Bernoulli number be a
+used. It gives the same numbers. The cell uses `combinations` from your
+toolkit. Before you run it, guess: will every Bernoulli number be a
 different fraction?
 
 ```python exec

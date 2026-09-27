@@ -87,7 +87,7 @@ answer: 2
 
 The first walk takes you 4 metres. The second takes you half of the 4
 metres left, so you have come 6. Then 7, then 7.5. Before you run the
-*cell*{.term}, guess how far you have come after ten walks.
+cell, guess how far you have come after ten walks.
 
 ```python exec
 id: getting-closer-door-1
@@ -213,7 +213,7 @@ and say "the limit, as $x$ approaches 2, is 4". The value at 2 itself
 plays no part. The rule has none, and the limit is still 4.
 
 We will close in on several more numbers, so let's give the loop a
-*name*{.term}. `approach` is a tool for this page only. It prints the same kind
+name. `approach` is a tool for this page only. It prints the same kind
 of table for any rule and any point `a`.
 
 ```python exec
@@ -250,7 +250,7 @@ with no algebra.
 
 ### Your turn
 
-1. Close in on 2 for $\frac{x^3 - 8}{x - 2}$. Write it as a *function*{.term},
+1. Close in on 2 for $\frac{x^3 - 8}{x - 2}$. Write it as a function,
    then call `approach`. What limit do you see?
 2. Try `approach(hole_rule, 3)`. There is no hole at 3. How does the
    limit compare with `hole_rule(3)`?

@@ -13,7 +13,7 @@ covers:
 
 # A program of your own
 
-Here is a whole program. Before you run it, what do you think the second
+Here is a whole *program*{.term}. Before you run it, what do you think the second
 line of its output will be?
 
 ```python exec
@@ -53,7 +53,7 @@ each one small. Here are three starting points.
 **A cipher tool.** The first version codes and decodes one message with a
 Caesar shift, like the program above. It has room to grow:
 
-- a key of your own, kept in a dictionary, in place of a shift;
+- a key of your own, kept in a *dictionary*{.term}, in place of a shift;
 - small letters, spaces and punctuation handled on purpose;
 - cracking a shift with no key, by counting letters;
 - a keyword cipher, where each letter has its own shift, taken from a
@@ -126,7 +126,7 @@ anything at all. It should feel almost too small to show anyone.
 
 - [ ] it runs from the top, on a freshly loaded page, with no errors;
 - [ ] it does one thing a person could use, however small;
-- [ ] a comment at the top gives its name, a version number and the date;
+- [ ] a *comment*{.term} at the top gives its name, a version number and the date;
 - [ ] each function's name says what it does, and a comment under its
   `def` line says what goes in and what comes out;
 - [ ] you have tried it on at least three inputs whose answers you knew

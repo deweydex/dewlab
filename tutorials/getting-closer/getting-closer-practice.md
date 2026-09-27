@@ -14,10 +14,10 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, with `plot_rule` from
+Your toolkit is loaded on this page, with `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule) and `close_enough` from
 [Does it work?](tutorial:does-it-work). `approach` belonged to the
-tutorial page only, so the first *cell*{.term} below writes it again. Run that
+tutorial page only, so the first cell below writes it again. Run that
 cell first.
 
 ## Warm-up
@@ -129,7 +129,7 @@ id: getting-closer-practice-core
 
 **5. Make.** A sound engineer's formula for a wave has
 $\frac{1 - \cos x}{x^2}$ in it, with $x$ in radians. At $x = 0$ it is
-$\frac{0}{0}$. Write it as a *function*{.term}, and use `approach` to find its
+$\frac{0}{0}$. Write it as a function, and use `approach` to find its
 limit at 0.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>

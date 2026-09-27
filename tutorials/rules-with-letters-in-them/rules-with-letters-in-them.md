@@ -30,8 +30,8 @@ On this page we:
 
 - tell three kinds of sentence with letters in them apart: an
   expression, an equation and an identity
-- put a number in for a letter, and add `evaluate` to the *toolkit*{.term}
-- keep an expression like $3x^2 + 5x - 2$ as a *list*{.term} of numbers
+- put a number in for a letter, and add `evaluate` to the toolkit
+- keep an expression like $3x^2 + 5x - 2$ as a list of numbers
 - simplify an expression by collecting the parts that belong together
 - multiply out brackets with a loop, and find the three weights that
   draw a curve on a screen
@@ -39,7 +39,7 @@ On this page we:
 > **The space we're in.** We work with the *real numbers*{.term}, and one letter
 > at a time, usually $x$. A letter stands for a number, so any move we may make with
 > a number, we may make with the letter. Python has no letters of this
-> kind. A Python *name*{.term} must have a value before we use it. So we check
+> kind. A Python name must have a value before we use it. So we check
 > our algebra by giving the letter one value after another. We usually
 > do not say it, but maths writes $3x$ for "3 times $x$", and Python
 > needs `3 * x`.
@@ -79,7 +79,7 @@ an *expression*{.term} was a piece of code that Python turns into one value.
 In maths, an expression can have letters in it too. It is a rule made
 of numbers, letters and operations, such as $50n + 30$ or $x^2 - 4$. It
 has a value once each letter has a value. Here $n$ is a name for any
-number we choose to put in, like the *parameter*{.term} of a *function*{.term}.
+number we choose to put in, like the *parameter*{.term} of a function.
 
 Now the question. "How many rows make exactly 280 pixels?" is written
 
@@ -100,7 +100,7 @@ An *identity* is an equation that is true for every value of its
 letters. Here $n$ is a name for every number at once. An identity is a
 promise: whatever number you put in, the two sides agree.
 
-The *cell*{.term} tries 1 to 8 rows, and asks the equation and the identity
+The cell tries 1 to 8 rows, and asks the equation and the identity
 of each. Pause here and guess which rows will say `True` in each
 column. Then run it.
 

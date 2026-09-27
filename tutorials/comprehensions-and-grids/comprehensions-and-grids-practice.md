@@ -10,8 +10,8 @@ worlds:
 
 # Comprehensions, grids and aliasing — Practice
 
-These problems are on comprehensions, grids and two names for one list,
-with three from earlier pages. Comprehensions and generator expressions are this
+These problems are on comprehensions, *grids*{.term} and two names for one *list*{.term},
+with three from earlier pages. Comprehensions and *generator expressions*{.term} are this
 page's own tools, so the first solution to a problem may use them. Try each
 problem before you open anything under it.
 
@@ -46,7 +46,7 @@ says how many rows, and the number after `*` how long each row is.
 
 ## 2. There and back
 
-Can you write this loop as a comprehension, under the name `short`?
+Can you write this *loop*{.term} as a comprehension, under the name `short`?
 
 ```python exec
 id: there-and-back-1
@@ -170,7 +170,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`['a', 'b', 'new']`. The function never gave `items` a new value with
+`['a', 'b', 'new']`. The *function*{.term} never gave `items` a new value with
 `=`, which would have stayed inside it. It changed the list `items` names,
 and that is the list `things` names too. It is problem 4 again, with the
 second name made by a call.
@@ -387,7 +387,7 @@ reversed each row in place would change the caller's picture too.
 
 ## 10. Pair by pair
 
-Can you set `products` to the two lists multiplied element by element?
+Can you set `products` to the two lists multiplied *element*{.term} by element?
 `[1, 2, 3]` and `[4, 5, 6]` give `[4, 10, 18]`.
 
 ```python exec
@@ -546,7 +546,7 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 `GOR`. A string slices the same way as a list. The numbers are the cuts
-between letters, and a slice keeps what lies between two cuts.
+between letters, and a *slice*{.term} keeps what lies between two cuts.
 
 </details>
 
@@ -579,7 +579,7 @@ What will the last line print?
 
 <details class="dl-answer"><summary>why</summary>
 
-5. The `total = 10` inside the function made a local variable, which
+5. The `total = 10` inside the function made a local *variable*{.term}, which
 disappears when the function returns. The `total` outside was never
 touched. Compare problem 5. There, nothing was assigned, and a list was
 changed in place.

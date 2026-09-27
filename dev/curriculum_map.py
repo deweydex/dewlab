@@ -562,6 +562,11 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 # quoted `return` made "return" look like a word the curriculum uses two
 # tutorials before it explains it.
 HTML_CODE_RE = re.compile(r"<code>.*?</code>", re.DOTALL)
+# A later use marked `*matrix*{.term}` is a use of "matrix", not an
+# introduction, so it is read as the plain word. Left as it was, the
+# `{.term}` itself read as the word "term", and every page with a mark
+# "used" *term* before the algebra page that introduces it.
+LATER_USE_RE = re.compile(r"\*{1,3}([^*\n]+?)\*{1,3}\{\.term\}")
 SUBTITLE_RE = re.compile(r"^\*\*Programming Design Principles.*$", re.MULTILINE)
 BIBLIOGRAPHY_RE = re.compile(r"^## Where to read more.*", re.DOTALL | re.MULTILINE | re.IGNORECASE)
 
@@ -587,6 +592,7 @@ def prose_of(tutorial: Tutorial) -> str:
     body = FENCE_BLOCK_RE.sub("", path.read_text())
     body = INLINE_CODE_RE.sub("", body)
     body = HTML_CODE_RE.sub("", body)
+    body = LATER_USE_RE.sub(r"\1", body)
     body = BIBLIOGRAPHY_RE.sub("", body)
     return SUBTITLE_RE.sub("", body)
 

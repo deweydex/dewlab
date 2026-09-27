@@ -12,9 +12,9 @@ Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
 anything.
 
-Your *toolkit*{.term} is loaded on this page, so `mean`, `median`, `mode` and
+Your toolkit is loaded on this page, so `mean`, `median`, `mode` and
 `std_dev` are ready to use, and so are `largest`, `smallest`, `total`
-and the rest. One warning, from the tutorial: a *cell*{.term} that says
+and the rest. One warning, from the tutorial: a cell that says
 `mean = ...` hides the tool. Call the number something else.
 
 ## Warm-up
@@ -104,7 +104,7 @@ inland = [15, 24, 18, 27, 20, 16, 26]
 print(coast, inland)
 ```
 
-**5. Make.** The two *lists*{.term} above are made-up highest temperatures, in
+**5. Make.** The two lists above are made-up highest temperatures, in
 degrees Celsius, for one week in two towns: one on the coast, and one
 far inland. Find each town's mean, range and standard deviation. What
 does the sea seem to do to the weather?
@@ -172,7 +172,7 @@ means anything?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The *function*{.term} takes the middle position of the list as it was given,
+The function takes the middle position of the list as it was given,
 which is 78 seconds, the slowest download. Schlomi's picture, the
 middle one of a line, works. But one step is missing. The line must be
 *in order*, so the values must be sorted first:
@@ -213,7 +213,7 @@ data_report([125.0, 40.0, 78.0, 312.0, 65.0])
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The error is an `UnboundLocalError`. Which *name*{.term} does it name?
+1. The error is an `UnboundLocalError`. Which name does it name?
 2. Inside the function, `mean = ...` makes `mean` a *local name*{.term}. Where
    does Python look for `mean`, then, when the same line calls it?
 3. What could the number be called instead?

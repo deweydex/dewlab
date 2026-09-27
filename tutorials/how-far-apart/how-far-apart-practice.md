@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `distance` and
+Your toolkit is loaded on this page, including `distance` and
 `midpoint` from the tutorial and `slope` from
 [Straight lines](tutorial:straight-lines). `math` is not loaded. Each
-*cell*{.term} that needs it starts with `import math`.
+cell that needs it starts with `import math`.
 
 ## Warm-up
 

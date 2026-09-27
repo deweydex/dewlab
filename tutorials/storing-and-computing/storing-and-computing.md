@@ -55,7 +55,7 @@ time.
 
 A *variable* is a name that refers to a value. We make one with the `=`
 sign. In programming, `=` means "give this name to this value". It does not
-mean "is equal to", the way it does in maths, and the next cell shows why
+mean "is equal to", the way it does in maths, and the next *cell*{.term} shows why
 that matters.
 
 ```python exec
@@ -171,7 +171,7 @@ A *Boolean* (`bool`) is a value that is either `True` or `False`. Booleans
 are named after George Boole, who created an algebra of logic in the
 1840s.
 
-The `type()` function tells us what type a value is.
+The `type()` *function*{.term} tells us what type a value is.
 
 ```python exec
 id: data-types-different-kinds-of-information-1
@@ -206,7 +206,7 @@ types. For numbers it adds, and for strings it *concatenates*, which means
 it joins them end to end. This is why types matter.
 
 Before you run the next cell, write what you think each line will print in
-the comment beside it.
+the *comment*{.term} beside it.
 
 ```python exec
 id: your-turn-2
@@ -262,7 +262,7 @@ number_as_text = str(100)        # a number to text
 print("The answer is " + number_as_text)
 ```
 
-This matters most when a program asks the person using it to type
+This matters most when a *program*{.term} asks the person using it to type
 something. The `input()` function asks for some typing, and returns what
 was typed. It always returns a string, even when the person types a
 number.
@@ -291,7 +291,7 @@ the oldest secret code there is. Julius Caesar is said to have written to his
 generals with every letter moved three places along: A became D, B became E.
 It is called a *Caesar shift*.
 
-Here is the plan, as pseudocode:
+Here is the plan, as *pseudocode*{.term}:
 
 ```
 STORE the letter, and how far to move it

@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `point_on_circle` from
+Your toolkit is loaded on this page, including `point_on_circle` from
 the tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `close_enough` from
-[Does it work?](tutorial:does-it-work). `math` is not loaded. Each *cell*{.term}
+[Does it work?](tutorial:does-it-work). `math` is not loaded. Each cell
 that needs it starts with `import math`.
 
 ## Warm-up
@@ -137,7 +137,7 @@ each side. What do you notice?
 
 1. Six corners evenly spaced are $360 \div 6 = 60^\circ$ apart, so the
    angles are 0, 60, 120, 180, 240 and 300: `range(0, 360, 60)`.
-2. Keep the corners in a *list*{.term}. To close the shape, add the first corner
+2. Keep the corners in a list. To close the shape, add the first corner
    again at the end.
 3. Measure from each corner to the next.
 
@@ -174,7 +174,7 @@ the tutorial, so its third side is 5 too.
 </details>
 
 **6. Fix.** Schlomo, who is learning Python too, is writing a game that
-seats players round a campfire. His *function*{.term} is meant to measure angles
+seats players round a campfire. His function is meant to measure angles
 the maths way, so a quarter turn, $90^\circ$, should be the top of the
 circle. What does it do instead, and what needs to change?
 

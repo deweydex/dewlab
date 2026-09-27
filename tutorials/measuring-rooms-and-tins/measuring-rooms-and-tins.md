@@ -42,7 +42,7 @@ On this page we:
   and circles
 - meet $\pi$, and see where it comes from
 - measure how much a solid holds, and how much it takes to wrap it
-- turn every formula into a *toolkit*{.term} *function*{.term}, and check each one
+- turn every formula into a toolkit function, and check each one
 - find the paint for a real room, and measure a CD, a 3D print and
   the Moon on the way
 
@@ -722,7 +722,7 @@ Back to the bedroom. Here are the steps, in order:
 Why up? Tins come whole. We are in the *natural numbers*{.term}, $\mathbb{N}$,
 where 2.2 tins is not something a shop sells. If we round to the nearest
 whole number, we get 2 tins, and one wall is left unfinished. `math.ceil`
-rounds any number up to the next whole number. Its *name*{.term} is short for
+rounds any number up to the next whole number. Its name is short for
 "ceiling".
 
 ```python exec

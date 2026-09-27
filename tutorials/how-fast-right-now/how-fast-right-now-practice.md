@@ -15,11 +15,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `derivative_at` from the
+Your toolkit is loaded on this page, including `derivative_at` from the
 tutorial, `slope` and `line_through` from
 [Straight lines](tutorial:straight-lines), `speed` from
 [Running a formula backwards](tutorial:running-a-formula-backwards),
-`plot_rule` and `close_enough`. The first *cell*{.term} below brings back the
+`plot_rule` and `close_enough`. The first cell below brings back the
 falling hailstone and two small rules. Run it first.
 
 ## Warm-up
@@ -132,7 +132,7 @@ id: how-fast-practice-core
 $20 + 70e^{-t/10}$. This shape is Newton's law of cooling, a real law
 of physics. The hotter the tea is than the room, the faster it cools.
 (The 10 is invented. A real cup depends on the cup.)
-Write it as a *function*{.term} and find its rate of change at 0 minutes and at
+Write it as a function and find its rate of change at 0 minutes and at
 10 minutes. What does the sign of the answer mean?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>

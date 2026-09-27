@@ -9,13 +9,13 @@ version: 2026.09.25.2
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. Many problems here ask "which space is
-this name in?". It helps to point at each *name*{.term} and say its space out
-loud: this call's own, the page's, or Python's. Your *toolkit*{.term} is loaded
+this name in?". It helps to point at each name and say its space out
+loud: this call's own, the page's, or Python's. Your toolkit is loaded
 on this page, from every earlier page.
 
 ## Warm-up
 
-Use this *cell*{.term} for any warm-up problem. Paste in the code, and run it.
+Use this cell for any warm-up problem. Paste in the code, and run it.
 
 ```python exec
 id: what-function-practice-scratch-1
@@ -107,7 +107,7 @@ end makes it print `2`.
 </details>
 
 **4. Make.** In a game, each enemy you stop is worth 3 points, and each
-coin you pick up is worth 1. This *function*{.term} reads the points for an enemy
+coin you pick up is worth 1. This function reads the points for an enemy
 from the page. Change it so that `points_per_enemy` is a parameter with
 a *default value*{.term} of 3. Then check that `game_score(10, 4)` is 34 and that
 `game_score(10, 4, points_per_enemy=2)` is 24.
@@ -301,7 +301,7 @@ each call, and it is not needed outside.
 
 </details>
 
-**9. Predict.** A small robot keeps its route as a *list*{.term} of moves. What
+**9. Predict.** A small robot keeps its route as a list of moves. What
 does the last line show?
 
 ```python

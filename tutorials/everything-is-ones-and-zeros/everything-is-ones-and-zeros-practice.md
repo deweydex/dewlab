@@ -7,7 +7,7 @@ version: 2026.09.25.1
 
 # Everything is ones and zeros — Practice
 
-Each problem says what kind it is: **Predict** (say what a *cell*{.term} will
+Each problem says what kind it is: **Predict** (say what a cell will
 print, then run it), **Make** (build something small), **Fix** (find
 why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route). Answers are in the folds. You learn more

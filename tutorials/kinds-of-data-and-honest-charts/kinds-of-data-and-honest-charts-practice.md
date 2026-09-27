@@ -15,14 +15,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page: `frequency_table` from the
+Your toolkit is loaded on this page: `frequency_table` from the
 tutorial, and `largest`, `smallest`, `count_if`, `total`, `simulate` and
 the rest from earlier pages. Every dataset on this page is made up,
 except the life expectancy file.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: kinds-practice-warm-up
@@ -71,7 +71,7 @@ discrete or *continuous*{.term}?
 </details>
 
 **3. Make.** In a survey of 40 people, 10 walk to work. How big an
-angle does "walk" get in a pie chart? Calculate it in Python, with *names*{.term}
+angle does "walk" get in a pie chart? Calculate it in Python, with names
 for the numbers.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -102,7 +102,7 @@ over.
 ## Core
 
 **5. Make.** Roll a fair die 60 times with `random.randint(1, 6)`, keep
-the rolls in a *list*{.term}, and draw a bar chart of their *frequency table*{.term}. Put
+the rolls in a list, and draw a bar chart of their *frequency table*{.term}. Put
 the faces in order, 1 to 6, along the bottom. About how tall do you
 expect each bar to be?
 
@@ -436,7 +436,7 @@ a good check.
 ## Stretch
 
 **13. Make.** The stem-and-leaf loop on the tutorial page went from
-stem 1 to stem 4, because we looked at the data first. Write a *function*{.term}
+stem 1 to stem 4, because we looked at the data first. Write a function
 `stem_and_leaf(values)` that prints the plot for any list of whole
 numbers from 0 to 99, finding the first and last stems for itself.
 Test it on the journey times and on the June temperatures.

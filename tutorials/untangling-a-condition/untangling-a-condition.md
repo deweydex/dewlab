@@ -37,8 +37,8 @@ as `not a or not b`?
 On this page we:
 
 - compare two *conditions*{.term} row by row, with the *truth tables*{.term} from the last page
-- write `same_rule`, a *function*{.term} that checks every row for us, and add it to
-  the *toolkit*{.term}
+- write `same_rule`, a function that checks every row for us, and add it to
+  the toolkit
 - find the two laws that let us move a `not` inside brackets
 - use them to untangle a hard condition from a real program, one checked
   step at a time
@@ -79,7 +79,7 @@ rule with three True/False inputs has a truth table with {8} rows.
 
 ## Two ways to grey out a button
 
-Let's give each programmer's test a *name*{.term}. Each one is a small function: two
+Let's give each programmer's test a name. Each one is a small function: two
 True/False values go in, and one True/False value comes out. The result is
 `True` when the button should be greyed out.
 
@@ -159,7 +159,7 @@ def grey_out_c(is_open, has_stock):
 ```
 
 Is `grey_out_c` the same rule as the other two? Make a guess before you run
-the *cell*{.term}.
+the cell.
 
 ```python exec
 id: untangling-arithmetic-move

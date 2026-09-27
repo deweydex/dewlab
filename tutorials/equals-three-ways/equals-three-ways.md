@@ -72,7 +72,7 @@ question.
 
 In maths, $x = 5$ and $5 = x$ say the same thing. The sign works both
 ways, and it states a fact. Most of us met `=` in maths for years before we
-met it in a program, so the maths meaning comes first.
+met it in a *program*{.term}, so the maths meaning comes first.
 
 Here is a way to see that Python's `=` does not work both ways. This cell
 is meant to fail.

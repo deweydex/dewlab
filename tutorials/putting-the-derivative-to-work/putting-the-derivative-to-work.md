@@ -34,7 +34,7 @@ On this page we:
   to the bottom of a curve
 - finish each project by comparing what we found with what we expected
 
-> **The space we're in.** Everything from this unit is in your *toolkit*{.term}:
+> **The space we're in.** Everything from this unit is in your toolkit:
 > `derivative_at`, `bisect_root` and `newton`, with `vertex`,
 > `solve_quadratic`, `smallest` and the rest from earlier units. Some
 > projects use rules, some use lists of measured numbers, and one uses
@@ -100,7 +100,7 @@ and the bottom of the wave. It is largest, near 1 or $-1$, at 0, 3.2
 and 6.0, where the wave crosses the middle. Flat means "turning here".
 Steep means "changing fast here".
 
-Here are the projects. Each takes a few *cells*{.term}, and each ends with a cell
+Here are the projects. Each takes a few cells, and each ends with a cell
 that sets what we found beside what we expected.
 
 | Project | The question | What it uses |

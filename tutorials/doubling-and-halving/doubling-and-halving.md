@@ -41,7 +41,7 @@ On this page we:
 - see why doublings add, and use $2^{10} \approx 1000$ to estimate
 - find how long computer chips, and a country's emissions, took to
   double
-- count halvings down to 1, and add `halvings` to the *toolkit*{.term}
+- count halvings down to 1, and add `halvings` to the toolkit
 - see why *binary search*{.term} is so quick: $2^k = n$ and $k = \log_2 n$, from
   both ends
 
@@ -98,7 +98,7 @@ has told someone new, so four people know. Every hour, the number who
 know doubles.
 
 The population of Ireland at the 2022 census was 5,149,139. Before you
-run the *cell*{.term}, guess how many hours the rumour needs to reach that many
+run the cell, guess how many hours the rumour needs to reach that many
 people. A day? A week? A month?
 
 ```python exec
@@ -215,7 +215,7 @@ product started at 1 on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding).
 So $2^0 = 1$.
 
-The cell builds a *list*{.term} of the grains on each square, then adds it up
+The cell builds a list of the grains on each square, then adds it up
 with your toolkit's `total`. Guess the number of digits in the answer
 before you run it.
 
@@ -498,7 +498,7 @@ def halvings(n):
 ```
 
 Run the toolkit cell. How does your `halvings` compare with one way to
-write it? The table below runs the same calls on your *function*{.term} and on a
+write it? The table below runs the same calls on your function and on a
 solution, side by side. Until `halvings` is written, your column shows
 `None`, because `...` returns `None`. The last two rows put
 `halvings(10000)` beside $\log_2 10000$, rounded down.

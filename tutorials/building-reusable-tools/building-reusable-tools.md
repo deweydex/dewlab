@@ -84,7 +84,7 @@ often enough.
 A *test* gives a function an input whose answer we already know, and
 checks that the function gives that answer. Python has a statement for
 it. `assert` is followed by something that should be `True`. If it is,
-nothing happens. If it is not, the program stops with an `AssertionError`.
+nothing happens. If it is not, the *program*{.term} stops with an `AssertionError`.
 
 ```python exec
 id: testing-as-a-habit-1
@@ -421,9 +421,9 @@ value can round it.
 
 ## Variable scope revisited
 
-Our functions now call other functions, so it is worth checking scope,
+Our functions now call other functions, so it is worth checking *scope*{.term},
 from [Writing your own functions](tutorial:writing-your-own-functions).
-Each function has its own workspace, and the variables made inside it
+Each function has its own workspace, and the *variables*{.term} made inside it
 disappear when it finishes.
 
 ```python exec
@@ -442,7 +442,7 @@ print(with_border(6))
 It gives a `NameError`, because `edge` exists only inside `with_border`.
 That is a help, not a nuisance. Many functions can each have a variable
 called `total` or `edge`, and none of them clashes with another.
-Information goes in only through parameters, and leaves only through
+Information goes in only through *parameters*{.term}, and leaves only through
 `return`.
 
 ## Looking back
@@ -450,7 +450,7 @@ Information goes in only through parameters, and leaves only through
 A test that passes tells you less than a test that fails. Why? What would
 make you trust a function you did not write?
 
-Here is a challenge. Test your bubble sort from
+Here is a challenge. Test your *bubble sort*{.term} from
 [Sorting a list](tutorial:putting-things-in-order) on a hundred lists
 nobody chose. Make each list at random, sort it, and check the answer
 against Python's own `sorted()`. What is the smallest list that catches a
