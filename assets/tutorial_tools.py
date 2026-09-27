@@ -4,7 +4,8 @@ This is the module a student's cell code sees. It does two jobs:
 
   * it runs a cell and renders whatever the cell produced — printed text, the
     value of the last expression, DataFrames, matplotlib figures, tracebacks —
-    into that cell's own output area, in the order the code produced it;
+    into that cell's own output area, in the order the code produced it, and
+    gives `input()` the lines the reader types (`_Stdin`);
 
   * it provides the small bridge a cell uses to put something on the page and
     read something back: `text_input`, `dropdown`, `slider`, `button`,
@@ -224,6 +225,9 @@ class _CellContext:
         # when the cell isn't SQL, or its last statement wasn't a query
         # with a result to be empty.
         self.last_result_empty: bool | None = None
+        # What has been printed since the last newline: the prompt, when
+        # `input()` asks, since `input()` prints it before it reads.
+        self.line = ""
 
 
 _current: _CellContext | None = None
@@ -297,10 +301,72 @@ class _StreamWriter(io.TextIOBase):
     def write(self, text: str) -> int:  # type: ignore[override]
         if text and _current is not None:
             _current.sink.stream(self._css_class, text)
+            if self._css_class == "dl-stdout":
+                _current.line = (_current.line + text).rsplit("\n", 1)[-1][-_PROMPT_LIMIT:]
         return len(text)
 
     def writable(self) -> bool:  # type: ignore[override]
         return True
+
+
+# The longest prompt a reader is shown when `input()` waits.
+_PROMPT_LIMIT = 200
+
+# How `input()` waits for a person, set by whatever runs Python on the page
+# (`_set_live_reader()`): a function taking the prompt and the cell's id and
+# returning the line typed, without its newline, or None for the end of the
+# input. None while nothing on the page can wait, as in the build.
+_live_reader = None
+
+_NO_WAITING = (
+    "input() waits for someone to type, and this browser has not let the "
+    "page wait. Reloading the page may fix it."
+)
+_NO_TYPING = "The comparison cannot wait for typing, so input() has nothing to read."
+
+
+def _set_live_reader(reader) -> None:
+    global _live_reader
+    _live_reader = reader
+
+
+class _Stdin(io.TextIOBase):
+    """What `input()` reads from: the same swap as `_StreamWriter`, for
+    `sys.stdin`. `input()` itself stays Python's own. With stdout replaced it
+    prints its prompt there and calls `sys.stdin.readline()`, so a program
+    written here runs unchanged in a terminal.
+
+    `typed`, when given, is a list of lines prepared in advance: a cell's
+    ```typed block, which the comparison and the build use, since neither
+    can wait for a person. Otherwise a cell run asks `_live_reader`, and
+    `live=False` (the comparison) never waits at all. Each line read is
+    printed after its prompt, as a terminal shows what was typed, so the
+    output reads like the session it was."""
+
+    def __init__(self, typed: list[str] | None = None, live: bool = True):
+        self._typed = list(typed) if typed is not None else None
+        self._live = live
+
+    def readable(self) -> bool:  # type: ignore[override]
+        return True
+
+    def readline(self, size: int = -1) -> str:  # type: ignore[override]
+        if self._typed is not None:
+            if not self._typed:
+                return ""
+            line = self._typed.pop(0)
+        elif not self._live:
+            raise EOFError(_NO_TYPING)
+        elif _live_reader is None:
+            raise EOFError(_NO_WAITING)
+        else:
+            prompt = _current.line if _current is not None else ""
+            cell_id = _current.cell_id if _current is not None else ""
+            line = _live_reader(prompt, cell_id)
+            if not isinstance(line, str):
+                return ""
+        sys.stdout.write(line + "\n")
+        return line + "\n"
 
 
 def _pandas():
@@ -722,7 +788,8 @@ def render_error(message: str) -> None:
         cell.sink.append_html(f'<pre class="dl-error-hint">{html.escape(hint)}</pre>')
 
 
-def _begin(cell_id: str, sink, code: str = "", label: str | None = None) -> None:
+def _begin(cell_id: str, sink, code: str = "", label: str | None = None,
+           typed: list[str] | None = None) -> None:
     """Everything that has to happen right before a cell's code runs:
     clear its old output, make it the "current" cell (so the module-level
     functions below like `show()` know which cell they belong to), teach
@@ -730,7 +797,9 @@ def _begin(cell_id: str, sink, code: str = "", label: str | None = None) -> None
     important part — replace `sys.stdout`/`sys.stderr` with the
     `_StreamWriter`s from above, so any `print()` the student's code does
     lands in this cell's output area instead of vanishing into nowhere
-    (there's no terminal for it to go to in a browser).
+    (there's no terminal for it to go to in a browser). `sys.stdin` is
+    replaced too (`_Stdin`), so `input()` reads `typed` when the build
+    passes a cell's prepared lines, and waits for the reader otherwise.
     """
     global _current
     sink.clear()
@@ -739,6 +808,7 @@ def _begin(cell_id: str, sink, code: str = "", label: str | None = None) -> None
     _patch_pyplot_show()
     sys.stdout = _StreamWriter("dl-stdout")
     sys.stderr = _StreamWriter("dl-error")
+    sys.stdin = _Stdin(typed)
 
 
 def _end(value) -> None:
@@ -746,10 +816,11 @@ def _end(value) -> None:
     (successfully or not — see `run_cell`'s `finally` below). Renders
     whatever value the cell's last line produced, flushes any matplotlib
     figures that were drawn but never shown, and — critically — puts
-    `sys.stdout`/`sys.stderr` back the way they were (`sys.__stdout__` is
-    Python's own untouched original, saved before anything could replace
-    it) so a later cell, or anything else in the interpreter, doesn't
-    keep writing into a cell that has already finished running.
+    `sys.stdout`/`sys.stderr`/`sys.stdin` back the way they were
+    (`sys.__stdout__` is Python's own untouched original, saved before
+    anything could replace it) so a later cell, or anything else in the
+    interpreter, doesn't keep writing into a cell that has already
+    finished running.
     """
     global _current
     try:
@@ -759,6 +830,7 @@ def _end(value) -> None:
     finally:
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+        sys.stdin = sys.__stdin__
         _current = None
 
 
@@ -1035,7 +1107,7 @@ async def _run_statement(statement: str, namespace: dict) -> dict:
 
 
 async def compare(solution: str | None, inputs_json: str = "[]",
-                  tests: str | None = None) -> str:
+                  tests: str | None = None, typed_json: str | None = None) -> str:
     """What the reader's code gives for each input, beside what a solution
     gives, as JSON for the page to draw.
 
@@ -1047,10 +1119,26 @@ async def compare(solution: str | None, inputs_json: str = "[]",
     runs against their code and against the solution before the author's
     inputs do. Printed output from either side is swallowed, and a figure
     either side draws is closed, so none of it lands in the next cell run.
+
+    Nobody can type during a comparison. `typed_json` is the cell's
+    ```typed block, a JSON list of lines: the solution, and each case on
+    each side, read them from the first line again, as a program run with
+    its input from a file would. Without one, `input()` raises.
     """
     import contextlib  # noqa: PLC0415
 
     inputs = json.loads(inputs_json or "[]")
+    typed = json.loads(typed_json) if typed_json else None
+
+    @contextlib.contextmanager
+    def typing():
+        saved = sys.stdin
+        sys.stdin = _Stdin(typed, live=False)
+        try:
+            yield
+        finally:
+            sys.stdin = saved
+
     pyplot = sys.modules.get("matplotlib.pyplot")
     figures_before = set(pyplot.get_fignums()) if pyplot else set()
     swallowed = io.StringIO()
@@ -1061,17 +1149,20 @@ async def compare(solution: str | None, inputs_json: str = "[]",
         if solution is not None:
             theirs = _copy_namespace(_page_globals)
             try:
-                await _run_code(solution, theirs, "<a solution>")
+                with typing():
+                    await _run_code(solution, theirs, "<a solution>")
             except BaseException as exc:  # noqa: BLE001
                 kind, message = _describe_error(exc)
                 result["solutionError"] = f"{kind}: {message}" if message else kind
                 theirs = None
 
         async def row(source: str, run, label: str | None = None) -> dict:
-            mine = await run(source, yours)
+            with typing():
+                mine = await run(source, yours)
             entry = {"input": source, "label": label, "yours": _shown(mine)}
             if theirs is not None:
-                other = await run(source, theirs)
+                with typing():
+                    other = await run(source, theirs)
                 entry["solution"] = _shown(other)
                 entry["differ"] = not _outcomes_same(mine, other)
             return entry

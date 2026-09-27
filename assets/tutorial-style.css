@@ -824,6 +824,20 @@ p code, li code {
 .dl-output pre:last-child { margin-bottom: 0; }
 
 .dl-stdout { color: var(--dl-fg); }
+/* The box a waiting input() puts after its prompt (assets/input-wait.js):
+ * in the printed text, in its font, so what is typed reads as part of the
+ * session. */
+input.dl-stdin {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--dl-orange);
+  padding: 0 0.15rem;
+  width: 20ch;
+  max-width: 100%;
+}
+input.dl-stdin:focus-visible { outline: 2px solid var(--dl-orange); outline-offset: 2px; }
 /* load_csv()'s line about which copy of a dataset a cell got: quiet, and
  * in the page's own font, so it never reads as the cell's printed output. */
 .dl-output .dl-data-note {
@@ -3784,6 +3798,12 @@ p code, li code {
   margin-top: 0.5rem;
 }
 .dl-compare-status { color: var(--dl-muted); font-size: 0.8rem; }
+/* What the comparison types for input(), from the cell's ```typed block. */
+.dl-compare-typed {
+  margin: 0.5rem 0 0;
+  color: var(--dl-muted);
+  font-size: 0.8rem;
+}
 
 /* The predict block (#313), above its cell. A guess, how sure, and after
    the run the guess beside what the cell printed. Nothing here is coloured
