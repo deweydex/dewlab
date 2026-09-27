@@ -5334,3 +5334,30 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 `planning/DEWEY_TRACK_PLAN.md` says the same. Nothing in the style guide changed, because `#no-verdicts` already covered this case.
 
 *Cost to change: moderate. The comparisons are ordinary blocks, and bringing a test cell back means writing its expected values again. The deleted test cells' ids were free while the track is in beta.*
+
+---
+
+**7.270 — The Zen of Slashes and Surds grows to twenty pages overnight: fractions, the rules of powers, and the first surds and logarithms.** Josh, 26 September 2026: "there is a lot more to do in this series with different operations with fractions and different types of exponents as well as various things in that direction like logarithms and surds … start work on that tonight while im sleeping". The plan was already written (`planning/outlines/zen-of-slashes-and-surds.md`, 7.254), so the night wrote pages rather than plans.
+
+**What is written.** Sixteen new pages, each with a practice page longer than itself except the closer look:
+- **Strand A (slashes):** `which-is-bigger`, `adding-slices`, `taking-slices-away`, `a-fraction-of-a-fraction`, the closer look `does-multiplying-make-it-bigger`, `how-many-fit` and `fractions-with-holes`.
+- **Strand B (powers):** `joining-two-stacks`, `sharing-out`, `when-everything-cancels`, `more-on-the-bottom` and `a-power-of-a-power`. They follow sections 2 to 6 of the Exponent Rules discovery worksheet, squiggles first.
+- **Strand C (surds and logs):** `the-side-of-a-square`, `sides-that-never-end`, `halfway-steps` and `how-many-hops`. Friendly names come first (side(49), edge(27), halfway(♡), hops(10 → 1000), folds(16)), and √, the fractional exponent and log come only under "The usual way to write it". The word *surd* comes last of all, on `sides-that-never-end`, with its history from al-Khwarizmi's "inaudible" to Latin *surdus*, checked against Wikipedia's page on the nth root.
+
+**How it was written.** `dev/graphics/zen.py` drew every picture first: number lines, squares cut two ways, pizzas with + and = between them, heart tiles joined and crossed out, boxes of hearts, bead squares and cubes, a tilted square for side(2), and hop lines. Six writers then drafted the pages in parallel from one brief (the outline, the style guide, and the four pilot pages as the pattern), each in its own folders. Each page was read in full before it was committed, and every number was run. The reading changed a few things. Two cells gained the `import` they relied on an earlier cell for. "Idea A is not a strange idea" and "The error is the answer" went, as a verdict raised to deny it and a closing saying. Two headings lost the phrasal verb "plug in". The join pictures lost their "2 + 3 = 5" label, which gave the adding rule away before the reader found it.
+
+**Two wordings, now the same on every Zen page.** Each world line reads "Normal numbers, like 3 and 10", and each explain fold is headed "one answer". "Ordinary" and "good" are both on the module's list of words to avoid (the outline's "Language: plainer than plain").
+
+**The pilot pages, swept.** 7.256's say-it-directly sweep left the four pilot pages for a separate read. Seven sentences that kept their main point behind a colon now say it first, and "just", "easy" and "altogether" are gone.
+
+**Placement.** The course lists the pages in outline order under three series, and a new series, "Surds and logs, undoing a power", holds strand C. The closer look sits straight after `a-fraction-of-a-fraction`, which links to it, and it joins the "Closer looks" topic group (7.261). The "from the beginning" topic group lists the rest.
+
+**Open questions, for Josh.**
+1. **Titles in strand C.** The titles avoid the scary words: "Undoing a square: the side of a square", not "Square roots: …"; "Counting hops: how many times did we multiply?", not "Logarithms: …". This keeps 7.254's "the sign comes last" in the title too. But it goes against the style guide's plain titles, which lead with "the term a student would search for". Which should win?
+2. **Colour words.** `a-fraction-of-a-fraction` and the heart-tile pages talk about yellow, blue and green parts. The colours come from the theme, so they hold in dark mode, where they are darker. A reader who cannot tell green from yellow has only the words, though, since the pictures carry no pattern. Should the crossing cells get stripes, and the page say "striped"?
+3. **The recurring character.** There is still none, so "what went differently here" problems use "somebody" or an unnamed worked line.
+4. **Not written yet:** the "view from the top" pages (A9, B8, C7), strand B's mixed challenge (B7), strand C's "stretching the halfway steps" (C4, partly covered on the `halfway-steps` practice page) and "hops that add" (C6), strands D and E, and the mixed sets.
+
+**Checked, and not.** Every cell and number was run in CPython, and the pages were built and viewed in a browser. The cells did not run in the browser, because this environment cannot reach Pyodide. `how-many-fit` has one cell that fails on purpose (`1 / 0`), and its prose says so first.
+
+*Cost to change: the sixteen new page ids and their question ids become a contract once a class has used them. A title is one line in a page's frontmatter. A picture is one entry in `dev/graphics/zen.py`'s `DIAGRAMS`.*

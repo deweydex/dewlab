@@ -4,15 +4,15 @@ practice_for: the-long-way
 year: "2026-2027"
 version: 2026.09.26.1
 worlds:
-  numbers: Ordinary numbers, like 3 and 10.
+  numbers: Normal numbers, like 3 and 10.
   squiggles: Shapes like ♡ and △, which can stand for any number.
   letters: Letters like b and n, which can stand for any number.
 ---
 
 # Powers: the long way and the short way — Practice
 
-Small problems on one idea: a power is a number multiplied by itself,
-written the short way. Try each problem before you open anything under
+These small problems are about one idea. A power is a number
+multiplied by itself, written the short way. Try each problem before you open anything under
 it. Choose numbers, shapes or letters in the box under the title.
 
 ## 1. The long way
@@ -132,7 +132,7 @@ type: fill-in-the-blank
 1. Write the power the long way first.
 2. Multiply two of the numbers. Then multiply that answer by the next
    one, and so on.
-3. For $10^4$, count the zeros: each 10 adds one.
+3. For $10^4$, count the zeros. Each 10 adds one zero.
 
 **Think about:** what multiplying 1 by itself does, however many times.
 
@@ -246,8 +246,8 @@ type: fill-in-the-blank
 
 1. Write the power the long way: the fraction, times itself, as many
    times as the exponent says.
-2. Multiplying fractions: the tops multiply together, and the bottoms
-   multiply together. The folded paper did this: half of a half is a
+2. When you multiply fractions, the tops multiply together, and the
+   bottoms multiply together. The folded paper did this: half of a half is a
    quarter.
 3. Write the top and the bottom as powers.
 

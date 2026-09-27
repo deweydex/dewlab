@@ -29,17 +29,33 @@
 
 groups:
   - key: fractions-and-powers-from-the-start
-    name: Fractions and powers, from the beginning
+    name: Fractions, powers, surds and logs, from the beginning
     intro: >
-      For anyone who wants to start again with the maths school was
-      supposed to teach: what a fraction is, why two fractions can be the
-      same amount, and what a power means. Small steps, pictures first,
-      and nothing to memorise.
+      For anyone who wants to start again with the maths that schools
+      teach. These pages show what a fraction is, how to compare, add,
+      multiply and divide fractions, what a power means, and how roots and
+      logarithms undo a power. They go in small steps, with pictures
+      first, and there is nothing to memorise.
     tutorials:
       - before-we-start
       - one-whole-many-slices
       - same-amount-different-names
+      - which-is-bigger
+      - adding-slices
+      - taking-slices-away
+      - a-fraction-of-a-fraction
+      - how-many-fit
+      - fractions-with-holes
       - the-long-way
+      - joining-two-stacks
+      - sharing-out
+      - when-everything-cancels
+      - more-on-the-bottom
+      - a-power-of-a-power
+      - the-side-of-a-square
+      - sides-that-never-end
+      - halfway-steps
+      - how-many-hops
 
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations
@@ -575,3 +591,4 @@ groups:
       - degrees-and-radians
       - why-we-have-seasons
       - when-is-a-breaks
+      - does-multiplying-make-it-bigger
