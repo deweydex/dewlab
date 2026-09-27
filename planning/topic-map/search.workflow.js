@@ -1,9 +1,8 @@
 export const meta = {
   name: 'dewlab-topic-map-search',
-  description: 'Rebuild dewlab topics as a multi-level map: blind double search per area, reconcile, integrate, critique, revise',
+  description: 'Rebuild dewlab topics as a multi-level map: one search per area, integrate, critique, revise',
   phases: [
-    { title: 'Search', detail: 'two blind proposers per area: pages-up and learner-down' },
-    { title: 'Reconcile', detail: 'one reconciler per area, as soon as its pair is done' },
+    { title: 'Search', detail: 'one proposer per area, working from the pages and from the learner' },
     { title: 'Integrate', detail: 'regions, cross-area needs, one validated graph' },
     { title: 'Critique', detail: 'size, needs, learner-eye and completeness critics' },
     { title: 'Revise', detail: 'apply what holds up, questions for Josh' },
@@ -19,10 +18,7 @@ const AREAS = [
   { id: 'databases', about: 'tables, SQL, querying and joining, designing and building databases, importing and exporting data' },
   { id: 'web', about: 'HTML, CSS, how a browser works, layout, accessibility, design, forms, publishing, and the full-stack page' },
 ]
-const LENS = {
-  A: 'Work **bottom-up from the pages**. Go through every page in your inventory, in course order, and write down what each page (or each section, where sections teach different things) teaches. Only then group those into topics by the size rule, and topics into districts.',
-  B: 'Work **top-down from the learner**. First write the list of ideas a learner in this area would name, as districts and topics, from what the courses set out to teach (their descriptions in courses/*.yaml, the series titles, the page titles). Then place every page into that list, splitting, merging and adding topics wherever the pages demand it.',
-}
+const METHOD = 'Work from **both directions**. First go bottom-up: go through every page in your inventory, in course order, and write down what each page (or each section, where sections teach different things) teaches, then group those into topics by the size rule and topics into districts. Then check top-down: list the ideas a learner in this area would name, from what the courses set out to teach (their descriptions in courses/*.yaml, the series titles), and fix every gap between the two lists by splitting, merging or adding topics.'
 const VAL = (file, area) => `python3 ${T}/validate.py proposal ${file} ${area}`
 
 const PROPOSAL_SUMMARY = {
@@ -38,21 +34,6 @@ const PROPOSAL_SUMMARY = {
     notes: { type: 'string' },
   },
   required: ['file', 'topics', 'districts', 'errors', 'hidden_topics', 'notes'],
-}
-const RECON_SUMMARY = {
-  type: 'object',
-  properties: {
-    file: { type: 'string' },
-    topics: { type: 'integer' },
-    agreed: { type: 'integer' },
-    a_only: { type: 'integer' },
-    b_only: { type: 'integer' },
-    merged: { type: 'integer' },
-    questions: { type: 'integer' },
-    errors: { type: 'integer' },
-    notes: { type: 'string' },
-  },
-  required: ['file', 'topics', 'agreed', 'a_only', 'b_only', 'merged', 'questions', 'errors', 'notes'],
 }
 const GRAPH_SUMMARY = {
   type: 'object',
@@ -107,17 +88,17 @@ const REVISE_SUMMARY = {
 
 const COMMON = `Read ${T}/BRIEF.md first and follow it exactly: it defines the levels, the size rule, the tests, needs, naming, ids and the file format. Do not edit anything in the repository at /home/user/dewlab; write only the file named below.`
 
-function proposerPrompt(area, lens) {
-  const file = `${T}/proposals/${area.id}-${lens}.json`
-  return `You are one of two independent proposers rebuilding dewlab's topics for the search area **${area.id}** (${area.about}).
+function proposerPrompt(area) {
+  const file = `${T}/proposals/${area.id}.json`
+  return `You are rebuilding dewlab's topics for the search area **${area.id}** (${area.about}).
 
 ${COMMON}
 
 Your pages: ${T}/generated/inventory-${area.id}.json. The old topics to account for: the "${area.id}" list in ${T}/generated/old-topics-by-area.json.
 
-${LENS[lens]}
+${METHOD}
 
-You are working blind: do not open any other file in ${T}/proposals/ or ${T}/reconciled/. Another proposer is doing the same area another way, and where you agree is evidence.
+Other agents are doing the other areas at the same time; do not open their files in ${T}/proposals/.
 
 Be thorough about hidden topics — ideas pages teach that the old list never named — and strict about the size rule and the not-a-topic tests. Open page markdown whenever the inventory leaves you unsure what a page or section teaches.
 
@@ -126,59 +107,29 @@ Write your proposal to ${file} (create the folder if needed). Then run:
 and fix every error until it reports 0 errors; act on warnings that are right. Return the summary.`
 }
 
-function reconcilePrompt(area) {
-  const a = `${T}/proposals/${area.id}-A.json`, b = `${T}/proposals/${area.id}-B.json`, out = `${T}/reconciled/${area.id}.json`
-  return `You reconcile two independent proposals for dewlab's topic search area **${area.id}** (${area.about}).
-
-${COMMON}
-
-Proposal A (built bottom-up from the pages): ${a}
-Proposal B (built top-down from the learner): ${b}
-The area's pages: ${T}/generated/inventory-${area.id}.json (open page markdown when you need to check a claim).
-
-Produce one reconciled file in the same format, where every topic also carries "agreement": "both" | "A" | "B" | "merged".
-- Same idea in both (names and ids may differ): keep it as "both", taking the better name, plain text and step list; check steps against the pages.
-- Found by one only: keep it if it passes the size rule and the tests and the pages bear it out; otherwise fold it into another topic as steps. Mark it "A" or "B".
-- One split what the other merged: apply the tests and decide ("merged"). If it is a real judgement call a teacher should make, add it to "questions" with the evidence, the options, and your lean.
-- Needs: keep a need both proposals had, or one you can confirm from the pages; drop the rest.
-- Keep the union of "elsewhere" entries (pages that belong to another area) and of "outcomes_culled", checked.
-- "questions": only decisions Josh should make (about six at most), never trivia.
-
-Write ${out} (create the folder if needed), run
-    ${VAL(out, area.id)}
-and fix until 0 errors. Return the summary.`
-}
-
 // the design spec is being researched by a separate agent outside this workflow
 phase('Search')
-const perArea = await pipeline(
-  AREAS,
-  (area) => parallel(['A', 'B'].map((lens) => () =>
-    agent(proposerPrompt(area, lens), { label: `propose:${area.id}:${lens}`, phase: 'Search', schema: PROPOSAL_SUMMARY }))),
-  (pair, area) => {
-    const ok = (pair || []).filter(Boolean)
-    if (ok.length < 2) log(`${area.id}: only ${ok.length} of 2 proposals came back; the reconciler works with what exists`)
-    return agent(reconcilePrompt(area), { label: `reconcile:${area.id}`, phase: 'Reconcile', schema: RECON_SUMMARY })
-      .then((r) => ({ area: area.id, proposals: ok, reconciled: r }))
-  },
-)
-const areasDone = perArea.filter(Boolean)
-log(`reconciled ${areasDone.filter((x) => x.reconciled).length} of ${AREAS.length} areas`)
+const perArea = await parallel(AREAS.map((area) => () =>
+  agent(proposerPrompt(area), { label: `propose:${area.id}`, phase: 'Search', schema: PROPOSAL_SUMMARY })
+    .then((r) => ({ area: area.id, proposal: r }))))
+const areasDone = perArea.filter(Boolean).filter((x) => x.proposal)
+log(`proposals for ${areasDone.length} of ${AREAS.length} areas`)
+if (areasDone.length < AREAS.length) log(`missing: ${AREAS.map((a) => a.id).filter((id) => !areasDone.some((x) => x.area === id)).join(', ')}`)
 
 phase('Integrate')
 const graphFile = `${T}/graph.json`
-const integrated = await agent(`You integrate dewlab's reconciled topic areas into one map.
+const integrated = await agent(`You integrate dewlab's topic proposals, one per search area, into one map.
 
 ${COMMON}
 
-Inputs: ${AREAS.map((a) => `${T}/reconciled/${a.id}.json`).join(', ')}. All pages: ${T}/generated/inventory.json.
+Inputs: ${AREAS.map((a) => `${T}/proposals/${a.id}.json`).join(', ')}. All pages: ${T}/generated/inventory.json.
 
 Write ${graphFile} in the brief's format, with these differences for the whole map:
 - Add "regions": [{"id", "name", "blurb"}] — the map's countries, about eight to eleven, named for learners. Search areas are not regions: split or join as the topics demand (a region for machine learning, or for making software, only if the topics warrant it). Every district gets a "region" field; regions hold about two to six districts each. Add "neighbours": [[regionA, regionB], ...] for regions that should border each other on the map, from the needs that cross between them.
 - Place every "elsewhere" page into a topic in its target region (or make the topic it calls for); the final file has no "elsewhere".
 - Merge topics that two areas both produced (for example the same idea taught once in maths and once in Python) only when they are the same idea for a learner; keep distinct ideas distinct, and attach the Python "closer look" pages where they belong.
 - Resolve every "ext:" and "old:" need to a topic id; if nothing matches, link the nearest real topic or drop it, and say which in "notes". Needs must form a DAG with no redundant direct needs.
-- Keep each topic's "agreement" field. Keep and de-duplicate "questions" into one list for Josh (at most about fifteen, each with evidence, options and a lean).
+- Keep and de-duplicate "questions" into one list for Josh (at most about fifteen, each with evidence, options and a lean).
 - Every descriptor outcome in outcomes.yaml (outside out-of-scope.yaml) must be served by a topic or be in "outcomes_culled"; every old topic code must appear in some "replaces" or be culled.
 
 Validate with
@@ -214,7 +165,7 @@ The map: ${graphFile}. Write the revised map to ${finalFile} (leave ${graphFile}
 The findings (JSON):
 ${JSON.stringify(allFindings)}
 
-For each finding: check it against the pages and the brief. Apply it if it holds up; reject it with a one-line reason if it doesn't, or if critics contradict each other and the brief decides. Where a finding is a real judgement call for a teacher, turn it into a question rather than applying it. Keep "agreement" fields (set "critic" on topics a finding created). Finish the "questions" list for Josh: at most twelve, each a decision only he should make, with the evidence, the options and your lean.
+For each finding: check it against the pages and the brief. Apply it if it holds up; reject it with a one-line reason if it doesn't, or if critics contradict each other and the brief decides. Where a finding is a real judgement call for a teacher, turn it into a question rather than applying it. Set "agreement": "critic" on topics a finding created or reshaped. Finish the "questions" list for Josh: at most twelve, each a decision only he should make, with the evidence, the options and your lean.
 
 Validate with
     python3 ${T}/validate.py graph ${finalFile}
