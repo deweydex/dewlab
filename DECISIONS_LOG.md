@@ -5530,3 +5530,30 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **Left out.** Database Methods, Web Authoring and Full Stack have no mixed sets. The issue's list of what is missing does not name them, and their work (SQL, HTML and CSS, a whole application) does not fit a set of Python problems; whether they need one is a question for a later issue.
 
 *Cost to change: small. Seven new pages, and every cell id in them, become a contract on 2 October. No existing id changed.*
+
+---
+
+**7.282 — My words: a reader's own word list, kept in the browser, and marked where each word appears again.** Issue #340, part of #306.
+
+**What a reader does.** Selecting a word, or a phrase of up to 5 words inside one paragraph, offers **Add to my words** beside Highlight. It opens the Notes panel at a form holding the word, the sentence around it, the Reference's definition where the page's glossary has the word, and a box for the reader's own meaning or translation. The definition is found by `entryFor()` from `term-definitions.js`, the same match hover definitions use. A word already in the list opens its entry instead of making a second one.
+
+**Where the list lives.** One `localStorage` key for the whole site, `dewlab:my-words`, holding `{version: 1, words: [...]}`. Each entry holds the word, the meaning, the sentence, the page's id, title and address from the site's root, and the Reference's term and definition when there was one. Notes are kept per page (`dewlab:progress:<id>`); words are not, because the point is to see them on other pages.
+
+**A section of Notes, not a fourth corner tab.** The issue asks for a panel beside Notes. 7.185 cut the dock to three tabs and kept Notes as its own door because it was "about to grow"; a fourth tab would reopen that for a list a reader opens less often than their notes. So **My words** is a section of the Notes panel, under the highlights. It has a search box (`textMatches()`, the site's own stems), an order by page or from A to Z, and **Change** and **Delete** on each word. If it needs a tab of its own, the section moves as it is.
+
+**Marks.** Where a saved word appears again, on any page, its first use in each paragraph is wrapped in `span.dl-myword`: a thin dashed line, so it is not taken for a term the author marked (`.dl-def`'s dotted one). Hover, a tap or Tab shows the reader's meaning; Enter opens it in the form. A word matches whole, in any case, and a plain plural of its last word counts.
+- This searches the prose, which 7.94 withdrew for glossary terms, because a regex cannot tell "set a seed" from a set. Here the reader chose the word and wrote the meaning, so a mark in another sense shows the reader's own words, never the site's definition as if it applied.
+- Nothing is marked in code, cells, maths, headings, links or buttons, or in an italic the author marked as a term.
+- A span adds no text, so highlights, which anchor to text offsets, are unaffected; a test makes a highlight across a marked word. A click on a word inside a highlight opens the highlight's popover, not the word's.
+- **My words on the page**, under Reading in Settings, turns the marks off.
+
+**Export and import** sit in Settings → Imports & Exports. The file is JSON, `my-dewlab-words.json`, marked `"dewlab": "my-words"`. Importing adds the file's words; an entry with the same id keeps whichever copy was changed last, so importing one file twice changes nothing. Every field is cut to a set length and shown with `textContent`, so a file made by hand cannot put markup on the page, and a test imports one that tries. There was no site-wide export to join: this is the first file that holds data from more than one page, and it holds only the words.
+
+**Phones.** A long press selects a word, and the same button appears. The three selection buttons now wrap onto a second row when they are wider than the screen. The word and its sentence are read when the selection changes, not on the tap, since on a phone the tap can clear the selection first.
+
+**Left out.**
+- Plain-word definitions: 7.273 left them for a wider rethink of support for readers of English as a second language, so an entry carries only the Reference's definition.
+- `all-notes.html` (My notes) does not list the words.
+- `tests/e2e/test_my_words.py` runs locally, like `test_my_notes.py`. The CI browser job keeps its fixed set of chrome and layout files.
+
+*Cost to change: small. One module, imported by the runtime and so in the standalone bundle; three sections of `shell.html`; one storage key. Removing it leaves a key nothing reads.*
