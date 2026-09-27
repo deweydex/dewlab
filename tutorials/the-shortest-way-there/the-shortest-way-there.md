@@ -503,3 +503,16 @@ Sedgewick, R. and Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley.
 Chapter 4.1 builds breadth-first search on a graph, with the same
 `came_from` idea, which it calls `edgeTo`. It goes much further than
 this page, into maps whose roads have lengths.
+
+Reducible (2020). *Breadth First Search (BFS): Visualized and Explained.*
+<https://www.youtube.com/watch?v=xlVX7dXLS64>. It walks through
+breadth-first search in pictures, with examples, and then writes the
+code. Watch it after the section on why breadth-first finds
+the shortest way.
+
+Reducible (2020). *Depth First Search (DFS) Explained: Algorithm,
+Examples, and Code.* <https://www.youtube.com/watch?v=PMMc4VsIacU>. This
+is the other walk from this page, the one that goes as deep as it can
+first. It has a recursive version and a loop version, as [Recursion:
+finding every file in a folder
+tree](tutorial:finding-everything-inside-a-folder) does.
