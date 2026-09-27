@@ -5404,7 +5404,19 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.273 — Algorithms brings in search and sorting, makes recursion's order visible, adds graph search, counts the work instead of timing it, and ends with a maze or puzzle of the reader's own.** The content issue (#333), part of #306.
+**7.273 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
+
+**Only author-marked uses.** 7.94 built prose-linking, measured it and withdrew it: a regex cannot tell "set a seed" from a set. Marking every appearance of a term for hover definitions would bring that back, and Josh chose against it. So only two places are marked. One is the italicised first use (`docs/WRITING_TUTORIALS.md#marking-a-term`); across 421 built pages, 705 of the 901 concept terms each page introduces are italicised there. The other is a later use the author writes `*term*{.term}`. The class tells `dev/curriculum_map.py`'s vocabulary report, and the glossary skill, that this is not an introduction. Inherited terms are italicised on later pages in only 48 places today, so the help a reader gets on later pages depends on authors marking uses. `dev/term_uses.py` lists the candidates for each page: about 4,500 across the site, with the sentence around each, including many everyday uses of glossary words like "and", "list" and "pair" that should stay unmarked.
+
+**How it works.** `assets/term-definitions.js` adds a class, `tabindex` and `aria-describedby` to the author's own `<em>` and never wraps text, so highlights are untouched. Only `concept` entries are matched, against the whole italic: exactly, or word for word after the site's stemming, with a plain plural allowed (the stemmer leaves short words alone, so *lists* would otherwise miss "list"). It never matches a word inside a longer italic, or a prefix. A `{.term}` mark renders in plain type with only the dotted line, since the term is not being introduced again. `dev/term_uses.py --check` lists marks that name no concept. Hover, focus or a tap shows a popover with the definition and **More in the Reference**; Enter on the term opens the Reference at it. The popover is visual only; a screen reader hears the definition through `aria-describedby`. Code, cells, maths, headings, links and folds' summaries are never marked. **Definitions on hover** under Reading in Settings turns it off. Look up and the Reference's own search share `openReferenceAt()`.
+
+**What it is worth now.** At a term's introduction, the sentence around it usually says what it means, so the popover mostly repeats it. The feature pays on later pages, which is where marking is still to do.
+
+*Cost to change: small. One module, one Settings row, one CSS block; the `{.term}` class is inert to everything but the vocabulary report.*
+
+---
+
+**7.274 — Algorithms brings in search and sorting, makes recursion's order visible, adds graph search, counts the work instead of timing it, and ends with a maze or puzzle of the reader's own.** The content issue (#333), part of #306.
 
 **Search and sorting.** `finding-things` and `putting-things-in-order`, as rebuilt in Foundations part 2, open the Algorithms series. Their linear search, binary search and "comparing our sorts" sections now claim CMPS-LO5, and the comments that held the claim back until this issue are gone. They keep their own two Foundations worlds: a world is chosen per page, so the switcher on these two pages offers theirs, and the other Algorithms pages offer the four below. `finding-things` stays the default course's page, since `mit-pdp-maths-prog-integration` comes first in `courses/index.yaml`.
 

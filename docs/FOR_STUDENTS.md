@@ -84,6 +84,12 @@ were working in rather than being moved without being asked.
 
 ## Looking a word up
 
+Some words in the reading have a faint dotted line under them. These are
+the course's own terms, where the writer marked them. Point at one, tap it,
+or reach it with Tab, and a small box shows what it means; Enter, or **More
+in the Reference**, opens the Reference at it. **Definitions on hover**,
+under Reading in Settings, turns this off.
+
 If a word in the reading is one the Reference knows, selecting it offers a
 small **Look up** button. Press it and the Reference opens, already filtered
 to that word, so you do not have to leave the sentence you were reading to go
