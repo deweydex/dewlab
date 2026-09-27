@@ -10,7 +10,7 @@ worlds:
 
 # Repeating steps with loops — Practice
 
-These problems are on *loops*{.term}, with three from earlier pages. Before you write any loop,
+These problems are on loops, with three from earlier pages. Before you write any loop,
 ask three questions: what am I collecting as I go, what does it start at,
 and what makes the loop stop? Try each problem before you open anything
 under it.

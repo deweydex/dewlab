@@ -22,7 +22,7 @@ covers:
 
 On [Variables, data types and text](tutorial:storing-and-computing), moving
 a whole word three places along meant writing the same line once for every
-letter. Here is a *loop*{.term} that does it for every letter, however long the
+letter. Here is a loop that does it for every letter, however long the
 word. What will it print?
 
 ```python exec
