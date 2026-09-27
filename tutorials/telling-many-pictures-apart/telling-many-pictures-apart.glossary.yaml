@@ -4,6 +4,13 @@
 # epoch, training and test examples are defined in
 # a-model-that-corrects-itself's glossary, the page before this one.
 entries:
+  - term: averaged perceptron
+    kind: concept
+    definition: >
+      A perceptron that keeps the average of its weights over the whole of
+      training, not the weights it has at the end. A few bad corrections
+      near the end then change it only a little.
+
   - term: class
     kind: concept
     definition: >
