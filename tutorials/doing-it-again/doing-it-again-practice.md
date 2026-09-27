@@ -13,12 +13,12 @@ anything. The problems get harder as they go, on purpose. If one of the
 stretch problems feels like hard work, open its hint if it has one, or
 skip it and come back.
 
-Your *toolkit*{.term} is loaded on this page, so `total` and `product` are ready
+Your toolkit is loaded on this page, so `total` and `product` are ready
 to use, and so are `digit_at`, `between` and the rest.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems. Type a few lines, and run
+Use this cell for any of the warm-up problems. Type a few lines, and run
 them.
 
 ```python exec
@@ -92,7 +92,7 @@ Her idea works in maths, where $=$ says two sides are equal, and no
 number is one more than itself. In Python, `=` is an instruction, not a
 claim that two sides are equal.
 It happens in two steps. First Python calculates the right-hand side,
-`count + 1`, using the value `count` has now. Then it points the *name*{.term}
+`count + 1`, using the value `count` has now. Then it points the name
 `count` at the answer. So if `count` was 4, it is now 5. The line means
 "count is now one more than it was".
 
@@ -464,7 +464,7 @@ the halvings one by one, and the logarithm gives the answer in one step.
 
 </details>
 
-**16. Predict.** Schlomi writes her own product *function*{.term}, and tests
+**16. Predict.** Schlomi writes her own product function, and tests
 it. What do the two `print` lines show? Explain the result, and fix the
 function.
 

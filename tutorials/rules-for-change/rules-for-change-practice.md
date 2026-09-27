@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `derivative_at` from
+Your toolkit is loaded on this page, including `derivative_at` from
 [How fast, right now?](tutorial:how-fast-right-now), `compose` from
 [Machines that take a number](tutorial:machines-that-take-a-number)
 and `close_enough` from [Does it work?](tutorial:does-it-work). Run the
-first *cell*{.term} before any other. It gives you `slopes_agree` and the *list*{.term}
+first cell before any other. It gives you `slopes_agree` and the list
 of `points` from the tutorial.
 
 ## Warm-up

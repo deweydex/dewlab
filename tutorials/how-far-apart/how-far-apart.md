@@ -35,7 +35,7 @@ On this page we:
 - measure a distance straight across, then straight up, then on a slant
 - see why Pythagoras' theorem is true, by moving the pieces of a picture
 - find the distance between any two points, and add `distance` to the
-  *toolkit*{.term}
+  toolkit
 - find the point halfway between two points, and add `midpoint`
 - decide whether two circles in a game touch, and watch a fast ball
   slip through
@@ -92,7 +92,7 @@ centre is at $(130, 90)$. From the player to the ball is 30 pixels
 across and 40 pixels up. If we go across and then up, that is 70 pixels. The
 straight line from one centre to the other is shorter than that. How
 long is it? Make a guess before
-you run the *cell*{.term}, which draws the three lines.
+you run the cell, which draws the three lines.
 
 ```python exec
 id: how-far-across-1
@@ -152,7 +152,7 @@ for panel, triangles in [(left, first_way), (right, second_way)]:
     panel.axis("off")
 ```
 
-`plt.Polygon` makes a flat shape from a *list*{.term} of corners, and
+`plt.Polygon` makes a flat shape from a list of corners, and
 `add_patch` puts it on the drawing.
 
 The frame is the same, and so are the four triangles. So whatever is
@@ -229,7 +229,7 @@ def distance(p, q):
 ```
 
 How does your `distance` compare with one way to write it? The table
-below runs the same calls on your *function*{.term} and on a solution, side by
+below runs the same calls on your function and on a solution, side by
 side. Python has its own version, `math.dist`, which does the same
 job, so some rows have a second row under them with `math.dist`. Until
 your `distance` has its `return` line, its column shows `None`. Before

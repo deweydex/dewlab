@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page. The tutorial's `quick_review` and
-`check_median_tool` are not loaded. They were page *cells*{.term}, so a problem
+Your toolkit is loaded on this page. The tutorial's `quick_review` and
+`check_median_tool` are not loaded. They were page cells, so a problem
 that needs one gives it again. Schlomo and Schlomi, who are learning Python
-too, wrote two of the *functions*{.term} below.
+too, wrote two of the functions below.
 
 ## Warm-up
 
@@ -30,7 +30,7 @@ id: code-other-practice-warm-up
 
 **1. Predict.** A music app has this function. What do the last two
 lines print? Is there a *side effect*{.term}, and would a stranger expect it
-from the *name*{.term}?
+from the name?
 
 ```python
 def add_track(playlist, track):
@@ -47,7 +47,7 @@ print(morning)
 
 It prints `3`, then `['Dreams', 'Zombie', 'Linger']`.
 
-`append` changes the *list*{.term} that `morning` points at, so the function has
+`append` changes the list that `morning` points at, so the function has
 a side effect. Here the name says "add", so a stranger would probably
 expect the playlist to change. The function also returns the new
 length, which the name does not say. A *docstring*{.term} can say both:

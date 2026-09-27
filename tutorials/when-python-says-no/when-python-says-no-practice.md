@@ -7,7 +7,7 @@ version: 2026.09.25.1
 
 # When Python says no: reading error messages — Practice
 
-Most *cells*{.term} on this page are meant to fail, the way they were on the
+Most cells on this page are meant to fail, the way they were on the
 tutorial page. Each problem says what kind it is: **Predict**, **Make**,
 **Fix**, **Explain** or **Another way**. Before you open an answer, try
 the routine: read the last line, find the line it names, ask which of
@@ -32,7 +32,7 @@ print(pixel_cuont)
 NameError: name 'pixel_cuont' is not defined. Did you mean: 'pixel_count'?
 ```
 
-The *name*{.term} on line 2 has the `o` and the `u` swapped, so it points at
+The name on line 2 has the `o` and the `u` swapped, so it points at
 nothing. Python looks for a name that is spelled nearly the same, and
 suggests `pixel_count`.
 
@@ -82,7 +82,7 @@ The message is:
 IndentationError: expected an indented block after function definition on line 1
 ```
 
-Both steps belong to the *function*{.term}, so both must be pushed in by the
+Both steps belong to the function, so both must be pushed in by the
 same amount:
 
 ```python

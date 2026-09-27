@@ -49,11 +49,11 @@ On this page we:
 - see `math.sqrt` refuse a negative number, and ask what that means
 
 > **The space we're in.** We work in the *real numbers*{.term}, $\mathbb{R}$: every point
-> on the number line. A letter in an equation is a *name*{.term} for a number we
+> on the number line. A letter in an equation is a name for a number we
 > do not know yet, and every answer is checked by putting it back in.
 > We usually do not say it, but an
 > equation can have one answer, two, none, or every number as an
-> answer. Your *toolkit*{.term} is loaded, with `evaluate` and `plot_rule` from
+> answer. Your toolkit is loaded, with `evaluate` and `plot_rule` from
 > the last two pages, and `close_enough` from
 > [Does it work?](tutorial:does-it-work).
 
@@ -204,7 +204,7 @@ def solve_linear(a, b):
 ```
 
 How does your `solve_linear` compare with one way to write it? The
-table below runs the same calls on your *function*{.term} and on a solution,
+table below runs the same calls on your function and on a solution,
 side by side. The first three rows are known answers. The rows after
 them check each answer the way this unit always will: they substitute
 the answer back. The rule $ax + b$ is a *polynomial*{.term} with two
@@ -307,7 +307,7 @@ Writing an *expression*{.term} as brackets multiplied together is called
 *factorising*. It is expanding, run backwards. Finding the two numbers
 by looking and thinking is *factorising by inspection*.
 
-Can you find the pair in your head? Then the *cell*{.term} tries every pair of
+Can you find the pair in your head? Then the cell tries every pair of
 whole numbers from −40 to 40, and prints the ones that work.
 
 ```python exec
@@ -461,7 +461,7 @@ The first curve crosses the axis twice, at 1 and 5. The second touches
 it once, at 3. The third never comes down to it.
 
 Now the formula can go in your toolkit. `solve_quadratic` promises a
-*list*{.term} of the real roots, smallest first: two, one, or none. Here are the
+list of the real roots, smallest first: two, one, or none. Here are the
 steps for the body:
 
 1. Calculate the discriminant.

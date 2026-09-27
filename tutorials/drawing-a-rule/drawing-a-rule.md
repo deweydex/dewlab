@@ -37,7 +37,7 @@ answers it at once, and shows more too.
 On this page we:
 
 - draw a rule as every *pair*{.term} $(x, y)$ at once, and add `plot_rule` to
-  the *toolkit*{.term}
+  the toolkit
 - read where a graph crosses zero, and check it by substituting
 - draw straight lines, parabolas and cubics, find where two graphs
   meet, and watch a ball fly along its graph
@@ -77,7 +77,7 @@ accepts.
 ## A table, then a picture
 
 Let's start with a table. For each whole number $x$ from $-3$ to 3, the
-*cell*{.term} prints $x$ and then $x^2 - 4$. Where do you expect the value to be
+cell prints $x$ and then $x^2 - 4$. Where do you expect the value to be
 0?
 
 ```python exec
@@ -128,7 +128,7 @@ plt.axvline(0, color="grey")
 
 The dots make a U. `"o"` asks for dots with no line between them. But
 what happens between the dots? The rule has a value at $x = 0.5$ and at
-$x = 2.71$ too. The *graph* of a *function*{.term} is the picture of every pair
+$x = 2.71$ too. The *graph* of a function is the picture of every pair
 $(x, f(x))$, for every $x$ in its *domain*{.term}. We write the rule as
 $y = f(x)$, so that $y$ names the *output*{.term}.
 
@@ -170,7 +170,7 @@ def plot_rule(rule, low, high):
 ```
 
 The loop is the table from the last section, with 401 rows in place of
-7. The rest draws. `rule.__name__` is the *name*{.term} the rule was given with
+7. The rest draws. `rule.__name__` is the name the rule was given with
 `def`, which `plot_rule` uses as a label. The two `if` lines draw an
 axis only where 0 is in view.
 

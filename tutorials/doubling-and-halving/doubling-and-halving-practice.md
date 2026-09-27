@@ -15,10 +15,10 @@ it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
 open them. Each one is one answer. Yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `halvings` from the
+Your toolkit is loaded on this page, including `halvings` from the
 tutorial and `binary_search` from
 [Finding things fast](tutorial:finding-things-fast). `math` is not: each
-*cell*{.term} that needs it starts with `import math`.
+cell that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -511,7 +511,7 @@ player asks "Is it alive?" first.
 
 </details>
 
-**17. Fix.** Schlomi, who is learning Python too, writes a *function*{.term}
+**17. Fix.** Schlomi, who is learning Python too, writes a function
 for the *doubling time*{.term} of anything that grows by the same percent each
 year. She compares it with the logarithm, which the tutorial showed
 gives the exact doubling time. For 4% a year, the logarithm says about

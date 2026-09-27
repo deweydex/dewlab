@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `close_enough`.
+Your toolkit is loaded on this page, including `close_enough`.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: does-it-practice-warm-up
@@ -46,7 +46,7 @@ tolerance.
 </details>
 
 **2. Make.** A video player shows how long a video is, in hours. Write three
-*test cases*{.term}, with `assert`, for this *function*{.term}: one from a fact you know, one
+*test cases*{.term}, with `assert`, for this function: one from a fact you know, one
 at an edge, and one that uses a second route.
 
 ```python
@@ -83,7 +83,7 @@ Give an example from this unit.
 <details class="dl-answer"><summary>answer</summary>
 
 Python only reports an error when it cannot make a move, such as
-dividing by zero or using a *name*{.term} that points at nothing. It has no idea
+dividing by zero or using a name that points at nothing. It has no idea
 what the function was meant to do. So a function can run with no error
 and still break its promise. The tutorial's `to_celsius` ran, and said
 water boils at about 194 °C. Only a test case, such as "32 °F should

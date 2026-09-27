@@ -40,7 +40,7 @@ On this page we:
 
 - measure a ramp's steepness as rise over run, and check it against
   the Irish guidance
-- find the slope between two points, and add `slope` to the *toolkit*{.term}
+- find the slope between two points, and add `slope` to the toolkit
 - meet a line with no slope
 - write a line as $y = mx + c$, and find it with `line_through`
 - write every line as $ax + by + c = 0$
@@ -202,7 +202,7 @@ change in $y$ over the change in $x$. Maths names the slope $m$:
 
 $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
 
-The *cell*{.term} draws the two points, the line through them, and the rise and
+The cell draws the two points, the line through them, and the rise and
 the run as dashed lines. The grey lines are the axes, through 0.
 
 ```python exec
@@ -227,7 +227,7 @@ while $x$ grows by 3, so the rise is $-6$ and the slope is $-2$. A
 right.
 
 Here is a tool, and its last line is yours to write. The line
-`x1, y1 = p` gives each value in the pair a *name*{.term}, as the *swap*{.term} on
+`x1, y1 = p` gives each value in the pair a name, as the *swap*{.term} on
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards#swapping-two-cards)
 named two values at once.
 
@@ -259,7 +259,7 @@ def slope(p, q):
 ```
 
 Run your cell. How does your `slope` compare with one way to
-write it? The table below runs the same calls on your *function*{.term} and on
+write it? The table below runs the same calls on your function and on
 a solution, side by side. Until `slope` has its `return` line, it
 returns `None`, and its column shows `None`. Guess the third row
 first. Does it matter which point comes first?

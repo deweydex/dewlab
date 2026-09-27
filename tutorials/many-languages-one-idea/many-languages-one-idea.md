@@ -43,7 +43,7 @@ On this page we:
   how a program is run, and where it runs
 - see what stays the same: the four questions
 
-> **The space we're in.** Python and SQL *cells*{.term} run here, in your
+> **The space we're in.** Python and SQL cells run here, in your
 > browser. The SQL cells use a small database that lives inside this
 > page and starts empty each time the page loads. JavaScript and BASIC
 > are shown to read, not to run. A programming language is a set of agreements between people and a
@@ -118,7 +118,7 @@ print("with the toolkit:", mean(rainfall_mm))
 ```
 
 The average is 5.0 mm, and three days were above it: 12.6, 7.1 and 7.0.
-Your *toolkit*{.term}'s `mean` from
+Your toolkit's `mean` from
 [What is typical?](tutorial:what-is-typical#share-it-out-equally-the-mean)
 agrees. Keep this cell in mind. Every version below does these same
 steps, or asks for these same answers.
@@ -169,7 +169,7 @@ SELECT AVG(rainfall_mm) FROM rain_tbl;
 
 It takes one line, and no loop. Five lines of Python became one line of SQL,
 and I think that is the biggest surprise on this page. `AVG` is a
-*function*{.term} that SQL gives us, the way Python gives us `len`. Now the
+function that SQL gives us, the way Python gives us `len`. Now the
 second part: the days above the average.
 
 ```sql exec
@@ -226,7 +226,7 @@ word on
 
 - Curly brackets `{ }` mark where a loop or an `if` starts and stops.
   Python uses indentation for the same job.
-- A new *name*{.term} starts with `let` or `const`. `const` promises that the
+- A new name starts with `let` or `const`. `const` promises that the
   name will never point at anything else.
 - Names are written `rainfallMm`, with a capital in the middle, where
   Python programmers write `rainfall_mm`. This is a habit of each
@@ -288,7 +288,7 @@ is to read, not to run:
 
 It prints `AVERAGE 5` and `DAYS ABOVE IT 3`. Every line has a number,
 and the numbers set the order. `REM` starts a *comment*{.term}, like `#` in
-Python. `DIM R(7)` makes room for seven numbers, like a *list*{.term}. The
+Python. `DIM R(7)` makes room for seven numbers, like a list. The
 readings sit in a `DATA` line at the end, and `READ` takes them one at a
 time.
 

@@ -28,16 +28,16 @@ The Mars Climate Orbiter came far too close to the planet, and was
 never heard from again.
 
 Code that runs can still break its promise. So when you write a
-*function*{.term}, how do you know it keeps its promise, before it matters?
+function, how do you know it keeps its promise, before it matters?
 
 On this page we:
 
 - test a function against answers we already know
 - build `close_enough`, for testing with *floats*{.term}
-- walk through a function by hand, with a table of *names*{.term} and values
+- walk through a function by hand, with a table of names and values
 - watch a debugger step through the same function, one line at a time
 - read code for its names and *comments*{.term}, the way a stranger would
-- run a test for every tool in your *toolkit*{.term}, all at once
+- run a test for every tool in your toolkit, all at once
 
 > **The space we're in.** Python checks that code is written in valid
 > Python, and then it runs it. It never checks that a function keeps its
@@ -125,7 +125,7 @@ Where do the expected answers come from? There are three good places.
 
 On [Machines that take a number](tutorial:machines-that-take-a-number),
 an `assert` could carry a message after a comma. Here are two test
-cases with messages. The *cell*{.term} is meant to stop with an error, because
+cases with messages. The cell is meant to stop with an error, because
 the function has a bug. Which test do you think fails first?
 
 ```python exec
@@ -245,7 +245,7 @@ the temperature where the round trip missed.
 
 Tests tell us that a promise is broken. They do not always tell us why.
 Here is a function for a weather app. It finds the warmest temperature
-in a *list*{.term} of readings, and it passes a test with summer readings. Before
+in a list of readings, and it passes a test with summer readings. Before
 you run it, what should it give for three January nights in Mullingar:
 −3, −1 and −4 degrees? What will it give?
 

@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, so every shape tool from the
+Your toolkit is loaded on this page, so every shape tool from the
 tutorial is here: `rectangle_perimeter`, `rectangle_area`,
 `triangle_area`, `circle_circumference`, `circle_area`, the four volumes
 and the four surface areas. So are `compose`, `total` and `simulate`
-from earlier pages. The *cell*{.term} below imports `math` for the whole page.
+from earlier pages. The cell below imports `math` for the whole page.
 Run it first.
 
 ```python exec
@@ -93,7 +93,7 @@ metres.
 
 **4. Predict.** A vinyl record is 30 cm across. Roughly how long is its
 edge, all the way round? Guess first, then use `circle_circumference`.
-Be careful: which number does the *function*{.term} want?
+Be careful: which number does the function want?
 
 <details class="dl-answer"><summary>answer</summary>
 

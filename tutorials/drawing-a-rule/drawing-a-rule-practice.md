@@ -13,10 +13,10 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `plot_rule` from the
+Your toolkit is loaded on this page, including `plot_rule` from the
 tutorial, `evaluate` from
 [Rules with letters in them](tutorial:rules-with-letters-in-them), and
-`close_enough`. Each call to `plot_rule` in one *cell*{.term} draws on the same
+`close_enough`. Each call to `plot_rule` in one cell draws on the same
 picture. The first cell below imports `matplotlib.pyplot` as `plt`, for
 `plt.legend()` and the other drawing tools, and `math`.
 
@@ -261,7 +261,7 @@ the value changes from negative to positive, or back.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start a *name*{.term}, `before`, at the value when $x$ is $-3$.
+1. Start a name, `before`, at the value when $x$ is $-3$.
 2. Make each next $x$ as `step / 100`, for `step` in
    `range(-299, 301)`. After each check, the new value becomes
    `before`.
@@ -392,7 +392,7 @@ of $x$, however high, is overtaken by $2^x$ in the end.
 </details>
 
 **13. Make.** Draw the *cubic*{.term} $y = (x + 1)(x - 1)(x - 3)$. First expand
-it by hand, or with the tutorial's grid, into a *list*{.term} for `evaluate`.
+it by hand, or with the tutorial's grid, into a list for `evaluate`.
 Before you draw it, say where its roots will be. Then check them by
 substituting.
 
@@ -418,7 +418,7 @@ cubic can.
 
 **14. Another way.** When is $2^x = 10$? Draw $2^x$ and the flat line
 $y = 10$ from 0 to 5, and read where they meet. Then find the same
-answer another way, with a *function*{.term} from
+answer another way, with a function from
 [Doubling and halving](tutorial:doubling-and-halving#doublings-add-up).
 
 <details class="dl-answer"><summary>answer</summary>
