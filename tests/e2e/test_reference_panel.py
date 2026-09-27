@@ -861,7 +861,10 @@ class TestHighlightToLookUp:
         context = browser.new_context()
         page = context.new_page()
         page.goto(f"{site_url}/tutorials/lookup.html")
-        page.wait_for_selector("#dl-body")
+        # The runtime, not only the page: a selection made before it has
+        # attached its selectionchange listener is never offered a lookup,
+        # and the runtime is a module that loads after the body.
+        page.wait_for_function("globalThis.dewlab !== undefined")
         return context, page
 
     def test_nothing_is_offered_until_something_is_selected(self, site, browser, site_url):
