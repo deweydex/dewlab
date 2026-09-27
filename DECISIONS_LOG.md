@@ -5644,3 +5644,17 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 **Also in #413.** `dev/term_uses.py` reads only what the author wrote (a cell's label, its report panel and a predict block's buttons had listed "cell" on nearly every page); a longer term wins ("selection sort" is not "selection"); a term with a capital is matched as written ("there is none" is not None). `dev/curriculum_map.py` reads a marked later use as the plain word, where the `{.term}` had read as the word "term" and made every marked page "use" *term* before the algebra page that introduces it.
 
 *Cost to change: small. The share and the window are two constants in `dev/term_uses.py`; after changing either, `--check` lists every mark that no longer fits.*
+
+---
+
+**7.286 — Patterns in pictures reach every generated picture, and text on a pattern gets a halo.** Josh, 27 September 2026, agreeing to the next step after 7.283: "Go for it". 7.283 patterned only the Zen pictures. So a reader who turned the setting on saw stripes in one module and none in the others, although the others use the same four tints.
+
+**Every generator.** All fourteen scripts in `dev/graphics/` with a `--write` pass now write `finished(relative, draw)`, a new helper in `palette.py`. It adds the pattern layer, with ids named after the picture's own path. Seventy-two pictures on 64 pages gained a layer. Two of them, `maths.py` and `computational_methods.py`, draw with the shared `grids`, `slices`, `steps` and `tree` modules, so a search for the tint names alone missed them. `add_patterns()` changes nothing in a picture without tints, so every script calls it, and `tests/test_picture_patterns.py` fails for a script that writes without it.
+
+**Text on a pattern.** 53 of the 78 tinted pictures outside the Zen module put text on a tint, such as a table's cells, a card's number or a panel's label. Rendered with the patterns on, stripes ran through the letters, and "Tyrannosaurus Rex" in a hatched row was hard to read. Maps label a hatched region with a halo, and so does the stylesheet now. While patterns show, text in a picture that has them gets an outline in the page colour (`paint-order: stroke`), which clears the stripes directly behind each letter. The Zen pictures get it too.
+
+**What was left alone.** Twenty pictures have tints only on dots, below the radius a pattern can fill, and one only on a small ellipse. Six of them use two tints, always amber and blue. Measured, that pair stays at least ΔE 29.9 apart under all three simulations, in both themes. Pink was measured for the first time: against blue it falls to 8.7 for protanopia. `bits-that-flip`'s parity check uses both, and the patterns now separate them there. Two captions, "Green: the sorted part. Amber: the card just placed.", name their tints alone. Amber and green stay apart under every simulation, so they stay as they are.
+
+**The rule for ids.** `tests/test_erd_graphics.py` forbade any id in a picture, because pictures inlined on one page must not collide. It now allows a pattern's `dlp-` id, and a new test checks that no two committed pictures share one. The comparison tests read `finished()` as well, so a stale picture still fails.
+
+*Cost to change: one helper and one CSS rule. A new generator writes through `finished()`, and a new tint needs an entry in `PATTERN_FOR`.*

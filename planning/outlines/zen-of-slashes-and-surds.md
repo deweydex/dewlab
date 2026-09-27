@@ -525,8 +525,8 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   tritanopia. The prose now names each part by where it is as well as
   its colour, and the display setting *Patterns in pictures*, off by
   default and on under high contrast, lays a different pattern over each
-  tint. A new picture gets its patterns from `add_patterns()` in
-  `dev/graphics/palette.py`, which `zen.py` already calls.
+  tint. A new picture gets its patterns from `finished()` in
+  `dev/graphics/palette.py`, which every generator writes through.
 - **Glossary files** (done, 7.283). Every Zen tutorial page has a
   `<slug>.glossary.yaml`. A new page needs one too, written to
   `.claude/skills/tutorial-glossary/SKILL.md`; a later use of a term is
