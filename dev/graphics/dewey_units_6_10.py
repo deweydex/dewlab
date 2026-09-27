@@ -43,6 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from palette import (  # noqa: E402
     FILL_AMBER, FILL_BLUE, FILL_GREEN, FILL_PINK, INK, MONO, MUTED, PANEL, PAPER, RULE, SANS,
 )
+from palette import finished  # noqa: E402
 
 TUTORIALS = Path(__file__).resolve().parent.parent.parent / "tutorials"
 
@@ -1681,7 +1682,7 @@ def bisection_squeeze() -> str:
 
 
 # --------------------------------------------------------------------------
-# Unit 9: the choose-a-project cards (DECISIONS_LOG 7.286)
+# Unit 9: the choose-a-project cards (DECISIONS_LOG 7.287)
 #
 # Small pictures, one per card, of what each project ends with. No labels:
 # the card's question says what the picture shows, so each is decorative
@@ -1941,7 +1942,7 @@ def main() -> int:
     changed = 0
     for relative, draw in sorted(DIAGRAMS.items()):
         target = TUTORIALS / relative
-        fresh = draw()
+        fresh = finished(relative, draw)
         if target.exists() and target.read_text() == fresh:
             print(f"  unchanged  {relative}")
             continue

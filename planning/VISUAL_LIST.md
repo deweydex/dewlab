@@ -57,6 +57,15 @@ This also makes a module's visual language reviewable in one place. Five ER
 diagrams drawn by five separate hands drift; five produced by one function
 with different inputs cannot.
 
+The `--write` pass writes `finished(relative, draw)`, from
+`dev/graphics/palette.py`, rather than `draw()` itself. That adds the hidden
+pattern layer a reader turns on with *Patterns in pictures* (7.283): a
+stripe or dot pattern over each tinted area, one pattern per tint, for a
+reader who cannot tell the tints apart. A picture with no tints comes back
+unchanged, and `tests/test_picture_patterns.py` fails for a new generator
+that writes without it. Parts still need names as well as colours, in the
+labels and the prose, because the patterns are off by default.
+
 ### Prefer the live thing to a picture of it
 
 Where the subject is something that *changes* — a row that wraps, a grid that

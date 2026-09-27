@@ -15,6 +15,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dev" / "graphics"))
 
+from palette import finished  # noqa: E402
+
 try:
     import erd
 except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
@@ -431,7 +433,7 @@ class TestDeweyUnitsOneToFive:
     @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
     def test_the_committed_picture_is_what_the_generator_draws(self, relative):
         committed = (dewey_early.TUTORIALS / relative).read_text()
-        assert committed == dewey_early.DIAGRAMS[relative](), (
+        assert committed == finished(relative, dewey_early.DIAGRAMS[relative]), (
             f"{relative} is stale: run python3 dev/graphics/dewey_units_1_5.py --write")
 
     @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
@@ -443,10 +445,13 @@ class TestDeweyUnitsOneToFive:
         svg = (dewey_early.TUTORIALS / relative).read_text()
         literals = {
             value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
-            if value != "none" and not value.startswith("var(--dl-") and value != "currentColor"
+            if value != "none" and not value.startswith(("var(--dl-", "url(#dlp-"))
+            and value != "currentColor"
         }
         assert not literals, f"literal colours in {relative}: {sorted(literals)}"
-        assert not re.search(r'\sid="', svg), f"{relative} carries an id"
+        # The one id allowed is a pattern's (7.283), named after this picture's
+        # own path, so no other picture on the page can share it.
+        assert not re.search(r'\sid="(?!dlp-)', svg), f"{relative} carries an id"
 
 
 try:
@@ -466,7 +471,7 @@ class TestDeweyUnitsSixToTen:
     @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
     def test_the_committed_picture_is_what_the_generator_draws(self, relative):
         committed = (dewey_late.TUTORIALS / relative).read_text()
-        assert committed == dewey_late.DIAGRAMS[relative](), (
+        assert committed == finished(relative, dewey_late.DIAGRAMS[relative]), (
             f"{relative} is stale: run python3 dev/graphics/dewey_units_6_10.py --write")
 
     @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
@@ -476,10 +481,13 @@ class TestDeweyUnitsSixToTen:
         svg = (dewey_late.TUTORIALS / relative).read_text()
         literals = {
             value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
-            if value != "none" and not value.startswith("var(--dl-") and value != "currentColor"
+            if value != "none" and not value.startswith(("var(--dl-", "url(#dlp-"))
+            and value != "currentColor"
         }
         assert not literals, f"literal colours in {relative}: {sorted(literals)}"
-        assert not re.search(r'\sid="', svg), f"{relative} carries an id"
+        # The one id allowed is a pattern's (7.283), named after this picture's
+        # own path, so no other picture on the page can share it.
+        assert not re.search(r'\sid="(?!dlp-)', svg), f"{relative} carries an id"
 
     @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
     def test_every_picture_is_placed_on_its_page_with_alt_text(self, relative):
@@ -487,6 +495,11 @@ class TestDeweyUnitsSixToTen:
 
         slug, name = relative.split("/")
         page = (dewey_late.TUTORIALS / slug / f"{slug}.md").read_text()
+        # A project card's picture (7.287) is placed by the build from the
+        # page's `projects:` and hidden from a screen reader, since the card's
+        # question and title already say what it shows.
+        if re.search(rf"^\s+picture: {re.escape(name)}$", page, re.M):
+            return
         tag = re.search(rf'<img src="{re.escape(name)}" alt="([^"]+)">', page)
         assert tag, f"{slug}.md does not show {name}, or shows it without alt text"
         assert tag.group(1).rstrip().endswith("."), "alt text is written in full sentences"

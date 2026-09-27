@@ -288,7 +288,7 @@ ROOT_HREF = 'href="dlroot:'
 WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
 WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
-# One project of a "choose your project" page (DECISIONS_LOG 7.286): the
+# One project of a "choose your project" page (DECISIONS_LOG 7.287): the
 # opening tag on a line of its own, an id from the page's `projects:`
 # frontmatter, and a matching `</div>`. See project_spans().
 PROJECT_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-project" data-project="(?P<project>[^"]*)">[ \t]*$')
@@ -587,7 +587,7 @@ class Tutorial:
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     # A "choose your project" page's projects, each with the ids of the
-    # cells inside it, in source order (7.286). Empty on most pages.
+    # cells inside it, in source order (7.287). Empty on most pages.
     project_cells: dict[str, list[str]] = field(default_factory=dict)
     notes: list[Note] = field(default_factory=list)
     # Where this page sits: every course that lists it, in courses/index.yaml
@@ -1820,7 +1820,7 @@ PROJECT_FIELDS = ("title", "question", "make", "maths", "data")
 
 def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     """A "choose your project" page's projects, from its `projects:`
-    frontmatter (7.286): each id, in order, with its title, the curious
+    frontmatter (7.287): each id, in order, with its title, the curious
     question its card leads with, what the reader makes, the maths and the
     data it uses, and an optional picture. `own: true` marks the project of
     the reader's own, which gets the wide card under the grid."""
@@ -1902,7 +1902,7 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
 
 
 def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[Cell]) -> dict[str, list[str]]:
-    """Each project's cells, by id, for the progress counts (7.286)."""
+    """Each project's cells, by id, for the progress counts (7.287)."""
     known = {cell.id for cell in cells}
     return {
         project: [found for found in re.findall(r"^id:\s*(\S+)\s*$", body[start:end], re.M)
@@ -1912,7 +1912,7 @@ def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[C
 
 
 def render_project_chooser(projects: dict[str, dict]) -> str:
-    """A "choose your project" page's cards and comparison table (7.286):
+    """A "choose your project" page's cards and comparison table (7.287):
     a 2×2 grid, each card led by its curious question, the reader's own
     project as a wide card under it, then the projects side by side. Each
     card is a link to its project, so without JavaScript it still takes
@@ -1964,7 +1964,7 @@ def render_project_chooser(projects: dict[str, dict]) -> str:
 
 def place_projects(body_html: str, projects: dict[str, dict], path: Path) -> str:
     """Give each project its anchor, and put the cards and table just before
-    the first one (7.286)."""
+    the first one (7.287)."""
     if not projects:
         return body_html
     if body_html.count('<div class="dl-project"') != len(projects):
@@ -4581,7 +4581,7 @@ def progress_attrs(tutorial: Tutorial) -> str:
     than a "0/0"."""
     if not tutorial.cells:
         return ""
-    # A choose-your-project page's projects count only once started (7.286),
+    # A choose-your-project page's projects count only once started (7.287),
     # so the badge needs to know which cells are whose.
     projects = (f' data-projects="{html.escape(json.dumps(tutorial.project_cells), quote=True)}"'
                 if tutorial.project_cells else "")
