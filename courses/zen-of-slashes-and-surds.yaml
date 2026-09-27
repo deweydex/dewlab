@@ -12,7 +12,7 @@ description: >-
 
 
   Nothing here is to be memorised. We practise each idea until it feels
-  ordinary, and a rule always comes after the picture that makes it
+  normal, and a rule always comes after the picture that makes it
   sensible. Every step starts with a guess, and a guess that differs
   from what happens is the most useful kind.
 
@@ -59,3 +59,7 @@ contents:
   - sides-that-never-end
   - halfway-steps
   - how-many-hops
+- title: Seeing it, lines, grids and graphs
+  tutorials:
+  - the-number-line
+  - two-lines-at-right-angles

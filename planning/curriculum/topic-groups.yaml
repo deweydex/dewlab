@@ -56,6 +56,8 @@ groups:
       - sides-that-never-end
       - halfway-steps
       - how-many-hops
+      - the-number-line
+      - two-lines-at-right-angles
 
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations
