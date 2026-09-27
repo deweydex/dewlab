@@ -4832,6 +4832,10 @@ em.term, .term em { font-style: normal; }
 }
 .dl-project-table thead th { color: var(--dl-muted); font-weight: 600; border-top: 0; }
 
+/* A project, one per <div class="dl-project"> the author writes. Closed
+   ones stack as a list of headings, so they need a little air between. */
+.dl-project + .dl-project { margin-top: 0.6rem; }
+
 /* A project's heading opens and closes it. Closed, only the heading shows. */
 .dl-project-head { margin-bottom: 0.4rem; }
 .dl-project-toggle {
