@@ -7,6 +7,9 @@ import {
   widgetValues, reconcileSliders, clearSliders, sliderMarkup, restoreSliders, followSlider,
 } from "./cell-widgets.js";
 import { initTermDefinitions, readDefinitionsSetting, writeDefinitionsSetting } from "./term-definitions.js";
+import {
+  initMyWords, readMarksSetting, writeMarksSetting, wordFromSelection, sentenceAround, readWords,
+} from "./my-words.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -207,6 +210,10 @@ function closeReference() {
 // — a small popover above that circle (7.204) — but sharing this array's
 // one-open-at-a-time rule and its Escape handling, since two boxes open
 // over the same corner of the screen is one too many either way.
+/* My words (#340; my-words.js), once the page has booted: the selection
+ * toolbar and the Notes panel reach it through this. */
+let myWords = null;
+
 const RIGHT_DOCK_PANELS = ["yourwork", "python", "settings"];
 const RIGHT_PANELS = [...RIGHT_DOCK_PANELS, "report"];
 
@@ -549,6 +556,8 @@ function initRightPanels() {
       if (p.name === "yourwork") {
         if (notesEl) autoGrowTextarea(notesEl);
         refreshHighlightsList();
+        // Another tab may have added a word since this panel last showed.
+        if (myWords) myWords.renderList();
       }
       if (p.name === "python") refreshPythonState();
     }
@@ -1462,6 +1471,35 @@ function initDefinitionsToggle(definitions) {
   sync();
 }
 
+/* The Settings switch for marking saved words, "My words on the page"
+ * under Reading. */
+function initMyWordsToggle() {
+  const onOff = document.querySelector("[data-mywords]");
+  if (!onOff) return;
+  const sync = () => {
+    const on = readMarksSetting();
+    for (const btn of onOff.querySelectorAll("button")) {
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
+    }
+    syncSegRoving(onOff);
+  };
+  onOff.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeMarksSetting(btn.dataset.value);
+    sync();
+    if (myWords) myWords.refresh();
+  });
+  sync();
+}
+
+/* Opens the Notes panel, where My words lives, if it is not open. */
+function openNotesPanel() {
+  const panel = document.getElementById("dl-yourwork");
+  const toggle = document.getElementById("dl-yourwork-toggle");
+  if (panel && toggle && panel.hidden) toggle.click();
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -1505,30 +1543,61 @@ function initReferenceLookup(manifest) {
   highlightButton.hidden = true;
   document.body.append(highlightButton);
 
+  // My words (#340): a word or a short phrase, kept with the reader's own
+  // meaning. The word and its sentence are read when the selection
+  // changes, not when the button is pressed: on a phone, the tap that
+  // presses it can clear the selection first.
+  const wordButton = document.createElement("button");
+  wordButton.type = "button";
+  wordButton.className = "dl-myword-btn";
+  wordButton.textContent = "Add to my words";
+  wordButton.hidden = true;
+  document.body.append(wordButton);
+  let offered = null;
+
   function hide() {
     lookupButton.hidden = true;
     highlightButton.hidden = true;
+    wordButton.hidden = true;
   }
 
   // Both buttons are independently `position: fixed`, not one toolbar with
   // a shared hidden wrapper — test_reference.py already asserts `.dl-lookup`
   // itself carries `hidden`, and a wrapper would mean that attribute alone
   // no longer says whether the button is actually visible.
+  // Three buttons can be wider than a phone's screen, so they wrap onto
+  // a second row rather than running off its edge.
   function layout(rect, buttons) {
     const margin = 8;
     const gap = 6;
-    const width = buttons.reduce((sum, b) => sum + b.offsetWidth, 0) + gap * (buttons.length - 1);
-    const height = Math.max(...buttons.map((b) => b.offsetHeight));
-    const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+    const room = window.innerWidth - 2 * margin;
+    const rows = [[]];
+    let used = 0;
+    for (const b of buttons) {
+      const row = rows[rows.length - 1];
+      if (row.length && used + gap + b.offsetWidth > room) {
+        rows.push([b]);
+        used = b.offsetWidth;
+      } else {
+        used += (row.length ? gap : 0) + b.offsetWidth;
+        row.push(b);
+      }
+    }
+    const rowHeight = Math.max(...buttons.map((b) => b.offsetHeight));
+    const height = rows.length * rowHeight + (rows.length - 1) * gap;
     const below = rect.bottom + 6;
-    const top = below + height + margin > window.innerHeight
+    let top = below + height + margin > window.innerHeight
       ? Math.max(margin, rect.top - height - 6)   // above the selection instead
       : below;
-    let x = left;
-    for (const b of buttons) {
-      b.style.left = `${x}px`;
-      b.style.top = `${top}px`;
-      x += b.offsetWidth + gap;
+    for (const row of rows) {
+      const width = row.reduce((sum, b) => sum + b.offsetWidth, 0) + gap * (row.length - 1);
+      let x = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+      for (const b of row) {
+        b.style.left = `${x}px`;
+        b.style.top = `${top}px`;
+        x += b.offsetWidth + gap;
+      }
+      top += rowHeight + gap;
     }
   }
 
@@ -1598,6 +1667,7 @@ function initReferenceLookup(manifest) {
     const endBlock = blockFor(range.endContainer);
     const highlightable = text.trim().length >= SHORTEST
       && startBlock && startBlock === endBlock ? startBlock : null;
+    const word = highlightable ? wordFromSelection(text) : "";
 
     if (!term && !highlightable) { hide(); return; }
 
@@ -1621,12 +1691,14 @@ function initReferenceLookup(manifest) {
     // handler just did, rather than trusting a reference that could be
     // stale by the time a click actually lands.
     highlightButton.hidden = !highlightable;
+    wordButton.hidden = !word;
+    offered = word ? { word, sentence: sentenceAround(highlightable, range) } : null;
 
-    // Positioned against the viewport, so both buttons are fixed rather
+    // Positioned against the viewport, so the buttons are fixed rather
     // than absolutely placed — no need to account for the page's own
     // scroll, and a scroll simply dismisses them. Measured after
     // unhiding, since a hidden element has no width to clamp against.
-    layout(rect, [lookupButton, highlightButton].filter((b) => !b.hidden));
+    layout(rect, [lookupButton, highlightButton, wordButton].filter((b) => !b.hidden));
   });
 
   lookupButton.addEventListener("mousedown", (ev) => {
@@ -1663,6 +1735,19 @@ function initReferenceLookup(manifest) {
     createHighlight(range, startBlock);
     selection.removeAllRanges();
     hide();
+  });
+
+  wordButton.addEventListener("mousedown", (ev) => {
+    // Same reason as the other two: keep the selection until the click.
+    ev.preventDefault();
+  });
+
+  wordButton.addEventListener("click", () => {
+    const chosen = offered;
+    const selection = document.getSelection();
+    if (selection) selection.removeAllRanges();
+    hide();
+    if (chosen && myWords) myWords.add(chosen.word, chosen.sentence);
   });
 
   document.addEventListener("scroll", hide, { passive: true });
@@ -6458,6 +6543,13 @@ initContentsProgress();
 trackChromeHeight();
 trackCornerDockHeights();
 announceRestore(restoreSaved());
+// After the highlights are back, so a word inside one is found in place.
+myWords = initMyWords({
+  body: document.getElementById("dl-body"),
+  manifest: currentManifest,
+  openPanel: openNotesPanel,
+});
+initMyWordsToggle();
 refreshHighlightsList();
 updateProgressSummary();
 updateNotesNudge();
@@ -6489,6 +6581,8 @@ if (cells.length === 0 || leaving) {
 
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
+  readWords,
+  get myWords() { return myWords; },
   cells,
   restartPython,
   customCells,

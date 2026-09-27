@@ -18,7 +18,10 @@ description: >-
   tools of your own. Data, Chance and Logic works with real data, counting
   and probability. Algebra and Functions draws graphs and solves equations in
   code. Trigonometry and Calculus measures angles, waves and change. After
-  them come review problems and a project you build with a team.
+  them comes a capstone project: you choose 1 of 7 briefs, from pictures
+  and sound to codes, electronics and the sea, and make it alone or in a
+  group. Last come a look back at your programs and a project you build
+  with a team.
 
 
   The tasks come in worlds you choose, page by page: secret messages and
@@ -92,7 +95,7 @@ contents:
   - derivative-rules
   - the-slope-of-a-wave
   - a-model-of-your-own
-- title: Review Problems
+- title: Capstone project
   tutorials:
   - bringing-it-all-together
 - title: Reflections and review
