@@ -59,7 +59,14 @@ sense.
 7. **Cell lifecycle** — `_begin`, `_end`, and `run_cell`, which ties
    everything above together into "run this code and render what it
    did."
-8. **Public output functions** — `show`, `show_table`.
+8. **Public output functions** — `show`, `show_table`, and `play`
+   (#415), which turns a list of samples into a 16-bit WAV
+   (`_wav_bytes()`, with Python's own `wave` module) and shows it in an
+   `<audio controls>` player as a `data:` address. Python in a Worker
+   cannot reach the speakers, and a browser will not start a sound by
+   itself, so the reader presses play. The sound is saved with the
+   cell's output like a figure, and `PLAY_LONGEST_SECONDS` keeps it to a
+   minute.
 9. **Comparing** — `compare()` and the helpers above it
    (`_copy_namespace`, `_same`, `_statements`): what **Compare with a
    solution** runs (#312). It took the place of `check()`, which told a

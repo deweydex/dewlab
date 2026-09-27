@@ -1521,6 +1521,7 @@ Beyond ordinary Python, a cell can use:
 |---|---|
 | `show(*values, label=None)` | Render something mid-cell, rather than only at the end. |
 | `show_table(frame, max_rows=20, caption=None)` | Render a DataFrame as a table. Long frames are truncated, and say so. |
+| `play(samples, rate=8000, label=None)` | A player for a sound under the cell: `samples` from -1 to 1, `rate` of them to a second, up to 60 seconds. It is a WAV inside the output, so it works offline and in the Notebook, and the reader presses play. A sample beyond -1 or 1 is cut, and a line says how many were. |
 | `text_input(label, value="", id=None)` | A text box. Read what was typed with `.value`. |
 | `dropdown(label, options, value=None, id=None)` | A menu. Also read with `.value`. |
 | `slider(label, low, high, step=None, value=None, id=None)` | A slider. Moving it runs the cell again, so a plot drawn from `.value` follows the thumb. `.value` is a number: an `int` when `low`, `high` and `step` are whole numbers. |

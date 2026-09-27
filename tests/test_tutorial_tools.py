@@ -236,6 +236,62 @@ def frame():
 
 
 @needs_pandas
+class TestPlay:
+    """play() (#415): a sound as a WAV inside an audio player in the output."""
+
+    @staticmethod
+    def _wav(html):
+        import base64
+        import io
+        import re
+        import wave
+        found = re.search(r'src="data:audio/wav;base64,([^"]+)"', html)
+        assert found, "no embedded WAV in the output"
+        return wave.open(io.BytesIO(base64.b64decode(found.group(1))))
+
+    def test_a_note_becomes_a_player_with_the_right_length_and_rate(self, cell):
+        import math
+        tt.play([math.sin(2 * math.pi * 440 * n / 8000) for n in range(16000)], label="A")
+        assert "<audio controls" in cell.html
+        wav = self._wav(cell.html)
+        assert (wav.getnchannels(), wav.getsampwidth(), wav.getframerate(), wav.getnframes()) == (1, 2, 8000, 16000)
+        assert "A · 2.00 seconds at 8,000 samples a second" in cell.html
+        assert "dl-sound-note" not in cell.html
+
+    def test_samples_beyond_one_are_cut_and_the_output_says_how_many(self, cell):
+        tt.play([0.5, 2.0, -3.0, 0.0], rate=8000)
+        assert "2 of the 4 samples were beyond -1 or 1" in cell.html
+        frames = self._wav(cell.html).readframes(4)
+        import array
+        levels = array.array("h", frames)
+        if sys.byteorder == "big":
+            levels.byteswap()
+        assert list(levels) == [16384, 32767, -32767, 0]
+
+    def test_a_numpy_array_plays_like_a_list(self, cell):
+        np = pytest.importorskip("numpy")
+        tt.play(np.zeros(8000), rate=8000)
+        assert self._wav(cell.html).getnframes() == 8000
+
+    def test_the_label_is_escaped(self, cell):
+        tt.play([0.0] * 1000, rate=1000, label="<b>chord</b>")
+        assert "&lt;b&gt;chord" in cell.html and "<b>chord" not in cell.html
+
+    @pytest.mark.parametrize("samples, rate, message", [
+        ([], 8000, "at least one sample"),
+        (["loud"], 8000, "list of numbers"),
+        ([0.0], 22.5, "whole number"),
+        ([0.0], 100, "whole number"),
+        ([0.0] * 8000 * 61, 8000, "plays up to 60 seconds"),
+    ])
+    def test_what_it_refuses_says_why(self, cell, samples, rate, message):
+        with pytest.raises((TypeError, ValueError), match=message):
+            tt.play(samples, rate=rate)
+
+    def test_it_is_in_every_cell_without_an_import(self):
+        assert "play" in tt.__all__
+
+
 class TestTables:
     def test_dataframe_renders_as_a_table(self, cell, frame):
         tt._render_value(frame)

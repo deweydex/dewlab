@@ -5692,3 +5692,22 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 **9.5.** The page's own table gave way to the generated cards and table, the four projects were wrapped, and a fifth, *A project of your own*, was added. The card pictures are drawn by `dev/graphics/dewey_units_6_10.py` from each project's own data: the page's cubic bowl, its row of pixels, Ireland's life expectancy with its least-squares line, and the walk down the two valleys. The plan's line that each project ends "in its own `check()`" was stale since #314 and now says each ends by setting what it found beside what was expected.
 
 *Cost to change: moderate. The syntax is documented in `docs/WRITING_TUTORIALS.md#choose-your-project`; the build's rules live in `page_projects()` and `project_spans()`, the page's in `assets/projects.js`, and the counting in `liveProgressCounts()` and `totalCounted()`.*
+
+---
+
+**7.289 — A cell can play a sound: `play(samples, rate)`.** Issue #415. Josh, 27 September 2026: "can we do the sound thing?"
+
+**How it works.** Python runs in a Worker, which has no `AudioContext`, so it cannot reach the speakers. But a cell's output is HTML, added to the page as it arrives. So `play()` in `tutorial_tools.py` writes the samples as a 16-bit mono WAV with Python's own `wave` module, and puts it into the output as an `<audio controls>` player whose `src` is a `data:` address. That needs no new code on the page, and it works the same on a tutorial page, in the Notebook, offline and in a downloaded copy. The reader presses play: a browser does not start a sound by itself, and in a classroom that is the better default anyway.
+
+**The three questions #415 left open.**
+- *Saved output.* A sound is saved with its cell's output, like a figure. Two seconds at 8,000 samples a second is about 43 KB, the size of a figure. The runtime already drops any output over 100 KB when the browser's storage is full (`SAVED_OUTPUT_STRIP_THRESHOLD`), and says so. `play()` refuses a sound over 60 seconds (`PLAY_LONGEST_SECONDS`), with a message saying why.
+- *One player per call*, so a cell can play a note and then a chord. A `label` names each one, and a caption under the player gives the length and the rate.
+- *No picture.* matplotlib already draws the wave, and every page that plays a sound draws it first.
+
+**Samples beyond -1 or 1** are cut to fit, not scaled. Scaling would make a quiet echo as loud as the sound it echoes. A line under the player says how many samples were cut, because cut samples are what make a sound crackle, and a reader can hear that and learn from it.
+
+**The Notebook's `.ipynb` import** keeps an embedded sound, the same rule as an embedded image: an `<audio>` or `<source>` whose address is a `data:audio/…;base64,` file inside the notebook, never a web address. That covers both `play()`'s player and Jupyter's own `Audio()`, which puts the file in a `<source>` inside the player.
+
+**Where it is used.** `sine-and-cosine-waves`'s sound world plays the mystery note; `a-model-of-your-own`'s plays the piano chord; the capstone's sound brief (7.281) plays its note and chord. The brief's paragraph about saving a `.wav` file and reaching it through "Use a folder on my computer" is gone. The glossary gains `play()` on `sine-and-cosine-waves`, and `assets/python-signatures.json` is regenerated.
+
+*Cost to change: small. One function and two private helpers in `tutorial_tools.py`, four tags on the Notebook's import allow-list, and a few lines of CSS.*

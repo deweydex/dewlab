@@ -79,6 +79,7 @@
     "tuple": "tuple(iterable=(), /)",
     "tutorial_tools.load_csv": "load_csv(name, **read_csv_kwargs)",
     "tutorial_tools.load_text": "load_text(name)",
+    "tutorial_tools.play": "play(samples, rate=8000, label=None)",
     "zip": "zip(*iterables, strict=False)"
   }
 }
