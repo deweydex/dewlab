@@ -1,4 +1,4 @@
-/* Choose your project (DECISIONS_LOG 7.287). A page offers two to four
+/* Choose your project (DECISIONS_LOG 7.288). A page offers two to four
  * projects that use one idea in different ways, and the reader picks one.
  * The build writes the cards and the comparison table before the first
  * project, and gives each project an anchor (build.py, place_projects()).

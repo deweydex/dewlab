@@ -495,7 +495,7 @@ class TestDeweyUnitsSixToTen:
 
         slug, name = relative.split("/")
         page = (dewey_late.TUTORIALS / slug / f"{slug}.md").read_text()
-        # A project card's picture (7.287) is placed by the build from the
+        # A project card's picture (7.288) is placed by the build from the
         # page's `projects:` and hidden from a screen reader, since the card's
         # question and title already say what it shows.
         if re.search(rf"^\s+picture: {re.escape(name)}$", page, re.M):

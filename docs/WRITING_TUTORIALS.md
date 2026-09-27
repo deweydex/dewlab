@@ -695,7 +695,7 @@ column.
 ### Choose your project
 
 A world changes a task's setting. A project changes the job an idea does
-(DECISIONS_LOG 7.287): where one idea has several good uses, a page offers
+(DECISIONS_LOG 7.288): where one idea has several good uses, a page offers
 two to four short projects, and a project of the reader's own, and the
 reader picks one. A page can have worlds, projects, or both.
 

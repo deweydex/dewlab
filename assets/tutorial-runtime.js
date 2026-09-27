@@ -2407,7 +2407,7 @@ function inHiddenWorld(element) {
   return !!element.closest(".dl-world[hidden]");
 }
 
-/* A project (7.287) the reader has neither opened nor worked in is not
+/* A project (7.288) the reader has neither opened nor worked in is not
  * on show: "run all" and the export leave it alone. */
 function inProjectNotInPlay(element) {
   const section = projectOf(element);
@@ -5899,7 +5899,7 @@ function progressCounts(entries) {
 }
 
 function liveProgressCounts() {
-  /* A project's cells count once the reader has run one of them (7.287),
+  /* A project's cells count once the reader has run one of them (7.288),
    * so doing one project of four does not read as a quarter done. */
   const counted = cells.filter((cell) => {
     if (inHiddenWorld(cell.element)) return false;
@@ -5947,7 +5947,7 @@ function writeProgressBadges(mode) {
 }
 
 /* A choose-your-project page's total leaves out the projects the reader
- * has not started (7.287): `data-projects` lists each project's cells. */
+ * has not started (7.288): `data-projects` lists each project's cells. */
 function totalCounted(link, record, total) {
   let projects;
   try {

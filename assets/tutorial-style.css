@@ -4825,7 +4825,7 @@ em.term, .term em { font-style: normal; }
   color: var(--dl-muted);
 }
 
-/* Choose your project (7.287; assets/projects.js). Cards first, each led by
+/* Choose your project (7.288; assets/projects.js). Cards first, each led by
    its curious question, then the projects side by side in a table. */
 .dl-project-chooser { margin: 1.4rem 0 1.8rem; }
 .dl-project-chooser > h3 { margin-bottom: 0.3rem; }

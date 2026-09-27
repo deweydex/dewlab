@@ -177,7 +177,7 @@ shape in an image, the best line through data, or the lowest point of a
 cost by walking downhill (gradient descent). Each unit's mixed page offers
 a choice of products in the same way. The page shows a grid of cards, each
 led by a curious question, then a table of the projects side by side; the
-projects start closed and a card opens one (7.287,
+projects start closed and a card opens one (7.288,
 `docs/WRITING_TUTORIALS.md#choose-your-project`). Projects are not worlds:
 the track uses no worlds yet, and a project changes the job, not the
 setting.
