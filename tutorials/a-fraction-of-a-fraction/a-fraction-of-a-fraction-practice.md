@@ -25,7 +25,8 @@ id: picture-words-and-sum-1
 type: multiple-choice
 answer: 1
 
-Which words and which sum go with the green part of the second square?
+Which words and which sum go with the green part of the second square,
+where the yellow columns and the blue rows cross?
 
 - Two thirds of three quarters, and 2/3 × 3/4
   - The yellow part is three quarters. The blue rows take two thirds of

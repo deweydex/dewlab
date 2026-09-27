@@ -1,0 +1,7 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: minus, subtracting
+    kind: concept
+    definition: >
+      Minus means "take away". Its sign is −, and in Python it is -.
+      Subtracting is another word for taking away. 5/8 − 2/8 = 3/8.

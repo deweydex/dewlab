@@ -51,6 +51,9 @@ const TEXTURE_DEFAULTS = {
   // accessibility toggle, not tied to the system prefers-reduced-motion
   // query, so a reader can ask for it even on a system that hasn't.
   motion: "normal",
+  // Stripes and dots over the tinted parts of a picture, for a reader who
+  // cannot tell the tints apart (7.283). High contrast shows them too.
+  patterns: "off",
   // A multiplier on the code editor's own line height, independent of the
   // overall text size above — a reader who wants more air between lines of
   // code without enlarging the letters themselves.
@@ -1997,6 +2000,8 @@ function applyTexture(state) {
   else root.setAttribute("data-button-labels", state.buttons);
   if (state.motion === "normal") root.removeAttribute("data-motion");
   else root.setAttribute("data-motion", state.motion);
+  if (state.patterns === "on") root.setAttribute("data-patterns", "on");
+  else root.removeAttribute("data-patterns");
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-code-line-height", state.codeLineHeight);

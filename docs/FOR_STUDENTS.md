@@ -162,6 +162,9 @@ sans or mono (plus two fonts built for easier reading, Lexend and
 OpenDyslexic), text size, how wide the lines run, and the colour of links.
 **High contrast**, also here, switches to black text on white, or white on
 black in dark mode, and turns on Lexend too, whatever font you had chosen.
+**Patterns in pictures** adds stripes to the coloured parts of a picture that
+has them, a different pattern for each colour, for a reader who cannot tell
+the colours apart. High contrast turns the patterns on as well.
 
 **Behavior** covers what the page does rather than how it looks: whether a
 run shows how long it took, whether a hint appears under a cell after

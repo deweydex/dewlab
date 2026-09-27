@@ -199,7 +199,7 @@ Then the box holds
 {6|24|9}.
 ```
 
-To *solve* an equation is to find the unknown, the number in the box.
+To *solve*{.term} an equation is to find the unknown, the number in the box.
 We solved □ + 9 = 15 without a single guess.
 
 {{include: setup/zen-calm-check.md}}
@@ -230,7 +230,7 @@ So the box holds
 {4|9|36}.
 ```
 
-Sharing into equal groups is *dividing*. Multiplying by 3 is undone by
+Sharing into equal groups is *dividing*{.term}. Multiplying by 3 is undone by
 dividing by 3.
 
 ```question

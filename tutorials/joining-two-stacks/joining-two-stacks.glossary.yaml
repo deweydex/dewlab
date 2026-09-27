@@ -1,0 +1,33 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: stack
+    kind: concept
+    definition: >
+      A stack is a row of the same number, multiplied together. ♡³ is a
+      stack of three hearts: ♡ × ♡ × ♡.
+  - term: "product rule, ♡ᵃ × ♡ᵇ = ♡ᵃ⁺ᵇ"
+    kind: formula
+    definition: >
+      When we multiply two powers with the same base, we add the
+      exponents. The two stacks of hearts join into one long row. The row has all the hearts
+      from both stacks.
+    example: "2 ** 3 * 2 ** 4   # 128, the same as 2 ** 7"
+  - term: product
+    kind: concept
+    definition: >
+      A product is the answer to a multiplication. The product of 2 and 3
+      is 6.
+  - term: byte
+    kind: concept
+    definition: >
+      A byte is a small amount of computer memory. One byte can hold one
+      letter, like A.
+  - term: gigabyte
+    kind: concept
+    definition: >
+      A gigabyte is 10⁹ bytes of computer memory.
+  - term: zettabyte
+    kind: concept
+    definition: >
+      A zettabyte is 10²¹ bytes of computer memory. That is 10¹² gigabytes,
+      because 10⁹ × 10¹² = 10²¹.

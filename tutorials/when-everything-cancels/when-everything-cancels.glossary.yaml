@@ -1,0 +1,15 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: cancel
+    kind: concept
+    definition: >
+      Two hearts cancel when we cross them out as a pair. One heart is on
+      the top, and one is on the bottom. Together they make ♡/♡, which is
+      1.
+  - term: "zero power, ♡⁰ = 1"
+    kind: formula
+    definition: >
+      A zero power is a power with the exponent 0. It comes from a power
+      divided by itself, like ♡⁴/♡⁴, where every heart cancels. So its
+      value is 1.
+    example: "5 ** 0   # 1"

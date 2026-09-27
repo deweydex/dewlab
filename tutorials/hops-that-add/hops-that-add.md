@@ -52,7 +52,7 @@ That is
 hops in total.
 ```
 
-A *product* is the answer to a multiplication. Here, the product is
+A *product*{.term} is the answer to a multiplication. Here, the product is
 100,000. The hops for the product are the hops of each part, added.
 
 ## Hops of two
@@ -214,7 +214,7 @@ agree?
 ## A ruler of hops
 
 Here are two rulers, one above the other. The top one is blue, and the
-bottom one is yellow. Each is marked from 1 to 10. They are not normal
+bottom one is yellow. We call them the top ruler and the bottom ruler. Each is marked from 1 to 10. They are not normal
 rulers.
 
 <img src="two-rulers.svg" alt="Two rulers, one above the other, with their 1s at the same place. The top ruler is blue and the bottom one is yellow. Each is marked 1 to 10. The marks are not evenly spaced: the gap from 1 to 2 is the widest, and the gaps get smaller towards 10.">
@@ -244,7 +244,7 @@ id: not-evenly-spaced-1
 type: multiple-choice
 answer: 1
 
-Look at the yellow ruler. Which gap is wider, 1 to 2 or 9 to 10?
+Look at the bottom ruler. Which gap is wider, 1 to 2 or 9 to 10?
 
 - 1 to 2
   - 1 to 2 multiplies by 2. 9 to 10 multiplies by only a little more
@@ -295,22 +295,22 @@ Which number sits in the middle of the ruler, half a hop from 1?
 
 ## Sliding the rulers
 
-Now the blue ruler slides to the right. Its 1 sits over the 2 on the
-yellow ruler.
+Now the top ruler slides to the right. Its 1 sits over the 2 on the
+bottom ruler.
 
-<img src="two-times-three.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the blue 1 over the yellow 2, labelled 1 over 2. The other is the blue 3 over the yellow 6, labelled 3 over 6.">
+<img src="two-times-three.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the top 1 over the bottom 2, labelled 1 over 2. The other is the top 3 over the bottom 6, labelled 3 over 6.">
 
 ```question
 id: sliding-the-rulers-1
 type: fill-in-the-blank
 
-The blue 3 sits over the yellow
+The top 3 sits over the bottom
 {6|5|9}.
 ```
 
-Here is why. Start at the yellow 1. The slide moves the blue ruler
-hops(10 → 2) along. Then the blue 3 is hops(10 → 3) further. So the
-blue 3 is hops(10 → 2) + hops(10 → 3) from the yellow 1. Hops add, so
+Here is why. Start at the bottom 1. The slide moves the top ruler
+hops(10 → 2) along. Then the top 3 is hops(10 → 3) further. So the
+top 3 is hops(10 → 2) + hops(10 → 3) from the bottom 1. Hops add, so
 that is hops(10 → 2 × 3), which is hops(10 → 6).
 
 ```question
@@ -322,18 +322,18 @@ Sliding one ruler along the other adds two distances. What does that
 do to the two numbers?
 
 - It multiplies them
-  - 2 × 3 is 6, and the blue 3 sits over the yellow 6.
+  - 2 × 3 is 6, and the top 3 sits over the bottom 6.
 - It adds them
-  - 2 + 3 is 5. Look at the picture: the blue 3 sits over 6, not 5.
+  - 2 + 3 is 5. Look at the picture: the top 3 sits over 6, not 5.
 - It takes one away from the other
-  - 3 − 2 is 1. The blue 3 is far from the yellow 1.
+  - 3 − 2 is 1. The top 3 is far from the bottom 1.
 ```
 
 ## Two times four
 
-Here is the same slide again. The blue 1 still sits over the yellow 2.
+Here is the same slide again. The top 1 still sits over the bottom 2.
 
-<img src="two-times-four.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the blue 1 over the yellow 2, labelled 1 over 2. The other is the blue 4 over the yellow 8, labelled 4 over 8.">
+<img src="two-times-four.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the top 1 over the bottom 2, labelled 1 over 2. The other is the top 4 over the bottom 8, labelled 4 over 8.">
 
 ```question
 id: two-times-four-1
@@ -343,11 +343,11 @@ answer: 1
 What does this picture find?
 
 - 2 × 4 = 8
-  - The blue 1 sits over 2, and the blue 4 sits over 8.
+  - The top 1 sits over 2, and the top 4 sits over 8.
 - 2 + 4 = 6
-  - The rulers add distances, not numbers. The blue 4 sits over 8.
+  - The rulers add distances, not numbers. The top 4 sits over 8.
 - 4 − 2 = 2
-  - 2 is where the blue 1 sits. Look where the blue 4 sits.
+  - 2 is where the top 1 sits. Look where the top 4 sits.
 ```
 
 A ruler like this is called a *slide rule*. In 1620, Edmund Gunter of
@@ -376,14 +376,14 @@ This step goes a little further. Sliding forwards adds two distances.
 Sliding back takes one distance away. Look at the last picture again,
 and read it the other way.
 
-To find 8 ÷ 4, put the blue 4 over the yellow 8. That is where it
+To find 8 ÷ 4, put the top 4 over the bottom 8. That is where it
 already is.
 
 ```question
 id: a-stretch-sliding-back-1
 type: fill-in-the-blank
 
-The blue 1 sits over the yellow
+The top 1 sits over the bottom
 {2|4|12}.
 
 So 8 ÷ 4 is
@@ -392,10 +392,10 @@ So 8 ÷ 4 is
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The blue 4 is hops(10 → 4) from the blue 1.
-2. The yellow 8 is hops(10 → 8) from the yellow 1.
-3. So the blue 1 sits hops(10 → 8) − hops(10 → 4) from the yellow 1.
-   Which yellow number is there?
+1. The top 4 is hops(10 → 4) from the top 1.
+2. The bottom 8 is hops(10 → 8) from the bottom 1.
+3. So the top 1 sits hops(10 → 8) − hops(10 → 4) from the bottom 1.
+   Which number on the bottom ruler is there?
 
 **Think about:** multiplying adds hops. What does dividing do to hops?
 
@@ -413,7 +413,7 @@ $$\text{hops}(10 \to 2 \times 3) = \text{hops}(10 \to 2) + \text{hops}(10 \to 3)
 On the page *Counting hops: logarithms, how many times did we
 multiply?*, hops(10 → 1000) had a usual way to write it:
 $\log_{10} 1000$. We read it as "log to base 10 of 1000". *Log* is
-short for *logarithm*. A logarithm counts hops. So the idea of this
+short for *logarithm*{.term}. A logarithm counts hops. So the idea of this
 page is
 
 $$\log_{10}(2 \times 3) = \log_{10} 2 + \log_{10} 3$$
@@ -453,8 +453,8 @@ Before you run it: will the first two lines print the same number?
 ```
 
 The first two lines both print `0.7781512503836436`. The last two both
-print `0.9030899869919435`. So the blue 3 sits about 0.78 of the way
-along the yellow ruler, over the 6.
+print `0.9030899869919435`. So the top 3 sits about 0.78 of the way
+along the bottom ruler, over the 6.
 
 You can keep writing hops when it feels calmer. hops(10 → 6) and
 $\log_{10} 6$ are two names for one number.
