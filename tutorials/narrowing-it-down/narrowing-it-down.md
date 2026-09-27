@@ -419,7 +419,7 @@ the two answers so far apart.
 
 ## Your own guesses
 
-Here is Drake's chain as a cell, with his smallest guesses. The names
+Here is Drake's chain as a cell, with the smallest 1961 guesses. The names
 say what each step is. Change any guess and run it again.
 
 ```python exec

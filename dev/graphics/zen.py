@@ -1063,6 +1063,8 @@ DIAGRAMS = {
     "a-box-with-something-in-it/box-and-three.svg": lambda: balance((1, 3), (0, 7)),
     "keeping-it-level/take-three.svg": lambda: balance((1, 0), (0, 4)),
     "keeping-it-level/two-boxes.svg": lambda: balance((2, 1), (0, 9)),
+    "a-box-with-something-in-it/three-boxes.svg": lambda: balance((3, 0), (0, 12)),
+    "keeping-it-level/three-boxes.svg": lambda: balance((3, 0), (0, 12)),
 }
 
 

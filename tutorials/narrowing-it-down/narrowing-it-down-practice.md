@@ -399,7 +399,7 @@ fit?](tutorial:how-many-fit), a number and its reciprocal made 1.
 
 ## 10. Your own Drake guesses
 
-Here is Drake's chain with his smallest guesses, except the last one.
+Here is Drake's chain with Drake's smallest guesses, except the last one.
 Can you find a number of years for `years_sending` that makes the
 answer exactly 1: our world alone?
 

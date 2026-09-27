@@ -353,7 +353,7 @@ What does this picture find?
 A ruler like this is called a *slide rule*. In 1620, Edmund Gunter of
 Oxford made a ruler marked in this way. Around 1622, William Oughtred
 of Cambridge put two of them together. That was the first slide rule.
-It came a few years after John Napier published his work on numbers
+It came a few years after John Napier published a book on numbers
 like hops.
 
 Engineers and scientists used slide rules for about 350 years. Buzz
