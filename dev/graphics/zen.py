@@ -1043,7 +1043,7 @@ DIAGRAMS = {
     # Views from the top
     "narrowing-it-down/a-town.svg": lambda: narrowing(1000, [
         (Fraction(1, 2), "like tea"), (Fraction(1, 5), "have a bike"),
-        (Fraction(1, 10), "were born in May")]),
+        (Fraction(1, 10), "can juggle")]),
     "powers-of-ten/ten-ladder.svg": lambda: ten_ladder(-3, 3),
 
     # Strand D: seeing it
