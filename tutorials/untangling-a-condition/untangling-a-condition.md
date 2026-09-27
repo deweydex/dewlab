@@ -36,9 +36,9 @@ as `not a or not b`?
 
 On this page we:
 
-- compare two conditions row by row, with the truth tables from the last page
-- write `same_rule`, a function that checks every row for us, and add it to
-  the toolkit
+- compare two *conditions*{.term} row by row, with the *truth tables*{.term} from the last page
+- write `same_rule`, a *function*{.term} that checks every row for us, and add it to
+  the *toolkit*{.term}
 - find the two laws that let us move a `not` inside brackets
 - use them to untangle a hard condition from a real program, one checked
   step at a time
@@ -79,7 +79,7 @@ rule with three True/False inputs has a truth table with {8} rows.
 
 ## Two ways to grey out a button
 
-Let's give each programmer's test a name. Each one is a small function: two
+Let's give each programmer's test a *name*{.term}. Each one is a small function: two
 True/False values go in, and one True/False value comes out. The result is
 `True` when the button should be greyed out.
 
@@ -159,7 +159,7 @@ def grey_out_c(is_open, has_stock):
 ```
 
 Is `grey_out_c` the same rule as the other two? Make a guess before you run
-the cell.
+the *cell*{.term}.
 
 ```python exec
 id: untangling-arithmetic-move
@@ -193,7 +193,7 @@ inputs.
 
 Two rules are *equivalent* when they give the same answer on every row of
 their truth table. A function that tests this needs every row, so let's
-start there. Python has a module called `itertools` that comes with it, and
+start there. Python has a *module*{.term} called `itertools` that comes with it, and
 one of its tools, `product`, makes every row of True/False values.
 
 How many rows do you expect for `repeat=2`? And for `repeat=3`? Run it to

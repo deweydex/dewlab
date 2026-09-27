@@ -52,7 +52,7 @@ On this page we:
 - turn a whole number into binary and back, and read a display digit as bits
 - add two numbers in binary
 - meet hexadecimal, a short way to write binary
-- add `to_binary`, `to_hex` and `pixel_row` to your toolkit
+- add `to_binary`, `to_hex` and `pixel_row` to your *toolkit*{.term}
 - draw a digit from one hex number, and read a colour like `#FF8800`
 - find out why Python says `0.1 + 0.2` is not quite `0.3`
 
@@ -115,7 +115,7 @@ symbols, with a small 2 to say which base we are in:
 
 $$1101_2 = 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0 = 8 + 4 + 0 + 1$$
 
-Before you run the next cell, calculate that. In Python, `0b` in front of
+Before you run the next *cell*{.term}, calculate that. In Python, `0b` in front of
 a number means "this is binary". Run it to check.
 
 ```python exec
@@ -188,7 +188,7 @@ print(format(100, "b"))
 
 ## How many bits is enough?
 
-The seven segments of a display digit, from
+The seven *segments*{.term} of a display digit, from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 are seven switches. So a digit's pattern is 7 bits. Give segment a the
 ones column, b the twos, c the fours, and so on up to g, the 64s. Then
@@ -233,7 +233,7 @@ the screen turned into nonsense, because the game had never planned for
 a number one byte cannot hold.
 
 The question also runs backwards. A Full HD screen has 2,073,600
-pixels. How many bits does it take to give each one its own number?
+*pixels*{.term}. How many bits does it take to give each one its own number?
 That is "how many times do I double 1?", a logarithm. Predict, then run.
 
 ```python exec
@@ -532,7 +532,7 @@ print(0.1 + 0.2 == 0.3)
 Python says `0.30000000000000004`, and `False`. That looks like a
 mistake, but it is not. It comes from the space that Python's decimals live in.
 
-A float is kept in binary too. After the point, binary columns are worth
+A *float*{.term} is kept in binary too. After the point, binary columns are worth
 a half, a quarter, an eighth, and so on. Some numbers can be made from
 those exactly: $0.75$ is a half plus a quarter. But no set of halves,
 quarters and eighths adds up to a tenth exactly. In binary, 0.1 repeats
@@ -592,7 +592,7 @@ hidden.
 | Question | On this page |
 |---|---|
 | What is named here? | A column's worth (1, 2, 4, 8…), a bit, a byte, and the tools `to_binary`, `to_hex` and `pixel_row` |
-| What is promised? | Each tool's docstring, checked by `assert`; `0x6996996` promises a picture of an 8, and `#FF8800` three brightnesses |
+| What is promised? | Each tool's *docstring*{.term}, checked by `assert`; `0x6996996` promises a picture of an 8, and `#FF8800` three brightnesses |
 | What happens when? | The halving recipe, step by step; the carries in binary addition, from right to left; the rows of a digit, top to bottom |
 | What does this space let us do? | Python's whole numbers grow as needed; a byte stops at 255; floats keep a tenth only nearly |
 

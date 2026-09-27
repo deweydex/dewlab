@@ -38,8 +38,8 @@ On this page we:
 - meet `True` and `False` as values with their own rules
 - combine them with `and`, `or`, `not`, and "one or the other, not both"
 - list every case of a rule in a truth table, with a loop
-- count the rows, and find binary counting hiding inside them
-- add `truth_table` to the toolkit, and use it on a digit display
+- count the rows, and find *binary*{.term} counting hiding inside them
+- add `truth_table` to the *toolkit*{.term}, and use it on a digit display
 
 > **The space we're in.** Every value on this page is True or False.
 > There is nothing in between: no "maybe", no "half working". Real life
@@ -82,7 +82,7 @@ values can 3 bits hold?
 
 ## True and false are values
 
-On the last page, every condition had an answer, `True` or `False`. A
+On the last page, every *condition*{.term} had an answer, `True` or `False`. A
 *Boolean value* is a value that is either True or False, and nothing
 else. The name comes from George Boole, who found the rules of
 these values in the 1840s and 1850s, in Cork.
@@ -127,7 +127,7 @@ A *loop* repeats some lines, once for each value in a list. The line
 `paid_up` as False, then once with it as True". That is all we need from
 loops for now. We learn them properly in Unit 3.
 
-How many lines will this cell print? Guess before you run it.
+How many lines will this *cell*{.term} print? Guess before you run it.
 
 ```python exec
 id: true-false-and-2
@@ -242,7 +242,7 @@ row:
 
 Maths writes XOR as $A \oplus B$. On
 [Bits that flip](tutorial:bits-that-flip) we will meet it again, working
-on the bits of numbers, and see how it catches a mistake in a message.
+on the *bits*{.term} of numbers, and see how it catches a mistake in a message.
 
 ```question
 id: true-false-xor-2
@@ -287,7 +287,7 @@ inputs there are
 
 $$2^n \text{ rows}$$
 
-That is the same doubling as bits and bytes: 8 bits hold $2^8 = 256$
+That is the same doubling as bits and *bytes*{.term}: 8 bits hold $2^8 = 256$
 values.
 
 In fact, the link goes further than the count. `int()` turns `False`
@@ -321,7 +321,7 @@ hand, but a computer does not mind.
 So far we wrote new loops for every rule. Let's make one tool that
 prints the truth table of any rule we give it.
 
-First, a rule becomes a function. Here are the three rules we have met
+First, a rule becomes a *function*{.term}. Here are the three rules we have met
 so far. Each takes Boolean values in and returns one Boolean value.
 
 ```python exec
@@ -345,7 +345,7 @@ print(unlock(True, False))
 ```
 
 Here is something new. A function is a value too, so we can pass the
-rule itself to another function, without brackets after its name.
+rule itself to another function, without brackets after its *name*{.term}.
 `truth_table(unlock, ["paid_up", "dock_working"])` passes the rule
 `unlock`, and the names of its two inputs. Then `truth_table` can call
 `unlock` once for every row.
@@ -362,7 +362,7 @@ from 0. And `results.append(result)` adds one value to the end of the
 list `results`. We use `sep="\t"` inside `print` to put a tab between
 values, so the columns line up.
 
-This is a toolkit cell. The branches for one input and two inputs are
+This is a toolkit cell. The *branches*{.term} for one input and two inputs are
 written for you. Can you write the branch for three inputs? It follows
 the same pattern, with one more loop.
 
@@ -496,7 +496,7 @@ the answer.
 
 ### Your turn: a digit display
 
-A seven-segment display, like the one Unit 1 builds, shows a digit with seven small bars, called
+A *seven-segment display*{.term}, like the one Unit 1 builds, shows a digit with seven small bars, called
 segments, which each light up or stay dark. You have seen them on
 microwaves and alarm clocks. Engineers name the segments with letters,
 from a at the top, round the outside, to g in the middle. Segment e is

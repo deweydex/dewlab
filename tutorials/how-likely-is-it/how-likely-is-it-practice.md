@@ -16,15 +16,15 @@ may be different and work too. Several problems ask you to guess
 first. Guesses about chance often miss, for everybody, and a guess that
 misses is the most useful kind here.
 
-Your toolkit is loaded on this page: `simulate` from the tutorial, and
+Your *toolkit*{.term} is loaded on this page: `simulate` from the tutorial, and
 `combinations`, `all_pairs`, `total` and the rest from earlier pages.
-Simulations are left to chance, so your numbers will differ a little
+*Simulations*{.term} are left to chance, so your numbers will differ a little
 from the ones in the answers. That is expected, and the tutorial's
 section "Why the two answers differ" says why.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: likely-practice-warm-up
@@ -34,19 +34,19 @@ print(13 / 52)
 ```
 
 **1. Predict.** A deck of 52 cards has 13 hearts. You pick one card
-without looking. What is the probability that it is a heart? Say it as
+without looking. What is the *probability*{.term} that it is a heart? Say it as
 a fraction, a decimal and a percentage, then run the cell above.
 
 <details class="dl-answer"><summary>answer</summary>
 
 $\frac{13}{52} = \frac{1}{4}$, which is 0.25, or 25%. Every card is
-equally likely, and 13 of the 52 outcomes are in the event "a heart".
+equally likely, and 13 of the 52 *outcomes*{.term} are in the *event*{.term} "a heart".
 
 </details>
 
-**2. Make.** A tiny image has 10 pixels: 3 red, 5 green and 2 blue. A
+**2. Make.** A tiny image has 10 *pixels*{.term}: 3 red, 5 green and 2 blue. A
 program picks one pixel at random. Find the probability that it is
-green, in Python, using names for the three counts.
+green, in Python, using *names*{.term} for the three counts.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -106,7 +106,7 @@ print(simulate(heads, 1000))
 ```
 
 **5. Make.** In a board game, you need a 5 or a 6 on one die to escape
-from jail. Write a trial, `escape`, and use `simulate` with 10,000 runs.
+from jail. Write a *trial*{.term}, `escape`, and use `simulate` with 10,000 runs.
 Then find the exact probability by counting, and compare.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -214,7 +214,7 @@ says, "a coin is 0.5." What would you tell him?
 
 Nothing is broken. Ten runs are very few, so the result can be far from 0.5.
 A fair coin gives 8 or more heads in 10 tosses about 5% of the time,
-so 0.8 will appear now and then. The law of large numbers promises that
+so 0.8 will appear now and then. The *law of large numbers*{.term} promises that
 the fraction gets closer to 0.5 as the runs grow. Try
 `simulate(heads, 100000)`, and it will be very close to 0.5. It still
 will not be exactly 0.5, and that is fine too.
@@ -403,7 +403,7 @@ is your toolkit's `product` from
 **14. Another way.** Schlomi, who is learning Python too, says: "Two dice
 can add up to 11 different totals, 2 to 12, so each total has
 probability $\frac{1}{11}$." For two dice that does not hold. Describe a
-different experiment, a different space, in which her answer would
+different *experiment*{.term}, a different space, in which her answer would
 hold.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -467,7 +467,7 @@ trust it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0.9 is a relative frequency. It is how often it caught spam, divided by
+0.9 is a *relative frequency*{.term}. It is how often it caught spam, divided by
 how many times it tried. It is not a probability found by counting equally
 likely outcomes, because a spam email has no such outcomes to count.
 

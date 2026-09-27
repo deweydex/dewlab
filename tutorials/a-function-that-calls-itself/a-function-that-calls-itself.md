@@ -28,26 +28,26 @@ own. How many photos are there in all, counting every folder inside
 every folder?
 
 A loop cannot answer that on its own, and you will see why. The answer
-is a function that uses itself. That sounds like a circle, the kind of
+is a *function*{.term} that uses itself. That sounds like a circle, the kind of
 answer that says "a word means the word". But if you are
 careful, it works, and it can be the shortest code on the page.
 
 On this page we:
 
-- keep a folder of folders as a list of lists
+- keep a folder of folders as a *list*{.term} of lists
 - see why a loop, or two loops, cannot count every photo
 - write a function that calls itself, and keeps its promise by using
   that promise on a smaller problem
 - watch the calls wait for each other, one inside another
 - see what happens when a promise never stops, and why every recursion
   needs a place to stop
-- add `count_items` to the toolkit
+- add `count_items` to the *toolkit*{.term}
 - count the same photos with a loop and a to-do list, and compare
 
 > **The space we're in.** We use lists, from
 > [A row of numbers](tutorial:a-row-of-numbers), and functions, which
 > can call any function they can see. This page adds one new idea. A
-> function can see its own name, so it can call itself. Every call gets a fresh space
+> function can see its own *name*{.term}, so it can call itself. Every call gets a fresh space
 > of names, as on
 > [What a function can see](tutorial:what-a-function-can-see#a-fresh-space-for-every-call).
 > We usually do not say it, but Python only lets calls wait inside
@@ -101,7 +101,7 @@ holidays = [
 print(len(holidays))
 ```
 
-Count the photos by eye first. There are 9. Before you run the cell,
+Count the photos by eye first. There are 9. Before you run the *cell*{.term},
 what will `len(holidays)` say?
 
 It says 4. `len` counts what is directly inside the list: two photos
@@ -174,7 +174,7 @@ on a smaller problem.
 
 Here is how to read that last line. Do not follow the call down. Trust
 the promise instead. `factorial_again(n - 1)` returns $(n - 1)!$,
-because that is what the docstring promises. Then $n \times (n - 1)!$
+because that is what the *docstring*{.term} promises. Then $n \times (n - 1)!$
 is $n!$, which is what this call promised. So the promise keeps itself,
 as long as it stops somewhere.
 
@@ -315,7 +315,7 @@ factorial_no_stop(4)
 ```
 
 `n` is 4, then 3, 2, 1, 0, then −1, −2, −3, and nothing tells it to
-stop. The traceback shows the same line many times, then a note like
+stop. The *traceback*{.term} shows the same line many times, then a note like
 `[Previous line repeated 996 more times]`. The last line says:
 
 ```text
@@ -356,7 +356,7 @@ print(factorial_again(3))
 ```
 
 `n` goes 2.5, 1.5, 0.5, −0.5, and steps over 0, so the same error
-appears. Whole numbers from 0 up are the domain of the promise, as on
+appears. Whole numbers from 0 up are the *domain*{.term} of the promise, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out).
 Outside it, the steps never land on the place where they stop.
 
@@ -554,9 +554,9 @@ This page asked you to trust the promise before it showed you the
 calls. You read `n * factorial_again(n - 1)` as "$n$ times $(n-1)!$",
 and only then watched five calls wait inside each other.
 
-Many courses go the other way: trace every call first, with a diagram of
+Many courses go the other way: *trace*{.term} every call first, with a diagram of
 the call stack, and let the promise come later. The trace shows that
-there is no magic, and it is the view a debugger gives you when a
+there is no magic, and it is the view a *debugger*{.term} gives you when a
 recursion does something you did not expect.
 
 We led with the promise because tracing stops working quickly. You can

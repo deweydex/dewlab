@@ -43,10 +43,10 @@ billion times apart.
 
 On this page we:
 
-- make random lists of 10, 100 and 1,000 numbers, and count the
-  comparisons each sort makes
+- make random *lists*{.term} of 10, 100 and 1,000 numbers, and count the
+  *comparisons*{.term} each sort makes
 - plot the counts, and see the shape of the growth before we name it
-- sort a real list that is nearly in order already
+- *sort*{.term} a real list that is nearly in order already
 - build a third sort, Shell sort, which makes long jumps first
 - time Python's own `sorted()` against all three
 - sort six thousand real planets, and choose the racers we can wait for
@@ -54,7 +54,7 @@ On this page we:
 
 > **The space we're in.** We use lists of numbers, and the two sorts from
 > [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards), which
-> your toolkit now holds. Random numbers come from the `random` module,
+> your *toolkit*{.term} now holds. Random numbers come from the `random` *module*{.term},
 > as on [How likely is it?](tutorial:how-likely-is-it). We usually
 > do not say it, but every comparison of two numbers takes about the
 > same time, whatever the numbers are. So we can count comparisons to
@@ -153,11 +153,11 @@ def insertion_count(values):
 
 ## Ten, a hundred, a thousand
 
-Now the race. The cell makes one random list of each size, and gives
-the same list to both sorts, so that each race is fair. Selection sort
+Now the race. The *cell*{.term} makes one random list of each size, and gives
+the same list to both sorts, so that each race is fair. *Selection sort*{.term}
 makes $\frac{n(n-1)}{2}$ comparisons on $n$ values, whatever their
 order. So you can calculate its column before you run the cell. What do
-you guess for insertion sort?
+you guess for *insertion sort*{.term}?
 
 ```python exec
 id: racing-ten-1
@@ -203,7 +203,7 @@ comparisons. About how many would a list of 2,000 take?
 A table with three rows hides the shape. Let's count at ten sizes, from
 100 to 1,000, and draw the counts. This cell makes about three million
 comparisons, so give it a few seconds. Before you run it, guess the
-shape of each line: straight, like linear search on
+shape of each line: straight, like *linear search*{.term} on
 [Finding things fast](tutorial:finding-things-fast#watching-the-steps-grow),
 or something else?
 
@@ -289,8 +289,8 @@ sort* is insertion sort done again and again, first with a large gap
 and then with smaller ones, ending with a gap of 1. Here, the gap
 starts at half the length of the list, and halves each pass.
 
-Here is Shell sort on a hand of 8 cards in reverse order, the worst
-case for insertion sort. Before you run it, what will the hand look
+Here is Shell sort on a hand of 8 cards in reverse order, the *worst case*{.term}
+for insertion sort. Before you run it, what will the hand look
 like after the gap-4 pass?
 
 ```python exec
@@ -322,7 +322,7 @@ come back to the code.
 With a gap of 4, the pairs 4 places apart are sorted: 13 and 7, 12
 and 5, 9 and 3, 8 and 1. Every small card jumped 4 places towards the
 front in one move. With a gap of 2, each card jumps 2 places. The last
-pass, with a gap of 1, only has to swap neighbours.
+pass, with a gap of 1, only has to *swap*{.term} neighbours.
 
 <img src="shell-sort-gaps.svg" alt="Shell sort on 13, 12, 9, 8, 7, 5, 3, 1, in four rows. In the first row, arcs join the values 4 places apart, in 4 pairs: 13 and 7, 12 and 5, 9 and 3, 8 and 1. After the gap-4 pass the list is 7, 5, 3, 1, 13, 12, 9, 8, and arcs join every other value, in 2 groups of 4. After the gap-2 pass it is 3, 1, 7, 5, 9, 8, 13, 12, and the next pass, with a gap of 1, is an ordinary insertion sort. After it the list is 1, 3, 5, 7, 8, 9, 12, 13, sorted.">
 
@@ -511,7 +511,7 @@ for racer in [selection_sort, insertion_sort, shell_sort, sorted]:
 ```
 
 Your times will differ from anyone else's, and from run to run.
-(`racer.__name__` is the name each function was given when it was
+(`racer.__name__` is the *name*{.term} each *function*{.term} was given when it was
 made.) Two things usually hold, though.
 
 First, `sorted()` is far ahead of all three: often more than ten times
@@ -532,7 +532,7 @@ computer's own instructions, not as lines of Python read one at a time.
 <aside class="dl-note" id="racing-note-timsort">
 
 **Tim's sort.** Timsort is named after Tim Peters, who wrote it for
-Python in 2002. It worked so well on real data that Java now uses it
+Python in 2002. It worked so well on real *data*{.term} that Java now uses it
 too, for sorting lists of objects.
 
 </aside>
@@ -594,7 +594,7 @@ apart, and one sort puts them at the two ends of the same list.
 
 ## Which sort, where?
 
-An algorithm is chosen for the job it is doing, not only for its
+An *algorithm*{.term} is chosen for the job it is doing, not only for its
 speed on one track. Here is what the races found.
 
 | Sort | Comparisons, $n$ random values | Where it fits |

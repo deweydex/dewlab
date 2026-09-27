@@ -19,7 +19,7 @@ covers:
 # Bits that flip: XOR and parity
 
 A weather buoy off the west coast of Ireland sends the sea temperature to
-land as a row of bits, over the radio. Radio is noisy. Now and then a
+land as a row of *bits*{.term}, over the radio. Radio is noisy. Now and then a
 single bit arrives flipped. A 0 that was sent arrives as a 1.
 
 Think about how strange it would be to catch that. The computer on land
@@ -32,10 +32,10 @@ The answer is one extra bit, and it is cleverer than it looks.
 
 On this page we:
 
-- meet exclusive or, XOR, on single bits, and Python's `^`
+- meet *exclusive or*{.term}, XOR, on single bits, and Python's `^`
 - use XOR to flip a bit, and to flip it back again
 - XOR whole numbers, one column of bits at a time, and flip a colour
-- add `parity_bit` to the toolkit, and use it to catch a flipped bit
+- add `parity_bit` to the *toolkit*{.term}, and use it to catch a flipped bit
 
 > **The space we're in.** Every value on this page is a bit, 0 or 1, or a
 > whole number made of bits, from 0 upwards. Python lets us treat `True`
@@ -83,8 +83,8 @@ Inside a computer, the switches are bits. Let's write *up* as 1 and *down*
 as 0. Then the stairs light is a rule on two bits: 1 when the bits are
 different, and 0 when they are the same.
 
-Python has an operator for XOR on bits: `^`, the small roof above the 6 on
-most keyboards. Before you run this cell, write down the four answers you
+Python has an *operator*{.term} for XOR on bits: `^`, the small roof above the 6 on
+most keyboards. Before you run this *cell*{.term}, write down the four answers you
 expect.
 
 ```python exec
@@ -125,7 +125,7 @@ once, as we will see.
 
 1. In the cell below, write `three_switches(a, b, c)` that returns
    `a ^ b ^ c`. Some big staircases really do have three switches.
-2. Print its truth table with `truth_table`.
+2. Print its *truth table*{.term} with `truth_table`.
 3. Look at the rows where the result is `True`. How many inputs are `True`
    in each of those rows? What do you notice?
 
@@ -161,7 +161,7 @@ print(shuffle)
 ```
 
 After an odd number of presses, shuffle is on. After an even number, it
-is back where it started. Each line gives the name `shuffle` a new value,
+is back where it started. Each line gives the *name*{.term} `shuffle` a new value,
 calculated from the old one, and the order of those lines decides the
 result.
 
@@ -176,7 +176,7 @@ are back where you started.
 ## XOR on whole numbers
 
 A whole number is a row of bits, so what would `12 ^ 10` mean? Python
-lines the two numbers up in binary and does XOR on each column, on its
+lines the two numbers up in *binary*{.term} and does XOR on each column, on its
 own. An operation that works on each column of bits separately is called
 *bitwise*.
 
@@ -213,7 +213,7 @@ in the columns worth 8 and 2".
 ### Flipping a colour
 
 On [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-`#FF8800` was orange. It was three bytes, for red, green and blue. What happens if
+`#FF8800` was orange. It was three *bytes*{.term}, for red, green and blue. What happens if
 we flip every bit of it? The mask for that is all 1s: `0xFFFFFF`. Each
 light that was bright goes dark, and each dark one goes bright.
 
@@ -278,8 +278,8 @@ id: bits-parity-1
 print(0 ^ 0 ^ 0 ^ 0 ^ 1 ^ 1 ^ 1 ^ 0)
 ```
 
-Typing every bit is slow, so let's write a toolkit function. It takes the
-bits as a string of 0s and 1s, like the text `to_binary` gives, and XORs
+Typing every bit is slow, so let's write a toolkit *function*{.term}. It takes the
+bits as a *string*{.term} of 0s and 1s, like the text `to_binary` gives, and XORs
 them together one at a time. `int("1")` turns the text `"1"` into the
 number 1, the same way it turned `False` into 0 on
 [True, false and every case](tutorial:true-false-and-every-case). The line

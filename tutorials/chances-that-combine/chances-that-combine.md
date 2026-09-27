@@ -43,8 +43,8 @@ On this page we:
 > [How likely is it?](tutorial:how-likely-is-it), and dice and coins are
 > fair. For birthdays we assume 365 days, each one equally likely, and
 > ignore 29 February. Real birthdays are not quite that even. We use
-> Python's `random` module, and `simulate`, `product`, `all_pairs` and
-> `combinations` from your toolkit.
+> Python's `random` *module*{.term}, and `simulate`, `product`, `all_pairs` and
+> `combinations` from your *toolkit*{.term}.
 
 ## Warm-up
 
@@ -88,7 +88,7 @@ $\frac{1}{12}$. Which one matches, or does none of them?
 
 We do not have to argue about it. On
 [Counting every outfit](tutorial:counting-every-outfit) we listed every
-outcome with `all_pairs`. How many outcomes do you expect, and how many
+*outcome*{.term} with `all_pairs`. How many outcomes do you expect, and how many
 are two sixes?
 
 ```python exec
@@ -117,11 +117,11 @@ $$\frac{1}{6} \times \frac{1}{6} = \frac{1}{36}$$
 
 <img src="two-sixes.svg" alt="A grid of 36 squares, with the first die down the side and the second die along the top. Each square shows its pair, from 1,1 to 6,6. The bottom row, a six on the first die, is shaded: it is 1/6 of the grid. In that row, only the square 6,6 is shaded more strongly: it is 1/6 of that row, which is 1/36 of the grid.">
 
-Two events are *independent* when one happening does not change the
+Two *events*{.term} are *independent* when one happening does not change the
 chance of the other. Dice and coins have no memory, so each roll is
 independent of the last. For independent events, the chance that both
 happen is the two chances multiplied. This is the *multiplication
-rule*. With $P(A)$ for the probability of A, it is
+rule*. With $P(A)$ for the *probability*{.term} of A, it is
 
 $$P(A \text{ and } B) = P(A) \times P(B)$$
 
@@ -143,7 +143,7 @@ print("100,000 games:  ", simulate(two_sixes, 100000))
 ```
 
 The exact answer is about 0.0278. The simulated answers are close, and
-change each time you run the cell. That is the law of large numbers from
+change each time you run the *cell*{.term}. That is the *law of large numbers*{.term} from
 [How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ).
 The more games we play, the closer the answers stay to the exact one.
 
@@ -177,7 +177,7 @@ Which kind of shuffle do you think gives the better chance?
 
 The songs are numbered 1 to 10, and songs 1 and 2 are the favourites.
 One new move is in this cell: `first in favourites` is True when
-`first` is one of the values in the list `favourites`.
+`first` is one of the values in the *list*{.term} `favourites`.
 
 ```python exec
 id: chances-playlist-1
@@ -193,7 +193,7 @@ def chance_both_favourites(pairs):
     return count / len(pairs)
 ```
 
-With repeats, every pair from `all_pairs` can happen. With no repeats,
+With repeats, every *pair*{.term} from `all_pairs` can happen. With no repeats,
 we keep only the pairs of two different songs.
 
 ```python exec
@@ -250,7 +250,7 @@ the *addition rule*:
 $$P(A \text{ or } B) = P(A) + P(B)$$
 
 So the chance a packet does not arrive whole is $0.2 + 0.1 = 0.3$. This
-is "and multiplies, or adds" from
+is "*and multiplies, or adds*{.term}" from
 [Counting every outfit](tutorial:counting-every-outfit#and-multiplies-or-adds),
 and it needs the same care. The two groups must not overlap.
 
@@ -305,7 +305,7 @@ which matches the count.
 
 This is the `or` from
 [True, false and every case](tutorial:true-false-and-every-case), which
-is True when at least one input is True, including when both are. For mutually
+is True when at least one *input*{.term} is True, including when both are. For mutually
 exclusive events the overlap is empty, so the addition rule is this
 rule with nothing subtracted.
 
@@ -335,9 +335,9 @@ $$P(\text{no six in four rolls}) = \left(\frac{5}{6}\right)^4
 \qquad
 P(\text{at least one six}) = 1 - \left(\frac{5}{6}\right)^4$$
 
-Which do you expect to be closer to the simulation: the gambler's
+Which do you expect to be closer to the *simulation*{.term}: the gambler's
 $\frac{2}{3}$, or the complement? Inside `six_in_four`, `return True`
-stops the function as soon as one six appears.
+stops the *function*{.term} as soon as one six appears.
 
 ```python exec
 id: chances-not-1
@@ -399,7 +399,7 @@ def at_least_one(chance, tries):
 How does your `at_least_one` compare with one way to write it? The
 table below runs the same calls on yours and on a solution, side by
 side. Where a row is different, try that call on its own. The last row
-uses `round`, because a float is very close to the true value, and
+uses `round`, because a *float*{.term} is very close to the true value, and
 not often equal to it.
 
 ```inputs
@@ -597,7 +597,7 @@ print(chance_of_shared(23))
 Programs often give each file a short code calculated from its
 contents, called a hash, so that two files can be compared by their
 codes. Two different files with the same code are a collision. A
-file's code is like a birthday, and a 32-bit hash has $2^{32}$ possible
+file's code is like a birthday, and a 32-*bit*{.term} hash has $2^{32}$ possible
 codes, about 4.3 billion. How many files before two of them probably
 share a code? A million? A billion? Guess, then run it.
 
@@ -632,7 +632,7 @@ leans. Your guess was never marked.
 
 | Question | On this page |
 |---|---|
-| What is named here? | Events got names, $A$ and $B$, and $P(A)$ named each one's chance. Each game became a trial, like `two_sixes`. |
+| What is named here? | Events got names, $A$ and $B$, and $P(A)$ named each one's chance. Each game became a *trial*{.term}, like `two_sixes`. |
 | What is promised? | Each rule promises a chance. `at_least_one` keeps its promise only when the tries are independent. |
 | What happens when? | Whether an earlier event changes a later one decides the rule. In the birthday count, each person changes the chance for the next. |
 | What does this space let us do? | Multiplying belongs to independent events, and adding to mutually exclusive ones. First, ask which space we are in. |

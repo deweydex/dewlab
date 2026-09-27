@@ -12,9 +12,9 @@ Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
 anything.
 
-Your toolkit is loaded on this page, so `mean`, `median`, `mode` and
+Your *toolkit*{.term} is loaded on this page, so `mean`, `median`, `mode` and
 `std_dev` are ready to use, and so are `largest`, `smallest`, `total`
-and the rest. One warning, from the tutorial: a cell that says
+and the rest. One warning, from the tutorial: a *cell*{.term} that says
 `mean = ...` hides the tool. Call the number something else.
 
 ## Warm-up
@@ -28,7 +28,7 @@ print(sleep_hours)
 ```
 
 **1. Predict.** Someone slept 7, 8, 6, 8 and 9 hours on five nights.
-Find the mean, the median and the mode by hand. Then check with
+Find the mean, the *median*{.term} and the *mode*{.term} by hand. Then check with
 your toolkit.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -104,7 +104,7 @@ inland = [15, 24, 18, 27, 20, 16, 26]
 print(coast, inland)
 ```
 
-**5. Make.** The two lists above are made-up highest temperatures, in
+**5. Make.** The two *lists*{.term} above are made-up highest temperatures, in
 degrees Celsius, for one week in two towns: one on the coast, and one
 far inland. Find each town's mean, range and standard deviation. What
 does the sea seem to do to the weather?
@@ -172,7 +172,7 @@ means anything?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The function takes the middle position of the list as it was given,
+The *function*{.term} takes the middle position of the list as it was given,
 which is 78 seconds, the slowest download. Schlomi's picture, the
 middle one of a line, works. But one step is missing. The line must be
 *in order*, so the values must be sorted first:
@@ -186,7 +186,7 @@ def middle_time(values):
 print(middle_time(download_seconds))    # 29
 ```
 
-A bug like this is hard to spot, because the code runs, and gives a
+A *bug*{.term} like this is hard to spot, because the code runs, and gives a
 real time from the list. A test with a list that is not already in
 order catches it. Your toolkit's `median` does the same job, and works
 for an even count too.
@@ -213,8 +213,8 @@ data_report([125.0, 40.0, 78.0, 312.0, 65.0])
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The error is an `UnboundLocalError`. Which name does it name?
-2. Inside the function, `mean = ...` makes `mean` a local name. Where
+1. The error is an `UnboundLocalError`. Which *name*{.term} does it name?
+2. Inside the function, `mean = ...` makes `mean` a *local name*{.term}. Where
    does Python look for `mean`, then, when the same line calls it?
 3. What could the number be called instead?
 
@@ -265,7 +265,7 @@ print(mean(ages + [64]), median(ages + [64]))    # 29.0 22.5
 ```
 
 The mean jumps from 22 to 29, older than everyone but the coach. The
-median moves only from 22 to 22.5. The coach is an outlier, and the
+median moves only from 22 to 22.5. The coach is an *outlier*{.term}, and the
 mean moves towards the tail, as it did with the response times. Notice
 `ages + [64]`: from
 [A row of numbers](tutorial:a-row-of-numbers#adding-and-multiplying-lists),
@@ -273,7 +273,7 @@ mean moves towards the tail, as it did with the response times. Notice
 
 </details>
 
-**9. Explain.** For any list, the deviations from the mean add up to 0.
+**9. Explain.** For any list, the *deviations*{.term} from the mean add up to 0.
 Why? Try to say it without a formula first, using the idea of
 sharing out.
 
@@ -381,7 +381,7 @@ There is more than one good answer. Here are some things to weigh:
   only need the steps named. Someone who is nervous of formulas might
   need the question first.
 - **What slips.** With the formula first, people often forget the
-  square root, or square something else. With the steps
+  *square root*{.term}, or square something else. With the steps
   first, a common problem is a lesson that runs long.
 
 Whichever you choose, say what it costs. The tutorial's "Why this
@@ -420,13 +420,13 @@ These are the numbers from the copy of the file saved on
 {{snapshot: life-expectancy}}. Over these 74 years, Spain's typical value
 is a little higher than Ireland's, and its standard deviation is bigger,
 because Spain started lower in 1950 and rose further. Nigeria's typical value is
-far lower, and its spread is almost the same as Spain's, since it rose
+far lower, and its *spread*{.term} is almost the same as Spain's, since it rose
 by about 19 years, from 35.5 to 54.5. A standard deviation across years
 measures how much a country changed, not how far apart its people are.
 
 </details>
 
-**14. Another way.** Python's own `statistics` module has two standard
+**14. Another way.** Python's own `statistics` *module*{.term} has two standard
 deviations: `statistics.pstdev`, which divides by $n$, and
 `statistics.stdev`, which divides by $n - 1$. Find both for the
 response times from the tutorial, and compare them with your
@@ -460,7 +460,7 @@ deviation of the totals. What do you expect the mode to be, from
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. `import random`, and start with an empty list.
+1. `import random`, and start with an *empty list*{.term}.
 2. Loop 1,000 times. Each time, append
    `random.randint(1, 6) + random.randint(1, 6)`.
 3. Hand the list to `mean`, `mode` and `std_dev`.
@@ -487,7 +487,7 @@ Your numbers will differ a little each run. The mean is close to 7, and
 the mode is almost always 7, because six of the 36 pairs add up to 7,
 more than any other total. The standard deviation is close to 2.4. If
 the mode ever comes out as 6 or 8, that is random chance in the
-simulation, and a run of 100,000 rolls would settle it.
+*simulation*{.term}, and a run of 100,000 rolls would settle it.
 
 </details>
 

@@ -37,7 +37,7 @@ A weather app shows the highest temperature for each day of the week.
 That is seven numbers. How do we keep them in a program, so that we can
 ask which day was warmest, or how much warmer Friday was than Thursday?
 
-Seven names would work, for a week. A year would need 365 names. A
+Seven *names*{.term} would work, for a week. A year would need 365 names. A
 phone that counts your steps every minute makes 525,600 numbers a year.
 Nobody can write half a million names. By the end of this page, one
 name will hold them all, and you will be asking questions of 74 years of
@@ -52,7 +52,7 @@ On this page we:
 - loop over a list by position, and build a new list in a loop
 - see what `+` and `*` do to lists, and do the maths meaning ourselves
 - see what happens when two names point at one list
-- add `largest`, `smallest` and `count_if` to the toolkit, and use them
+- add `largest`, `smallest` and `count_if` to the *toolkit*{.term}, and use them
   on 74 years of real Irish data
 
 > **The space we're in.** We work with lists of numbers, and now and then of words.
@@ -169,7 +169,7 @@ Notice what `week[3]` is. It is a name made from a name and a number.
 We can use it anywhere we could use a plain name. `week[4] - week[3]`
 is how much warmer Friday was than Thursday.
 
-What happens if we ask for `week[7]`? The cell below is meant to stop
+What happens if we ask for `week[7]`? The *cell*{.term} below is meant to stop
 with an error.
 
 ```python exec
@@ -328,7 +328,7 @@ print(len(week_fahrenheit))
 ```
 
 The new list has seven values, from 51.8 °F on Monday to 46.4 °F on
-Sunday. This is the shape of a running total again. We start before
+Sunday. This is the shape of a *running total*{.term} again. We start before
 the loop with something empty, and add to it each time round. For a total, the
 start is 0. For a list, the start is `[]`.
 
@@ -453,7 +453,7 @@ label is a change to the only box there is, and both labels see it.
 
 You met this on
 [What a function can see](tutorial:what-a-function-can-see#handing-over-a-list),
-where a function changed a playlist it was handed. It is the same
+where a *function*{.term} changed a playlist it was handed. It is the same
 thing. There is one list with two names.
 
 When we want a second box, we ask for one. `.copy()` makes a new list
@@ -490,7 +490,7 @@ turned round. `count_if` is a stub too. It is given a list and a test:
 a function that returns True or False for one value. It counts the
 values for which the test gives True. You handed a function to a
 function on [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-times),
-when `simulate` was given a trial.
+when `simulate` was given a *trial*{.term}.
 
 Here is a test to hand to `count_if`. It gives True for a cold day,
 below 10 degrees. Run it before the toolkit cell, because the table

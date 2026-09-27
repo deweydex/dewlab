@@ -42,18 +42,18 @@ On this page we:
 
 - find where two servers are equally fast, by a table and then by
   undoing
-- write `solve_linear` for any equation of the form $ax + b = 0$
+- write `solve_linear` for any *equation*{.term} of the form $ax + b = 0$
 - solve an equation with a square in it by spotting two numbers
 - say the quadratic formula in words, then in symbols, then in code
 - count a quadratic's answers first, with the discriminant
 - see `math.sqrt` refuse a negative number, and ask what that means
 
-> **The space we're in.** We work in the real numbers, $\mathbb{R}$: every point
-> on the number line. A letter in an equation is a name for a number we
+> **The space we're in.** We work in the *real numbers*{.term}, $\mathbb{R}$: every point
+> on the number line. A letter in an equation is a *name*{.term} for a number we
 > do not know yet, and every answer is checked by putting it back in.
 > We usually do not say it, but an
 > equation can have one answer, two, none, or every number as an
-> answer. Your toolkit is loaded, with `evaluate` and `plot_rule` from
+> answer. Your *toolkit*{.term} is loaded, with `evaluate` and `plot_rule` from
 > the last two pages, and `close_enough` from
 > [Does it work?](tutorial:does-it-work).
 
@@ -109,7 +109,7 @@ divide both sides by 2: $g = 6$. The graph's "about 6" is exactly 6.
 
 **Where "algebra" comes from.** Around the year 820, in Baghdad,
 Muhammad ibn Musa al-Khwarizmi wrote a book on solving equations. Its
-title has the word *al-jabr*, "restoring": moving a term that is taken
+title has the word *al-jabr*, "restoring": moving a *term*{.term} that is taken
 away on one side over to the other, where it is added. That word became
 *algebra*, and his own name became *algorithm*.
 
@@ -151,7 +151,7 @@ print(8 + 2 * thousands, 15 + 1.2 * thousands)
 
 It prints `8.75`, and both servers take 25.5 ms there. Below 8,750 people server
 A is faster, and above it server C is. Each side of this equation has
-degree 1, so it is a *linear equation*: the unknown is only multiplied
+*degree*{.term} 1, so it is a *linear equation*: the unknown is only multiplied
 by a number and added to. Each side, drawn as on the last page, is a
 straight line, and the answer is where the two lines cross.
 
@@ -204,12 +204,12 @@ def solve_linear(a, b):
 ```
 
 How does your `solve_linear` compare with one way to write it? The
-table below runs the same calls on your function and on a solution,
+table below runs the same calls on your *function*{.term} and on a solution,
 side by side. The first three rows are known answers. The rows after
 them check each answer the way this unit always will: they substitute
-the answer back. The rule $ax + b$ is a polynomial with two
+the answer back. The rule $ax + b$ is a *polynomial*{.term} with two
 coefficients, so `evaluate([b, a], x)` calculates it, and each of
-those rows is 0, or a float very close to 0. Where a row is different,
+those rows is 0, or a *float*{.term} very close to 0. Where a row is different,
 try that call on its own.
 
 ```inputs
@@ -247,7 +247,7 @@ last line of the function is not written yet. It starts with `return`.
 ### Your turn
 
 Two phones are charging. Phone A is at 20% and gains 1.5% a minute.
-Phone B is at 50% and gains 0.9% a minute. (A steady rate is a model.
+Phone B is at 50% and gains 0.9% a minute. (A steady rate is a *model*{.term}.
 Real phones charge more slowly as they fill.)
 
 1. Write the equation for "the two show the same charge", with $m$ for
@@ -278,10 +278,10 @@ $$w^2 + 3w - 40 = 0$$
 
 Now $w$ appears twice, once squared, and no single move gets it alone.
 An equation of the shape $ax^2 + bx + c = 0$, where $a$ is not 0, is a
-*quadratic equation*. Its left side is a quadratic, of degree 2. The
-numbers that make it true are its roots. As on
+*quadratic equation*. Its left side is a *quadratic*{.term}, of degree 2. The
+numbers that make it true are its *roots*{.term}. As on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule),
-a root is a place where the graph meets the x-axis.
+a root is a place where the graph meets the *x-axis*{.term}.
 
 Let's try a table first. How many rows do you expect?
 
@@ -303,11 +303,11 @@ $$x^2 + (p + q)x + pq$$
 
 So if we can find two numbers $p$ and $q$ that add to make 3 and
 multiply to make $-40$, then $w^2 + 3w - 40$ is $(w + p)(w + q)$.
-Writing an expression as brackets multiplied together is called
+Writing an *expression*{.term} as brackets multiplied together is called
 *factorising*. It is expanding, run backwards. Finding the two numbers
 by looking and thinking is *factorising by inspection*.
 
-Can you find the pair in your head? Then the cell tries every pair of
+Can you find the pair in your head? Then the *cell*{.term} tries every pair of
 whole numbers from −40 to 40, and prints the ones that work.
 
 ```python exec
@@ -356,7 +356,7 @@ Both give 0, so both are roots. Only one of them is a sprite sheet.
 
 Inspection works well when the roots are whole numbers. Often they are
 not. Back to the footballer. The ball leaves the boot 1 m above the
-grass, rising at 14 metres a second. Gravity slows it by 9.8 metres a
+grass, rising at 14 metres a second. *Gravity*{.term} slows it by 9.8 metres a
 second, every second. Leaving out the air, its height after $t$
 seconds is
 
@@ -374,7 +374,7 @@ The *quadratic formula* gives the roots of $ax^2 + bx + c = 0$. Here it
 is in words first:
 
 1. Square $b$, and take away four times $a$ times $c$.
-2. Take the square root of that.
+2. Take the *square root*{.term} of that.
 3. Add it to $-b$ for one root, and take it away from $-b$ for the other.
 4. Divide each by two times $a$.
 
@@ -461,11 +461,11 @@ The first curve crosses the axis twice, at 1 and 5. The second touches
 it once, at 3. The third never comes down to it.
 
 Now the formula can go in your toolkit. `solve_quadratic` promises a
-list of the real roots, smallest first: two, one, or none. Here are the
+*list*{.term} of the real roots, smallest first: two, one, or none. Here are the
 steps for the body:
 
 1. Calculate the discriminant.
-2. If it is less than 0, return an empty list, `[]`.
+2. If it is less than 0, return an *empty list*{.term}, `[]`.
 3. If it is 0, return a list holding the one root, $-\frac{b}{2a}$.
 4. Otherwise, calculate both roots with `math.sqrt`, and return them in
    a list, smallest first. `sorted` from
@@ -625,7 +625,7 @@ builds it.
 |---|---|
 | What is named here? | a letter, $g$, $w$ or $x$, for a number we do not know yet; $a$, $b$ and $c$ for the numbers in an equation; roots |
 | What is promised? | `solve_linear` gives the one answer, or `None`; `solve_quadratic` gives every real root, smallest first; every answer is checked by substituting it back |
-| What happens when? | the same move on both sides, one step at a time; the discriminant is calculated before any square root is taken |
+| What happens when? | *the same move on both sides*{.term}, one step at a time; the discriminant is calculated before any square root is taken |
 | What does this space let us do? | in $\mathbb{R}$, $x^2 = -1$ has no answer and `math.sqrt` refuses; a count of rows lives in the whole numbers, and a landing time comes after the kick, so one root may not fit the question |
 
 ## What we have now
@@ -648,5 +648,5 @@ For another route through these equations, the integrated course has
 
 Welch Labs (2015). *Imaginary Numbers Are Real [Part 3: Cardan's
 Problem].* <https://www.youtube.com/watch?v=N9QOLrfcKNc>. The quadratic
-formula has an older cousin for cubic equations. This short video tells
+formula has an older cousin for *cubic*{.term} equations. This short video tells
 how people found it, and the strange square roots it needed. Five minutes.

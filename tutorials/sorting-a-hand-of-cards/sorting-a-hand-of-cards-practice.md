@@ -15,14 +15,14 @@ it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
 open them. Each one is one answer. Yours may be different and work too.
 
-Your toolkit is loaded on this page: `selection_sort` and
+Your *toolkit*{.term} is loaded on this page: `selection_sort` and
 `insertion_sort` from the tutorial, `linear_search` and `binary_search`
 from the page before, and `smallest`, `median` and the rest from
 earlier pages.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: sorting-hand-practice-warm-up
@@ -38,14 +38,14 @@ check.
 <details class="dl-answer"><summary>answer</summary>
 
 `file_sizes` still holds `[34, 7, 61, 12]`, in the old order. Both
-toolkit sorts promise a new list, and leave the one they are given
+toolkit sorts promise a new *list*{.term}, and leave the one they are given
 alone. `insertion_sort(file_sizes)[0]` is 7. Index 0 of the sorted list
 is the smallest value, the smallest file.
 
 </details>
 
-**2. Predict.** You are dealt 6 cards. How many comparisons will
-selection sort make to put them in order? And how many will insertion
+**2. Predict.** You are dealt 6 cards. How many *comparisons*{.term} will
+*selection sort*{.term} make to put them in order? And how many will insertion
 sort make if the 6 cards are already in order? Find both before
 you run anything.
 
@@ -53,7 +53,7 @@ you run anything.
 
 Selection sort always makes $\frac{n(n-1)}{2}$ comparisons, which for
 6 cards is $\frac{6 \times 5}{2} = 15$: 5, then 4, 3, 2 and 1.
-Insertion sort on a hand already in order makes one comparison for
+*Insertion sort*{.term} on a hand already in order makes one comparison for
 each card after the first, so 5.
 
 ```python
@@ -71,7 +71,7 @@ The second line checks the formula with `total` from
 **3. Make.** TRAPPIST-1 is a small, cool star about 40 light-years
 away, with seven planets roughly the size of the Earth. Here is how
 many days each planet takes to go once round the star, in no order.
-Sort the list, and print the three shortest orbits: the three planets
+*Sort*{.term} the list, and print the three shortest orbits: the three planets
 nearest the star.
 
 ```python
@@ -86,7 +86,7 @@ in_order = insertion_sort(trappist_days)
 print(in_order[:3])
 ```
 
-This prints `[1.51, 2.42, 4.05]`. Ascending order puts the shortest
+This prints `[1.51, 2.42, 4.05]`. *Ascending order*{.term} puts the shortest
 orbit first, and a slice from
 [A row of numbers](tutorial:a-row-of-numbers#a-slice-of-the-week)
 takes the first three. `selection_sort` gives the same list. A year on
@@ -138,7 +138,7 @@ print("The lowest battery is at", ranking[0], "percent")
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The last line of the error mentions `'NoneType'`. Which name holds
+1. The last line of the error mentions `'NoneType'`. Which *name*{.term} holds
    `None`?
 2. Print `ranking` on its own. Then print `battery`.
 3. What does `.sort()` return, and what does it change?
@@ -210,7 +210,7 @@ light travels in a year, about 9.5 million million kilometres.
 
 There are over six thousand planets, which is a lot for our sorts. The
 next page shows why. So first keep only the planets nearer than 20
-light-years, as a list of pairs, `(distance, name)`. Then sort the
+light-years, as a list of *pairs*{.term}, `(distance, name)`. Then sort the
 pairs with one of your tools, and print the first five. Python
 compares two pairs by their first values, and uses the second values
 only if the first are equal. So pairs sort by distance.
@@ -225,7 +225,7 @@ print(len(names), names[0], light_years[0])
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start with an empty list, `pairs = []`.
+1. Start with an *empty list*{.term}, `pairs = []`.
 2. Loop by index. When `light_years[i] < 20`, append
    `(light_years[i], names[i])`.
 3. Sort `pairs` with one of your tools, and take the slice `[:5]`.
@@ -265,7 +265,7 @@ the loop leaves them out.
 
 **8. Fix.** Schlomi, who is learning Python too, writes a selection
 sort for the lengths of songs, in seconds. Her first line, `items =
-values`, is meant to make a list of her own to work on. The function
+values`, is meant to make a list of her own to work on. The *function*{.term}
 returns a sorted list, as it promises. But it breaks the other half
 of its promise. Run it, find what happens to `song_lengths`, and
 change the line that causes it.
@@ -306,7 +306,7 @@ list, on
 <details class="dl-answer"><summary>answer</summary>
 
 Both lines print `[187, 199, 241, 305]`. `items = values` ties a second
-name to the same list, so every swap changes `song_lengths` too, and
+name to the same list, so every *swap*{.term} changes `song_lengths` too, and
 the playlist's own order is lost. Schlomi wanted a list of her own,
 as the tutorial did. That needs `.copy()`:
 
@@ -525,7 +525,7 @@ answer might weigh:
   short or nearly sorted lists, and it is part of shell sort on the
   next page. Bubble sort is mostly met in courses and exams.
 - **What you want the reader to count.** All three make about
-  $\frac{n^2}{2}$ comparisons in the worst case, so any of them can
+  $\frac{n^2}{2}$ comparisons in the *worst case*{.term}, so any of them can
   show why a better sort is worth having.
 
 A full answer picks one, says who it is for, and says what the choice
@@ -533,9 +533,9 @@ costs.
 
 </details>
 
-**13. Make.** A laptop measured the temperature of its processor
+**13. Make.** A laptop measured the temperature of its *processor*{.term}
 chip once a minute for seven minutes, in degrees Celsius: the list
-`chip_temps` in the cell above. The median
+`chip_temps` in the cell above. The *median*{.term}
 is the middle value when the values stand in a line, in order. Find it
 with one of your sorts and an index, and check it against `median`
 from your toolkit.
@@ -570,9 +570,9 @@ with sorting, which is one reason sorting matters so much.
 </details>
 
 **14. Make.** A phone holds 1,000 numbers in no order. Is it worth
-sorting them first, so that every search can be a binary search? Use
+sorting them first, so that every *search*{.term} can be a *binary search*{.term}? Use
 `insertion_comparisons` from problem 10 to count the cost of sorting
-1,000 random numbers. A linear search for a number that is there looks
+1,000 random numbers. A *linear search*{.term} for a number that is there looks
 at about 500 items on average, and a binary search at about 10. After
 how many searches has sorting paid for itself?
 

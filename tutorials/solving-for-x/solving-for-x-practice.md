@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `solve_linear` and
+Your *toolkit*{.term} is loaded on this page, including `solve_linear` and
 `solve_quadratic` from the tutorial, and `evaluate`, `plot_rule` and
 `close_enough` from earlier pages. As on the tutorial, every answer
 gets checked by putting it back in.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: solving-practice-warm-up
@@ -41,13 +41,13 @@ They print `2.5`, then `None`, then `[2.0, 3.0]`.
 
 $4x - 10 = 0$ gives $x = \frac{10}{4} = 2.5$. $0x + 3 = 0$ has no
 answer at all, so `solve_linear` keeps its promise and returns
-`None`. And $x^2 - 5x + 6 = (x - 2)(x - 3)$, so the roots are 2 and 3,
+`None`. And $x^2 - 5x + 6 = (x - 2)(x - 3)$, so the *roots*{.term} are 2 and 3,
 smallest first. They are floats, because the formula divides.
 
 </details>
 
 **2. Make.** A 500 MB download has 300 MB done, and 4 MB more arrive
-each second. How many seconds until it is done? Write the equation,
+each second. How many seconds until it is done? Write the *equation*{.term},
 tidy it into the shape $ax + b = 0$, solve it with `solve_linear`, and
 substitute the answer back.
 
@@ -67,7 +67,7 @@ It prints `50.0` and `500.0`. The download finishes in 50 more seconds.
 </details>
 
 **3. Predict.** Without running anything, calculate the discriminant of
-each quadratic, and say how many real roots it has. Then check with
+each *quadratic*{.term}, and say how many real roots it has. Then check with
 `solve_quadratic`.
 
 - $x^2 + 2x + 1$
@@ -89,7 +89,7 @@ print(solve_quadratic(1, 0, -9))
 ```
 
 It prints `[-1.0]`, `[]` and `[-3.0, 3.0]`. For $x^2 - 9$ there is no
-$x$ term, so $b$ is 0.
+$x$ *term*{.term}, so $b$ is 0.
 
 </details>
 
@@ -236,7 +236,7 @@ one, $x^2 + x - 20 = (x + 5)(x - 4)$.
 </details>
 
 **8. Predict.** This is the tutorial's search loop, for a new pair of
-targets. What will it print, and which quadratic is it factorising?
+targets. What will it print, and which quadratic is it *factorising*{.term}?
 
 ```python
 target_sum = -7
@@ -343,13 +343,13 @@ order of operations from
 ```
 
 **11. Explain.** For $x^2 + 4 = 0$, the toolkit's `solve_quadratic`
-returns `[]`, an empty list. It could have stopped with an error
+returns `[]`, an *empty list*{.term}. It could have stopped with an error
 instead. Why is an empty list a better way to keep its promise? Think
 about a loop like `for x in solve_quadratic(a, b, c):`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The promise is "a list of the real roots". When there are none, an
+The promise is "a *list*{.term} of the real roots". When there are none, an
 empty list keeps that promise exactly. It says "no real roots" in the
 same shape as "two roots" or "one root".
 
@@ -357,14 +357,14 @@ Code that uses the tool does not need a special case. A loop over an
 empty list runs 0 times and moves on, so a check like the tutorial's
 works for every quadratic. An error would stop the whole program, even
 though "no real roots" is a true answer, not a failure. An error suits
-the case where the input itself breaks the promise, such as $a = 0$,
-which the docstring rules out.
+the case where the *input*{.term} itself breaks the promise, such as $a = 0$,
+which the *docstring*{.term} rules out.
 
 </details>
 
 **12. Another way.** Solve $x^2 - 6x + 8 = 0$ three ways: by inspection,
 with `solve_quadratic`, and by drawing it with `plot_rule` and reading
-where it crosses the x-axis. Do all three agree?
+where it crosses the *x-axis*{.term}. Do all three agree?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -454,8 +454,8 @@ $2x^2 - 7x + 3$, the roots 0.5 and 3 add to 3.5 and multiply to 1.5.
 Both match.
 
 For $x^2 - 10x + 21$ the roots add to 10, so the other root is
-$10 - 3 = 7$. Check: $3 \times 7 = 21$. This is factorising by
-inspection again. When $a$ is 1, the two numbers you look for are the
+$10 - 3 = 7$. Check: $3 \times 7 = 21$. This is *factorising by
+inspection*{.term} again. When $a$ is 1, the two numbers you look for are the
 roots with their signs changed.
 
 </details>
@@ -472,7 +472,7 @@ Expanding $2(x + 3)$ gives $2x + 6$. Take away the right side:
 - $2(x + 3) = 2x + 7$ becomes $0x - 1 = 0$, so `solve_linear(0, -1)`.
 
 Both give `None`, and for different reasons. The first is true for
-every $x$. It is an identity, as on
+every $x$. It is an *identity*{.term}, as on
 [Rules with letters in them](tutorial:rules-with-letters-in-them). The
 second is true for no $x$ at all. `None` promises only "no single
 answer". A tool that needed to tell the two apart would have to look at

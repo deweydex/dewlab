@@ -44,8 +44,8 @@ On this page we:
 - write steps that a robot could follow exactly
 - find the steps that repeat, and the steps that choose
 - write a plan in pseudocode, a halfway point between English and Python
-- give names to values in Python, and a name to a whole list of steps
-- look for algorithms outside the kitchen
+- give *names*{.term} to values in Python, and a name to a whole list of steps
+- look for *algorithms*{.term} outside the kitchen
 
 > **The space we're in.** A kitchen, but a strange one. The robot knows
 > only the words we give it. It does exactly what we write, in the order
@@ -147,7 +147,7 @@ a task. Now we can say what "clear" asks for. A good algorithm has:
 - **a fixed order**, so that every step happens after the steps it needs;
 - **an end**, so that it finishes, and does not go on for ever.
 
-From the first try to the second, we changed the environment most. The first try assumed a person's knowledge: that
+From the first try to the second, we changed the *environment*{.term} most. The first try assumed a person's knowledge: that
 kettles need water, that tea bags come out. The second try says those
 things out loud.
 
@@ -171,7 +171,7 @@ this", and "if they take milk, add milk".
 So there are three shapes a step can have.
 
 - **One after another.** Do this, then this, then this. This is
-  sequence, which we met on the last page.
+  *sequence*{.term}, which we met on the last page.
 - **Choosing.** Do this only if something is true: "if they take milk,
   add milk". This is called *selection*, because the robot selects one
   path or another.
@@ -240,7 +240,7 @@ light, called segments. To show a 4, the clock lights some bars and
 leaves the others off. Write a plan, in pseudocode, for a clock that
 shows one digit. Use `SET`, `REPEAT` and `IF` at least once each.
 
-Write it in the cell below. Each line starts with `#`, which makes it a
+Write it in the *cell*{.term} below. Each line starts with `#`, which makes it a
 *comment*: a note for people, which Python skips. So you can run the cell
 and nothing will go wrong. There is one possible answer at the bottom of
 this section.
@@ -363,7 +363,7 @@ Nothing appears, and nothing should. Let's stop here for a moment. The word
 card does not make any tea.
 
 To use the card, we write its name with brackets after it. That is
-called *calling* the function. Now the steps run, in order, from the top.
+called *calling* the *function*{.term}. Now the steps run, in order, from the top.
 How many lines do you expect this time?
 
 ```python exec

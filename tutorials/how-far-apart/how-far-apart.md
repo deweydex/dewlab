@@ -35,14 +35,14 @@ On this page we:
 - measure a distance straight across, then straight up, then on a slant
 - see why Pythagoras' theorem is true, by moving the pieces of a picture
 - find the distance between any two points, and add `distance` to the
-  toolkit
+  *toolkit*{.term}
 - find the point halfway between two points, and add `midpoint`
 - decide whether two circles in a game touch, and watch a fast ball
   slip through
 
 > **The space we're in.** The same flat plane as on
 > [Straight lines](tutorial:straight-lines), with the same unit across
-> and up. Here the unit is the pixel, one dot of the screen. "How far"
+> and up. Here the unit is the *pixel*{.term}, one dot of the screen. "How far"
 > means in a straight line, as a bird flies. A person walking along streets, or a ball bouncing off walls,
 > goes further.
 
@@ -92,7 +92,7 @@ centre is at $(130, 90)$. From the player to the ball is 30 pixels
 across and 40 pixels up. If we go across and then up, that is 70 pixels. The
 straight line from one centre to the other is shorter than that. How
 long is it? Make a guess before
-you run the cell, which draws the three lines.
+you run the *cell*{.term}, which draws the three lines.
 
 ```python exec
 id: how-far-across-1
@@ -118,7 +118,7 @@ hypotenuse.
 
 You used a rule for this on
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins#wrapping-it-surface-area),
-to find the slant of a cone, and that page promised the reason later.
+to find the slant of a *cone*{.term}, and that page promised the reason later.
 Here it is, as a picture.
 
 Take a right-angled triangle with short sides $a$ and $b$, and
@@ -134,7 +134,7 @@ $a + b$. There are two ways to lay the four triangles in the frame:
 
 The cell draws both, with $a = 3$ and $b = 4$. Before you run it, can
 you say why the white space in the two pictures must have the same
-area?
+*area*{.term}?
 
 ```python exec
 id: how-far-squares-1
@@ -152,7 +152,7 @@ for panel, triangles in [(left, first_way), (right, second_way)]:
     panel.axis("off")
 ```
 
-`plt.Polygon` makes a flat shape from a list of corners, and
+`plt.Polygon` makes a flat shape from a *list*{.term} of corners, and
 `add_patch` puts it on the drawing.
 
 The frame is the same, and so are the four triangles. So whatever is
@@ -169,7 +169,7 @@ like this one, is a *proof*.
 
 Let's check it with numbers. The white space is the frame's area
 minus four triangles. `triangle_area` is from your toolkit. Will the two
-columns agree for every pair?
+columns agree for every *pair*{.term}?
 
 ```python exec
 id: how-far-squares-2
@@ -189,7 +189,7 @@ only. The square corner made the pieces fit in the picture.
 ## The distance between two points
 
 Now back to the ball. The across and up are the two short sides, so
-the straight distance is the square root of $30^2 + 40^2$.
+the straight distance is the *square root*{.term} of $30^2 + 40^2$.
 
 For any two points $(x_1, y_1)$ and $(x_2, y_2)$, the across is
 $x_2 - x_1$ and the up is $y_2 - y_1$. So the distance between them is:
@@ -229,7 +229,7 @@ def distance(p, q):
 ```
 
 How does your `distance` compare with one way to write it? The table
-below runs the same calls on your function and on a solution, side by
+below runs the same calls on your *function*{.term} and on a solution, side by
 side. Python has its own version, `math.dist`, which does the same
 job, so some rows have a second row under them with `math.dist`. Until
 your `distance` has its `return` line, its column shows `None`. Before
@@ -331,7 +331,7 @@ def midpoint(p, q):
 
 How do we know the point is really halfway? Two things must be true.
 It must be the same distance from both ends, half the whole way. And it
-must be on the line between them, so the slope from the start to the
+must be on the line between them, so the *slope*{.term} from the start to the
 midpoint must be the slope of the whole line. The table below shows
 both, with `slope` from the last page. It runs the same calls on your
 `midpoint` and on a solution, side by side. Where a row is different,
@@ -378,7 +378,7 @@ frame.
 
 Now the game's question. Picture the ball and the player as two
 circles. Draw the straight line between their centres. Along that
-line, the ball's edge is its radius from its centre, and the player's
+line, the ball's edge is its *radius*{.term} from its centre, and the player's
 edge is the player's radius from theirs. If the centres are further
 apart than the two radii added together, there is a gap between the
 edges. If not, the circles touch or overlap.

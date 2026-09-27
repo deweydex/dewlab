@@ -13,10 +13,10 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `evaluate` from the
+Your *toolkit*{.term} is loaded on this page, including `evaluate` from the
 tutorial and `close_enough` from
 [Does it work?](tutorial:does-it-work#close-enough). The tutorial's
-`expand_brackets` was a page cell, not a toolkit tool, so the stretch
+`expand_brackets` was a page *cell*{.term}, not a toolkit tool, so the stretch
 section copies it in. Schlomo and Schlomi, who are learning Python too,
 have ideas in a few of the problems.
 
@@ -40,7 +40,7 @@ print(2 * x ** 2, (2 * x) ** 2)
 
 It prints `32 64`.
 
-In `2 * x ** 2`, the power comes first: $4^2 = 16$, then $2 \times 16 =
+In `2 * x ** 2`, the *power*{.term} comes first: $4^2 = 16$, then $2 \times 16 =
 32$. In `(2 * x) ** 2`, the brackets come first: $2 \times 4 = 8$, then
 $8^2 = 64$. In maths, $2x^2$ means the first one.
 
@@ -48,7 +48,7 @@ $8^2 = 64$. In maths, $2x^2$ means the first one.
 
 **2. Explain.** A weather sensor sends 3 readings every 4 seconds, so
 in $y$ seconds it sends $\frac{3y}{4}$ readings. Which of these is an
-expression, which an equation with one answer, and which an identity?
+*expression*{.term}, which an *equation*{.term} with one answer, and which an *identity*{.term}?
 Say why for each.
 
 - $\frac{3y}{4}$
@@ -73,7 +73,7 @@ print("True for every value tried.")
 
 </details>
 
-**3. Make.** Write the list of coefficients for $4x^3 - x + 9$. Then use
+**3. Make.** Write the *list*{.term} of *coefficients*{.term} for $4x^3 - x + 9$. Then use
 `evaluate` to find its value at $x = 2$, and check it with Python's own
 arithmetic.
 
@@ -85,7 +85,7 @@ print(evaluate(cubic_list, 2), 4 * 2 ** 3 - 2 + 9)
 ```
 
 Both give 39. The list is lowest power first: 9, then $-1$ for the $x$
-term, then 0, because there is no $x^2$ term, then 4 for $x^3$. The 0
+*term*{.term}, then 0, because there is no $x^2$ term, then 4 for $x^3$. The 0
 keeps the 4 at index 3.
 
 </details>
@@ -153,13 +153,13 @@ They print `15` and `1111`.
 The list is $1 + x + x^2 + x^3$. At $x = 2$ it is $1 + 2 + 4 + 8 = 15$.
 At $x = 10$ it is $1 + 10 + 100 + 1000 = 1111$. The second one shows
 something about place value. Read from the right, the digits of a
-number are the coefficients of a polynomial, with 10 in place of $x$:
+number are the coefficients of a *polynomial*{.term}, with 10 in place of $x$:
 $1111 = 1 + 1 \times 10 + 1 \times 10^2 + 1 \times 10^3$.
 
 </details>
 
-**7. Make.** Simplify $3(2x + 1) - 2(x - 4)$ by hand. Then check your
-answer by substitution, for every whole number from $-10$ to 10.
+**7. Make.** *Simplify*{.term} $3(2x + 1) - 2(x - 4)$ by hand. Then check your
+answer by *substitution*{.term}, for every whole number from $-10$ to 10.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
@@ -191,7 +191,7 @@ At $x = 0$ the two sides would be 11 and $-5$.
 
 **8. Fix.** Schlomi, who is learning Python too, wrote her own version
 of `evaluate`. $x^3 - 4x$ and $x^2 - 4$ are both 0 at $x = 2$. Her
-function gives 0 for the first one, but 4 for the second. Can you find
+*function*{.term} gives 0 for the first one, but 4 for the second. Can you find
 the line that does not do what she meant, and change it?
 
 ```python exec
@@ -227,7 +227,7 @@ never show it.
 
 **9. Make.** A square icon is $x$ pixels on each side. A margin adds
 4 pixels to its width and 6 to its height. Expand $(x + 4)(x + 6)$, the
-area of the icon and its margin, with a grid of four pieces. Then check
+*area*{.term} of the icon and its margin, with a grid of four pieces. Then check
 your expansion by substitution.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -272,7 +272,7 @@ This mental arithmetic uses an identity.
 **11. Explain.** The tutorial checked each piece of algebra by
 substituting numbers, and said a proof by rules is what algebra is for
 in the end. A textbook often starts the other way: it teaches the rules
-for brackets and like terms, and practises them by hand, with no
+for brackets and *like terms*{.term}, and practises them by hand, with no
 numbers put in. Which way would you have wanted to learn it, and why?
 There is no single answer.
 
@@ -402,7 +402,7 @@ against `evaluate` for many values of $x$.
 3. Walk through `[-2, 5, 3]` at $x = 2$ by hand: 3, then 11, then 20.
 
 **Think about:** how many multiplications does each way need for a
-polynomial of degree 10?
+polynomial of *degree*{.term} 10?
 
 </details>
 
@@ -426,7 +426,7 @@ print(evaluate_nested([-2, 5, 3], 2))
 
 It prints 20, and every check passes. This is called Horner's method.
 For degree 10 it makes 10 multiplications, where calculating every
-power separately needs many more. Computers often evaluate polynomials
+power separately needs many more. Computers often *evaluate*{.term} polynomials
 this way.
 
 </details>
@@ -590,7 +590,7 @@ for tenths in range(11):
     print(t, round(twice, 6), round(weighted, 6))
 ```
 
-The two columns agree (a `-0.0` is a float a tiny bit below 0, and rounding
+The two columns agree (a `-0.0` is a *float*{.term} a tiny bit below 0, and rounding
 keeps its sign). Many drawing programs find a curve by mixing twice,
 because it needs only the one small step, done again.
 
