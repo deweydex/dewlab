@@ -29,6 +29,10 @@ def test_only_the_marked_terms_are_marked(tab):
     assert sorted(marked) == ["cell", "variable"]
     plain = tab.eval_on_selector_all("#dl-body em:not(.dl-def)", "els => els.map(e => e.textContent)")
     assert "emphasis" in plain and "print" in plain
+    # A later use is not an introduction: plain type, dotted line only.
+    style = "el => getComputedStyle(el).fontStyle"
+    assert tab.eval_on_selector("#dl-body em.dl-def:text-is('cell')", style) == "normal"
+    assert tab.eval_on_selector(VARIABLE, style) == "italic"
 
 
 def test_hover_shows_the_definition(tab):

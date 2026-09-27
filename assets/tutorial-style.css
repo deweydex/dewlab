@@ -4032,6 +4032,9 @@ p code, li code {
   cursor: help;
 }
 .dl-def:hover { text-decoration-color: var(--dl-orange); }
+/* A later use marked `*term*{.term}` is not being introduced, so it reads
+   in plain type and keeps only the dotted line. */
+em.term, .term em { font-style: normal; }
 .dl-def:focus-visible {
   outline: 2px solid var(--dl-orange);
   outline-offset: 1px;

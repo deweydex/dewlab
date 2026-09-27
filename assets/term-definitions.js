@@ -42,6 +42,13 @@ function normalise(text) {
  * stemming, so *iterations* finds "iteration". Never a word inside a longer
  * italic, and never a prefix (*set* is not "setup"): either is where a
  * wrong sense gets in. */
+/* The site's stemmer trims only longer words, so *lists* would miss
+ * "list". Safe to allow here, because only an italic the author wrote as
+ * the term is ever compared. */
+function plural(singular, word) {
+  return word === `${singular}s` || word === `${singular}es`;
+}
+
 export function entryFor(text, entries) {
   const needle = normalise(text);
   if (needle.length < 2) return null;
@@ -53,7 +60,7 @@ export function entryFor(text, entries) {
     for (const name of names) {
       const tokens = tokenize(name);
       if (tokens.length === needleTokens.length
-        && tokens.every((token, i) => token === needleTokens[i])) {
+        && tokens.every((token, i) => token === needleTokens[i] || plural(token, needleTokens[i]))) {
         return entry;
       }
     }

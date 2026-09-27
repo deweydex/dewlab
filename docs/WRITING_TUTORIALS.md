@@ -1301,9 +1301,10 @@ to its first plain use instead.
 when a reader points at it, taps it, or reaches it with Tab (DECISIONS_LOG
 7.273). Only the italics mark it, so only a use you marked shows one. To
 give a later page's use of an earlier term the same help, write
-`*matrix*{.term}`: it looks like any italic, and the `{.term}` tells the
-vocabulary report and the glossary skill that this is not a new term. Mark
-a later use only where it means the term. "Set a seed" is not a set.
+`*matrix*{.term}`. It shows in plain type with the dotted line, since the
+term is not being introduced again, and the `{.term}` tells the vocabulary
+report and the glossary skill the same. Mark a later use only where it
+means the term, and once on a page is enough. "Set a seed" is not a set.
 `python3 dev/term_uses.py <slug>` lists the places a page uses an earlier
 term unmarked, with the sentence around each, for you to decide. The
 italics mark concepts only: a function name is code, and a formula is

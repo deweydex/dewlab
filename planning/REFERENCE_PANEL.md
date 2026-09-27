@@ -253,7 +253,8 @@ as the term is marked: the italicised first use, or a later use written
 Marking adds a class, `tabindex` and `aria-describedby` to the author's own
 `<em>`, and never wraps text, so highlights are untouched. Only `concept`
 entries are marked, matched to the whole italic, exactly or word for word
-after stemming; never a word inside a longer italic, never a prefix. Code,
+after stemming or as a plain plural; never a word inside a longer italic,
+never a prefix. A `{.term}` mark renders in plain type with the dotted line. Code,
 cells, maths, headings, links and folds' summaries are never marked.
 `dev/term_uses.py` lists, for each built page, the inherited concepts that
 appear unmarked in its prose, for an author to mark the ones that mean the

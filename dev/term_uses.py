@@ -14,6 +14,13 @@ Reads the built site, so run `python3 build.py` first.
 
     python3 dev/term_uses.py                 # every page
     python3 dev/term_uses.py doubling-and-halving
+    python3 dev/term_uses.py --check         # marks that name no term
+
+`--check` lists every `{.term}` mark whose words are not a concept in that
+page's glossary. The page would show nothing for it, so either the word or
+the glossary needs a look. It matches more strictly than the page does (no
+stemming beyond a plural), so a listed mark may still work; open the page
+to be sure.
 """
 
 from __future__ import annotations
@@ -65,10 +72,43 @@ def candidates(page: Path) -> list[tuple[str, int, str]]:
     return rows
 
 
+MARK_RE = re.compile(r'<em class="term">(.*?)</em>|<strong class="term"><em>(.*?)</em></strong>', re.S)
+
+
+def unmatched_marks(page: Path) -> list[str]:
+    text = page.read_text(encoding="utf-8")
+    found = MANIFEST_RE.search(text)
+    names = set()
+    if found:
+        for entry in json.loads(found.group(1)).get("glossary") or []:
+            if entry.get("kind") == "concept":
+                names.update(part.strip().lower() for part in entry["term"].split(","))
+    bad = []
+    for plain, bold in MARK_RE.findall(text):
+        word = re.sub(r"\s+", " ", html.unescape(TAG_RE.sub("", plain or bold))).strip().lower()
+        singulars = {word, word[:-1] if word.endswith("s") else word, word[:-2] if word.endswith("es") else word}
+        if not singulars & names:
+            bad.append(word)
+    return bad
+
+
+def check(pages: list[Path]) -> int:
+    problems = 0
+    for page in pages:
+        for word in unmatched_marks(page):
+            problems += 1
+            print(f"{page.stem}: *{word}*{{.term}} names no concept in this page's glossary")
+    print(f"{problems} marks name no term.")
+    return 1 if problems else 0
+
+
 def main(argv: list[str]) -> int:
     if not SITE.exists():
         print("No built site: run `python3 build.py` first.", file=sys.stderr)
         return 1
+    if argv[:1] == ["--check"]:
+        rest = argv[1:]
+        return check([SITE / f"{slug}.html" for slug in rest] if rest else sorted(SITE.glob("*.html")))
     pages = [SITE / f"{slug}.html" for slug in argv] if argv else sorted(SITE.glob("*.html"))
     total = 0
     for page in pages:
