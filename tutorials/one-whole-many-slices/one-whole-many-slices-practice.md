@@ -11,8 +11,8 @@ worlds:
 
 # Fractions: one whole pizza, many slices — Practice
 
-Small problems on one idea: all the slices of a pizza make the whole
-pizza. Try each problem before you open anything under it. There is no
+These small problems are about one idea. All the slices of a pizza
+make the whole pizza. Try each problem before you open anything under it. There is no
 hurry, and no score. Some problems come with numbers, shapes or letters.
 Choose the way you like in the box under the title.
 
@@ -198,7 +198,7 @@ of them, how much pizza would be missing?
 <details class="dl-answer"><summary>answer</summary>
 
 A million of them make the whole pizza. With 999,999, one slice is
-missing: one millionth of a pizza, which nobody would notice.
+missing. That slice is one millionth of a pizza. Nobody would notice it.
 
 </details>
 

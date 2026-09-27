@@ -80,7 +80,7 @@ and nothing is sent anywhere.
 
 ## Calm is the goal
 
-When learning goes well, you feel curious: you want to know what
+When learning goes well, you feel curious. You want to know what
 happens next. Sometimes that feeling slowly changes. You start to feel
 frustrated: annoyed, tired or stuck. It is useful to notice this change.
 It usually means that a step was too big. A smaller step helps more

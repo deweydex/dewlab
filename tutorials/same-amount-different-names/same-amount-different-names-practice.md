@@ -11,7 +11,8 @@ worlds:
 
 # Equivalent fractions: the same amount, different names — Practice
 
-Small problems on one idea: the same amount can have many names. Try
+These small problems are about one idea. The same amount can have
+many names. Try
 each problem before you open anything under it. Some problems come with
 numbers, shapes or letters. Choose the way you like in the box under
 the title.
