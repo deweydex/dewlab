@@ -5661,6 +5661,22 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 
 ---
 
+**7.287 — Why "up" does badly in the arrows world, and two ways around it.** Josh, 27 September 2026: "lets also explain why up does badly on that sprite page (but also, lets see if we can avoid that issue? Is there a clever way around it?)"
+
+**The cause is where training stops, not the up arrow.** In `telling-many-pictures-apart`'s arrows world, the model named only 14 of 50 test "up" arrows, and the note blamed arrows that differ in four pixels, which does not say why up was worse than down. It is not the arrow. With the training arrows from seed 2, "right" gets 14; with seed 3, "down" gets 24. After 10 epochs no model names all its own training arrows (0.9 or 0.95), so the perceptrons are still being corrected when training stops, and each keeps whatever its last corrections left. With seed 1 the "up" perceptron's weights add up to −12, and the others' to between −1 and −3, so its total is rarely the highest. Ties were checked and are not the cause: "up" loses none on a tie.
+
+**Two ways around it, both now on the page, in the arrows world after the reader's task.**
+- *An averaged perceptron:* keep the average of each perceptron's weights over the whole of training. On the same training arrows, "up" rises from 14 to 30, and the share from 0.655 to 0.685. Across seeds 1 to 8 the worst arrow never falls below 21, where the plain model falls to 14.
+- *Turn the arrows:* each arrow is a quarter turn of another, so every training arrow makes three more, and 10 of each kind become 40. None of the 160 is a test arrow. With the average, the model names 0.84 of the test arrows, more than choosing the closest of the four clean arrows (0.825), which the model never saw.
+
+**Tried and left out.** Training the four perceptrons together, so that a wrong winner is lowered and the right class raised (the multiclass perceptron), was no better here: 0.646 on average across seeds 1 to 8, against 0.665 for the page's model. More epochs help a little on their own (20 epochs lift "up" to 28), but averaging does more with the same training.
+
+**Where to read more** gains Freund and Schapire (1999), the paper behind the averaged perceptron. The glossary gains *averaged perceptron*.
+
+*Cost to change: small. Four cells in one world of one page, all new ids; no existing id changed.*
+
+---
+
 **7.288 — A cell can play a sound: `play(samples, rate)`.** Issue #415. Josh, 27 September 2026: "can we do the sound thing?"
 
 **How it works.** Python runs in a Worker, which has no `AudioContext`, so it cannot reach the speakers. But a cell's output is HTML, added to the page as it arrives. So `play()` in `tutorial_tools.py` writes the samples as a 16-bit mono WAV with Python's own `wave` module, and puts it into the output as an `<audio controls>` player whose `src` is a `data:` address. That needs no new code on the page, and it works the same on a tutorial page, in the Notebook, offline and in a downloaded copy. The reader presses play: a browser does not start a sound by itself, and in a classroom that is the better default anyway.
