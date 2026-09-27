@@ -47,6 +47,13 @@ close to self-contained:
   the Notes panel (`refreshHighlightsList()`), and a cross-page summary
   at `all-notes.html` built from the same saved records by a separate
   file, `assets/my-notes.js`.
+- **My words** — not a section of this file but a module it imports,
+  `assets/my-words.js`: a reader's own word list for the whole site, one
+  `localStorage` key rather than one per page. `initReferenceLookup()`
+  offers **Add to my words** beside Highlight; the module fills the form
+  and list in the Notes panel, marks each saved word's first use in each
+  paragraph by wrapping it in a `span.dl-myword` (which adds no text, so
+  highlights still anchor), and exports and imports the list as a file.
 - **Progress** — the "3 of 8 cells run" summary and the contents-page
   badges.
 - **Versions** — for a tutorial with more than one release: which one a
@@ -558,12 +565,25 @@ steps the way the base feature was:
   `compareCell()` runs the cell as it stands (`runCell()`), then calls
   `tutorial_tools.compare()` through a `"compare"` worker message or
   `toolsMT` directly (`compareMainThread()`), the usual fork on
-  `manifest.standalone`. `renderComparison()` fills the table the build
+  `manifest.standalone`. A cell with a ```typed block has its lines in
+  the manifest as `typed`, and the comparison hands them to `input()`,
+  since nobody can type during one. `renderComparison()` fills the table the build
   wrote (`.dl-compare`, build.py's `render_inputs()`) with plain text
   only, adds a "Your tests" section when the reader has a tests cell,
   and marks a row that differs with `.dl-compare-differ` and the word
   "different". A guess column's boxes save with the cell
   (`cellGuesses()`/`restoreGuesses()`, the record's `guesses`).
+- **"What happens when a cell calls `input()`?"** — on a hosted page,
+  the Worker posts `"input-request"` and waits on the input buffer
+  `bootWorker()` sent it (only when the page is cross-origin isolated,
+  alongside the interrupt buffer). `askForLine()` puts a box after the
+  prompt in the cell's output (`assets/input-wait.js`'s `askInOutput()`,
+  which joins the cell's open `<pre>` in `openStreams`), and Enter writes
+  the line back (`answerLine()`). `requestInterrupt()` ends a wait
+  (`stopWaitingForLine()`), so Stop stops it, and `restartPython()`
+  removes the box. A downloaded page has no Worker: `bootMainThread()`
+  gives Python the browser's own dialog (`askInDialog()`). See
+  [`input-wait-explained.md`](input-wait-explained.md).
 - **"What does the predict block above a cell do?"** — `initPredict()`,
   called from `buildCells()` for a cell whose `.dl-predict` the build drew
   above it (build.py's `render_predict()`). `setSure()` records how sure

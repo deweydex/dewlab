@@ -140,6 +140,16 @@ finding each match, not just substitute fixed text.
   `place_worlds()` adds each variant's group and name and puts
   `render_world_chooser()` under the title. `check_solutions()` runs once
   per world.
+- **"What does a ```typed block do?"** — `parse_typed()` reads its lines,
+  exactly as written, and `extract_blocks()` attaches them to their cell
+  as `Cell.typed`, leaving nothing on the page. They are the lines
+  `input()` reads wherever nobody can type: the manifest carries them for
+  the comparison, `render_inputs()` says under a comparison table what
+  it types (`render_typed()`), and `_run_solutions()` hands them to
+  `SOLUTION_RUNNER`, which gives them to the cell's own run and to
+  `compare()`. A solution that raises `EOFError` fails the build with a
+  message asking for a typed block. A cell run by a reader never reads
+  them: there, `input()` waits for the reader.
 - **"How does the knowledge map lay itself out?"** — `topic_tiers()`
   (how deep a topic is, based on its prerequisites) feeds `topic_layout()`
   (turning tiers into actual x/y coordinates), and `arrow_between()` draws

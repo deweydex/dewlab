@@ -27,6 +27,10 @@ is an expression, a table drawn as a table, and a chart drawn as a picture. If
 something goes wrong, you get an error message trimmed down to your own line
 rather than a wall of text you did not write.
 
+Some programs ask you something with `input()`. Then a box appears in the
+cell's output, after the question. Type your answer, then press Enter, and
+the program continues. To stop a program while it waits, press **Stop**.
+
 The cells on one page share their variables from top to bottom, so a cell near
 the end can use something a cell near the start set up. Each page starts fresh,
 though, so a variable from one tutorial is not there on the next. The Dewey
@@ -106,6 +110,29 @@ Reference shows where you first met it.
 
 ---
 
+## Keeping your own words
+
+Select a word, or a short phrase, in the reading, and an **Add to my words**
+button appears beside **Highlight**. Press it, and the Notes panel opens at
+**My words**. It shows the word, the sentence it came from, and, if the
+Reference knows the word, what the Reference says. Write your own meaning,
+or a translation into your own language, and press **Save**. On a phone,
+press and hold a word to select it.
+
+Your list is for the whole site, not one page. Wherever a saved word appears
+again, on this page or on any other, a thin dashed line marks its first use
+in each paragraph. Point at it, tap it, or reach it with Tab, and a small box
+shows your own meaning. **My words on the page**, under Reading in Settings,
+turns the lines off.
+
+In **My words** you can search your list, show it by page or from A to Z,
+change a meaning, or delete a word. The list is saved in this browser, like
+your notes. **Export my words**, under Imports & Exports in Settings, saves
+it as a file, and **Import my words** adds a file's words to the list in
+another browser. Nothing is sent anywhere.
+
+---
+
 ## The right-hand panels
 
 Every page has three panels, opened from tabs stacked in the top-right
@@ -117,7 +144,7 @@ it wider or narrower.
 **Notes** holds a place to write your own notes on the page, whether your
 work is saving, and the buttons to export a copy, load one back in, or start
 the tutorial over. Every highlight you have made on the page is listed here
-too. At the top of it, **My notes** opens a page of its own, holding
+too, and so is **My words**, your own word list. At the top of it, **My notes** opens a page of its own, holding
 everything you have written and highlighted on every page you have opened in
 this browser.
 
@@ -135,6 +162,9 @@ sans or mono (plus two fonts built for easier reading, Lexend and
 OpenDyslexic), text size, how wide the lines run, and the colour of links.
 **High contrast**, also here, switches to black text on white, or white on
 black in dark mode, and turns on Lexend too, whatever font you had chosen.
+**Patterns in pictures** adds stripes to the coloured parts of a picture that
+has them, a different pattern for each colour, for a reader who cannot tell
+the colours apart. High contrast turns the patterns on as well.
 
 **Behavior** covers what the page does rather than how it looks: whether a
 run shows how long it took, whether a hint appears under a cell after
@@ -142,7 +172,7 @@ several runs that did not get there, and whether the tutorials list shows
 how far you have got.
 
 **Imports & Exports** holds the ways to take a tutorial with you, described
-below.
+below, and the export and import for My words.
 
 **Give Feedback** is not one of the three panels. It has a small circle of
 its own, in the bottom-right corner of the screen, and it opens a short box

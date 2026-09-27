@@ -68,7 +68,10 @@ contents/tree pages, all in one real browser + real Pyodide pass.
 `test_cell_report.py` (also covers the hint icon, which shares the same
 disclosure code as the report icon), `test_cell_hints_staged.py`,
 `test_autocomplete.py`, `test_stop_button.py`, `test_custom_cells.py`,
-`test_app_cell_live.py` — things that happen on or around one cell.
+`test_app_cell_live.py`, `test_input.py` (`input()` waiting for a box on
+an isolated page, Stop while it waits, a downloaded copy's dialog, a page
+that cannot wait, the comparison reading a cell's typed lines, and the
+Notebook) — things that happen on or around one cell.
 
 *Save/restore:* `test_saved_progress.py` (the core save/restore mechanism,
 plus the live run-summary and the site-wide progress badges as their own
@@ -94,6 +97,8 @@ counterpart, what the tutorials it writes actually build into, is
 *The Notebook and the Workspace (dewmini and dewmini web in the code):* `test_dewminiweb.py`, `test_dewmini_workbench.py`, and `test_old_compose_addresses.py` for the redirects at their old addresses.
 
 *My Notes:* `test_my_notes.py` — the cross-tutorial notes/highlights page.
+
+*My words:* `test_my_words.py` — a word saved on one page and marked, with the reader's meaning, on another; the list after a reload; export and import (prose-only, no Pyodide needed).
 
 *Datasets:* `test_loading_data.py` — a live source that answers, one that
 fails, and a downloaded copy with no network (#324). The live source is

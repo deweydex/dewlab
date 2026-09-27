@@ -6,6 +6,7 @@
     "chr": "chr(i, /)",
     "cmath.sqrt": "cmath.sqrt(z, /)",
     "complex": "complex(real=0, imag=0)",
+    "decimal.Decimal": "decimal.Decimal(value='0', context=None)",
     "dict.get": "dict.get(key, default=None, /)",
     "dict.items": "dict.items()",
     "dict.keys": "dict.keys()",

@@ -7,6 +7,12 @@ import {
   widgetValues, reconcileSliders, clearSliders, sliderMarkup, restoreSliders, followSlider,
 } from "./cell-widgets.js";
 import { initTermDefinitions, readDefinitionsSetting, writeDefinitionsSetting } from "./term-definitions.js";
+import {
+  initMyWords, readMarksSetting, writeMarksSetting, wordFromSelection, sentenceAround, readWords,
+} from "./my-words.js";
+import {
+  createInputBuffer, answerLine, endLine, stillWaiting, askInOutput, askInDialog,
+} from "./input-wait.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -45,6 +51,9 @@ const TEXTURE_DEFAULTS = {
   // accessibility toggle, not tied to the system prefers-reduced-motion
   // query, so a reader can ask for it even on a system that hasn't.
   motion: "normal",
+  // Stripes and dots over the tinted parts of a picture, for a reader who
+  // cannot tell the tints apart (7.283). High contrast shows them too.
+  patterns: "off",
   // A multiplier on the code editor's own line height, independent of the
   // overall text size above — a reader who wants more air between lines of
   // code without enlarging the letters themselves.
@@ -207,6 +216,10 @@ function closeReference() {
 // — a small popover above that circle (7.204) — but sharing this array's
 // one-open-at-a-time rule and its Escape handling, since two boxes open
 // over the same corner of the screen is one too many either way.
+/* My words (#340; my-words.js), once the page has booted: the selection
+ * toolbar and the Notes panel reach it through this. */
+let myWords = null;
+
 const RIGHT_DOCK_PANELS = ["yourwork", "python", "settings"];
 const RIGHT_PANELS = [...RIGHT_DOCK_PANELS, "report"];
 
@@ -549,6 +562,8 @@ function initRightPanels() {
       if (p.name === "yourwork") {
         if (notesEl) autoGrowTextarea(notesEl);
         refreshHighlightsList();
+        // Another tab may have added a word since this panel last showed.
+        if (myWords) myWords.renderList();
       }
       if (p.name === "python") refreshPythonState();
     }
@@ -1462,6 +1477,35 @@ function initDefinitionsToggle(definitions) {
   sync();
 }
 
+/* The Settings switch for marking saved words, "My words on the page"
+ * under Reading. */
+function initMyWordsToggle() {
+  const onOff = document.querySelector("[data-mywords]");
+  if (!onOff) return;
+  const sync = () => {
+    const on = readMarksSetting();
+    for (const btn of onOff.querySelectorAll("button")) {
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
+    }
+    syncSegRoving(onOff);
+  };
+  onOff.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeMarksSetting(btn.dataset.value);
+    sync();
+    if (myWords) myWords.refresh();
+  });
+  sync();
+}
+
+/* Opens the Notes panel, where My words lives, if it is not open. */
+function openNotesPanel() {
+  const panel = document.getElementById("dl-yourwork");
+  const toggle = document.getElementById("dl-yourwork-toggle");
+  if (panel && toggle && panel.hidden) toggle.click();
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -1505,30 +1549,61 @@ function initReferenceLookup(manifest) {
   highlightButton.hidden = true;
   document.body.append(highlightButton);
 
+  // My words (#340): a word or a short phrase, kept with the reader's own
+  // meaning. The word and its sentence are read when the selection
+  // changes, not when the button is pressed: on a phone, the tap that
+  // presses it can clear the selection first.
+  const wordButton = document.createElement("button");
+  wordButton.type = "button";
+  wordButton.className = "dl-myword-btn";
+  wordButton.textContent = "Add to my words";
+  wordButton.hidden = true;
+  document.body.append(wordButton);
+  let offered = null;
+
   function hide() {
     lookupButton.hidden = true;
     highlightButton.hidden = true;
+    wordButton.hidden = true;
   }
 
   // Both buttons are independently `position: fixed`, not one toolbar with
   // a shared hidden wrapper — test_reference.py already asserts `.dl-lookup`
   // itself carries `hidden`, and a wrapper would mean that attribute alone
   // no longer says whether the button is actually visible.
+  // Three buttons can be wider than a phone's screen, so they wrap onto
+  // a second row rather than running off its edge.
   function layout(rect, buttons) {
     const margin = 8;
     const gap = 6;
-    const width = buttons.reduce((sum, b) => sum + b.offsetWidth, 0) + gap * (buttons.length - 1);
-    const height = Math.max(...buttons.map((b) => b.offsetHeight));
-    const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+    const room = window.innerWidth - 2 * margin;
+    const rows = [[]];
+    let used = 0;
+    for (const b of buttons) {
+      const row = rows[rows.length - 1];
+      if (row.length && used + gap + b.offsetWidth > room) {
+        rows.push([b]);
+        used = b.offsetWidth;
+      } else {
+        used += (row.length ? gap : 0) + b.offsetWidth;
+        row.push(b);
+      }
+    }
+    const rowHeight = Math.max(...buttons.map((b) => b.offsetHeight));
+    const height = rows.length * rowHeight + (rows.length - 1) * gap;
     const below = rect.bottom + 6;
-    const top = below + height + margin > window.innerHeight
+    let top = below + height + margin > window.innerHeight
       ? Math.max(margin, rect.top - height - 6)   // above the selection instead
       : below;
-    let x = left;
-    for (const b of buttons) {
-      b.style.left = `${x}px`;
-      b.style.top = `${top}px`;
-      x += b.offsetWidth + gap;
+    for (const row of rows) {
+      const width = row.reduce((sum, b) => sum + b.offsetWidth, 0) + gap * (row.length - 1);
+      let x = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
+      for (const b of row) {
+        b.style.left = `${x}px`;
+        b.style.top = `${top}px`;
+        x += b.offsetWidth + gap;
+      }
+      top += rowHeight + gap;
     }
   }
 
@@ -1598,6 +1673,7 @@ function initReferenceLookup(manifest) {
     const endBlock = blockFor(range.endContainer);
     const highlightable = text.trim().length >= SHORTEST
       && startBlock && startBlock === endBlock ? startBlock : null;
+    const word = highlightable ? wordFromSelection(text) : "";
 
     if (!term && !highlightable) { hide(); return; }
 
@@ -1621,12 +1697,14 @@ function initReferenceLookup(manifest) {
     // handler just did, rather than trusting a reference that could be
     // stale by the time a click actually lands.
     highlightButton.hidden = !highlightable;
+    wordButton.hidden = !word;
+    offered = word ? { word, sentence: sentenceAround(highlightable, range) } : null;
 
-    // Positioned against the viewport, so both buttons are fixed rather
+    // Positioned against the viewport, so the buttons are fixed rather
     // than absolutely placed — no need to account for the page's own
     // scroll, and a scroll simply dismisses them. Measured after
     // unhiding, since a hidden element has no width to clamp against.
-    layout(rect, [lookupButton, highlightButton].filter((b) => !b.hidden));
+    layout(rect, [lookupButton, highlightButton, wordButton].filter((b) => !b.hidden));
   });
 
   lookupButton.addEventListener("mousedown", (ev) => {
@@ -1663,6 +1741,19 @@ function initReferenceLookup(manifest) {
     createHighlight(range, startBlock);
     selection.removeAllRanges();
     hide();
+  });
+
+  wordButton.addEventListener("mousedown", (ev) => {
+    // Same reason as the other two: keep the selection until the click.
+    ev.preventDefault();
+  });
+
+  wordButton.addEventListener("click", () => {
+    const chosen = offered;
+    const selection = document.getSelection();
+    if (selection) selection.removeAllRanges();
+    hide();
+    if (chosen && myWords) myWords.add(chosen.word, chosen.sentence);
   });
 
   document.addEventListener("scroll", hide, { passive: true });
@@ -1909,6 +2000,8 @@ function applyTexture(state) {
   else root.setAttribute("data-button-labels", state.buttons);
   if (state.motion === "normal") root.removeAttribute("data-motion");
   else root.setAttribute("data-motion", state.motion);
+  if (state.patterns === "on") root.setAttribute("data-patterns", "on");
+  else root.removeAttribute("data-patterns");
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-code-line-height", state.codeLineHeight);
@@ -3709,6 +3802,7 @@ async function bootMainThread(manifest) {
   toolsMT = pyodideMT.pyimport("tutorial_tools");
   inspectModuleMT = pyodideMT.pyimport("inspect");
   builtinsModuleMT = pyodideMT.pyimport("builtins");
+  toolsMT._set_live_reader(askInDialog);
   /* A downloaded page cannot fetch data/index.json or the snapshots from
    * disk, so write_standalone() put the ones this page declares in its
    * manifest. A hosted page has neither, and fetches them. */
@@ -3782,6 +3876,8 @@ function queryRowsMT(sql, params) {
 
 let worker = null;
 let interruptBuffer = null;
+let inputBuffer = null; // where input() waits for a typed line (assets/input-wait.js)
+let inputBox = null; // the box a waiting input() put in a cell's output
 let jediReadyWorker = false;
 let nextRequestId = 1;
 const pendingRequests = new Map(); // id -> resolve
@@ -3795,6 +3891,26 @@ function workerRequest(type, payload) {
 }
 
 const openStreams = new Map(); // cellId -> {el, cssClass}
+
+/* input() is waiting in the Worker: a box goes where the cell's printed
+ * text has got to, and Enter sends the line back. */
+function askForLine(cellId, prompt) {
+  const cell = cells.find((c) => c.id === cellId) || customCells.find((c) => c.id === cellId);
+  if (!cell || !inputBuffer || !stillWaiting(inputBuffer)) return;
+  const buffer = inputBuffer;
+  const asked = askInOutput(cell.outputEl, openStreams.get(cellId), prompt, (line) => {
+    inputBox = null;
+    answerLine(buffer, line);
+  });
+  openStreams.set(cellId, asked.stream);
+  inputBox = asked.box;
+}
+
+function stopWaitingForLine() {
+  inputBox?.remove();
+  inputBox = null;
+  if (inputBuffer) endLine(inputBuffer);
+}
 
 /* A widget rendered by Worker-run Python has no way to report itself back:
  * `_MessageSink.append_html()` returns None, so the Python side holds no
@@ -3864,6 +3980,8 @@ function ensureWorker(manifest) {
       jediReadyWorker = true;
     } else if (msg.type === "output") {
       applyOutputEvent(msg.cellId, msg.kind, msg.cssClass, msg.text, msg.markup);
+    } else if (msg.type === "input-request") {
+      askForLine(msg.cellId, msg.prompt);
     } else if (msg.type === "response") {
       const pending = pendingRequests.get(msg.id);
       if (!pending) return;
@@ -3889,6 +4007,8 @@ async function bootWorker(manifest) {
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
     interruptBuffer = new SharedArrayBuffer(4);
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
+    inputBuffer = createInputBuffer();
+    worker.postMessage({ type: "set-input-buffer", buffer: inputBuffer });
   }
   await loadToolkit();
 
@@ -3902,6 +4022,8 @@ function requestInterrupt() {
   if (!interruptBuffer) return;
   /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
   new Int32Array(interruptBuffer)[0] = 2;
+  /* After the interrupt is set, so a waiting input() wakes into it. */
+  stopWaitingForLine();
 }
 
 async function runCellWorker(cell) {
@@ -4244,6 +4366,9 @@ function initCompare(cell, spec) {
     solution: typeof spec.solution === "string" ? spec.solution : null,
     inputs: Array.isArray(spec.inputs) ? spec.inputs : [],
     testsCell: spec.tests || null,
+    /* A ```typed block: what input() reads here, since nobody can type
+     * during a comparison. */
+    typed: Array.isArray(spec.typed) ? JSON.stringify(spec.typed) : null,
   };
   box.querySelector(".dl-btn-compare").addEventListener("click", () => compareCell(cell));
   for (const input of box.querySelectorAll(".dl-compare-guess input")) {
@@ -4265,13 +4390,13 @@ function restoreGuesses(cell, guesses) {
   });
 }
 
-async function compareMainThread(solution, inputs, tests) {
-  return JSON.parse(await toolsMT.compare(solution, inputs, tests));
+async function compareMainThread(solution, inputs, tests, typed) {
+  return JSON.parse(await toolsMT.compare(solution, inputs, tests, typed));
 }
 
 async function compareCell(cell) {
   if (running) return;
-  const { box, solution, inputs, testsCell } = cell.compare;
+  const { box, solution, inputs, testsCell, typed } = cell.compare;
   const status = box.querySelector(".dl-compare-status");
   const button = box.querySelector(".dl-btn-compare");
   button.disabled = true;
@@ -4284,8 +4409,8 @@ async function compareCell(cell) {
       : null;
     const payload = JSON.stringify(inputs);
     const result = currentManifest.standalone
-      ? await compareMainThread(solution, payload, tests)
-      : await workerRequest("compare", { solution, inputs: payload, tests });
+      ? await compareMainThread(solution, payload, tests, typed)
+      : await workerRequest("compare", { solution, inputs: payload, tests, typed });
     renderComparison(cell, result);
     status.textContent = result.solutionError
       ? `The solution could not run here (${result.solutionError}). That is a problem in the page, not in your code.`
@@ -4959,6 +5084,8 @@ async function restartPython() {
     }
     worker = null;
     interruptBuffer = null;
+    stopWaitingForLine();
+    inputBuffer = null;
     jediReadyWorker = false;
     for (const { reject } of pendingRequests.values()) {
       reject(new Error("Python was restarted before this finished."));
@@ -6458,6 +6585,13 @@ initContentsProgress();
 trackChromeHeight();
 trackCornerDockHeights();
 announceRestore(restoreSaved());
+// After the highlights are back, so a word inside one is found in place.
+myWords = initMyWords({
+  body: document.getElementById("dl-body"),
+  manifest: currentManifest,
+  openPanel: openNotesPanel,
+});
+initMyWordsToggle();
 refreshHighlightsList();
 updateProgressSummary();
 updateNotesNudge();
@@ -6489,6 +6623,8 @@ if (cells.length === 0 || leaving) {
 
 globalThis.dewlab = {
   version: PYODIDE_VERSION,
+  readWords,
+  get myWords() { return myWords; },
   cells,
   restartPython,
   customCells,

@@ -36,6 +36,7 @@
     if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
     if (s.link) r.style.setProperty("--dl-link", s.link);
     if (s.motion && s.motion !== "normal") r.setAttribute("data-motion", s.motion);
+    if (s.patterns === "on") r.setAttribute("data-patterns", "on");
     if (s.codeLineHeight) r.style.setProperty("--dl-code-line-height", s.codeLineHeight);
   } catch (e) { /* private mode, blocked storage: fall through to defaults */ }
 })();
@@ -234,6 +235,45 @@
     <div class="dl-highlight-list" id="dl-highlights-list"></div>
   </section>
 
+  <!-- My words (#340; assets/my-words.js): the reader's own word list,
+       for the whole site, not this page. Selecting a word and choosing
+       "Add to my words" opens the form here. The list is built by
+       renderList(); its words are marked on every page. -->
+  <section class="dl-settings-section dl-words" id="dl-settings-words">
+    <h3>My words</h3>
+    <p class="dl-panel-note">
+      Select a word on any page, then choose <strong>Add to my words</strong>
+      to keep it with your own meaning or translation. Wherever the word
+      appears again, it is underlined. Point at it or tap it to see your
+      meaning.
+    </p>
+
+    <form class="dl-word-form" id="dl-word-form" hidden>
+      <p class="dl-panel-note" id="dl-word-form-note" hidden></p>
+      <label class="dl-word-label" for="dl-word-input">Word</label>
+      <input type="text" class="dl-word-input" id="dl-word-input" maxlength="60" autocomplete="off">
+      <p class="dl-word-sentence" id="dl-word-sentence" hidden></p>
+      <p class="dl-word-definition" id="dl-word-definition" hidden></p>
+      <label class="dl-word-label" for="dl-word-meaning">Your meaning or translation</label>
+      <textarea class="dl-progress-notes" id="dl-word-meaning" rows="3"></textarea>
+      <div class="dl-progress-actions">
+        <button type="submit" class="dl-btn" id="dl-word-save">Save</button>
+        <button type="button" class="dl-btn" id="dl-word-cancel">Cancel</button>
+      </div>
+    </form>
+
+    <div class="dl-words-controls">
+      <input type="search" class="dl-words-search" id="dl-words-search"
+             placeholder="Search my words" aria-label="Search my words">
+      <div class="dl-seg" data-words-sort role="radiogroup" aria-label="Order of my words">
+        <button type="button" data-value="page" role="radio">by page</button>
+        <button type="button" data-value="az" role="radio">A to Z</button>
+      </div>
+    </div>
+    <p class="dl-panel-note" id="dl-words-status" role="status">No words saved yet.</p>
+    <ul class="dl-words-list" id="dl-words-list"></ul>
+  </section>
+
   <section class="dl-settings-section" id="dl-settings-progress">
     <h3>Progress</h3>
     <p class="dl-panel-note" id="dl-progress-summary" hidden></p>
@@ -341,6 +381,14 @@
       </div>
     </div>
 
+    <div class="dl-texture-row" data-keywords="my words vocabulary translation meaning underline saved">
+      <span id="dl-seg-mywords-label">My words on the page</span>
+      <div class="dl-seg" data-mywords role="radiogroup" aria-labelledby="dl-seg-mywords-label">
+        <button type="button" data-value="on" role="radio">on</button>
+        <button type="button" data-value="off" role="radio">off</button>
+      </div>
+    </div>
+
     <div class="dl-texture-row" data-keywords="typeface serif sans mono">
       <span id="dl-seg-font-label">Font</span>
       <div class="dl-seg" data-texture="font" role="radiogroup" aria-labelledby="dl-seg-font-label">
@@ -430,6 +478,14 @@
       </div>
     </div>
 
+    <div class="dl-texture-row" data-keywords="patterns stripes pictures diagrams colour blindness color blindness accessibility">
+      <span id="dl-seg-patterns-label">Patterns in pictures</span>
+      <div class="dl-seg" data-texture="patterns" role="radiogroup" aria-labelledby="dl-seg-patterns-label">
+        <button type="button" data-value="off" role="radio">off</button>
+        <button type="button" data-value="on" role="radio">on</button>
+      </div>
+    </div>
+
     <div class="dl-texture-row" data-keywords="animation motion accessibility">
       <span id="dl-seg-motion-label">Reduce motion</span>
       <div class="dl-seg" data-texture="motion" role="radiogroup" aria-labelledby="dl-seg-motion-label">
@@ -500,6 +556,22 @@
       <button type="button" class="dl-btn dl-progress-clear" id="dl-custom-cells-clear">Remove all of mine</button>
     </div>
     <input type="file" id="dl-custom-cells-file" accept="application/json,.json" hidden>
+  </section>
+
+  <section class="dl-settings-section" id="dl-settings-words-io">
+    <h3>My words</h3>
+    <p class="dl-panel-note">
+      Your word list is kept in this browser. Export it as a file to keep a
+      copy, or to move it to another browser, and import the file there.
+      Importing adds the file's words to your list. Nothing is sent
+      anywhere.
+    </p>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-words-export">Export my words</button>
+      <button type="button" class="dl-btn" id="dl-words-import">Import my words</button>
+    </div>
+    <input type="file" id="dl-words-file" accept="application/json,.json" hidden>
+    <p class="dl-panel-note" id="dl-words-io-status" role="status"></p>
   </section>
 
   <section class="dl-settings-section" id="dl-settings-versions">

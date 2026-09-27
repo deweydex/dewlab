@@ -1,0 +1,29 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "hops(10 → n), log₁₀ n, log, logarithm"
+    kind: concept
+    definition: >
+      hops(10 → n) counts how many hops of ×10 go from 1 to n. hops(10 →
+      1000) is 3, because 10 × 10 × 10 = 1000. The usual way to write it is
+      log₁₀ 1000, read "log to base 10 of 1000". Log is short for
+      logarithm.
+  - term: "folds(n), log₂ n"
+    kind: concept
+    definition: >
+      folds(n) counts how many times we fold a sheet of paper to make n
+      pieces. Each fold doubles the pieces, so folds(16) is 4. It is the
+      same as hops(2 → n), and the usual way to write it is log₂ n.
+  - term: counting digits with hops
+    kind: formula
+    definition: >
+      A whole number has about hops(10 → n) + 1 digits. 1000 has 4 digits,
+      and hops(10 → 1000) is 3. 5000 has 4 digits too, and hops(10 → 5000)
+      is between 3 and 4.
+  - term: "math.log10(), math.log2()"
+    kind: function
+    python: [math.log10, math.log2]
+    definition: >
+      math.log10() finds hops(10 → n), and math.log2() finds hops(2 → n).
+      Each one needs the line import math first. For a number between two
+      stops, like 5000, the answer is a decimal.
+    example: "math.log10(1000)   # 3.0"
