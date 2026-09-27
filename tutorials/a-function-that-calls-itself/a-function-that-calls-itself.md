@@ -80,7 +80,7 @@ id: calls-itself-warm-up-2
 type: fill-in-the-blank
 
 $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$, and
-$4! = 24$. So $5! = 5 \times {24}$.
+$4! = 24$. So $5! = 5 \times$ {24}.
 ```
 
 ## Folders inside folders

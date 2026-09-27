@@ -5429,8 +5429,22 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 - **"Let's"** went, and **an unwatched video** (3Blue1Brown's *Triangle of Power*) was taken out, per the video library's rule.
 - **The refrain** "That is all a letter in algebra means" is on six earlier pages. The new pages keep it.
 
-**A fault this batch found.** In a fill-in question, every `{...}` is a gap, including one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages. They now group with `\bgroup` and `\egroup`, and `docs/WRITING_TUTORIALS.md` says so. Some older pages have the same pattern. Two of them use it on purpose: `a-function-that-calls-itself` and `going-round-in-circles` put a gap inside a formula. The others are left for their own change.
+**A fault this batch found.** In a fill-in question, every `{...}` was read as a gap, even one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages and two older ones. 7.275 changes the build so that braces inside maths stay maths.
 
 **Checked, and not.** All 69 cells run in CPython, and every figure was checked against the source the page names. The site builds, and the unit tests pass. The cells did not run in the browser, because Pyodide is unreachable from this environment. Josh's colour question (7.273) is still open. A class has not yet used the module.
 
 *Cost to change: the new page ids and their question ids become a contract once a class has used them. A picture is one entry in `DIAGRAMS`.*
+
+**7.275 — In a fill-in question, braces inside maths are maths, not gaps.** Josh, 27 September 2026, on the `\bgroup` workaround 7.274 first used: "cant we just use curly brackets there instead of relying upon spacing for the fractions and exponents to render correctly?"
+
+**The problem.** `build.py` read every `{...}` in a fill-in-the-blank question as a gap (`GAP_RE`), including one inside `$...$`. `$10^{-12}$` became 10^ and a typing box. `$\frac{1}{8}$` became `\frac` and two. `\{1, 2\}` became a gap too. Nine pages were affected: seven new ones, plus `getting-closer` and the practice page of `sets-as-sorted-lists`. The first fix wrote the groups as `\bgroup ... \egroup`. That was unreadable, and it failed inside `\frac`, where KaTeX printed the source.
+
+**The rule now.** `find_gaps()` reads a question's text once, left to right. A `$` that opens a real maths span (the same `DISPLAY_MATH_RE` and `INLINE_MATH_RE` test `extract_math` makes) skips the whole span, braces and all. A `{` outside maths starts a gap, and the gap is taken whole. So a price offered as a choice, `{$5|$10}`, is still a dropdown, as its test asks. A question whose only braces are maths fails the build, saying it has no gap outside its maths.
+
+**What moved.** Two pages put a gap inside a formula on purpose, and now close the maths just before it:
+- `a-function-that-calls-itself`: `$5! = 5 \times$ {24}`
+- `going-round-in-circles`: `$C =$ {2}$\pi r$`
+
+Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIALS.md` says where a gap may sit. `tests/build/test_questions.py` has three new tests: braces in maths are maths, a gap beside maths is a gap, and a question with only maths braces fails.
+
+*Cost to change: one function in `build.py`. A page that wants a blank inside a formula closes the maths before it.*

@@ -142,10 +142,10 @@ type: fill-in-the-blank
 id: fill-the-gap-1--squiggles
 type: fill-in-the-blank
 
-$10^\bgroup \heartsuit\egroup \times 10^\bgroup 3\egroup = 10^\bgroup ?\egroup$. The ? is
+$10^{\heartsuit} \times 10^{3} = 10^{?}$. The ? is
 {♡ + 3|♡ × 3|3}.
 
-$10^\bgroup \heartsuit\egroup \times 10^\bgroup ?\egroup = 10^\bgroup \heartsuit + \triangle\egroup$. The ? is
+$10^{\heartsuit} \times 10^{?} = 10^{\heartsuit + \triangle}$. The ? is
 {△|♡|♡ + △}.
 ```
 
@@ -157,10 +157,10 @@ $10^\bgroup \heartsuit\egroup \times 10^\bgroup ?\egroup = 10^\bgroup \heartsuit
 id: fill-the-gap-1--letters
 type: fill-in-the-blank
 
-$10^\bgroup m\egroup \times 10^\bgroup 3\egroup = 10^\bgroup ?\egroup$. The ? is
+$10^{m} \times 10^{3} = 10^{?}$. The ? is
 {m + 3|3m|3}.
 
-$10^\bgroup m\egroup \times 10^\bgroup ?\egroup = 10^\bgroup m + n\egroup$. The ? is
+$10^{m} \times 10^{?} = 10^{m + n}$. The ? is
 {n|m|m + n}.
 ```
 
@@ -352,7 +352,7 @@ That is
 id: looks-scary-1--squiggles
 type: fill-in-the-blank
 
-$(5 \times 10^\bgroup \heartsuit\egroup) \times (2 \times 10^\bgroup -\heartsuit\egroup)$ is 10 ×
+$(5 \times 10^{\heartsuit}) \times (2 \times 10^{-\heartsuit})$ is 10 ×
 {10⁰|10^(2♡)|10^(−♡ × ♡)}.
 
 That is
@@ -367,7 +367,7 @@ That is
 id: looks-scary-1--letters
 type: fill-in-the-blank
 
-$(5 \times 10^\bgroup n\egroup) \times (2 \times 10^\bgroup -n\egroup)$ is 10 ×
+$(5 \times 10^{n}) \times (2 \times 10^{-n})$ is 10 ×
 {10⁰|10^(2n)|10^(−n²)}.
 
 That is

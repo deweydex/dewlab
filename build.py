@@ -174,7 +174,8 @@ CARD_HEADER_RE = re.compile(r"^\s*(url|status|meta|wide)\s*:\s*(.*)$")
 QUESTION_HEADER_RE = re.compile(r"^\s*(id|type|answer|correct)\s*:\s*(.*)$")
 QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # One flat level of {...} — a gap with no "|" is a typing box, one with
-# "|" a dropdown, the first item either way the expected answer.
+# "|" a dropdown, the first item either way the expected answer. Braces
+# inside $...$ maths are the maths' own, not gaps: find_gaps() below.
 GAP_RE = re.compile(r"\{([^{}]*)\}")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
 # (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
@@ -1467,6 +1468,32 @@ def _split_multiple_choice(text: str) -> tuple[str, list[str], list[str]]:
     return prompt, options, notes
 
 
+def find_gaps(text: str) -> list[re.Match]:
+    """The {...} gaps in a fill-in-the-blank question's text, left to right.
+
+    Braces inside $...$ or $$...$$ maths belong to the maths, so
+    `$10^{-12}$` stays a power and does not become a typing box. The text
+    is read in one pass: a `{` outside maths starts a gap, and a gap is
+    taken whole, so a dollar sign inside one (a price offered as a choice,
+    `{$5|$10}`) never opens a maths span. A `$` that opens a real maths
+    span (DISPLAY_MATH_RE, INLINE_MATH_RE, the same test extract_math
+    makes) skips past the span; any other `$` is a plain character.
+    """
+    gaps: list[re.Match] = []
+    position = 0
+    while position < len(text):
+        char = text[position]
+        if char == "$":
+            maths = DISPLAY_MATH_RE.match(text, position) or INLINE_MATH_RE.match(text, position)
+            position = maths.end() if maths else position + 1
+        elif char == "{" and (gap := GAP_RE.match(text, position)):
+            gaps.append(gap)
+            position = gap.end()
+        else:
+            position += 1
+    return gaps
+
+
 def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
     """Every `{` in a fill-in-the-blank question's text closes, and every
     `}` closes one that opened. Gaps are one flat level (GAP_RE), so a
@@ -1533,8 +1560,9 @@ def parse_question(body: str, path: Path) -> Question:
                          options=options, answer=int(raw_answer), notes=notes)
 
     _check_balanced_gaps(text, path, question_id)
-    if not GAP_RE.search(text):
-        fail(path, f"question {question_id!r} is fill-in-the-blank and has no {{...}} gap in it")
+    if not find_gaps(text):
+        fail(path, f"question {question_id!r} is fill-in-the-blank and has no {{...}} gap "
+                   f"in it outside its maths")
     return Question(id=question_id, type=question_type, prompt=text)
 
 
@@ -1616,8 +1644,13 @@ def render_question(question: Question) -> str:
         # inside a gap's own {...} — a price as one of the choices, say
         # — is already gone from the text convert_prose_with_math sees,
         # so it is never mistaken for the start of a maths span.
-        gaps = GAP_RE.findall(question.prompt)
-        tokenised = GAP_RE.sub(lambda m: f"dlgap{len(GAP_RE.findall(question.prompt[:m.start()]))}z", question.prompt)
+        # find_gaps() skips braces inside maths, so they stay in the text
+        # and reach KaTeX as the maths' own grouping.
+        found = find_gaps(question.prompt)
+        gaps = [gap.group(1) for gap in found]
+        tokenised = question.prompt
+        for index, gap in reversed(list(enumerate(found))):
+            tokenised = tokenised[:gap.start()] + f"dlgap{index}z" + tokenised[gap.end():]
         prompt_html = convert_prose_with_math(tokenised)
         for index, raw in enumerate(gaps):
             prompt_html = prompt_html.replace(f"dlgap{index}z", gap_widget(raw))

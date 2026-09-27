@@ -387,11 +387,11 @@ Choose numbers, shapes or letters in the box under the title.
 id: any-number-of-hops-1--numbers
 type: fill-in-the-blank
 
-$2^\bgroup 200\egroup$ is about
+$2^{200}$ is about
 {60.206|200|20}
 hops of ×10.
 
-So $2^\bgroup 200\egroup$ has
+So $2^{200}$ has
 {61|60|201}
 digits.
 ```
@@ -404,7 +404,7 @@ digits.
 id: any-number-of-hops-1--squiggles
 type: fill-in-the-blank
 
-$2^\bgroup \heartsuit\egroup$ is ♡ hops of ×2. That is about
+$2^{\heartsuit}$ is ♡ hops of ×2. That is about
 {♡ × 0.30103|♡ + 0.30103|♡ ÷ 0.30103}
 hops of ×10.
 ```
@@ -417,7 +417,7 @@ hops of ×10.
 id: any-number-of-hops-1--letters
 type: fill-in-the-blank
 
-$2^\bgroup n\egroup$ is n hops of ×2. That is about
+$2^{n}$ is n hops of ×2. That is about
 {n × 0.30103|n + 0.30103|n ÷ 0.30103}
 hops of ×10.
 ```

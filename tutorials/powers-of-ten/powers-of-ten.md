@@ -246,7 +246,7 @@ type: fill-in-the-blank
 id: multiplying-1--squiggles
 type: fill-in-the-blank
 
-$(4 \times 10^\bgroup \triangle\egroup) \times (2 \times 10^\bgroup \square\egroup) = 8 \times 10^\bgroup ?\egroup$
+$(4 \times 10^{\triangle}) \times (2 \times 10^{\square}) = 8 \times 10^{?}$
 
 The ? is
 {△ + □|△ × □|□ − △}.
@@ -260,7 +260,7 @@ The ? is
 id: multiplying-1--letters
 type: fill-in-the-blank
 
-$(4 \times 10^\bgroup m\egroup) \times (2 \times 10^\bgroup n\egroup) = 8 \times 10^\bgroup ?\egroup$
+$(4 \times 10^{m}) \times (2 \times 10^{n}) = 8 \times 10^{?}$
 
 The ? is
 {m + n|m × n|n − m}.

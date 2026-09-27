@@ -215,7 +215,7 @@ type: fill-in-the-blank
 The smallest number with 31 digits is 1 followed by 30 zeros. That is
 {10³⁰|10³¹|10¹⁰⁰}.
 
-So $2^\bgroup 100\egroup$ lands between $10^\bgroup 30\egroup$ and
+So $2^{100}$ lands between $10^{30}$ and
 {10³¹|10³²|10¹⁰⁰}.
 ```
 
@@ -247,7 +247,7 @@ $10^6$ is 1,000,000. It has
 {7|6|10}
 digits.
 
-$10^\bgroup 1000\egroup$ has
+$10^{1000}$ has
 {1001|1000|10}
 digits.
 ```
@@ -264,7 +264,7 @@ $10^6$ is 1,000,000. It has
 {7|6|10}
 digits.
 
-$10^\bgroup \heartsuit\egroup$ has
+$10^{\heartsuit}$ has
 {♡ + 1|♡|10}
 digits.
 ```
@@ -281,7 +281,7 @@ $10^6$ is 1,000,000. It has
 {7|6|10}
 digits.
 
-$10^\bgroup n\egroup$ has
+$10^{n}$ has
 {n + 1|n|10}
 digits.
 ```

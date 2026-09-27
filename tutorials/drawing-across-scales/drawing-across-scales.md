@@ -223,11 +223,11 @@ gaps to the right of 1.
 id: powers-of-ten-on-a-hops-line-1--squiggles
 type: fill-in-the-blank
 
-$10^\bgroup \heartsuit\egroup$ sits
+$10^{\heartsuit}$ sits
 {♡|10|10 × ♡}
 gaps to the right of 1.
 
-$10^\bgroup \heartsuit\egroup$ and $10^\bgroup \heartsuit + 1\egroup$ are
+$10^{\heartsuit}$ and $10^{\heartsuit + 1}$ are
 {one gap apart|♡ gaps apart|ten gaps apart}.
 ```
 
@@ -239,11 +239,11 @@ $10^\bgroup \heartsuit\egroup$ and $10^\bgroup \heartsuit + 1\egroup$ are
 id: powers-of-ten-on-a-hops-line-1--letters
 type: fill-in-the-blank
 
-$10^\bgroup n\egroup$ sits
+$10^{n}$ sits
 {n|10|10n}
 gaps to the right of 1.
 
-$10^\bgroup n\egroup$ and $10^\bgroup n + 1\egroup$ are
+$10^{n}$ and $10^{n + 1}$ are
 {one gap apart|n gaps apart|ten gaps apart}.
 ```
 
@@ -393,11 +393,11 @@ scale can.
 id: from-a-virus-to-the-universe-2
 type: fill-in-the-blank
 
-From $10^\bgroup -7\egroup$ metres up to 1 metre is
+From $10^{-7}$ metres up to 1 metre is
 {7|−7|0}
 hops of ×10.
 
-From 1 metre up to $10^\bgroup 27\egroup$ metres is
+From 1 metre up to $10^{27}$ metres is
 {27|26|28}
 hops.
 
