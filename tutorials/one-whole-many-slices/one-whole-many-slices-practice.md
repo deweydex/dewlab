@@ -125,7 +125,7 @@ whole pizza.
 
 1. The bottom of a fraction says how many slices the whole was cut into.
 2. So a slice of 1/8 comes from a pizza cut into 8 slices.
-3. How many slices did that pizza have altogether?
+3. How many slices did that pizza have in total?
 
 **Think about:** what the bottom number of a fraction counts.
 

@@ -165,7 +165,7 @@ top and 100 to the bottom?
 No. $\frac{2}{3}$ is more than half: two slices out of three. Adding
 the same number to the top and the bottom changes the amount.
 Multiplying both by the same number does not change it, because it only
-cuts every slice again. Adding feels just as fair. That is why many
+cuts every slice again. Adding feels as fair. That is why many
 people try it.
 
 </details>
