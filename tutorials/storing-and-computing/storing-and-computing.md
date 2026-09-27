@@ -1,7 +1,7 @@
 ---
 title: "Variables, data types and text"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -267,20 +267,22 @@ something. The `input()` function asks for some typing, and returns what
 was typed. It always returns a string, even when the person types a
 number.
 
-The lines in the next cell are comments, so the cell does nothing yet. To
-try them, remove the `#` at the start of each line of code, then run the
-cell. It waits for you to type something.
+Run the next cell. It waits for you: a box appears after the question.
+Type your answer, then press Enter.
 
 ```python exec
 id: type-conversion-2
-# user_name = input("What is your name? ")
-# print("Hello, " + user_name)
+user_name = input("What is your name? ")
+print("Hello, " + user_name)
 
-# user_age = input("How old are you? ")
-# print(type(user_age))          # it is a string
-# user_age = int(user_age)       # now it is a whole number
-# print("Next year you will be", user_age + 1)
+user_age = input("How old are you? ")
+print(type(user_age))          # it is a string, even if you typed digits
+user_age = int(user_age)       # now it is a whole number
+print("Next year you will be", user_age + 1)
 ```
+
+What happens if you type `ten` for your age? Python stops with an error,
+because `int()` cannot read `ten` as a number.
 
 ## Putting it together: a small program
 
