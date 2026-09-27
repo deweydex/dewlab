@@ -68,3 +68,28 @@ def test_a_bead_is_too_small_to_carry_a_pattern():
     )
     copies = overlays(add_patterns(beads, "dlp-test"))
     assert len(copies) == 1 and 'r="20"' in copies[0]
+
+
+def test_every_picture_script_adds_the_pattern_layer():
+    # A script that writes pictures without it would ship tints a reader
+    # with the setting on cannot tell apart. `finished()` adds the layer,
+    # and changes nothing in a picture with no tints, so every script
+    # writes through it.
+    graphics = Path(__file__).resolve().parent.parent / "dev" / "graphics"
+    writers = [path for path in sorted(graphics.glob("*.py"))
+               if "for relative, draw in sorted(DIAGRAMS.items())" in path.read_text()]
+    assert len(writers) >= 14
+    missing = [path.name for path in writers if "finished(relative, draw)" not in path.read_text()]
+    assert missing == []
+
+
+def test_no_two_pictures_share_a_pattern_id():
+    # Several pictures are inlined on one page, where a shared id would let
+    # one picture's pattern stand in for another's.
+    tutorials = Path(__file__).resolve().parent.parent / "tutorials"
+    owner: dict[str, Path] = {}
+    for picture in sorted(tutorials.glob("*/*.svg")):
+        for pattern_id in set(re.findall(r'<pattern id="([^"]+)"', picture.read_text())):
+            assert pattern_id not in owner, f"{picture} and {owner[pattern_id]} share {pattern_id}"
+            owner[pattern_id] = picture
+    assert owner
