@@ -6,6 +6,7 @@ import { textMatches, tokenize, tokenHits } from "./search-words.js";
 import {
   widgetValues, reconcileSliders, clearSliders, sliderMarkup, restoreSliders, followSlider,
 } from "./cell-widgets.js";
+import { initTermDefinitions, readDefinitionsSetting, writeDefinitionsSetting } from "./term-definitions.js";
 
 const PYODIDE_VERSION = "0.28.3";
 const PYODIDE_BASE = new URL(
@@ -1421,6 +1422,46 @@ function createHighlight(range, block, note = "") {
   return highlight;
 }
 
+/* Opens the Reference panel filtered to one term: Look up's button, and a
+ * term's definition on hover (term-definitions.js), both come here. */
+function openReferenceAt(term) {
+  const panel = document.getElementById("dl-reference");
+  const toggle = document.getElementById("dl-reference-toggle");
+  if (!panel || !toggle) return;
+  panel.removeAttribute("hidden");
+  toggle.setAttribute("aria-expanded", "true");
+  // The value goes in whether or not the box is visible. renderReference()
+  // hides it on a page with only a handful of entries, and the observer in
+  // initReference() clears the filter on close by reading this value — so
+  // skipping it there left such a page filtered to one term the next time
+  // it opened, with no visible box to clear.
+  const searchInput = document.getElementById("dl-reference-search");
+  if (searchInput) searchInput.value = term;
+  filterReferenceContent(term);
+}
+
+/* The Settings switch for definitions on hover, "Definitions" under
+ * Reading. */
+function initDefinitionsToggle(definitions) {
+  const onOff = document.querySelector("[data-definitions]");
+  if (!onOff) return;
+  const sync = () => {
+    const on = readDefinitionsSetting();
+    for (const btn of onOff.querySelectorAll("button")) {
+      setSegChecked(btn, (btn.dataset.value === "on") === on);
+    }
+    syncSegRoving(onOff);
+  };
+  onOff.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button");
+    if (!btn) return;
+    writeDefinitionsSetting(btn.dataset.value);
+    sync();
+    definitions.refresh();
+  });
+  sync();
+}
+
 function initReferenceLookup(manifest) {
   const body = document.getElementById("dl-body");
   const panel = document.getElementById("dl-reference");
@@ -1602,16 +1643,7 @@ function initReferenceLookup(manifest) {
     const selection = document.getSelection();
     if (selection) selection.removeAllRanges();
     hide();
-    panel.removeAttribute("hidden");
-    toggle.setAttribute("aria-expanded", "true");
-    // The value goes in whether or not the box is visible. renderReference()
-    // hides it on a page with only a handful of entries, and the observer in
-    // initReference() clears the filter on close by reading this value — so
-    // skipping it there left such a page filtered to one term the next time
-    // it opened, with no visible box to clear.
-    const searchInput = document.getElementById("dl-reference-search");
-    if (searchInput) searchInput.value = term;
-    filterReferenceContent(term);
+    openReferenceAt(term);
   });
 
   highlightButton.addEventListener("mousedown", (ev) => {
@@ -6407,6 +6439,11 @@ initRightPanels();
 initSettingsTabs();
 initReference(currentManifest);
 initReferenceLookup(currentManifest);
+initDefinitionsToggle(initTermDefinitions({
+  body: document.getElementById("dl-body"),
+  glossary: currentManifest.glossary,
+  openReference: openReferenceAt,
+}));
 initHighlightPopover();
 // After every toggle it mirrors has settled its own hidden state —
 // Reference only unhides itself in initReference() above.

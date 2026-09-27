@@ -4018,7 +4018,53 @@ p code, li code {
 /* Printing a page should not print a transient button, and a reader who
    has turned motion or chrome down does not need it either. */
 @media print {
-  .dl-lookup, .dl-highlight-btn, .dl-highlight-popover { display: none !important; }
+  .dl-lookup, .dl-highlight-btn, .dl-highlight-popover, .dl-def-popover { display: none !important; }
+  .dl-def { text-decoration: none; }
+}
+
+/* A term the author marked shows its definition on hover, tap or focus
+   (assets/term-definitions.js, #339). A faint dotted underline says so;
+   the italic already says it is a term. */
+.dl-def {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--dl-muted);
+  text-underline-offset: 0.18em;
+  cursor: help;
+}
+.dl-def:hover { text-decoration-color: var(--dl-orange); }
+/* A later use marked `*term*{.term}` is not being introduced, so it reads
+   in plain type and keeps only the dotted line. */
+em.term, .term em { font-style: normal; }
+.dl-def:focus-visible {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.dl-def-popover {
+  position: fixed;
+  z-index: 46;
+  width: min(20rem, calc(100vw - 1rem));
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.5rem;
+  background: var(--dl-panel-bg);
+  color: var(--dl-fg);
+  box-shadow: 0 2px 8px var(--dl-shadow);
+  font-family: var(--dl-font-family);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.dl-def-popover p { margin: 0.25rem 0 0.4rem; }
+.dl-def-popover button {
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dl-link, var(--dl-orange));
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* The edit/remove popover on an existing highlight -- fixed and

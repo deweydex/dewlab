@@ -54,6 +54,10 @@ same") that is not a term. Run that extraction (import it, or run
 `python3 dev/curriculum_map.py` and read its vocabulary section) to get
 this tutorial's own emphasised terms as your starting list. Do not
 re-implement this extraction by eye — it exists, it is tested, use it.
+An italic followed by `{.term}` (`*matrix*{.term}`) is a later use an
+author marked so that it shows its definition on hover; the extraction
+leaves it out, and so should you: it is not a term this tutorial
+introduces.
 
 **Your own read, for what emphasis misses.** A function or operator
 introduced mainly through a code cell rarely gets written as `*@*` in

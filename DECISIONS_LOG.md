@@ -5404,7 +5404,66 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.275 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
+**7.273 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
+
+**Only author-marked uses.** 7.94 built prose-linking, measured it and withdrew it: a regex cannot tell "set a seed" from a set. Marking every appearance of a term for hover definitions would bring that back, and Josh chose against it. So only two places are marked. One is the italicised first use (`docs/WRITING_TUTORIALS.md#marking-a-term`); across 421 built pages, 705 of the 901 concept terms each page introduces are italicised there. The other is a later use the author writes `*term*{.term}`. The class tells `dev/curriculum_map.py`'s vocabulary report, and the glossary skill, that this is not an introduction. Inherited terms are italicised on later pages in only 48 places today, so the help a reader gets on later pages depends on authors marking uses. `dev/term_uses.py` lists the candidates for each page: about 4,500 across the site, with the sentence around each, including many everyday uses of glossary words like "and", "list" and "pair" that should stay unmarked.
+
+**How it works.** `assets/term-definitions.js` adds a class, `tabindex` and `aria-describedby` to the author's own `<em>` and never wraps text, so highlights are untouched. Only `concept` entries are matched, against the whole italic: exactly, or word for word after the site's stemming, with a plain plural allowed (the stemmer leaves short words alone, so *lists* would otherwise miss "list"). It never matches a word inside a longer italic, or a prefix. A `{.term}` mark renders in plain type with only the dotted line, since the term is not being introduced again. `dev/term_uses.py --check` lists marks that name no concept. Hover, focus or a tap shows a popover with the definition and **More in the Reference**; Enter on the term opens the Reference at it. The popover is visual only; a screen reader hears the definition through `aria-describedby`. Code, cells, maths, headings, links and folds' summaries are never marked. **Definitions on hover** under Reading in Settings turns it off. Look up and the Reference's own search share `openReferenceAt()`.
+
+**What it is worth now.** At a term's introduction, the sentence around it usually says what it means, so the popover mostly repeats it. The feature pays on later pages, which is where marking is still to do.
+
+*Cost to change: small. One module, one Settings row, one CSS block; the `{.term}` class is inert to everything but the vocabulary report.*
+
+**7.274 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
+
+1. **Strand C titles: the friendly name first, then the search term.** A title opens with the friendly phrase and puts the usual term straight after the colon: "Undoing a square: square roots, the side of a square", "Sides that never end: surds, the square root of 2", "Halfway powers: fractional exponents, two half steps make one", "Counting hops: logarithms, how many times did we multiply?". A reader who searches for "square root" or "logarithm" finds the page, and the scary word is still not the first thing on it. The page bodies are unchanged: inside a page, the sign still comes last (7.254). Later strand C pages follow the same pattern.
+2. **Colour words: left for now.** The pictures keep their theme colours with no pattern, and the prose keeps naming parts by colour. The question stays open in the outline, and it is worth asking again if a reader reports it.
+3. **No recurring character.** "What went differently here?" problems keep using "somebody" or an unnamed worked line. Nobody to like or dislike, nothing to translate, and the mistake belongs to no one. The outline's note that a character "would make them warmer" goes.
+4. **What to write next: all of it.** The rest of strand C (C4, C6, C7), the views from the top (A9, B8), strand B's mixed challenge (B7), the mixed sets, and strands D and E.
+
+*Cost to change: a title is one line in a page's frontmatter, plus the few places another page quotes it.*
+
+**7.275 — The Zen of Slashes and Surds is written to the end of its plan: the rest of strand C, the views from the top, strands D and E, and four mixed sets.** Josh, 27 September 2026, choosing "all of it" for what to write next (7.274).
+
+**What is written.** Twelve pages, each with a practice page, and four mixed sets:
+- **Strand A:** `narrowing-it-down`, the view from the top. A made-up town is narrowed by fractions first. Then come Drake's 1961 guesses, multiplied in small steps: the smallest give 20, the largest 50,000,000, and most of the gap comes from L. Then Frank and Sullivan's "has anyone ever?" sets A = 1, so f_bt is a reciprocal: one in 60 billion for the Milky Way (their Table 1, read in the paper).
+- **Strand B:** `everything-at-once`, the mixed challenge, with the long way as the path back to any rule. `powers-of-ten` takes scientific notation from the Grade 8 sheets and checks each figure against NASA's fact sheets. It ends with Voyager 1 reaching one light-day, 25.902 billion km, on 18 November 2026. Two of the sheets' figures were off: a caesium atom's size, and a tennis ball's diameter given as its radius. The practice page uses Wikipedia's values.
+- **Strand C:** `stretching-the-halfway-steps` (the bottom of a fractional exponent cuts the hop, the top counts the small hops), `hops-that-add` (hops for a product add, then the slide rule, with its history from Wikipedia) and `surds-and-logs-in-the-wild` (why A-series paper has side(2) in it, and the 41,024,320 digits of the largest known prime, counted with hops).
+- **Strand D:** `the-number-line` (negatives meet the reader as floors and temperatures before they are named), `two-lines-at-right-angles` (across, then up, before x and y), `a-pattern-as-dots` (adding makes a line and multiplying a curve, found from the gaps) and `drawing-across-scales` (the planets on a normal scale and a hops scale, a virus to the universe in 34 hops, and Kepler's 3/2 as a challenge).
+- **Strand E:** `a-box-with-something-in-it` and `keeping-it-level`. The balance, a box before a letter, and undoing in the opposite order. It ends at the Dewey Track's `rules-with-letters-in-them` and `running-a-formula-backwards`.
+- **Mixed sets:** `mixed-slashes`, `mixed-powers`, `mixed-surds-and-logs` and `mixed-zen`. The last one needs two strands in every problem, carries D and E, and closes the module with a short paragraph that names what the reader has done. The course lists them under `mixed:`.
+
+**How it was written.** As in 7.270, the pictures came first. `dev/graphics/zen.py` gained hops cut into thirds, a slide rule, A-series paper, a narrowing chain, a powers-of-ten ladder, a number line through 0, a coordinate grid, dot plots, the planets on two scales and a balance. Seven writers then worked from one brief, and every page was read before it was committed. The reading changed these things:
+- **Opposite, not partner.** The number line called −3 and 3 "partners". Strand A already calls 5/7 and 7/5 partners, so these are now *opposites*, with a line saying the two ideas differ.
+- **Habitable zone.** "About one star in five has a planet in its habitable zone" misread n_e = 0.2. It now says "for every five stars, about one planet in a habitable zone".
+- **The tennis ball** of atoms fills about half its cube, not "a little less".
+- **Pronouns.** Luke Durant, Frank Drake and John Napier are named, not given pronouns.
+- **"Let's"** went, and **an unwatched video** (3Blue1Brown's *Triangle of Power*) was taken out, per the video library's rule.
+- **The refrain** "That is all a letter in algebra means" is on six earlier pages. The new pages keep it.
+
+**A fault this batch found.** In a fill-in question, every `{...}` was read as a gap, even one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages and two older ones. 7.276 changes the build so that braces inside maths stay maths.
+
+**Checked, and not.** All 69 cells run in CPython, and every figure was checked against the source the page names. The site builds, and the unit tests pass. The cells did not run in the browser, because Pyodide is unreachable from this environment. Josh's colour question (7.274) is still open. A class has not yet used the module.
+
+*Cost to change: the new page ids and their question ids become a contract once a class has used them. A picture is one entry in `DIAGRAMS`.*
+
+**7.276 — In a fill-in question, braces inside maths are maths, not gaps.** Josh, 27 September 2026, on the `\bgroup` workaround 7.275 first used: "cant we just use curly brackets there instead of relying upon spacing for the fractions and exponents to render correctly?"
+
+**The problem.** `build.py` read every `{...}` in a fill-in-the-blank question as a gap (`GAP_RE`), including one inside `$...$`. `$10^{-12}$` became 10^ and a typing box. `$\frac{1}{8}$` became `\frac` and two. `\{1, 2\}` became a gap too. Nine pages were affected: seven new ones, plus `getting-closer` and the practice page of `sets-as-sorted-lists`. The first fix wrote the groups as `\bgroup ... \egroup`. That was unreadable, and it failed inside `\frac`, where KaTeX printed the source.
+
+**The rule now.** `find_gaps()` reads a question's text once, left to right. A `$` that opens a real maths span (the same `DISPLAY_MATH_RE` and `INLINE_MATH_RE` test `extract_math` makes) skips the whole span, braces and all. A `{` outside maths starts a gap, and the gap is taken whole. So a price offered as a choice, `{$5|$10}`, is still a dropdown, as its test asks. A question whose only braces are maths fails the build, saying it has no gap outside its maths.
+
+**What moved.** Two pages put a gap inside a formula on purpose, and now close the maths just before it:
+- `a-function-that-calls-itself`: `$5! = 5 \times$ {24}`
+- `going-round-in-circles`: `$C =$ {2}$\pi r$`
+
+Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIALS.md` says where a gap may sit. `tests/build/test_questions.py` has three new tests: braces in maths are maths, a gap beside maths is a gap, and a question with only maths braces fails.
+
+*Cost to change: one function in `build.py`. A page that wants a blank inside a formula closes the maths before it.*
+
+---
+
+**7.278 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
 
 **The course.** `courses/machine-learning.yaml`, listed in `courses/index.yaml` straight after Computational Methods. The shared pages (the three text-generation pages and the perceptron) come first in Computational Methods' file, so that stays their default course and their address; they are the same files in both courses, so the two cannot drift apart. The card says who the course is for, what you make, and the worlds. The description names the Python it needs, from Computational Methods' first series, since it has no Python series of its own.
 

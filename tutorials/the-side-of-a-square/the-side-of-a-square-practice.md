@@ -1,5 +1,5 @@
 ---
-title: "Undoing a square: the side of a square — Practice"
+title: "Undoing a square: square roots, the side of a square — Practice"
 practice_for: the-side-of-a-square
 year: "2026-2027"
 version: 2026.09.27.1
@@ -9,7 +9,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Undoing a square: the side of a square — Practice
+# Undoing a square: square roots, the side of a square — Practice
 
 These small problems are about one idea. side(…) starts with a square
 of beads, and finds the number of beads along one side. edge(…) does

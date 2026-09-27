@@ -10,6 +10,13 @@ these can help. Some are part of dewlab, and some come with your browser.
 
 ## On every dewlab page
 
+**See what a term means.** Some words in the reading have a faint dotted
+line under them. The course uses each of these words in a particular way.
+Point at one, or tap it, and a small box shows what it means. With the
+keyboard, press Tab to reach the word, and Enter to open the Reference at
+it. If you would rather not see the lines, open **Settings**, then
+**Reading**, and turn off **Definitions on hover**.
+
 **Look a word up.** Select a word in the reading. If the Reference knows it,
 a small **Look up** button appears. Press it, and the Reference opens at that
 word. If you met it on an earlier page, it links back there.

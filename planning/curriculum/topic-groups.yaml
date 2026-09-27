@@ -34,8 +34,9 @@ groups:
       For anyone who wants to start again with the maths that schools
       teach. These pages show what a fraction is, how to compare, add,
       multiply and divide fractions, what a power means, and how roots and
-      logarithms undo a power. They go in small steps, with pictures
-      first, and there is nothing to memorise.
+      logarithms undo a power. Then they draw numbers as lines, grids and
+      graphs, and solve a first equation with a balance. They go in small
+      steps, with pictures first, and there is nothing to memorise.
     tutorials:
       - before-we-start
       - one-whole-many-slices
@@ -46,16 +47,32 @@ groups:
       - a-fraction-of-a-fraction
       - how-many-fit
       - fractions-with-holes
+      - narrowing-it-down
+      - mixed-slashes
       - the-long-way
       - joining-two-stacks
       - sharing-out
       - when-everything-cancels
       - more-on-the-bottom
       - a-power-of-a-power
+      - everything-at-once
+      - powers-of-ten
+      - mixed-powers
       - the-side-of-a-square
       - sides-that-never-end
       - halfway-steps
+      - stretching-the-halfway-steps
       - how-many-hops
+      - hops-that-add
+      - surds-and-logs-in-the-wild
+      - mixed-surds-and-logs
+      - the-number-line
+      - two-lines-at-right-angles
+      - a-pattern-as-dots
+      - drawing-across-scales
+      - a-box-with-something-in-it
+      - keeping-it-level
+      - mixed-zen
 
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations

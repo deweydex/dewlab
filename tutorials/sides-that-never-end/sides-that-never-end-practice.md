@@ -1,5 +1,5 @@
 ---
-title: "Sides that never end: the side of 2 — Practice"
+title: "Sides that never end: surds, the square root of 2 — Practice"
 practice_for: sides-that-never-end
 year: "2026-2027"
 version: 2026.09.27.1
@@ -9,7 +9,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Sides that never end: the side of 2 — Practice
+# Sides that never end: surds, the square root of 2 — Practice
 
 These small problems are about sides that are not whole numbers, like
 side(2). Its digits never stop and never repeat. Try each problem before
@@ -428,7 +428,7 @@ k × k × side(2).
 
 ## 12. From earlier: square numbers
 
-From *Undoing a square: the side of a square*.
+From *Undoing a square: square roots, the side of a square*.
 
 ```question
 id: from-earlier-square-numbers-1
