@@ -242,6 +242,23 @@ programmers (`super()`'s begins "super() -> same as super(__class__,
 reader has met is course order, which Python cannot know. The docstrings
 still reach a reader: hovering a name in a cell shows the real one.
 
+## 6e. Definitions on hover
+
+Built — `DECISIONS_LOG.md` 7.272, `assets/term-definitions.js`, issue #339.
+
+A term shows its entry's definition on hover, tap or keyboard focus, in a
+small popover with **More in the Reference**. Only a use the author marked
+as the term is marked: the italicised first use, or a later use written
+`*term*{.term}`. So 6c's obstacle never arises: nothing guesses at sense.
+Marking adds a class, `tabindex` and `aria-describedby` to the author's own
+`<em>`, and never wraps text, so highlights are untouched. Only `concept`
+entries are marked, matched to the whole italic, exactly or word for word
+after stemming; never a word inside a longer italic, never a prefix. Code,
+cells, maths, headings, links and folds' summaries are never marked.
+`dev/term_uses.py` lists, for each built page, the inherited concepts that
+appear unmarked in its prose, for an author to mark the ones that mean the
+term. A Settings switch, **Definitions on hover**, turns it off.
+
 ## 7. What ships in what order
 
 Roughly: schema + a couple of hand-written example glossaries to prove the

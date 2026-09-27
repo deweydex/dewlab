@@ -5381,3 +5381,15 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 **Not done.** The issue's "done when" asks that both course files list the pages. The machine-learning course file is #338's; that issue lists these three pages as its first part.
 
 *Cost to change: small. The new ids are cells within existing pages; the world keys and the cell ids ending in a world key become a contract on 2 October.*
+
+---
+
+**7.272 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
+
+**Only author-marked uses.** 7.94 built prose-linking, measured it and withdrew it: a regex cannot tell "set a seed" from a set. Marking every appearance of a term for hover definitions would bring that back, and Josh chose against it. So only two places are marked. One is the italicised first use (`docs/WRITING_TUTORIALS.md#marking-a-term`); across 421 built pages, 705 of the 901 concept terms each page introduces are italicised there. The other is a later use the author writes `*term*{.term}`. The class tells `dev/curriculum_map.py`'s vocabulary report, and the glossary skill, that this is not an introduction. Inherited terms are italicised on later pages in only 48 places today, so the help a reader gets on later pages depends on authors marking uses. `dev/term_uses.py` lists the candidates for each page: about 4,500 across the site, with the sentence around each, including many everyday uses of glossary words like "and", "list" and "pair" that should stay unmarked.
+
+**How it works.** `assets/term-definitions.js` adds a class, `tabindex` and `aria-describedby` to the author's own `<em>` and never wraps text, so highlights are untouched. Only `concept` entries are matched, against the whole italic: exactly, or word for word after the site's stemming. It never matches a word inside a longer italic, or a prefix. Hover, focus or a tap shows a popover with the definition and **More in the Reference**; Enter on the term opens the Reference at it. The popover is visual only; a screen reader hears the definition through `aria-describedby`. Code, cells, maths, headings, links and folds' summaries are never marked. **Definitions on hover** under Reading in Settings turns it off. Look up and the Reference's own search share `openReferenceAt()`.
+
+**What it is worth now.** At a term's introduction, the sentence around it usually says what it means, so the popover mostly repeats it. The feature pays on later pages, which is where marking is still to do.
+
+*Cost to change: small. One module, one Settings row, one CSS block; the `{.term}` class is inert to everything but the vocabulary report.*
