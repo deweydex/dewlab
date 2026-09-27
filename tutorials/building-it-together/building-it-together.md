@@ -29,10 +29,10 @@ covers:
 
 # The team project: design, build, release and review
 
-You have a toolkit of about sixty functions, written and tested across
+You have a *toolkit*{.term} of about sixty *functions*{.term}, written and tested across
 this course. Each one is small. What happens when you join them into
 something bigger: a weather station, a game, a map of other worlds, a
-display that draws numbers in pixels?
+display that draws numbers in *pixels*{.term}?
 
 That is this project, in a team of three to five or on your own. This
 page is a brief: the description of a piece of work, and the habits
@@ -42,8 +42,8 @@ practice.
 > **The space we're in.** A team of three to five, or one person,
 > working over several weeks, with a teacher who agrees the plan. A
 > team can use any tested function in any member's toolkit. The page's
-> Python runs in a browser, so values a user would type are names at
-> the top of a cell. Most of what goes wrong in a team project is about people, not code.
+> Python runs in a browser, so values a user would type are *names*{.term} at
+> the top of a *cell*{.term}. Most of what goes wrong in a team project is about people, not code.
 
 ## Warm-up
 
@@ -85,7 +85,7 @@ two versions of the brief. Choose one with your teacher.
 
 1. uses functions from your toolkits, from **at least four units** of
    this course;
-2. has its own new functions too, each with a docstring and tests;
+2. has its own new functions too, each with a *docstring*{.term} and tests;
 3. comes out in **three releases**, a week or more apart;
 4. is reviewed, by people who did not write it, before each release.
 
@@ -119,14 +119,14 @@ kilowatt-hours.
   TMP36's `sensor_celsius` from
   [Machines that take a number](tutorial:machines-that-take-a-number)
 - Unit 5: `mean`, `median`, `std_dev`, `largest`, `smallest`,
-  `count_if`, `frequency_table`, and an honest chart from
+  `count_if`, `frequency_table`, and an *honest chart*{.term} from
   [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts#a-chart-that-tells-the-truth)
 - Unit 6: `shell_sort`, for the warmest hours in order
 - Unit 7 or 8: `line_through`, for a trend over the days
 - Unit 9, if you want it: `derivative_at`, for when it warmed fastest
 
 The starter uses an invented day. Before you run it, look at the
-readings. Will the mean be above or below the median?
+readings. Will the mean be above or below the *median*{.term}?
 
 ```python exec
 id: building-it-weather-1
@@ -166,7 +166,7 @@ The collision checker from
 engine to start from, and its last section,
 [Play it: your checker in a real game](tutorial:mixed-shapes-angles-and-waves#play-it-your-checker-in-a-real-game),
 turns it into a game you move with the arrow keys. A Python cell sets
-the level, and a JavaScript engine plays it on a canvas. For more on
+the level, and a *JavaScript*{.term} engine plays it on a canvas. For more on
 how a page draws one frame after another,
 [Drawing frames with JavaScript](tutorial:drawing-frames-with-javascript)
 goes further.
@@ -200,9 +200,9 @@ print("exact chance:", circle_area(1.5) / 2 / 100)
 ```
 
 About 3.5% of throws hit, and each run of the cell gives a slightly
-different count. The exact answer is half a circle of radius 1.5,
-because the player is on the edge, over the pitch's area of 100. When a
-simulation and a formula agree, that is a useful first test.
+different count. The exact answer is half a circle of *radius*{.term} 1.5,
+because the player is on the edge, over the pitch's *area*{.term} of 100. When a
+*simulation*{.term} and a formula agree, that is a useful first test.
 
 ### A planet tracker
 
@@ -217,7 +217,7 @@ found, when, and how far away are they? Which are most like the Earth?
 - Unit 7: Kepler's third law, $T^2 = a^3$, from
   [Unit 7's mixed problems](tutorial:mixed-algebra-you-can-run), on
   NASA's eight planets
-- Unit 8: `point_on_circle`, to draw an orbit
+- Unit 8: `point_on_circle`, to draw an *orbit*{.term}
 
 Before you run it, which year do you think found the most planets?
 
@@ -249,8 +249,8 @@ most surprising bar on this page.
 ### A digit display, in pixels
 
 This is Unit 1's project, grown up. It is a display that draws any
-number in a 4 by 7 pixel font, then a clock, a score, or a countdown. How many
-different glyphs could the font hold? Can a parity bit catch a pixel
+number in a 4 by 7 *pixel font*{.term}, then a clock, a score, or a countdown. How many
+different glyphs could the font hold? Can a *parity bit*{.term} catch a pixel
 that flipped?
 
 - Unit 1: `digit_at`, `to_binary`, `to_hex`, `pixel_row`, and
@@ -285,14 +285,14 @@ each of you tries more than one.
 | Role | What it looks after |
 |---|---|
 | **Coordinator** | the plan, the dates, and a short meeting each week; says early when the team falls behind |
-| **Tester** | the team's test suite; runs it before anything is shared |
+| **Tester** | the team's *test suite*{.term}; runs it before anything is shared |
 | **Reviewer** | the review before each release, with the checklist from [Code other people can read](tutorial:code-other-people-can-read#a-checklist-for-a-review) |
 | **Documenter** | the docstrings, the release notes, and the page that says how to use the program |
 | **Builder** | one part of the program, and its promises to the other parts |
 
 In a team of three, one person holds two roles. In a team of five, two
 people are builders. On your own, you hold every role, one at a time:
-for an hour you are the tester, and for another the reviewer.
+for an hour you are the tester, and for another the *reviewer*{.term}.
 
 ## Design before code
 
@@ -304,9 +304,9 @@ the program, and write the answers down. That written answer is the
    shape: the font, as one whole number; a glyph, as 7 hex digits; a
    row of pixels, as text like `.##.`.
 2. **What is promised?** Every function you will write, as a name, its
-   inputs, and a docstring, with no body yet. Which toolkit functions
+   *inputs*{.term}, and a docstring, with no body yet. Which toolkit functions
    each one will call.
-3. **What happens when?** The main program in pseudocode, as on
+3. **What happens when?** The main program in *pseudocode*{.term}, as on
    [Recipes are algorithms](tutorial:recipes-are-algorithms#writing-a-plan-in-pseudocode).
 4. **What does this space let us do?** What the program assumes:
    whole numbers 0 or more, glyphs 4 pixels wide, no typed input.
@@ -346,7 +346,7 @@ releases are kept, not overwritten.
 | Release | For the digit display | The question it answers |
 |---|---|---|
 | 0.1 | 2026, one fixed number, printed in pixels | do the parts connect? |
-| 0.2 | any number, and a clock from `digit_at` in base 60 | does the main feature work? |
+| 0.2 | any number, and a clock from `digit_at` in *base 60*{.term} | does the main feature work? |
 | 1.0 | a parity check on every row, tidied, tested and documented | would we give this to someone? |
 
 On your own, release 0.2 can be your last. Release 0.1 should feel
@@ -418,8 +418,8 @@ Three habits from
   the team through their part, line by line, and the others ask
   questions.
 - **When a test stops the cell, trace it.** Predict each value, then
-  check it with a trace table or with `step_through`. Read any
-  traceback from its last line, as on
+  check it with a *trace table*{.term} or with `step_through`. Read any
+  *traceback*{.term} from its last line, as on
   [When Python says no](tutorial:when-python-says-no#the-last-line-first).
 
 ## Releasing and reviewing

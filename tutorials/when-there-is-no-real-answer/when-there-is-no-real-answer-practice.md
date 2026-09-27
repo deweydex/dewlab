@@ -13,8 +13,8 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, with `evaluate`, `solve_quadratic`
-and `close_enough`. `solve_quadratic_complex` was a cell on the
+Your *toolkit*{.term} is loaded on this page, with `evaluate`, `solve_quadratic`
+and `close_enough`. `solve_quadratic_complex` was a *cell*{.term} on the
 tutorial, not a toolkit tool, so the core section starts by writing it
 again. `cmath` is not loaded. Each cell that needs it starts with
 `import cmath`.
@@ -39,8 +39,8 @@ print(1j ** 2, (3j) ** 2, (1 + 2j).real, (1 + 2j).imag)
 
 `(-1+0j) (-9+0j) 1.0 2.0`.
 
-$i^2 = -1$, and $(3i)^2 = 9i^2 = -9$. Python shows each as a complex
-number with 0 as its imaginary part. The real part of $1 + 2i$ is 1 and
+$i^2 = -1$, and $(3i)^2 = 9i^2 = -9$. Python shows each as a *complex
+number*{.term} with 0 as its *imaginary part*{.term}. The *real part*{.term} of $1 + 2i$ is 1 and
 its imaginary part is 2, and Python gives both as floats.
 
 </details>
@@ -55,7 +55,7 @@ print(cmath.sqrt(-2))
 <details class="dl-answer"><summary>answer</summary>
 
 `3j`, because $(3i)^2 = -9$. And `1.4142135623730951j`, which is
-$\sqrt{2}\,i$: the square root of 2 from
+$\sqrt{2}\,i$: the *square root*{.term} of 2 from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
 turned a quarter turn. `math.sqrt` would refuse both.
 
@@ -67,7 +67,7 @@ something false?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. Her teacher was working in the real numbers, $\mathbb{R}$, and in
+No. Her teacher was working in the *real numbers*{.term}, $\mathbb{R}$, and in
 $\mathbb{R}$ no number squares to make −1. That is true, and `math.sqrt`
 agrees.
 
@@ -169,7 +169,7 @@ in 3D. The carving is gone, and a plaque marks the place.
 </aside>
 
 **6. Make.** Solve $x^2 + 2x + 10 = 0$. First find the discriminant,
-and say how many real roots there are. Then find the complex roots with
+and say how many real *roots*{.term} there are. Then find the complex roots with
 `solve_quadratic_complex`, and put each one back with `evaluate`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -204,7 +204,7 @@ print(turned)
 <details class="dl-answer"><summary>answer</summary>
 
 The last line is `NameError: name 'j' is not defined`. On its own, `j`
-is a name, like `x` or `total`, and nothing has that name. The number
+is a *name*{.term}, like `x` or `total`, and nothing has that name. The number
 $i$ is written `1j`, with the 1:
 
 ```python
@@ -217,7 +217,7 @@ because 0 is the centre of the turn.
 </details>
 
 **8. Explain.** On the tutorial, the two roots of $x^2 - 2x + 5 = 0$
-were $1 - 2i$ and $1 + 2i$: conjugates. For a quadratic whose $a$, $b$
+were $1 - 2i$ and $1 + 2i$: *conjugates*{.term}. For a *quadratic*{.term} whose $a$, $b$
 and $c$ are real numbers, why do complex roots always come as a pair
 like this? Look at the quadratic formula.
 
@@ -264,7 +264,7 @@ print(sorted([3, 1j, 2]))
 <details class="dl-answer"><summary>answer</summary>
 
 `TypeError: '<' not supported between instances of 'complex' and
-'int'`. To sort, Python compares values with `<`, and complex numbers
+'int'`. To *sort*{.term}, Python compares values with `<`, and complex numbers
 have no `<`. There is no order for points on a plane that keeps the
 rules of $\mathbb{R}$. So the toolkit's `solve_quadratic` promises
 real roots, smallest first. "Smallest first" only means something in
@@ -379,7 +379,7 @@ plt.gca().set_aspect("equal")
 halfway between 1 and $i$. Squared, it gives very nearly `1j`. Its
 distance from 0, `abs(eighth)`, is 1, so each multiply turns a dot
 without moving it nearer to 0 or further away. The eight dots sit on a
-circle of radius 1, like a compass. A later unit comes back to points
+circle of *radius*{.term} 1, like a compass. A later unit comes back to points
 on a circle, with sine and cosine.
 
 </details>

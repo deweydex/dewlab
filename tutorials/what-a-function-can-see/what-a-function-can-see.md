@@ -27,8 +27,8 @@ covers:
 
 # What a function can see: scope and parameters
 
-You write a function that calculates how fast a file downloaded, and
-inside it you give the speed a name. On the next line, outside the
+You write a *function*{.term} that calculates how fast a file downloaded, and
+inside it you give the speed a *name*{.term}. On the next line, outside the
 function, you ask Python to print that name. Python says it has never
 heard of it. The name was there a moment ago. Where did it go, and what
 can a function see?
@@ -39,7 +39,7 @@ On this page we:
 - see which names a function can read from the page around it
 - find out why a function cannot change a page's name with `=`
 - hand values to a function by position and by name
-- hand a function a list, and see why that is different
+- hand a function a *list*{.term}, and see why that is different
 - find out how a function made inside another one keeps what it needs
 - ask of any function: what does it need, and where does it get it?
 
@@ -48,7 +48,7 @@ On this page we:
 > usually deletes it when the call ends. From inside that space, a
 > function can read the names on the page around it, but a new name made
 > with `=` stays inside. Those rules are almost never written down. This
-> page is about them. Your toolkit from every earlier page
+> page is about them. Your *toolkit*{.term} from every earlier page
 > is loaded here, as usual.
 
 ## Warm-up
@@ -126,7 +126,7 @@ A *local name* is a name made inside a function. It exists only inside
 that function, and only while one call is running. The *scope* of a name
 is the part of a program where the name can be seen. So the scope of
 `megabytes_per_second` is the inside of `download_speed`, and the last
-line of the cell is outside it.
+line of the *cell*{.term} is outside it.
 
 You can picture each call as a small room, built when the call starts
 and removed when it ends. The only thing carried out of the room is
@@ -152,7 +152,7 @@ after the call ends.
 
 ## A fresh space for every call
 
-A network card counts the packets of data it receives: small pieces of
+A network card counts the *packets*{.term} of data it receives: small pieces of
 a file, sent one at a time. Here is a first try at a packet counter.
 It is called three times. Will it print 1, 2 and 3, or something else?
 Decide, then run it to check.
@@ -175,7 +175,7 @@ starts again with `packets = 0`. Nothing is kept from one call to the
 next.
 
 For a counter, that is a problem, because a counter has to remember.
-But it also means we can test the function's promise. The same inputs
+But it also means we can test the function's promise. The same *inputs*{.term}
 give the same result every time. A later section on this page fixes the
 counter.
 
@@ -196,7 +196,7 @@ def sound_bytes(seconds):
 print(image_bytes(1920, 1080) + sound_bytes(10))
 ```
 
-It prints `7984800`. That is about 6.2 million bytes for one full-HD picture,
+It prints `7984800`. That is about 6.2 million *bytes*{.term} for one full-HD picture,
 and 1.8 million for ten seconds of CD sound. Each `size` lives in its
 own function's space, like two files called `notes.txt` in two
 different folders.
@@ -269,10 +269,10 @@ as the rule above says they should. NASA keeps a film of it online.
 </aside>
 
 Is that what we want? The same call, `fall_time(20)`, gave two different
-answers, and nothing in the call or the docstring says why. The pull of
+answers, and nothing in the call or the *docstring*{.term} says why. The pull of
 gravity is a *hidden input*: something the function needs that is not
-among its parameters. The fix is to make it a parameter, with a default
-value, as `digit_at` does with its base:
+among its *parameters*{.term}. The fix is to make it a parameter, with a
+*default value*{.term}, as `digit_at` does with its base:
 
 ```python exec
 id: what-function-outside-3
@@ -292,7 +292,7 @@ print(fall_time(20))
 It prints `2.02`, even though the page's `gravity` is still 1.62. The
 parameter `gravity` is a local name, and the function's own space is
 searched first. Now everything the function needs is on its `def` line,
-where a reader can see it. For the Moon, you change one argument.
+where a reader can see it. For the Moon, you change one *argument*{.term}.
 
 ## Changing a name from inside
 
@@ -329,7 +329,7 @@ Python decided this while it read the `def`, before the function ever
 ran, as on
 [When Python says no](tutorial:when-python-says-no#mistakes-python-finds-before-it-starts).
 
-Python does have a way to say "use the page's name". The keyword
+Python does have a way to say "use the page's name". The *keyword*{.term}
 `global`, on the first line of a function, does it:
 
 ```python
@@ -402,7 +402,7 @@ The first line gives `2`, the thousands digit of 2026. The second gives
 `place` went into the slot called `number`, because it came first. The
 function saw the values 3 and 2026, in the order they came.
 
-A function cannot see your variable's name. It sees only the value you
+A function cannot see your *variable*{.term}'s name. It sees only the value you
 hand it. This is also why your toolkit works on every page.
 `digit_at` was written on another page, knows nothing about this one,
 and needs nothing from it.
@@ -428,7 +428,7 @@ print(score)
 ```
 
 The first line shows `168`, the score with its bonus. The second shows
-`84`, so `score` did not change. A trace table, like the ones on
+`84`, so `score` did not change. A *trace table*{.term}, like the ones on
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand), shows why. This one has a column
 for each space.
 
@@ -481,7 +481,7 @@ So there are two different moves, and it helps to keep them apart:
 A number cannot be changed in place, so for numbers only the first move
 exists. That is why `score` was safe. A list can be changed in place, so a
 function that is handed a list can change it. `add_reading` says so in
-its docstring. It is a procedure, in
+its docstring. It is a *procedure*{.term}, in
 the words of
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
 It returns `None`, and it changes something outside its own space, through

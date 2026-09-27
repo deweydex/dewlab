@@ -37,7 +37,7 @@ On this page we:
 - count the ways to fill the first few places: permutations
 - count the ways to choose when order does not matter: combinations
 - check every formula against a loop that lists every case
-- add `factorial`, `permutations` and `combinations` to the toolkit
+- add `factorial`, `permutations` and `combinations` to the *toolkit*{.term}
 
 > **The space we're in.** We use whole numbers, and groups of things that
 > are all different from each other, such as eight different drones or
@@ -123,7 +123,7 @@ played cannot play again.
 
 ### Your turn
 
-1. Add a fourth song, "Ode to My Family", to the list in the cell above.
+1. Add a fourth song, "Ode to My Family", to the *list*{.term} in the *cell*{.term} above.
 2. Before you change anything else, guess how many orders there will be
    now.
 3. Add a fourth loop, `for fourth in songs:`, and make the `if` check
@@ -135,7 +135,7 @@ played cannot play again.
 
 Four songs have $4 \times 3 \times 2 \times 1 = 24$ orders. For any
 number of songs, the pattern is the same: one choice fewer at each place,
-down to 1. This product has its own name and its own sign.
+down to 1. This product has its own *name*{.term} and its own sign.
 
 The *factorial* of a whole number $n$ is the product of every whole
 number from 1 up to $n$. We write it $n!$ and say "n factorial". It
@@ -212,7 +212,7 @@ orders could they print in?
 
 ### Your turn: factorial in your toolkit
 
-The cell below is the start of `factorial`, a new function for your
+The cell below is the start of `factorial`, a new *function*{.term} for your
 toolkit. Replace the `...` with a loop that multiplies every whole
 number from 1 up to `n`, the way the cell `orders-factorial-1` did, and
 return the result.
@@ -325,7 +325,7 @@ $$P(n, r) = n \times (n-1) \times \dots \times (n - r + 1) = \frac{n!}{(n-r)!}$$
 Here it is in Python, with your `factorial`. We use `//`, from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold),
 because this division always gives a whole number, and `//` keeps the answer
-an int. This cell needs your `factorial` from the last section. If it is
+an *int*{.term}. This cell needs your `factorial` from the last section. If it is
 not written yet, the cell stops with a `TypeError`, because a function
 with no `return` returns `None`, and Python cannot divide `None`.
 
@@ -439,7 +439,7 @@ $6720 \div 5! = 6720 \div 120 = 56$.
 ### Checking with a list of every team
 
 Five loops, one inside another, would list the teams, but that is a lot
-of typing. Python has a module that does the listing for us:
+of typing. Python has a *module*{.term} that does the listing for us:
 `itertools`, which we met on
 [Untangling a condition](tutorial:untangling-a-condition). Its
 `combinations` lists every choice, and its `permutations` lists every

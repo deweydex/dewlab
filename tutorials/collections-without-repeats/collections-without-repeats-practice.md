@@ -14,14 +14,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page: `frequency_table`, `all_pairs`,
+Your *toolkit*{.term} is loaded on this page: `frequency_table`, `all_pairs`,
 `combinations`, `simulate`, `count_if` and the rest from earlier pages.
-A set prints its elements in an order of its own, so the answers print
+A *set*{.term} prints its *elements*{.term} in an order of its own, so the answers print
 `sorted(...)` wherever the order matters to a reader.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: collections-practice-warm-up
@@ -34,13 +34,13 @@ What will `len(set("banana"))` print? Guess, then run the cell.
 <details class="dl-answer"><summary>answer</summary>
 
 It prints `3`. The word has six letters, but only three different ones:
-b, a and n. `set` reads a string letter by letter, the way a
+b, a and n. `set` reads a *string*{.term} letter by letter, the way a
 `for` loop does, and keeps each letter once.
 
 </details>
 
-**2. Make.** A game uses two small pictures. Each list below is the
-colour of every pixel in one picture, as a hex code from
+**2. Make.** A game uses two small pictures. Each *list*{.term} below is the
+colour of every *pixel*{.term} in one picture, as a hex code from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 How many different colours do the two pictures use between them? That
 number is the size of the *palette*, the set of colours the game must
@@ -199,7 +199,7 @@ in all: the five from the first match, and the two new ones.
 
 **8. Make.** Leinster has twelve counties. Make a set of the counties you
 have visited, or make up a list, and print the Leinster counties you
-have not visited yet. What is the universal set here?
+have not visited yet. What is the *universal set*{.term} here?
 
 ```python exec
 id: collections-practice-leinster
@@ -276,7 +276,7 @@ It is finite. It has exactly 1,000,000,000 elements, which is a large
 number, but a number. Python could try to make it, with
 `set(range(1, 1_000_000_001))`, but a set of a billion numbers needs
 tens of gigabytes of memory, more than most computers have. So in this
-space, a finite set can still be too big to list.
+space, a *finite set*{.term} can still be too big to list.
 
 A rule does the job, as for $\mathbb{N}$ on the tutorial page. A test
 such as `1 <= number <= 1_000_000_000 and number == int(number)` answers
@@ -296,7 +296,7 @@ bigger than another.
 
 **11. Fix.** Schlomi, who is learning Python too, wants the different
 words in a line of a song. Maths writes a set with curly brackets, so
-she starts an empty set with `{}`. The cell stops with an error. Run
+she starts an *empty set*{.term} with `{}`. The cell stops with an error. Run
 it, read the last line of the error, then find the line that does not
 do what Schlomi meant.
 
@@ -315,7 +315,7 @@ print(len(different_words))
 The last line of the error is
 `AttributeError: 'dict' object has no attribute 'add'`. Schlomi's
 brackets are the ones maths uses, but in Python `{}` is an empty
-dictionary, not an empty set. A dictionary has no `.add`. Start with `set()`:
+*dictionary*{.term}, not an empty set. A dictionary has no `.add`. Start with `set()`:
 
 ```python
 different_words = set()
@@ -331,7 +331,7 @@ It prints `7`. The line has nine words, and "row" is three of them.
 
 **12. Make.** A Python program needs three *packages*, collections of
 extra code other people wrote: `numpy`, `pandas` and `matplotlib`.
-Write a function `can_run(needed, installed)` that gives True when
+Write a *function*{.term} `can_run(needed, installed)` that gives True when
 everything needed is installed on a computer. Then print what is
 missing from the second computer.
 
@@ -416,10 +416,10 @@ for n in range(7):
 print(power_set([]))
 ```
 
-It prints `[set()]`. An `assert` prints nothing when its condition is
+It prints `[set()]`. An `assert` prints nothing when its *condition*{.term} is
 True. The empty set has one subset:
 itself. That matches $2^0 = 1$, and it is why the loop starts from
-`[set()]`, not from an empty list.
+`[set()]`, not from an *empty list*{.term}.
 
 </details>
 
@@ -461,7 +461,7 @@ symbols, $\sum_{k=0}^{n} C(n, k) = 2^n$.
 two people in a class of 23 share a birthday about half the time. A set
 gives a short way to check a class for a shared birthday. If the set of
 birthdays is smaller than the class, two of them were the same. Write a
-trial with that idea, and use `simulate` to check the tutorial's answer.
+*trial*{.term} with that idea, and use `simulate` to check the tutorial's answer.
 
 ```python exec
 id: collections-practice-birthdays
@@ -514,7 +514,7 @@ left out of $A \cap B$.
 It is not quite an intersection because the two tables' rows are
 different kinds of thing, a customer and an order, so no row is "in
 both". A JOIN compares one column, and then makes a new, wider row from
-each matching pair. So it is closer to two steps. First make every pair,
+each matching pair. So it is closer to two steps. First make every *pair*{.term},
 as a `CROSS JOIN` or `all_pairs` does, then keep only the pairs whose ids
 agree.
 

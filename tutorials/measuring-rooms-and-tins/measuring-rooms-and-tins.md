@@ -42,7 +42,7 @@ On this page we:
   and circles
 - meet $\pi$, and see where it comes from
 - measure how much a solid holds, and how much it takes to wrap it
-- turn every formula into a toolkit function, and check each one
+- turn every formula into a *toolkit*{.term} *function*{.term}, and check each one
 - find the paint for a real room, and measure a CD, a 3D print and
   the Moon on the way
 
@@ -271,7 +271,7 @@ about 74 minutes.
 ## Tools for flat shapes
 
 Now each formula becomes a function in your toolkit, with its promise
-in the docstring. Two are written. Replace each `...` in the other
+in the *docstring*{.term}. Two are written. Replace each `...` in the other
 three with one `return` line, using the formulas above and `math.pi`.
 
 ```python exec
@@ -616,7 +616,7 @@ def sphere_surface_area(radius):
 
 How do your two functions compare with one way to write them? The
 table below runs the same calls on your tools and on a solution, side
-by side. Where a row is different, try that call on its own. Floats
+by side. Where a row is different, try that call on its own. *Floats*{.term}
 round very slightly, so some rows round to 9 decimal places. Which rows
 show Archimedes?
 
@@ -719,10 +719,10 @@ Back to the bedroom. Here are the steps, in order:
 5. Divide by 2.5 litres a tin, to get the number of tins.
 6. Round the number of tins up.
 
-Why up? Tins come whole. We are in the natural numbers, $\mathbb{N}$,
+Why up? Tins come whole. We are in the *natural numbers*{.term}, $\mathbb{N}$,
 where 2.2 tins is not something a shop sells. If we round to the nearest
 whole number, we get 2 tins, and one wall is left unfinished. `math.ceil`
-rounds any number up to the next whole number. Its name is short for
+rounds any number up to the next whole number. Its *name*{.term} is short for
 "ceiling".
 
 ```python exec

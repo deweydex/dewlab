@@ -82,7 +82,7 @@ very small screen, 2 pixels wide:
 
 Counting from 0, the way the computer counts, pixel 7 is in row 3 and
 column 1. How could a computer find that from 7 and 2 alone? Before
-you run the cell, guess what each line shows. The third line uses `%`,
+you run the *cell*{.term}, guess what each line shows. The third line uses `%`,
 which you may not have met. Guess anyway.
 
 ```python exec
@@ -122,7 +122,7 @@ print(7 % 2)
 ## Families of numbers
 
 Some questions only make sense with whole things. There is no pixel
-3.5. Mathematicians have names for these different spaces of numbers.
+3.5. Mathematicians have *names*{.term} for these different spaces of numbers.
 There are four main ones, and each is bigger than the last.
 
 The *natural numbers*, written $\mathbb{N}$, are the counting numbers:
@@ -183,7 +183,7 @@ type: fill-in-the-blank
 
 ## Two kinds of number in Python
 
-Python has its own number spaces. The function `type()` tells you which
+Python has its own number spaces. The *function*{.term} `type()` tells you which
 kind of value something is. Before you run the cell, look at the last
 line. Will Python show `2` or `2.0`?
 
@@ -445,7 +445,7 @@ pages load them for you. Replace the `...` with one line that starts
 with `return`. The digits cell above has the pattern, with 10 in place
 of `base`.
 
-`base=10` gives the parameter a *default value*. If a call does not say
+`base=10` gives the *parameter*{.term} a *default value*. If a call does not say
 what the base is, it is 10. So `digit_at(2026, 3)` counts in tens, and
 `digit_at(1234, 1, 60)` counts in sixties.
 
@@ -534,7 +534,7 @@ print(digit_at(seconds, 1, 60), "minutes and", digit_at(seconds, 0, 60), "second
 
 The Python on this page has no keyboard to listen to, so we edit a cell
 instead. `int()` turns the typed text into a whole number, because
-whatever someone types arrives as a string.
+whatever someone types arrives as a *string*{.term}.
 
 <details class="dl-why"><summary>Why this way?</summary>
 

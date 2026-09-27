@@ -13,12 +13,12 @@ anything. The problems get harder as they go, on purpose. If one of the
 stretch problems feels like hard work, open its hint if it has one, or
 skip it and come back.
 
-Your toolkit is loaded on this page, so `total` and `product` are ready
+Your *toolkit*{.term} is loaded on this page, so `total` and `product` are ready
 to use, and so are `digit_at`, `between` and the rest.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems. Type a few lines, and run
+Use this *cell*{.term} for any of the warm-up problems. Type a few lines, and run
 them.
 
 ```python exec
@@ -92,7 +92,7 @@ Her idea works in maths, where $=$ says two sides are equal, and no
 number is one more than itself. In Python, `=` is an instruction, not a
 claim that two sides are equal.
 It happens in two steps. First Python calculates the right-hand side,
-`count + 1`, using the value `count` has now. Then it points the name
+`count + 1`, using the value `count` has now. Then it points the *name*{.term}
 `count` at the answer. So if `count` was 4, it is now 5. The line means
 "count is now one more than it was".
 
@@ -108,7 +108,7 @@ rainfall = [148, 110, 115, 85, 80, 85, 90, 110, 120, 160, 150, 165]
 print(total(rainfall))
 ```
 
-**5. Make.** The list `rainfall` in the cell above is the rain, in mm,
+**5. Make.** The *list*{.term} `rainfall` in the cell above is the rain, in mm,
 for each month of one year at a weather station in the west of Ireland.
 (The numbers are made up, but close to real ones.) Write a loop that
 counts how many months had more than 150 mm.
@@ -124,7 +124,7 @@ print(wet_months)     # 2
 ```
 
 Two months, October (160 mm) and December (165 mm). November had
-exactly 150 mm, which is not more than 150. A count is a running total
+exactly 150 mm, which is not more than 150. A count is a *running total*{.term}
 that adds 1 each time, and only when the `if` is True. The whole year
 had 1,418 mm.
 
@@ -183,7 +183,7 @@ for size in file_sizes:
 print("The folder holds", round(folder, 2), "MB")    # 5.05
 ```
 
-`round` removes a float's tiny rounding error, so the answer shows as
+`round` removes a *float*{.term}'s tiny rounding error, so the answer shows as
 5.05.
 
 </details>
@@ -293,7 +293,7 @@ the start, only when to stop. That is the job of a `while` loop.
 
 </details>
 
-**11. Another way.** A game draws a ramp in pixels, 30 rows tall. The top
+**11. Another way.** A game draws a ramp in *pixels*{.term}, 30 rows tall. The top
 row is 20 pixels wide, the next is 21, then 22, and each row is one
 pixel wider than the row above. How many pixels is the ramp? Find the
 answer two ways: with a loop, and with the formula
@@ -464,7 +464,7 @@ the halvings one by one, and the logarithm gives the answer in one step.
 
 </details>
 
-**16. Predict.** Schlomi writes her own product function, and tests
+**16. Predict.** Schlomi writes her own product *function*{.term}, and tests
 it. What do the two `print` lines show? Explain the result, and fix the
 function.
 

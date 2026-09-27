@@ -9,13 +9,13 @@ version: 2026.09.25.2
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. Many problems here ask "which space is
-this name in?". It helps to point at each name and say its space out
-loud: this call's own, the page's, or Python's. Your toolkit is loaded
+this name in?". It helps to point at each *name*{.term} and say its space out
+loud: this call's own, the page's, or Python's. Your *toolkit*{.term} is loaded
 on this page, from every earlier page.
 
 ## Warm-up
 
-Use this cell for any warm-up problem. Paste in the code, and run it.
+Use this *cell*{.term} for any warm-up problem. Paste in the code, and run it.
 
 ```python exec
 id: what-function-practice-scratch-1
@@ -40,7 +40,7 @@ print(chill)
 The first line shows `5.0`. The second stops with
 `NameError: name 'chill' is not defined`.
 
-`chill` is a local name. It was made in the space of one call to
+`chill` is a *local name*{.term}. It was made in the space of one call to
 `feels_like`, and that space was deleted when the call ended. Only
 the value 5.0 came out, through `return`. To keep it, give it a name on
 the page: `chill = feels_like(8, 30)`.
@@ -78,7 +78,7 @@ print(brightness)
 
 It shows `6`, then `5`.
 
-There are two names called `brightness`, in two spaces. The parameter
+There are two names called `brightness`, in two spaces. The *parameter*{.term}
 `brightness` lives in the call's space. It starts by pointing at 5, and
 then `=` points it at 6. The page's `brightness` is a different name,
 and nothing points it anywhere new. To make the page's brightness go
@@ -107,9 +107,9 @@ end makes it print `2`.
 </details>
 
 **4. Make.** In a game, each enemy you stop is worth 3 points, and each
-coin you pick up is worth 1. This function reads the points for an enemy
+coin you pick up is worth 1. This *function*{.term} reads the points for an enemy
 from the page. Change it so that `points_per_enemy` is a parameter with
-a default value of 3. Then check that `game_score(10, 4)` is 34 and that
+a *default value*{.term} of 3. Then check that `game_score(10, 4)` is 34 and that
 `game_score(10, 4, points_per_enemy=2)` is 24.
 
 ```python exec
@@ -238,7 +238,7 @@ name with the same spelling, for the whole function.
 
 </details>
 
-**7. Predict.** A pixel font is drawn on a grid of pixels. What do the
+**7. Predict.** A *pixel font*{.term} is drawn on a grid of *pixels*{.term}. What do the
 two print lines show?
 
 ```python
@@ -256,9 +256,9 @@ print(pixels_needed(7))
 
 It shows `28`, then `35`.
 
-`width` is a global name, and the function reads it every time it runs,
+`width` is a *global name*{.term}, and the function reads it every time it runs,
 not once when it was written. By the second call, the page's `width`
-points at 5. That makes `width` a hidden input. The same call,
+points at 5. That makes `width` a *hidden input*{.term}. The same call,
 `pixels_needed(7)`, gave two answers. Giving the function a `width`
 parameter would put everything it needs on its `def` line.
 
@@ -301,7 +301,7 @@ each call, and it is not needed outside.
 
 </details>
 
-**9. Predict.** A small robot keeps its route as a list of moves. What
+**9. Predict.** A small robot keeps its route as a *list*{.term} of moves. What
 does the last line show?
 
 ```python
@@ -391,7 +391,7 @@ print(my_backpack)
 The error is
 `AttributeError: 'NoneType' object has no attribute 'append'`.
 
-`pick_up` is a procedure. It returns `None`. So the first
+`pick_up` is a *procedure*{.term}. It returns `None`. So the first
 `my_backpack = pick_up(...)` line makes `my_backpack` point at `None`,
 and the key is lost with the list. On the next line, `pick_up` is handed
 `None`, and `None` has no `append`.
@@ -413,7 +413,7 @@ second `pick_up`, but the line responsible was the first, as on
 </details>
 
 **12. Explain.** Rainfall is measured in millimetres. Fill in a
-trace table for this cell, with one column for the page's space
+*trace table*{.term} for this cell, with one column for the page's space
 and one for the call's space. What is `week` at the end?
 
 ```python
@@ -438,7 +438,7 @@ week = double_it(rain_mm) + rain_mm
 
 `week` is 9. The `+ rain_mm` at the end reads the page's `rain_mm`,
 which is still 3. Using the same spelling for two names in two spaces is
-allowed, but in a walkthrough the two are hard to tell apart, which is
+allowed, but in a *walkthrough*{.term} the two are hard to tell apart, which is
 one reason to choose different names.
 
 </details>
@@ -500,12 +500,12 @@ is more than a colour part can hold.
 
 `brighten` finds `factor` in the space of the call to `brightener` it
 was made in. That space stays as long as `twenty_percent` needs
-it. That makes `twenty_percent` a closure.
+it. That makes `twenty_percent` a *closure*{.term}.
 
 </details>
 
 **14. Another way.** Here are two ways to time a fall on the Moon. The
-first is `fall_time` from the tutorial, with a default for gravity. The
+first is `fall_time` from the tutorial, with a default for *gravity*{.term}. The
 second is a closure, in the shape of `converter`. Write the closure,
 `fall_timer(gravity)`, which returns a function of the height alone.
 Then check with `close_enough` that both ways agree on the Moon, where
@@ -542,7 +542,7 @@ print("The two ways agree from 0 to 200 metres.")
 The two ways keep gravity in different places. `fall_time` is handed it
 at every call. `moon_fall` was handed it once, and keeps it in the space
 it was made in. The closure is handy when one value is used many times,
-or when a tool like `compose` needs a function of one input.
+or when a tool like `compose` needs a function of one *input*{.term}.
 
 </details>
 
@@ -568,14 +568,14 @@ is why every toolkit function takes everything it needs as a parameter.
 **16. Make.** Your toolkit's `simulate(trial, times)`, from
 [How likely is it?](tutorial:how-likely-is-it), runs `trial()` again
 and again and returns the fraction of runs where it gave `True`. A
-trial has no parameters. So how can one tool simulate a day with a 30%
+*trial*{.term} has no parameters. So how can one tool simulate a day with a 30%
 chance of rain, and another with a 70% chance? Write
 `chance_of(probability)`, which returns a trial that is True with
-that probability. Then simulate 10,000 days at 30% and at 70%.
+that *probability*{.term}. Then simulate 10,000 days at 30% and at 70%.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. `random.random()` gives a random float from 0 up to 1, so
+1. `random.random()` gives a random *float*{.term} from 0 up to 1, so
    `random.random() < 0.3` is True about 30% of the time.
 2. Make the trial inside `chance_of`, with no parameters. It can still
    see `probability`.

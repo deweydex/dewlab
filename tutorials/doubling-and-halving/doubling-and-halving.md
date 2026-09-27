@@ -41,18 +41,18 @@ On this page we:
 - see why doublings add, and use $2^{10} \approx 1000$ to estimate
 - find how long computer chips, and a country's emissions, took to
   double
-- count halvings down to 1, and add `halvings` to the toolkit
-- see why binary search is so quick: $2^k = n$ and $k = \log_2 n$, from
+- count halvings down to 1, and add `halvings` to the *toolkit*{.term}
+- see why *binary search*{.term} is so quick: $2^k = n$ and $k = \log_2 n$, from
   both ends
 
 > **The space we're in.** We work with whole numbers that double, and
 > whole numbers that are halved with `//`, which drops any remainder.
-> Python's whole numbers have no size limit, however big they get. We met powers and
+> Python's whole numbers have no size limit, however big they get. We met *powers*{.term} and
 > logarithms on
 > [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
 > and binary search on
 > [Finding things fast](tutorial:finding-things-fast). We usually do not
-> say it, but a rule like "everyone tells one more person" is a model.
+> say it, but a rule like "everyone tells one more person" is a *model*{.term}.
 > It is true of the maths. It is only roughly true of people, and only
 > for a while.
 
@@ -98,7 +98,7 @@ has told someone new, so four people know. Every hour, the number who
 know doubles.
 
 The population of Ireland at the 2022 census was 5,149,139. Before you
-run the cell, guess how many hours the rumour needs to reach that many
+run the *cell*{.term}, guess how many hours the rumour needs to reach that many
 people. A day? A week? A month?
 
 ```python exec
@@ -162,7 +162,7 @@ rumour runs out of people.
 </aside>
 
 Growth like this, where a number is multiplied by the same amount each
-step, is called *exponential growth*. The name comes from the exponent:
+step, is called *exponential growth*. The name comes from the *exponent*{.term}:
 after $k$ hours, $2^k$ people know. So the question "how many hours?"
 asks for the $k$ that makes $2^k$ reach 5,149,139. That is a logarithm,
 as on
@@ -207,7 +207,7 @@ at such a small reward.
 
 You met this kind of doubling on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times),
-where each new segment of a display doubled the number of patterns. Now
+where each new *segment*{.term} of a display doubled the number of patterns. Now
 let's fill the whole board. Square $k$ has $2^{k-1}$ grains. The power
 is one less than the square's number, because the first square has had
 no doublings yet. Multiplying no 2s at all leaves 1, as a running
@@ -215,7 +215,7 @@ product started at 1 on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding).
 So $2^0 = 1$.
 
-The cell builds a list of the grains on each square, then adds it up
+The cell builds a *list*{.term} of the grains on each square, then adds it up
 with your toolkit's `total`. Guess the number of digits in the answer
 before you run it.
 
@@ -235,7 +235,7 @@ whole board holds 18,446,744,073,709,551,615. If a grain of rice weighs
 about 0.02 grams, that is about 369 billion tonnes of rice: hundreds of
 times what the whole world grows in a year.
 
-Look at the running total for the first few squares: 1, then 3, then 7,
+Look at the *running total*{.term} for the first few squares: 1, then 3, then 7,
 then 15, then 31. Each is one less than a power of 2. Can you say why
 before you run the check?
 
@@ -255,7 +255,7 @@ $$\sum_{k=1}^{64} 2^{k-1} = 2^{64} - 1$$
 
 That number may look familiar. On
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#how-many-bits-is-enough),
-each extra bit doubled the number of values a byte could hold. A number
+each extra *bit*{.term} doubled the number of values a *byte*{.term} could hold. A number
 kept in 64 bits can be anything from 0 to $2^{64} - 1$. The king's debt
 fits in 64 bits exactly, with no room to spare.
 
@@ -273,7 +273,7 @@ It is fifteen. In powers, that says:
 
 $$2^{10} \times 2^{5} = 2^{15}$$
 
-In words: to multiply two powers of the same base, add the exponents.
+In words: to multiply two powers of the same *base*{.term}, add the exponents.
 This is a *law of powers*: $2^a \times 2^b = 2^{a+b}$. Let's check it,
 and try one other thing. What do you notice about `2 ** 10`?
 
@@ -334,7 +334,7 @@ The bouncing ball on
 shrank by the same factor at every bounce. Computer chips have grown
 the other way. A chip does its work with *transistors*: tiny switches,
 each on or off, like the segments of a display. Here are seven chips,
-from the first one-chip processor in 1971 to a laptop chip of 2020,
+from the first one-chip *processor*{.term} in 1971 to a laptop chip of 2020,
 with how many transistors each holds.
 
 For each chip, how many doublings is it from the first? Guess the last
@@ -498,7 +498,7 @@ def halvings(n):
 ```
 
 Run the toolkit cell. How does your `halvings` compare with one way to
-write it? The table below runs the same calls on your function and on a
+write it? The table below runs the same calls on your *function*{.term} and on a
 solution, side by side. Until `halvings` is written, your column shows
 `None`, because `...` returns `None`. The last two rows put
 `halvings(10000)` beside $\log_2 10000$, rounded down.
@@ -562,7 +562,7 @@ $2^{23}$.
 
 There is one more way to see `halvings`. On
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#from-a-number-to-its-bits),
-the recipe for binary halved a number again and again. Each `// 2`
+the recipe for *binary*{.term} halved a number again and again. Each `// 2`
 drops the last binary digit of a number, so the halvings of $n$ are one
 fewer than its number of binary digits. What do you expect `to_binary(1000)` to look
 like, and how long?
@@ -590,7 +590,7 @@ left. So the most looks a search can need is the number of halvings that
 take $n$ values down to 1, plus one last look at the value that is left:
 `halvings(n) + 1`.
 
-Is that promise true for every target, not only the one past the end?
+Is that promise true for every *target*{.term}, not only the one past the end?
 Here is `binary_looks` from that page again. It returns how many
 items a binary search looked at. The cell tries every target in lists
 of 10 up to 10,000 numbers, and keeps the largest count. It uses your
@@ -624,7 +624,7 @@ for size in [10, 100, 1000, 10000]:
 ```
 
 The last two columns agree. A list of 10,000 values never needs more than 14
-looks. A linear search could need all 10,000.
+looks. A *linear search*{.term} could need all 10,000.
 
 Now put the two ends side by side. The rumour needed 23 doublings to
 reach five million people. A phone book of five million names needs at
@@ -640,7 +640,7 @@ number, found from opposite ends:
 | where we met it | the rumour, the chessboard | tennis, binary search |
 
 Doubling makes numbers huge fast. Halving makes them small equally fast.
-That is why the logarithmic growth of binary search is so slow. Ten
+That is why the *logarithmic growth*{.term} of binary search is so slow. Ten
 times as many names adds only 3 or 4 looks, because
 $\log_2 10 \approx 3.3$. A million times as many adds about 20.
 

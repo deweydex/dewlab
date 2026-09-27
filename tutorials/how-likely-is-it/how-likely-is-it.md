@@ -38,9 +38,9 @@ ways, and we will see why the two ways agree only nearly.
 On this page we:
 
 - put chances on a scale from 0 to 1
-- find a chance by counting outcomes that are equally likely
-- let Python toss coins and roll dice, with the `random` module
-- add `simulate` to the toolkit, a tool that runs a chance experiment
+- find a chance by counting *outcomes*{.term} that are equally likely
+- let Python toss coins and roll dice, with the `random` *module*{.term}
+- add `simulate` to the *toolkit*{.term}, a tool that runs a chance *experiment*{.term}
   many times, and counts
 - use it on rain falling on a grid, and watch the grid fill
 - see why a simulation and the exact answer differ a little, and how
@@ -133,7 +133,7 @@ You roll an ordinary die once. Which of these has probability 0?
 
 On [Counting every outfit](tutorial:counting-every-outfit#outcomes-of-an-experiment)
 we met an experiment, like rolling a die, and its outcomes, like
-rolling a 4. The sample space was the list of every outcome. We need one
+rolling a 4. The *sample space*{.term} was the list of every outcome. We need one
 more word. An *event* is a group of outcomes we care about. For example,
 "rolling an even number" is the event made of the outcomes 2, 4 and 6.
 
@@ -162,7 +162,7 @@ print(sevens, "of", len(outcomes))
 print(sevens / len(outcomes))
 ```
 
-The line `for red, blue in outcomes:` splits each pair as the
+The line `for red, blue in outcomes:` splits each *pair*{.term} as the
 loop goes round. `red` points at the pair's first value, and `blue` at
 its second.
 
@@ -178,7 +178,7 @@ are equally likely, so we count pairs.
 
 ### Your turn
 
-1. Change the cell so that it counts the outcomes where the two dice
+1. Change the *cell*{.term} so that it counts the outcomes where the two dice
    show the same number: a double. Guess the answer first.
 2. Change it again to count sums of 10 or more.
 3. Write each answer as a fraction, a decimal and a percentage.
@@ -195,7 +195,7 @@ Python keeps its random tools in a module called `random`. A module, as
 said, is a collection of extra tools that Python loads only
 when we `import` it. Three of its tools are enough for this page:
 
-- `random.choice(values)` picks one value from a list, each equally
+- `random.choice(values)` picks one value from a *list*{.term}, each equally
   likely.
 - `random.randint(1, 6)` picks a whole number from 1 to 6, with both
   ends included, the way a die does.
@@ -245,7 +245,7 @@ a little every time.
 We will want to run many different experiments many times. So let's
 make one tool that does it for any experiment.
 
-The experiment itself becomes a function with no inputs, which we call
+The experiment itself becomes a *function*{.term} with no *inputs*{.term}, which we call
 a *trial*. It returns True when the event happens, and False when it
 does not. Here are two:
 
@@ -265,7 +265,7 @@ print(heads(), roll_six())
 ```
 
 On [True, false and every case](tutorial:true-false-and-every-case) we
-passed a rule to `truth_table` without brackets after its name. We do
+passed a rule to `truth_table` without brackets after its *name*{.term}. We do
 the same here. `simulate(heads, 1000)` passes the trial `heads`
 itself, so that `simulate` can call it 1,000 times.
 
@@ -287,7 +287,7 @@ def never():
 
 A *simulation* is a program that acts out an experiment many times, to
 see what usually happens. Here is the promise of `simulate`, as a
-docstring. Write its body. It needs a loop that calls `trial()` `times`
+*docstring*{.term}. Write its body. It needs a loop that calls `trial()` `times`
 times, counts the True results, and returns the fraction.
 
 ```python exec
@@ -368,7 +368,7 @@ the solution under the table, copy it into the stub, and run it.
 A trial does not have to be a coin. Here is one from the weather. A
 shower starts over a patio of 100 square paving stones, 10 by 10. In
 the first second, each square gets a raindrop with chance 0.3, whatever
-happens to the others. That is a model. Real drops are smaller than a
+happens to the others. That is a *model*{.term}. Real drops are smaller than a
 paving stone, and many land at once. But the model keeps the part we
 care about.
 

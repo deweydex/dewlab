@@ -48,13 +48,13 @@ On this page we:
 
 - trap $\sqrt{2}$ between two guesses, using a sign change
 - halve the gap between the guesses again and again, which is binary
-  search on a number line, and add `bisect_root` to the toolkit
+  search on a number line, and add `bisect_root` to the *toolkit*{.term}
 - follow a tangent down to zero, which is Newton's method, and add
   `newton` to the toolkit
 - race the two methods, and count their steps
 - watch Newton's method fail on a flat tangent, and ask why
 
-> **The space we're in.** Real numbers, kept as floats, and rules
+> **The space we're in.** *Real numbers*{.term}, kept as *floats*{.term}, and rules
 > whose graphs have no gaps. We cannot solve $x^2 = 2$ by writing down
 > the answer, because its digits never end, as
 > [How a computer stores a number](tutorial:how-a-computer-stores-a-number#the-square-root-of-2)
@@ -99,11 +99,11 @@ What is the slope of $y = x^2 - 2$ at $x = 3$?
 ## Squeezing a root between two guesses
 
 To find $\sqrt{2}$, we look for the number whose square is 2. Said
-another way, we look for a root of the rule $x^2 - 2$. A root is an $x$
+another way, we look for a *root*{.term} of the rule $x^2 - 2$. A root is an $x$
 where the rule gives 0, as on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule).
 
-Let's try a few guesses. Before you run the cell, which two whole
+Let's try a few guesses. Before you run the *cell*{.term}, which two whole
 numbers do you think $\sqrt{2}$ sits between?
 
 ```python exec
@@ -123,7 +123,7 @@ graph has no gaps, so to get from below zero to above zero it must
 cross zero somewhere between 1 and 2. That crossing is $\sqrt{2}$.
 
 This is the idea of the whole page. A *sign change* is a pair of
-inputs where a rule gives a negative value at one and a positive value
+*inputs*{.term} where a rule gives a negative value at one and a positive value
 at the other. If a rule has a sign change and its graph has no gap,
 there is a root between the two inputs. The guesses 1.4 and 1.5 also
 give a sign change, so the root is between them too. Each new pair of
@@ -133,8 +133,8 @@ guesses squeezes it into a smaller space.
 
 How should we choose the next guess? On
 [Finding things fast](tutorial:finding-things-fast#binary-search-halve-what-is-left),
-binary search looked at the middle of a sorted list, and ignored the
-half where the target could not be. We can do the same on a number
+*binary search*{.term} looked at the middle of a sorted *list*{.term}, and ignored the
+half where the *target*{.term} could not be. We can do the same on a number
 line.
 
 Start with `low` at 1 and `high` at 2. Look at the middle. If the sign
@@ -171,7 +171,7 @@ and 1.41796875, so its first two decimal places are 1.41.
 
 <img src="bisection-squeeze.svg" alt="A number line from 1 to 2, and under it seven rows: one for the start and one for each of the first six steps of bisection. Each row shades the part from low to high. The start covers 1 to 2, a gap of 1. Each step halves the gap: 0.5, 0.25, 0.125, 0.0625, 0.03125 and 0.015625. A dashed line through every row marks the square root of 2, about 1.41421, and it is inside the shaded part on every row.">
 
-Bisection is divide and conquer, as the guessing game was. Each step
+Bisection is *divide and conquer*{.term}, as the guessing game was. Each step
 turns the problem into the same problem, half the size.
 
 How many steps until the gap is below a billionth, $10^{-9}$? The gap
@@ -191,7 +191,7 @@ print(halvings(10 ** 9) + 1)
 ```
 
 It takes thirty steps. $10^9$ is $1000^3$, and each thousand is about 10
-halvings. Every step gives us about one more correct binary digit.
+halvings. Every step gives us about one more correct *binary*{.term} digit.
 
 ### Your turn
 
@@ -283,7 +283,7 @@ had one?
 ```
 
 How does your `bisect_root` compare with one way to write it? The table
-below runs the same calls on your function and on a solution, side by
+below runs the same calls on your *function*{.term} and on a solution, side by
 side. It tries `square_gap` and the two rules from the start of this
 section. Some rows are not calls to `bisect_root`. They
 give the same root another way, so you can compare. While the body is
@@ -352,8 +352,8 @@ shape. Can a guess use more?
 
 On
 [How fast, right now?](tutorial:how-fast-right-now#the-tangent-line),
-the tangent line was the straight line that touches a curve at one
-point, with the curve's slope there. Close to that point, the curve and its tangent are
+the *tangent line*{.term} was the straight line that touches a curve at one
+point, with the curve's *slope*{.term} there. Close to that point, the curve and its tangent are
 nearly the same. And a straight line is a rule we can solve.
 
 So here is a plan. Start with a guess. Draw the tangent at the guess.
@@ -381,7 +381,7 @@ next guess is 1.5, much closer to 1.414 than 1 was.
 Where does the formula come from? The tangent starts at height
 $f(g)$ above the guess $g$, and drops by $f'(g)$ for every step
 across. To drop the whole height, it must go $\frac{f(g)}{f'(g)}$
-across, as rise over run on
+across, as *rise*{.term} over run on
 [Straight lines](tutorial:straight-lines#how-steep-is-a-ramp) said. In
 words: from the guess, go back by the height divided by the slope.
 
@@ -411,7 +411,7 @@ For $x^2 - 2$, the slope is $2x$, as
 [Rules for change](tutorial:rules-for-change#a-pattern-in-the-slopes-the-power-rule)
 showed, and the step becomes "the average of $g$ and $\frac{2}{g}$".
 That form is nearly 2,000 years old. Heron of Alexandria described it
-as a way to find square roots.
+as a way to find *square roots*{.term}.
 
 <aside class="dl-note" id="solving-by-note-raphson">
 
@@ -536,7 +536,7 @@ print(newton(square_gap, 0))
 ```
 
 The last line reads `ZeroDivisionError: float division by zero`. At 0
-the parabola is at its lowest point, its vertex, as on
+the *parabola*{.term} is at its lowest point, its *vertex*{.term}, as on
 [The top of the curve](tutorial:the-top-of-the-curve#a-curve-that-turns).
 The tangent there is flat, with slope 0. A flat line never meets zero,
 so "follow the tangent down" has nowhere to go.

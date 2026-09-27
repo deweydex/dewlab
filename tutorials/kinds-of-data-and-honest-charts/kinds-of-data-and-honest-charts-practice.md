@@ -15,14 +15,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page: `frequency_table` from the
+Your *toolkit*{.term} is loaded on this page: `frequency_table` from the
 tutorial, and `largest`, `smallest`, `count_if`, `total`, `simulate` and
 the rest from earlier pages. Every dataset on this page is made up,
 except the life expectancy file.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: kinds-practice-warm-up
@@ -33,7 +33,7 @@ print(frequency_table(chords))
 ```
 
 **1. Predict.** A guitar song uses the chords in `chords` above, in
-that order. What will `frequency_table(chords)` print? Say the keys in
+that order. What will `frequency_table(chords)` print? Say the *keys*{.term} in
 the order they will appear, then run the cell.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -44,8 +44,8 @@ the number of chords in the song.
 
 </details>
 
-**2. Explain.** What kind of data is each of these: nominal, ordinal,
-discrete or continuous?
+**2. Explain.** What kind of *data*{.term} is each of these: nominal, *ordinal*{.term},
+discrete or *continuous*{.term}?
 
 1. the county you were born in
 2. a film's rating, from one star to five stars
@@ -71,7 +71,7 @@ discrete or continuous?
 </details>
 
 **3. Make.** In a survey of 40 people, 10 walk to work. How big an
-angle does "walk" get in a pie chart? Calculate it in Python, with names
+angle does "walk" get in a pie chart? Calculate it in Python, with *names*{.term}
 for the numbers.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -87,7 +87,7 @@ of the circle: a right angle.
 
 </details>
 
-**4. Predict.** In a stem-and-leaf plot with the tens as stems, what are
+**4. Predict.** In a *stem-and-leaf plot*{.term} with the tens as stems, what are
 the stem and the leaf of 47? Say them, then check with
 `print(47 // 10, 47 % 10)`.
 
@@ -102,7 +102,7 @@ over.
 ## Core
 
 **5. Make.** Roll a fair die 60 times with `random.randint(1, 6)`, keep
-the rolls in a list, and draw a bar chart of their frequency table. Put
+the rolls in a *list*{.term}, and draw a bar chart of their *frequency table*{.term}. Put
 the faces in order, 1 to 6, along the bottom. About how tall do you
 expect each bar to be?
 
@@ -436,7 +436,7 @@ a good check.
 ## Stretch
 
 **13. Make.** The stem-and-leaf loop on the tutorial page went from
-stem 1 to stem 4, because we looked at the data first. Write a function
+stem 1 to stem 4, because we looked at the data first. Write a *function*{.term}
 `stem_and_leaf(values)` that prints the plot for any list of whole
 numbers from 0 to 99, finding the first and last stems for itself.
 Test it on the journey times and on the June temperatures.
@@ -494,9 +494,9 @@ in a histogram.
 
 </details>
 
-**14. Another way.** The mode is the most common value. Find the mode of
+**14. Another way.** The *mode*{.term} is the most common value. Find the mode of
 `journeys` from its frequency table, with a loop that keeps the key
-with the biggest frequency so far. Then check your answer with `mode`
+with the biggest *frequency*{.term} so far. Then check your answer with `mode`
 from [What is typical?](tutorial:what-is-typical).
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -529,7 +529,7 @@ print(mode(journeys))
 
 Both give `bus`, with 7. The loop is `largest` again, with one change.
 It compares the frequencies, but it keeps the key. A `for` loop over a
-dictionary uses its keys, the same as `.keys()`.
+*dictionary*{.term} uses its keys, the same as `.keys()`.
 
 </details>
 

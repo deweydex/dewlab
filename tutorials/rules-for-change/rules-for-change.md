@@ -24,7 +24,7 @@ covers:
 
 # Rules for change: the sum, product, quotient and chain rules
 
-Your toolkit's `derivative_at` can find the slope of any curve, at any
+Your *toolkit*{.term}'s `derivative_at` can find the *slope*{.term} of any curve, at any
 point. Ask it about $x^2$ at 3, and it says about 6. At 5, it says about
 10. Each answer is one number, not quite exact, and it comes with no
 reason, like a machine that never explains itself. Is there a
@@ -42,12 +42,12 @@ On this page we:
 - come back to the bottom of the letter's curve from Unit 7, and find
   it a second way
 
-> **The space we're in.** Rules made from powers of $x$, added,
-> multiplied, divided and put inside each other, over the real numbers.
+> **The space we're in.** Rules made from *powers*{.term} of $x$, added,
+> multiplied, divided and put inside each other, over the *real numbers*{.term}.
 > Every rule on this page is checked against `derivative_at` from
 > [How fast, right now?](tutorial:how-fast-right-now), which is an
 > estimate. So "agrees" means "agrees to within $10^{-6}$", the
-> tolerance its own tests used, with `close_enough` from
+> *tolerance*{.term} its own tests used, with `close_enough` from
 > [Does it work?](tutorial:does-it-work#close-enough). A rule for
 > slopes is a promise about every $x$. A check at 40 points does not
 > prove it, but it does catch almost every rule that does not hold.
@@ -86,7 +86,7 @@ What does `derivative_at(rule, 2)` work out?
 
 ## A pattern in the slopes: the power rule
 
-Let's start with a table. The cell asks `derivative_at` for the slopes
+Let's start with a table. The *cell*{.term} asks `derivative_at` for the slopes
 of $x^2$, $x^3$ and $x^4$ at the whole numbers from 1 to 5, and rounds
 them to 4 places. Before you run it, guess the slope of $x^2$ at 4.
 
@@ -142,7 +142,7 @@ tall is 5 times as steep. And a number on its own, such as 7, has
 slope 0, because its graph is a flat line.
 
 Five rows are a pattern, not a check. This helper checks a slope rule
-against `derivative_at` at every point in a list.
+against `derivative_at` at every point in a *list*{.term}.
 
 ```python exec
 id: rules-for-power-2
@@ -170,7 +170,7 @@ print(slopes_agree(fourth_power, power_rule_for_fourth, points))
 ```
 
 The helper checks sixty-one points, and the power rule agrees with the
-chord at every one.
+*chord*{.term} at every one.
 
 Does it work for powers that are not whole numbers? $\sqrt{x}$ is
 $x^{1/2}$, and $\frac{1}{x}$ is $x^{-1}$, a negative power, as on
@@ -210,7 +210,7 @@ gets.
 A car's stopping distance has two parts. While the driver sees the
 danger and moves a foot to the brake, the car keeps going. This
 is the thinking distance. Then the brakes slow it. This is the braking
-distance. Here is a model in metres, at $v$ km/h, with the shape of
+distance. Here is a *model*{.term} in metres, at $v$ km/h, with the shape of
 the Road Safety Authority's chart and rounded, invented numbers.
 
 $$\text{stopping}(v) = 0.2v + 0.006v^2$$
@@ -244,9 +244,9 @@ At 50 km/h, each extra km/h adds 0.8 m. At 100 km/h, it adds 1.4 m.
 The faster you go, the more each extra km/h costs, because the braking
 part grows with the square of the speed.
 
-A polynomial is a sum of powers, and on
+A *polynomial*{.term} is a sum of powers, and on
 [Rules with letters in them](tutorial:rules-with-letters-in-them#terms-coefficients-and-a-list)
-a polynomial was a list of coefficients, lowest power first. So the
+a polynomial was a list of *coefficients*{.term}, lowest power first. So the
 power rule and the sum rule together are a loop over that list. The
 coefficient of $x^k$ is multiplied by $k$, and moves down one place.
 What list do you expect for $5 + 3x - 2x^2 + x^3$?
@@ -284,7 +284,7 @@ points.
 
 A phone app turns a video window from tall to wide. Every tenth of a
 second, the window gets 0.5 cm wider and 0.4 cm shorter. After $t$
-tenths it is $4 + 0.5t$ cm wide and $8 - 0.4t$ cm high, and its area
+tenths it is $4 + 0.5t$ cm wide and $8 - 0.4t$ cm high, and its *area*{.term}
 is the width times the height. Is the window growing or shrinking, and
 how fast?
 
@@ -394,7 +394,7 @@ $\frac{x}{x^2 + 1}$.
 
 ## A rule inside a rule: the chain rule
 
-A stone drops into a still pond. The ripple's radius grows by 0.5
+A stone drops into a still pond. The ripple's *radius*{.term} grows by 0.5
 metres every second. After $t$ seconds, the radius is $0.5t$, and the
 area inside the ripple is $\pi r^2$, which is `circle_area` from
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins#tools-for-flat-shapes).
@@ -442,7 +442,7 @@ agrees at every second.
 
 Multiplying slopes works here. For a product,
 two rules sit side by side, and multiplying their slopes fails. For a
-rule inside a rule, one rule's output is the other's input, and the
+rule inside a rule, one rule's *output*{.term} is the other's *input*{.term}, and the
 slopes multiply.
 
 One more check, with no story: $(2x + 1)^3$. The outside rule is "cube
@@ -482,8 +482,8 @@ id: rules-for-chain-your-turn
 
 On [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
 the bottom of a letter's bowl had the height $400t^2 - 440t + 112$
-font units, lowest at $t = 0.55$. That page found it by completing the
-square, and promised that Unit 9 would come back to this curve with
+*font units*{.term}, lowest at $t = 0.55$. That page found it by *completing the square*{.term},
+and promised that Unit 9 would come back to this curve with
 the idea of a slope at a point.
 
 At the bottom of a curve, the curve is neither going up nor going
@@ -494,7 +494,7 @@ so the slope there is 0. The tests on
 checked this for the kicked ball, at a top we already knew from its
 graph. Now we go the other way. We set the slope to 0, and find the
 bottom with no graph at all. By the power rule and the sum rule, the slope of
-the bowl is $800t - 440$. Where is that 0? That is a linear equation,
+the bowl is $800t - 440$. Where is that 0? That is a *linear equation*{.term},
 and your toolkit's `solve_linear` from
 [Solving for x](tutorial:solving-for-x#a-tool-for-any-straight-line-equation)
 solves it. Predict the answer.
@@ -513,19 +513,19 @@ print(vertex(400, -440, 112))
 The slope is $-440 + 800t$, it is 0 at $t = 0.55$, and the height there
 is $-9$. It is the same answer as `vertex` gives, found by a new route.
 
-This works for every quadratic, with no graph and no completing the
+This works for every *quadratic*{.term}, with no graph and no completing the
 square. The slope of $ax^2 + bx + c$ is $2ax + b$, and that is 0 when
 $x = -\frac{b}{2a}$. That is the formula from Unit 7, found again. The
 difference comes next. Completing the square only works on a
 quadratic. A slope of 0 finds the tops and bottoms of any curve whose
 slope we can find, and the four rules on this page can find a great
-many, such as the cubic curves many fonts draw with.
+many, such as the *cubic*{.term} curves many fonts draw with.
 
 ### Your turn
 
 A box with no lid is made from a square of card 30 cm across, by
 cutting a square of side $x$ from each corner and folding up the sides.
-Its volume is $x(30 - 2x)^2$.
+Its *volume*{.term} is $x(30 - 2x)^2$.
 
 1. Use the product rule and the chain rule to find the slope of the
    volume.
@@ -544,7 +544,7 @@ This page found the power rule in a table, and checked every rule
 against `derivative_at` at many points. It did not prove any of them.
 
 Most calculus courses prove each rule from the definition of the
-derivative, using limits and algebra. A proof makes a rule
+derivative, using limits and algebra. A *proof*{.term} makes a rule
 certain, rather than very likely. A proof also shows why the corner of the
 rectangle disappears, which this page said only in words.
 
@@ -580,7 +580,7 @@ certainty. For proofs from limits, see the page linked at the end.
 
 The practice page is next. Then
 [Solving by computing](tutorial:solving-by-computing) uses slopes to
-find roots that no formula gives.
+find *roots*{.term} that no formula gives.
 
 ## Where to read more
 

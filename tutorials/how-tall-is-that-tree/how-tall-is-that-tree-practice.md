@@ -14,11 +14,11 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page, including `angle_between` from the
+Your *toolkit*{.term} is loaded on this page, including `angle_between` from the
 tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not loaded, so each cell starts with `import math`.
+not loaded, so each *cell*{.term} starts with `import math`.
 
 ## Warm-up
 
@@ -40,10 +40,10 @@ print(round(math.degrees(math.atan(1)), 1), round(math.sin(math.radians(30)), 2)
 
 `45.0 0.5`.
 
-A tangent of 1 means the opposite and adjacent sides are the same
+A tangent of 1 means the opposite and *adjacent sides*{.term} are the same
 length, so the triangle is half of a square, and its angle is 45°. The
-sine of 30° is 0.5. In a right-angled triangle with a 30° angle, the
-side opposite it is half the hypotenuse.
+sine of 30° is 0.5. In a *right-angled triangle*{.term} with a 30° angle, the
+side opposite it is half the *hypotenuse*{.term}.
 
 </details>
 
@@ -72,8 +72,8 @@ What angle does such a ladder make with the ground?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. From the angle at the foot of the ladder, the wall is the opposite
-   side and the ground is the adjacent side.
+1. From the angle at the foot of the ladder, the wall is the *opposite
+   side*{.term} and the ground is the adjacent side.
 2. Which of SOH, CAH and TOA uses opposite and adjacent?
 3. Go backwards from the ratio to the angle, and turn radians into
    degrees.
@@ -95,9 +95,9 @@ ladder at 4 up for 1 out has the same shape, and the same angle.
 </details>
 
 **4. Explain.** A ramp rises from the path to a door. From the angle at
-the bottom of the ramp, the rise is the opposite side. From the angle at
+the bottom of the ramp, the *rise*{.term} is the opposite side. From the angle at
 the top, between the ramp and the door's wall, which side is opposite?
-Why can one side have two names?
+Why can one side have two *names*{.term}?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -105,7 +105,7 @@ From the top, the opposite side is the flat run along the ground, and the
 rise is now the adjacent side. The names opposite and adjacent are not
 fixed to the sides. They say where a side is from the angle we are
 looking at. Only the hypotenuse keeps its name, because it is always
-across from the right angle.
+across from the *right angle*{.term}.
 
 </details>
 
@@ -139,7 +139,7 @@ $\text{opposite} = \text{hypotenuse} \times \sin 40^\circ$. Then add the
 </details>
 
 **6. Make.** Orienteering maps have a grid with east as x and north as
-y. Write `compass_bearing(start, end)`, which returns the bearing from
+y. Write `compass_bearing(start, end)`, which returns the *bearing*{.term} from
 one point to another, from 0 up to 360 degrees. Test it with four points
 due north, east, south and west of $(0, 0)$.
 
@@ -275,7 +275,7 @@ $d\tan 40^\circ$, and it is also $(d + 15)\tan 28^\circ$.
    $d\tan 40^\circ = (d + 15)\tan 28^\circ$.
 2. Move everything to one side:
    $d(\tan 40^\circ - \tan 28^\circ) - 15\tan 28^\circ = 0$.
-3. That is $ad + b = 0$, a linear equation. Your toolkit's
+3. That is $ad + b = 0$, a *linear equation*{.term}. Your toolkit's
    `solve_linear(a, b)` from
    [Solving for x](tutorial:solving-for-x) solves it.
 
@@ -331,19 +331,19 @@ give only one of them?
 <details class="dl-answer"><summary>answer</summary>
 
 On the circle, the points at 30° and at 150° are at the same height,
-one on each side of the y-axis, so they have the same sine. When the
+one on each side of the *y-axis*{.term}, so they have the same sine. When the
 sine rule gives you a sine and you go back to an angle, both 30° and
 150° fit. If the other angles still leave room, there are two triangles.
 
-`math.asin` is a function, and a function gives one answer for each
-input. So it always picks the angle from −90° to 90°. The other answer,
+`math.asin` is a *function*{.term}, and a function gives one answer for each
+*input*{.term}. So it always picks the angle from −90° to 90°. The other answer,
 $180^\circ$ minus that, is yours to check. To test it, add up the
 angles, and see if both choices stay under 180°.
 
 </details>
 
 **13. Make.** Light from the sky meets a glass window at 30° from the
-normal. The glass has a refractive index of about 1.5, and air about
+normal. The glass has a *refractive index*{.term} of about 1.5, and air about
 1.00. At what angle does the light travel inside the glass? It leaves
 through the other side of the pane, which is parallel to the first.
 Before you calculate it, at what angle does it come out into the room?
@@ -462,7 +462,7 @@ is the player, so `player` goes in the middle of `angle_between`.
 
 **16. Another way.** The three phone masts from the tutorial stand at
 $(0, 0)$, $(3.0, 0)$ and `point_on_circle(2.5, 70)`, in kilometres.
-Find the area of their triangle two ways from the corners alone: with
+Find the *area*{.term} of their triangle two ways from the corners alone: with
 `angle_between`, `distance` and $\frac{1}{2}ab\sin C$, and with
 `triangle_area(base, height)`, where the height is the top corner's y.
 Do both give about 3.52 square kilometres?
@@ -481,7 +481,7 @@ print(round(0.5 * side_a * side_b * math.sin(math.radians(angle_c)), 2))
 print(round(triangle_area(3.0, third_mast[1]), 2))
 ```
 
-Both print 3.52. The base lies along the x-axis, so the height is the
+Both print 3.52. The base lies along the *x-axis*{.term}, so the height is the
 top corner's y. The first route never needed the height at all.
 
 </details>
@@ -513,9 +513,9 @@ to choose from that.
 
 </details>
 
-**18. Make.** An optical fibre has a core of glass with a refractive
+**18. Make.** An *optical fibre*{.term} has a core of glass with a refractive
 index of about 1.47, inside a layer of glass, the cladding, of about
-1.46. (These are typical values, rounded.) Find the critical angle
+1.46. (These are typical values, rounded.) Find the *critical angle*{.term}
 where the core meets the cladding. Next, suppose light travels down the fibre
 at 5° to its middle line, and meets the side. The side runs along the
 middle line, so the normal is at a right angle to it. Does the light
