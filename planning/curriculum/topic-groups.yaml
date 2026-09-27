@@ -388,6 +388,7 @@ groups:
       - what-a-language-model-does-differently
       - limits-and-judgement
       - two-bots-and-a-test
+      - mixed-machine-learning
 
   - key: chance-and-simulation
     name: Chance and simulation

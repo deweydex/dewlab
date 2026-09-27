@@ -5404,7 +5404,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.274 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
+**7.275 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
 
 **The course.** `courses/machine-learning.yaml`, listed in `courses/index.yaml` straight after Computational Methods. The shared pages (the three text-generation pages and the perceptron) come first in Computational Methods' file, so that stays their default course and their address; they are the same files in both courses, so the two cannot drift apart. The card says who the course is for, what you make, and the worlds. The description names the Python it needs, from Computational Methods' first series, since it has no Python series of its own.
 
