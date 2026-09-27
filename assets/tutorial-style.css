@@ -4831,6 +4831,8 @@ em.term, .term em { font-style: normal; }
   margin: 0.4rem 0;
 }
 .dl-words-search { flex: 1 1 10rem; }
+.dl-words-controls .dl-seg { flex: 0 0 auto; }
+.dl-words-controls .dl-seg button { white-space: nowrap; }
 .dl-words-list { list-style: none; margin: 0; padding: 0; }
 .dl-word-group { margin: 0.6rem 0 0; }
 .dl-word-page { margin: 0 0 0.25rem; font-weight: 600; font-size: 0.85rem; }

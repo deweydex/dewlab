@@ -207,11 +207,14 @@ export function initMyWords({ body, manifest, openPanel }) {
       return;
     }
     const found = glossary.length ? entryFor(word, glossary) : null;
+    // A table cell or a list item can hold only the word, and a sentence
+    // that says the word again adds nothing.
+    const context = sentence && !sameWord(tidyWord(sentence), word) ? sentence : "";
     openForm({
       id: "",
       word,
       meaning: "",
-      sentence: sentence || "",
+      sentence: context,
       page: page.slug,
       title: page.title,
       path: page.path,
