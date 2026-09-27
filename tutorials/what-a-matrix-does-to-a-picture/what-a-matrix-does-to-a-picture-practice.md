@@ -302,8 +302,9 @@ new point. Why not change the point where it is, as `point[0] = ...`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-A point is a tuple, and a tuple cannot be changed, so Python would raise
-a `TypeError`. Returning a new point is also safer. It leaves the
+Each point is a tuple. A tuple is a group of values in round brackets,
+like `(3, 1)`, and it cannot be changed after it is made. So Python would
+raise a `TypeError`. Returning a new point is also safer. It leaves the
 original F alone, so the playground can draw the before and the after
 side by side.
 

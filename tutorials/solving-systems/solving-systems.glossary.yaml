@@ -51,8 +51,8 @@ entries:
   - term: "eliminate(M)"
     kind: function
     definition: >
-      The function you write on this page. It returns the augmented matrix
-      M in row echelon form, as a new list of rows, and leaves M as it was.
+      Returns the augmented matrix M in row echelon form, as a new list of
+      rows, and leaves M as it was. You write it in Systems of equations.
     example: "eliminate([[2, 3, 7], [1, -1, 1]]) gives [[2, 3, 7], [0.0, -2.5, -2.5]]"
   - term: "solve(M)"
     kind: function

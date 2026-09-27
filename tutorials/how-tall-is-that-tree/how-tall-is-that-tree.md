@@ -42,7 +42,7 @@ On this page we:
   rule
 - add `angle_between` to the toolkit
 
-> **The space we're in.** A flat plane, with points as `(x, y)` tuples.
+> **The space we're in.** A flat plane, with points as `(x, y)` *tuples*{.term}.
 > We say angles in degrees, and Python's `math` works in radians, as on
 > [Going round in circles](tutorial:going-round-in-circles). On a flat
 > plane, a triangle's three angles add up to 180°. On

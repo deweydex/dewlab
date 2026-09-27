@@ -52,7 +52,7 @@ entries:
     kind: keyword
     definition: >
       A ValueError is an error for a value that has the right type but is
-      wrong in some other way. On this page we raise one ourselves, with a
-      message that says what went wrong. That is clearer than an error
-      like IndexError, which says where something failed but not why.
+      wrong in some other way. Your own code can raise one, with a message
+      that says what went wrong. That is clearer than an error like
+      IndexError, which says where something failed but not why.
     example: "raise ValueError(\"a and b are not the same shape\")"

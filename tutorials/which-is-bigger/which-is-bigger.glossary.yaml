@@ -12,8 +12,7 @@ entries:
     kind: concept
     definition: >
       A number line is a line with numbers in order along it. Every
-      fraction has a place on it. On this page, the line starts at 0 and
-      ends at 1.
+      fraction has a place on it.
   - term: "<"
     kind: operator
     definition: >
