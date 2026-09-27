@@ -9,10 +9,10 @@ version: 2026.09.25.1
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. For a Predict problem, write your guess
-down before you run the cell. A guess that missed, once you see why,
+down before you run the *cell*{.term}. A guess that missed, once you see why,
 teaches more than a lucky match you were not sure of.
 
-A plan or pseudocode can be written in many different ways. Where an
+A plan or *pseudocode*{.term} can be written in many different ways. Where an
 answer fold shows a plan, it shows one answer, not the only one.
 Yours may be clearer. Here is one test for any plan. Would a robot
 that knows nothing follow it and finish the task?
@@ -56,14 +56,14 @@ print(minutes)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`48`. The name `songs` points at 12. Then Python calculates `songs * 4`,
+`48`. The *name*{.term} `songs` points at 12. Then Python calculates `songs * 4`,
 which is 48, and the name `minutes` points at that. A playlist of 12 songs, each
 about 4 minutes long, lasts about 48 minutes.
 
 </details>
 
-**3. Explain.** Which shape of step is each of these: sequence,
-selection or repetition?
+**3. Explain.** Which shape of step is each of these: *sequence*{.term},
+*selection*{.term} or *repetition*{.term}?
 
 - (a) Do 10 press-ups.
 - (b) If it is raining, take an umbrella.
@@ -85,7 +85,7 @@ Most repeats that end with "until" have a check like this inside.
 </details>
 
 **4. Make.** A phone backs up your photos each night, and each photo
-takes about 3 MB (megabytes) of space. Make a variable `photos` that holds 8, and show the
+takes about 3 MB (megabytes) of space. Make a *variable*{.term} `photos` that holds 8, and show the
 space that 8 photos take.
 
 ```python exec
@@ -157,7 +157,7 @@ Hey, hey, hey!
 ```
 
 The `def` part shows nothing when it runs. It only writes the recipe
-card. Each `chorus()` line calls the function, and its one step runs.
+card. Each `chorus()` line calls the *function*{.term}, and its one step runs.
 It is called three times, so the chorus appears three times.
 
 </details>
@@ -280,7 +280,7 @@ CROSS the road
 
 The repeat ends when the green man shows, so it cannot go on for ever,
 as long as the lights are working. That "as long as" is an assumption
-about the environment, and it is worth noticing.
+about the *environment*{.term}, and it is worth noticing.
 
 </details>
 
@@ -294,7 +294,7 @@ Without a limit, someone with a stolen card could try every possible PIN
 until one worked. A four-digit PIN has 10,000 possibilities, and a
 machine could try them all quickly. The limit makes that impossible.
 
-A limit also guarantees that the repeat ends. An algorithm must finish,
+A limit also guarantees that the repeat ends. An *algorithm*{.term} must finish,
 and "repeat until the PIN is right" might never finish if the person
 does not know it.
 

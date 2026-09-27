@@ -9,7 +9,7 @@ version: 2026.09.26.1
 
 Each problem says what kind it is: **Predict**, **Make**, **Fix**,
 **Explain** or **Another way**. With numbers, it is tempting to run the
-cell first and guess afterwards. Try it the other way round. Write your
+*cell*{.term} first and guess afterwards. Try it the other way round. Write your
 guess down, then run. You learn most from the surprises, and a guess
 that misses gives you one.
 
@@ -40,7 +40,7 @@ print(17 / 5)
 
 `17 // 5` is 3, so there are enough files for 3 full folders. `17 % 5`
 is 2, so two files are left over. `17 / 5` is 3.4, which is a true answer in
-the rational numbers, but nobody can fill 0.4 of a folder. For this
+the *rational numbers*{.term}, but nobody can fill 0.4 of a folder. For this
 question, `//` and `%` live in the right space, and `/` does not.
 
 </details>
@@ -48,7 +48,7 @@ question, `//` and `%` live in the right space, and `/` does not.
 **2. Explain.** What is the smallest family of numbers, $\mathbb{N}$,
 $\mathbb{Z}$, $\mathbb{Q}$ or $\mathbb{R}$, that each of these belongs to?
 
-- (a) 12 pixels in a row
+- (a) 12 *pixels*{.term} in a row
 - (b) a temperature of −4 °C in Mullingar in January
 - (c) a phone battery three quarters full, 0.75
 - (d) $\pi$, the number that turns a circle's width into its distance round
@@ -127,9 +127,9 @@ print(10.0 // 4)
 2.0
 ```
 
-`/` always gives a float, even when the division is exact, so `10 / 5` is
+`/` always gives a *float*{.term}, even when the division is exact, so `10 / 5` is
 `2.0`, a float. `10 // 4` keeps the whole part, 2, and since both
-numbers were ints, the answer is an int. In the third line, `10.0` is a
+numbers were *ints*{.term}, the answer is an int. In the third line, `10.0` is a
 float, so the answer is a float too: `2.0`. Floor division keeps the
 kind of number it was given.
 
@@ -196,7 +196,7 @@ print(minutes // 60, "hours and", minutes % 60, "minutes")
 This shows `2 hours and 15 minutes`. `//` gives the whole hours, and `%`
 gives the minutes left over. `digit_at(135, 1, 60)` and
 `digit_at(135, 0, 60)` give the same two numbers, because hours and
-minutes are base 60 too.
+minutes are *base 60*{.term} too.
 
 </details>
 
@@ -315,7 +315,7 @@ print(digit_at(minutes, 1), digit_at(minutes, 0), digit_at(seconds, 1), digit_at
 
 This shows `12 34`, then `1 2 3 4`, so the timer reads 12:34. Check:
 $12 \times 60 + 34 = 754$. The base-10 calls have no third number,
-so `base` takes its default value, 10.
+so `base` takes its *default value*{.term}, 10.
 
 </details>
 
@@ -385,7 +385,7 @@ halvings take a million below 1.
 </details>
 
 **14. Fix.** Schlomi wants the tens digit of a number. Her idea is to
-take the last digit, then divide it by 10. For 2026 her function gives
+take the last digit, then divide it by 10. For 2026 her *function*{.term} gives
 0, but the tens digit is 2. Can you find the mistake in the idea, and fix
 it?
 
@@ -471,7 +471,7 @@ chose "down" instead.
 
 **16. Make.** A photo 1920 pixels wide is shrunk to fit a screen 1280
 pixels wide. Write a function `scale(position, from_width, to_width)`
-that returns where a pixel's column moves to. Give it a docstring, and
+that returns where a pixel's column moves to. Give it a *docstring*{.term}, and
 test it with at least two `assert` lines.
 
 ```python exec
@@ -485,7 +485,7 @@ def scale(position, from_width, to_width):
 
 1. What fraction of the way across the photo is `position`?
 2. Where is that same fraction of the way across the new width?
-3. Write that as one expression after `return`.
+3. Write that as one *expression*{.term} after `return`.
 4. Test it with numbers you can check in your head: halfway across 1920
    is 960, and halfway across 1280 is 640.
 

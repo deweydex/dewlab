@@ -13,10 +13,10 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `plot_rule` from the
+Your *toolkit*{.term} is loaded on this page, including `plot_rule` from the
 tutorial, `evaluate` from
 [Rules with letters in them](tutorial:rules-with-letters-in-them), and
-`close_enough`. Each call to `plot_rule` in one cell draws on the same
+`close_enough`. Each call to `plot_rule` in one *cell*{.term} draws on the same
 picture. The first cell below imports `matplotlib.pyplot` as `plt`, for
 `plt.legend()` and the other drawing tools, and `math`.
 
@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 # Try things here
 ```
 
-**1. Predict.** The rule is $y = 2x + 1$. What are the coordinates of
+**1. Predict.** The rule is $y = 2x + 1$. What are the *coordinates*{.term} of
 its points at $x = 0$, 1 and 2? Then draw the rule from $-1$ to 3, and
 find your three points on the line.
 
@@ -49,7 +49,7 @@ plt.plot([0, 1, 2], [1, 3, 5], "o")
 ```
 
 The three dots sit on the line. Each step of 1 to the right goes 2 up,
-and the line crosses the y-axis at 1, the $c$ of $y = mx + c$.
+and the line crosses the *y-axis*{.term} at 1, the $c$ of $y = mx + c$.
 
 </details>
 
@@ -65,7 +65,7 @@ it too: 5 at $-3$ and at 3, $-3$ at $-1$ and at 1.
 
 </details>
 
-**3. Make.** Draw $y = 3 - x$ from $-2$ to 5. Read its root from the
+**3. Make.** Draw $y = 3 - x$ from $-2$ to 5. Read its *root*{.term} from the
 graph, then check it by substituting.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -79,7 +79,7 @@ plot_rule(three_take_x, -2, 5)
 print(three_take_x(3))
 ```
 
-The line slopes down, and meets the x-axis at $x = 3$. `three_take_x(3)`
+The line slopes down, and meets the *x-axis*{.term} at $x = 3$. `three_take_x(3)`
 is 0, so 3 is the root.
 
 </details>
@@ -142,7 +142,7 @@ the number it was given.
 
 **6. Fix.** Schlomo, who is learning Python too, wants to draw an arch,
 $y = 4 - x^2$. He remembers that some calculators and spreadsheets
-write a power with `^`, so he tries it. His cell stops with an error.
+write a *power*{.term} with `^`, so he tries it. His cell stops with an error.
 Read the error, then change the rule.
 
 ```python exec
@@ -158,9 +158,9 @@ plot_rule(arch, -3, 3)
 
 The last line of the error is
 `TypeError: unsupported operand type(s) for ^: 'float' and 'int'`.
-In Python, `^` is not a power. It is XOR, from
+In Python, `^` is not a power. It is *XOR*{.term}, from
 [Bits that flip](tutorial:bits-that-flip), and it works only on whole
-numbers, so the float `-3.0` makes it stop. The power is `**`:
+numbers, so the *float*{.term} `-3.0` makes it stop. The power is `**`:
 
 ```python
 def arch(x):
@@ -189,7 +189,7 @@ and spreadsheets and some languages still use it for powers.
 </aside>
 
 **7. Make.** A basketball leaves a player's hands 2 m above the floor.
-In a simple model, its height after $t$ seconds is $2 + 8t - 5t^2$
+In a simple *model*{.term}, its height after $t$ seconds is $2 + 8t - 5t^2$
 metres. If nobody catches it, when does it hit the floor? Draw the rule,
 read the answer to one decimal place, then check by substituting.
 
@@ -261,7 +261,7 @@ the value changes from negative to positive, or back.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start a name, `before`, at the value when $x$ is $-3$.
+1. Start a *name*{.term}, `before`, at the value when $x$ is $-3$.
 2. Make each next $x$ as `step / 100`, for `step` in
    `range(-299, 301)`. After each check, the new value becomes
    `before`.
@@ -305,7 +305,7 @@ believe, the graph or Python? Why?
 
 1. What number, times $x$, makes 1? Could that number be 0?
 2. Try `print(1 / 10 ** 300)` and `print(1 / 10 ** 330)`.
-3. Which space is each answer in: the real numbers, or Python's floats?
+3. Which space is each answer in: the *real numbers*{.term}, or Python's floats?
 
 </details>
 
@@ -314,7 +314,7 @@ believe, the graph or Python? Why?
 We can believe both, each in its own space. In the real numbers, $\frac{1}{x}$ is
 the number that, times $x$, makes 1. If it were 0, then 0 times $x$
 would be 1, but 0 times any number is 0. So $\frac{1}{x}$ can be as
-small as you like, when $x$ is large, but never 0. The equation
+small as you like, when $x$ is large, but never 0. The *equation*{.term}
 $\frac{1}{x} = 0$ has no answer in $\mathbb{R}$.
 
 Schlomi's `0.0` is true of floats. A float cannot hold a number much
@@ -347,7 +347,7 @@ for people in range(1, 11):
 plt.plot(dots_x, dots_y, "o")
 ```
 
-The dots tell the truth. People come in whole numbers, so the domain
+The dots tell the truth. People come in whole numbers, so the *domain*{.term}
 of this rule is 1, 2, 3 and so on. The curve has a value at 2.5 people,
 24 GB, which means nothing. A curve says "every value in between makes
 sense". For a speed, a temperature, or a time, it does. For a
@@ -391,8 +391,8 @@ of $x$, however high, is overtaken by $2^x$ in the end.
 
 </details>
 
-**13. Make.** Draw the cubic $y = (x + 1)(x - 1)(x - 3)$. First expand
-it by hand, or with the tutorial's grid, into a list for `evaluate`.
+**13. Make.** Draw the *cubic*{.term} $y = (x + 1)(x - 1)(x - 3)$. First expand
+it by hand, or with the tutorial's grid, into a *list*{.term} for `evaluate`.
 Before you draw it, say where its roots will be. Then check them by
 substituting.
 
@@ -418,7 +418,7 @@ cubic can.
 
 **14. Another way.** When is $2^x = 10$? Draw $2^x$ and the flat line
 $y = 10$ from 0 to 5, and read where they meet. Then find the same
-answer another way, with a function from
+answer another way, with a *function*{.term} from
 [Doubling and halving](tutorial:doubling-and-halving#doublings-add-up).
 
 <details class="dl-answer"><summary>answer</summary>
@@ -435,7 +435,7 @@ print(math.log2(10))
 
 The graphs meet at about $x = 3.3$. `math.log2(10)` is about 3.32. The
 logarithm answers "how many doublings make 10?", which is the same
-question. Reading from the graph and using the inverse function are two
+question. Reading from the graph and using the *inverse function*{.term} are two
 routes to one answer.
 
 </details>
@@ -471,7 +471,7 @@ plot_rule(server_time, 0, 10)
 ```
 
 The error was raised inside `plot_rule`, but the missing `return` was
-in `server_time`. The traceback lists both. The line at the bottom says
+in `server_time`. The *traceback*{.term} lists both. The line at the bottom says
 what happened, and the lines above say where it came from.
 
 </details>

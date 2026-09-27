@@ -40,15 +40,15 @@ On this page we:
 
 - measure a ramp's steepness as rise over run, and check it against
   the Irish guidance
-- find the slope between two points, and add `slope` to the toolkit
+- find the slope between two points, and add `slope` to the *toolkit*{.term}
 - meet a line with no slope
 - write a line as $y = mx + c$, and find it with `line_through`
 - write every line as $ax + by + c = 0$
 - tell parallel and perpendicular lines from their slopes
 
 > **The space we're in.** A flat plane with two axes at right angles:
-> $x$ across and $y$ up. A point is an $(x, y)$ pair, which Python keeps
-> as a tuple, like `(3, 0.3)`. Both axes use the same unit, so a metre across is a metre up. A slope compares
+> $x$ across and $y$ up. A point is an $(x, y)$ *pair*{.term}, which Python keeps
+> as a *tuple*{.term}, like `(3, 0.3)`. Both axes use the same unit, so a metre across is a metre up. A slope compares
 > the two, so it only means something when they are measured the same
 > way.
 
@@ -113,7 +113,7 @@ print("1 in", round(1 / ramp_slope))
 ```
 
 Python shows `0.09999999999999999`, a tiny way under 0.1. That is the
-float rounding from
+*float*{.term} rounding from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
 The slope is 0.1. For every
 metre along, the ramp rises 0.1 of a metre.
@@ -202,7 +202,7 @@ change in $y$ over the change in $x$. Maths names the slope $m$:
 
 $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
 
-The cell draws the two points, the line through them, and the rise and
+The *cell*{.term} draws the two points, the line through them, and the rise and
 the run as dashed lines. The grey lines are the axes, through 0.
 
 ```python exec
@@ -227,7 +227,7 @@ while $x$ grows by 3, so the rise is $-6$ and the slope is $-2$. A
 right.
 
 Here is a tool, and its last line is yours to write. The line
-`x1, y1 = p` gives each value in the pair a name, as the swap on
+`x1, y1 = p` gives each value in the pair a *name*{.term}, as the *swap*{.term} on
 [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards#swapping-two-cards)
 named two values at once.
 
@@ -259,7 +259,7 @@ def slope(p, q):
 ```
 
 Run your cell. How does your `slope` compare with one way to
-write it? The table below runs the same calls on your function and on
+write it? The table below runs the same calls on your *function*{.term} and on
 a solution, side by side. Until `slope` has its `return` line, it
 returns `None`, and its column shows `None`. Guess the third row
 first. Does it matter which point comes first?
@@ -308,13 +308,13 @@ id: straight-wall-1
 print(slope((2, 0), (2, 5)))
 ```
 
-The last line of the traceback reads
+The last line of the *traceback*{.term} reads
 `ZeroDivisionError: division by zero`. The run is $2 - 2 = 0$, and the
 formula divides by the run. Your `slope` is keeping its promise here.
-The docstring promised a slope only for points with different $x$
+The *docstring*{.term} promised a slope only for points with different $x$
 values.
 
-Is "infinitely steep" an answer? It is not, in the real numbers. A *vertical
+Is "infinitely steep" an answer? It is not, in the *real numbers*{.term}. A *vertical
 line*, one that goes straight up, has no slope in this space. Two
 sections on, a way of writing lines makes room for it.
 
@@ -522,7 +522,7 @@ What is the slope of the line $2x + 4y - 8 = 0$?
 
 On
 [Several unknowns at once](tutorial:several-unknowns-at-once#when-there-is-no-single-answer),
-two parallel lines never met, so their equations had no single answer.
+two *parallel lines*{.term} never met, so their *equations*{.term} had no single answer.
 Now we can say what "the same steepness" means: parallel lines have the
 same slope. The two server A lines in the picture were parallel.
 

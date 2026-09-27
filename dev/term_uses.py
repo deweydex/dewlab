@@ -21,9 +21,10 @@ Reads the built site, so run `python3 build.py` first.
     python3 dev/term_uses.py doubling-and-halving
     python3 dev/term_uses.py --check         # marks that name no term
 
-`--check` lists every `{.term}` mark whose words are not a concept in that
-page's glossary. The page would show nothing for it, so either the word or
-the glossary needs a look. It matches more strictly than the page does (no
+`--check` lists every `{.term}` mark the page would show no definition for:
+its words are not a concept in that page's glossary, or they are two
+concepts' (a table's frequency and a wave's) and neither is the page's own.
+Either the word or the glossary needs a look. It matches more strictly than the page does (no
 stemming beyond a plural), so a listed mark may still work; open the page
 to be sure.
 """
@@ -86,6 +87,11 @@ class _Prose(HTMLParser):
         if not self.skipping:
             self.parts.append(data)
 
+# assets/search-words.js's STOPWORDS: a comma part that is only one of these
+# names nothing (term-definitions.js drops it the same way).
+STOPWORDS = {"a", "an", "the", "and", "or", "of", "to", "in", "on", "for", "is",
+             "are", "with", "by", "at", "from", "your", "what", "how"}
+
 
 def prose(page_html: str) -> str:
     match = BODY_RE.search(page_html)
@@ -106,7 +112,8 @@ def candidates(page: Path) -> list[tuple[str, int, str]]:
     names = [part.strip() for entry in concepts if entry.get("origin") for part in entry["term"].split(",")]
     rows = []
     for name in names:
-        if len(name) < 3:
+        # "order of not, and, or" is one term; a bare "and" is not a name.
+        if len(name) < 3 or name.lower() in STOPWORDS:
             continue
         # A longer term that holds this one wins: "selection sort" is not a
         # use of "selection". A name with a capital (None, ASCII) is matched
@@ -128,19 +135,27 @@ MARK_RE = re.compile(r'<em class="term">(.*?)</em>|<strong class="term"><em>(.*?
 
 
 def unmatched_marks(page: Path) -> list[str]:
+    """Each `{.term}` mark the page would show no definition for: naming no
+    concept, or naming two with neither the page's own (term-definitions.js's
+    pick()), as "word (why)"."""
     text = page.read_text(encoding="utf-8")
     found = MANIFEST_RE.search(text)
-    names = set()
+    entries = []
     if found:
         for entry in json.loads(found.group(1)).get("glossary") or []:
             if entry.get("kind") == "concept":
-                names.update(part.strip().lower() for part in entry["term"].split(","))
+                names = ({p.strip().lower() for p in entry["term"].split(",")}
+                         | {entry["term"].strip().lower()}) - STOPWORDS
+                entries.append((names, bool(entry.get("origin"))))
     bad = []
     for plain, bold in MARK_RE.findall(text):
         word = re.sub(r"\s+", " ", html.unescape(TAG_RE.sub("", plain or bold))).strip().lower()
         singulars = {word, word[:-1] if word.endswith("s") else word, word[:-2] if word.endswith("es") else word}
-        if not singulars & names:
-            bad.append(word)
+        matches = [inherited for names, inherited in entries if singulars & names]
+        if not matches:
+            bad.append(f"{word} (names no concept)")
+        elif len(matches) > 1 and [inherited for inherited in matches if not inherited] != [False]:
+            bad.append(f"{word} (names {len(matches)} concepts)")
     return bad
 
 
@@ -149,8 +164,8 @@ def check(pages: list[Path]) -> int:
     for page in pages:
         for word in unmatched_marks(page):
             problems += 1
-            print(f"{page.stem}: *{word}*{{.term}} names no concept in this page's glossary")
-    print(f"{problems} marks name no term.")
+            print(f"{page.stem}: {word}")
+    print(f"{problems} marks the page would show no definition for.")
     return 1 if problems else 0
 
 

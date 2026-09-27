@@ -14,14 +14,14 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page, including `slope` and
+Your *toolkit*{.term} is loaded on this page, including `slope` and
 `line_through` from the tutorial, `close_enough` from
 [Does it work?](tutorial:does-it-work) and `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule).
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: straight-practice-warm-up
@@ -40,15 +40,15 @@ print(slope((0, 3), (3, 0)))
 
 `0.25`, `0.0` and `-1.0`.
 
-The first line rises 1 over a run of 4. The second has a rise of
+The first line rises 1 over a run of 4. The second has a *rise*{.term} of
 $5 - 5 = 0$, so it is flat. The third falls 3 over a run of 3, so its
-slope is $\frac{-3}{3} = -1$. It goes down as we read it from left to
-right. Python shows each as a float, because `/` always gives a float.
+*slope*{.term} is $\frac{-3}{3} = -1$. It goes down as we read it from left to
+right. Python shows each as a *float*{.term}, because `/` always gives a float.
 
 </details>
 
 **2. Make.** A road climbs 25 m while going 200 m along the ground.
-What is its slope? Road signs often show a gradient as a percent, which
+What is its slope? Road signs often show a *gradient*{.term} as a percent, which
 is the slope times 100. What percent is this hill, and what is it as
 "1 in" something?
 
@@ -82,7 +82,7 @@ anything, then check.
 
 Neither. They are equally steep. Ramp B is ramp A cut in half, so both
 the rise and the run are halved, and rise over run does not change.
-Both slopes are $\frac{1}{12}$, a gradient of 1:12. Steepness is about
+Both slopes are $\frac{1}{12}$, a gradient of *1:12*{.term}. Steepness is about
 the rise for each metre along, not about the rise alone.
 
 </details>
@@ -219,13 +219,13 @@ B C False -1.0
 
 A and B have the same slope, so they are parallel. They never meet. C
 is perpendicular to both, because $2 \times -0.5 = -1$. A line that is
-perpendicular to one of two parallel lines is perpendicular to the
+perpendicular to one of two *parallel lines*{.term} is perpendicular to the
 other too.
 
 </details>
 
 **9. Make.** Air usually gets colder as you climb. On a day when it is
-15 °C at sea level, a standard model of the air says it will be about
+15 °C at sea level, a standard *model*{.term} of the air says it will be about
 2 °C at 2,000 m up. Treat that as a straight line. Find its slope, and
 use it to estimate the temperature at the top of Carrauntoohil,
 Ireland's highest mountain, at 1,039 m.
@@ -237,7 +237,7 @@ Ireland's highest mountain, at 1,039 m.
 2. `line_through` gives you `m` and `c`.
 3. Put 1,039 in for $x$ in $y = mx + c$.
 
-**Think about:** what does a negative slope mean for a climber?
+**Think about:** what does a *negative slope*{.term} mean for a climber?
 
 **Try this next:** at what height would the line reach 0 °C?
 
@@ -270,9 +270,9 @@ rule can describe it. The general form only asks whether a point makes
 $ax + by + c$ equal 0. It does not need to find $y$, so it has room for
 the wall: $1x + 0y - 2 = 0$.
 
-When $b = 0$, the $y$ disappears from the line's equation, and only $x$
-decides whether a point is on the line. So $b = 0$ means a vertical
-line. The slope, $-\frac{a}{b}$, cannot be found then, because it
+When $b = 0$, the $y$ disappears from the line's *equation*{.term}, and only $x$
+decides whether a point is on the line. So $b = 0$ means a *vertical
+line*{.term}. The slope, $-\frac{a}{b}$, cannot be found then, because it
 would divide by 0.
 
 </details>
@@ -359,9 +359,9 @@ by drawing both lines with `plot_rule`, with `plt.axis("equal")`.
 1. The new slope is $-\frac{1}{m}$.
 2. The point is on the new line, so $c = y - (\text{new slope}) \times x$,
    as in `line_through`.
-3. Return the pair.
+3. Return the *pair*{.term}.
 
-**Think about:** which slope `m` makes this function fail, and what
+**Think about:** which slope `m` makes this *function*{.term} fail, and what
 kind of line would the answer be?
 
 </details>
@@ -445,7 +445,7 @@ careful: what space are the two numbers in each pair measured in?
    with the next one.
 2. Turn the distance into metres first, so that across and up use the
    same unit.
-3. Keep the slopes in a list, and use `largest` from your toolkit.
+3. Keep the slopes in a *list*{.term}, and use `largest` from your toolkit.
 
 **Think about:** what would the steepest slope be if you forgot to
 turn km into m? Would anyone cycle up it?

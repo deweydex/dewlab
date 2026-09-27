@@ -14,12 +14,12 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, `compose` included. Every other
-function a problem needs is written out in the problem.
+Your *toolkit*{.term} is loaded on this page, `compose` included. Every other
+*function*{.term} a problem needs is written out in the problem.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: machines-practice-warm-up
@@ -45,7 +45,7 @@ print(seconds_per_beat(90))
 
 A minute is 60 seconds. At 120 beats a minute, each beat gets half a
 second. At 60 it gets a whole second. At 90 the answer is $\frac{2}{3}$
-of a second, which a float can only hold as a long decimal. And `/`
+of a second, which a *float*{.term} can only hold as a long decimal. And `/`
 always gives a float, which is why the second line shows `1.0` and not
 `1`.
 
@@ -66,7 +66,7 @@ a minute.
 once, and the sound comes later. Sound travels about 343 metres each
 second in air at 20 °C. So if you count the seconds from the flash to
 the thunder, the storm is 343 times that many metres away. Write the
-rule in function notation, in kilometres, then as a Python function
+rule in *function notation*{.term}, in kilometres, then as a Python function
 `storm_km(seconds)`. How far away is a storm 3 seconds after the flash?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -84,12 +84,12 @@ print(storm_km(3))
 
 This prints `1.029`. That is where the old rule "three seconds for
 every kilometre" comes from. This is one answer. Your function may
-have other names and do the same job.
+have other *names*{.term} and do the same job.
 
 </details>
 
-**3. Explain.** In this code, what is the parameter, and what is the
-argument?
+**3. Explain.** In this code, what is the *parameter*{.term}, and what is the
+*argument*{.term}?
 
 ```python
 def colour_bytes(pixels):
@@ -127,7 +127,7 @@ Hello, Aoife
 None
 ```
 
-`greet` is a procedure. It does a job, printing, and it has no `return`
+`greet` is a *procedure*{.term}. It does a job, printing, and it has no `return`
 line. So when it finishes, it returns `None`, and that is what the
 name `answer` points at.
 
@@ -144,7 +144,7 @@ id: machines-practice-core
 
 **5. Make.** A weather station counts the days in a year with some rain.
 Write `rain_percent(rainy_days)`, which gives those days as a percentage
-of 365. Its domain is the whole numbers from 0 to 365. Use `between`
+of 365. Its *domain*{.term} is the whole numbers from 0 to 365. Use `between`
 from your toolkit in an `assert` with a message, so that 400 days stops
 with a clear error. Try it with 230 days, then with 400.
 
@@ -279,8 +279,8 @@ in the cell first, negative ones too.
 
 <details class="dl-answer"><summary>answer</summary>
 
-Squaring sends 3 and −3 to the same output, 9, so the output cannot say
-which one went in. Squaring is not one-to-one.
+Squaring sends 3 and −3 to the same *output*{.term}, 9, so the output cannot say
+which one went in. Squaring is not *one-to-one*{.term}.
 
 Cubing keeps the sign: $3^3 = 27$ and $(-3)^3 = -27$. Every real number
 has exactly one cube, and every output comes from exactly one input, so
@@ -297,7 +297,7 @@ The middle column is different on every line. The last column is not.
 </details>
 
 **9. Another way.** How many even numbers are there from 1 to $n$? One
-algorithm counts them with a loop and `%`. Another says the answer is
+*algorithm*{.term} counts them with a loop and `%`. Another says the answer is
 `n // 2`. Write the loop version as `evens_by_loop(n)`, and check that
 the two algorithms are the same function for every $n$ from 0 to 200.
 
@@ -347,7 +347,7 @@ print("The row is", row, "pixels wide")
 1. The last line of the error names two kinds of value. Which one is
    `NoneType`?
 2. What does a function return when it has no `return` line?
-3. The docstring says "Return". Does the function do that?
+3. The *docstring*{.term} says "Return". Does the function do that?
 
 **Think about:** the difference between showing a number and returning
 it.
@@ -405,7 +405,7 @@ named too.
 ## Stretch
 
 **12. Make.** A lighting app keeps each colour level as a number from 0
-to 1. A web page wants it as a byte, from 0 to 255, written in hex, as
+to 1. A web page wants it as a *byte*{.term}, from 0 to 255, written in hex, as
 on [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 Write `to_byte(level)`, which returns `round(level * 255)`. Then use
 `compose` and your toolkit's `to_hex` to make `hex_for`, which goes
@@ -462,7 +462,7 @@ Try it on 45. What should it do with 50?
 more computers? What does that say about the inverse?
 
 **Try this next:** list the numbers of cables that are possible for 2
-to 10 computers. Those are the range, and the domain of
+to 10 computers. Those are the *range*{.term}, and the domain of
 `computers_for`.
 
 </details>
@@ -529,7 +529,7 @@ for hour in range(12):
 print(earlier(2))
 ```
 
-It prints `10`, and every test passes. In the integers, $2 - 4 = -2$.
+It prints `10`, and every test passes. In the *integers*{.term}, $2 - 4 = -2$.
 On the clock, $2 - 4$ is 10 o'clock, and "subtract 4" is the inverse
 of "add 4" there, as it was in the integers.
 

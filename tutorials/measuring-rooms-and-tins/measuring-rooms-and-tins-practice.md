@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, so every shape tool from the
+Your *toolkit*{.term} is loaded on this page, so every shape tool from the
 tutorial is here: `rectangle_perimeter`, `rectangle_area`,
 `triangle_area`, `circle_circumference`, `circle_area`, the four volumes
 and the four surface areas. So are `compose`, `total` and `simulate`
-from earlier pages. The cell below imports `math` for the whole page.
+from earlier pages. The *cell*{.term} below imports `math` for the whole page.
 Run it first.
 
 ```python exec
@@ -51,7 +51,7 @@ print(rectangle_area(3, 3))
 `14`, `10` and `9`.
 
 The distance round the frame is $5 + 2 + 5 + 2 = 14$ cm. The frame covers
-$5 \times 2 = 10$ cm². The tile is a square, so its area is $3^2 = 9$ cm².
+$5 \times 2 = 10$ cm². The tile is a square, so its *area*{.term} is $3^2 = 9$ cm².
 The first answer is a length, in cm, and the other two are areas, in cm².
 
 </details>
@@ -73,7 +73,7 @@ more than 1.3 hectares. A hectare is 10,000 m².
 </details>
 
 **3. Explain.** Schlomi, who is learning Python too, measures a square
-room, 4 m on each side. "Its area is 16 and its perimeter is 16," she
+room, 4 m on each side. "Its area is 16 and its *perimeter*{.term} is 16," she
 says, "so the area and the perimeter are the same." What would you say
 to her?
 
@@ -93,7 +93,7 @@ metres.
 
 **4. Predict.** A vinyl record is 30 cm across. Roughly how long is its
 edge, all the way round? Guess first, then use `circle_circumference`.
-Be careful: which number does the function want?
+Be careful: which number does the *function*{.term} want?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -101,7 +101,7 @@ Be careful: which number does the function want?
 print(circle_circumference(15))
 ```
 
-It is about 94.2 cm. The function wants the radius, which is half of 30
+It is about 94.2 cm. The function wants the *radius*{.term}, which is half of 30
 cm. Here is a quick check. The edge is a bit more than 3 times the distance across,
 and $3 \times 30 = 90$.
 
@@ -124,7 +124,7 @@ litres.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The layer of water is a cuboid. What are its length, width and
+1. The layer of water is a *cuboid*{.term}. What are its length, width and
    height, in metres?
 2. `cuboid_volume` gives cubic metres.
 3. Multiply by 1,000 for litres.
@@ -151,7 +151,7 @@ millimetres, and means nothing.
 
 **6. Fix.** A satellite dish catches radio signals over its whole
 round face, so a bigger face catches more. Dishes are sold by their
-diameter. Schlomo, who is learning Python too, writes a function to
+*diameter*{.term}. Schlomo, who is learning Python too, writes a function to
 give a dish's area from its diameter. For a 60 cm dish, the round face
 covers about 2,827 cm², and Schlomo's function gives a different answer. Can you find the line that does not do
 what Schlomo meant?
@@ -183,14 +183,14 @@ doubles, the area doubles twice, because the radius is squared.
 
 1. Print `dish_area(60)` on its own. Is it too big or too small?
 2. By how many times?
-3. Read the docstring of `circle_area` with `help(circle_area)`. Which
+3. Read the *docstring*{.term} of `circle_area` with `help(circle_area)`. Which
    measurement does it want?
 
 **Think about:** why the answer is four times too big, not twice.
 
 </details>
 
-**7. Another way.** The tutorial found a cylinder's surface area as two
+**7. Another way.** The tutorial found a *cylinder*{.term}'s *surface area*{.term} as two
 circles plus a label. If you peel the label from the tin, it is a rectangle. Find
 the surface area of a tin with radius 4 cm and height 10 cm in two ways:
 once with `cylinder_surface_area`, and once by adding two circles to a
@@ -207,7 +207,7 @@ print(first_way, second_way)
 ```
 
 Both are `351.85837720205683` cm². The label's length is the
-circumference, because it went once round the tin.
+*circumference*{.term}, because it went once round the tin.
 
 </details>
 
@@ -223,7 +223,7 @@ print(cuboid_volume(4, 4, 4) / cuboid_volume(2, 2, 2))
 print(cube_surface_area(4) / cube_surface_area(2))
 ```
 
-This prints `8.0` and `4.0`. The volume goes up 8 times, $2^3$, because
+This prints `8.0` and `4.0`. The *volume*{.term} goes up 8 times, $2^3$, because
 it is length times length times length. The surface area goes up 4
 times, $2^2$, because it is length times length. Double every length of
 any solid, and its volume is 8 times bigger, but its outside only 4
@@ -276,7 +276,7 @@ one more card. That is rounding up.
 </details>
 
 **11. Fix.** Someone wrote their own function for the volume of a ball.
-Archimedes' rule from the tutorial says that a sphere fills two thirds
+Archimedes' rule from the tutorial says that a *sphere*{.term} fills two thirds
 of the cylinder that fits round it. For a ball of radius 3, this
 function's answer is not two thirds of that cylinder. Can you find the
 line that does not do what its writer meant?
@@ -392,7 +392,7 @@ extra optics that corrected the fault, a little like glasses.
 a square 1 unit on each side, with a quarter circle of radius 1 drawn
 from one corner. Drop a point anywhere in the square, at random. The
 chance that it lands inside the quarter circle is the quarter circle's
-area divided by the square's: $\frac{\pi}{4}$. Write a trial that drops
+area divided by the square's: $\frac{\pi}{4}$. Write a *trial*{.term} that drops
 one point and says whether it landed inside, simulate it many times,
 and multiply by 4.
 
@@ -442,7 +442,7 @@ This is another.
 
 </details>
 
-**15. Make.** A traffic cone is 45 cm tall, and its base has a radius of
+**15. Make.** A traffic *cone*{.term} is 45 cm tall, and its base has a radius of
 15 cm. Its orange plastic covers only the sloping side. The base is
 open. How much orange plastic is there, in cm²? Use
 `cone_surface_area`, and think about which part not to count.

@@ -7,14 +7,14 @@ version: 2026.09.25.1
 
 # Everything is ones and zeros — Practice
 
-Each problem says what kind it is: **Predict** (say what a cell will
+Each problem says what kind it is: **Predict** (say what a *cell*{.term} will
 print, then run it), **Make** (build something small), **Fix** (find
 why code that looks fine does something else, and change it), **Explain** (answer in words) or **Another way** (reach the
 same answer by a second route). Answers are in the folds. You learn more
-if you work by hand first, then check in Python. It is slower. Binary
+if you work by hand first, then check in Python. It is slower. *Binary*{.term}
 is a new way of seeing numbers you have known all your life.
 
-Your toolkit is loaded here: `digit_at`, `to_binary`, `to_hex` and
+Your *toolkit*{.term} is loaded here: `digit_at`, `to_binary`, `to_hex` and
 `pixel_row`. If you have not finished one of them, the page uses a
 reference version. Use this cell for any problem that has no cell of
 its own.
@@ -45,9 +45,9 @@ print(0xA)
 
 </details>
 
-**2. Make.** On a seven-segment display, the digit 7 lights segments a,
+**2. Make.** On a *seven-segment display*{.term}, the digit 7 lights segments a,
 b and c. Segment a is the ones column, b the twos and c the fours. Write
-the digit 7's pattern as 7 bits by hand. Then turn it into a number with
+the digit 7's pattern as 7 *bits*{.term} by hand. Then turn it into a number with
 `0b`, and into hex with `to_hex`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -114,7 +114,7 @@ the columns are worth 1, 8, 64, and so on.)
 
 **5. Make.** An electronic keyboard sends each note as a number from 0
 to 127. What is 127 in binary? How many bits does that take, and does
-it fit in one byte?
+it fit in one *byte*{.term}?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -211,7 +211,7 @@ print(colour)
 2. Print `to_hex(0)` on its own. How many digits does it give?
 3. Each light needs exactly two digits, even when the first one is 0.
 
-**Think about:** `to_hex` promised a number in hexadecimal. Did it
+**Think about:** `to_hex` promised a number in *hexadecimal*{.term}. Did it
 promise two digits?
 
 **Try this next:** would the same problem happen with a brightness of
@@ -332,7 +332,7 @@ harder to read in hex.
 </details>
 
 **12. Another way.** On the tutorial page we turned numbers into binary
-by halving. Here is a second recipe: subtract the biggest power of 2
+by halving. Here is a second recipe: subtract the biggest *power*{.term} of 2
 that fits, and repeat. Use it to write 200 in binary, then check with
 `to_binary(200)`.
 

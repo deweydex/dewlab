@@ -14,21 +14,21 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `bisect_root` and
+Your *toolkit*{.term} is loaded on this page, including `bisect_root` and
 `newton` from the tutorial, `derivative_at` from
 [How fast, right now?](tutorial:how-fast-right-now) and
 `solve_quadratic` from [Solving for x](tutorial:solving-for-x).
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: solving-by-practice-warm-up
 # Try things here
 ```
 
-**1. Predict.** Bisection starts with a gap of 1 between `low` and
+**1. Predict.** *Bisection*{.term} starts with a gap of 1 between `low` and
 `high`. How many steps until the gap is smaller than 0.001? Use
 $2^{10} \approx 1000$.
 
@@ -48,9 +48,9 @@ It prints `10`.
 
 </details>
 
-**2. Predict.** Newton's method is looking for $\sqrt{9}$, a root of
+**2. Predict.** Newton's method is looking for $\sqrt{9}$, a *root*{.term} of
 $x^2 - 9$, and starts at 4. What is its next guess? Find it by hand
-with $g - \frac{f(g)}{f'(g)}$, using the slope $2x$.
+with $g - \frac{f(g)}{f'(g)}$, using the *slope*{.term} $2x$.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -96,7 +96,7 @@ Where does her reading of the error stop working?
 <details class="dl-answer"><summary>answer</summary>
 
 At $-5$ and at 5 the rule gives 16, positive both times. There is no
-sign change, so the promise of `bisect_root` cannot be kept, and it
+*sign change*{.term}, so the promise of `bisect_root` cannot be kept, and it
 says so. The curve goes down through zero at $-3$ and comes back up
 through zero at 3, and the two crossings hide each other. A sign
 change says "at least one root here". No sign change does not mean "no
@@ -117,9 +117,9 @@ id: solving-by-practice-core
 # Your working for problems 5 to 12
 ```
 
-**5. Make.** On [Waves](tutorial:waves), each semitone on a piano
+**5. Make.** On [Waves](tutorial:waves), each *semitone*{.term} on a piano
 multiplies the frequency by the same number $r$, and 12 semitones make
-an octave, which doubles it. So $r^{12} = 2$. Find $r$ with `newton`,
+an *octave*{.term}, which doubles it. So $r^{12} = 2$. Find $r$ with `newton`,
 starting at 1, and check it against `2 ** (1 / 12)`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -198,7 +198,7 @@ it.
 </details>
 
 **7. Predict.** Bisection looks for $\sqrt{50}$ between 0 and 10, with a
-tolerance of $10^{-6}$. How many steps will it take? Predict, then
+*tolerance*{.term} of $10^{-6}$. How many steps will it take? Predict, then
 count them with a counter inside the loop.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -300,7 +300,7 @@ for step in range(6):
 
 <details class="dl-answer"><summary>answer</summary>
 
-The guesses go 0, 1, 0, 1, 0, 1 (to within a tiny float error), for
+The guesses go 0, 1, 0, 1, 0, 1 (to within a tiny *float*{.term} error), for
 ever. At 0 the rule gives 2 and the slope is $-2$, so the tangent
 leads to $0 - \frac{2}{-2} = 1$. At 1 the rule gives 1 and the slope is
 1, so the tangent leads to $1 - 1 = 0$. Each tangent points back at
@@ -368,8 +368,8 @@ id: solving-by-practice-stretch
 # Your working for problems 13 to 15
 ```
 
-**13. Make.** Where will Mars be in its orbit next month?
-Astronomers answer that with Kepler's equation,
+**13. Make.** Where will Mars be in its *orbit*{.term} next month?
+Astronomers answer that with Kepler's *equation*{.term},
 $E - e\sin E = M$. Here $M$ is how far round Mars would be if it
 moved at a steady speed, $e$ says how far its orbit is from a circle,
 and $E$ is an angle that fixes where Mars really is. All three are in
@@ -412,7 +412,7 @@ equation again and again, often with Newton's method.
 
 **14. Make.** On
 [Rules for change](tutorial:rules-for-change#back-to-the-top-of-the-curve),
-a box made from card 30 cm across had the volume $x(30 - 2x)^2$, and
+a box made from card 30 cm across had the *volume*{.term} $x(30 - 2x)^2$, and
 its slope was $(30 - 2x)(30 - 6x)$. The biggest box is where the slope
 is 0. Find it with `newton` from 3, and with `bisect_root` between 0
 and 10. Then try `newton` from 12. What changes?
@@ -476,6 +476,6 @@ brings the answer within about 0.2% of the true value.
 ## Where to read more
 
 Stand-up Maths (2018). *How to find a square root.*
-<https://www.youtube.com/watch?v=Bwt5EZEb1Ns>. Matt Parker finds a square
-root by hand, the way people did before calculators. Which of this page's
+<https://www.youtube.com/watch?v=Bwt5EZEb1Ns>. Matt Parker finds a *square root*{.term}
+by hand, the way people did before calculators. Which of this page's
 two methods is his closest to? About six minutes.

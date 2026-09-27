@@ -5482,3 +5482,37 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **Practice.** All three practice pages move to blocks. Every `shortest_way` input on the graph page has exactly one shortest answer, counted in each world, for the reason above.
 
 *Cost to change: small. `the-shortest-way-there`, `a-puzzle-of-your-own` and every new cell id, including the world cells, become a contract on 2 October. No page id changed. Five cell ids went, before that date: `walking-it-without-recursion-2` on the folder page, and four on the practice pages that moved to blocks.*
+
+---
+
+**7.278 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
+
+**The course.** `courses/machine-learning.yaml`, listed in `courses/index.yaml` straight after Computational Methods. The shared pages (the three text-generation pages and the perceptron) come first in Computational Methods' file, so that stays their default course and their address; they are the same files in both courses, so the two cannot drift apart. The card says who the course is for, what you make, and the worlds. The description names the Python it needs, from Computational Methods' first series, since it has no Python series of its own.
+
+**Learning from pictures.** The perceptron page already had what the errors issue asked for (unseen test pictures, three flips, accuracy by epoch). Its first paragraph said "So far in this module", listing matrices and the π estimate, which a reader of this course has not met; it now reads true in both courses. The new page, `telling-many-pictures-apart`, grows it to four digits on a 5 by 5 grid: one perceptron per class, and the highest total wins, because for 50 of the 200 test pictures no perceptron says yes. The test pictures are made first, with their own seed, so that every training set is scored on the same 200. Accuracy on them rises from 0.575 to 0.86 over three epochs; a confusion matrix shows the 1s read as 7s; 40 examples of each digit reach 0.985; adding an 8 and a 9 makes the score jump about near 0.8, since no epoch gets every training picture right. The world task counts the right answers by class for game items, weather icons, arrows and faces, and the notes report what each world gives without claiming a cause the numbers do not show. The page ends at MNIST, which stays deferred to its own issue; the 12% error of a linear classifier in 1998 is from LeCun and others.
+
+**What a language model does differently.** On *The Time Machine*, with the last tenth held back: temperature as each weight to the power 1/t, which is the same as dividing a model's scores by t before its softmax; a two-word chain copying 12 words in a row; 0.877 of two-word keys with one follower, and 0.905 of held-back three-word runs never seen; perplexity, with 90% of each chance from the chain and 10% from how common the word is, so no chance is 0 (add-one smoothing also worked, but gave perplexities in the thousands); byte-pair encoding, 100 merges, writing all 260 held-back words the book never used whole; and weights as the learned half. The world task measures one-follower shares for each book: five times the text lowers the two-word share by about 0.05.
+
+**Limits and judgement.** Four questions, each with a test: where it fails (random pixels and a 3 read as digits with every total below zero; 0.225 right once every test digit moves one column), what the data leaves out ("phone" and "computer" in no book; "he" against "she", 11 to 1 in *Treasure Island*), whose work it learns from (the Gutenberg header; a three-word chain copying runs of 16 to 43 words), and how to check a claim (on what, compared with what, for whom, on pictures like which), with Gender Shades as the real case. Questions of permission are asked, not answered.
+
+**The making task and the mixed set.** `two-bots-and-a-test`: the starters' tests score near 1 on an easy pair, and fall to 0.5 to 0.76 on a harder one, which is where the reader's own test begins. Tests are scored on seeds 50 to 99, which played no part in choosing them. `mixed-machine-learning` has twelve problems across the seven teaching pages. The new pages have no practice pages of their own; the mixed set is the course's practice.
+
+*Cost to change: small. `telling-many-pictures-apart`, `what-a-language-model-does-differently`, `limits-and-judgement`, `two-bots-and-a-test`, `mixed-machine-learning` and their cell ids become a contract on 2 October. No existing id changed.*
+
+---
+
+**7.279 — The Dewey Track marks its later uses of terms, and the hover lookup learns four things from doing it.** Follows 7.273.
+
+**The pass.** `dev/term_uses.py` listed 1,678 places on the track's 97 pages (tutorials and practice pages) where an inherited concept appears unmarked. Each was read in its sentence against the definition the page would show. 1,195 became `*word*{.term}`, at most one per term per page, on the first use that means the term. The rest stay plain: an everyday sense ("set a seed", "a piece of string", "power-up"), the English "and", a word inside a longer term ("base case", "binary search"), or a use only in code, maths, link text or a solution fence. Every mark was then loaded in a browser and shows a definition.
+
+**What the pass found in the lookup.**
+- **A comma is not always a list.** "order of not, and, or" is one term. Split, it made a bare "and" and "or" into names, so an italic *or* written for stress would have shown the logic definition. A comma part that is only a stopword now names nothing, and the whole term counts as a name as well (*and multiplies, or adds*).
+- **Two entries can share a word.** A table's frequency and a wave's are two concepts. The page's own new term wins; otherwise the word shows nothing, because a guess could give the other sense. `term_uses.py --check` lists such marks, and two were taken out.
+- **Words are compared as written first.** The search stemmer is uneven on plurals ("outcomes" and "outcome" stem differently) and drops one-character words, so "base 2" looked like "base". Matching now needs the same number of words, allows a plain plural, and uses stemming only after that.
+- **A later use reads in plain type** (7.273's follow-up), so it does not look like an introduction.
+
+**Two definitions widened**, where the track uses the word more broadly than its glossary did: *input, output* now covers a function's and a rule's, and *expression* covers maths with letters.
+
+**Left for a decision** (listed for Josh, not changed): the glossary has only one sense for *base* (a power's, not a number base), *index* (a subscript, not a list position), *sequence* (control flow, not a maths sequence), *sample* (sound), *gap* (Shell sort's) and *branch* (an `if`'s, not a tree diagram's), so uses in the other sense stay unmarked. *nominal* and *discrete* sit inside entries titled "categorical data: nominal, ordinal" and "numerical data: discrete, continuous" and can never be matched alone. *solution* is a concept and also the word every comparison table uses for the model answer.
+
+*Cost to change: small. A mark is a few characters in a page; `term_uses.py --check` finds any that stop resolving.*

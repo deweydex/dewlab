@@ -14,10 +14,10 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, with `plot_rule` from
+Your *toolkit*{.term} is loaded on this page, with `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule) and `close_enough` from
 [Does it work?](tutorial:does-it-work). `approach` belonged to the
-tutorial page only, so the first cell below writes it again. Run that
+tutorial page only, so the first *cell*{.term} below writes it again. Run that
 cell first.
 
 ## Warm-up
@@ -53,7 +53,7 @@ The heights are 2.0, 1.0, 0.5, 0.25, and so on, down to 0.015625 after
 7 bounces. No row prints 0. Half of a number that is not 0 is never
 0. But the heights get as close to 0 as we like, so the limit of the
 sequence is 0. (A real ball does stop, after a dozen or so bounces. The
-rule "half the height every time" is a model, and it stops being true
+rule "half the height every time" is a *model*{.term}, and it stops being true
 when the bounces get very small.)
 
 </details>
@@ -108,7 +108,7 @@ print(1 + 1e-15 == 1)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`True`, then `False`. The gap between neighbouring floats near 1 is
+`True`, then `False`. The gap between neighbouring *floats*{.term} near 1 is
 about $2.2 \times 10^{-16}$, as on
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16).
 $10^{-16}$ is less than half that gap, so $1 + 10^{-16}$ is kept as 1.
@@ -129,7 +129,7 @@ id: getting-closer-practice-core
 
 **5. Make.** A sound engineer's formula for a wave has
 $\frac{1 - \cos x}{x^2}$ in it, with $x$ in radians. At $x = 0$ it is
-$\frac{0}{0}$. Write it as a function, and use `approach` to find its
+$\frac{0}{0}$. Write it as a *function*{.term}, and use `approach` to find its
 limit at 0.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -203,7 +203,7 @@ however many films it streams, and €0.50 for the data of each film it
 streams. (The prices are invented.) So the average cost of a film, when
 it streams $n$ films in a month, is $\frac{300 + 0.5n}{n}$. What
 happens to the average cost as $n$ grows? Try 10, 100, 1,000, 10,000
-and 1,000,000 films, and give the limit at infinity.
+and 1,000,000 films, and give the *limit at infinity*{.term}.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -276,7 +276,7 @@ print(round(2.5), round(3.5))
 
 The first row is `1 2 4`, since 1.5 rounds to 2 and 3.5 to 4. After
 that, the left column is always 2 and the right column always 3. So the
-one-sided limits are 2 from the left and 3 from the right, and `round`
+*one-sided limits*{.term} are 2 from the left and 3 from the right, and `round`
 has no limit at 2.5.
 
 The last line prints `2 4`, which surprises most people. Exactly
@@ -356,7 +356,7 @@ rule happens to be 0.
 At 0.3, 0.03, 0.003 and 0.0003 the rule is about $-0.866$. Close to 0,
 $\frac{\pi}{x}$ is huge and changes very fast, so the sine swings
 between $-1$ and 1 over and over, however close we get. The values
-never settle, so there is no limit. A table is evidence, not proof,
+never settle, so there is no limit. A table is evidence, not *proof*{.term},
 and a table that only looks at special points can be fooled.
 
 This is one answer. Yours may use other words, or a picture, and say
@@ -365,7 +365,7 @@ the same thing.
 </details>
 
 **13. Predict.** The tutorial's bank broke at $n = 10^{16}$. Here is
-the same rule at powers of 2. Predict each line, and say why powers of
+the same rule at *powers*{.term} of 2. Predict each line, and say why powers of
 2 last longer than powers of 10.
 
 ```python
@@ -379,11 +379,11 @@ for k in [20, 40, 52, 53]:
 2.7182805, 2.71828182845781, then 2.718281828459045, which is `math.e`
 to every digit Python shows, and then 1.0.
 
-A float is a binary fraction, as on
+A float is a *binary fraction*{.term}, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
 $\frac{1}{2^{52}}$ is a binary fraction with a single 1 in it, so
 $1 + \frac{1}{2^{52}}$ is kept exactly, with no rounding at all. But
-$\frac{1}{10^{15}}$ has no exact binary form, so it is rounded, and
+$\frac{1}{10^{15}}$ has no exact *binary*{.term} form, so it is rounded, and
 the power makes the rounding error large. At $2^{53}$, the step is
 half the gap between floats near 1, and $1 + \frac{1}{2^{53}}$ is kept
 as 1.
@@ -441,7 +441,7 @@ money. Only the euros above the line are taxed at the higher rate.
 
 </details>
 
-**15. Make.** The rule $x^x$ gives complex numbers for negative $x$,
+**15. Make.** The rule $x^x$ gives *complex numbers*{.term} for negative $x$,
 as on
 [When there is no real answer](tutorial:when-there-is-no-real-answer).
 Try `(-0.5) ** (-0.5)` to see one. So only the right-hand side makes

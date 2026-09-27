@@ -7,7 +7,7 @@ version: 2026.09.25.1
 
 # When Python says no: reading error messages — Practice
 
-Most cells on this page are meant to fail, the way they were on the
+Most *cells*{.term} on this page are meant to fail, the way they were on the
 tutorial page. Each problem says what kind it is: **Predict**, **Make**,
 **Fix**, **Explain** or **Another way**. Before you open an answer, try
 the routine: read the last line, find the line it names, ask which of
@@ -32,7 +32,7 @@ print(pixel_cuont)
 NameError: name 'pixel_cuont' is not defined. Did you mean: 'pixel_count'?
 ```
 
-The name on line 2 has the `o` and the `u` swapped, so it points at
+The *name*{.term} on line 2 has the `o` and the `u` swapped, so it points at
 nothing. Python looks for a name that is spelled nearly the same, and
 suggests `pixel_count`.
 
@@ -47,7 +47,7 @@ spelled nearly the same.
 
 </aside>
 
-**2. Explain.** A traceback can be many lines long. Why do we start
+**2. Explain.** A *traceback*{.term} can be many lines long. Why do we start
 reading it at the last line?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -82,7 +82,7 @@ The message is:
 IndentationError: expected an indented block after function definition on line 1
 ```
 
-Both steps belong to the function, so both must be pushed in by the
+Both steps belong to the *function*{.term}, so both must be pushed in by the
 same amount:
 
 ```python
@@ -94,7 +94,7 @@ def startup_steps():
 startup_steps()
 ```
 
-Many devices light every segment for a moment when they start. This
+Many devices light every *segment*{.term} for a moment when they start. This
 shows at once if a segment is broken.
 
 </details>
@@ -124,7 +124,7 @@ print("Goals this season:", goals)
 ```
 
 Both lines print `Goals this season: 14`. The first turns the number
-into a string, so `+` joins two strings. The second gives `print` two
+into a *string*{.term}, so `+` joins two strings. The second gives `print` two
 things, separated by a comma, and `print` puts a space between them.
 
 </details>
@@ -164,7 +164,7 @@ how long it took, in seconds, and reports your speed. Run the cell. The
 first report works and the second does not. Schlomo, who is learning
 Python too, says line 2 must be the problem, because that is where
 Python stopped. Where does his idea work, and where does it stop
-working? Which line failed, and which line is responsible? Answer in the comments at the end.
+working? Which line failed, and which line is responsible? Answer in the *comments*{.term} at the end.
 
 ```python exec
 id: when-python-practice-speed
@@ -315,7 +315,7 @@ place along the line. The problem is that the name `totl` was never
 declared, which in C means it was never named before it was used.
 
 The closest Python error is a `NameError`. The difference is when it is
-found. The C compiler finds it before the program runs, and Python
+found. The C *compiler*{.term} finds it before the program runs, and Python
 finds it when it reaches that line.
 
 </details>
@@ -337,7 +337,7 @@ print(to_hex(brightness))
 
 1. Read the last line. What kind of value does it say it was given?
 2. What kind of value does `to_hex` promise to work with?
-3. `float()` turns text into a float. Is there a matching way to turn
+3. `float()` turns text into a *float*{.term}. Is there a matching way to turn
    text into a whole number?
 
 **Think about:** the words after the colon told you the fix, even
@@ -402,7 +402,7 @@ rows_needed = left / pixels_per_row
 print("rows_needed:", rows_needed)
 ```
 
-This prints `left: 0` and `rows_needed: 0.0`. Every pixel is painted,
+This prints `left: 0` and `rows_needed: 0.0`. Every *pixel*{.term} is painted,
 so line 4 makes `left` zero, and the 0 travels down to line 7. Line 7
 has no mistake in it. The question it asks has no answer when no rows
 are left. You can also print values to follow the trail, and this works
@@ -410,7 +410,7 @@ even when there is no error to read.
 
 </details>
 
-**13. Predict.** Your toolkit's `digit_at` from
+**13. Predict.** Your *toolkit*{.term}'s `digit_at` from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold)
 takes a number and a place. What do you think happens here? Which of
 the four questions is the error about?
@@ -431,7 +431,7 @@ only the number. So this is about *what is promised*. A function's
 promise holds only when it gets everything it asked for. An *argument*
 is Python's word for a value given to a function when it is called.
 `digit_at(2026, 0)` keeps the promise, and gives `6`. The base could be
-left out, because it has a default value, 10.
+left out, because it has a *default value*{.term}, 10.
 
 </details>
 

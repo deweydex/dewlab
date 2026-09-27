@@ -11,12 +11,12 @@ Each answer is hidden until you open it. Each one is one answer.
 Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
-Your toolkit is loaded on this page, so `count_items` is ready to use,
+Your *toolkit*{.term} is loaded on this page, so `count_items` is ready to use,
 and so are `factorial`, `total` and the rest.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: calls-itself-practice-scratch-1
@@ -47,7 +47,7 @@ Lift off!
 
 The call for 3 prints 3, then calls `countdown(2)`, which prints 2 and
 calls `countdown(1)`. That prints 1 and calls `countdown(0)`, which is
-the base case. It prints "Lift off!" and makes no more calls. The
+the *base case*{.term}. It prints "Lift off!" and makes no more calls. The
 `return` with nothing after it ends the call and returns `None`.
 
 </details>
@@ -83,18 +83,18 @@ themselves: passport, tickets, charger and book.
 </details>
 
 **3. Explain.** In `countdown` from problem 1, which lines are the base
-case, and which are the recursive case? Why does the countdown always
+case, and which are the *recursive case*{.term}? Why does the countdown always
 reach its base case, for any whole number from 0 up?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The base case is the `if seconds == 0:` branch. It prints "Lift off!"
+The base case is the `if seconds == 0:` *branch*{.term}. It prints "Lift off!"
 and makes no more calls. The recursive case is the last two lines: print
-the number, then hand `seconds - 1` to the same function.
+the number, then hand `seconds - 1` to the same *function*{.term}.
 
 Each call hands on a number one smaller. Starting from a whole number,
 0 or more, the numbers go down one at a time, so they must land on 0.
-That is the second rule for a recursion that ends: every call is a step
+That is the second rule for a *recursion*{.term} that ends: every call is a step
 closer to the base case.
 
 </details>
@@ -118,7 +118,7 @@ print(count_items(playlists))    # 8
 ```
 
 There are three in "Chill", four in "Workout" with its remixes, and
-one on its own, so 8 songs. The playlists' names are in comments, not in the lists,
+one on its own, so 8 songs. The playlists' names are in comments, not in the *lists*{.term},
 so they are not counted as songs.
 
 </details>
@@ -132,15 +132,15 @@ id: calls-itself-practice-scratch-2
 # Use this cell for the core problems
 ```
 
-**5. Make.** A power is a product of the same number, again and again.
+**5. Make.** A *power*{.term} is a product of the same number, again and again.
 In words, $b$ to the power $e$ is $b$ times $b$ to the power $e - 1$,
 and any number to the power 0 is 1:
 
 $$b^e = b \times b^{e-1}, \qquad b^0 = 1$$
 
-Write `power(base, exponent)` as a recursive function, for whole-number
+Write `power(base, exponent)` as a *recursive function*{.term}, for whole-number
 exponents from 0 up. An internet address of the older kind, called
-IPv4, is 32 bits long. Use `power` to find how many different addresses
+IPv4, is 32 *bits*{.term} long. Use `power` to find how many different addresses
 32 bits can make, and check against Python's `**`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -317,12 +317,12 @@ back up to 3
 Each call prints its "down" line, then waits while the call it made
 runs. Only when that call has finished does it print its "back up"
 line. So the "back up" lines come out in the opposite order: the last
-call to start is the first to finish. That is the call stack at work.
+call to start is the first to finish. That is the *call stack*{.term} at work.
 
 </details>
 
 **9. Make.** A zip file can hold files, and other zip files, and
-those can hold zip files too. Here is one, as a nested list of the
+those can hold zip files too. Here is one, as a *nested list*{.term} of the
 sizes of the files inside it, in kilobytes (KB). Write
 `sum_nested(nested)`, which adds up every size, at any depth. It has
 the same shape as `count_items`. How many kilobytes are inside?
@@ -348,7 +348,7 @@ print(sum_nested(archive))    # 2465
 ```
 
 There are 2,465 KB inside. Only one thing changed from `count_items`: a file adds its
-own size, where a photo added 1. The running name is `running`, not
+own size, where a photo added 1. The running *name*{.term} is `running`, not
 `total`, so the toolkit's `total` stays available.
 
 </details>
@@ -395,7 +395,7 @@ grow until Python's limit stops them.
 Schlomi's change does stop the error. But then it quietly gives answers
 that mean nothing. `factorial_again(2.5)` would give $2.5 \times 1.5 \times 0.5 =
 1.875$, which is not a factorial of anything. The inputs are outside the
-promise's domain, whole numbers from 0 up. A clearer fix checks the
+promise's *domain*{.term}, whole numbers from 0 up. A clearer fix checks the
 domain at the top, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#what-goes-in-and-what-comes-out):
 
@@ -484,10 +484,10 @@ and the function returns 1.
 </details>
 
 **14. Another way.** On
-[Finding things fast](tutorial:finding-things-fast), binary search
+[Finding things fast](tutorial:finding-things-fast), *binary search*{.term}
 looked at the middle of a sorted list, then kept only the half that
-could hold the target. That page called this divide and conquer.
-Keeping half is the same search on a smaller problem, so binary search
+could hold the *target*{.term}. That page called this *divide and conquer*{.term}.
+Keeping half is the same *search*{.term} on a smaller problem, so binary search
 can be written as a recursion. Finish this
 version, which searches between the places `low` and `high`, and prints
 each part it looks at. How many parts does it look at to find the last
@@ -601,7 +601,7 @@ library = [
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Start with an empty list, `found = []`.
+1. Start with an *empty list*{.term}, `found = []`.
 2. For an item that is not a list, `append` it to `found`.
 3. For an item that is a list, `all_items(item)` returns a list.
    `found + that_list` joins two lists into one.

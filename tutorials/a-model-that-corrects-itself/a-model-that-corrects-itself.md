@@ -23,10 +23,11 @@ worlds:
 
 # The perceptron: a model that learns from its mistakes
 
-So far in this module, every model has been a fixed formula. A matrix
-transformation, a system of equations and even the π estimate, once its
+Most models are fixed once they are made. A matrix transformation, a
+system of equations and an estimate of π from random darts, once its
 seed is set, all return the same answer every time you give them the
-same numbers.
+same numbers. A Markov chain is built by counting a book once, and its
+counts never change after that.
 
 On this page we build a different kind of model. It starts out wrong on
 purpose. Then it changes its own numbers, based on the mistakes it makes.

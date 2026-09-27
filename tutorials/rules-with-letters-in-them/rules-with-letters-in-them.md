@@ -17,7 +17,7 @@ covers:
 
 # Rules with letters in them: expressions, equations and identities
 
-Open a photo gallery on a website. The page has a header 30 pixels
+Open a photo gallery on a website. The page has a header 30 *pixels*{.term}
 tall, and under it rows of photos, each row 50 pixels tall. Your
 browser window is 280 pixels tall. How many rows fit?
 
@@ -30,16 +30,16 @@ On this page we:
 
 - tell three kinds of sentence with letters in them apart: an
   expression, an equation and an identity
-- put a number in for a letter, and add `evaluate` to the toolkit
-- keep an expression like $3x^2 + 5x - 2$ as a list of numbers
+- put a number in for a letter, and add `evaluate` to the *toolkit*{.term}
+- keep an expression like $3x^2 + 5x - 2$ as a *list*{.term} of numbers
 - simplify an expression by collecting the parts that belong together
 - multiply out brackets with a loop, and find the three weights that
   draw a curve on a screen
 
-> **The space we're in.** We work with the real numbers, and one letter
+> **The space we're in.** We work with the *real numbers*{.term}, and one letter
 > at a time, usually $x$. A letter stands for a number, so any move we may make with
 > a number, we may make with the letter. Python has no letters of this
-> kind. A Python name must have a value before we use it. So we check
+> kind. A Python *name*{.term} must have a value before we use it. So we check
 > our algebra by giving the letter one value after another. We usually
 > do not say it, but maths writes $3x$ for "3 times $x$", and Python
 > needs `3 * x`.
@@ -75,11 +75,11 @@ $$50n + 30$$
 
 On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first),
-an expression was a piece of code that Python turns into one value.
+an *expression*{.term} was a piece of code that Python turns into one value.
 In maths, an expression can have letters in it too. It is a rule made
 of numbers, letters and operations, such as $50n + 30$ or $x^2 - 4$. It
 has a value once each letter has a value. Here $n$ is a name for any
-number we choose to put in, like the parameter of a function.
+number we choose to put in, like the *parameter*{.term} of a *function*{.term}.
 
 Now the question. "How many rows make exactly 280 pixels?" is written
 
@@ -100,7 +100,7 @@ An *identity* is an equation that is true for every value of its
 letters. Here $n$ is a name for every number at once. An identity is a
 promise: whatever number you put in, the two sides agree.
 
-The cell tries 1 to 8 rows, and asks the equation and the identity
+The *cell*{.term} tries 1 to 8 rows, and asks the equation and the identity
 of each. Pause here and guess which rows will say `True` in each
 column. Then run it.
 
@@ -149,9 +149,9 @@ To *evaluate* an expression is to find its value for one value of
 its letter. Putting the number in place of the letter is called
 *substitution*.
 
-The order of operations from
+The *order of operations*{.term} from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#which-comes-first)
-still holds. In $3x^2$, the power comes first, then the multiply. What
+still holds. In $3x^2$, the *power*{.term} comes first, then the multiply. What
 will each line print when $x$ is $-2$?
 
 ```python exec
@@ -163,7 +163,7 @@ print((3 * x) ** 2 + 5 * x - 2)
 
 The first line is $3 \times 4 - 10 - 2 = 0$. The second squares $-6$,
 and gives 24. The brackets moved the power to a new place in the
-sequence of steps.
+*sequence*{.term} of steps.
 
 ### Terms, coefficients and a list
 
@@ -209,14 +209,14 @@ Which list is $2x^2 - 7$?
 
 Here is the rule for evaluating, in words: multiply each coefficient by
 $x$ to the power of its index, and add up the results. In symbols, with
-$c_i$ for the coefficient at index $i$, it is the sigma from
+$c_i$ for the coefficient at *index*{.term} $i$, it is the sigma from
 [Doing it again](tutorial:doing-it-again#sigma-a-loop-written-by-mathematicians):
 
 $$c_0 + c_1 x + c_2 x^2 + \dots + c_n x^n = \sum_{i=0}^{n} c_i x^i$$
 
 Replace the `...` with a loop:
 
-1. Start a running total at 0.
+1. Start a *running total*{.term} at 0.
 2. For each `power` in `range(len(coefficients))`, add
    `coefficients[power] * x ** power` to it.
 3. After the loop, return the running total.
@@ -301,7 +301,7 @@ def evaluate(coefficients, x):
     return value
 ```
 
-In the last two rows, $x$ is 0.1, a float. Two routes to a float can
+In the last two rows, $x$ is 0.1, a *float*{.term}. Two routes to a float can
 differ in the last digit, so those two rows may not match exactly.
 `close_enough` from [Does it work?](tutorial:does-it-work#close-enough)
 compares two floats like these.
@@ -393,7 +393,7 @@ bracket times one term of the second:
 <img src="photo-with-bars.svg" alt="A rectangle x + 3 wide and x + 5 tall, cut into four pieces. At the top left is the photo, a square x by x, marked x². To its right is the strip, 3 wide and x tall, marked 3x. Below the photo is the bar, x wide and 5 tall, marked 5x. At the bottom right is the corner, 3 by 5, marked 15. Beside the rectangle: (x + 3)(x + 5) = x² + 3x + 5x + 15 = x² + 8x + 15.">
 
 Adding the four pieces, and collecting the like terms $5x$ and $3x$,
-gives the area:
+gives the *area*{.term}:
 
 $$(x + 3)(x + 5) = x^2 + 8x + 15$$
 

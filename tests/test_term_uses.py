@@ -72,4 +72,4 @@ def test_check_reads_a_marked_term(tmp_path):
         '<p>A <em class="term">matrix</em> and an <em class="term">elephant</em>.</p>',
         [{"term": "matrix", "kind": "concept", "definition": "a grid", "origin": EARLIER}],
     )
-    assert term_uses.unmatched_marks(page) == ["elephant"]
+    assert term_uses.unmatched_marks(page) == ["elephant (names no concept)"]

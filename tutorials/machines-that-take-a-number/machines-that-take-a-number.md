@@ -25,7 +25,7 @@ covers:
 A weather station, a phone and a 3D printer all know the temperature.
 But the small chip that senses it knows nothing about degrees. It produces
 a voltage, and a rule turns that voltage into a temperature. The
-rule takes one number in and gives one number out. That is a function.
+rule takes one number in and gives one number out. That is a *function*{.term}.
 
 Here is the question for this page. Give the rule a voltage the chip
 could never make, and it answers −350 °C. That is colder than anything
@@ -36,20 +36,20 @@ On this page we:
 
 - write one rule as a function in maths and in Python, and see that the
   two are the same idea
-- ask which inputs a function accepts, and which outputs it can give
-- see an algorithm as a function on a set of inputs
+- ask which *inputs*{.term} a function accepts, and which outputs it can give
+- see an *algorithm*{.term} as a function on a set of inputs
 - tell a function that returns a value from one that only does
   something
 - run a function backwards, with its inverse
-- join two functions into one, and add `compose` to the toolkit
+- join two functions into one, and add `compose` to the *toolkit*{.term}
 
 > **The space we're in.** Most functions on this page take one number
-> and return one number. We work in the real numbers, $\mathbb{R}$,
+> and return one number. We work in the *real numbers*{.term}, $\mathbb{R}$,
 > where no number squares to make a negative one. Python gives us `def`
 > and `return`, which we met on
 > [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold).
 > People rarely say that Python never checks that a function keeps its
-> promise. The docstring says the promise, and tests check it.
+> promise. The *docstring*{.term} says the promise, and tests check it.
 
 ## Warm-up
 
@@ -98,12 +98,12 @@ Maths writes that rule like this:
 
 $$f(x) = 100x - 50$$
 
-We read $f(x)$ as "f of x". The letter $f$ is the function's name, $x$
+We read $f(x)$ as "f of x". The letter $f$ is the function's *name*{.term}, $x$
 stands for the input, and the right-hand side is the rule. So $f(0.75)$
 means "put 0.75 in the slot": $f(0.75) = 100 \times 0.75 - 50 = 25$.
 This way of writing a function is called *function notation*.
 
-Python writes the same rule with `def`. Before you run the cell, what
+Python writes the same rule with `def`. Before you run the *cell*{.term}, what
 will each line show?
 
 ```python exec
@@ -135,7 +135,7 @@ returns a number keeps the same promise.
 
 Two words help us talk about the slot. On
 [Recipes are algorithms](tutorial:recipes-are-algorithms) we met the
-parameter: the name in the brackets of the `def` line, here `volts`.
+*parameter*{.term}: the name in the brackets of the `def` line, here `volts`.
 The value we put in when we call the function, here `0.75`, is the
 *argument*. The parameter is the slot, and the argument is what goes
 into it.
@@ -186,7 +186,7 @@ is the set of outputs it can give. The TMP36 works from −40 °C to
 Some functions in Python do check their domain. Here is one. The
 *square root* of a number is the number that, multiplied by itself,
 makes it. The square root of 16 is 4, because $4 \times 4 = 16$. We
-write it $\sqrt{16}$, and Python keeps it in the `math` module as
+write it $\sqrt{16}$, and Python keeps it in the `math` *module*{.term} as
 `math.sqrt`.
 
 What do you think each line will do? The last line is meant to stop
@@ -378,7 +378,7 @@ print(digit_at(sum_by_loop(100), place=1, base=2))
 ```
 
 The first line gives 5, the digit in the thousands place. The second
-gives 1. In binary, 5050 is `1001110111010`, and its bit in place 1 is
+gives 1. In *binary*{.term}, 5050 is `1001110111010`, and its *bit*{.term} in place 1 is
 1. Look at the order of events. Python calculates `sum_by_loop(100)`
 first, and gets 5050. Only then does that number go into `digit_at`.
 The inside of the brackets happens before the outside, as it did with
@@ -396,7 +396,7 @@ $$f^{-1}(y) = \frac{y + 50}{100}$$
 
 We read $f^{-1}$ as "f inverse". The *inverse* of a function is a
 function that undoes it. If $f$ takes $x$ to $y$, then $f^{-1}$ takes
-$y$ back to $x$. The −1 here is a name, not a power.
+$y$ back to $x$. The −1 here is a name, not a *power*{.term}.
 
 What will these three lines show? The second and third put one machine's
 output into the other's slot.

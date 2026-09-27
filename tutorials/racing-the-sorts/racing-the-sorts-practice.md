@@ -11,9 +11,9 @@ Each answer is hidden until you open it. Each one is one answer.
 Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
-Your toolkit is loaded on this page, so `shell_sort`, `selection_sort`,
+Your *toolkit*{.term} is loaded on this page, so `shell_sort`, `selection_sort`,
 `insertion_sort`, `binary_search` and `median` are ready to use. The
-counting racers from the page are not in the toolkit, so the first cell
+counting racers from the page are not in the toolkit, so the first *cell*{.term}
 below holds them. Run it once before anything else.
 
 ## Warm-up
@@ -84,8 +84,8 @@ def shell_count(values):
 print("The racers are ready.")
 ```
 
-**1. Predict.** A teacher sorts 20 exam marks with selection sort. How
-many comparisons does it make? Calculate it before you check with
+**1. Predict.** A teacher *sorts*{.term} 20 exam marks with *selection sort*{.term}. How
+many *comparisons*{.term} does it make? Calculate it before you check with
 `selection_count(random_list(20))`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -103,7 +103,7 @@ in order: `[7, 8, 9, 10, 11, 12]`. How many comparisons does
 
 It makes 5. Each time from the second on looks once to its left, finds a smaller
 time, and stays where it is. That is one comparison for each of the 5
-times after the first. For a list already in order, insertion sort
+times after the first. For a *list*{.term} already in order, *insertion sort*{.term}
 makes $n - 1$ comparisons.
 
 </details>
@@ -169,7 +169,7 @@ $$\frac{2000 \times 1999}{2} = 1\,999\,000$$
 print(selection_count(random_list(2000)))    # 1999000
 ```
 
-That is 4.002 times 499,500, which is quadratic growth.
+That is 4.002 times 499,500, which is *quadratic growth*{.term}.
 
 </details>
 
@@ -187,7 +187,7 @@ comparisons does `is_in_order` make on a list of $n$ values?
    `False` at once.
 3. If the loop finishes, return `True`.
 
-**Think about:** what should an empty list give?
+**Think about:** what should an *empty list*{.term} give?
 
 **Try this next:** is `is_in_order` quicker than sorting the list and
 comparing?
@@ -215,9 +215,9 @@ gives `True`, because it has no pair in the wrong order.
 
 </details>
 
-**7. Fix.** Schlomi, who is learning Python too, wrote her own Shell
-sort to put the sizes of eight photos in order, in kilobytes. Halving
-the gap is dividing by 2, so she wrote `gap / 2`. That is one way
+**7. Fix.** Schlomi, who is learning Python too, wrote her own *Shell sort*{.term}
+to put the sizes of eight photos in order, in kilobytes. Halving
+the *gap*{.term} is dividing by 2, so she wrote `gap / 2`. That is one way
 to read "halve". The cell is meant to fail. Read the last line of
 the error, find the line that stops it, and change it.
 
@@ -244,7 +244,7 @@ print(shell_sort_draft([1507, 1320, 1745, 1288, 1602, 1411, 1390, 1533]))
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The last line says `'float' object cannot be interpreted as an
-   integer`. Which name holds a float?
+   integer`. Which *name*{.term} holds a *float*{.term}?
 2. The first pass, with a gap of 4, ran. What is `gap` for the second
    pass?
 3. Which kind of division, from
@@ -308,8 +308,8 @@ selection sort?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Both make 4,950. A list in reverse order is insertion sort's worst
-case: every song slides all the way to the front, so it compares with
+Both make 4,950. A list in reverse order is insertion sort's *worst case*{.term}:
+every song slides all the way to the front, so it compares with
 every song before it, $1 + 2 + \dots + 99 = \frac{99 \times 100}{2} =
 4950$. Selection sort makes 4,950 on every list of 100.
 
@@ -321,7 +321,7 @@ print(insertion_count(backwards), selection_count(backwards))    # 4950 4950
 </details>
 
 **10. Another way.** Here are seven response times of a website, in
-milliseconds: `[210, 190, 3400, 180, 230, 1850, 200]`. Find the median
+milliseconds: `[210, 190, 3400, 180, 230, 1850, 200]`. Find the *median*{.term}
 by sorting them with `shell_sort` and taking the middle one. Then check
 with your toolkit's `median` from
 [What is typical?](tutorial:what-is-typical).
@@ -487,7 +487,7 @@ plt.legend()
 The Shell sort line lies close to the bottom, reaching about 15,000 at
 1,000 values while selection sort reaches 499,500. It still bends
 upwards a little, so it grows faster than a straight line, but much
-more slowly than the other two. The dictionary here is the kind from
+more slowly than the other two. The *dictionary*{.term} here is the kind from
 [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts).
 
 </details>

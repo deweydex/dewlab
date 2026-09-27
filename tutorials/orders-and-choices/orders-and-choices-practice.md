@@ -16,14 +16,14 @@ may be different and work too. The last few problems are meant to
 be hard. If one feels like hard work, open its hint if it has one, or
 come back to it after the others.
 
-Your toolkit is loaded on this page: `factorial`, `permutations` and
+Your *toolkit*{.term} is loaded on this page: `factorial`, `permutations` and
 `combinations` from the tutorial, and `total`, `product` and `all_pairs`
 from the two pages before it. If you have not written one of them
 yourself, the reference version is used, so every problem works.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: orders-practice-warm-up
@@ -43,7 +43,7 @@ $5 \times 4 \times 3 \times 2 \times 1 = 5! = 120$.
 
 **2. Make.** A podcast app will play 3 of your 10 saved episodes, one
 after another. How many different running orders could it play? Decide
-which toolkit function fits, and use it.
+which toolkit *function*{.term} fits, and use it.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -128,7 +128,7 @@ print(my_combinations(4, 2))
 
 1. Calculate the line by hand with $n = 4$ and $r = 2$. What are the
    three factorials?
-2. `//` and `*` have the same rank in the order of operations. Which one
+2. `//` and `*` have the same rank in the *order of operations*{.term}. Which one
    does Python do first?
 3. The formula has $r!\,(n-r)!$ together on the bottom of the fraction.
 
@@ -295,10 +295,10 @@ for lit in range(0, 8):
     print(lit, combinations(7, lit))
 ```
 
-**12. Make.** A seven-segment display has seven bars of light. The cell
+**12. Make.** A *seven-segment display*{.term} has seven bars of light. The cell
 above prints $C(7, r)$ for every $r$ from 0 to 7, which is the number
 of patterns with exactly $r$ segments lit. Put those eight numbers in a
-list and add them up with `total`. What do you get, and where have you
+*list*{.term} and add them up with `total`. What do you get, and where have you
 seen that number before?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -307,7 +307,7 @@ seen that number before?
 2. Call `total` on the list after the loop.
 3. Compare the answer with $2^7$.
 
-**Think about:** a truth table with 7 inputs, one for each segment. How
+**Think about:** a *truth table*{.term} with 7 inputs, one for each segment. How
 many of its rows have exactly 2 inputs True?
 
 </details>
