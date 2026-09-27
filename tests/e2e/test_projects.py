@@ -1,4 +1,4 @@
-"""Choose your project (DECISIONS_LOG 7.282), on the fixture's
+"""Choose your project (DECISIONS_LOG 7.283), on the fixture's
 `choosing-a-project` page: the cards and the table come before the
 projects, the projects start closed, a card opens its project and nothing
 else, the choice is remembered, and a project counts towards progress only

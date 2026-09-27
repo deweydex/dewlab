@@ -1,4 +1,4 @@
-"""Choose your project (DECISIONS_LOG 7.282): a page's `projects:`
+"""Choose your project (DECISIONS_LOG 7.283): a page's `projects:`
 frontmatter names each project with its card and table fields, and each
 project is a `<div class="dl-project" data-project="…">` in the page that
 opens with its `##` heading. The build writes the cards and the table just
