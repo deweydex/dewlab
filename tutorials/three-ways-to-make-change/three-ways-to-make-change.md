@@ -374,7 +374,7 @@ least one of the first coin, `coins[0]`, and then the rest of it makes
 made from `coins[1:]` alone. No handful is both kinds, so nothing is
 counted twice.
 
-The same questions come back again and again, so a cache helps here
+The same questions are asked again and again, so a cache helps here
 too. What should the key be? The answer depends on the amount and on
 which coins are still allowed, and on nothing else, so those two make a
 safe key.

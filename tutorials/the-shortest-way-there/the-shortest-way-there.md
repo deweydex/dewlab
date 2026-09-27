@@ -20,8 +20,8 @@ worlds:
 
 # Graph search: the shortest way there
 
-A folder tree never loops back: each folder has one way in. A map is
-different. From the station you can walk down one street and come back
+A folder tree never loops: each folder has one way in. A map is
+different. From the station you can walk along one street and return
 by another. On this page we search a map for the shortest way from one
 place to another. We use the breadth-first walk from
 [Recursion: finding every file in a folder
@@ -85,13 +85,16 @@ while to_visit and len(order) < 12:
 print(order)
 ```
 
-The station comes back, and the market, and the bridge. The market
+The station appears again, and the market, and the bridge. The market
 leads back to the station, which leads to the market again. On a map
 with loops, this walk never ends: it goes round in circles. A folder
 tree could never do that, because nothing leads back up.
 
-The fix is to remember every place we have already found, in a set,
-and never add one twice.
+The fix is to remember every place we have already found, and never
+add one twice. The cell keeps them in a *set*: a collection, like a
+list, that holds each value only once, and that answers `in` quickly.
+`{start}` makes a set with one value in it, and `visited.add(neighbour)`
+adds one more.
 
 ```python exec
 id: going-round-in-circles-2
@@ -119,7 +122,7 @@ What will the cell print? Look at the map first.
 
 - station market bridge school library park harbour
 - station market school library park harbour bridge
-  - It follows one street as far as it goes, then comes back.
+  - It follows one street as far as it goes, then returns.
 - station bridge park harbour market school library
   - It goes straight towards the harbour.
 ```

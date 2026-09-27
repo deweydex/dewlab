@@ -287,7 +287,7 @@ def worst_gap(limit, coins):
 ```
 
 ```hint
-Start with `worst = (0, None)`. For each amount, work out how many extra
+Start with `worst = (0, None)`. For each amount, find how many extra
 coins greedy uses, and keep it only if it is *more* than the worst so
 far, so that the first amount is the one kept.
 ```
@@ -327,7 +327,7 @@ def worst_gap(limit, coins):
 ```
 
 ```hint
-Start with `worst = (0, None)`. For each amount, work out how many extra
+Start with `worst = (0, None)`. For each amount, find how many extra
 coins greedy uses, and keep it only if it is *more* than the worst so
 far, so that the first amount is the one kept.
 ```
@@ -367,7 +367,7 @@ def worst_gap(limit, coins):
 ```
 
 ```hint
-Start with `worst = (0, None)`. For each amount, work out how many extra
+Start with `worst = (0, None)`. For each amount, find how many extra
 coins greedy uses, and keep it only if it is *more* than the worst so
 far, so that the first amount is the one kept.
 ```
@@ -407,7 +407,7 @@ def worst_gap(limit, coins):
 ```
 
 ```hint
-Start with `worst = (0, None)`. For each amount, work out how many extra
+Start with `worst = (0, None)`. For each amount, find how many extra
 coins greedy uses, and keep it only if it is *more* than the worst so
 far, so that the first amount is the one kept.
 ```

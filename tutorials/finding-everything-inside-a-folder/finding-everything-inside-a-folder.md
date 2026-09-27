@@ -71,7 +71,7 @@ holds no files and one subfolder, trip, which holds two
 files.](photos-tree.svg)
 
 This shape is called a *tree*. A tree is a structure where each value can
-lead to several others, and if you follow it, you never come back to
+lead to several others, and if you follow it, you never return to
 where you started.
 
 - `photos` holds two files, and two subfolders: `"2025"` and `"2026"`.
@@ -189,7 +189,7 @@ What will the cell print?
 ```
 
 The recursion goes as deep as it can down the first branch, all the way
-to `"summer"`, before it comes back for `"2026"`. It finishes one whole
+to `"summer"`, before it returns for `"2026"`. It finishes one whole
 branch before it starts the next.
 
 ## Walking it without recursion

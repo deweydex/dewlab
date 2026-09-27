@@ -222,7 +222,7 @@ def places_within(graph, start, steps):
 ```
 
 ```hint
-Work out how far every place is, as in problem 1, then keep the places
+Find how far away every place is, as in problem 1, then keep the places
 that are not too far, and sort them.
 ```
 
@@ -273,7 +273,7 @@ def places_within(graph, start, steps):
 ```
 
 ```hint
-Work out how far every place is, as in problem 1, then keep the places
+Find how far away every place is, as in problem 1, then keep the places
 that are not too far, and sort them.
 ```
 
@@ -323,7 +323,7 @@ def places_within(graph, start, steps):
 ```
 
 ```hint
-Work out how far every place is, as in problem 1, then keep the places
+Find how far away every place is, as in problem 1, then keep the places
 that are not too far, and sort them.
 ```
 
@@ -381,7 +381,7 @@ def places_within(graph, start, steps):
 ```
 
 ```hint
-Work out how far every place is, as in problem 1, then keep the places
+Find how far away every place is, as in problem 1, then keep the places
 that are not too far, and sort them.
 ```
 
