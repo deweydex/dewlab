@@ -5530,3 +5530,28 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **Left out.** Database Methods, Web Authoring and Full Stack have no mixed sets. The issue's list of what is missing does not name them, and their work (SQL, HTML and CSS, a whole application) does not fit a set of Python problems; whether they need one is a question for a later issue.
 
 *Cost to change: small. Seven new pages, and every cell id in them, become a contract on 2 October. No existing id changed.*
+
+---
+
+**7.281 — The integrated course's capstone becomes a menu of 7 briefs, and the page's world choice is the menu.** The content issue (#336), part of #306.
+
+**What it replaces.** `bringing-it-all-together` was four review problems on polynomials, equations and sets. It used nothing from trigonometry, calculus or statistics, and offered no choice. It is rewritten in place as "Capstone project: choose a brief" and keeps its id, so the course, the topic group and the old address in `courses/redirects.yaml` still reach it. Its old cell ids are gone; the ids were free until 2 October, and the new page has no cells.
+
+**The menu is the world choice.** Each brief is a world: images and pixels, sound and waves, codes and secrets, simulations and games, electronics, machine learning, and sky and sea. The chooser under the title lists them with one line each, so choosing a world is choosing a brief, and switching worlds shows the others. Building the menu from worlds needed no new code.
+
+**Each brief.** An individual version, and a group version for 2 to 4 people in which each person owns a part; how a class runs the project is the teacher's decision, and the page says so once. The same three milestones in every brief: a first working piece, something that grows (with two or three named ways to grow it), and something shared. A `python challenge` starter that opens in the Notebook. A list of where the maths appears, linking the course's own pages, and two questions to think about. The page ends with questions for every brief and a reading for each. There is no marking scheme, as the style guide asks of a project brief.
+
+**The starters were run where a reader runs them.** Each was opened from the built page in the Notebook and run in Pyodide in Chromium: no errors, and every number a brief quotes (3.17 and 3.161 volts, 5.4 minutes on 6 days, a shift of 11) is what its starter prints. Two things the starters found:
+
+- `daylight.csv` gives Dublin's daylight to 0.01 of an hour, so the biggest change from one day to the next, 5.4 minutes, is shared by 6 days between 7 March and 3 April. The brief makes that its first question, instead of naming a fastest day that the data cannot pick out.
+- The Notebook can draw a sound but cannot play one. The sound brief's starter writes a `.wav` file, and the brief says where to find it: the Workbench's "Use a folder on my computer", in Chrome or Edge. A way to play a sound in the Notebook is a question for a later issue.
+
+**Not every brief uses trigonometry or calculus.** Codes and secrets draws on counting, chance, logic and algebra; machine learning on chance, straight lines and statistics. The issue asks for trigonometry or calculus in each brief, but in a cipher it would be decoration, so the page says that most briefs use them.
+
+**Outcome claims.** The old page claimed MIT-1.6, 1.8, 1.12 and 2.2 and PDP-LO10. Other pages cover each of them, and the new page claims none, like the course's other making pages (`a-tool-of-your-own`, `a-model-of-your-own`).
+
+**Glossary.** *capstone*, *brief*, *milestone*, and the words the briefs introduce: *pixel*, *sample* (in a sound), *capacitor* and *glider*. `the-team-project`, later in the course, also defines *brief*, with the same meaning.
+
+**Course file.** The series "Review Problems" is now "Capstone project", and the course description says what the capstone is.
+
+*Cost to change: small. One page rewritten under its old id, with no cells, so no new cell id becomes a contract.*
