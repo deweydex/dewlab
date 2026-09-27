@@ -5583,7 +5583,37 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 
 *Cost to change: small. One module, imported by the runtime and so in the standalone bundle; three sections of `shell.html`; one storage key. Removing it leaves a key nothing reads.*
 
-**7.283 — A term the reader meets every page or two is marked only near its start; the site's own words the same.** Josh, 27 September 2026, choosing between the pilot on Programming Foundations (#413, about a sixth of the candidates marked) and 7.279 (seven in ten): "lets find something in between the pilot and 7.279... but yes no words that are part of the app itself except in the beginning".
+---
+
+**7.283 — Patterns in pictures: a display setting for readers who cannot tell the tints apart, and glossary files for every Zen page.** Josh, 27 September 2026, on the colour question 7.274 left open: "we can do the color words but I am concerned that it wont look good? how is colorblindness otherwise handled especially given that we have themes like light and dark and high contrast? Is this solveable there with a new colorblind friendly option?" He then chose a new setting, off by default, that high contrast also turns on, and the Zen pictures first.
+
+**What was measured.** The generated pictures fill their parts with four tints, `--dl-highlight-bg` (amber), `-green`, `-blue` and `-pink`, and high contrast leaves the tints as they are. Under simulated colour blindness (the Machado, Oliveira and Fernandes 2009 matrices, compared by ΔE), amber, green and blue stay at least about 15 apart for protanopia and deuteranopia, in both themes. For tritanopia, green and blue fall to about 6, which is hard to tell apart. A page that says "the green pieces" gives such a reader nothing to match.
+
+**The setting.** *Patterns in pictures*, under Appearance, then Accessibility, beside high contrast. `TEXTURE_DEFAULTS` gains `patterns: "off"`, and `applyTexture()` sets `data-patterns="on"` on `<html>`. The page shell sets it before the first paint, as it does for the other settings. `dev/graphics/palette.py`'s `add_patterns()` gives each tinted shape a copy on top, filled with a pattern for its tint: stripes one way for amber, the other way for blue, both for green, where amber columns cross blue rows, and dots for pink. The copy has the class `dl-pattern` and `aria-hidden`, since it says nothing the shape under it does not. The stylesheet hides `.dl-pattern` unless `data-patterns="on"` or `data-contrast="high"` is set. So a picture looks as it did for every other reader. The patterns are drawn in `currentColor`, so they follow the theme. A bead or a dot smaller than a radius of 9 keeps only its tint. `dev/graphics/zen.py` runs every picture through it, and 46 SVGs changed.
+
+**Not chosen.** Changing the tints for everyone would have made every picture on the site different in order to fix one colour pair. A separate colour-blind theme would multiply the themes by two. A pattern layer changes nothing for a reader who does not ask for it.
+
+**The words.** Where a Zen page named a part by colour alone, it now names it by place as well, and keeps the colour. `hops-that-add` and its practice page call the rulers the top ruler and the bottom ruler. `joining-two-stacks` says which hearts came from which stack. `a-fraction-of-a-fraction` names the columns, the rows and the part where they cross, and says where the setting is. The alt text keeps the colours.
+
+**Glossary files.** No Zen page had a `<slug>.glossary.yaml`, so no Zen term reached the Reference or the definitions on hover (7.273). Thirty-two pages now have one, written to `.claude/skills/tutorial-glossary/SKILL.md` and read for plain English and accuracy. Each term is defined on the page that teaches it, and no term appears twice in the course. Some repeat a Math Basics term (*exponent*, *fraction*, *power*), as glossaries elsewhere do. These are the definitions for this reader, and they record where the term was taught. Practice pages and mixed sets have none, as the skill says. Where a later page used a term in italics again, it is now `*term*{.term}`, so it shows its definition there.
+
+**Terms used before their page.** A term's entry belongs on the first page that explains it, even in passing, so the Reference has it wherever the word is used. Five entries moved earlier:
+- *decimal* moved to `does-multiplying-make-it-bigger`, from `more-on-the-bottom`.
+- *whole number* moved to `a-fraction-of-a-fraction`, and *cube* to `the-long-way`, both from `the-side-of-a-square`.
+- *digit* moved to `powers-of-ten`, from `sides-that-never-end`.
+- *algebra* moved to `before-we-start`, where the refrain "a letter in algebra means the same thing" begins, from `fractions-with-holes`.
+
+The later pages keep their own sentence about each word, and their italic becomes `{.term}`, so it reads as a reminder. `adding-slices` used `2 ** step` "from the page on powers", a page the reader has not reached yet. It now says what `**` does there, and that the page on powers comes later. Most other early uses the check lists are everyday English (*of*, *row*, *step*, *pattern*), or names `before-we-start` gives as a preview.
+
+**Marks that named nothing.** After main's stricter lookup (7.279), five of the new marks showed no definition. *log*, *square root*, *dividing* and *cross out* are now names on the entries they mean, and *cube root* joins its entry beside *square root*. A lone *of* is a stopword and cannot be matched, so `narrowing-it-down` puts it in quotes instead. `dev/term_uses.py --check` now reports none.
+
+**Found, not fixed here.** `dev/curriculum_map.py` reads a page title in italics as a term, and misses an italic phrase that breaks across a line.
+
+**Checked.** `tests/test_picture_patterns.py` checks what `add_patterns()` writes. A browser test checks that the layer is hidden by default, shown by the setting and shown by high contrast. The pictures were looked at in Chromium, off and on, in light, dark and high contrast.
+
+*Cost to change: the setting is one key in `TEXTURE_DEFAULTS` and one row in the shell. A glossary entry can move to another page at any time; only cell and page ids are a contract. Another picture script gets patterns by calling `add_patterns()`. No page id or cell id changed.*
+
+**7.284 — A term the reader meets every page or two is marked only near its start; the site's own words the same.** Josh, 27 September 2026, choosing between the pilot on Programming Foundations (#413, about a sixth of the candidates marked) and 7.279 (seven in ten): "lets find something in between the pilot and 7.279... but yes no words that are part of the app itself except in the beginning".
 
 **The rule.** 7.279's rule stands: the first use on a page that means the term, and never the everyday sense. Two kinds of term are marked only on the tutorial that introduces them and the next three, with their practice pages:
 - **the site's own words**: *cell*, *toolkit* and *illustration*, the three the glossary defines;

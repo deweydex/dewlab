@@ -1,0 +1,16 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "hops for a product, log(a × b) = log a + log b"
+    kind: formula
+    definition: >
+      The hops for a product are the hops of each part, added. hops(10 → 2
+      × 3) is hops(10 → 2) + hops(10 → 3). The usual way to write it is
+      log(a × b) = log a + log b.
+    example: "math.log10(2) + math.log10(3)   # the same as math.log10(6)"
+  - term: slide rule
+    kind: concept
+    definition: >
+      A slide rule is two rulers marked in hops, one above the other. Each
+      number sits at hops(10 → the number) from 1. Sliding one ruler along
+      the other adds two numbers' hops, and that multiplies the two
+      numbers.

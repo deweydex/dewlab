@@ -193,7 +193,7 @@ two stacks*: when we multiply, we add the exponents.
 
 ## 5. Closer to 0, to a half, or to 1?
 
-Look at the yellow ruler. The whole ruler is one hop of ×10.
+Look at the bottom ruler. The whole ruler is one hop of ×10.
 
 ```question
 id: closer-to-1
@@ -211,7 +211,7 @@ hops(10 → 1.2) is closer to
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Put your finger on 9 on the yellow ruler. Is it near the start, the
+1. Put your finger on 9 on the bottom ruler. Is it near the start, the
    middle or the far end?
 2. Do the same for 3.
 3. 1.2 is not marked. It is a little after 1.
@@ -267,41 +267,41 @@ does 2.5 sit?
 
 ## 7. Reading the slide rule
 
-In this picture, the blue ruler has slid along. Its 1 sits over the
-yellow 2.
+In this picture, the top ruler has slid along. Its 1 sits over the
+bottom 2.
 
-<img src="two-times-three.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the blue 1 over the yellow 2, labelled 1 over 2. The other is the blue 3 over the yellow 6, labelled 3 over 6.">
+<img src="two-times-three.svg" alt="The two rulers again. The blue top ruler has slid to the right, so its 1 sits over the 2 on the yellow bottom ruler. Dashed lines mark two places. One is the top 1 over the bottom 2, labelled 1 over 2. The other is the top 3 over the bottom 6, labelled 3 over 6.">
 
 ```question
 id: reading-the-slide-rule-1
 type: fill-in-the-blank
 
-The blue 4 sits over the yellow
+The top 4 sits over the bottom
 {8|6|10}.
 
-The yellow 10 is under the blue
+The bottom 10 is under the blue
 {5|8|10}.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The blue 1 sits over the yellow 2. So the slide multiplies by 2.
-2. Each blue number sits over 2 times itself.
+1. The top 1 sits over the bottom 2. So the slide multiplies by 2.
+2. Each number on the top ruler sits over 2 times itself.
 3. Which number, times 2, is 10?
 
-**Think about:** the blue 6 would sit over 12. Is 12 on the yellow
+**Think about:** the top 6 would sit over 12. Is 12 on the bottom
 ruler?
 
-**Try this next:** slide the blue 1 over the yellow 3. What would sit
-under the blue 3?
+**Try this next:** slide the top 1 over the bottom 3. What would sit
+under the top 3?
 
 </details>
 
 <details class="dl-answer"><summary>one way through it</summary>
 
-The blue 4 sits over 2 × 4, which is 8. The yellow 10 is under the
-blue 5, because 2 × 5 is 10. The blue 6 is past the end of the yellow
-ruler, because 2 × 6 is 12, and the yellow ruler stops at 10.
+The top 4 sits over 2 × 4, which is 8. The bottom 10 is under the
+top 5, because 2 × 5 is 10. The top 6 is past the end of the bottom
+ruler, because 2 × 6 is 12, and the bottom ruler stops at 10.
 
 </details>
 
@@ -431,14 +431,14 @@ hops(2 → 32 ÷ 4) is 5 − 2, which is
 {3|7|8}.
 ```
 
-On the slide rule, dividing slides back. To find 8 ÷ 2, put the blue 2
-over the yellow 8. Where is the blue 1 now?
+On the slide rule, dividing slides back. To find 8 ÷ 2, put the top 2
+over the bottom 8. Where is the top 1 now?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The blue 2 is hops(10 → 2) from the blue 1.
-2. So the blue 1 sits hops(10 → 2) back from the yellow 8.
-3. Which yellow number, times 2, is 8?
+1. The top 2 is hops(10 → 2) from the top 1.
+2. So the top 1 sits hops(10 → 2) back from the bottom 8.
+3. Which number on the bottom ruler, times 2, is 8?
 
 **Think about:** 8 ÷ 2 asks which number, times 2, makes 8.
 
@@ -448,8 +448,8 @@ over the yellow 8. Where is the blue 1 now?
 
 <details class="dl-answer"><summary>one way through it</summary>
 
-The blue 1 sits over the yellow 4. The blue 2 is hops(10 → 2) from the
-blue 1, so the blue 1 is hops(10 → 8) − hops(10 → 2) from the yellow 1.
+The top 1 sits over the bottom 4. The top 2 is hops(10 → 2) from the
+top 1, so the top 1 is hops(10 → 8) − hops(10 → 2) from the bottom 1.
 That is hops(10 → 4). And 8 ÷ 2 is 4.
 
 </details>

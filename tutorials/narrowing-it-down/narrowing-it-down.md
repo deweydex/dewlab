@@ -54,7 +54,7 @@ One tenth of those 100 can juggle. One tenth of 100 is
 3. Now put 100 people into 10 equal groups.
 
 **Think about:** on [Multiplying fractions: a fraction of a
-fraction](tutorial:a-fraction-of-a-fraction), *of* meant times. One
+fraction](tutorial:a-fraction-of-a-fraction), "of" meant times. One
 fifth of 500 is $\frac{1}{5} \times 500$.
 
 **Try this next:** what is one half of 1000?
@@ -511,7 +511,7 @@ only 1? Then
 $$6 \times 10^{10} \times f_{bt} = 1$$
 
 On [Dividing fractions: how many fit?](tutorial:how-many-fit), a number
-times its partner, the *reciprocal*, made 1. $\frac{1}{4} \times 4 = 1$.
+times its partner, the *reciprocal*{.term}, made 1. $\frac{1}{4} \times 4 = 1$.
 
 ```question
 id: one-in-60-billion-1

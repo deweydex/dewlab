@@ -36,6 +36,7 @@
     if (s.width) r.style.setProperty("--dl-line-width", s.width + "rem");
     if (s.link) r.style.setProperty("--dl-link", s.link);
     if (s.motion && s.motion !== "normal") r.setAttribute("data-motion", s.motion);
+    if (s.patterns === "on") r.setAttribute("data-patterns", "on");
     if (s.codeLineHeight) r.style.setProperty("--dl-code-line-height", s.codeLineHeight);
   } catch (e) { /* private mode, blocked storage: fall through to defaults */ }
 })();
@@ -474,6 +475,14 @@
       <div class="dl-seg" data-texture="contrast" role="radiogroup" aria-labelledby="dl-seg-contrast-label">
         <button type="button" data-value="normal" role="radio">off</button>
         <button type="button" data-value="high" role="radio">on</button>
+      </div>
+    </div>
+
+    <div class="dl-texture-row" data-keywords="patterns stripes pictures diagrams colour blindness color blindness accessibility">
+      <span id="dl-seg-patterns-label">Patterns in pictures</span>
+      <div class="dl-seg" data-texture="patterns" role="radiogroup" aria-labelledby="dl-seg-patterns-label">
+        <button type="button" data-value="off" role="radio">off</button>
+        <button type="button" data-value="on" role="radio">on</button>
       </div>
     </div>
 

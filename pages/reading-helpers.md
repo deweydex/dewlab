@@ -37,6 +37,9 @@ then **Appearance**. There you can choose:
 - a font built for easier reading: Lexend, or OpenDyslexic;
 - **High contrast**, which gives black text on white, or white on black in
   dark mode;
+- **Patterns in pictures**, which adds stripes to the coloured parts of
+  some pictures, so you can tell the parts apart without the colours.
+  **High contrast** turns it on too;
 - **Reduce motion**, which stops things moving on the page.
 
 Your choices stay the same from page to page.

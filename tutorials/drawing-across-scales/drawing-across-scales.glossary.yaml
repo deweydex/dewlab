@@ -1,0 +1,34 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "scale, normal scale"
+    kind: concept
+    definition: >
+      The scale of a line is the way numbers are spread along it. On a
+      normal scale, equal gaps are equal amounts, like 0, 1,000, 2,000 and
+      3,000.
+  - term: "hops scale, log scale, logarithmic scale"
+    kind: concept
+    definition: >
+      A hops scale is a scale where equal gaps are equal hops of ×10, like
+      1, 10, 100 and 1,000. Each number sits at hops(10 → the number). One
+      short line can then show very small and very big things. The usual
+      name is a log scale, or a logarithmic scale.
+  - term: observable universe
+    kind: concept
+    definition: >
+      The observable universe is all the space we can see from the Earth,
+      in every direction. It is about 8.8 × 10²⁶ metres across.
+  - term: "plt.yscale(), plt.xscale()"
+    kind: function
+    python: [matplotlib.pyplot.yscale, matplotlib.pyplot.xscale]
+    definition: >
+      plt.yscale("log") makes the up scale of a graph a hops scale.
+      plt.xscale("log") does the same for the across scale.
+    example: 'plt.yscale("log")'
+  - term: Kepler's third law
+    kind: formula
+    definition: >
+      Kepler's third law links how far a planet is from the Sun with how
+      long its year is. If a planet is 4 times as far from the Sun, its
+      year is 4^(3/2) = 8 times as long. On a graph with two hops scales,
+      the planets make a straight line.

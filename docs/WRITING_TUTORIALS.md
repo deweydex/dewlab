@@ -1311,7 +1311,7 @@ term is not being introduced again, and the `{.term}` tells the vocabulary
 report and the glossary skill the same. Mark the first use on a page that
 means the term, and only that one. "Set a seed" is not a set.
 
-Some terms are marked only near the start (DECISIONS_LOG 7.283): on the
+Some terms are marked only near the start (DECISIONS_LOG 7.284): on the
 tutorial that introduces them and the next three, with their practice
 pages. They are the site's own words (*cell*, *toolkit*, *illustration*),
 and any term a course uses on three in five of its pages after introducing
