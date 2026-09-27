@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: unknown
+    kind: concept
+    definition: >
+      The unknown is a number we do not know yet. In □ + 3 = 7, the unknown
+      is the number in the box. Books usually write it as a letter, like x
+      in x + 3 = 7.
+  - term: equation
+    kind: concept
+    definition: >
+      An equation is a sentence with an = sign between two sides, like
+      □ + 3 = 7. The = sign says the two sides have the same amount, like
+      the two pans of a level balance.
+  - term: solve
+    kind: concept
+    definition: >
+      To solve an equation is to find the number in the box. For
+      □ + 3 = 7, the box holds 4, because 4 + 3 = 7.
