@@ -16,7 +16,7 @@ and `if`. There are no new tools, only new messages to read.
 
 ## 1. Which kind
 
-For each of these, is it a syntax error, a runtime error, a logical error,
+For each of these, is it a *syntax error*{.term}, a *runtime error*{.term}, a *logical error*{.term},
 or no error at all?
 
 - (a) `if total > 10` followed by an indented `print(total)`
@@ -82,7 +82,7 @@ What will it print?
 
 ## 4. Name the error
 
-Before you run each cell, write the error you expect in its comment.
+Before you run each cell, write the error you expect in its *comment*{.term}.
 
 ```python exec
 id: naming-the-error-early-1
@@ -145,7 +145,7 @@ program needs to say what to type, or check what it got.
 
 ## 6. Where to look first
 
-In a traceback, where do you find the error that stopped the program? And
+In a *traceback*{.term}, where do you find the error that stopped the *program*{.term}? And
 when a syntax error puts its marker under a word that looks fine, where do
 you look?
 

@@ -39,7 +39,7 @@ On this page we:
 - list every outfit, with one loop inside another
 - meet experiments, outcomes, and the list of every outcome
 - find the counting principle, and check it against the list
-- add `all_pairs` to your *toolkit*{.term}, and list every *pixel*{.term} and colour
+- add `all_pairs` to your toolkit, and list every *pixel*{.term} and colour
 - count PINs and passwords, far too many to list
 
 > **The space we're in.** We look at choices that do not change each other.
@@ -83,7 +83,7 @@ have?
 
 Let's start smaller: three tops and two pairs of trousers. Each outfit
 is one top with one pair of trousers. How many outfits is that? Guess
-before you run the *cell*{.term}.
+before you run the cell.
 
 ```python exec
 id: counting-every-outfits-1

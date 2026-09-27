@@ -14,13 +14,13 @@ way** means reach the same place by a second route. The answers are
 folded away until you open them, and each shows one answer. Yours
 may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, `at_least_one` included, along with
+Your toolkit is loaded on this page, `at_least_one` included, along with
 `all_pairs`, `product`, `combinations` and `simulate` from earlier in
 the unit.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: chances-practice-warm-up
@@ -433,7 +433,7 @@ print(names, chance_of_shared_bucket(names))
 It prints `5` and about `0.618`. With 4 names the chance is about
 0.427, so 5 is the first count where a shared bucket is more likely
 than not. With 365 in place of 12, the same loop stops at 23. A shared
-bucket does not break the program, because it keeps a short *list*{.term} in each
+bucket does not break the program, because it keeps a short list in each
 bucket. But the birthday problem says the programmer should plan for
 it from the start.
 
@@ -520,7 +520,7 @@ print(simulate(room_of_2, 1000))
 
 The two steps are in the wrong order. The day is added to `seen` first,
 so the check `day in seen` always finds it, even for the first person.
-The *function*{.term} returns True at once, every time. Check first, then
+The function returns True at once, every time. Check first, then
 add:
 
 ```python

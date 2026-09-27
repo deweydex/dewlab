@@ -115,7 +115,7 @@ symbols, with a small 2 to say which base we are in:
 
 $$1101_2 = 1 \times 2^3 + 1 \times 2^2 + 0 \times 2^1 + 1 \times 2^0 = 8 + 4 + 0 + 1$$
 
-Before you run the next *cell*{.term}, calculate that. In Python, `0b` in front of
+Before you run the next cell, calculate that. In Python, `0b` in front of
 a number means "this is binary". Run it to check.
 
 ```python exec

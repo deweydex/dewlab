@@ -35,7 +35,7 @@ On this page we:
 - meet *exclusive or*{.term}, XOR, on single bits, and Python's `^`
 - use XOR to flip a bit, and to flip it back again
 - XOR whole numbers, one column of bits at a time, and flip a colour
-- add `parity_bit` to the *toolkit*{.term}, and use it to catch a flipped bit
+- add `parity_bit` to the toolkit, and use it to catch a flipped bit
 
 > **The space we're in.** Every value on this page is a bit, 0 or 1, or a
 > whole number made of bits, from 0 upwards. Python lets us treat `True`
@@ -84,7 +84,7 @@ as 0. Then the stairs light is a rule on two bits: 1 when the bits are
 different, and 0 when they are the same.
 
 Python has an *operator*{.term} for XOR on bits: `^`, the small roof above the 6 on
-most keyboards. Before you run this *cell*{.term}, write down the four answers you
+most keyboards. Before you run this cell, write down the four answers you
 expect.
 
 ```python exec
@@ -161,7 +161,7 @@ print(shuffle)
 ```
 
 After an odd number of presses, shuffle is on. After an even number, it
-is back where it started. Each line gives the *name*{.term} `shuffle` a new value,
+is back where it started. Each line gives the name `shuffle` a new value,
 calculated from the old one, and the order of those lines decides the
 result.
 
@@ -278,7 +278,7 @@ id: bits-parity-1
 print(0 ^ 0 ^ 0 ^ 0 ^ 1 ^ 1 ^ 1 ^ 0)
 ```
 
-Typing every bit is slow, so let's write a toolkit *function*{.term}. It takes the
+Typing every bit is slow, so let's write a toolkit function. It takes the
 bits as a *string*{.term} of 0s and 1s, like the text `to_binary` gives, and XORs
 them together one at a time. `int("1")` turns the text `"1"` into the
 number 1, the same way it turned `False` into 0 on

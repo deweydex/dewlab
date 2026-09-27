@@ -12,12 +12,12 @@ predict, the prediction is the exercise, so make one before you run
 anything. An answer shows one way. Yours may be different and work
 too.
 
-Your *toolkit*{.term} is loaded on this page, so `all_pairs`, `total` and
+Your toolkit is loaded on this page, so `all_pairs`, `total` and
 `product` are ready to use, and so is everything from earlier pages.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: counting-every-practice-scratch-1
@@ -172,7 +172,7 @@ by listing the outcomes and counting the ones we want.
 
 </details>
 
-**7. Fix.** Schlomo, who is learning Python too, writes a *function*{.term} to
+**7. Fix.** Schlomo, who is learning Python too, writes a function to
 list every text style a small editor offers: one font and one size. It
 gives only some of them. Find why, and change it.
 

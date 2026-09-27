@@ -43,7 +43,7 @@ On this page we:
 - draw the curve, and name the point where it turns
 - see that the turning point sits halfway between the *roots*{.term}
 - rewrite a *quadratic*{.term} so that we can read its top or bottom from it
-- add `vertex` to the *toolkit*{.term}, and check it with a search in tiny steps
+- add `vertex` to the toolkit, and check it with a search in tiny steps
 
 > **The space we're in.** Quadratics, $ax^2 + bx + c$, with $a$ not 0,
 > over the *real numbers*{.term}. A letter's curve is only drawn for some *inputs*{.term},
@@ -110,7 +110,7 @@ gives a quadratic in $t$:
 
 $$y = 400t^2 - 440t + 112$$
 
-The *cell*{.term} calculates the height both ways, at every tenth from 0 to 1.
+The cell calculates the height both ways, at every tenth from 0 to 1.
 Before you run it, where do you think the curve is lowest?
 
 ```python exec
@@ -201,7 +201,7 @@ A parabola has exactly one turning point, and that point is called the
 
 When $a$, the *coefficient*{.term} of $x^2$, is positive, the parabola opens
 upwards, like a valley, and the vertex is its lowest point. The lowest
-value a *function*{.term} reaches is its *minimum*. The bowl's $a$ is 400, so
+value a function reaches is its *minimum*. The bowl's $a$ is 400, so
 its height has a minimum, $-9$.
 
 When $a$ is negative, the parabola opens downwards, like a hill, and
@@ -293,7 +293,7 @@ drawing anything.
 How do we get the second form from the first? On
 [Rules with letters in them](tutorial:rules-with-letters-in-them#a-move-that-works-once),
 $(x + n)^2 = x^2 + 2nx + n^2$ for any number $n$. So a bracket squared
-makes an $x$ *term*{.term} with twice its number. We want $-6x$, so we halve
+makes an $x$ term with twice its number. We want $-6x$, so we halve
 $-6$ and get $-3$: $(x - 3)^2 = x^2 - 6x + 9$. That is 4 short of
 $x^2 - 6x + 13$, so we add 4:
 
@@ -507,7 +507,7 @@ its own. Unit 9 comes back to this bowl with that idea.
 
 | The question | On this page |
 |---|---|
-| What is named here? | $t$ for how far along a curve we are; the vertex $(h, k)$; a quadratic named by its *list*{.term} of coefficients |
+| What is named here? | $t$ for how far along a curve we are; the vertex $(h, k)$; a quadratic named by its list of coefficients |
 | What is promised? | `vertex(a, b, c)` promises the turning point; vertex form promises the same rule, written to show its top or bottom |
 | What happens when? | the search tries every thousandth in order and keeps the smallest; completing the square halves $b$ first, then corrects the number at the end |
 | What does this space let us do? | a real square is never negative, so the vertex is a true top or bottom; a letter's curve only uses $t$ from 0 to 1 |

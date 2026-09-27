@@ -13,8 +13,8 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, with `evaluate`, `solve_quadratic`
-and `close_enough`. `solve_quadratic_complex` was a *cell*{.term} on the
+Your toolkit is loaded on this page, with `evaluate`, `solve_quadratic`
+and `close_enough`. `solve_quadratic_complex` was a cell on the
 tutorial, not a toolkit tool, so the core section starts by writing it
 again. `cmath` is not loaded. Each cell that needs it starts with
 `import cmath`.
@@ -204,7 +204,7 @@ print(turned)
 <details class="dl-answer"><summary>answer</summary>
 
 The last line is `NameError: name 'j' is not defined`. On its own, `j`
-is a *name*{.term}, like `x` or `total`, and nothing has that name. The number
+is a name, like `x` or `total`, and nothing has that name. The number
 $i$ is written `1j`, with the 1:
 
 ```python

@@ -40,7 +40,7 @@ On this page we:
 - find a triangle's *area*{.term} from two sides and the angle between them
 - solve triangles with no *right angle*{.term}, with the cosine rule and the sine
   rule
-- add `angle_between` to the *toolkit*{.term}
+- add `angle_between` to the toolkit
 
 > **The space we're in.** A flat plane, with points as `(x, y)` tuples.
 > We say angles in degrees, and Python's `math` works in radians, as on
@@ -92,7 +92,7 @@ right angle.
 On [Going round in circles](tutorial:going-round-in-circles), a point
 turned round a circle, and its x and y came from the cosine and the
 sine. A right-angled triangle is a piece of that picture. Your line of
-sight is a *radius*{.term}, and the tree is the point's height. The *cell*{.term} draws
+sight is a *radius*{.term}, and the tree is the point's height. The cell draws
 it with `point_on_circle` from your toolkit.
 
 ```python exec
@@ -132,7 +132,7 @@ at your eye:
 - the *adjacent* side is the short side that touches the angle: the
   level line.
 
-From the treetop, the *names*{.term} would swap.
+From the treetop, the names would swap.
 
 The adjacent side is the point's x, the hypotenuse times the cosine. The
 opposite side is its y, the hypotenuse times the sine. And the
@@ -453,7 +453,7 @@ and then `math.acos` gives the angle.
 ## A tool for the angle at a corner
 
 Games and maps often know three points and want the angle at the middle
-one. Is the player facing the ball? Here is a toolkit *function*{.term} for
+one. Is the player facing the ball? Here is a toolkit function for
 that, with the cosine rule run backwards inside it. The body is yours:
 
 1. Use `distance` to find the two sides that meet at `q`, and the side

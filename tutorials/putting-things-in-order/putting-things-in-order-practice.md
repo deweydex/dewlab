@@ -18,8 +18,8 @@ you usually cannot.
 
 ## 1. One pass
 
-Trace one full pass of bubble sort over `[5, 1, 4, 2, 8]`. What is the
-list after the pass? The cell prints the list after each swap, to check
+Trace one full pass of *bubble sort*{.term} over `[5, 1, 4, 2, 8]`. What is the
+list after the pass? The cell prints the list after each *swap*{.term}, to check
 your trace.
 
 ```python exec
@@ -41,7 +41,7 @@ The 5 travelled to its place in one pass, which is what "bubbling" means.
 ## 2. How many passes
 
 How many passes does bubble sort need on `[5, 1, 4, 2, 8]` before the list
-is sorted? How many does a plain bubble sort do?
+is *sorted*{.term}? How many does a plain bubble sort do?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -53,8 +53,8 @@ is sorted. Problem 6 fixes that.
 
 ## 3. Insertion, traced
 
-Trace insertion sort over `[3, 1, 4, 1, 5]`. Write down the list after
-each element is placed.
+Trace *insertion sort*{.term} over `[3, 1, 4, 1, 5]`. Write down the list after
+each *element*{.term} is placed.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -69,7 +69,7 @@ sorted twice, by two different things, as in problem 12.
 
 ## 4. Selection, traced
 
-Trace selection sort over `[64, 25, 12, 22, 11]`.
+Trace *selection sort*{.term} over `[64, 25, 12, 22, 11]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -437,8 +437,8 @@ the order they had, because the sort is stable.
 
 ## 14. A function that calls itself
 
-Binary search can be written so that it calls itself on a smaller range,
-in place of a loop. A function that calls itself uses *recursion*. What
+*Binary search*{.term} can be written so that it calls itself on a smaller range,
+in place of a *loop*{.term}. A *function*{.term} that calls itself uses *recursion*. What
 does every recursive function need, to stop?
 
 ```python exec
@@ -565,7 +565,7 @@ What will the last line print?
 
 <details class="dl-answer"><summary>why</summary>
 
-The answer is `B`. A loop over a dictionary gives its keys, in the order they were
+The answer is `B`. A loop over a *dictionary*{.term} gives its *keys*{.term}, in the order they were
 added. `key.items()` gives the pairs.
 
 </details>

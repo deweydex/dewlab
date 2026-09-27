@@ -39,7 +39,7 @@ On this page we:
 - draw each fact as a line, and find the answer where the lines cross
 - solve by elimination, said in words and then in symbols
 - turn elimination into a formula, and add `solve_simultaneous` to the
-  *toolkit*{.term}
+  toolkit
 - see when two facts have no single answer, and draw why
 - take the same idea to three unknowns
 
@@ -90,7 +90,7 @@ and the number of text requests $c$. The first fact, in symbols, is
 $$a + c = 230$$
 
 Is that enough to find $a$? Try some *pairs*{.term}: 200 images and 30 pages
-of text, or 115 and 115. Each one makes 230. The *cell*{.term} counts every
+of text, or 115 and 115. Each one makes 230. The cell counts every
 pair of whole numbers that fits. How many do you expect?
 
 ```python exec
@@ -173,7 +173,7 @@ any move is allowed, if we do it to both sides. The plan, in words:
 
 1. Change one equation so that $c$ has the same number in front of it
    in both.
-2. Take one equation away from the other. The $c$ *terms*{.term} cancel, and
+2. Take one equation away from the other. The $c$ terms cancel, and
    only $a$ is left.
 3. Solve for $a$.
 4. Put $a$ back into either equation, and find $c$.
@@ -307,7 +307,7 @@ divisions, and not after?
 ```
 
 How does your `solve_simultaneous` compare with a solution? The table
-below runs the same calls on your *function*{.term} and on one way to write it,
+below runs the same calls on your function and on one way to write it,
 side by side. The first row is the server log. The last row builds two
 equations from an answer we choose, $(1.5, 4)$, and asks the tool to
 find that answer again. Where a row is different, try that call on its

@@ -5629,9 +5629,25 @@ The later pages keep their own sentence about each word, and their italic become
 
 *Cost to change: medium. The mechanism is one shared module and a `sys.stdin` swap; the ```typed block is new syntax a page may come to rely on. Going back to a stand-in would mean rewriting those pages again.*
 
+**7.285 — A term the reader meets every page or two is marked only near its start; the site's own words the same.** Josh, 27 September 2026, choosing between the pilot on Programming Foundations (#413, about a sixth of the candidates marked) and 7.279 (seven in ten): "lets find something in between the pilot and 7.279... but yes no words that are part of the app itself except in the beginning".
+
+**The rule.** 7.279's rule stands: the first use on a page that means the term, and never the everyday sense. Two kinds of term are marked only on the tutorial that introduces them and the next three, with their practice pages:
+- **the site's own words**: *cell*, *toolkit* and *illustration*, the three the glossary defines;
+- **a course's constant words**: a term the course uses on three in five of its pages after introducing it.
+
+A reader meets both every page or two, so they stay fresh without help, and a dotted line under them on every later page is clutter. A term met twice and then not for a month is where forgetting happens, and the rule keeps marking those wherever they appear.
+
+**Measured, not listed.** `dev/term_uses.py --common` works out the constant words from the built pages, so the list follows the pages as they change. Today it finds, among others, *function*, *name*, *list* and *term* on the Dewey Track; *table*, *row*, *column*, *query* and *database* in Database Methods; *class*, *method*, *object* and *inheritance* in OOP; and *rule*, *browser* and *element* in Web Authoring. At one in two it also caught words that are frequent in their everyday sense (*turn*, *pair*, *rise*, *caller*), which would have stopped their technical sense being marked; three in five leaves only each course's constant vocabulary. The candidate list leaves a term out past its start, and `--check` lists a mark past its start. A page in two courses is past a term's start only when it is past it in both: a course that does not count the term as constant wants it marked everywhere. *loop* is constant in Programming and Design Principles but not in the integrated course, so a Foundations page, which both list, keeps its *loop*.
+
+**What changed.** 340 of 7.279's marks on the Dewey Track came out, all past their start: *cell* 89, *toolkit* 81, *function* 73, *name* 53, *list* 41 and *term* 3. Programming Foundations, where the pilot had marked 52 uses, was marked again to the full rule: 194 marks on 33 pages. Reviewing them took out seven *value* marks in the everyday sense (a list's middle value, a value handed to a function), which would have shown the dictionary's key-and-value definition.
+
+**Also in #413.** `dev/term_uses.py` reads only what the author wrote (a cell's label, its report panel and a predict block's buttons had listed "cell" on nearly every page); a longer term wins ("selection sort" is not "selection"); a term with a capital is matched as written ("there is none" is not None). `dev/curriculum_map.py` reads a marked later use as the plain word, where the `{.term}` had read as the word "term" and made every marked page "use" *term* before the algebra page that introduces it.
+
+*Cost to change: small. The share and the window are two constants in `dev/term_uses.py`; after changing either, `--check` lists every mark that no longer fits.*
+
 ---
 
-**7.286 — A cell can play a sound: `play(samples, rate)`.** Issue #415. Josh, 27 September 2026: "can we do the sound thing?"
+**7.287 — A cell can play a sound: `play(samples, rate)`.** Issue #415. Josh, 27 September 2026: "can we do the sound thing?"
 
 **How it works.** Python runs in a Worker, which has no `AudioContext`, so it cannot reach the speakers. But a cell's output is HTML, added to the page as it arrives. So `play()` in `tutorial_tools.py` writes the samples as a 16-bit mono WAV with Python's own `wave` module, and puts it into the output as an `<audio controls>` player whose `src` is a `data:` address. That needs no new code on the page, and it works the same on a tutorial page, in the Notebook, offline and in a downloaded copy. The reader presses play: a browser does not start a sound by itself, and in a classroom that is the better default anyway.
 

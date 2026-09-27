@@ -10,8 +10,8 @@ worlds:
 
 # How programming languages came to be — Practice
 
-Problems on binary, hexadecimal and ASCII, on the history and the
-paradigms, and three from earlier pages. Try the conversions by hand
+Problems on *binary*{.term}, *hexadecimal*{.term} and *ASCII*{.term}, on the history and the
+*paradigms*{.term}, and three from earlier pages. Try the conversions by hand
 before you use the cell to check them. The aim is that you can read the
 notation yourself, without Python reading it for you.
 
@@ -41,7 +41,7 @@ print(to_binary(72), from_binary("01001000"), hex(72), chr(72))
 
 ## 1. Binary to base 10
 
-Change these binary numbers to base 10 by hand, then check: `1101`,
+Change these binary numbers to *base 10*{.term} by hand, then check: `1101`,
 `10000`, `11111`, `10101010`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -179,7 +179,7 @@ never built?
 <details class="dl-answer"><summary>answer</summary>
 
 She wrote a step-by-step method for the Analytical Engine to calculate a
-sequence of numbers, with loops and conditional branching, in notes to a
+*sequence*{.term} of numbers, with loops and conditional branching, in notes to a
 translation that became longer than the paper. The machine was never
 built, and that matters. A program does not need a working machine to
 exist. It is a list of exact instructions, whether or not anything can
@@ -190,14 +190,14 @@ follow them yet.
 ## 11. In order
 
 Put these in order, and say what each one made easier: high-level
-languages, machine code, assembly language.
+languages, *machine code*{.term}, *assembly language*{.term}.
 
 <details class="dl-answer"><summary>answer</summary>
 
 1. Machine code, in the 1940s: binary the hardware runs directly.
 2. Assembly, in the 1950s: short names like `ADD` in place of binary,
-   turned back into binary by an assembler.
-3. High-level languages, from 1957: code that reads like English or
+   turned back into binary by an *assembler*{.term}.
+3. *High-level languages*{.term}, from 1957: code that reads like English or
    mathematics, no longer tied to one kind of machine.
 
 Each step made things easier for people. The hardware never needed any of
@@ -207,16 +207,16 @@ them.
 
 ## 12. Compiled or interpreted
 
-Why does a compiled program usually run faster? And why is an interpreted
+Why does a compiled *program*{.term} usually run faster? And why is an interpreted
 language usually quicker to find and fix mistakes in?
 
 <details class="dl-answer"><summary>answer</summary>
 
 A compiled program was translated before it ran, so no time is spent
-translating while it runs, and the compiler could look at the whole
+translating while it runs, and the *compiler*{.term} could look at the whole
 program to make it faster. An interpreted program is translated as it
 runs, which takes time, but there is no extra step before you see what a
-changed line does. When you are hunting a bug, that is worth a great
+changed line does. When you are hunting a *bug*{.term}, that is worth a great
 deal.
 
 </details>
@@ -239,23 +239,23 @@ without a very good reason.
 
 Which paradigm is each closest to? What told you?
 
-- (a) `total = 0`, then a loop adding each price to it
+- (a) `total = 0`, then a *loop*{.term} adding each price to it
 - (b) `sum(price for price in prices)`
 - (c) `basket.add(4.50)`, then `basket.total()`
 - (d) `apply_to_all(double, prices)`
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) Procedural: a variable changed step by step. (b) Declarative: it says
-what the answer is. (c) Object-oriented: the basket keeps its prices, and
-adding and totalling are things it does. (d) Functional: a function,
+(a) Procedural: a *variable*{.term} changed step by step. (b) *Declarative*{.term}: it says
+what the answer is. (c) *Object-oriented*{.term}: the basket keeps its prices, and
+adding and totalling are things it does. (d) *Functional*{.term}: a function,
 `double`, is handed to another function as a value.
 
 </details>
 
 ## 15. Back to a loop
 
-Rewrite `doubled = [n * 2 for n in numbers]` in the procedural style.
+Rewrite `doubled = [n * 2 for n in numbers]` in the *procedural*{.term} style.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -434,7 +434,7 @@ What will it do?
 <details class="dl-answer"><summary>why</summary>
 
 It stops with an `AssertionError`. `.sort()` sorts its list and returns
-`None`, and `None` is not `[1, 2, 3]`. The test fails because the mistake
+`None`, and `None` is not `[1, 2, 3]`. The *test*{.term} fails because the mistake
 is in the test itself. It meant `sorted([3, 1, 2])`.
 
 </details>

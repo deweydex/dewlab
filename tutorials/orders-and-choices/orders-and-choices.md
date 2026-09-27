@@ -37,7 +37,7 @@ On this page we:
 - count the ways to fill the first few places: permutations
 - count the ways to choose when order does not matter: combinations
 - check every formula against a loop that lists every case
-- add `factorial`, `permutations` and `combinations` to the *toolkit*{.term}
+- add `factorial`, `permutations` and `combinations` to the toolkit
 
 > **The space we're in.** We use whole numbers, and groups of things that
 > are all different from each other, such as eight different drones or
@@ -123,7 +123,7 @@ played cannot play again.
 
 ### Your turn
 
-1. Add a fourth song, "Ode to My Family", to the *list*{.term} in the *cell*{.term} above.
+1. Add a fourth song, "Ode to My Family", to the *list*{.term} in the cell above.
 2. Before you change anything else, guess how many orders there will be
    now.
 3. Add a fourth loop, `for fourth in songs:`, and make the `if` check
@@ -135,7 +135,7 @@ played cannot play again.
 
 Four songs have $4 \times 3 \times 2 \times 1 = 24$ orders. For any
 number of songs, the pattern is the same: one choice fewer at each place,
-down to 1. This product has its own *name*{.term} and its own sign.
+down to 1. This product has its own name and its own sign.
 
 The *factorial* of a whole number $n$ is the product of every whole
 number from 1 up to $n$. We write it $n!$ and say "n factorial". It
@@ -212,7 +212,7 @@ orders could they print in?
 
 ### Your turn: factorial in your toolkit
 
-The cell below is the start of `factorial`, a new *function*{.term} for your
+The cell below is the start of `factorial`, a new function for your
 toolkit. Replace the `...` with a loop that multiplies every whole
 number from 1 up to `n`, the way the cell `orders-factorial-1` did, and
 return the result.

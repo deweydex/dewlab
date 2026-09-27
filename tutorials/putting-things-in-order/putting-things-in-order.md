@@ -42,16 +42,16 @@ both start with 1, which comes before 9, so both go first. The same thing
 puts `file10` before `file9` in a folder of files. Every sort needs a rule
 that says which of two things comes first.
 
-In a real program, `sorted()` is the way to sort. This page builds three
+In a real *program*{.term}, `sorted()` is the way to sort. This page builds three
 sorts by hand anyway: bubble sort, insertion sort and selection sort. Each
 is short enough to remember all at once. When you build them, you see what
 sorting costs, and why some ways are far slower than others.
 [Searching a list](tutorial:finding-things) showed why it matters. Binary
-search needs sorted data.
+search needs *sorted*{.term} data.
 
 ## The swap
 
-Every sort here moves elements by *swapping* two of them: exchanging their
+Every sort here moves *elements*{.term} by *swapping* two of them: exchanging their
 places. Python does it in one line.
 
 ```python exec
@@ -63,7 +63,7 @@ print(numbers)
 
 `a, b = b, a` works because Python calculates the whole right-hand side
 first, and only then gives the values to the names on the left. Many other
-languages need a spare variable: `spare = a`, then `a = b`, then
+languages need a spare *variable*{.term}: `spare = a`, then `a = b`, then
 `b = spare`.
 
 ## Bubble sort: let things rise
@@ -284,7 +284,7 @@ A reversed list is a good test, and not enough on its own.
 
 ## Sorting with a key
 
-`sorted()` can sort by anything. Give it a function as `key=`, and it sorts
+`sorted()` can sort by anything. Give it a *function*{.term} as `key=`, and it sorts
 by what that function returns for each element. `reverse=True` puts the
 largest first.
 
@@ -517,7 +517,7 @@ Python Software Foundation. *Sorting Techniques*.
 and `key=` work, including why Python's sort is stable, and when that matters.
 
 Polylog (2022). *The Simplest Sorting Algorithm (You've Never Heard Of).*
-<https://www.youtube.com/watch?v=_W0yUJlscRA>. The algorithm has two loops
+<https://www.youtube.com/watch?v=_W0yUJlscRA>. The *algorithm*{.term} has two *loops*{.term}
 and one swap. It looks wrong, but it sorts. Polylog shows why it works.
 The video is four minutes long. Compare it with the three sorts on this
 page. Which one is it closest to?

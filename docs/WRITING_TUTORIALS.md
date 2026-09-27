@@ -1339,12 +1339,23 @@ when a reader points at it, taps it, or reaches it with Tab (DECISIONS_LOG
 give a later page's use of an earlier term the same help, write
 `*matrix*{.term}`. It shows in plain type with the dotted line, since the
 term is not being introduced again, and the `{.term}` tells the vocabulary
-report and the glossary skill the same. Mark a later use only where it
-means the term, and once on a page is enough. "Set a seed" is not a set.
+report and the glossary skill the same. Mark the first use on a page that
+means the term, and only that one. "Set a seed" is not a set.
+
+Some terms are marked only near the start (DECISIONS_LOG 7.285): on the
+tutorial that introduces them and the next three, with their practice
+pages. They are the site's own words (*cell*, *toolkit*, *illustration*),
+and any term a course uses on three in five of its pages after introducing
+it, such as *function* on the Dewey Track or *table* in Database Methods.
+A reader meets these every page or two, so they stay fresh without help,
+and a dotted line under them on every page is clutter.
+`python3 dev/term_uses.py --common` lists them for each course.
+
 `python3 dev/term_uses.py <slug>` lists the places a page uses an earlier
-term unmarked, with the sentence around each, for you to decide. The
-italics mark concepts only: a function name is code, and a formula is
-maths, and neither is ever marked.
+term unmarked, with the sentence around each, for you to decide. It leaves
+out a term past its start. `--check` lists a mark that would show nothing,
+or one past its term's start. The italics mark concepts only: a function
+name is code, and a formula is maths, and neither is ever marked.
 
 ---
 

@@ -16,14 +16,14 @@ may be different and work too. The last few problems are meant to
 be hard. If one feels like hard work, open its hint if it has one, or
 come back to it after the others.
 
-Your *toolkit*{.term} is loaded on this page: `factorial`, `permutations` and
+Your toolkit is loaded on this page: `factorial`, `permutations` and
 `combinations` from the tutorial, and `total`, `product` and `all_pairs`
 from the two pages before it. If you have not written one of them
 yourself, the reference version is used, so every problem works.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: orders-practice-warm-up
@@ -43,7 +43,7 @@ $5 \times 4 \times 3 \times 2 \times 1 = 5! = 120$.
 
 **2. Make.** A podcast app will play 3 of your 10 saved episodes, one
 after another. How many different running orders could it play? Decide
-which toolkit *function*{.term} fits, and use it.
+which toolkit function fits, and use it.
 
 <details class="dl-answer"><summary>answer</summary>
 

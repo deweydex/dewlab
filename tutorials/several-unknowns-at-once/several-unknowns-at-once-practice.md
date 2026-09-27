@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `solve_simultaneous`
+Your toolkit is loaded on this page, including `solve_simultaneous`
 from the tutorial, `solve_linear` from
 [Solving for x](tutorial:solving-for-x) and `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule).
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: several-unknowns-practice-warm-up
@@ -171,7 +171,7 @@ places shows the sizes.
 **7. Fix.** Schlomo, who is learning Python too, wrote his own
 version, `solve_pair`. It has every line it needs. For the server log
 it gives (130, 100). For $3x + 2y = 80$ and $6x + 4y = 150$, there
-is no single answer. There the *function*{.term} stops with an error, and does
+is no single answer. There the function stops with an error, and does
 not return `None`.
 Can you find what to change?
 
@@ -310,7 +310,7 @@ thousand people. Write the two servers as *simultaneous equations*{.term} in $g$
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Server B: $y = 20$. With no $g$ in it, that is $0g + 1y = 20$.
-2. Server A: $y = 8 + 2g$. Move the $g$ *term*{.term} to the left:
+2. Server A: $y = 8 + 2g$. Move the $g$ term to the left:
    $-2g + 1y = 8$.
 3. The six numbers are `0, 1, 20, -2, 1, 8`.
 

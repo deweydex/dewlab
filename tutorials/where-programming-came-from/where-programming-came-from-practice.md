@@ -14,12 +14,12 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `total` from
+Your toolkit is loaded on this page, including `total` from
 [Doing it again](tutorial:doing-it-again), `combinations` from
 [Orders and choices](tutorial:orders-and-choices) and `insertion_sort`
 from [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards). The
 tutorial's `bernoulli_numbers` is not a toolkit tool, so the Core
-section starts with a *cell*{.term} that defines it again.
+section starts with a cell that defines it again.
 
 ## Warm-up
 
@@ -75,7 +75,7 @@ room in London, and used it to explain his engine's cards to visitors.
 
 </aside>
 
-**3. Predict.** What is the first item of this sorted *list*{.term}?
+**3. Predict.** What is the first item of this sorted list?
 
 ```python
 languages = [(1995, "JavaScript"), (1964, "BASIC"), (1991, "Python")]
@@ -108,7 +108,7 @@ that could run them. After that, change came much faster.
 ## Core
 
 This cell defines the tutorial's `bernoulli_numbers` again, with the
-*names*{.term} the problems below use. Run it first.
+names the problems below use. Run it first.
 
 ```python exec
 id: where-prog-practice-core
@@ -156,7 +156,7 @@ our 2, 4, 6, 8. Add 1 to her number to get ours.
 
 </details>
 
-**6. Fix.** This is the tutorial's *function*{.term} with one change. As in
+**6. Fix.** This is the tutorial's function with one change. As in
 the printed table of *Note G*{.term}, the two numbers of one division have been
 swapped. Run it, compare the results with the tutorial's table, and
 swap them back.

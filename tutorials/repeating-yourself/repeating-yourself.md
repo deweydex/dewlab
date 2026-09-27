@@ -22,7 +22,7 @@ covers:
 
 On [Variables, data types and text](tutorial:storing-and-computing), moving
 a whole word three places along meant writing the same line once for every
-letter. Here is a loop that does it for every letter, however long the
+letter. Here is a *loop*{.term} that does it for every letter, however long the
 word. What will it print?
 
 ```python exec
@@ -46,7 +46,7 @@ three times, once for each letter of `CAT`, and each time round `letter`
 held the next one. Change the word to your own name, in capitals, and run
 it again. The loop does not care how long it is.
 
-Our programs can run lines in order, and make decisions. This page adds
+Our *programs*{.term} can run lines in order, and make decisions. This page adds
 the third thing every program is built from: repetition.
 
 ## While loops: repeat until done
@@ -89,7 +89,7 @@ do not see a Stop button, reloading the page stops it too.)
 ### Trace it by hand
 
 Before you run the next cell, write the values of `total` and `n` for each
-time round in the comments at the bottom. What will it print at the end?
+time round in the *comments*{.term} at the bottom. What will it print at the end?
 
 ```python exec
 id: your-turn-1
@@ -347,7 +347,7 @@ mathematicians do not write it. A loop has to say it. So `total = 0`
 sits above every accumulator you write.
 
 We can make this more general. $\sum_{i=1}^{n} i^2$ means "add up the
-squares of all the integers from 1 to n":
+squares of all the *integers*{.term} from 1 to n":
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-2
@@ -385,9 +385,9 @@ multiplication.
 ### Your turn
 
 Can you calculate each of these with a loop? For each one, write
-pseudocode first, then the code.
+*pseudocode*{.term} first, then the code.
 
-1. $\sum_{i=1}^{100} i$, the sum of the first 100 natural numbers. (There
+1. $\sum_{i=1}^{100} i$, the sum of the first 100 *natural numbers*{.term}. (There
    is a famous story that the young Gauss found this in moments.)
 2. $\sum_{i=1}^{10} \frac{1}{i}$, the first 10 terms of the *harmonic
    series*. The harmonic series is the sum
@@ -440,7 +440,7 @@ each of those the inner loop runs 8 times, so the `if` runs 32 times, once
 for every pixel. `(row + column) % 2` shifts each row along by one.
 
 If the outer loop runs $n$ times, and the inner loop runs $n$ times for
-each, the total is $n \times n$, or $n^2$. Counting the steps an algorithm
+each, the total is $n \times n$, or $n^2$. Counting the steps an *algorithm*{.term}
 takes matters a great deal when we come to searching and sorting, in
 [Searching a list: linear and binary search](tutorial:finding-things) and
 [Sorting a list: bubble, insertion and selection sort](tutorial:putting-things-in-order).

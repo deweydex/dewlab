@@ -233,7 +233,7 @@ side(10)?
 
 </details>
 
-A *whole number*{.term} is a number with no fraction part: 1, 2, 3, and so
+A whole number is a number with no fraction part: 1, 2, 3, and so
 on. side(10) is not a whole number. It is a little more than 3. The
 next page is about sides like this.
 

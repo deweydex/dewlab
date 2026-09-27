@@ -23,7 +23,7 @@ covers:
 
 # Code other people can read: reviewing your toolkit
 
-Next week your team starts its project, and it will share one *toolkit*{.term}.
+Next week your team starts its project, and it will share one toolkit.
 Someone who has never seen your code opens it and finds `halvings(n)`.
 Can they tell what it does, what it needs, and what it returns,
 without asking you?
@@ -34,7 +34,7 @@ it that way. This page is about writing for that person.
 
 On this page we:
 
-- read a hard-to-read *function*{.term} the way a stranger would
+- read a hard-to-read function the way a stranger would
 - review it with a checklist built from the four questions
 - rewrite it without changing what it does, with tests checking each step
 - write *docstrings*{.term} a stranger can rely on, and let one check itself
@@ -43,7 +43,7 @@ On this page we:
 - read your own toolkit as a stranger would
 
 > **The space we're in.** Python runs any code that is valid, however
-> it is written. *Names*{.term}, *comments*{.term}, layout and docstrings are for people,
+> it is written. Names, *comments*{.term}, layout and docstrings are for people,
 > and Python ignores them. So nothing on this page changes what a
 > program does. Code is read many more times than it is written. Your whole toolkit is loaded, from
 > `digit_at` to `angle_between` and beyond.
@@ -111,7 +111,7 @@ It finds the *median*{.term}, 14.5 °C, and that matches your toolkit's
 `median`. But look at the second line of *output*{.term}. The readings are now
 in order from coldest to warmest, and the order of the hours is gone.
 Which hour was coldest? The log can no longer say. The line `l.sort()`
-sorted the caller's own *list*{.term}, as `hand.sort()` did in the warm-up.
+sorted the caller's own list, as `hand.sort()` did in the warm-up.
 
 <img src="one-list-two-names.svg" alt="Two names, log_c, the caller's name, and l, the name inside m, both point at one list. Before l.sort(), the list is 14.5, 13.0, 12.5, 16.0, 19.5, in the order the hours arrived. After l.sort(), the same list is 12.5, 13.0, 14.5, 16.0, 19.5. Both names still point at it, so log_c shows the sorted order too.">
 
@@ -186,7 +186,7 @@ Changing how code is written, without changing what it does, is called
 that worked. So a refactor starts with tests, written before any code
 is touched.
 
-The *cell*{.term} below builds a test for any median function. It compares the
+The cell below builds a test for any median function. It compares the
 function with your toolkit's `median` on four lists, the windowsill log
 among them. Then it checks that the list handed in comes back
 unchanged. Run it on `m`. It is meant to stop with an

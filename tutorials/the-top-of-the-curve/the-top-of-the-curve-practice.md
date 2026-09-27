@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `vertex` from the
+Your toolkit is loaded on this page, including `vertex` from the
 tutorial, `solve_quadratic` from
 [Solving for x](tutorial:solving-for-x) and `evaluate` from
 [Rules with letters in them](tutorial:rules-with-letters-in-them).
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: the-top-practice-warm-up

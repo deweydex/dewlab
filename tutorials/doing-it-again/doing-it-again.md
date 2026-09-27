@@ -37,7 +37,7 @@ On this page we:
 - keep a running total, and count with `range()`
 - read sigma, $\sum$, and pi, $\prod$: loops written by mathematicians
 - repeat until something is true, with `while`
-- add `total` and `product` to your *toolkit*{.term}
+- add `total` and `product` to your toolkit
 
 > **The space we're in.** Numbers, and lines of Python that run from the
 > top down. New on this page: a few lines can run again and again. Our
@@ -84,7 +84,7 @@ many lines are printed in all?
 We drop the ball from 100 cm, which is 1 metre. It keeps 80% of its
 height at each bounce, so the first bounce goes up to 80 cm, and the
 second to 80% of that, 64 cm. How high is the tenth bounce? Guess
-before you run the *cell*{.term}.
+before you run the cell.
 
 ```python exec
 id: doing-it-ball-1
@@ -126,7 +126,7 @@ SAY the ball is still bouncing
 ```
 
 In Python, the square brackets make a *list*: a row of values, kept in
-order, under one *name*{.term}. Unit 5 looks at lists properly. How many lines
+order, under one name. Unit 5 looks at lists properly. How many lines
 will the cell print? Count before you run it.
 
 ```python exec
@@ -676,7 +676,7 @@ title: some steps
 not inside it?
 ```
 
-Here is one thing about names. `total` is now a *function*{.term}. If a later cell says
+Here is one thing about names. `total` is now a function. If a later cell says
 `total = 0`, the name points at 0 instead, and the tool is gone from that
 page. That is why this page used names like `travelled` and `kept`.
 

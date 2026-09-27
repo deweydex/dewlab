@@ -11,9 +11,9 @@ Each answer is hidden until you open it. Each one is one answer.
 Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
-Your *toolkit*{.term} is loaded on this page, so `shell_sort`, `selection_sort`,
+Your toolkit is loaded on this page, so `shell_sort`, `selection_sort`,
 `insertion_sort`, `binary_search` and `median` are ready to use. The
-counting racers from the page are not in the toolkit, so the first *cell*{.term}
+counting racers from the page are not in the toolkit, so the first cell
 below holds them. Run it once before anything else.
 
 ## Warm-up
@@ -103,7 +103,7 @@ in order: `[7, 8, 9, 10, 11, 12]`. How many comparisons does
 
 It makes 5. Each time from the second on looks once to its left, finds a smaller
 time, and stays where it is. That is one comparison for each of the 5
-times after the first. For a *list*{.term} already in order, *insertion sort*{.term}
+times after the first. For a list already in order, *insertion sort*{.term}
 makes $n - 1$ comparisons.
 
 </details>
@@ -244,7 +244,7 @@ print(shell_sort_draft([1507, 1320, 1745, 1288, 1602, 1411, 1390, 1533]))
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The last line says `'float' object cannot be interpreted as an
-   integer`. Which *name*{.term} holds a *float*{.term}?
+   integer`. Which name holds a *float*{.term}?
 2. The first pass, with a gap of 4, ran. What is `gap` for the second
    pass?
 3. Which kind of division, from

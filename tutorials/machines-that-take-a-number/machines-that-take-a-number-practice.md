@@ -14,12 +14,12 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, `compose` included. Every other
-*function*{.term} a problem needs is written out in the problem.
+Your toolkit is loaded on this page, `compose` included. Every other
+function a problem needs is written out in the problem.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: machines-practice-warm-up
@@ -84,7 +84,7 @@ print(storm_km(3))
 
 This prints `1.029`. That is where the old rule "three seconds for
 every kilometre" comes from. This is one answer. Your function may
-have other *names*{.term} and do the same job.
+have other names and do the same job.
 
 </details>
 
