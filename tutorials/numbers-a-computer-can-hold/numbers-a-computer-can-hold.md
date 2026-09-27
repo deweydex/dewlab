@@ -1,7 +1,7 @@
 ---
 title: "Numbers a computer can hold"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 covers:
   the-row-and-column-of-a-pixel:
     covers: [PDP-LO4]
@@ -527,14 +527,17 @@ A real microwave reads its buttons. Python's `input()` waits for
 someone to type. A value the program asks for is *input*, and a result it
 shows is *output*.
 
-```python
+Run this cell, and type a number of seconds, such as 150. It uses your
+`digit_at`, so it works once yours does.
+
+```python exec
+id: numbers-toolkit-input
 seconds = int(input("How many seconds? "))
 print(digit_at(seconds, 1, 60), "minutes and", digit_at(seconds, 0, 60), "seconds")
 ```
 
-The Python on this page has no keyboard to listen to, so we edit a cell
-instead. `int()` turns the typed text into a whole number, because
-whatever someone types arrives as a *string*{.term}.
+`int()` turns the typed text into a whole number, because whatever
+someone types arrives as a *string*{.term}.
 
 <details class="dl-why"><summary>Why this way?</summary>
 

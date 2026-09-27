@@ -392,7 +392,7 @@ the reasoning.
 ## Blocks attached to a cell
 
 A block is a fence that belongs to one cell: a solution, the inputs to try,
-a prediction, a hint, or a challenge. Write it after its cell. With a
+the lines to type, a prediction, a hint, or a challenge. Write it after its cell. With a
 `for:` line, it belongs to the cell that line names instead. A cell's blocks
 may follow it in any order, and every block uses the same `key: value`
 header lines a cell does.
@@ -451,6 +451,37 @@ line_up([-3, 3])     # a negative number
 
 You never write the expected values. What the solution gives is found by
 running it.
+
+<a id="typed"></a>
+### typed
+
+The lines `input()` reads where nobody can type: in the comparison, and
+when the build runs the page's cells and solutions. One line for each time
+the code calls `input()`, written exactly as a person would type it,
+spaces included. A blank line between two others is an empty line typed.
+
+````markdown
+```typed
+seven
+30
+7
+```
+````
+
+A reader never needs this block. When they run a cell, `input()` waits for
+them: a box appears after the prompt, and Enter sends what they typed. So
+a cell that only asks, like a menu loop, needs no typed block at all. Add
+one when the build or the comparison has to run code that asks:
+
+- a solution that calls `input()`. Without typed lines, the build stops
+  and asks for them;
+- a cell with inputs, when the cases call a function that asks, such as
+  `ask_shift()`.
+
+The comparison starts again at the first line for the solution's run and
+for each case on each side, as a program given its input from a file
+would. It says under its table which lines it types, so a reader can see
+where their code's answers came from. A cell has at most one typed block.
 
 ### The comparison
 
@@ -1423,6 +1454,17 @@ Beyond ordinary Python, a cell can use:
 These are already in the page's namespace before the first cell runs. Do not
 write `from tutorial_tools import check`: it works, and it teaches an import
 that is not part of how the page works.
+
+**`input()` works as it does anywhere.** A cell that calls it waits: a box
+appears in its output after the prompt, the reader types and presses Enter,
+and the program continues with what they typed, which stays in the
+output after the prompt. Stop ends the wait. Write programs with plain
+`input()`, the way they run in a terminal, not with a function that stands
+in for it. On a hosted page the waiting needs the same cross-origin
+isolation as Stop, which the site arranges on the first visit; a
+downloaded copy asks with the browser's own dialog instead. Where nobody
+can type (the comparison, and the build), `input()` reads the cell's
+[typed](#typed) lines.
 
 `button()` and `image_input()` need Python on the page's own thread. On the
 site, a page runs Python in a background Worker (`DECISIONS_LOG.md` 7.77), so

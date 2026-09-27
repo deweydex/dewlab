@@ -22,11 +22,14 @@ separation is what makes a genuine Stop button possible in the first
 place: even if a student's code runs forever, it's only blocking *this*
 thread, and the page stays completely responsive.
 
-The one thing that *does* cross the thread boundary without going through
-a message is the interrupt buffer — a small piece of `SharedArrayBuffer`
-memory both sides can see at once, which is how Stop actually works (see
+Two things *do* cross the thread boundary without going through a
+message, both small pieces of `SharedArrayBuffer` memory both sides can
+see at once. The interrupt buffer is how Stop works (see
 `self.onmessage`'s `"set-interrupt-buffer"` handler, and its own comment,
-for how that's wired up).
+for how that's wired up). The input buffer is how `input()` gets a line
+the reader typed while this thread is blocked waiting for it, and cannot
+receive a message (`"set-input-buffer"`, `readLine()`, and
+[`input-wait-explained.md`](input-wait-explained.md)).
 
 ---
 
@@ -74,7 +77,15 @@ for how that's wired up).
    before it ever reaches this file; this worker has no idea a SQL cell
    exists, which is deliberate — see
    [`dewmini-js-explained.md`](dewmini-js-explained.md).
-8. **`"load-toolkit"`** (tutorial pages only) — a page's toolkit, the
+8. **`readLine()`** — what `input()` calls, through
+   `tutorial_tools._set_live_reader()`, once the page has sent an input
+   buffer (`"set-input-buffer"`). It posts an `"input-request"` with the
+   prompt and the cell's id, then blocks in `input-wait.js`'s
+   `waitForLine()` until the page writes the line in, calling Pyodide's
+   `checkInterrupt()` as it waits so Stop still works. A page that is not
+   cross-origin isolated never sends the buffer, and `input()` then says
+   it cannot wait.
+9. **`"load-toolkit"`** (tutorial pages only) — a page's toolkit, the
    toolkit cells of earlier pages in its course, arrives as one JSON
    string of entries and goes straight to `tutorial_tools._load_toolkit()`,
    which runs each into the shared namespace and returns JSON saying which
@@ -82,14 +93,14 @@ for how that's wired up).
    version is the reader's own, and when to load (after boot, after every
    reset, when the reader changes the toolkit mode), is decided on the page
    by `tutorial-runtime.js`'s `loadToolkit()`. dewmini never sends it.
-9. **Filesystem** (dewmini only — a
+10. **Filesystem** (dewmini only — a
    tutorial page has no filesystem to mount) — `fsMountNative`/`fsMountOpfs`/
    `fsMountIdbfs` (the three storage backends), `fsSync`, `fsUnmount`,
    and the plain file operations `fsList`/`fsRead`/`fsWrite`/`fsDelete`/
    `fsMkdir`. `db`-seeding above follows the same "purely additive,
    gated on who actually asks" shape this section already established —
    now asked by two callers instead of one.
-10. **`self.onmessage`** at the bottom — the one entry point tying
+11. **`self.onmessage`** at the bottom — the one entry point tying
    everything above together: reads a message's `type`, calls the
    matching function, and posts a `"response"` back (or an `"error"` if
    something threw).
@@ -105,10 +116,12 @@ the page side (`workerRequest()` in `pyodide-engine.js`, or its
 equivalent in `tutorial-runtime.js`) match a reply to the specific
 request that asked for it — since several requests could be in flight at
 once, there's no other way to know which answer belongs to which
-question. A few message types (`"status"`, `"jedi-ready"`, `"output"`)
-are the exception: one-way pushes posted directly from `boot()`/
-`runCell()`, with no `id` and no reply expected, since nothing on the
-page side is waiting for them specifically.
+question. A few message types (`"status"`, `"jedi-ready"`, `"output"`,
+`"input-request"`) are the exception: one-way pushes posted directly from
+`boot()`/`runCell()`/`readLine()`, with no `id` and no reply expected,
+since nothing on the page side is waiting for them specifically. The
+answer to an `"input-request"` comes back through the input buffer, not
+as a message, since this thread is blocked and could not read one.
 
 **Live-then-static lookup.** Both `hoverDoc()` and `signatureHelp()`
 combine two genuinely different techniques. "Live" (`docFor`/
@@ -128,6 +141,10 @@ answer available in either case.
 - **"How does Stop actually stop a `while True: pass`?"** — the
   `"set-interrupt-buffer"` case in `self.onmessage`, and
   `pyodide-engine.js`'s `requestInterrupt()` for the other half.
+- **"How does Stop stop an `input()` that is waiting?"** — the page sets
+  the interrupt, then ends the wait (`endLine()`), and `waitForLine()`
+  calls `checkInterrupt()` before it returns, so Python gets a
+  `KeyboardInterrupt` and the cell says "Stopped." as for any loop.
 - **"Why can a page mount a real folder here, if this worker has no
   window to show a picker from?"** — `fsMountNative`'s comment: the
   folder picker (`window.showDirectoryPicker()`) has to run on the main

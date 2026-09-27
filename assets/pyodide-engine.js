@@ -1,6 +1,9 @@
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
 import { widgetValues, reconcileSliders, clearSliders, followSlider } from "./cell-widgets.js";
+import {
+  createInputBuffer, answerLine, endLine, stillWaiting, askInOutput, askInDialog,
+} from "./input-wait.js";
 
 const DEFAULT_PACKAGES = ["numpy", "pandas", "matplotlib", "sqlite3"];
 
@@ -93,6 +96,8 @@ export function clearOutput(cellId) {
 
 let worker = null; // the Worker object itself, once created
 let interruptBuffer = null; // shared memory used to signal "stop running" (see requestInterrupt below)
+let inputBuffer = null; // shared memory input() waits on for a typed line (assets/input-wait.js)
+let inputBox = null; // the box a waiting input() put in a cell's output
 let jediReadyWorker = false; // has the worker finished loading Jedi (autocomplete) yet?
 let nextRequestId = 1; // counts up so every request gets a unique id
 const pendingRequests = new Map(); // id -> {resolve, reject}
@@ -103,6 +108,26 @@ function workerRequest(type, payload) {
     pendingRequests.set(id, { resolve, reject });
     worker.postMessage({ type, id, ...payload });
   });
+}
+
+/* input() is waiting in the Worker: a box goes where the cell's printed
+ * text has got to, and Enter sends the line back. */
+function askForLine(cellId, prompt) {
+  const el = getOutputEl ? getOutputEl(cellId) : null;
+  if (!el || !inputBuffer || !stillWaiting(inputBuffer)) return;
+  const buffer = inputBuffer;
+  const asked = askInOutput(el, openStreams.get(cellId), prompt, (line) => {
+    inputBox = null;
+    answerLine(buffer, line);
+  });
+  openStreams.set(cellId, asked.stream);
+  inputBox = asked.box;
+}
+
+function stopWaitingForLine() {
+  inputBox?.remove();
+  inputBox = null;
+  if (inputBuffer) endLine(inputBuffer);
 }
 
 function ensureWorker() {
@@ -116,6 +141,8 @@ function ensureWorker() {
       jediReadyWorker = true;
     } else if (msg.type === "output") {
       applyOutputEvent(msg.cellId, msg.kind, msg.cssClass, msg.text, msg.markup);
+    } else if (msg.type === "input-request") {
+      askForLine(msg.cellId, msg.prompt);
     } else if (msg.type === "response") {
       const pending = pendingRequests.get(msg.id);
       if (!pending) return;
@@ -144,6 +171,8 @@ async function bootWorker() {
   if (globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== "undefined") {
     interruptBuffer = new SharedArrayBuffer(4);
     worker.postMessage({ type: "set-interrupt-buffer", buffer: interruptBuffer });
+    inputBuffer = createInputBuffer();
+    worker.postMessage({ type: "set-input-buffer", buffer: inputBuffer });
   }
 }
 
@@ -151,6 +180,8 @@ function requestInterrupt() {
   if (!interruptBuffer) return;
   /* 2 is SIGINT in Pyodide's own interrupt-buffer convention. */
   new Int32Array(interruptBuffer)[0] = 2;
+  /* After the interrupt is set, so a waiting input() wakes into it. */
+  stopWaitingForLine();
 }
 
 async function runCellWorker(cellId, code, label) {
@@ -344,6 +375,7 @@ async function bootMainThread() {
   toolsMT = pyodideMT.pyimport("tutorial_tools");
   inspectModuleMT = pyodideMT.pyimport("inspect");
   builtinsModuleMT = pyodideMT.pyimport("builtins");
+  toolsMT._set_live_reader(askInDialog);
   toolsMT.configure(dataBase);
 
   await pyodideMT.runPythonAsync(RESEED_GLOBALS_SOURCE);
@@ -471,6 +503,8 @@ export function restart() {
   }
   worker = null;
   interruptBuffer = null;
+  stopWaitingForLine();
+  inputBuffer = null;
   jediReadyWorker = false;
 
   for (const { reject } of pendingRequests.values()) {

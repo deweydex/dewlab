@@ -1,7 +1,7 @@
 ---
 title: "A front end: letting someone use your classes"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 worlds:
   game: A game world, with characters, the things they carry, and rooms.
   ocean: An ocean expedition, with a submarine, its crew, and what they find.
@@ -99,37 +99,18 @@ and later give it a second front end with no change at all.
 
 ## A loop that asks
 
-A real front end asks, in a loop, until the player quits. On a computer,
-it would look like this:
-
-```python
-still_playing = True
-while still_playing:
-    choice = input("What now? ")
-    still_playing = run_choice(ada, grog, choice)
-print("Goodbye.")
-```
-
-A cell on this page cannot wait for someone to type, so here the typing
-is written in advance, in a list, and a small `ask` takes the place of
-`input`, as on
-[From cells to a program](tutorial:from-cells-to-a-program). On a
-computer, `ask = input` is the only change.
+A real front end asks, in a loop, until the player quits. Here is one,
+with `input()`, as on
+[From cells to a program](tutorial:from-cells-to-a-program). Run the
+cell and play: type `look`, `attack` or `rest`, and `quit` to stop.
 
 ```python exec
 id: a-loop-that-asks-1
-typed = ["look", "attack", "fly", "quit"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 ada = Character("Ada", 10)
 grog = Character("Grog", 8)
 still_playing = True
 while still_playing:
-    choice = ask("What now? ")
+    choice = input("What now? ")
     still_playing = run_choice(ada, grog, choice)
 print("Goodbye.")
 ```
@@ -139,7 +120,8 @@ capital, an empty line. A front end has to expect that, because the
 player has never seen `run_choice` and cannot fix it. When a program
 checks what a person typed before it uses it, we call that *input
 validation*. Here the `else` does it. Anything unknown gets an answer,
-and the loop continues. Try adding `"Attack"` to `typed`. What happens, and should it?
+and the loop continues. Run it again, and type `fly`, then `Attack`.
+What happens, and should it?
 
 ## A menu to choose from
 
@@ -417,16 +399,9 @@ def run_choice(choice):
         print("Not a command:", choice)
     return True
 
-typed = ["Attack", " look ", "QUIT"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 still_playing = True
 while still_playing:
-    choice = ask("What now? ")
+    choice = input("What now? ")
     still_playing = run_choice(choice)
 print("Goodbye.")
 ```
