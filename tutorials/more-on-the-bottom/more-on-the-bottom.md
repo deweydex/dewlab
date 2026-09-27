@@ -309,7 +309,7 @@ Before you run it: what will Python print?
     and its sign says where they go.
 ```
 
-Python printed 0.01. This is a *decimal*: a number with a point in it.
+Python printed 0.01. This is a *decimal*{.term}: a number with a point in it.
 A decimal is another way to write a fraction. The first place after the
 point counts tenths, and the second counts hundredths. So 0.01 is
 $\frac{1}{100}$, one centimetre in metres.

@@ -5545,8 +5545,18 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 
 **Glossary files.** No Zen page had a `<slug>.glossary.yaml`, so no Zen term reached the Reference or the definitions on hover (7.273). Thirty-two pages now have one, written to `.claude/skills/tutorial-glossary/SKILL.md` and read for plain English and accuracy. Each term is defined on the page that teaches it, and no term appears twice in the course. Some repeat a Math Basics term (*exponent*, *fraction*, *power*), as glossaries elsewhere do. These are the definitions for this reader, and they record where the term was taught. Practice pages and mixed sets have none, as the skill says. Where a later page used a term in italics again, it is now `*term*{.term}`, so it shows its definition there.
 
-**Found, not fixed here.** Some terms are used on a page before the page that defines them: *decimal*, *digit*, *cube* and *whole number*, and *algebra*, and `**` on `adding-slices`. `dev/curriculum_map.py` reads a page title in italics as a term, and misses an italic phrase broken across a line.
+**Terms used before their page.** A term's entry belongs on the first page that explains it, even in passing, so the Reference has it wherever the word is used. Five entries moved earlier:
+- *decimal* moved to `does-multiplying-make-it-bigger`, from `more-on-the-bottom`.
+- *whole number* moved to `a-fraction-of-a-fraction`, and *cube* to `the-long-way`, both from `the-side-of-a-square`.
+- *digit* moved to `powers-of-ten`, from `sides-that-never-end`.
+- *algebra* moved to `before-we-start`, where the refrain "a letter in algebra means the same thing" begins, from `fractions-with-holes`.
+
+The later pages keep their own sentence about each word, and their italic becomes `{.term}`, so it reads as a reminder. `adding-slices` used `2 ** step` "from the page on powers", a page the reader has not reached yet. It now says what `**` does there, and that the page on powers comes later. Most other early uses the check lists are everyday English (*of*, *row*, *step*, *pattern*), or names `before-we-start` gives as a preview.
+
+**Marks that named nothing.** After main's stricter lookup (7.279), five of the new marks showed no definition. *log*, *square root*, *dividing* and *cross out* are now names on the entries they mean, and *cube root* joins its entry beside *square root*. A lone *of* is a stopword and cannot be matched, so `narrowing-it-down` puts it in quotes instead. `dev/term_uses.py --check` now reports none.
+
+**Found, not fixed here.** `dev/curriculum_map.py` reads a page title in italics as a term, and misses an italic phrase that breaks across a line.
 
 **Checked.** `tests/test_picture_patterns.py` checks what `add_patterns()` writes. A browser test checks that the layer is hidden by default, shown by the setting and shown by high contrast. The pictures were looked at in Chromium, off and on, in light, dark and high contrast.
 
-*Cost to change: the setting is one key in `TEXTURE_DEFAULTS` and one row in the shell. Another picture script gets patterns by calling `add_patterns()`. No page id or cell id changed.*
+*Cost to change: the setting is one key in `TEXTURE_DEFAULTS` and one row in the shell. A glossary entry can move to another page at any time; only cell and page ids are a contract. Another picture script gets patterns by calling `add_patterns()`. No page id or cell id changed.*

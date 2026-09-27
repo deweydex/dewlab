@@ -31,3 +31,9 @@ entries:
     definition: >
       A shape like ♡ or △ means that any number can be here. It can be 3,
       or 12, or a million. A letter in algebra means the same thing.
+  - term: algebra
+    kind: concept
+    definition: >
+      Algebra is the part of maths that uses letters for numbers. A
+      letter in algebra works in the same way as a shape like ♡: any
+      number can be here.

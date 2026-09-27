@@ -12,9 +12,3 @@ entries:
       division where the bottom has more hearts, like ♡²/♡⁵. The minus sign
       says that the hearts are on the bottom.
     example: "10 ** -2   # 0.01"
-  - term: decimal
-    kind: concept
-    definition: >
-      A decimal is a number with a point in it, like 0.01. It is another
-      way to write a fraction. The places after the point count tenths,
-      then hundredths.

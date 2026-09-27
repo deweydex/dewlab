@@ -6,7 +6,7 @@ entries:
       Square numbers are the numbers of beads that make a square, with no
       extra beads. They are 1, 4, 9, 16, 25, and so on. Each one is a whole
       number times itself.
-  - term: "side(n), √n (square root)"
+  - term: "side(n), √n, square root"
     kind: concept
     definition: >
       side(n) is the number of beads along one side of a square of n beads.
@@ -18,19 +18,7 @@ entries:
       To undo a step is to return to the number we started with. side(…)
       undoes a square: side(3 × 3) = 3. edge(…) undoes a cube in the same
       way.
-  - term: whole number
-    kind: concept
-    definition: >
-      A whole number is a number with no fraction part, like 1, 2 or 3.
-      side(9) is a whole number. side(10) is not, because it is a little
-      more than 3.
-  - term: cube
-    kind: concept
-    definition: >
-      A cube is a box shape. It is the same number of beads wide, high and
-      deep. A cube with 3 beads along each edge has 3 × 3 × 3 = 27 beads, a
-      power with exponent 3.
-  - term: "edge(n), ∛n (cube root)"
+  - term: "edge(n), ∛n, cube root"
     kind: concept
     definition: >
       edge(n) is the number of beads along one edge of a cube of n beads.

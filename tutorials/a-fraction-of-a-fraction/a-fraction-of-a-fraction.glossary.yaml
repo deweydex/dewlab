@@ -25,3 +25,8 @@ entries:
     definition: >
       Multiplies. It is the times sign in Python.
     example: "Fraction(2, 3) * Fraction(3, 4)"
+  - term: whole number
+    kind: concept
+    definition: >
+      A whole number is a number with no fraction part, like 1, 2, 3 or
+      12. In 3 × 4 = 12, every number is a whole number. 1/2 is not.

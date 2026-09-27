@@ -138,7 +138,7 @@ same way.
 ## Guess and check
 
 side(2) is more than 1 and less than 2. Let's guess a decimal, like
-1.4, and check it. A decimal is a number with a point in it. A *digit*
+1.4, and check it. A decimal is a number with a point in it. A *digit*{.term}
 is one of the signs 0 to 9.
 
 $$1.4 \times 1.4 = 1.96 \qquad 1.41 \times 1.41 = 1.9881$$

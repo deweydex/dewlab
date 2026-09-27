@@ -54,7 +54,7 @@ One tenth of those 100 can juggle. One tenth of 100 is
 3. Now put 100 people into 10 equal groups.
 
 **Think about:** on [Multiplying fractions: a fraction of a
-fraction](tutorial:a-fraction-of-a-fraction), *of*{.term} meant times. One
+fraction](tutorial:a-fraction-of-a-fraction), "of" meant times. One
 fifth of 500 is $\frac{1}{5} \times 500$.
 
 **Try this next:** what is one half of 1000?

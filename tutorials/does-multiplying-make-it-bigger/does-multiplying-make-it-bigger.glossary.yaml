@@ -9,3 +9,9 @@ entries:
       Divides the first number by the second. It is the sign for dividing
       in Python.
     example: "40 / Fraction(1, 2)"
+  - term: decimal
+    kind: concept
+    definition: >
+      A decimal is a number with a point in it, like 0.5. It is another
+      way to write a fraction: 0.5 is a half. The places after the point
+      count tenths, then hundredths.

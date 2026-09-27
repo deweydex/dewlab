@@ -36,3 +36,9 @@ entries:
       Finds a power in Python. Python cannot write a small raised number,
       so it uses two stars. 2 ** 3 means 2³.
     example: "2 ** 3   # 8"
+  - term: cube
+    kind: concept
+    definition: >
+      A cube is a box shape. It is the same number of beads wide, high
+      and deep. The golden-bead cube is 10 beads each way, so it has
+      10 × 10 × 10 = 10³ = 1000 beads.

@@ -1,6 +1,6 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 entries:
-  - term: "hops(10 → n), log₁₀ n, logarithm"
+  - term: "hops(10 → n), log₁₀ n, log, logarithm"
     kind: concept
     definition: >
       hops(10 → n) counts how many hops of ×10 go from 1 to n. hops(10 →
