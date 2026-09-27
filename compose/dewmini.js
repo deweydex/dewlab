@@ -2451,7 +2451,7 @@ const IMPORTED_HTML_TAGS = new Set([
   "P", "DIV", "SPAN", "PRE", "CODE", "BR", "HR", "EM", "STRONG", "B", "I", "U", "SMALL", "SUB", "SUP",
   "UL", "OL", "LI", "DL", "DT", "DD", "BLOCKQUOTE",
   "TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TH", "TD", "CAPTION", "COLGROUP", "COL",
-  "H1", "H2", "H3", "H4", "H5", "H6", "IMG",
+  "H1", "H2", "H3", "H4", "H5", "H6", "IMG", "FIGURE", "FIGCAPTION", "AUDIO", "SOURCE",
 ]);
 
 function sanitizeImportedHtml(html) {
@@ -2480,6 +2480,17 @@ function sanitizeImportedHtml(html) {
         clean.setAttribute("src", src);
         const alt = node.getAttribute("alt");
         if (alt) clean.setAttribute("alt", alt);
+      }
+      // An embedded sound, from play() (#415) or Jupyter's own Audio(),
+      // which puts the file in a <source> inside the player. The same rule
+      // as an image: only a file inside the notebook, never an address.
+      if (node.tagName === "AUDIO" || node.tagName === "SOURCE") {
+        const src = node.getAttribute("src");
+        if (src !== null) {
+          if (!/^data:audio\/(wav|x-wav|wave|mpeg|ogg);base64,/.test(src)) continue;
+          clean.setAttribute("src", src);
+        }
+        if (node.tagName === "AUDIO") clean.setAttribute("controls", "");
       }
       copy(node, clean);
       to.appendChild(clean);

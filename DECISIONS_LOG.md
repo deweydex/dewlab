@@ -5693,7 +5693,26 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 
 *Cost to change: moderate. The syntax is documented in `docs/WRITING_TUTORIALS.md#choose-your-project`; the build's rules live in `page_projects()` and `project_spans()`, the page's in `assets/projects.js`, and the counting in `liveProgressCounts()` and `totalCounted()`.*
 
-**7.289 — The unit tests run on every core, and the build stops doing the same work one page at a time.** Josh, 27 September 2026: "see if we can make the tests not only run faster", and then "I think its both the build and the tests that take so long... how could we improve this?"
+---
+
+**7.289 — A cell can play a sound: `play(samples, rate)`.** Issue #415. Josh, 27 September 2026: "can we do the sound thing?"
+
+**How it works.** Python runs in a Worker, which has no `AudioContext`, so it cannot reach the speakers. But a cell's output is HTML, added to the page as it arrives. So `play()` in `tutorial_tools.py` writes the samples as a 16-bit mono WAV with Python's own `wave` module, and puts it into the output as an `<audio controls>` player whose `src` is a `data:` address. That needs no new code on the page, and it works the same on a tutorial page, in the Notebook, offline and in a downloaded copy. The reader presses play: a browser does not start a sound by itself, and in a classroom that is the better default anyway.
+
+**The three questions #415 left open.**
+- *Saved output.* A sound is saved with its cell's output, like a figure. Two seconds at 8,000 samples a second is about 43 KB, the size of a figure. The runtime already drops any output over 100 KB when the browser's storage is full (`SAVED_OUTPUT_STRIP_THRESHOLD`), and says so. `play()` refuses a sound over 60 seconds (`PLAY_LONGEST_SECONDS`), with a message saying why.
+- *One player per call*, so a cell can play a note and then a chord. A `label` names each one, and a caption under the player gives the length and the rate.
+- *No picture.* matplotlib already draws the wave, and every page that plays a sound draws it first.
+
+**Samples beyond -1 or 1** are cut to fit, not scaled. Scaling would make a quiet echo as loud as the sound it echoes. A line under the player says how many samples were cut, because cut samples are what make a sound crackle, and a reader can hear that and learn from it.
+
+**The Notebook's `.ipynb` import** keeps an embedded sound, the same rule as an embedded image: an `<audio>` or `<source>` whose address is a `data:audio/…;base64,` file inside the notebook, never a web address. That covers both `play()`'s player and Jupyter's own `Audio()`, which puts the file in a `<source>` inside the player.
+
+**Where it is used.** `sine-and-cosine-waves`'s sound world plays the mystery note; `a-model-of-your-own`'s plays the piano chord; the capstone's sound brief (7.281) plays its note and chord. The brief's paragraph about saving a `.wav` file and reaching it through "Use a folder on my computer" is gone. The glossary gains `play()` on `sine-and-cosine-waves`, and `assets/python-signatures.json` is regenerated.
+
+*Cost to change: small. One function and two private helpers in `tutorial_tools.py`, four tags on the Notebook's import allow-list, and a few lines of CSS.*
+
+**7.290 — The unit tests run on every core, and the build stops doing the same work one page at a time.** Josh, 27 September 2026: "see if we can make the tests not only run faster", and then "I think its both the build and the tests that take so long... how could we improve this?"
 
 **Measured first,** on a quiet four-core machine. CI's unit suite (`pytest tests --ignore=tests/e2e`) is 710 tests in 100 seconds, and no test takes longer than four: most build a small site of their own, at about 0.4 seconds each, so the time is in the number of tests. The full build took 494 seconds, and a profile of it found three things, none of them the pages themselves (writing all 498 took two seconds):
 
@@ -5707,7 +5726,7 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 
 *Cost to change: small. Dropping `-n auto` from the workflow, calling `check_solutions()` in the page loop again, or removing the thread pool around the archives each goes back to the old behaviour on its own.*
 
-**7.290 — Checks on the project's own planning, and on house preferences, report and no longer fail a pull request.** Josh, 27 September 2026: "I am worried that a lot of decisions made really quickly all became a series of tests that actually are just suggestions or things that we would like the average author to follow on this project... if we had an author that broke a lot of those rules we could still have a great tutorial".
+**7.291 — Checks on the project's own planning, and on house preferences, report and no longer fail a pull request.** Josh, 27 September 2026: "I am worried that a lot of decisions made really quickly all became a series of tests that actually are just suggestions or things that we would like the average author to follow on this project... if we had an author that broke a lot of those rules we could still have a great tutorial".
 
 **What the audit found.** Every test, every CI step and each of the build's refusals was read and sorted. The prose rules of the style guide were never machine-checked: nothing scans a page for verdict words, phrasal verbs or cell length. The build's refusals (`fail()` in `build.py`, about 190 of them) are nearly all things a page cannot do without: an id to key saved work under, frontmatter that parses, a link or a file that exists, a solution that runs, an image that says what it shows. What failed pull requests for reasons no reader would see was elsewhere:
 

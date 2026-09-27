@@ -26,6 +26,14 @@ entries:
       The midline is the line y = D that a wave swings about, halfway
       between its top and its bottom. Moving it up or down is a vertical
       shift, which is what the lift D does.
+  - term: "play()"
+    kind: function
+    python: tutorial_tools.play
+    definition: >
+      Puts a player under the cell for a sound: a list of samples between
+      -1 and 1, and how many of them make one second. Press play to hear
+      it.
+    example: 'play([0.5 * math.sin(2 * math.pi * 440 * n / 8000) for n in range(16000)], rate=8000)'
   - term: frequency, hertz (Hz)
     kind: concept
     definition: >

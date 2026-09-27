@@ -1315,6 +1315,34 @@ def test_an_image_survives_the_round_trip_as_a_png(dewmini, tmp_path):
     assert "".join(outputs[0]["data"]["image/png"]).strip() == TINY_PNG
 
 
+def test_an_embedded_sound_survives_import_and_an_address_does_not(dewmini, tmp_path):
+    """A sound from play() (#415), or from Jupyter's own Audio(), is a WAV
+    inside the notebook, and keeps its player. A sound from an address is
+    dropped, for the same reason a remote image is."""
+    wav = "UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA="
+    html = (
+        f'<figure class="dl-sound"><audio controls src="data:audio/wav;base64,{wav}"></audio>'
+        "<figcaption>ours</figcaption></figure>"
+        f'<audio controls="controls"><source src="data:audio/wav;base64,{wav}" type="audio/wav"></audio>'
+        '<audio controls src="https://example.invalid/tracker.wav"></audio>'
+    )
+    path = write_ipynb(tmp_path / "with_sound.ipynb", [code_cell(
+        "play(note)\n",
+        [{"output_type": "display_data", "data": {"text/html": [html]}, "metadata": {}}],
+    )])
+
+    import_file(dewmini, path)
+
+    output = dewmini.locator(".dm-cell-output").first
+    output.wait_for(state="visible")
+    players = output.locator("audio")
+    assert players.count() == 2, "only the two embedded sounds keep a player"
+    assert players.nth(0).get_attribute("src").startswith("data:audio/wav;base64,")
+    assert players.nth(1).locator("source").get_attribute("src").startswith("data:audio/wav;base64,")
+    assert all(players.nth(i).get_attribute("controls") is not None for i in range(2))
+    assert "example.invalid" not in output.inner_html()
+
+
 def test_html_output_from_an_imported_notebook_cannot_bring_anything_active(dewmini, tmp_path):
     """An imported .ipynb is a file from anywhere, and its HTML outputs go
     into the page — only an allow-list is safe here, since a list of things

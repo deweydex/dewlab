@@ -157,7 +157,7 @@ project's planning files (the curriculum map is current, the outlines index
 lists every outline, a topic description is at least twelve words). Those are
 marked `@pytest.mark.advisory`. A plain `python3 -m pytest` leaves them out,
 `python3 -m pytest -m advisory` runs only them, and CI's `house-style` job
-runs them and reports a failure as a warning (`DECISIONS_LOG.md` 7.290).
+runs them and reports a failure as a warning (`DECISIONS_LOG.md` 7.291).
 
 Where one test checked both kinds of thing, it was split, so the half a page
 depends on still blocks: a topic has a name and a description, because the

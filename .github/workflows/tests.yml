@@ -50,7 +50,7 @@ jobs:
       # is only out of date exits 1 and passes here: the map also counts the
       # italic words in every tutorial's prose, so any new sentence can make it
       # stale, and a stale planning document breaks no page. The house-style
-      # job below reports it (DECISIONS_LOG 7.290).
+      # job below reports it (DECISIONS_LOG 7.291).
       - name: Fail if the curriculum map cannot be made
         run: python3 dev/curriculum_map.py --check || [ $? -eq 1 ]
 
@@ -75,7 +75,7 @@ jobs:
 
 
   # Checks that look after the project rather than any page, reported and
-  # never blocking (DECISIONS_LOG 7.290): the tests marked `advisory` (a
+  # never blocking (DECISIONS_LOG 7.291): the tests marked `advisory` (a
   # house preference about tutorial prose, the tidiness of planning files),
   # the curriculum map being current, and the links inside the documents
   # about the project. Each step turns a failure into a warning on the pull

@@ -929,7 +929,7 @@ def main() -> int:
     it against what's currently committed, and exits 1 if they don't
     match. A map that cannot be made at all (a `covers:` code or section
     that does not exist) exits 2 instead, in either mode. CI fails a pull
-    request on the 2 and only reports the 1 (DECISIONS_LOG 7.290): the
+    request on the 2 and only reports the 1 (DECISIONS_LOG 7.291): the
     map counts italic words in the tutorials' prose, so any new sentence
     makes it stale, and a stale planning document breaks no page.
     """

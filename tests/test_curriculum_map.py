@@ -221,7 +221,7 @@ class TestTheRealMap:
     # Advisory: the map is a planning document, and it counts italic words
     # in the tutorials' prose, so a sentence added to any page makes it
     # stale. A stale map misleads nobody reading the site (DECISIONS_LOG
-    # 7.290). CI reports it without failing the pull request.
+    # 7.291). CI reports it without failing the pull request.
     @pytest.mark.advisory
     def test_it_is_committed_current(self):
         # The same guard CI runs, against the real committed file.

@@ -258,7 +258,7 @@ own planning rather than any page: the curriculum map in
 long enough to be worth reading, the outlines index listing every outline,
 the links inside documents about the project. Some are house preferences
 about tutorial prose, such as not naming an institution's assessments. These
-are marked `advisory` in the test suite (`DECISIONS_LOG.md` 7.290). A pull
+are marked `advisory` in the test suite (`DECISIONS_LOG.md` 7.291). A pull
 request shows them as a warning, and a maintainer tidies them up. To see them
 yourself, run `python3 -m pytest -m advisory`.
 

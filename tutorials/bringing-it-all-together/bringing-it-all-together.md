@@ -1,7 +1,7 @@
 ---
 title: "Capstone project: choose a brief"
 year: "2026-2027"
-version: 2026.09.27.1
+version: 2026.09.27.2
 datasets: [daylight, dublin-tides, treasure-island]
 worlds:
   images-and-pixels: Pictures as grids of numbers. Blur them, find their edges, or draw a fractal.
@@ -147,7 +147,7 @@ right.set_title("blurred")
 **What you make.** A sound is a wave, and a computer stores it as a
 long list of numbers, called *samples*. You make sounds from sine waves:
 notes, chords, an echo, and perhaps a short tune. You draw each sound,
-and save it as a file you can play.
+and play it.
 
 **On your own.** Make a tune of at least 8 notes that ends on a chord,
 and draw its wave.
@@ -171,11 +171,10 @@ number of samples each second.
 3. Share your tune with someone who listens to it and looks at its
    picture. Can they hear the parts that they can see?
 
-**Hearing it.** The Notebook can draw a sound, but it cannot play one.
-The starter's `save()` writes a `.wav` file, which a music player can
-play. In Chrome or Edge, open the Notebook's Workbench, and choose **Use
-a folder on my computer** under Files, before you run the starter. The
-file then appears in that folder.
+**Hearing it.** `play(samples, rate)` puts a player under the cell.
+Press play to hear the sound. A sample beyond -1 or 1 is cut to fit, and
+a line under the player says how many were. Cut samples make a sound
+crackle.
 
 **The maths in it.**
 
@@ -192,7 +191,6 @@ file then appears in that folder.
 
 ```python challenge
 import math
-import wave
 import matplotlib.pyplot as plt
 
 rate = 8000    # samples in each second of sound
@@ -204,22 +202,11 @@ def note(frequency, seconds):
     return [math.sin(2 * math.pi * frequency * n / rate) for n in range(count)]
 
 
-def save(samples, name):
-    """Save the samples as a .wav file that a music player can play."""
-    with wave.open(name, "wb") as file:
-        file.setnchannels(1)
-        file.setsampwidth(2)
-        file.setframerate(rate)
-        frames = bytearray()
-        for sample in samples:
-            frames += int(sample * 32000).to_bytes(2, "little", signed=True)
-        file.writeframes(bytes(frames))
-
-
 a = note(440, 2)
 # A chord: 3 notes added, then divided by 3 so it stays between -1 and 1.
 chord = [(x + y + z) / 3 for x, y, z in zip(note(440, 2), note(550, 2), note(660, 2))]
-save(chord, "chord.wav")
+play(a, rate, label="one note")
+play(chord, rate, label="a chord")
 
 plt.plot(a[:80], label="one note, 440 Hz")
 plt.plot(chord[:80], label="a chord: 440, 550 and 660 Hz")

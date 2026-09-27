@@ -1,7 +1,7 @@
 ---
 title: "Sine and cosine waves: amplitude, period and shift"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 datasets: [daylight, dublin-tides]
 covers:
   why-it-repeats:
@@ -540,8 +540,9 @@ hours, 12 hours and 25 minutes, comes from the Moon.
 A sound is a wave in the air. The air's pressure rises and falls very
 fast, hundreds of times a second. The number of waves each second is
 the *frequency*, measured in hertz (Hz). The cell draws a note from a
-guitar for one hundredth of a second. Can you read its period from the
-picture, in milliseconds? Then write `frequency_from_period(ms)`. Which
+guitar for one hundredth of a second, and `play()` adds a player to
+the output, so you can hear two seconds of it. Can you read its period
+from the picture, in milliseconds? Then write `frequency_from_period(ms)`. Which
 note is it: A at 440 Hz, E at 330 Hz, or D at 294 Hz?
 
 ```python exec
@@ -553,6 +554,10 @@ fig, ax = plt.subplots(figsize=(8, 3.5))
 ax.plot([s * 1000 for s in seconds], [mystery(s) for s in seconds])
 ax.grid(alpha=0.3)
 ax.set_xlabel("milliseconds")
+
+# Two seconds of the note, 8,000 samples each second, at half the height
+# so that it is not too loud.
+play([0.5 * mystery(n / 8000) for n in range(16000)], rate=8000)
 ```
 
 ```hint

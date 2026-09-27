@@ -77,7 +77,7 @@ one of the generated files for the topic tools is out of date. Its
 page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
 current, and the links inside the documents about the project. It reports what
 it finds as a warning on the pull request and never fails it
-(`DECISIONS_LOG.md` 7.290). To see those checks locally, run
+(`DECISIONS_LOG.md` 7.291). To see those checks locally, run
 `python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check` and
 `python3 dev/check_doc_links.py`.
 

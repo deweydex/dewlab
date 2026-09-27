@@ -41,7 +41,7 @@ path.
 
 Prints one line per problem and exits 1 if there are any. CI runs it in the
 `house-style` job, which reports a failure as a warning and does not block a
-pull request (`DECISIONS_LOG.md` 7.290): no page a reader opens depends on it.
+pull request (`DECISIONS_LOG.md` 7.291): no page a reader opens depends on it.
 """
 
 from __future__ import annotations
