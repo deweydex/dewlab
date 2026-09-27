@@ -26,7 +26,9 @@ place.
 <ul class="dl-feature-list">
 
 - **Look up what you have learned.** The Reference panel holds a glossary
-  of every term and function this page and earlier ones have covered.
+  of every term and function this page and earlier ones have covered. A
+  term with a dotted line under it shows what it means when you point at
+  it or tap it.
 - **Keep your own notes.** Write down anything worth remembering as you
   read. Notes are saved in this browser.
 - **Take your saved work with you.** Export your answers and notes as a

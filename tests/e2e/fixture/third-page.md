@@ -32,3 +32,8 @@ The idea was first introduced in Tutorial 1, and this page leans on it.
 ## A second section
 
 So that this page has a contents list of its own as well.
+
+It also holds the terms that show a definition on hover. A *variable* is
+introduced here, and a later use of *cell*{.term} is marked by hand. The word
+variable, unmarked, stays plain, as does *emphasis* that names no term, and
+*print*, which is a function and lives in code.

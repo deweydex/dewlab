@@ -5402,7 +5402,19 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 *Cost to change: small. `a-simulation-of-your-own` and the new cell ids, including every world cell, become a contract on 2 October. The queue page's title changed; its id did not.*
 
-**7.273 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
+---
+
+**7.273 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
+
+**Only author-marked uses.** 7.94 built prose-linking, measured it and withdrew it: a regex cannot tell "set a seed" from a set. Marking every appearance of a term for hover definitions would bring that back, and Josh chose against it. So only two places are marked. One is the italicised first use (`docs/WRITING_TUTORIALS.md#marking-a-term`); across 421 built pages, 705 of the 901 concept terms each page introduces are italicised there. The other is a later use the author writes `*term*{.term}`. The class tells `dev/curriculum_map.py`'s vocabulary report, and the glossary skill, that this is not an introduction. Inherited terms are italicised on later pages in only 48 places today, so the help a reader gets on later pages depends on authors marking uses. `dev/term_uses.py` lists the candidates for each page: about 4,500 across the site, with the sentence around each, including many everyday uses of glossary words like "and", "list" and "pair" that should stay unmarked.
+
+**How it works.** `assets/term-definitions.js` adds a class, `tabindex` and `aria-describedby` to the author's own `<em>` and never wraps text, so highlights are untouched. Only `concept` entries are matched, against the whole italic: exactly, or word for word after the site's stemming, with a plain plural allowed (the stemmer leaves short words alone, so *lists* would otherwise miss "list"). It never matches a word inside a longer italic, or a prefix. A `{.term}` mark renders in plain type with only the dotted line, since the term is not being introduced again. `dev/term_uses.py --check` lists marks that name no concept. Hover, focus or a tap shows a popover with the definition and **More in the Reference**; Enter on the term opens the Reference at it. The popover is visual only; a screen reader hears the definition through `aria-describedby`. Code, cells, maths, headings, links and folds' summaries are never marked. **Definitions on hover** under Reading in Settings turns it off. Look up and the Reference's own search share `openReferenceAt()`.
+
+**What it is worth now.** At a term's introduction, the sentence around it usually says what it means, so the popover mostly repeats it. The feature pays on later pages, which is where marking is still to do.
+
+*Cost to change: small. One module, one Settings row, one CSS block; the `{.term}` class is inert to everything but the vocabulary report.*
+
+**7.274 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
 
 1. **Strand C titles: the friendly name first, then the search term.** A title opens with the friendly phrase and puts the usual term straight after the colon: "Undoing a square: square roots, the side of a square", "Sides that never end: surds, the square root of 2", "Halfway powers: fractional exponents, two half steps make one", "Counting hops: logarithms, how many times did we multiply?". A reader who searches for "square root" or "logarithm" finds the page, and the scary word is still not the first thing on it. The page bodies are unchanged: inside a page, the sign still comes last (7.254). Later strand C pages follow the same pattern.
 2. **Colour words: left for now.** The pictures keep their theme colours with no pattern, and the prose keeps naming parts by colour. The question stays open in the outline, and it is worth asking again if a reader reports it.
@@ -5411,7 +5423,7 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 *Cost to change: a title is one line in a page's frontmatter, plus the few places another page quotes it.*
 
-**7.274 — The Zen of Slashes and Surds is written to the end of its plan: the rest of strand C, the views from the top, strands D and E, and four mixed sets.** Josh, 27 September 2026, choosing "all of it" for what to write next (7.273).
+**7.275 — The Zen of Slashes and Surds is written to the end of its plan: the rest of strand C, the views from the top, strands D and E, and four mixed sets.** Josh, 27 September 2026, choosing "all of it" for what to write next (7.274).
 
 **What is written.** Twelve pages, each with a practice page, and four mixed sets:
 - **Strand A:** `narrowing-it-down`, the view from the top. A made-up town is narrowed by fractions first. Then come Drake's 1961 guesses, multiplied in small steps: the smallest give 20, the largest 50,000,000, and most of the gap comes from L. Then Frank and Sullivan's "has anyone ever?" sets A = 1, so f_bt is a reciprocal: one in 60 billion for the Milky Way (their Table 1, read in the paper).
@@ -5429,13 +5441,13 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 - **"Let's"** went, and **an unwatched video** (3Blue1Brown's *Triangle of Power*) was taken out, per the video library's rule.
 - **The refrain** "That is all a letter in algebra means" is on six earlier pages. The new pages keep it.
 
-**A fault this batch found.** In a fill-in question, every `{...}` was read as a gap, even one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages and two older ones. 7.275 changes the build so that braces inside maths stay maths.
+**A fault this batch found.** In a fill-in question, every `{...}` was read as a gap, even one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages and two older ones. 7.276 changes the build so that braces inside maths stay maths.
 
-**Checked, and not.** All 69 cells run in CPython, and every figure was checked against the source the page names. The site builds, and the unit tests pass. The cells did not run in the browser, because Pyodide is unreachable from this environment. Josh's colour question (7.273) is still open. A class has not yet used the module.
+**Checked, and not.** All 69 cells run in CPython, and every figure was checked against the source the page names. The site builds, and the unit tests pass. The cells did not run in the browser, because Pyodide is unreachable from this environment. Josh's colour question (7.274) is still open. A class has not yet used the module.
 
 *Cost to change: the new page ids and their question ids become a contract once a class has used them. A picture is one entry in `DIAGRAMS`.*
 
-**7.275 — In a fill-in question, braces inside maths are maths, not gaps.** Josh, 27 September 2026, on the `\bgroup` workaround 7.274 first used: "cant we just use curly brackets there instead of relying upon spacing for the fractions and exponents to render correctly?"
+**7.276 — In a fill-in question, braces inside maths are maths, not gaps.** Josh, 27 September 2026, on the `\bgroup` workaround 7.275 first used: "cant we just use curly brackets there instead of relying upon spacing for the fractions and exponents to render correctly?"
 
 **The problem.** `build.py` read every `{...}` in a fill-in-the-blank question as a gap (`GAP_RE`), including one inside `$...$`. `$10^{-12}$` became 10^ and a typing box. `$\frac{1}{8}$` became `\frac` and two. `\{1, 2\}` became a gap too. Nine pages were affected: seven new ones, plus `getting-closer` and the practice page of `sets-as-sorted-lists`. The first fix wrote the groups as `\bgroup ... \egroup`. That was unreadable, and it failed inside `\frac`, where KaTeX printed the source.
 

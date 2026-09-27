@@ -547,10 +547,12 @@ def conflicts(found, scope) -> list[str]:
 
 # A term's first use is `*term*`, or `***term***` where a page sets its key
 # terms in bold as well (docs/WRITING_TUTORIALS.md#marking-a-term): the
-# italics are what marks the term, the bold is only how it looks.
+# italics are what marks the term, the bold is only how it looks. A later
+# use marked `*term*{.term}`, so that it shows its definition on hover, is
+# not an introduction, and the `(?!\{)` leaves it out.
 EMPHASIS_RE = re.compile(
-    r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w])"
-    r"|(?<![*\w])\*\*\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*\*\*(?![*\w])"
+    r"(?<![*\w])\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*(?![*\w{])"
+    r"|(?<![*\w])\*\*\*(?!\s)([^*\n]{2,40}?)(?<!\s)\*\*\*(?![*\w{])"
 )
 FENCE_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`]*`")

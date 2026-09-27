@@ -1,6 +1,6 @@
 # Outline — The Zen of Slashes and Surds
 
-**Status:** written (7.274). Every page in the plan below is written,
+**Status:** written (7.275). Every page in the plan below is written,
 with its practice page (the closer look has none, like the other closer
 looks), and the four mixed sets are `mixed-slashes`, `mixed-powers`,
 `mixed-surds-and-logs` and `mixed-zen`. The pages will change once a
@@ -257,7 +257,7 @@ Kinds of problem to mix, beyond "simplify this":
   number sense.
 - **Where does it go on the line?** Placing fractions on a number line.
 - **Spot what happened.** A worked problem by "somebody", or an unnamed
-  worked line (7.273: no recurring character). Which step changed the
+  worked line (7.274: no recurring character). Which step changed the
   amount? The reader finds it, and the mistake belongs to no one.
 - **Two paths, one answer.** From worksheet 8, question 5: simplify
   $(z^{12})^{1/6}$ two ways and see they agree.
@@ -369,7 +369,7 @@ friendly one enough to want something shorter.
 | $\log_2 16$ | **folds(16)**: how many folds make 16 pieces | the folded paper from strand B |
 
 **Titles** put the friendly phrase first and the usual term straight
-after the colon (7.273): "Counting hops: logarithms, how many times did
+after the colon (7.274): "Counting hops: logarithms, how many times did
 we multiply?". A reader who searches for the term finds the page, and
 the page itself still shows the sign last.
 
@@ -515,11 +515,11 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   should still meet the early pages before the rest is written. What
   the pilot should answer: are the steps small enough, does the calm
   check help or annoy, and do readers use the notation switch.
-- **No recurring character** (7.273). The style guide allows one who
+- **No recurring character** (7.274). The style guide allows one who
   makes the mistakes, but this module uses "somebody" or an unnamed
   worked line instead. The mistake belongs to no one, and there is no
   name to translate.
-- **Colour words** (open, 7.273). Some pictures tell parts apart only by
+- **Colour words** (open, 7.274). Some pictures tell parts apart only by
   colour. The pages name the parts by colour, and the pictures carry no
   pattern. Worth asking again if a reader reports it.
 - **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
