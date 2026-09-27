@@ -68,7 +68,10 @@ contents/tree pages, all in one real browser + real Pyodide pass.
 `test_cell_report.py` (also covers the hint icon, which shares the same
 disclosure code as the report icon), `test_cell_hints_staged.py`,
 `test_autocomplete.py`, `test_stop_button.py`, `test_custom_cells.py`,
-`test_app_cell_live.py` — things that happen on or around one cell.
+`test_app_cell_live.py`, `test_input.py` (`input()` waiting for a box on
+an isolated page, Stop while it waits, a downloaded copy's dialog, a page
+that cannot wait, the comparison reading a cell's typed lines, and the
+Notebook) — things that happen on or around one cell.
 
 *Save/restore:* `test_saved_progress.py` (the core save/restore mechanism,
 plus the live run-summary and the site-wide progress badges as their own

@@ -63,9 +63,10 @@ The pipeline, in order:
    involved), an `AppPane` (the same three languages tagged `app` instead,
    grouped by `app:` name into one `AppCell` — a full-stack cell whose
    JavaScript can reach the page's own shared `db`, `DECISIONS_LOG.md`
-   7.180), a `Solution` or `Inputs` block (a ```` ```solution ```` or
-   ```` ```inputs ```` fence, attached to the exec cell above it or the one
-   its `for:` names, #312), or a `CodeBlock` (anything else). `extract_math()` does the
+   7.180), a `Solution`, `Inputs` or `Typed` block (a ```` ```solution ````,
+   ```` ```inputs ```` or ```` ```typed ```` fence, attached to the exec
+   cell above it or the one its `for:` names, #312), or a `CodeBlock`
+   (anything else). `extract_math()` does the
    same for `$…$`/`$$…$$`, since Python's `markdown` library doesn't know
    dewlab's conventions and would otherwise read `$a_i + b_j$`'s subscript
    as emphasis.
@@ -273,7 +274,20 @@ page namespace, the solution's copy having run the solution first; the page
 fills the table and marks rows that differ, without a verdict. Before
 writing a page, `check_solutions()` runs its cells and every solution in a
 separate Python, through that same `compare()`, and stops the build if a
-solution raises.
+solution raises. Nobody can type in either, so a cell whose code calls
+`input()` can carry a ```` ```typed ```` fence: the lines `input()` reads
+there, in order.
+
+**`input()`** is Python's own. `tutorial_tools._begin()` replaces
+`sys.stdin` for each run, as it does `sys.stdout`, with a `_Stdin` that asks
+the reader. On a hosted page, Python in the Worker blocks on a second
+`SharedArrayBuffer`, sent beside the interrupt buffer, while the page shows
+a box after the prompt; Enter writes the line in, and Stop ends the wait
+(`assets/input-wait.js`, shared by `tutorial-runtime.js`,
+`pyodide-engine.js` and the Worker). Where Python runs on the main thread,
+a downloaded page or the Notebook's fallback, it asks with the browser's
+own dialog. A hosted page that never became cross-origin isolated cannot
+wait, and `input()` raises an error that says so.
 
 **The predict block** (#313) is drawn above its cell by `render_cell()`
 (`render_predict()`), since a guess comes before the run. The runtime
