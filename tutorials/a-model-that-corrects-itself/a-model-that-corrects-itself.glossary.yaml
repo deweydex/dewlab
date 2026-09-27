@@ -20,12 +20,13 @@ entries:
       prediction. It stays fixed once it is built, unless something
       outside it corrects it on purpose.
 
-  - term: simulation
+  - term: training
     kind: concept
     definition: >
-      A simulation runs a model again and again, and lets each run change
-      what the next run sees. Running a fixed formula once is not a
-      simulation. Running it repeatedly, with feedback between runs, is.
+      Training runs a model over its examples again and again, and
+      corrects its weights after each mistake. It is also called fitting
+      the model to the examples. A simulation's result is a picture of
+      what might happen; training's result is the model itself.
 
   - term: weight
     kind: concept
