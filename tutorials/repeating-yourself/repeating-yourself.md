@@ -22,7 +22,7 @@ covers:
 
 On [Variables, data types and text](tutorial:storing-and-computing), moving
 a whole word three places along meant writing the same line once for every
-letter. Here is a loop that does it for every letter, however long the
+letter. Here is a *loop*{.term} that does it for every letter, however long the
 word. What will it print?
 
 ```python exec
@@ -347,7 +347,7 @@ mathematicians do not write it. A loop has to say it. So `total = 0`
 sits above every accumulator you write.
 
 We can make this more general. $\sum_{i=1}^{n} i^2$ means "add up the
-squares of all the integers from 1 to n":
+squares of all the *integers*{.term} from 1 to n":
 
 ```python exec
 id: sigma-notation-mathematics-meets-loops-2
@@ -385,7 +385,7 @@ multiplication.
 ### Your turn
 
 Can you calculate each of these with a loop? For each one, write
-pseudocode first, then the code.
+*pseudocode*{.term} first, then the code.
 
 1. $\sum_{i=1}^{100} i$, the sum of the first 100 natural numbers. (There
    is a famous story that the young Gauss found this in moments.)

@@ -421,7 +421,7 @@ value can round it.
 
 ## Variable scope revisited
 
-Our functions now call other functions, so it is worth checking scope,
+Our functions now call other functions, so it is worth checking *scope*{.term},
 from [Writing your own functions](tutorial:writing-your-own-functions).
 Each function has its own workspace, and the variables made inside it
 disappear when it finishes.
@@ -450,7 +450,7 @@ Information goes in only through parameters, and leaves only through
 A test that passes tells you less than a test that fails. Why? What would
 make you trust a function you did not write?
 
-Here is a challenge. Test your bubble sort from
+Here is a challenge. Test your *bubble sort*{.term} from
 [Sorting a list](tutorial:putting-things-in-order) on a hundred lists
 nobody chose. Make each list at random, sort it, and check the answer
 against Python's own `sorted()`. What is the smallest list that catches a

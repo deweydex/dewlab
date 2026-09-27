@@ -257,7 +257,7 @@ How long will the list be?
 ```
 
 It is 26 long, from A to Z. `range(26)` gives 0 to 25: 26 numbers, one for
-each letter. This is the accumulator pattern from
+each letter. This is the *accumulator pattern*{.term} from
 [Repeating steps with loops](tutorial:repeating-yourself), with a list
 where the total was. It starts empty, and gets one more value each time
 round.

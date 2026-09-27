@@ -189,7 +189,7 @@ from `"H"` works because H is a key. Starting from `""` would stop with a
 
 ## 7. By first letter
 
-Can you set `groups` to a dictionary that keeps the words in lists, by
+Can you set `groups` to a *dictionary*{.term} that keeps the words in lists, by
 their first letter?
 
 ```python exec
@@ -255,7 +255,7 @@ up.
 ## 9. Two lists into one dictionary
 
 A key has been kept as two lists, in matching order. Can you set `key` to
-one dictionary, with each plain letter as a key and its code letter as the
+one dictionary, with each plain letter as a *key*{.term} and its code letter as the
 value?
 
 ```python exec

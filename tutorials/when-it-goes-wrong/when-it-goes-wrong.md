@@ -53,7 +53,7 @@ complains.
 [Reading an error message](tutorial:reading-an-error-message) met the three
 kinds of wrong in programs of a few lines. Since then, programs have grown:
 loops, lists, dictionaries, and functions that call functions. Bigger
-programs bring new errors, longer tracebacks, and logical errors that hide
+programs bring new errors, longer *tracebacks*{.term}, and *logical errors*{.term} that hide
 much better. Most cells on this page are meant to fail, or to give a wrong
 answer. The exercise is to see why.
 

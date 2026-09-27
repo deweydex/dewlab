@@ -10,7 +10,7 @@ worlds:
 
 # Designing and testing good functions — Practice
 
-Problems on docstrings, edge cases and tests, and three from earlier
+Problems on *docstrings*{.term}, *edge cases*{.term} and tests, and three from earlier
 pages. Where a problem has a cell of tests under it, those tests are
 yours. Add to them, and they run against your function and against a
 solution. Try each problem before you open anything under it.

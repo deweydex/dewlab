@@ -41,7 +41,7 @@ print(to_binary(72), from_binary("01001000"), hex(72), chr(72))
 
 ## 1. Binary to base 10
 
-Change these binary numbers to base 10 by hand, then check: `1101`,
+Change these *binary*{.term} numbers to base 10 by hand, then check: `1101`,
 `10000`, `11111`, `10101010`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -66,7 +66,7 @@ way you do when you multiply by ten in base 10.
 
 ## 3. Base 10 to hex
 
-Change these to hexadecimal: 15, 16, 255, 256, 4095.
+Change these to *hexadecimal*{.term}: 15, 16, 255, 256, 4095.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -90,7 +90,7 @@ digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
 
 ## 5. Two letters
 
-Decode `01001000 01001001` as ASCII.
+Decode `01001000 01001001` as *ASCII*{.term}.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -237,7 +237,7 @@ without a very good reason.
 
 ## 14. Which paradigm
 
-Which paradigm is each closest to? What told you?
+Which *paradigm*{.term} is each closest to? What told you?
 
 - (a) `total = 0`, then a loop adding each price to it
 - (b) `sum(price for price in prices)`

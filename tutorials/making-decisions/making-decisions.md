@@ -533,7 +533,7 @@ print("Real (R): " + str(is_real))
 
 1. Change `value` to each of these in turn: 7, -3, 0.5, 0, 3.14159. How
    does the answer change each time?
-2. In the cell below, plan a new version as pseudocode. It should use
+2. In the cell below, plan a new version as *pseudocode*{.term}. It should use
    `if`, `elif` and `else`.
 3. Write it so that it prints one clear summary, such as "7 is a natural
    number (and therefore also an integer, rational, and real)."

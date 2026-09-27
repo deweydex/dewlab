@@ -64,8 +64,8 @@ RETURN -1, because the target is not there
 
 ### Your turn
 
-Can you turn the pseudocode into `linear_search(items, target)`, which
-returns the index where it finds the target, or -1 if the target is not in
+Can you turn the *pseudocode*{.term} into `linear_search(items, target)`, which
+returns the *index*{.term} where it finds the target, or -1 if the target is not in
 the list?
 
 ```python exec

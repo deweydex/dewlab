@@ -51,7 +51,7 @@ until it stops being a surprise.
 
 ## 2. Slices
 
-With `xs = [10, 20, 30, 40, 50]`, what does each slice give?
+With `xs = [10, 20, 30, 40, 50]`, what does each *slice*{.term} give?
 
 - (a) `xs[1:3]`
 - (b) `xs[:2]`
@@ -399,7 +399,7 @@ when `number` is not in the list yet.
 <div class="dl-world" data-world="secret-messages">
 
 Doubled letters are a clue when breaking a code. In English, EE, LL, SS and
-OO are common. Can you build `doubles`, the index of every letter that is
+OO are common. Can you build `doubles`, the *index*{.term} of every letter that is
 the same as the one after it?
 
 ```python exec
@@ -436,7 +436,7 @@ stops one early, so `index + 1` never runs off the end.
 <div class="dl-world" data-world="pixel-art">
 
 An *edge* in a picture is where dark meets light. Can you build `edges`,
-the index of every pixel below 128 whose right-hand neighbour is 128 or
+the *index*{.term} of every pixel below 128 whose right-hand neighbour is 128 or
 more?
 
 ```python exec

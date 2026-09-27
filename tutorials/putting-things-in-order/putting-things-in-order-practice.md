@@ -18,7 +18,7 @@ you usually cannot.
 
 ## 1. One pass
 
-Trace one full pass of bubble sort over `[5, 1, 4, 2, 8]`. What is the
+Trace one full pass of *bubble sort*{.term} over `[5, 1, 4, 2, 8]`. What is the
 list after the pass? The cell prints the list after each swap, to check
 your trace.
 
@@ -53,7 +53,7 @@ is sorted. Problem 6 fixes that.
 
 ## 3. Insertion, traced
 
-Trace insertion sort over `[3, 1, 4, 1, 5]`. Write down the list after
+Trace *insertion sort*{.term} over `[3, 1, 4, 1, 5]`. Write down the list after
 each element is placed.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -69,7 +69,7 @@ sorted twice, by two different things, as in problem 12.
 
 ## 4. Selection, traced
 
-Trace selection sort over `[64, 25, 12, 22, 11]`.
+Trace *selection sort*{.term} over `[64, 25, 12, 22, 11]`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -437,7 +437,7 @@ the order they had, because the sort is stable.
 
 ## 14. A function that calls itself
 
-Binary search can be written so that it calls itself on a smaller range,
+*Binary search*{.term} can be written so that it calls itself on a smaller range,
 in place of a loop. A function that calls itself uses *recursion*. What
 does every recursive function need, to stop?
 

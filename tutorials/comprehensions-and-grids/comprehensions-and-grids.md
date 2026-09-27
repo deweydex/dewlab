@@ -208,7 +208,7 @@ brightness no screen has.
 
 A list can hold other lists. A picture, a board or a table is a grid, and a
 list of lists keeps a grid with one inner list for each row. To read one
-value, we give two indexes. Before you run the cell, what will
+value, we give two *indexes*{.term}. Before you run the cell, what will
 `picture[1][3]` be?
 
 ```python exec
@@ -431,7 +431,7 @@ Numbers and strings never cause this. They cannot be changed in place, so
 
 ### Inside a function
 
-A function's parameter is one more name. In
+A function's *parameter*{.term} is one more name. In
 [Writing your own functions](tutorial:writing-your-own-functions), giving
 a name a new value inside a function left everything outside alone. What
 happens when the function changes a list in place?

@@ -11,7 +11,7 @@ worlds:
 # Comprehensions, grids and aliasing — Practice
 
 These problems are on comprehensions, grids and two names for one list,
-with three from earlier pages. Comprehensions and generator expressions are this
+with three from earlier pages. Comprehensions and *generator expressions*{.term} are this
 page's own tools, so the first solution to a problem may use them. Try each
 problem before you open anything under it.
 

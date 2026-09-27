@@ -333,7 +333,7 @@ can be part of a bigger calculation.
 
 ## 12. Which are pure
 
-A *pure function* depends only on its arguments: the same input always
+A *pure function* depends only on its *arguments*{.term}: the same input always
 gives the same output, and it changes nothing outside itself. Which of
 these are pure?
 
@@ -427,7 +427,7 @@ def reciprocal(x):
     return 1 / x
 ```
 
-Which input is outside this function's domain? What happens if you call it
+Which input is outside this function's *domain*{.term}? What happens if you call it
 with that input?
 
 <details class="dl-answer"><summary>answer</summary>

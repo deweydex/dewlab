@@ -171,7 +171,7 @@ A *Boolean* (`bool`) is a value that is either `True` or `False`. Booleans
 are named after George Boole, who created an algebra of logic in the
 1840s.
 
-The `type()` function tells us what type a value is.
+The `type()` *function*{.term} tells us what type a value is.
 
 ```python exec
 id: data-types-different-kinds-of-information-1
@@ -267,7 +267,7 @@ something. The `input()` function asks for some typing, and returns what
 was typed. It always returns a string, even when the person types a
 number.
 
-The lines in the next cell are comments, so the cell does nothing yet. To
+The lines in the next cell are *comments*{.term}, so the cell does nothing yet. To
 try them, remove the `#` at the start of each line of code, then run the
 cell. It waits for you to type something.
 
@@ -289,7 +289,7 @@ the oldest secret code there is. Julius Caesar is said to have written to his
 generals with every letter moved three places along: A became D, B became E.
 It is called a *Caesar shift*.
 
-Here is the plan, as pseudocode:
+Here is the plan, as *pseudocode*{.term}:
 
 ```
 STORE the letter, and how far to move it

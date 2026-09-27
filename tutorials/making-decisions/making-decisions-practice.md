@@ -526,7 +526,7 @@ the first test that comes out true gives the most exact answer.
 
 ## 17. Is every float rational
 
-The tutorial's classifier says every Python float is rational. Is that
+The tutorial's classifier says every Python *float*{.term} is rational. Is that
 true?
 
 <details class="dl-answer"><summary>one good answer</summary>

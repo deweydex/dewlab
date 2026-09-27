@@ -31,7 +31,7 @@ for −1 gets a wrong answer and no error.
 
 ## 2. Counting looks
 
-Linear search looks at a list of 100 items. How many comparisons does
+*Linear search*{.term} looks at a list of 100 items. How many comparisons does
 it make when the target is first? When it is last? When it is not there?
 And on average, when the target is there and equally likely to be
 anywhere?
@@ -88,7 +88,7 @@ last one in the list.
 
 ## 4. A trace
 
-Binary search looks for 72 in
+*Binary search*{.term} looks for 72 in
 `[3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]`. Which
 indexes does it look at, in order?
 

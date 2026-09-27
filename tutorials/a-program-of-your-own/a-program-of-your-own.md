@@ -53,7 +53,7 @@ each one small. Here are three starting points.
 **A cipher tool.** The first version codes and decodes one message with a
 Caesar shift, like the program above. It has room to grow:
 
-- a key of your own, kept in a dictionary, in place of a shift;
+- a key of your own, kept in a *dictionary*{.term}, in place of a shift;
 - small letters, spaces and punctuation handled on purpose;
 - cracking a shift with no key, by counting letters;
 - a keyword cipher, where each letter has its own shift, taken from a

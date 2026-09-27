@@ -128,7 +128,7 @@ its second number. Two lookups in a row: first by key, then by index.
 
 ## Adding and changing values
 
-A dictionary is mutable, like a list. The two middle lines here have the
+A dictionary is *mutable*{.term}, like a list. The two middle lines here have the
 same shape. How many pairs will the palette have at the end?
 
 ```python exec
@@ -450,7 +450,7 @@ for letter in text:
 print(counts)
 ```
 
-This is the accumulator pattern again, with one accumulator for each key.
+This is the *accumulator pattern*{.term} again, with one accumulator for each key.
 `.get()` makes the loop shorter. Why is the default 0 here?
 
 ```python exec

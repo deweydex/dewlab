@@ -89,7 +89,7 @@ there is only one document.
 
 ## Where else it happens
 
-A grid made with `*` has the same surprise. What will this print?
+A *grid*{.term} made with `*` has the same surprise. What will this print?
 
 ```python exec
 id: where-else-it-happens-1

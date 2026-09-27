@@ -86,7 +86,7 @@ such as `numbers`, fixes it. Restart Python, or reload the page, to get
 
 ## 4. Two things to find
 
-Run this, and read the traceback. Which line failed, and which line is
+Run this, and read the *traceback*{.term}. Which line failed, and which line is
 responsible?
 
 ```python exec

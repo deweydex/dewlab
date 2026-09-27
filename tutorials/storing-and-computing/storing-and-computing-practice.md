@@ -17,7 +17,7 @@ under it.
 
 ## 1. Allowed names
 
-Which of these can be variable names in Python? For the ones that cannot,
+Which of these can be *variable*{.term} names in Python? For the ones that cannot,
 can you say why?
 
 `total`, `2nd_place`, `first name`, `_hidden`, `class`, `Total`,
@@ -376,7 +376,7 @@ with. A third is not exact in decimal for the same reason.
 ## 14. Hours and minutes
 
 Can you change a number of minutes into hours and minutes, with clear
-names, and print it with an f-string?
+names, and print it with an *f-string*{.term}?
 
 ```python exec
 id: hours-and-minutes-1
@@ -400,7 +400,7 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 
 ## 15. Counting in cents
 
-A shop's till stores prices in euro as floats. Adding up fifty items at
+A shop's till stores prices in euro as *floats*{.term}. Adding up fifty items at
 €0.10 gives €4.999999999999998. What should the till store instead?
 
 <details class="dl-answer"><summary>answer</summary>

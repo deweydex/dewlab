@@ -192,7 +192,7 @@ what each one is telling you.
 
 | Error | What it means |
 |---|---|
-| `NameError` | You used a variable that was never created, or whose name is misspelled. |
+| `NameError` | You used a *variable*{.term} that was never created, or whose name is misspelled. |
 | `TypeError` | You did something to a value that its type does not allow. Adding a number to a string is the classic example. |
 | `ValueError` | The type is right, but the content is wrong. `int("hello")` gives `int` a string, which is what `int` wants, but not a string that means anything as a number. |
 | `ZeroDivisionError` | You divided by zero. This nearly always means a value came out as zero when you expected it not to. |
