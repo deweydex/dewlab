@@ -22,11 +22,12 @@ worlds:
 
 # Monte Carlo simulation: estimating π with random darts
 
-In [Random numbers: pseudo-random numbers and seeds](tutorial:leaving-it-to-chance),
-we got the computer to give us unpredictable numbers whenever we asked.
-On this page we spend those numbers on something that seems like a
-strange way to do mathematics. We calculate the value of π by throwing
-darts at a wall and counting where they land.
+In [Random numbers: pseudo-random numbers and
+seeds](tutorial:leaving-it-to-chance), we got the computer to give us
+unpredictable numbers whenever we asked. On this page we spend those
+numbers on something that seems like a strange way to do mathematics. We
+calculate the value of π by throwing darts at a wall and counting where
+they land.
 
 It is a strange way. It also works. And the reason it works is the basis
 of a whole family of methods, called Monte Carlo methods. People use them
@@ -51,9 +52,10 @@ should be the quarter-circle's share of the square:
 
 $$\frac{\text{quarter-circle area}}{\text{square area}} = \frac{\pi/4}{1} = \frac{\pi}{4}$$
 
-We can use this the other way. Take the fraction that lands inside, and multiply
-it by 4. That gives an estimate of π. We never measure a circle. We never
-use a formula for its area. And we do not need to know π at the start.
+We can use this the other way. Take the fraction that lands inside, and
+multiply it by 4. That gives an estimate of π. We never measure a
+circle. We never use a formula for its area. And we do not need to know
+π at the start.
 
 We only need a way to tell whether a point is inside the curve. A point
 $(x, y)$ is inside a circle of radius 1, centred on the origin, when
@@ -117,11 +119,11 @@ print(estimate_pi(100))
 The result is 3.04. It came from a hundred darts. The only mathematics was
 Pythagoras, and we never even took a square root.
 
-The answer is also wrong in the second decimal place. Think about
-that for a moment, because it matters. The method has not made an error. There is no
-bug to find. A hundred darts do not hold enough information to find π
-more exactly than this, and no amount of care in the code would change
-that.
+The answer is also wrong in the second decimal place. Think about that
+for a moment, because it matters. The method has not made an error.
+There is no bug to find. A hundred darts do not hold enough information
+to find π more exactly than this, and no amount of care in the code
+would change that.
 
 ### Your turn
 
@@ -291,7 +293,9 @@ box's area.
 
 <div class="dl-world" data-world="living-systems">
 
-An atoll is a ring of coral reef around a lagoon. Seen from above, this one is the ring between a circle of radius 1 and a circle of radius 0.5, both centred at (1, 1) in a 2 by 2 square. What is the reef's area?
+An atoll is a ring of coral reef around a lagoon. Seen from above, this
+one is the ring between a circle of radius 1 and a circle of radius 0.5,
+both centred at (1, 1) in a 2 by 2 square. What is the reef's area?
 
 ```python exec
 id: your-world-1--living-systems
@@ -341,7 +345,10 @@ A thousand darts give 2.216, and 100,000 give 2.343. The exact area is the big c
 
 <div class="dl-world" data-world="queues-and-crowds">
 
-Two friends each arrive at the gate of a theme park at a random moment in the same hour. Each waits 10 minutes for the other, then goes in alone. A dart $(x, y)$ in a 1 by 1 square stands for the two arrival times, as fractions of the hour. What share of the square is "they meet"?
+Two friends each arrive at the gate of a theme park at a random moment
+in the same hour. Each waits 10 minutes for the other, then goes in
+alone. A dart $(x, y)$ in a 1 by 1 square gives the two arrival times,
+as fractions of the hour. What share of the square is "they meet"?
 
 ```python exec
 id: your-world-1--queues-and-crowds
@@ -391,7 +398,9 @@ A thousand darts give 0.279, and 100,000 give 0.307. The exact answer is $1 - (5
 
 <div class="dl-world" data-world="spread">
 
-A wildfire burns everything within a distance of 1 of the point (1, 1), in a 2 by 2 square, except where a road stops it. The road runs up the square at $x = 1.4$, and nothing past it burns. What area burns?
+A wildfire burns everything within a distance of 1 of the point (1, 1),
+in a 2 by 2 square, except where a road stops it. The road runs up the
+square at $x = 1.4$, and nothing past it burns. What area burns?
 
 ```python exec
 id: your-world-1--spread
@@ -441,7 +450,8 @@ A thousand darts give 2.26, and 100,000 give 2.335. The exact area, from a formu
 
 <div class="dl-world" data-world="space-and-physics">
 
-An asteroid's shadow, seen from a spacecraft, is an ellipse: 4 wide and 2 tall, centred at (2, 1) in a 4 by 2 box. What is its area?
+An asteroid's shadow, seen from a spacecraft, is an ellipse: 4 wide and
+2 tall, centred at (2, 1) in a 4 by 2 box. What is its area?
 
 ```python exec
 id: your-world-1--space-and-physics
@@ -561,11 +571,11 @@ statistical questions without formulas. It applies this tutorial's argument
 to real data.
 
 Robert, C. P. and Casella, G. (2004). *Monte Carlo Statistical Methods*
-(2nd ed.). Springer. This is the standard graduate reference, far beyond this
-course's level. We list it because Chapter 1's opening pages make the same
-argument as this tutorial. The method is most useful on problems where no
-formula is available. It is worth seeing the people who use it for real work
-say so.
+(2nd ed.). Springer. This is the standard graduate reference, far beyond
+this course's level. We list it because Chapter 1's opening pages make
+the same argument as this tutorial. The method is most useful on
+problems where no formula is available. It is worth seeing the people
+who use it for real work say so.
 
 AlphaPhoenix (2016). *RainPi: Calculate Pi with Raindrops!*
 <https://www.youtube.com/watch?v=I-BC_vI4CAE>. Our darts are random

@@ -31,7 +31,7 @@ waiting requests. They all work the same way:
 3. A queue builds up in between.
 
 The people in the queue care about one thing: how long they wait. On
-this page we simulate a queue, time every wait, and find out how the
+this page we simulate a queue, time every wait, and measure how the
 wait changes as the server gets busier. The answer surprised the
 engineers who first measured it, and it still surprises the people who
 plan shops, hospitals and computer systems.
@@ -275,9 +275,9 @@ Here are some more things the model leaves out:
 - The server never stops. A real one takes breaks.
 
 Choose two. Would each one make the real wait longer than the model
-says, or shorter? A model is only as good as the question it is used
-for. This one is good for "how does the wait change as the server gets
-busier?" It is not good for "exactly how long will I wait at the
+says, or shorter? A model is only as useful as the question it is used
+for. This one is useful for "how does the wait change as the server gets
+busier?" It is not useful for "exactly how long will I wait at the
 spaceport on Monday?"
 
 ## Your world
@@ -362,7 +362,7 @@ def mean_wait(arrival_prob, service_capacity, seed=1):
     return sum(waits) / len(waits)
 ---
 One desk is 94% busy, and a passenger waits about 3.8 steps. With two
-desks, the wait is 0. That is too good to be true, and the model says
+desks, the wait is 0. No real spaceport is like that, and the model says
 why: at most two passengers arrive in a step, and two desks clear two.
 A real rush brings a coach full of passengers at once, as the groups
 above showed. Off the rush, at `arrival_prob=0.3`, one desk is enough:

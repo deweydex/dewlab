@@ -123,9 +123,9 @@ hint: PLUS has a 1 in the top-middle position; CROSS has a 0 there. A weight of 
 
 ## Running it again and again
 
-We cannot find the right weights on paper, the way
-[Systems of equations: solving them with matrices](tutorial:solving-systems) found exact unknowns.
-Instead, we correct the model one mistake at a time:
+We cannot find the right weights on paper, the way [Systems of
+equations: solving them with matrices](tutorial:solving-systems) found
+exact unknowns. Instead, we correct the model one mistake at a time:
 
 1. Show it a picture.
 2. Check whether its guess matches the true label.
@@ -164,10 +164,10 @@ print(train[0])
 print(train[1])
 ```
 
-Now the model corrects itself. Look at the inner `if` in the code below. `error` is
-`label - guess`. It is 1 when the model said "cross" for a plus, and -1
-when it said "plus" for a cross. So each lit pixel's weight moves up for
-a missed plus, and down for a missed cross.
+Now the model corrects itself. Look at the inner `if` in the code below.
+`error` is `label - guess`. It is 1 when the model said "cross" for a
+plus, and -1 when it said "plus" for a cross. So each lit pixel's weight
+moves up for a missed plus, and down for a missed cross.
 
 ```python exec
 id: running-it-again-and-again-2
@@ -368,7 +368,8 @@ returns the weights and the bias.
 
 <div class="dl-world" data-world="living-systems">
 
-Tracks in fresh snow: a bird's footprint, three toes shaped like a Y, or a fox's pawprint, four pads at the corners.
+Tracks in fresh snow: a bird's footprint, three toes shaped like a Y, or
+a fox's pawprint, four pads at the corners.
 
 ```python exec
 id: your-world-1--living-systems
@@ -440,7 +441,8 @@ Trained, the model gets all 20 training pictures right, and 43 of the 50 it neve
 
 <div class="dl-world" data-world="queues-and-crowds">
 
-People seen from above: standing in a row along a counter, or waiting one behind the other in a single-file queue.
+People seen from above: standing in a row along a counter, or waiting
+one behind the other in a single-file queue.
 
 ```python exec
 id: your-world-1--queues-and-crowds
@@ -512,7 +514,8 @@ Trained, the model gets 19 of the 20 training pictures right, not all of them, a
 
 <div class="dl-world" data-world="spread">
 
-A disease on a map of towns: spreading along a road, or out from one town in four directions.
+A disease on a map of towns: spreading along a road, or out from one
+town in four directions.
 
 ```python exec
 id: your-world-1--spread
@@ -584,7 +587,8 @@ Trained, the model gets all 20 training pictures right, but only 29 of the 45 it
 
 <div class="dl-world" data-world="space-and-physics">
 
-A camera's picture of a meteor streak: falling to the left, from top-left to bottom-right, or to the right.
+A camera's picture of a meteor streak: falling to the left, from
+top-left to bottom-right, or to the right.
 
 ```python exec
 id: your-world-1--space-and-physics
@@ -711,10 +715,10 @@ Choose one of these questions, or ask one of your own:
 ## Where to read more
 
 Rosenblatt, F. (1958). *The Perceptron: A Probabilistic Model for
-Information Storage and Organization in the Brain.* Psychological Review,
-65(6), 386–408. This is the original paper. The `predict()` rule and the training
-loop on this page are a simplified form of the perceptron it describes,
-nearly seventy years before this course.
+Information Storage and Organization in the Brain.* Psychological
+Review, 65(6), 386–408. This is the original paper. The `predict()` rule
+and the training loop on this page are a simplified form of the
+perceptron it describes, nearly seventy years before this course.
 
 Nielsen, M. (2015). *Neural Networks and Deep Learning*.
 <http://neuralnetworksanddeeplearning.com/>. It is a free online book.

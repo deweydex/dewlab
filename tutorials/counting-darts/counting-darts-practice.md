@@ -327,7 +327,11 @@ trials in which something happens.
 
 <div class="dl-world" data-world="living-systems">
 
-A turtle lays 100 eggs on a beach. Each hatchling has a chance of 0.02 of reaching the sea and growing up. What is the chance that at least one does? Can you write `chance_any(k, p, trials, seed)`? In each trial it checks `k` hatchlings, each with chance `p`, and it returns the share of trials in which at least one made it.
+A turtle lays 100 eggs on a beach. Each hatchling has a chance of 0.02
+of reaching the sea and growing up. What is the chance that at least one
+does? Can you write `chance_any(k, p, trials, seed)`? In each trial it
+checks `k` hatchlings, each with chance `p`, and it returns the share of
+trials in which at least one made it.
 
 ```python exec
 id: your-world-1--living-systems
@@ -363,7 +367,11 @@ def chance_any(k, p, trials, seed):
 
 <div class="dl-world" data-world="queues-and-crowds">
 
-23 riders queue for a ride. What is the chance that two of them share a birthday? Can you write `chance_shared(people, days, trials, seed)`? In each trial, each person gets a day from 1 to `days` at random, and the function returns the share of trials in which two people got the same day.
+23 riders queue for a ride. What is the chance that two of them share a
+birthday? Can you write `chance_shared(people, days, trials, seed)`? In
+each trial, each person gets a day from 1 to `days` at random, and the
+function returns the share of trials in which two people got the same
+day.
 
 ```python exec
 id: your-world-1--queues-and-crowds
@@ -400,7 +408,11 @@ def chance_shared(people, days, trials, seed):
 
 <div class="dl-world" data-world="spread">
 
-At a meeting, one person has an illness, and each of the 5 people they talk to catches it with a chance of 0.2. What is the chance that at least one of them catches it? Can you write `chance_any(k, p, trials, seed)`? In each trial it checks `k` contacts, each with chance `p`, and it returns the share of trials in which at least one caught it.
+At a meeting, one person has an illness, and each of the 5 people they
+talk to catches it with a chance of 0.2. What is the chance that at
+least one of them catches it? Can you write `chance_any(k, p, trials,
+seed)`? In each trial it checks `k` contacts, each with chance `p`, and
+it returns the share of trials in which at least one caught it.
 
 ```python exec
 id: your-world-1--spread
@@ -436,7 +448,11 @@ def chance_any(k, p, trials, seed):
 
 <div class="dl-world" data-world="space-and-physics">
 
-Ten meteors appear during an hour, each in a minute chosen at random. What is the chance that two appear in the same minute? Can you write `chance_shared(people, days, trials, seed)`? In each trial, each of `people` meteors gets a minute from 1 to `days` at random, and the function returns the share of trials in which two got the same minute.
+Ten meteors appear during an hour, each in a minute chosen at random.
+What is the chance that two appear in the same minute? Can you write
+`chance_shared(people, days, trials, seed)`? In each trial, each of
+`people` meteors gets a minute from 1 to `days` at random, and the
+function returns the share of trials in which two got the same minute.
 
 ```python exec
 id: your-world-1--space-and-physics

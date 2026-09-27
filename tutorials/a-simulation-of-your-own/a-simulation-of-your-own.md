@@ -128,12 +128,12 @@ axes[1].set_ylabel("share of cells with a tree")
 
 <div class="dl-world" data-world="queues-and-crowds">
 
-A café with two tills. Customers can wait in one shared queue, and go
-to whichever till is free. Or each till can have its own queue, and a
+A café with two tills. Customers can wait in one shared queue, and go to
+whichever till is free. Or each till can have its own queue, and a
 customer picks one at random when they arrive. Which is quicker for the
-customers? This starter builds both, from the queue in
-[Simulating a queue: how busy is too busy?](tutorial:when-a-queue-never-clears),
-with four chances of an arrival in each step.
+customers? This starter builds both, from the queue in [Simulating a
+queue: how busy is too busy?](tutorial:when-a-queue-never-clears), with
+four chances of an arrival in each step.
 
 Some questions your simulation could answer:
 

@@ -162,7 +162,9 @@ under `limit`.
 
 <div class="dl-world" data-world="living-systems">
 
-A reef's cleaning station has several cleaner wrasse, each cleaning one fish a step. Fish arrive with 10 chances a step, each with `arrival_prob=0.39`. How many wrasse keep the average wait under 1 step?
+A reef's cleaning station has several cleaner wrasse, each cleaning one
+fish a step. Fish arrive with 10 chances a step, each with
+`arrival_prob=0.39`. How many wrasse keep the average wait under 1 step?
 
 ```python exec
 id: your-world-1--living-systems
@@ -204,7 +206,9 @@ def servers_needed(arrival_prob, chances, limit):
 
 <div class="dl-world" data-world="queues-and-crowds">
 
-The spaceport's departure hall has several check-in desks. Passengers arrive with 8 chances a step, each with `arrival_prob=0.475`. How many desks keep the average wait under 1 step?
+The spaceport's departure hall has several check-in desks. Passengers
+arrive with 8 chances a step, each with `arrival_prob=0.475`. How many
+desks keep the average wait under 1 step?
 
 ```python exec
 id: your-world-1--queues-and-crowds
@@ -246,7 +250,10 @@ def servers_needed(arrival_prob, chances, limit):
 
 <div class="dl-world" data-world="spread">
 
-During an outbreak, a clinic has several doctors, each seeing one patient a step. Patients arrive with 6 chances a step, each with `arrival_prob=0.49`. How many doctors keep the average wait under 2 steps?
+During an outbreak, a clinic has several doctors, each seeing one
+patient a step. Patients arrive with 6 chances a step, each with
+`arrival_prob=0.49`. How many doctors keep the average wait under 2
+steps?
 
 ```python exec
 id: your-world-1--spread
@@ -288,7 +295,10 @@ def servers_needed(arrival_prob, chances, limit):
 
 <div class="dl-world" data-world="space-and-physics">
 
-On the night of a meteor shower, several computers check the camera's pictures, one picture a step each. Pictures arrive with 5 chances a step, each with `arrival_prob=0.58`. How many computers keep the average wait under 1 step?
+On the night of a meteor shower, several computers check the camera's
+pictures, one picture a step each. Pictures arrive with 5 chances a
+step, each with `arrival_prob=0.58`. How many computers keep the average
+wait under 1 step?
 
 ```python exec
 id: your-world-1--space-and-physics

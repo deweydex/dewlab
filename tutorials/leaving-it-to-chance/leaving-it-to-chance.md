@@ -85,10 +85,10 @@ hint: Call randint twice and add the results. Storing each roll in its own varia
 The next cell does something that looks like a mistake.
 
 It builds a list of five dice rolls with a list comprehension, which we
-met in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
-The loop variable is called `_`. Python programmers use the name `_` for
-a loop variable the loop never uses. Here the loop only needs to run five
-times.
+met in [Comprehensions, grids and
+aliasing](tutorial:comprehensions-and-grids). The loop variable is
+called `_`. Python programmers use the name `_` for a loop variable the
+loop never uses. Here the loop only needs to run five times.
 
 ```python exec
 id: the-same-numbers-twice-1
@@ -144,12 +144,12 @@ is true, as we will see below. For simulation, it is almost the opposite.
 Think about what you did to find a seed that gives a 1. You ran an
 experiment, and you can run it again and get the same result.
 
-Now imagine that a simulation, like the one in
-[Simulating a queue: how busy is too busy?](tutorial:when-a-queue-never-clears),
-gives a strange result, such as a queue that never clears. You want to
-know why. With truly random numbers, that run is gone forever. You cannot
-repeat it, step through it, or show it to anyone else. With a seed, you
-write down one whole number, and the whole run comes back exactly.
+Now imagine that a simulation, like the one in [Simulating a queue: how
+busy is too busy?](tutorial:when-a-queue-never-clears), gives a strange
+result, such as a queue that never clears. You want to know why. With
+truly random numbers, that run is gone forever. You cannot repeat it,
+step through it, or show it to anyone else. With a seed, you write down
+one whole number, and the whole run comes back exactly.
 
 Scientists need to be able to run an experiment again and check it.
 Being able to repeat a run exactly is called *reproducibility*, and it is
@@ -454,7 +454,7 @@ because everyone who knows is telling someone. Try 3,000.
 A speck of dust in the air is knocked by molecules from every side. In
 this simple model it moves along a line, one step left or one step
 right, chosen at random each time. Can you write `walk(steps, seed)`? It
-sets the seed and returns where the speck ends up, counting from 0.
+sets the seed and returns where the speck finishes, counting from 0.
 
 ```python exec
 id: your-world-1--space-and-physics
@@ -562,13 +562,15 @@ managing secrets.* <https://docs.python.org/3/library/secrets.html>. This
 page covers the cases where a predictable number is a weakness, not a
 feature.
 
-Downey, A. B. (2015). *Think Python* (2nd ed.). O'Reilly. Chapter 13 builds a
-word-frequency study on `random` and is a good next step if the "choose a
-thing, not a number" half of this tutorial was the interesting part.
+Downey, A. B. (2015). *Think Python* (2nd ed.). O'Reilly. Chapter 13
+builds a word-frequency study on `random` and is a good next step if the
+"choose a thing, not a number" half of this tutorial was the interesting
+part.
 
-Matsumoto, M. and Nishimura, T. (1998). *Mersenne Twister: A 623-dimensionally
-equidistributed uniform pseudo-random number generator.* ACM Transactions on
-Modeling and Computer Simulation, 8(1), 3–30.
+Matsumoto, M. and Nishimura, T. (1998). *Mersenne Twister: A
+623-dimensionally equidistributed uniform pseudo-random number
+generator.* ACM Transactions on Modeling and Computer Simulation, 8(1),
+3–30.
 <https://doi.org/10.1145/272991.272995>. The algorithm behind Python's own
 generator. It is much harder than anything in this series. We include it
 because you can go and check the claim that an algorithm makes the
