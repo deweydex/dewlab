@@ -5384,7 +5384,27 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 ---
 
-**7.272 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
+**7.272 — Simulation is set in four worlds, the queue page is rebuilt around waiting, and the series ends with a simulation of the reader's own.** The content issue (#332), part of #306.
+
+**The queue page.** `when-a-queue-never-clears` now times every wait: the queue is a list of arrival steps, and a wait is the step it was served minus the step it arrived. A predict asks for the average wait at 90% busy (2.3 steps, against 0.4 at 60%), and a sweep from 0.5 to 0.98 draws the hockey stick the plan promised and the page had dropped: about 1 step at 80%, 2.3 at 90%, 4.6 at 95%, 11 at 98%. For this model the average wait is exactly $u/(4(1-u))$ (binomial arrivals, one service a step, and Little's law); the page states it without the derivation, and the simulated points sit close to it except at 97% and 98%, where a run of 20,000 steps has not settled. Past full, the queue never clears. "Is this a good model?" changes one assumption, arrivals in groups, and at the same 90% busy the wait rises from 2.3 steps to 17 with groups of 4. The title becomes "how busy is too busy?".
+
+**Worlds.** The series' four worlds from the issue, chosen per page: living systems, queues and crowds, spread, and space and physics. Each page has a task in each, and each practice page a problem in each. On the queue page they are a reef's cleaning station, a spaceport's check-in, a clinic in an outbreak and a meteor camera; on the darts page, an atoll, two friends meeting at a gate, a fire stopped by a road and an asteroid's shadow, each with its exact area to compare.
+
+**The perceptron.** `sum(w * p ...)` is named as the dot product from `multiplying-grids`. The loop is called training, not a simulation, as the issue asked: a simulation's result is a picture of what might happen, training's result is the model. Its world task trains on a new pair of shapes per world, and the practice counts the pictures two flips can make from either shape. In the queues world the same picture is in the training set twice with both labels, and in the spread world two flips turn one shape into the other. The plus and cross differ in 8 pixels, so the tutorial's own misses are the model's. The page stays in Computational Methods for CMPS-LO7; listing it in the machine-learning course is #338's.
+
+**Lab benches.** Every page ends with a cell whose numbers are all named at the top, and four questions to choose from, or one of the reader's own.
+
+**The making task.** `a-simulation-of-your-own` follows `stepping-forward-in-time`: a forest regrowing after fires (a cellular automaton), one queue or a queue per till (1.0 step against 3.75 at 90% busy), a disease across a grid, and dust on random walks. It asks the reader to name one thing their simulation leaves out, and to predict whether putting it back would raise or lower the answer.
+
+**Kept.** `leaving-it-to-chance` and `counting-darts` keep their voice, and "The method has not made an error. There is no bug to find."
+
+**Practice.** All four practice pages move to blocks. Every function that draws random numbers takes a seed and sets it, so the reader's function and the solution's give the same numbers row by row.
+
+*Cost to change: small. `a-simulation-of-your-own` and the new cell ids, including every world cell, become a contract on 2 October. The queue page's title changed; its id did not.*
+
+---
+
+**7.273 — A term shows its definition on hover, but only where the author marked it.** Issue #339, part of #306. Josh, 26 September 2026: build the glossary half now; plain words, and whether they join the Reference, wait for a wider rethink of support for readers of English as a second language.
 
 **Only author-marked uses.** 7.94 built prose-linking, measured it and withdrew it: a regex cannot tell "set a seed" from a set. Marking every appearance of a term for hover definitions would bring that back, and Josh chose against it. So only two places are marked. One is the italicised first use (`docs/WRITING_TUTORIALS.md#marking-a-term`); across 421 built pages, 705 of the 901 concept terms each page introduces are italicised there. The other is a later use the author writes `*term*{.term}`. The class tells `dev/curriculum_map.py`'s vocabulary report, and the glossary skill, that this is not an introduction. Inherited terms are italicised on later pages in only 48 places today, so the help a reader gets on later pages depends on authors marking uses. `dev/term_uses.py` lists the candidates for each page: about 4,500 across the site, with the sentence around each, including many everyday uses of glossary words like "and", "list" and "pair" that should stay unmarked.
 

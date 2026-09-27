@@ -2,7 +2,7 @@
 
 A term shows its definition on hover only where the author marked it: the
 italicised first use, or a later use written `*term*{.term}`
-(docs/WRITING_TUTORIALS.md#marking-a-term, DECISIONS_LOG 7.272). Nothing
+(docs/WRITING_TUTORIALS.md#marking-a-term, DECISIONS_LOG 7.273). Nothing
 marks a later use automatically, because a word match cannot tell the
 everyday "set a seed" from a set (7.94). This lists the candidates instead:
 for each built page, each concept it inherits from an earlier page that

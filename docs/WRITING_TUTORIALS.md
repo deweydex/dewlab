@@ -1299,7 +1299,7 @@ to its first plain use instead.
 
 **Definitions on hover.** A marked term also shows its glossary definition
 when a reader points at it, taps it, or reaches it with Tab (DECISIONS_LOG
-7.272). Only the italics mark it, so only a use you marked shows one. To
+7.273). Only the italics mark it, so only a use you marked shows one. To
 give a later page's use of an earlier term the same help, write
 `*matrix*{.term}`: it looks like any italic, and the `{.term}` tells the
 vocabulary report and the glossary skill that this is not a new term. Mark

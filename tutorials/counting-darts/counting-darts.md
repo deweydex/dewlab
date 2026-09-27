@@ -1,7 +1,7 @@
 ---
 title: "Monte Carlo simulation: estimating π with random darts"
 year: "2026-2027"
-version: 2026.08.30.1
+version: 2026.09.27.1
 covers:
   a-question-you-can-answer-by-throwing-things:
     covers: [CMPS-LO3]
@@ -11,15 +11,23 @@ covers:
     covers: [CMPS-LO3]
   more-darts-better-on-average:
     covers: [CMPS-LO3, CMPS-LO13]
+  your-world:
+    touches: [CMPS-LO3]
+worlds:
+  living-systems: An atoll, a ring-shaped coral reef around a lagoon.
+  queues-and-crowds: Two friends meeting at the gate of a theme park.
+  spread: A wildfire, stopped by a road.
+  space-and-physics: The shadow of an asteroid.
 ---
 
 # Monte Carlo simulation: estimating π with random darts
 
-In [Random numbers: pseudo-random numbers and seeds](tutorial:leaving-it-to-chance),
-we got the computer to give us unpredictable numbers whenever we asked.
-On this page we spend those numbers on something that seems like a
-strange way to do mathematics. We calculate the value of π by throwing
-darts at a wall and counting where they land.
+In [Random numbers: pseudo-random numbers and
+seeds](tutorial:leaving-it-to-chance), we got the computer to give us
+unpredictable numbers whenever we asked. On this page we spend those
+numbers on something that seems like a strange way to do mathematics. We
+calculate the value of π by throwing darts at a wall and counting where
+they land.
 
 It is a strange way. It also works. And the reason it works is the basis
 of a whole family of methods, called Monte Carlo methods. People use them
@@ -44,9 +52,10 @@ should be the quarter-circle's share of the square:
 
 $$\frac{\text{quarter-circle area}}{\text{square area}} = \frac{\pi/4}{1} = \frac{\pi}{4}$$
 
-We can use this the other way. Take the fraction that lands inside, and multiply
-it by 4. That gives an estimate of π. We never measure a circle. We never
-use a formula for its area. And we do not need to know π at the start.
+We can use this the other way. Take the fraction that lands inside, and
+multiply it by 4. That gives an estimate of π. We never measure a
+circle. We never use a formula for its area. And we do not need to know
+π at the start.
 
 We only need a way to tell whether a point is inside the curve. A point
 $(x, y)$ is inside a circle of radius 1, centred on the origin, when
@@ -110,11 +119,11 @@ print(estimate_pi(100))
 The result is 3.04. It came from a hundred darts. The only mathematics was
 Pythagoras, and we never even took a square root.
 
-The answer is also wrong in the second decimal place. Think about
-that for a moment, because it matters. The method has not made an error. There is no
-bug to find. A hundred darts do not hold enough information to find π
-more exactly than this, and no amount of care in the code would change
-that.
+The answer is also wrong in the second decimal place. Think about that
+for a moment, because it matters. The method has not made an error.
+There is no bug to find. A hundred darts do not hold enough information
+to find π more exactly than this, and no amount of care in the code
+would change that.
 
 ### Your turn
 
@@ -274,6 +283,259 @@ id: more-is-not-reliably-better-2
 hint: Two more decimal places means the error has to fall by a factor of 100. If error goes as 1/sqrt(n), what does n have to do?
 ```
 
+## Your world
+
+The darts work on any shape, as long as we can tell whether a point is
+inside it. Can you write `estimate_area(inside, width, height, n,
+seed=0)`? It throws `n` darts at a box `width` by `height`, counts the
+ones for which `inside(x, y)` is `True`, and returns that share of the
+box's area.
+
+<div class="dl-world" data-world="living-systems">
+
+An atoll is a ring of coral reef around a lagoon. Seen from above, this
+one is the ring between a circle of radius 1 and a circle of radius 0.5,
+both centred at (1, 1) in a 2 by 2 square. What is the reef's area?
+
+```python exec
+id: your-world-1--living-systems
+def inside_reef(x, y):
+    """True when the point is on the ring of reef."""
+    return 0.25 <= (x - 1) ** 2 + (y - 1) ** 2 <= 1
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    # Your code here.
+```
+
+```hint
+It is `estimate_pi` with two changes. A dart is `random.random() *
+width` across and `random.random() * height` up, and the answer is the
+share of hits times `width * height`, not times 4.
+```
+
+```inputs
+round(estimate_area(inside_reef, 2, 2, 1000), 3)
+round(estimate_area(inside_reef, 2, 2, 100000), 3)
+inside_reef(2 / 2, 2 / 2)
+```
+
+```solution
+def inside_reef(x, y):
+    """True when the point is on the ring of reef."""
+    return 0.25 <= (x - 1) ** 2 + (y - 1) ** 2 <= 1
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.random() * width
+        y = random.random() * height
+        if inside(x, y):
+            hits += 1
+    return width * height * hits / n
+---
+A thousand darts give 2.216, and 100,000 give 2.343. The exact area is the big circle minus the lagoon: $\pi \times 1^2 - \pi \times 0.5^2 = 0.75\pi \approx 2.356$. The darts never needed that formula. For a reef with a ragged edge, there would be no formula, and the darts would work just the same.
+```
+
+</div>
+
+<div class="dl-world" data-world="queues-and-crowds">
+
+Two friends each arrive at the gate of a theme park at a random moment
+in the same hour. Each waits 10 minutes for the other, then goes in
+alone. A dart $(x, y)$ in a 1 by 1 square gives the two arrival times,
+as fractions of the hour. What share of the square is "they meet"?
+
+```python exec
+id: your-world-1--queues-and-crowds
+def they_meet(x, y):
+    """True when the two arrival times are within 10 minutes."""
+    return abs(x - y) <= 10 / 60
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    # Your code here.
+```
+
+```hint
+It is `estimate_pi` with two changes. A dart is `random.random() *
+width` across and `random.random() * height` up, and the answer is the
+share of hits times `width * height`, not times 4.
+```
+
+```inputs
+round(estimate_area(they_meet, 1, 1, 1000), 3)
+round(estimate_area(they_meet, 1, 1, 100000), 3)
+they_meet(1 / 2, 1 / 2)
+```
+
+```solution
+def they_meet(x, y):
+    """True when the two arrival times are within 10 minutes."""
+    return abs(x - y) <= 10 / 60
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.random() * width
+        y = random.random() * height
+        if inside(x, y):
+            hits += 1
+    return width * height * hits / n
+---
+A thousand darts give 0.279, and 100,000 give 0.307. The exact answer is $1 - (5/6)^2 = 11/36 \approx 0.306$: the friends meet a little under one time in three. Here the "area" is a chance, and the square is every pair of arrival times. That is the Monte Carlo idea at its widest: a fraction of cases.
+```
+
+</div>
+
+<div class="dl-world" data-world="spread">
+
+A wildfire burns everything within a distance of 1 of the point (1, 1),
+in a 2 by 2 square, except where a road stops it. The road runs up the
+square at $x = 1.4$, and nothing past it burns. What area burns?
+
+```python exec
+id: your-world-1--spread
+def burns(x, y):
+    """True when the fire reaches the point."""
+    return (x - 1) ** 2 + (y - 1) ** 2 <= 1 and x < 1.4
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    # Your code here.
+```
+
+```hint
+It is `estimate_pi` with two changes. A dart is `random.random() *
+width` across and `random.random() * height` up, and the answer is the
+share of hits times `width * height`, not times 4.
+```
+
+```inputs
+round(estimate_area(burns, 2, 2, 1000), 3)
+round(estimate_area(burns, 2, 2, 100000), 3)
+burns(2 / 2, 2 / 2)
+```
+
+```solution
+def burns(x, y):
+    """True when the fire reaches the point."""
+    return (x - 1) ** 2 + (y - 1) ** 2 <= 1 and x < 1.4
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.random() * width
+        y = random.random() * height
+        if inside(x, y):
+            hits += 1
+    return width * height * hits / n
+---
+A thousand darts give 2.26, and 100,000 give 2.335. The exact area, from a formula for a slice of a circle that this page does not need, is about 2.349: the road saves about a quarter of the circle's $\pi \approx 3.14$. Change the road, and the darts answer at once. The formula would have to be worked out again.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-and-physics">
+
+An asteroid's shadow, seen from a spacecraft, is an ellipse: 4 wide and
+2 tall, centred at (2, 1) in a 4 by 2 box. What is its area?
+
+```python exec
+id: your-world-1--space-and-physics
+def in_shadow(x, y):
+    """True when the point is inside the ellipse."""
+    return (x - 2) ** 2 / 4 + (y - 1) ** 2 <= 1
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    # Your code here.
+```
+
+```hint
+It is `estimate_pi` with two changes. A dart is `random.random() *
+width` across and `random.random() * height` up, and the answer is the
+share of hits times `width * height`, not times 4.
+```
+
+```inputs
+round(estimate_area(in_shadow, 4, 2, 1000), 3)
+round(estimate_area(in_shadow, 4, 2, 100000), 3)
+in_shadow(4 / 2, 2 / 2)
+```
+
+```solution
+def in_shadow(x, y):
+    """True when the point is inside the ellipse."""
+    return (x - 2) ** 2 / 4 + (y - 1) ** 2 <= 1
+
+
+def estimate_area(inside, width, height, n, seed=0):
+    """The share of n random darts that land inside, times the box's area."""
+    random.seed(seed)
+    hits = 0
+    for _ in range(n):
+        x = random.random() * width
+        y = random.random() * height
+        if inside(x, y):
+            hits += 1
+    return width * height * hits / n
+---
+A thousand darts give 6.144, and 100,000 give 6.258. The exact area of an ellipse with half-widths 2 and 1 is $\pi \times 2 \times 1 \approx 6.283$. A real asteroid is lumpy, and has no formula for its shadow. A spacecraft's camera could still throw darts at its picture.
+```
+
+</div>
+
+## Lab bench
+
+Every number this experiment uses is named at the top of the cell.
+Change them, run it, and see what happens.
+
+```python exec
+id: lab-bench-1
+import math
+import matplotlib.pyplot as plt
+
+DARTS = 10000      # darts in each run
+RUNS = 20          # how many runs
+FIRST_SEED = 0     # the runs use seeds FIRST_SEED, FIRST_SEED + 1, and so on
+
+estimates = [estimate_pi(DARTS, seed=FIRST_SEED + run) for run in range(RUNS)]
+print(f"lowest:  {min(estimates):.4f}")
+print(f"highest: {max(estimates):.4f}")
+print(f"average: {sum(estimates) / len(estimates):.4f}")
+
+plt.hist(estimates, bins=10)
+plt.axvline(math.pi, color="grey", linestyle="--", label="π")
+plt.xlabel("estimate")
+plt.ylabel("runs")
+plt.legend()
+```
+
+Choose one of these questions, or ask one of your own:
+
+1. Multiply `DARTS` by 100. How much narrower does the gap between the
+   lowest and highest get? Is that what the $1/\sqrt{n}$ rule says?
+2. Twenty runs of 10,000 darts use 200,000 darts in all. Is their
+   average closer to π than one run of 200,000 darts?
+3. Change `inside_circle` to a shape whose area you know exactly, such
+   as a triangle. Do the darts find it?
+4. How many darts does one run need before every one of 20 runs starts
+   with 3.14?
+
 ## Reflection
 
 There is no formula for π anywhere in the method on this page. The
@@ -309,11 +571,11 @@ statistical questions without formulas. It applies this tutorial's argument
 to real data.
 
 Robert, C. P. and Casella, G. (2004). *Monte Carlo Statistical Methods*
-(2nd ed.). Springer. This is the standard graduate reference, far beyond this
-course's level. We list it because Chapter 1's opening pages make the same
-argument as this tutorial. The method is most useful on problems where no
-formula is available. It is worth seeing the people who use it for real work
-say so.
+(2nd ed.). Springer. This is the standard graduate reference, far beyond
+this course's level. We list it because Chapter 1's opening pages make
+the same argument as this tutorial. The method is most useful on
+problems where no formula is available. It is worth seeing the people
+who use it for real work say so.
 
 AlphaPhoenix (2016). *RainPi: Calculate Pi with Raindrops!*
 <https://www.youtube.com/watch?v=I-BC_vI4CAE>. Our darts are random

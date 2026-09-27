@@ -1,4 +1,4 @@
-"""Definitions on hover (#339, DECISIONS_LOG 7.272), on the fixture's
+"""Definitions on hover (#339, DECISIONS_LOG 7.273), on the fixture's
 `third-page`, the one page here with a glossary: a term the author
 italicised, and a later use marked `*cell*{.term}`, show their definitions
 on hover, focus and tap; an unmarked use, an italic naming no term, and a

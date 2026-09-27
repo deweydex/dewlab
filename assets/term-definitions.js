@@ -1,4 +1,4 @@
-/* Definitions on hover (#339; DECISIONS_LOG 7.272).
+/* Definitions on hover (#339; DECISIONS_LOG 7.273).
  *
  * A term shows its glossary definition on hover, tap or keyboard focus,
  * but only where the author marked it as the term. That means one of two

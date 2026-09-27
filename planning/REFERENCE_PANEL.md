@@ -244,7 +244,7 @@ still reach a reader: hovering a name in a cell shows the real one.
 
 ## 6e. Definitions on hover
 
-Built — `DECISIONS_LOG.md` 7.272, `assets/term-definitions.js`, issue #339.
+Built — `DECISIONS_LOG.md` 7.273, `assets/term-definitions.js`, issue #339.
 
 A term shows its entry's definition on hover, tap or keyboard focus, in a
 small popover with **More in the Reference**. Only a use the author marked
