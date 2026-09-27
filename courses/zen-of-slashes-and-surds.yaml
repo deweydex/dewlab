@@ -12,7 +12,7 @@ description: >-
 
 
   Nothing here is to be memorised. We practise each idea until it feels
-  ordinary, and a rule always comes after the picture that makes it
+  normal, and a rule always comes after the picture that makes it
   sensible. Every step starts with a guess, and a guess that differs
   from what happens is the most useful kind.
 
@@ -27,9 +27,10 @@ description: >-
   picture you can change, or to check your own work.
 
 
-  The pages for fractions, powers, and surds and logarithms are written.
-  They will change as people use them. Tell us what works for you and
-  what does not.
+  Every part of the module is written now: fractions, powers, roots and
+  logarithms, numbers as pictures and graphs, and a first look at
+  equations. The pages will change as people use them. Tell us what
+  works for you and what does not.
 contents:
 - title: Before we start
   tutorials:
@@ -45,6 +46,7 @@ contents:
   - does-multiplying-make-it-bigger
   - how-many-fit
   - fractions-with-holes
+  - narrowing-it-down
 - title: Powers, the long way and the short way
   tutorials:
   - the-long-way
@@ -53,9 +55,29 @@ contents:
   - when-everything-cancels
   - more-on-the-bottom
   - a-power-of-a-power
+  - everything-at-once
+  - powers-of-ten
 - title: Surds and logs, undoing a power
   tutorials:
   - the-side-of-a-square
   - sides-that-never-end
   - halfway-steps
+  - stretching-the-halfway-steps
   - how-many-hops
+  - hops-that-add
+  - surds-and-logs-in-the-wild
+- title: Seeing it, lines, grids and graphs
+  tutorials:
+  - the-number-line
+  - two-lines-at-right-angles
+  - a-pattern-as-dots
+  - drawing-across-scales
+- title: The balance, a first look at algebra
+  tutorials:
+  - a-box-with-something-in-it
+  - keeping-it-level
+mixed:
+- mixed-slashes
+- mixed-powers
+- mixed-surds-and-logs
+- mixed-zen

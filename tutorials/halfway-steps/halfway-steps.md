@@ -1,5 +1,5 @@
 ---
-title: "Halfway powers: two half steps make one"
+title: "Halfway powers: fractional exponents, two half steps make one"
 year: "2026-2027"
 version: 2026.09.27.1
 worlds:
@@ -8,7 +8,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Halfway powers: two half steps make one
+# Halfway powers: fractional exponents, two half steps make one
 
 Here is a line with the numbers 1, 2, 4, 8 and 16 on it. Each curve is
 a *hop*. A hop multiplies. Above the line, two big hops each
@@ -193,7 +193,7 @@ multiplied by itself. So:
 - halfway(9) = 3, because 3 × 3 = 9.
 - halfway(16) = 4, because 4 × 4 = 16.
 
-You may have read the page *Undoing a square: the side of a square*. It
+You may have read the page *Undoing a square: square roots, the side of a square*. It
 found the side of a square of beads. A square of 9 beads has a side of
 3. So side(9) is 3, and halfway(9) is 3 too. The side of a square
 and the halfway hop are the same number. halfway(♡) is side(♡)
@@ -295,7 +295,7 @@ The adding rule works here too. Three thirds make one whole:
 $$8^{1/3} \times 8^{1/3} \times 8^{1/3} = 8^{1/3 + 1/3 + 1/3} = 8^1 = 8$$
 
 So $8^{1/3}$ is the number that, done three times, gives 8. That is 2.
-The page *Undoing a square: the side of a square* had a name for
+The page *Undoing a square: square roots, the side of a square* had a name for
 this too: edge(8), the edge
 of a cube of 8 beads. A cube of 8 beads is 2 beads wide, 2 high and 2
 deep.
@@ -394,7 +394,7 @@ $$\text{halfway}(9) = 9^{1/2} = 3$$
 
 The edge of a cube has a usual way too: edge(8) is $8^{1/3}$.
 
-The page *Undoing a square: the side of a square* had one more
+The page *Undoing a square: square roots, the side of a square* had one more
 sign: $\sqrt{9}$. It is
 called the *square root* of 9, and it is side(9). So halfway(9),
 side(9), $9^{1/2}$ and $\sqrt{9}$ are four names for one number, 3.

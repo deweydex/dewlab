@@ -782,6 +782,11 @@ An angle of 90 degrees is a {right angle|straight angle|acute angle}.
 The reader sees the choices shuffled, and the dropdown starts on a blank
 *choose*, so the page's word is not showing before they pick one.
 
+Braces inside `$...$` maths are the maths' own, not gaps, so
+`$10^{-12}$` and `$\frac{1}{8}$` in a fill-in question render as maths. A
+gap is a `{...}` outside the maths: to leave a blank at the end of a formula,
+close the maths first, as in `$5! = 5 \times$ {24}`.
+
 A question with several gaps has one **Show the page's words** button for the
 whole sentence. Each gap then shows the page's word beside it, and what the
 student wrote stays as they wrote it.

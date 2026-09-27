@@ -1,5 +1,5 @@
 ---
-title: "Counting hops: how many times did we multiply?"
+title: "Counting hops: logarithms, how many times did we multiply?"
 year: "2026-2027"
 version: 2026.09.27.1
 worlds:
@@ -8,7 +8,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Counting hops: how many times did we multiply?
+# Counting hops: logarithms, how many times did we multiply?
 
 Here is a line with the numbers 1, 10, 100 and 1,000 on it. Each curve
 is a *hop*. A hop multiplies by 10. Look at the picture before you
@@ -289,7 +289,7 @@ to 4?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. From [Halfway powers: two half steps make one](tutorial:halfway-steps),
+1. From [Halfway powers: fractional exponents, two half steps make one](tutorial:halfway-steps),
    halfway(10) is about 3.16. So a half hop multiplies by about 3.16.
 2. Three and a half hops land on 1000 × 3.16, which is about 3162.
 3. Is 5000 before or after 3162?

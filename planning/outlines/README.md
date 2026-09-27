@@ -36,4 +36,4 @@ of which has an outline file yet.
 | [The Matrices Strand](./matrices.md) | `CMPS-LO4` (written); touches `CMPS-LO1`, `CMPS-LO2` | Multi-unit strand, six tutorials | Written |
 | [The Simulation Strand](./monte-carlo.md) | `CMPS-LO3`, the randomness half of `CMPS-LO2`; partly `CMPS-LO6` | Multi-unit strand, four tutorials | In progress |
 | [The Team Project](./team-project.md) | `PDP-LO12` | Collaborative project specification | Written |
-| [The Zen of Slashes and Surds](./zen-of-slashes-and-surds.md) | none new; the ground under `MIT-1.1` and `MIT-1.7` | A module of its own: five strands of short pages | In progress (pilot written) |
+| [The Zen of Slashes and Surds](./zen-of-slashes-and-surds.md) | none new; the ground under `MIT-1.1` and `MIT-1.7` | A module of its own: five strands of short pages | Written |
