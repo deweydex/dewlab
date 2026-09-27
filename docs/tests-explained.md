@@ -147,6 +147,26 @@ cancels.
 
 ---
 
+## Blocking and advisory
+
+A test fails a pull request when what it checks would break something for a
+reader: a page that does not build, work that is lost, a number that is
+wrong. A few tests check something else: a house preference about tutorial
+prose (not naming an institution's assessments), or the tidiness of the
+project's planning files (the curriculum map is current, the outlines index
+lists every outline, a topic description is at least twelve words). Those are
+marked `@pytest.mark.advisory`. A plain `python3 -m pytest` leaves them out,
+`python3 -m pytest -m advisory` runs only them, and CI's `house-style` job
+runs them and reports a failure as a warning (`DECISIONS_LOG.md` 7.290).
+
+Where one test checked both kinds of thing, it was split, so the half a page
+depends on still blocks: a topic has a name and a description, because the
+build reads both, while how long the description is was left to the advisory
+half. Before marking a test advisory, check that nothing reads what it
+protects.
+
+---
+
 ## Where does a new test go?
 
 1. **Is it a standalone Python module `build.py` never touches?** `tests/`
@@ -175,3 +195,6 @@ cancels.
    and live halves of app-cell coverage used to differ only by a plural
    `s`, easy to misread in a CI failure list — is exactly what this is
    trying to avoid.
+6. **Would a page still build and teach well if the test failed?** Then it
+   checks a preference, not a fault. Mark it `@pytest.mark.advisory`, and
+   say in a comment why it is only reported.

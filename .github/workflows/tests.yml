@@ -45,10 +45,14 @@ jobs:
         run: python build.py --clean
 
       # The curriculum map is generated from the outcome data and the tutorials'
-      # own `covers:` frontmatter. A stale map is worse than none: it links to
-      # sections that may have moved and reports coverage that may have changed.
-      - name: Fail if the curriculum map is out of date
-        run: python3 dev/curriculum_map.py --check
+      # own `covers:` frontmatter. A map that cannot be made at all (a `covers:`
+      # code or section that does not exist) exits 2, and fails here. One that
+      # is only out of date exits 1 and passes here: the map also counts the
+      # italic words in every tutorial's prose, so any new sentence can make it
+      # stale, and a stale planning document breaks no page. The house-style
+      # job below reports it (DECISIONS_LOG 7.290).
+      - name: Fail if the curriculum map cannot be made
+        run: python3 dev/curriculum_map.py --check || [ $? -eq 1 ]
 
       # The pair game carries the topics as a JSON blob, because it is one file
       # a phone opens with no build step. A copy drifts: after thirteen topics
@@ -69,12 +73,48 @@ jobs:
           python3 dev/pair_results.py --from sighted
           git diff --exit-code planning/curriculum/review/pair-results*.md
 
+
+  # Checks that look after the project rather than any page, reported and
+  # never blocking (DECISIONS_LOG 7.290): the tests marked `advisory` (a
+  # house preference about tutorial prose, the tidiness of planning files),
+  # the curriculum map being current, and the links inside the documents
+  # about the project. Each step turns a failure into a warning on the pull
+  # request, with the log saying what it found; a maintainer tidies up, and
+  # a contributor is welcome to, but nobody has to before merging.
+  house-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+          python -m pip install -r requirements-build.txt
+
+      - name: Report the advisory tests
+        run: |
+          python -m pytest tests --ignore=tests/e2e -m advisory -rf \
+            || echo "::warning title=Advisory tests::Some advisory tests failed. They do not block this pull request; the log names each one and what it found."
+
+      - name: Report whether the curriculum map is current
+        run: |
+          python3 dev/curriculum_map.py --check \
+            || echo "::warning title=Curriculum map::planning/CURRICULUM_MAP.md is out of date. Run python3 dev/curriculum_map.py and commit the result, or leave it for a maintainer."
+
       # The build already refuses to publish a tutorial whose `tutorial:` link
-      # goes nowhere. This holds the documentation about the project to the same
-      # standard, which it had drifted from: renamed files still cited by their
-      # old paths, an index that had fallen behind the directory it indexes.
-      - name: Fail if a document points at a file that is not there
-        run: python3 dev/check_doc_links.py
+      # goes nowhere. This holds the documents about the project to a similar
+      # standard, which they had drifted from: renamed files still cited by
+      # their old paths, an index that had fallen behind the directory it
+      # indexes. It is a report because no page a reader opens depends on it.
+      - name: Report a document that points at a file that is not there
+        run: |
+          python3 dev/check_doc_links.py \
+            || echo "::warning title=Document links::A document about the project names a file or a style-guide anchor that is not there. The log above lists each one."
 
   # The reference shows each Python name's signature as Python itself gives
   # it (dev/glossary_python.py), and a signature depends on the Python

@@ -1716,11 +1716,16 @@ open the pull request for you — [`CHECK_YOUR_WORK.md`](CHECK_YOUR_WORK.md).
 Run `python3 build.py` and fix anything it fails on — a dead link, a missing
 `alt`, an unstyled fold, a `covers:` section that does not exist.
 
-Run `python3 dev/curriculum_map.py` if you touched `covers:`, `outcomes.yaml` or
-`topics.yaml`, and check that the coverage gaps it reports are the ones you
-expect.
+Run `python3 dev/curriculum_map.py` if you touched `covers:` or
+`outcomes.yaml`, and check that the coverage gaps it reports are the ones you
+expect. The map also counts the terms your prose puts in italics, so any edit
+can make it out of date. That is reported on the pull request as a warning and
+does not stop it; commit the regenerated map if you like, or leave it for a
+maintainer.
 
-Run `python3 -m pytest` and make sure it is green.
+Run `python3 -m pytest` and make sure it is green. `python3 -m pytest -m
+advisory` runs the house checks it leaves out, which are reported on the pull
+request and never block it.
 
 If you added or changed a code cell, run it. Every number a tutorial or practice
 page states as an answer should have been executed, not reasoned about. Open the
