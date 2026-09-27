@@ -4,8 +4,8 @@ entries:
     kind: concept
     definition: >
       A model is a simple version of something real, with only the parts
-      we need. The bouncing ball on this page keeps exactly the same
-      fraction of its height at every bounce, which a real ball does only
+      we need. For example, a ball that keeps exactly the same fraction of
+      its height at every bounce is a model. A real ball does that only
       roughly.
   - term: list
     kind: concept

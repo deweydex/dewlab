@@ -290,7 +290,7 @@ would you tell her? Would its line on a graph change?
 
 Here is one answer. Yours may be different and work too.
 
-Any *pair*{.term} that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
+Any pair that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
 because both sides were multiplied by the same number. It works the
 other way too: dividing both sides by 5 brings the first equation back.
 So the two equations are true for exactly the same pairs. They are the
