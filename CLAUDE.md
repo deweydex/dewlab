@@ -10,6 +10,7 @@ file is only what you need before touching anything.
 pip install -r requirements-build.txt   # first time only
 python3 build.py --clean                # writes site/ from scratch
 python3 -m pytest                       # unit + browser tests
+python3 -m pytest --ignore=tests/e2e -n auto   # unit tests on every core (pytest-xdist)
 ```
 
 `site/` is gitignored and rebuilt every time. Never edit it. If you change

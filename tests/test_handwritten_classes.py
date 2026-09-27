@@ -60,7 +60,8 @@ def test_the_scan_finds_the_markup_built_diagrams():
     # make the test above pass on everything, including a real break.
     used = _used()
     assert "dl-boxmodel" in used
-    assert used["dl-boxmodel"] == [Path("tutorials/the-box/the-box.md")]
+    # `in`, not `==`: a second page drawing the same diagram is not a break.
+    assert Path("tutorials/the-box/the-box.md") in used["dl-boxmodel"]
 
 
 # --------------------------------------------------------------------------

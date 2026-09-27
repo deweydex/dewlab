@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import ast
 import base64
+import concurrent.futures
 import datetime
 import functools
 import gzip
@@ -5036,6 +5037,29 @@ def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
             _run_solutions(tutorial, toolkit, seen[: last + 1], checked)
 
 
+def check_every_solution(tutorials: list[Tutorial], toolkits: list[list[dict]]) -> None:
+    """check_solutions() for every page, several pages at once.
+
+    Each page's check is a Python process of its own, so the build spends
+    that time waiting rather than working, and on a whole site it was most
+    of the build. Pages run side by side on threads, one per core; each
+    thread only starts a process and waits for it. Every page finishes
+    before anything is reported, and the failure reported is the first in
+    page order, the same one a build checking one page at a time would stop
+    on. Notes about a skipped solution may print in a different order.
+    """
+    workers = min(len(tutorials), os.cpu_count() or 1)
+    if workers <= 1:
+        for tutorial, toolkit in zip(tutorials, toolkits):
+            check_solutions(tutorial, toolkit)
+        return
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        running = [pool.submit(check_solutions, tutorial, toolkit)
+                   for tutorial, toolkit in zip(tutorials, toolkits)]
+    for page in running:
+        page.result()
+
+
 def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], checked) -> None:
     """One separate Python for check_solutions(): the cells in `seen`, in
     order, each followed by its solutions where `checked(cell)` says so."""
@@ -5344,7 +5368,16 @@ def origin_anchor(tutorial: Tutorial, term: str) -> str:
     heading of any level is usually "Your turn", which every tutorial has
     several of and none of which tells a reader where they are.
     """
-    body = tutorial.body_html
+    return _origin_anchor(tutorial.body_html, term)
+
+
+# Every later page's glossary asks again where an earlier page introduced
+# each of its terms, the same question with the same answer, and on the
+# whole site that was a hundred thousand searches and most of a minute and
+# a half. The answer depends only on the page's HTML and the term, so it is
+# kept for each pair; build() clears it, like data_index().
+@functools.lru_cache(maxsize=None)
+def _origin_anchor(body: str, term: str) -> str:
     headings = list(re.finditer(r'<h2[^>]*\sid="([^"]+)"[^>]*>(.*?)</h2>', body, re.S))
     if not headings:
         return ""
@@ -7781,6 +7814,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     # one process.
     read_dataset.cache_clear()
     data_index.cache_clear()
+    _origin_anchor.cache_clear()
     data_index()
 
     registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
@@ -7810,12 +7844,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
                   f"tutorials/{tutorial.slug}.html, and nothing links to it — add "
                   "its id to a course file under courses/ when it is ready.",
                   file=sys.stderr)
-    written: list[Path] = []
     for tutorial in tutorials:
         check_alt_text(tutorial)
         check_folds(tutorial)
-        toolkit = toolkit_for(tutorial, registry, groups)
-        check_solutions(tutorial, toolkit)
+    toolkits = [toolkit_for(tutorial, registry, groups) for tutorial in tutorials]
+    check_every_solution(tutorials, toolkits)
+    written: list[Path] = []
+    for tutorial, toolkit in zip(tutorials, toolkits):
         # An archived tutorial belongs to no reading order, so there is no
         # previous and no next — only the way back.
         members = groups.get((tutorial.course, tutorial.series), [])
@@ -7846,22 +7881,31 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     archives: dict[tuple[str, str], Path] = {}
     course_archives: dict[str, Path] = {}
     if standalone:
-        for course in catalog.values():
-            series_in_order: list[tuple[str, str, list[Tutorial]]] = []
-            for key in course.keys:
-                members = groups.get((course.id, key))
-                if not members:
-                    continue
-                title = course.series_title(key)
-                archives[(course.id, key)] = write_series_zip(
-                    course.id, key, members, practice, title
-                )
-                series_in_order.append((key, title, members))
-            if series_in_order or mixed.get(course.id):
-                course_archives[course.id] = write_course_zip(
-                    course.id, course.title, series_in_order, practice,
-                    mixed.get(course.id, []),
-                )
+        # Compressing is nearly all of what an archive costs, and zlib lets go
+        # of the interpreter while it compresses, so the archives are written
+        # side by side, one per core. Each is a file of its own, written by one
+        # thread from start to finish, so the bytes are the same either way.
+        series_jobs: dict[tuple[str, str], concurrent.futures.Future] = {}
+        course_jobs: dict[str, concurrent.futures.Future] = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 1) as pool:
+            for course in catalog.values():
+                series_in_order: list[tuple[str, str, list[Tutorial]]] = []
+                for key in course.keys:
+                    members = groups.get((course.id, key))
+                    if not members:
+                        continue
+                    title = course.series_title(key)
+                    series_jobs[(course.id, key)] = pool.submit(
+                        write_series_zip, course.id, key, members, practice, title
+                    )
+                    series_in_order.append((key, title, members))
+                if series_in_order or mixed.get(course.id):
+                    course_jobs[course.id] = pool.submit(
+                        write_course_zip, course.id, course.title, series_in_order,
+                        practice, mixed.get(course.id, []),
+                    )
+        archives = {key: job.result() for key, job in series_jobs.items()}
+        course_archives = {key: job.result() for key, job in course_jobs.items()}
         written.extend(archives.values())
         written.extend(course_archives.values())
 

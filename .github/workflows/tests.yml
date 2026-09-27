@@ -28,13 +28,18 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest numpy pandas matplotlib
+          python -m pip install pytest pytest-xdist numpy pandas matplotlib
           python -m pip install -r requirements-build.txt
 
       # Everything under tests/ except the browser suite, rather than a list of
       # files — a named list quietly stops covering each new test module.
+      # Most of these build a small site of their own, about 0.4 seconds
+      # each and no one test slower than four, so the time is in the number
+      # of them rather than in any one: spread over the runner's cores the
+      # run takes a little over half as long. Each test builds into its own
+      # temporary folder, which is what makes them safe to run side by side.
       - name: Run unit tests
-        run: python -m pytest tests --ignore=tests/e2e
+        run: python -m pytest tests --ignore=tests/e2e -n auto
 
       - name: Build the tutorials
         run: python build.py --clean

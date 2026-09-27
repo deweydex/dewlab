@@ -46,7 +46,12 @@ python3 -m pytest                      # everything
 python3 -m pytest --ignore=tests/e2e   # the fast ones, no browser
 ```
 
-The unit tests need nothing but Python. The end-to-end tests drive a real
+The unit tests need nothing but Python. Most of them build a small site of
+their own, so there are a lot of short ones; with `pytest-xdist` installed
+(`pip install pytest-xdist`), `python3 -m pytest --ignore=tests/e2e -n auto`
+runs them on every core, as CI does, in a little over half the time.
+
+The end-to-end tests drive a real
 browser against a real Python runtime, so they need a local copy of that runtime
 first — `python3 dev/fetch_pyodide.py`, about 30 MB. Without it they skip with a
 message rather than failing.
