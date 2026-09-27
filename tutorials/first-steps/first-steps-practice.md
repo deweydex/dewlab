@@ -223,7 +223,7 @@ What will it print?
 
 ## 10. A toast algorithm
 
-Here is an algorithm for making toast. Where would a machine get stuck
+Here is an *algorithm*{.term} for making toast. Where would a machine get stuck
 following it?
 
 ```
@@ -353,7 +353,7 @@ It gives the same answer, but it hides what each number means.
 
 ## 14. Why plan at all
 
-Why write pseudocode at all, when you could write the Python straight
+Why write *pseudocode*{.term} at all, when you could write the Python straight
 away?
 
 <details class="dl-answer"><summary>one good answer</summary>
