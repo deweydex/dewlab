@@ -1,0 +1,20 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Machine learning, Limits and judgement. Classifier, class and confusion
+# matrix are defined in telling-many-pictures-apart's glossary; held-back
+# text in whose-voice-is-this'.
+entries:
+  - term: baseline
+    kind: concept
+    definition: >
+      The score a model would get without learning anything, such as by
+      always giving the most common answer. A claim about a model's
+      accuracy means little until it is set beside the baseline.
+
+  - term: public domain
+    kind: concept
+    definition: >
+      Writing, pictures or music that anyone may copy and use, because
+      its copyright has ended or never applied. The books from Project
+      Gutenberg on these pages are in the public domain in the United
+      States.
