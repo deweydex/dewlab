@@ -49,4 +49,5 @@ contents:
   - limits-and-judgement
   - two-bots-and-a-test
 mixed:
+- mixed-text-generation
 - mixed-machine-learning

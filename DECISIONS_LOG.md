@@ -5498,3 +5498,17 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **The making task and the mixed set.** `two-bots-and-a-test`: the starters' tests score near 1 on an easy pair, and fall to 0.5 to 0.76 on a harder one, which is where the reader's own test begins. Tests are scored on seeds 50 to 99, which played no part in choosing them. `mixed-machine-learning` has twelve problems across the seven teaching pages. The new pages have no practice pages of their own; the mixed set is the course's practice.
 
 *Cost to change: small. `telling-many-pictures-apart`, `what-a-language-model-does-differently`, `limits-and-judgement`, `two-bots-and-a-test`, `mixed-machine-learning` and their cell ids become a contract on 2 October. No existing id changed.*
+
+---
+
+**7.279 — Every series of Computational Methods gets a mixed set, and Computational Methods, the integrated course and OOP each get a cumulative one.** The content issue (#335), part of #306.
+
+**Computational Methods.** Four new series sets: `mixed-graphics`, `mixed-text-generation`, `mixed-simulation` and `mixed-algorithms`, next to the existing `mixed-matrices`. The Python fundamentals series shares its pages with Programming Foundations, so `mixed-programming` is listed on this course too; a set can sit on several courses, and it keeps its default course, the first in `courses/index.yaml` to list it. Problem Solving has one page, the debugging gym, which the issue lets serve as its own set. The cumulative `mixed-computational-methods` takes the critique's ideas: a flat matrix, why two seeded sentences differ, a walk that prints after its insides, a Parsons problem that rebuilds `generate2`, greedy change's first failure, a loop that never ends, shared birthdays simulated and then calculated, "which tool?", and a Monte Carlo estimate of "the" in the reader's book. It ends with two bots from the reader's book and a test of their own, and points to `two-bots-and-a-test` for more.
+
+**Other courses.** `mixed-maths-and-programming` draws on every series of the integrated course, programming and mathematics together; `mixed-calculus` already gives Calculus its interleaved practice. `mixed-objects-and-more` reaches past the OOP course's own set into lists, dictionaries, sorting and recursion, with objects. Machine Learning lists `mixed-text-generation` for the text series it shares, and Programming Design Principles lists `mixed-programming` for its Programming Foundations series. The Dewey Track and the Zen of Slashes and Surds already had a set for every series.
+
+**Format.** Problems are unlabelled. Code problems are blocks, with a hint, and two solutions, "with what you've met so far" and "a shorter way you'll meet later", where a shorter way exists; mathematics done by hand gets a hint fold and a "one way through it" fold. Each set ends with a world section in its series' worlds, and a world cell never depends on a function the reader was asked to write earlier on the page, since at build time that function is still the empty stub. Every number in a note is what the cells print.
+
+**Left out.** Database Methods, Web Authoring and Full Stack have no mixed sets. The issue's list of what is missing does not name them, and their work (SQL, HTML and CSS, a whole application) does not fit a set of Python problems; whether they need one is a question for a later issue.
+
+*Cost to change: small. Seven new pages, and every cell id in them, become a contract on 2 October. No existing id changed.*
