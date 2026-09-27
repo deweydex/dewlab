@@ -1,0 +1,125 @@
+# The Cost of Inertia: How AI Tutors Reinforce the Education They Promise to Change
+
+## Abstract
+
+AI tutors, chatbots built on large language models and designed to teach, are promoted as a way to change education quickly, above all by personalising it. This position paper argues that they are more likely to reinforce the education they promise to change. For decades, research and policy have called for learning that is active, inclusive and designed for the full range of learners, yet teaching and assessment still largely rest on the transmission of content. AI tutors fit that unreformed model from both sides: they can deliver content as a teacher does and produce assessed work as a student does. What they offer is personalised education, the same content at each learner's pace, rather than personal education, shaped around who learners are and the communities they are joining. Drawing on Dewey, Freire, Lave and Wenger, and Biggs and Tang, the paper argues that this is the cost of a slow transition, and closes with what Irish further education can do about it.
+
+**Keywords:** AI tutors; large language models; personalisation; inclusive education; banking education; communities of practice; further education; Ireland
+
+## Introduction
+
+AI tutors, chatbots built on large language models and designed to teach, have entered education quickly. Many learners already use general-purpose chatbots in their studies: in a national survey of learners in Irish further and higher education, seven in ten reported using generative AI in their academic work in the previous year, and one in twelve reported using it almost daily (Quality and Qualifications Ireland \[QQI], 2025 \[]). Technology companies now also build chatbots designed specifically as tutors, and their advocates promise rapid change: an AI tutor for every student, personalised to each learner (Khan, 2024). The evidence that these tools teach well has not kept pace, and their developers acknowledge that there is not yet an agreed way to evaluate them (LearnLM Team, 2025).
+
+That promise of rapid change needs to be read against a history of slow change. For decades, research on learning has moved away from the transmission of content and towards learning that is active and aimed at understanding (Biggs & Tang, 2011). It has also asked teachers to design from the outset for the full range of learners (Meyer et al., 2014), an approach that Irish further education has made a national priority (SOLAS, 2020). Practice, however, has moved slowly and unevenly. As the education researchers John Biggs and Catherine Tang observe, "the view of university teaching as transmitting information is so widely accepted that teaching and assessment the world over are based on it" (Biggs & Tang, 2011, p. 18). Those of us who decide what counts as success in education, and I include myself, still count teaching a success when a curriculum has been covered and students can show that they know what it specifies, and we certify students on that basis. Half a century ago, the Brazilian educator Paulo Freire called this the "banking" concept of education, in which the teacher deposits content and the student stores it (Freire, 1970/2018). The name still fits.
+
+This paper argues that AI tutors suit that unreformed model, and suit it from both sides. A chatbot can deliver content as a teacher does, and it can produce the work by which a student shows that the content was received. It can also adapt how the content is delivered, but not what counts as learning. What it offers, then, is personalised education, the same content delivered at each learner's pace, rather than personal education, shaped around who learners are and the communities they are learning to join. A technology promoted as a way to change education quickly is instead reinforcing the model that research has spent decades trying to leave. That is the cost of inertia: when the transition is slow, a new technology inherits the old aims. Recent work asks how generative AI should change teaching and assessment (Bower et al., 2024; Mao et al., 2024). This paper asks the reverse question: what the uptake of AI tutors shows about how little teaching and assessment have changed already. It offers no new theory of learning, since the literature already has several. Its aim is to make visible the gap between what we say learning is and what our institutions reward.
+
+Section 1 reviews the evidence for AI tutors. Section 2 shows how they fit the banking model. Section 3 describes the transition we have not made, and why a tool cannot make it for us. Section 4 sets the fast arrival of the technology against the slow pace of reform, and turns to Ireland, where post-school education is being reorganised. Several of the writers I draw on wrote before generative AI, or about schools rather than further education; applying them here is my step, not theirs. In Ireland, further education and training means publicly funded vocational, apprenticeship and adult education outside the universities, and it is where much of my own teaching takes place.
+
+## 1. The promise and the evidence
+
+Before asking what AI tutors reveal, it helps to be clear about what they are used for. An AI tutor can be used in many ways, and this paper focuses on three: as an aid that a learner chooses to consult, much as they might consult a library; as a tool inside a design made by a teacher; and as a stand-in teacher. All three uses need evidence that they do no harm, but only the third claims to teach, and so only the third needs evidence that it teaches. The first use is easy to support. A chatbot that explains a topic at a learner's own level, at any hour, can open knowledge to people with no other easy way in, as Wikipedia did. Personalised explanation is valuable as an aid; the difficulty arises when it is taken for teaching. The second use, a tool inside a teacher's design, is where the evidence below is most encouraging.
+
+Evidence for the third use is thin. In 2025 the team building Google's AI tutor, LearnLM, wrote that "there are no widely recognized benchmarks for measuring the performance of AI for learning" (LearnLM Team, 2025, p. 1). Where such benchmarks, or standard tests, do exist, they show that a model able to solve a mathematics problem is not necessarily good at helping a student to solve it (e.g., Macina et al., 2025). My own systematic review of 109 research papers on AI tutors found a related gap (Author, 2026). Many papers described their systems in the vocabulary of good teaching, such as scaffolding and Socratic questioning, but rarely turned that vocabulary into anything they measured. Most judged a tutor instead by whether its answers matched an answer key.
+
+The randomised controlled trials published so far point in one direction: the tools help most when teachers shape or supervise how they are used. In the only such trial of a language-model tutor in my review, LearnLM did at least as well as human tutors for 165 UK secondary pupils (LearnLM Team, Google, & Eedi, 2025, p. 5). But a human tutor checked every message it drafted, and the tutors reported that its "relatively inflexible adherence to pedagogical principles threatened to exasperate some students" (p. 7). Outside my review, trials reported gains in a Harvard physics course whose instructors wrote the chatbot's instructions (Kestin et al., 2025 \[]), and in after-school English classes in Nigeria led by teachers (De Simone et al., 2025 \[]). A trial in a Turkish high school shows the other side. Students who practised mathematics with an ordinary version of ChatGPT did better on the practice problems, but worse on a later examination taken without it. A version given teachers' solutions and common mistakes did no such harm (Bastani et al., 2025 \[]). Even as an aid, then, a chatbot can do harm when nobody has shaped how it is used.
+
+Better trials would still not settle whether AI tutors are good for education, because most measure what schools already measure: whether students can show that they know the specified content. A system trained to raise that score will raise it, but that tells us nothing about whether the score is worth raising. A trial can only measure what we have already decided to value, and what we value is the subject of Section 2.
+
+## 2. The model AI tutors fit
+
+Section 1 showed that AI tutors were adopted before there was evidence that they teach. For that to happen, the name "tutor" had to seem plausible, and for that a belief had to be in place already: that teaching is something a chatbot could do. That belief rests on the banking model. In it, the teacher deposits information, and "the scope of action allowed to the students extends only as far as receiving, filing, and storing the deposits" (Freire, 1970/2018, p. 72). On the teacher's side, a chatbot is the most tireless depositor ever built. On the student's side, it can produce the work that shows the deposit was received. An education system that asks only for deposits and proof of receipt cannot tell a student who has learned from a chatbot that has performed.
+
+The banking model also explains why the promise of personalisation needs care. What AI tutors personalise is delivery: the pace, the order and the explanation of content that has already been decided. Research on inclusive education has asked for something more. Universal Design for Learning, for example, asks teachers to offer learners different ways to engage, to take in material and to show what they can do (Meyer et al., 2014). That is personal education, because it changes how learners can take part and show what they have learned, not only how quickly the content arrives. A tutor that personalises delivery while leaving the curriculum and its assessment untouched makes the banking model more efficient, not less.
+
+The same model shapes the work we ask of students. Biggs and Tang describe a "surface approach" to learning, which "arises from an intention to get the task out of the way with minimum trouble, while appearing to meet course requirements" (2011, p. 24). Handing an essay to a chatbot is the surface approach made effortless. But, as they note, the surface approach "works when teaching, and particularly assessment, allow it to" (p. 24), and "the problem lies therefore not in the student, but in the assessment task" (p. 25).
+
+A chatbot can write an acceptable essay when little in the essay depends on who the student is. Work of that kind is drudgery: labour that offers no satisfaction of its own. A student who passes drudgery to a machine loses less than we might think, because the task offered little to begin with. The American philosopher John Dewey held that examinations "are of use only so far as they test the child's fitness for social life" (Dewey, 1897, p. 78), that is, the child's capacity to take part in the life around them. An essay with no connection to the student's life tests nothing of the kind.
+
+Drudgery does not fall on everyone equally. The American literacy researcher Patrick Finn reports a study by the education researcher Jean Anyon of five primary schools in New Jersey, which found that the most mechanical and routine schoolwork went to working-class children (Finn, 1999, pp. 9–20). Further education serves many adults whom school treated in just this way. Where schoolwork is already mechanical, a machine can seem an adequate substitute for a teacher, and where budgets are tightest, a cheap substitute is most tempting. The cost of inertia is therefore not shared evenly: a stand-in tutor is likely to reach these learners first.
+
+## 3. The transition we have not made
+
+If AI tutors fit the banking model, the question is what the transition away from it would look like, and the answer has been available for more than a century. Dewey argued in 1897 that education is "a process of living and not a preparation for future living" (Dewey, 1897, p. 78), not the storing of content for later use. The anthropologist Jean Lave and the educational theorist Etienne Wenger later described learning as participation in a "community of practice". Newcomers learn a craft by taking part in the work of those who already practise it, moving gradually from the edges towards full membership (Lave & Wenger, 1991). In a college, the practice is the discipline or trade itself, and the class is a way into it. On this view, learning is personal because it is social: learners become a particular kind of person, such as an electrician, a nurse or a programmer, among others who recognise them as such. This complements the inclusive design described in Section 2. Universal Design for Learning widens the ways in which learners can take part; a community of practice gives them something to take part in.
+
+A tool can support a community of this kind, as a library or a laboratory can, but it cannot be a member of one. Members have something at stake in the community's work, whereas a tool has nothing riding on it. Members are answerable to one another and are changed by the community over time, whereas a tool answers to no one in the room and is updated by its maker rather than changed by its class. Above all, a tool tends to serve the interests of those who gain from its continued use (see Crawford, 2021). Tellingly, the LearnLM team states as its "core belief" that AI works best as tools that "complement and empower human teachers, rather than as agents that try to approximate them" (LearnLM Team, 2025, p. 6). A tool, then, cannot make the transition on a community's behalf; it can only support the people who are making it.
+
+The transition would change assessment most of all, because assessment is where the banking model is enforced. An award should record that a community has recognised a new member, much as a craft guild once judged an apprentice's "masterpiece" before admitting its maker as a master. Most awards today record something thinner, namely that content was covered and its receipt shown, which is exactly the evidence a chatbot can help to produce. Others have shown what the alternative can look like. The American educators Dennis Littky and Elliot Washor founded schools in which students learn through internships with mentors and present their work in public exhibitions (Littky & Grabelle, 2004; Washor & Mojkowski, 2013), and the English educator Ken Robinson argued for assessment that shows real audiences what students can do (Robinson & Aronica, 2016). What these approaches share is work that cannot be separated from the people who made it, shown to people able to respond to it.
+
+My own students show why this matters. Much of my teaching is in a wide and complex technical discipline in further education, and many of my students are people whom school did not serve well the first time. They often arrive with little reason to trust a classroom, and then show that they are capable of a great deal. They want an award, but they also want to understand the field deeply, to contribute to it, and to become people who can make their way in it. Many are also working out who they are, and the discipline becomes one of the places where they do so. That is personal education, and no tool can do it for them.
+
+*\[one concrete moment from my teaching (a project, a turning point, a piece of work a student made) that shows this. Keep the college unnamed for blind review.]*
+
+## 4. Fast and slow
+
+The argument of this paper turns on two speeds. AI tutors arrived quickly and were adopted before the evidence; the transition that research has called for has taken decades and is still unfinished. We have been fast where we should be slow, and slow where we could be fast. Replacing a teacher with a tool deserves slowness, because what it would displace, relationships built over years, cannot be rebuilt quickly. Giving up the fiction of standardisation deserves speed, because the case against it has been made for decades.
+
+The fast answer, buying the change, does not work. Dewey warned that any reform resting on "changes in mechanical or outward arrangements" is "transitory and futile" (Dewey, 1897, p. 80). A stand-in tutor bought under contract is a reform of that kind: it changes the arrangements of education but not its aims, its assessment or its relationships. The American education scholar Michael Apple shows where such reforms tend to lead. Given "existing structures of economic and cultural power", he writes, a reform that begins "as an attempt to make things better" is "all too usually transformed into another set of mechanisms for social stratification" (Apple, 2006, p. 229). The risk is that government, under budget pressure, replaces teachers with software and calls the result wider access, and the learners Section 2 identified would receive it first.
+
+The fiction of standardisation is the belief that education is standardised: that two learners who leave with the same award, or even the same marks, have been shaped by their education in the same way. They have not. Biggs and Tang describe a psychology student who earned good marks by memorising lists of facts and later graduated with first-class honours, having, in their words, "outconned the teacher" (2011, p. 25). The American education researcher Daniel Koretz argues that test-based accountability encourages schools to raise scores without raising learning (Koretz, 2017), and Finland's success came from resisting standardisation rather than perfecting it (Sahlberg, 2021, p. 177 \[]). Standardisation was a wrong turn, not a neutral default. Leaving it means loosening overly prescriptive curricula, which the best teachers, in my experience, already adapt to the learners in front of them, and assessing work that shows who did it and how they have grown. AI tutors may make that change easier to argue for, because a chatbot can now produce the standard outputs on which the fiction rests. A fast technology could force a slow reckoning, if we let it.
+
+The slower route has been taken before. The Finnish educator Pasi Sahlberg describes how Finland relied on trust in teachers and on research-based teacher education, in a change that took decades (Sahlberg, 2021, pp. 150–151, 180–181 \[]). Finland invested in its teachers, not in products that stand in for them.
+
+Ireland has an opening of its own. Its post-school system is being reorganised, with new tertiary degrees that begin in further education colleges and finish in universities (Higher Education Authority, 2023), and its further education strategy already commits to inclusive design (SOLAS, 2020). Inequality, however, persists. Of 25 to 34 year olds whose parents did not finish secondary school, only 39% hold a tertiary qualification, against 79% of those with a tertiary-educated parent (OECD, 2025, p. 1), and these are the learners most likely to be handed a stand-in tutor. A system in flux is open to vendors as well as to reformers, and whichever arrives first will shape it.
+
+## Conclusion
+
+AI tutors were promoted as a way to change education quickly. They are more likely to reinforce what it already is, because they fit the banking model that research has long criticised and practice has been slow to leave. What they offer is personalised education in place of personal education, and that is the cost of inertia. The special issue asks who educational technology is for. My answer is the learners who have most often been handed drudgery, and who show what they can do once the work is their own.
+
+For Irish educators, four things follow. First, use AI as an aid and inside designs that teachers control, and check that it does no harm. Second, loosen prescriptive curricula and redesign assessment so that the work cannot be separated from the students who do it, since that is worth doing whatever the trials show. Third, begin with the learners most often handed drudgery, since they are also the most likely to be handed a stand-in tutor. Finally, give staff and learners a voice in any decision to buy these tools, so that the transition is made by the people it is for. Be slow to replace teachers, and quick to stop pretending that education is standard.
+
+## References
+
+Apple, M. W. (2006). *Educating the "right" way: Markets, standards, God, and inequality* (2nd ed.). Routledge.
+
+Author. (2026). *\[Title withheld for blind review]* \[Master's thesis, institution withheld].
+
+Bastani, H., Bastani, O., Sungu, A., Ge, H., Kabakcı, Ö., & Mariman, R. (2025). Generative AI without guardrails can harm learning: Evidence from high school mathematics. *Proceedings of the National Academy of Sciences, 122*(26), Article e2422633122. <https://doi.org/10.1073/pnas.2422633122>
+
+Biggs, J., & Tang, C. (2011). *Teaching for quality learning at university: What the student does* (4th ed.). Open University Press.
+
+Bower, M., Torrington, J., Lai, J. W. M., Petocz, P., & Alfano, M. (2024). How should we change teaching and assessment in response to increasingly powerful generative artificial intelligence? Outcomes of the ChatGPT teacher survey. *Education and Information Technologies, 29*(12), 15403–15439. <https://doi.org/10.1007/s10639-023-12405-0>
+
+Crawford, K. (2021). *Atlas of AI: Power, politics, and the planetary costs of artificial intelligence*. Yale University Press.
+
+De Simone, M., Tiberti, F., Barron Rodriguez, M., Manolio, F., Mosuro, W., & Dikoru, E. J. (2025). *From chalkboards to chatbots: Evaluating the impact of generative AI on learning outcomes in Nigeria* (Policy Research Working Paper No. 11125). World Bank. <https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099548105192529324>
+
+Dewey, J. (1897). My pedagogic creed. *School Journal, 54*(3), 77–80.
+
+Finn, P. J. (1999). *Literacy with an attitude: Educating working-class children in their own self-interest*. State University of New York Press.
+
+Freire, P. (2018). *Pedagogy of the oppressed* (M. B. Ramos, Trans.; 50th anniversary ed.). Bloomsbury Academic. (Original work published 1970)
+
+Higher Education Authority. (2023, July 7). *Tertiary programmes launch 7th July 2023*. <https://hea.ie/2023/07/07/tertiary-programmes-launch-7th-july-2023/>
+
+Kestin, G., Miller, K., Klales, A., Milbourne, T., & Ponti, G. (2025). AI tutoring outperforms in-class active learning: An RCT introducing a novel research-based design in an authentic educational setting. *Scientific Reports, 15*, Article 17458. <https://doi.org/10.1038/s41598-025-97652-6>
+
+Khan, S. (2024). *Brave new words: How AI will revolutionize education (and why that's a good thing)*. Viking.
+
+Koretz, D. (2017). *The testing charade: Pretending to make schools better*. University of Chicago Press.
+
+Lave, J., & Wenger, E. (1991). *Situated learning: Legitimate peripheral participation*. Cambridge University Press.
+
+LearnLM Team. (2025). *Evaluating Gemini in an arena for learning* (arXiv:2505.24477). arXiv. <https://doi.org/10.48550/arXiv.2505.24477>
+
+LearnLM Team, Google, & Eedi. (2025). *AI tutoring can safely and effectively support students: An exploratory RCT in UK classrooms* (arXiv:2512.23633). arXiv. <https://doi.org/10.48550/arXiv.2512.23633>
+
+Littky, D., & Grabelle, S. (2004). *The big picture: Education is everyone's business*. Association for Supervision and Curriculum Development.
+
+Macina, J., Daheim, N., Hakimi, I., Kapur, M., Gurevych, I., & Sachan, M. (2025). MathTutorBench: A benchmark for measuring open-ended pedagogical capabilities of LLM tutors. In C. Christodoulopoulos, T. Chakraborty, C. Rose, & V. Peng (Eds.), *Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing* (pp. 204–221). Association for Computational Linguistics. <https://doi.org/10.18653/v1/2025.emnlp-main.11>
+
+Mao, J., Chen, B., & Liu, J. C. (2024). Generative artificial intelligence in education and its implications for assessment. *TechTrends, 68*(1), 58–66. <https://doi.org/10.1007/s11528-023-00911-4>
+
+Meyer, A., Rose, D. H., & Gordon, D. (2014). *Universal design for learning: Theory and practice*. CAST Professional Publishing.
+
+OECD. (2025). *Education at a glance 2025: Ireland* [Country note]. OECD Publishing. <https://www.oecd.org/en/publications/education-at-a-glance-2025_1a3543e2-en/ireland_1ed5ff68-en.html>
+
+Quality and Qualifications Ireland. (2025). *Generative artificial intelligence survey report*. QQI. <https://www.qqi.ie/sites/default/files/2025-08/generative-artificial-intelligence-survey-report-2025.pdf>
+
+Robinson, K., & Aronica, L. (2016). *Creative schools: Revolutionizing education from the ground up*. Penguin Books.
+
+Sahlberg, P. (2021). *Finnish lessons 3.0: What can the world learn from educational change in Finland?* (3rd ed.). Teachers College Press.
+
+SOLAS. (2020). *Future FET: Transforming learning. The national further education and training (FET) strategy*. SOLAS.
+
+Washor, E., & Mojkowski, C. (2013). *Leaving to learn: How out-of-school learning increases student engagement and reduces dropout rates*. Heinemann.
