@@ -1,7 +1,7 @@
 ---
 title: "Classifying pictures: one perceptron for each class"
 year: "2026-2027"
-version: 2026.09.27.1
+version: 2026.09.27.2
 worlds:
   game-items: Items from a game, drawn as sprites. A sword, a shield, a potion and a key.
   weather-icons: The icons of a weather forecast. Sun, cloud, rain and lightning.
@@ -463,8 +463,154 @@ def right_by_class(model, test):
             right[name] += 1
     return right
 ---
-Only 0.655 of the 200 are right, and "up" only 14 of its 50. Up and down differ in just four pixels, as do left and right, so six flips can easily move one arrow most of the way to another. `world_history[-1][0]` shows that the model does not even name every training arrow correctly. Does 20 of each help?
+Only 0.655 of the 200 are right, and "up" only 14 of its 50. Up and down differ in just four pixels, as do left and right, so six flips can easily move one arrow most of the way to another. But why is "up" so much worse than "down"? The next cells look.
 ```
+
+### Why "up" does badly
+
+Is something wrong with the up arrow? The cell trains the same model
+three times, each time on a different set of messy training arrows,
+chosen by the `seed`. Then it counts what each model names correctly.
+It has its own copy of the counting, so it runs even if yours is not
+finished.
+
+```python exec
+id: why-up-does-badly-1--arrows
+def right_per_arrow(model, test):
+    """How many test arrows of each kind the model names correctly."""
+    counts = {name: 0 for name in ARROWS}
+    for pixels, name in test:
+        if classify(model, pixels) == name:
+            counts[name] += 1
+    return counts
+
+
+for seed in (1, 2, 3):
+    arrow_model, arrow_history = train_model(make_train(ARROWS, 10, world_test, seed=seed), world_test)
+    print("seed", seed, right_per_arrow(arrow_model, world_test), "training:", arrow_history[-1][0])
+```
+
+With seed 1, "up" gets only 14 right. With seed 2, "right" gets 14, and
+with seed 3, "down" is the worst. So the up arrow is not the problem.
+Which arrow does badly depends on the training arrows.
+
+Look at the last number on each line. After 10 epochs, no model names
+all of its own training arrows correctly, so its perceptrons are still
+being corrected when training stops. Each perceptron's weights are
+where the last few corrections left them. With seed 1, the last
+corrections made the "up" perceptron's weights smaller: they add up to
+−12, and the other three add up to between −1 and −3. So the "up" total
+is rarely the highest, even for an up arrow.
+
+### Keep the average
+
+One way around this is to keep, for each perceptron, the average of its
+weights over the whole of training, not its weights at the end. A few
+bad corrections at the end then change the average only a little. This
+is called an *averaged perceptron*.
+
+```python exec
+id: keep-the-average-1--arrows
+def train_averaged(train, epochs=10, learning_rate=0.5):
+    """Like train_model, but returns the average of each perceptron's weights
+    over the whole of training, not its weights at the end."""
+    names = sorted({name for pixels, name in train})
+    model = {name: ([0.0] * 25, 0.0) for name in names}
+    sums = {name: ([0.0] * 25, 0.0) for name in names}
+    steps = 0
+    for epoch in range(epochs):
+        for pixels, label in train:
+            for name, (weights, bias) in model.items():
+                target = 1 if name == label else 0
+                guess = 1 if total(weights, bias, pixels) > 0 else 0
+                error = target - guess
+                if error != 0:
+                    for i in range(25):
+                        weights[i] += learning_rate * error * pixels[i]
+                    model[name] = (weights, bias + learning_rate * error)
+            # After every picture, add each perceptron's weights to its sums.
+            steps += 1
+            for name, (weights, bias) in model.items():
+                weight_sums, bias_sum = sums[name]
+                sums[name] = ([s + w for s, w in zip(weight_sums, weights)], bias_sum + bias)
+    return {name: ([s / steps for s in weight_sums], bias_sum / steps)
+            for name, (weight_sums, bias_sum) in sums.items()}
+
+
+averaged = train_averaged(make_train(ARROWS, 10, world_test))
+print(right_per_arrow(averaged, world_test), round(share_right(averaged, world_test), 3))
+```
+
+The same training arrows now give "up" 30 right, not 14, and the share
+rises from 0.655 to 0.685.
+
+### Turn the arrows
+
+The arrows have something the other worlds do not. Each one is a
+quarter turn of another: turn "up" a quarter to the left, and it is
+"left". So every messy training arrow can make three more, one pointing
+each other way. The 10 training arrows of each kind become 40, with no
+new drawing.
+
+```python exec
+id: turn-the-arrows-1--arrows
+def turn(pixels):
+    """A quarter turn to the left: the right-hand column becomes the top row."""
+    return [pixels[column * 5 + (4 - row)] for row in range(5) for column in range(5)]
+
+
+TURNED = {"up": "left", "left": "down", "down": "right", "right": "up"}
+print(turn(ARROWS["up"]) == ARROWS["left"])
+
+
+def with_turns(train):
+    """Each training arrow, and the three arrows made by turning it."""
+    more = []
+    for pixels, name in train:
+        for _ in range(4):
+            more.append((pixels, name))
+            pixels, name = turn(pixels), TURNED[name]
+    return more
+
+
+turned_train = with_turns(make_train(ARROWS, 10, world_test))
+test_pixels = [pixels for pixels, name in world_test]
+print(len(turned_train), "training arrows, and",
+      sum(1 for pixels, name in turned_train if pixels in test_pixels), "of them are test arrows")
+turned_model = train_averaged(turned_train)
+print(right_per_arrow(turned_model, world_test), round(share_right(turned_model, world_test), 3))
+```
+
+The first line checks that a quarter turn of "up" is "left". None of
+the 160 training arrows is a test arrow, so the test is still fair.
+With turned arrows and the average, the model names 0.84 of the test
+arrows correctly.
+
+How good is that? The cell below compares each test arrow with the four
+clean arrows, and chooses the one it differs from in the fewest pixels.
+
+```python exec
+id: turn-the-arrows-2--arrows
+def closest_clean(pixels):
+    """The arrow whose clean picture differs from these pixels in the fewest places."""
+    best_name, best_count = None, None
+    for name, clean in ARROWS.items():
+        count = sum(1 for a, b in zip(clean, pixels) if a != b)
+        if best_count is None or count < best_count:
+            best_name, best_count = name, count
+    return best_name
+
+
+print(sum(1 for pixels, name in world_test if closest_clean(pixels) == name) / len(world_test))
+```
+
+It gets 0.825, and it was given the clean arrows. The model never saw a
+clean arrow, only messy ones, and it does a little better.
+
+How much of the gain comes from each idea? `train_model(turned_train,
+world_test)[0]` is a model trained on the turned arrows without the
+average. And could you turn the pictures in the other worlds? After a
+quarter turn, which of them would still be the same class?
 
 </div>
 
@@ -548,6 +694,12 @@ of the IEEE, 86(11), 2278–2324. This is the paper that made MNIST
 famous. Its comparison of methods begins with a linear classifier, one
 weighted sum for each digit, like ours, with an error rate of 12% on
 the test digits.
+
+Freund, Y. and Schapire, R. E. (1999). *Large Margin Classification
+Using the Perceptron Algorithm.* Machine Learning, 37(3), 277–296. The
+paper behind the averaged perceptron in the arrows world. It keeps
+every set of weights that training passes through, and lets them vote.
+Averaging them is its simpler form.
 
 3Blue1Brown (2017). *But what is a neural network? | Deep learning
 chapter 1.* <https://www.youtube.com/watch?v=aircAruvnKk>. It takes
