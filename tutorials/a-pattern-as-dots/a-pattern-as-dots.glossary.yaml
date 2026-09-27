@@ -1,0 +1,60 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: pattern
+    kind: concept
+    definition: >
+      A pattern is a list of numbers that follows a rule. 2, 4, 6, 8, 10 is
+      a pattern that adds 2 each time.
+  - term: step
+    kind: concept
+    definition: >
+      A step is one place in a pattern: the first step, the second step,
+      and so on. On a graph of a pattern, the step number is how far across
+      the dot is.
+  - term: value
+    kind: concept
+    definition: >
+      The value at a step is the number the pattern has there. In 2, 4, 6,
+      8, 10, the value at step 3 is 6. On a graph, the value is how far up
+      the dot is.
+  - term: "gap, drop"
+    kind: concept
+    definition: >
+      The gap between two values is how much bigger the second one is. In
+      2, 4, 8, 16, the gaps are 2, 4 and 8. When the values get smaller,
+      each gap is a drop, which is how much smaller the next value is.
+  - term: graph
+    kind: concept
+    definition: >
+      A graph is a picture with a dot for each pair of numbers. Adding the
+      same amount at each step makes equal gaps, and the dots make a
+      straight line. Multiplying makes bigger and bigger gaps, and the dots
+      make a curve.
+  - term: steeper
+    kind: concept
+    definition: >
+      A curve gets steeper when it climbs more for each step across. The
+      doubling pattern 2, 4, 8, 16, 32 gets steeper at every step.
+  - term: plt.plot()
+    kind: function
+    python: matplotlib.pyplot.plot
+    definition: >
+      Draws a graph from two lists of numbers. The first list gives the places
+      across, and the second gives the places up. The "o" asks for a round dot at each pair.
+    example: 'plt.plot(steps, values, "o")'
+  - term: arithmetic sequence
+    kind: concept
+    definition: >
+      An arithmetic sequence is a pattern that adds the same amount at each
+      step, like 5, 8, 11, 14. Its dots make a straight line.
+  - term: geometric sequence
+    kind: concept
+    definition: >
+      A geometric sequence is a pattern that multiplies by the same amount
+      at each step, like 3, 9, 27, 81. Its dots make a curve.
+  - term: exponential growth
+    kind: concept
+    definition: >
+      Exponential growth is growing by multiplying by the same amount at
+      each step, like 2, 4, 8, 16, 32. Its graph is a curve that gets
+      steeper and steeper.

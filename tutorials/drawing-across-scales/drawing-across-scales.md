@@ -157,7 +157,7 @@ amounts. On a *hops scale*, equal gaps are equal hops of ×10.
 You met hops in [Counting hops: logarithms, how many times did we
 multiply?](tutorial:how-many-hops). hops(10 → 1000) counts the hops of
 ×10 from 1 to 1000. It is 3. The usual way to write it is
-$\log_{10} 1000 = 3$, and *log* is short for *logarithm*. So the usual
+$\log_{10} 1000 = 3$, and *log*{.term} is short for *logarithm*{.term}. So the usual
 name for a hops scale is a *log scale*, or a *logarithmic scale*. You
 can keep saying hops scale, if it feels calmer.
 
@@ -347,7 +347,7 @@ can check.
 | From the Earth to the Sun | $1.496 \times 10^{11}$ (149.6 million km) | NASA Planetary Fact Sheet |
 | The observable universe, across | $8.8 \times 10^{26}$ | Wikipedia, "Observable universe" |
 
-A *nanometre* is a billionth of a metre. The *observable universe* is
+A *nanometre*{.term} is a billionth of a metre. The *observable universe* is
 all the space we can see from the Earth, in every direction.
 
 ```question

@@ -1,0 +1,47 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "of" and "reciprocal" are italicised on this page too, but
+# a-fraction-of-a-fraction and how-many-fit introduce them. "juggle" is an
+# everyday word explained for the story, and "now" and "ever" are stress.
+entries:
+  - term: chain, narrow
+    kind: concept
+    definition: >
+      A chain of fractions is a start number, multiplied by one fraction
+      after another. Each fraction smaller than 1 narrows the count. It
+      keeps only a part. The order of the fractions does not change the
+      end.
+  - term: galaxy
+    kind: concept
+    definition: >
+      A galaxy is a huge group of stars. Our galaxy is called the Milky
+      Way. Our Sun is one of its stars.
+  - term: SETI
+    kind: concept
+    definition: >
+      SETI means listening for signals from beings on other worlds. The
+      first meeting about SETI was in 1961.
+  - term: "·"
+    kind: operator
+    definition: >
+      Means times. It is another way to write ×.
+  - term: Drake equation
+    kind: formula
+    definition: >
+      The Drake equation is a chain of seven steps. It asks how many worlds
+      in our galaxy send signals we could hear, now. Frank Drake wrote it
+      in 1961: N = R* · fp · ne · fl · fi · fc · L.
+  - term: habitable zone
+    kind: concept
+    definition: >
+      The habitable zone of a star is where a planet is not too hot and not
+      too cold. There, water can be a liquid.
+  - term: "≈"
+    kind: operator
+    definition: >
+      Means "about". fp ≈ 1 means that fp is about 1.
+  - term: billion
+    kind: concept
+    definition: >
+      A billion is a thousand million, 1,000,000,000. 60 billion is
+      60,000,000,000.

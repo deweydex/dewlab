@@ -1,0 +1,9 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "power of a power, (♡ᵃ)ᵇ = ♡ᵃᵇ"
+    kind: formula
+    definition: >
+      A power of a power is a power in brackets, with another exponent
+      outside. (♡²)³ is 3 boxes, with 2 hearts in each box. We multiply
+      the two exponents to count all the hearts: (♡²)³ = ♡⁶.
+    example: "(2 ** 3) ** 2   # 64, the same as 2 ** 6"

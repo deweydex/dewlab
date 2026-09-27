@@ -23,10 +23,12 @@ square tile.
 id: two-stacks-1
 type: fill-in-the-blank
 
-The yellow hearts are ♡ × ♡. Written the short way, that is
+The yellow hearts, the first stack, are ♡ × ♡. Written the short way,
+that is
 {♡²|2♡|♡³}.
 
-The blue hearts are ♡ × ♡ × ♡. Written the short way, that is
+The blue hearts, the second stack, are ♡ × ♡ × ♡. Written the short
+way, that is
 {♡³|3♡|♡²}.
 ```
 
@@ -34,7 +36,8 @@ The blue hearts are ♡ × ♡ × ♡. Written the short way, that is
 
 The picture multiplies the yellow stack by the blue stack. After the
 equals sign, every heart is in one long row. Each heart keeps its
-colour, so you can see where it came from.
+colour, so you can see where it came from: the first two hearts come
+from the first stack, and the last three from the second.
 
 ```question
 id: two-stacks-one-row-1

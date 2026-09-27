@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: right angle
+    kind: concept
+    definition: >
+      A right angle is a square corner, like the corner of a page. The two
+      number lines of a grid meet at a right angle.
+  - term: "coordinates, (x, y)"
+    kind: concept
+    definition: >
+      The coordinates of a point are two numbers in brackets that give its
+      place on a grid. The first number, x, is the steps across. The
+      second, y, is the steps up. The order matters, so (2, 3) and (3, 2)
+      are different places.
+  - term: "axis, x-axis, y-axis"
+    kind: concept
+    definition: >
+      An axis is one of the two number lines on a grid. The x-axis is the
+      across line, and the y-axis is the up line. They meet at 0.

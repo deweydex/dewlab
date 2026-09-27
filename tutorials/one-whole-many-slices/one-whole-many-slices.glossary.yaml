@@ -1,0 +1,17 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "fraction insets" (in Read more) is a Montessori classroom object, not a
+# term the reader is asked to use, so it is left out.
+entries:
+  - term: fraction
+    kind: concept
+    definition: >
+      A fraction is a number like 3/4. The bottom number says how many
+      equal slices the whole is cut into. The top number says how many of
+      those slices we have.
+  - term: "♡/♡ = 1"
+    kind: formula
+    definition: >
+      A fraction with the same number on the top and on the bottom is
+      exactly 1. All the slices of a pizza make the whole pizza. So 3/3,
+      8/8 and 250/250 are all 1.

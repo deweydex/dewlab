@@ -1,0 +1,39 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "power" is italicised on this page, but the page only names it in
+# passing. the-long-way introduces it properly, so it is left for that
+# page. "surd" is left for sides-that-never-end for the same reason.
+entries:
+  - term: slash
+    kind: concept
+    definition: >
+      A slash is the line in a fraction, like the line in 1/2. It is half
+      of the name of this module.
+  - term: zen
+    kind: concept
+    definition: >
+      Zen is a word for a calm mind. In this module, calm is a goal, as
+      well as the maths.
+  - term: fluency
+    kind: concept
+    definition: >
+      Fluency is what you have when an idea feels normal. It comes from
+      practice with many small problems. It does not come from memorising
+      rules.
+  - term: calm check
+    kind: concept
+    definition: >
+      A calm check is a box that you see twice on every page. It asks how
+      you feel. If you feel frustrated, it gives you three things you can
+      do.
+  - term: "♡, △"
+    kind: concept
+    definition: >
+      A shape like ♡ or △ means that any number can be here. It can be 3,
+      or 12, or a million. A letter in algebra means the same thing.
+  - term: algebra
+    kind: concept
+    definition: >
+      Algebra is the part of maths that uses letters for numbers. A
+      letter in algebra works in the same way as a shape like ♡: any
+      number can be here.
