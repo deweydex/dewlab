@@ -1,0 +1,36 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Machine learning, What a language model does differently. "perplexity",
+# "score (of a passage)" and "held-back text" are defined in
+# whose-voice-is-this's glossary, and "order (of a chain)" and "n-gram" in
+# how-much-it-remembers', both earlier in the course.
+entries:
+  - term: language model
+    kind: concept
+    definition: >
+      A program that gives a chance to every piece of text that could come
+      next, and writes by choosing pieces one at a time. A Markov chain is
+      a very small language model. The ones behind a chatbot learn weights
+      from an enormous amount of text.
+
+  - term: temperature
+    kind: concept
+    definition: >
+      A setting that changes how a language model chooses. Every weight is
+      raised to the power 1 ÷ temperature before the choice. Below 1, the
+      likely words become more likely. Above 1, the rare words become more
+      likely.
+
+  - term: token
+    kind: concept
+    definition: >
+      One piece of text, as a language model sees it. A common word is
+      usually one token, and a rare word is several. A model that writes
+      tokens can write any word, even one it has never seen whole.
+
+  - term: byte-pair encoding
+    kind: concept
+    definition: >
+      A way to choose tokens. Start with single letters. Join the two
+      pieces that sit side by side most often into one new piece, and
+      repeat that many times.

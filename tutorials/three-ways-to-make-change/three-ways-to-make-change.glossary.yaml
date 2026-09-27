@@ -1,10 +1,12 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
 # Algorithms series. Checked against every other glossary file in
-# computational-methods (python-fundamentals, matrices, simulation) -- no
-# overlap with brute force, cache, memoization, greedy, or heuristic.
-# "recursion" is used here but defined in
+# computational-methods -- no overlap with brute force, cache,
+# memoization, greedy, heuristic, exponential growth, linear growth or log
+# scale. "recursion" is used here but defined in
 # finding-everything-inside-a-folder's glossary, which this page links to.
+# "O(n)" is in finding-things' glossary; linear growth here is the same
+# idea, named from the call counts.
 entries:
   - term: brute force
     kind: concept
@@ -17,27 +19,48 @@ entries:
   - term: cache
     kind: concept
     definition: >
-      A cache is a place to store an answer the first time it is worked
-      out. When the same question comes up again, the answer is looked up
-      instead of worked out again.
+      A cache is a place to store an answer the first time it is found.
+      When the same question is asked again, the stored answer is used,
+      and nothing is found a second time.
 
   - term: memoization
     kind: concept
     definition: >
       Memoization is storing the answer to each smaller version of a
-      problem in a cache, so that solving a bigger version never works out
+      problem in a cache, so that solving a bigger version never solves
       the same smaller one twice.
 
   - term: greedy (algorithm)
     kind: concept
     definition: >
       A greedy algorithm builds an answer by taking the choice that looks
-      best at each step, and never going back to change it. It is fast,
-      but a choice that looked best at the time can turn out to be wrong.
+      best at each step, and never returning to change it. It is fast,
+      but a choice that looked best at the time can be wrong in the end.
 
   - term: heuristic
     kind: concept
     definition: >
-      A heuristic is a rule of thumb that gets to an answer quickly,
-      without checking every possibility. It gives up the guarantee of a
-      correct answer that brute force and caching both keep.
+      A heuristic is a quick rule that reaches an answer without checking
+      every possibility. It loses the guarantee of a correct answer that
+      brute force and caching both keep.
+
+  - term: log scale
+    kind: concept
+    definition: >
+      A scale on a graph where each equal step multiplies by the same
+      amount, often 10: 1, 10, 100, 1,000. A count that is multiplied by
+      the same amount each time draws a straight line on it.
+
+  - term: exponential growth
+    kind: concept
+    definition: >
+      Growth where the count is multiplied by a fixed amount each time the
+      problem grows by one step. It becomes too large for any computer
+      very soon. Brute force's calls grow this way.
+
+  - term: linear growth
+    kind: concept
+    definition: >
+      Growth where the count goes up by a fixed amount each time the
+      problem grows by one step. Doubling the size of the problem doubles
+      the work. The cached version's calls grow this way.

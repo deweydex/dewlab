@@ -243,7 +243,9 @@ groups:
       - finding-things
       - putting-things-in-order
       - finding-everything-inside-a-folder
+      - the-shortest-way-there
       - three-ways-to-make-change
+      - a-puzzle-of-your-own
       - building-reusable-tools
       - when-it-goes-wrong
       - mixed-programming
@@ -388,6 +390,24 @@ groups:
       - from-cells-to-a-program
       - the-team-project
       - critique-and-reflection
+
+  - key: machine-learning
+    name: "Machine learning: programs that write and recognise"
+    intro: >
+      How a program learns from examples: a chain that writes from a
+      book, a model that corrects its own mistakes and grows into a reader
+      of digits, and what a language model does that a chain cannot. Then
+      where these models fail, and how to check a claim made about one.
+    tutorials:
+      - a-chain-reads-a-book
+      - how-much-it-remembers
+      - whose-voice-is-this
+      - a-model-that-corrects-itself
+      - telling-many-pictures-apart
+      - what-a-language-model-does-differently
+      - limits-and-judgement
+      - two-bots-and-a-test
+      - mixed-machine-learning
 
   - key: chance-and-simulation
     name: Chance and simulation

@@ -31,14 +31,14 @@ entries:
     kind: concept
     definition: >
       The call stack is Python's own list of the function calls that have
-      started but not yet finished. A recursive function uses it to keep
-      track of what is left to do.
+      started but not yet finished. A recursive function uses it to
+      remember what is left to do.
 
   - term: "pop()"
     python: list.pop
     kind: function
     definition: >
-      Removes an item from a list and gives it back. With nothing in the
+      Removes an item from a list and returns it. With nothing in the
       brackets, it removes the last item. pop(0) removes the first.
     example: "current = to_visit.pop()"
 
@@ -48,3 +48,27 @@ entries:
     definition: >
       Adds every item from another list to the end of a list.
     example: "to_visit.extend(current['subfolders'])"
+
+  - term: depth-first
+    kind: concept
+    definition: >
+      A way to walk a tree or a graph that goes as deep as it can down one
+      branch, and finishes it, before it starts the next. Taking the last
+      item from the list of places to visit, with pop(), walks this way.
+
+  - term: breadth-first
+    kind: concept
+    definition: >
+      A way to walk a tree or a graph level by level: every place one step
+      from the start, then every place two steps away, and so on. Taking
+      the first item from the list of places to visit, with pop(0), walks
+      this way.
+
+  - term: "os.walk()"
+    python: os.walk
+    kind: function
+    definition: >
+      Walks a real folder tree on a disk. For each folder it gives three
+      things: the folder's path, the names of its subfolders, and the
+      names of its files.
+    example: "for here, subfolders, files in os.walk(root):"
