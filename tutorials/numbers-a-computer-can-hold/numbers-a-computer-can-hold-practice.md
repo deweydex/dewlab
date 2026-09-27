@@ -2,7 +2,7 @@
 title: "Numbers a computer can hold — Practice"
 practice_for: numbers-a-computer-can-hold
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Numbers a computer can hold — Practice
@@ -385,18 +385,38 @@ halvings take a million below 1.
 </details>
 
 **14. Fix.** Schlomi wants the tens digit of a number. Her idea is to
-take the last digit, then divide it by 10. Her tests fail. Run the cell,
-find the flaw in the idea, and fix it so that both tests pass.
+take the last digit, then divide it by 10. For 2026 her function gives
+0, but the tens digit is 2. Can you find the mistake in the idea, and fix
+it?
 
 ```python exec
 id: numbers-practice-fix-3
 def tens_digit(number):
     """Give the tens digit of a whole number."""
     return number % 10 // 10
+```
 
-assert tens_digit(2026) == 2
-assert tens_digit(57) == 5
-print("tens_digit keeps its promise.")
+```inputs
+tens_digit(2026)
+tens_digit(57)
+```
+
+```solution
+def tens_digit(number):
+    """Give the tens digit of a whole number."""
+    return number // 10 % 10
+---
+`2026 % 10` is 6, and `6 // 10` is 0. Any last digit is less than 10,
+so her function gives 0 every time. The first step loses the tens
+digit.
+
+The steps need the other order. First drop the last digit, then keep
+the new last digit.
+
+This is about *what happens when*. Here is another way that
+works: `number % 100 // 10` keeps the last two digits first, 26, then
+drops the ones, leaving 2. Schlomi had the two moves she needed. Only
+their order had to change.
 ```
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -407,26 +427,6 @@ print("tens_digit keeps its promise.")
    digit?
 
 **Think about:** which of the four questions is this about?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-`2026 % 10` is 6, and `6 // 10` is 0. Any last digit is less than 10,
-so her function gives 0 every time. The first step loses the tens
-digit.
-
-The steps need the other order. First drop the last digit, then keep
-the new last digit.
-
-```python
-    return number // 10 % 10
-```
-
-This is about *what happens when*. Here is another way that
-works: `number % 100 // 10` keeps the last two digits first, 26, then
-drops the ones, leaving 2. Schlomi had the two moves she needed. Only
-their order had to change.
 
 </details>
 
@@ -509,7 +509,6 @@ def scale(position, from_width, to_width):
 
 assert scale(960, 1920, 1280) == 640
 assert scale(100, 400, 200) == 50
-print("scale keeps its promise.")
 ```
 
 First we divide by the old width, to find how far across the pixel is.

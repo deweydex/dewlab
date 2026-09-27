@@ -1,7 +1,7 @@
 ---
 title: "What is typical? Mean, median, mode and spread"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [life-expectancy]
 covers:
   share-it-out-equally-the-mean:
@@ -141,23 +141,39 @@ def mean(values):
     return total(values) / len(values)
 ```
 
-The tests below check the "share it out" meaning. If every load took
-the mean, the pot would hold the same total as before. The mean times
-the count gives the total. Until your `mean` is written, this cell
-stops with an error, and the cells below that use `mean` stop too, or
-show `None` where a number should be.
+How does your `mean` compare with one way to write it? The table below
+runs the same calls on your function and on a solution, side by side.
+Rows three and four show the "share it out" meaning. If every load took
+the mean, the pot would hold the same total as before. So the mean
+times the count gives the total. Until your `mean` is written, the cells
+below that use `mean` stop with an error, or show `None` where a number
+should be.
 
-```python exec
-id: typical-toolkit-mean-tests
-assert mean([2, 4, 6]) == 4
-assert mean([7]) == 7
-assert close_enough(mean(response_ms) * len(response_ms), total(response_ms))
-print("mean keeps its promise. The mean response time is", round(mean(response_ms), 2))
+```inputs
+for: typical-toolkit-mean
+mean([2, 4, 6])
+mean([7])
+mean(response_ms) * len(response_ms)    # the mean, times the count...
+total(response_ms)                      # ...gives the total again
+round(mean(response_ms), 2)             # the mean response time
+```
+
+```solution
+for: typical-toolkit-mean
+def mean(values):
+    """Return the mean of values: their total shared out equally.
+
+    values is a list of at least one number.
+    """
+    return total(values) / len(values)
 ```
 
 ```hint
-What does `print(mean([2, 4, 6]))` show? If it shows `None`, the
-function has no `return` yet. The line to write starts with `return`.
+for: typical-toolkit-mean
+after: 3 runs
+Which row is different? What does `print(mean([2, 4, 6]))` show? If it
+shows `None`, the function has no `return` yet. The line to write
+starts with `return`.
 ```
 
 The mean response time is 639.09 ms, the number on the status page.
@@ -226,16 +242,31 @@ def median(values):
     return (in_order[middle - 1] + in_order[middle]) / 2
 ```
 
-Before you run the tests, find the second one by hand. Which two
-values are in the middle?
+The table below runs some calls on `median` and on a solution, side by
+side. Before you compare, find the second row by hand. Which two values
+are in the middle?
 
-```python exec
-id: typical-toolkit-median-tests
-assert median([3, 1, 2]) == 2
-assert median([4, 1, 3, 2]) == 2.5
-assert median([7]) == 7
-assert median(response_ms) == 200
-print("median keeps its promise.")
+```inputs
+for: typical-toolkit-median
+median([3, 1, 2])
+median([4, 1, 3, 2])
+median([7])
+median(response_ms)
+```
+
+```solution
+for: typical-toolkit-median
+def median(values):
+    """Return the median of values: the middle one when they are in order.
+
+    With an even count, return the mean of the two middle values.
+    values is a list of at least one number. It is not changed.
+    """
+    in_order = sorted(values)
+    middle = len(in_order) // 2
+    if len(in_order) % 2 == 1:
+        return in_order[middle]
+    return (in_order[middle - 1] + in_order[middle]) / 2
 ```
 
 For `[4, 1, 3, 2]`, the values in order are 1, 2, 3 and 4. The two in
@@ -306,18 +337,34 @@ title: some steps
 promise about ties?
 ```
 
-Until your `mode` is written, the tests stop with an error.
+How does your `mode` compare with one way to write it? The table below
+runs the same calls on your function and on a solution. Where a row is
+different, try that call on its own.
 
-```python exec
-id: typical-toolkit-mode-tests
-assert mode(response_ms) == 190
-assert mode(["png", "jpg", "pdf", "jpg", "txt"]) == "jpg"
-assert mode([3, 5, 5, 3]) == 3
-assert mode([9]) == 9
-print("mode keeps its promise.")
+```inputs
+for: typical-toolkit-mode
+mode(response_ms)
+mode(["png", "jpg", "pdf", "jpg", "txt"])
+mode([3, 5, 5, 3])
+mode([9])
 ```
 
-The third test is the tie: 3 and 5 each appear twice, and 3 comes first.
+```solution
+for: typical-toolkit-mode
+def mode(values):
+    """Return the most common value in values, a list of at least one value.
+
+    If several values are equally common, return the one that comes first.
+    The values can be numbers or words.
+    """
+    most_common = values[0]
+    for value in values:
+        if values.count(value) > values.count(most_common):
+            most_common = value
+    return most_common
+```
+
+The third row is the tie: 3 and 5 each appear twice, and 3 comes first.
 
 ## When the three disagree
 
@@ -577,20 +624,54 @@ title: some steps
 line is different?
 ```
 
-Here are the tests. numpy has its own standard deviation, `np.std`, and
-the last two tests check yours against it. Until your `std_dev` is
-written, this cell stops with an error.
+How does your `std_dev` compare with one way to write it? The table
+below runs the same calls on your function and on a solution, side by
+side. Where a row is different, try that call on its own.
+
+```inputs
+for: typical-toolkit-std-dev
+std_dev([5, 5, 5])
+std_dev([2, 4, 4, 4, 5, 5, 7, 9])
+std_dev(connection_a)
+std_dev(connection_b)
+std_dev(response_ms)
+```
+
+```solution
+for: typical-toolkit-std-dev
+import math
+
+
+def mean(values):
+    """Return the mean of values: their total shared out equally.
+
+    values is a list of at least one number.
+    """
+    return total(values) / len(values)
+
+
+def std_dev(values):
+    """Return the standard deviation of values, a list of at least one number.
+
+    It is the square root of the mean of the squared distances from the mean.
+    """
+    centre = mean(values)
+    squares = []
+    for value in values:
+        squares.append((value - centre) ** 2)
+    return math.sqrt(mean(squares))
+```
+
+numpy has its own standard deviation, `np.std`. This cell prints
+numpy's answers for the last two rows of the table. Are they the same
+as yours?
 
 ```python exec
-id: typical-toolkit-std-dev-tests
+id: typical-std-dev-numpy
 import numpy as np
 
-assert std_dev([5, 5, 5]) == 0
-assert std_dev([2, 4, 4, 4, 5, 5, 7, 9]) == 2
-assert close_enough(std_dev(connection_b), np.std(connection_b))
-assert close_enough(std_dev(response_ms), np.std(response_ms))
-print("std_dev keeps its promise.")
-print(round(std_dev(connection_a), 2), round(std_dev(connection_b), 2))
+print(np.std(connection_b))
+print(np.std(response_ms))
 ```
 
 Connection A's standard deviation is about 7.56 ms, and connection B's
@@ -598,7 +679,7 @@ about 35.05. They are a little bigger than the mean distances, 5.71 and
 31.43, because squaring makes big deviations count for more. Connection
 B is still roughly five times as spread out.
 
-The first test is worth a look. When every value is the same, nothing
+The first row is worth a look. When every value is the same, nothing
 is spread out, and the standard deviation is 0.
 
 One more note. Some calculators and spreadsheets have a second

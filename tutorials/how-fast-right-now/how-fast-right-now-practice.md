@@ -2,7 +2,7 @@
 title: "How fast, right now? The derivative — Practice"
 practice_for: how-fast-right-now
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 datasets: [co2-emissions]
 ---
 
@@ -175,33 +175,31 @@ rate that grows with how much hotter it is than the air around it.
 </aside>
 
 **6. Fix.** Schlomi, who is learning Python too, wrote her own
-`derivative_at`. Run the cell, see which test fails, and change the
-line that does not do what Schlomi meant.
+`derivative_at`. A straight line has the same slope everywhere, so
+`straight_line` has a slope of 1.5 at 0. Her function gives about 3
+there, twice that. Can you find the line that does not do what Schlomi
+meant, and change it?
 
 ```python exec
 id: how-fast-practice-fix
 def derivative_again(rule, x, step=1e-6):
     """Return the slope of rule at x: the slope of a very short chord centred on x."""
     return (rule(x + step) - rule(x - step)) / step
-
-assert close_enough(derivative_again(straight_line, 0), 1.5, tolerance=1e-6), "a line"
-print("derivative_again keeps its promise.")
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```inputs
+derivative_again(straight_line, 0)    # a line
+```
 
-The test fails, because `derivative_again(straight_line, 0)` gives about 3, twice
-the line's slope of 1.5. The chord runs from `x - step` to `x + step`, so its
-run is two steps, not one. The fix is to divide by `2 * step`:
-
-```python
+```solution
+def derivative_again(rule, x, step=1e-6):
+    """Return the slope of rule at x: the slope of a very short chord centred on x."""
     return (rule(x + step) - rule(x - step)) / (2 * step)
+---
+The chord runs from `x - step` to `x + step`, so its run is two steps,
+not one. The fix is to divide by `2 * step`. A straight line shows the
+mistake clearly, because its slope is known exactly.
 ```
-
-A test on a straight line catches this, because the line's slope is
-known exactly.
-
-</details>
 
 **7. Predict.** The tutorial said a big step bends away from the curve.
 What do you expect from these two lines, with steps of 1 and 0.5?

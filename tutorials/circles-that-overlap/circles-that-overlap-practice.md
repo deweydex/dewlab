@@ -2,7 +2,7 @@
 title: "Circles that overlap: Venn diagrams — Practice"
 practice_for: circles-that-overlap
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 ---
 
 # Circles that overlap: Venn diagrams — Practice
@@ -193,9 +193,10 @@ $0 + 2 + 1$, speak exactly two: Chloe, Iris and Kasia.
 **6. Fix.** Schlomi, who is learning Python too, wants a function that
 finds "exactly two" from a report's totals. Her idea is to add the
 three pairs, then take away the middle, because the middle is not "exactly
-two". She tests it on the tutorial's laptops: their pairs are 7, 3 and
-4, their middle is 2, and the tutorial found 8. The cell is meant to
-stop with an `AssertionError` until you fix the function.
+two". She tries it on the tutorial's laptops: their pairs are 7, 3 and
+4, and their middle is 2. The tutorial found 8 laptops in exactly two,
+but her function gives a different number. Can you find the line that
+does not do what Schlomi meant?
 
 ```python exec
 id: circles-practice-fix-two
@@ -208,11 +209,32 @@ def exactly_two_from_totals(pair_1, pair_2, pair_3, all_three):
     return pair_1 + pair_2 + pair_3 - all_three
 
 
-assert exactly_two_from_totals(7, 3, 4, 2) == 8, "the laptops have 8"
+print(exactly_two_from_totals(7, 3, 4, 2), "laptops")
 print(exactly_two_from_totals(9, 2, 1, 1), "days in Galway")
 ```
 
-Once it passes, the last line uses it on a made-up month of weather in
+```inputs
+exactly_two_from_totals(7, 3, 4, 2)    # the laptops
+exactly_two_from_totals(9, 2, 1, 1)    # Galway
+```
+
+```solution
+def exactly_two_from_totals(pair_1, pair_2, pair_3, all_three):
+    """Return how many are in exactly two of three sets.
+
+    pair_1, pair_2 and pair_3 are the sizes of the three overlaps of two
+    sets. all_three is the size of the overlap of all three.
+    """
+    return pair_1 + pair_2 + pair_3 - 3 * all_three
+---
+Schlomi saw that the middle must go. But each pair's total
+includes the middle. There are three pairs, so the middle is counted
+three times, and it must be taken away three times. Now the laptops
+give $14 - 6 = 8$. Galway had $12 - 3 = 9$ days with exactly two of
+rain, wind and frost.
+```
+
+The last line uses it on a made-up month of weather in
 Galway: 9 days had rain and wind, 2 had rain and frost, 1 had wind and
 frost, and 1 day had all three.
 
@@ -226,21 +248,6 @@ frost, and 1 day had all three.
 
 **Think about:** the table in the tutorial's section on inclusion–exclusion
 for three sets. What does it say about a laptop in all three circles?
-
-</details>
-
-<details class="dl-answer"><summary>answer</summary>
-
-Schlomi saw that the middle must go. But each pair's total
-includes the middle. There are three pairs, so the middle is counted
-three times, and it must be taken away three times:
-
-```python
-    return pair_1 + pair_2 + pair_3 - 3 * all_three
-```
-
-Now the laptops give $14 - 6 = 8$, and the test passes. Galway had
-$12 - 3 = 9$ days with exactly two of rain, wind and frost.
 
 </details>
 

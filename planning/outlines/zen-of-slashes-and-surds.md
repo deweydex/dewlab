@@ -1,8 +1,13 @@
 # Outline — The Zen of Slashes and Surds
 
-**Status:** in progress. The pilot pages are written: `before-we-start`,
-`one-whole-many-slices`, `same-amount-different-names` and `the-long-way`,
-each with its practice page. The rest below is planned.
+**Status:** in progress. Twenty pages are written, each with its practice
+page (the closer look has none, like the other closer looks): strand 0;
+strand A pages 1 to 8 and its closer look; strand B pages 1 to 6; and
+strand C pages 1, 2, 3 and 5. Still planned: the "view from the top"
+pages, strand B's mixed challenge, strand C's pages 4 and 6, strands D
+and E, and the mixed sets. Pages marked *written* below are live; the
+rest are proposals. A written page's title is in its own frontmatter,
+and can differ from the working title here.
 **Kind:** a module of its own (`courses/zen-of-slashes-and-surds.yaml`),
 for readers who struggle with mathematics. It covers the primary and
 secondary school ground that the other modules assume: fractions (the
@@ -297,20 +302,20 @@ are listed in order. Ids of pages not yet written are proposals.
    The fraction wall: $\frac{1}{2} = \frac{2}{4} = \frac{3}{6}$, seen
    before it is said. Multiplying top and bottom by the same number cuts
    every slice again without changing the pizza.
-3. **Which is bigger?** (`which-is-bigger`). Comparing, the number line,
+3. **Which is bigger?** (`which-is-bigger`, written). Comparing, the number line,
    and the three landmarks 0, $\frac{1}{2}$ and 1.
-4. **Adding slices** (`adding-slices`). Same-size slices first, then
+4. **Adding slices** (`adding-slices`, written). Same-size slices first, then
    different sizes: to add a half and a third, cut both pizzas into
    sixths. The common denominator arrives as the thing the picture needed.
-5. **Taking slices away** (`taking-slices-away`).
-6. **A fraction of a fraction** (`a-fraction-of-a-fraction`).
+5. **Taking slices away** (`taking-slices-away`, written).
+6. **A fraction of a fraction** (`a-fraction-of-a-fraction`, written).
    Multiplying: half of a half, shown by cutting the pizza one way and then
    the other. Why multiplying by a fraction smaller than one makes a
    number smaller (the closer look below).
-7. **How many fit? Turning a fraction over** (`how-many-fit`). Dividing
+7. **How many fit? Turning a fraction over** (`how-many-fit`, written). Dividing
    as "how many quarters fit in 3?", then the reciprocal as the partner
    that makes 1, which is the first page's idea again.
-8. **Fractions with holes in them** (`fractions-with-holes`). The same
+8. **Fractions with holes in them** (`fractions-with-holes`, written). The same
    moves with squiggles and letters: $\frac{1}{\heartsuit} +
    \frac{1}{\heartsuit}$, $\frac{\triangle}{\heartsuit} \cdot
    \frac{\heartsuit}{\triangle}$. Points forward to
@@ -321,7 +326,7 @@ are listed in order. Ids of pages not yet written are proposals.
    See *The views from the top*, below.
 
 **Closer look:** *does multiplying always make a number bigger?*
-(`does-multiplying-make-it-bigger`), after page 6.
+(`does-multiplying-make-it-bigger`, written), after page 6.
 
 ### Strand B. Repeated multiplication (powers)
 
@@ -332,17 +337,17 @@ starting with squiggles and pictures before letters.
 1. **The long way** (`the-long-way`, written). A power written out as
    repeated multiplication: $\heartsuit^3 = \heartsuit \cdot \heartsuit
    \cdot \heartsuit$. Paper folding and the golden beads.
-2. **Joining two stacks** (`joining-two-stacks`). Multiplying with the
+2. **Joining two stacks** (`joining-two-stacks`, written). Multiplying with the
    same base: write both the long way, count the hearts. The rule is the
    reader's to say.
-3. **Sharing out** (`sharing-out`). Dividing with the same base: write
+3. **Sharing out** (`sharing-out`, written). Dividing with the same base: write
    both the long way, cancel in pairs.
-4. **When everything cancels** (`when-everything-cancels`). The zero
+4. **When everything cancels** (`when-everything-cancels`, written). The zero
    power, as $\frac{\heartsuit^{\triangle}}{\heartsuit^{\triangle}}$. It is
    the pizza page again: all the slices make 1.
-5. **More on the bottom** (`more-on-the-bottom`). Negative powers, from
+5. **More on the bottom** (`more-on-the-bottom`, written). Negative powers, from
    dividing when the bottom has more. Reciprocals return.
-6. **A power of a power** (`a-power-of-a-power`). Stacks of stacks.
+6. **A power of a power** (`a-power-of-a-power`, written). Stacks of stacks.
 7. **Everything at once** (`everything-at-once`). The worksheet's mixed
    simplification challenge, with the "looks scary, is simple" problems
    and invent-five. Its fractional-power sections wait for strand C.
@@ -373,22 +378,22 @@ reveal is always a short section headed "The usual way to write it",
 which shows the sign, says it means exactly the friendly name, and says
 the reader can keep using whichever feels calmer.
 
-1. **The side of a square** (`the-side-of-a-square`). Bead squares, and
+1. **The side of a square** (`the-side-of-a-square`, written). Bead squares, and
    side(n). Which squares have a whole side? Then edge(n) for the bead
    cubes. The usual way to write it: $\sqrt{\;}$ and $\sqrt[3]{\;}$.
-2. **Sides that never end** (`sides-that-never-end`). side(2), the
+2. **Sides that never end** (`sides-that-never-end`, written). side(2), the
    diagonal of a one-by-one square: no whole number, and no fraction
    either. A cell runs it to twenty places and it does not stop. Then
    side(8) as two side(2)s, from a picture of a square of area 8 made of
    four squares of area 2. The usual way to write it, and the word
    *surd* last of all.
-3. **Halfway steps** (`halfway-steps`). halfway(♡) is the power that,
+3. **Halfway steps** (`halfway-steps`, written). halfway(♡) is the power that,
    done twice, gives ♡. It is side(♡) again. The usual way to write it:
    $\heartsuit^{1/2}$, then $\heartsuit^{1/3}$ as edge.
 4. **Stretching the halfway steps** (`stretching-the-halfway-steps`).
    $\heartsuit^{2/3}$: what the top and the bottom of the fraction each
    do. The worksheet's sections 7 and 8.
-5. **How many hops?** (`how-many-hops`). hops(10 → 1000), folds(16),
+5. **How many hops?** (`how-many-hops`, written). hops(10 → 1000), folds(16),
    and counting the digits of a number as nearly the same question. The
    usual way to write it: $\log$, last.
 6. **Hops that add** (`hops-that-add`). hops for a product is the hops
@@ -500,13 +505,16 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
 
 ## Before writing
 
-- **A pilot first.** Strand 0, pages A1 and A2 and page B1, with their
-  practice pages, are written, so a class meets both slashes and powers.
-  What the pilot should answer: are the steps small enough, does the calm
+- **A pilot first.** Strand 0, pages A1 and A2 and page B1 came first
+  (7.254). The overnight batch (7.270) wrote the rest of strands A and B
+  up to their mixed pages, and the first four pages of strand C. A class
+  should still meet the early pages before the rest is written. What
+  the pilot should answer: are the steps small enough, does the calm
   check help or annoy, and do readers use the notation switch.
 - **The recurring character.** The style guide allows one who makes the
-  mistakes. This module needs one before the "spot what happened"
-  problems can be written.
+  mistakes. This module has none yet, so its "what went differently here"
+  problems use "somebody" or an unnamed worked line. A character would
+  make them warmer.
 - **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
   in the site's theme colours, so they read in light, dark and high
   contrast.

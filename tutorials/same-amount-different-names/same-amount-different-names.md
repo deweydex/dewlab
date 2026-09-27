@@ -29,7 +29,7 @@ Which pizza has the most pizza shaded?
   - In each picture, exactly the right half of the circle is shaded.
 ```
 
-All three pizzas show the same amount: half a pizza. The slices are
+All three pizzas show the same amount. Each one is half a pizza. The slices are
 different. So the names are different too: 1 of 2, 2 of 4, 4 of 8.
 
 ## A wall of fractions
@@ -68,7 +68,7 @@ Now the same wall, with half of each row shaded.
 
 <img src="wall-shaded.svg" alt="The same fraction wall. In the halves row, 1 half is shaded. In the quarters row, 2 quarters are shaded. In the eighths row, 4 eighths are shaded. The shaded parts all end at the same place, the middle of the wall.">
 
-All the shaded parts stop at the same place: the middle. So
+All the shaded parts stop at the same place, the middle. So
 
 $$\frac{1}{2} = \frac{2}{4} = \frac{4}{8}$$
 
@@ -191,8 +191,8 @@ print(Fraction(8, 12))
 print(Fraction(2, 4) == Fraction(4, 8))
 ```
 
-The last line asks Python a question: are these two fractions the same
-amount? `True` means yes. `==` is how Python asks "is this equal to
+The last line asks Python if these two fractions are the same
+amount. `True` means yes. `==` is how Python asks "is this equal to
 that?"
 
 {{include: setup/zen-calm-check.md}}

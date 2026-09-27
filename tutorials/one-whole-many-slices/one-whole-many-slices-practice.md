@@ -4,15 +4,15 @@ practice_for: one-whole-many-slices
 year: "2026-2027"
 version: 2026.09.26.1
 worlds:
-  numbers: Ordinary numbers, like 3 and 12.
+  numbers: Normal numbers, like 3 and 10.
   squiggles: Shapes like ♡ and △, which can stand for any number.
   letters: Letters like n and k, which can stand for any number.
 ---
 
 # Fractions: one whole pizza, many slices — Practice
 
-Small problems on one idea: all the slices of a pizza make the whole
-pizza. Try each problem before you open anything under it. There is no
+These small problems are about one idea. All the slices of a pizza
+make the whole pizza. Try each problem before you open anything under it. There is no
 hurry, and no score. Some problems come with numbers, shapes or letters.
 Choose the way you like in the box under the title.
 
@@ -125,7 +125,7 @@ whole pizza.
 
 1. The bottom of a fraction says how many slices the whole was cut into.
 2. So a slice of 1/8 comes from a pizza cut into 8 slices.
-3. How many slices did that pizza have altogether?
+3. How many slices did that pizza have in total?
 
 **Think about:** what the bottom number of a fraction counts.
 
@@ -198,7 +198,7 @@ of them, how much pizza would be missing?
 <details class="dl-answer"><summary>answer</summary>
 
 A million of them make the whole pizza. With 999,999, one slice is
-missing: one millionth of a pizza, which nobody would notice.
+missing. That slice is one millionth of a pizza. Nobody would notice it.
 
 </details>
 
@@ -207,7 +207,7 @@ missing: one millionth of a pizza, which nobody would notice.
 Why is $\frac{12}{12}$ the same amount of pizza as $\frac{3}{3}$, when
 12 is so much bigger than 3?
 
-<details class="dl-answer"><summary>one good answer</summary>
+<details class="dl-answer"><summary>one answer</summary>
 
 Both are every slice of one pizza. The pizza for 12/12 was cut into
 more slices, so each slice is smaller. More slices, each smaller, make

@@ -6,7 +6,7 @@ version: 2026.09.26.1
 
 # Fractions: one whole pizza, many slices
 
-The first question looks very easy. It is not a trick. This page works
+The first question is a very small step. It is not a trick. This page works
 in small steps, and this is the first one.
 
 <img src="one-pizza.svg" alt="A round pizza, not cut into slices.">

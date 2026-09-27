@@ -425,7 +425,6 @@ def password_strength(choices, length):
 assert password_strength(10, 4) == "weak"      # 10,000 PINs
 assert password_strength(26, 8) == "fair"      # about 209 thousand million
 assert password_strength(26, 12) == "strong"
-print("password_strength keeps its promise.")
 ```
 
 The counting principle gives the count, and `if` and `elif` from

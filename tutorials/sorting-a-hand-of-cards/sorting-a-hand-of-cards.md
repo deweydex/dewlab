@@ -1,7 +1,7 @@
 ---
 title: "Sorting a hand of cards: selection and insertion sort"
 year: "2026-2027"
-version: 2026.09.25.1
+version: 2026.09.26.1
 covers:
   two-ways-to-sort-a-hand:
     covers: [MIT-6.8]
@@ -517,57 +517,34 @@ def insertion_sort(values):
     return items
 ```
 
-The tests check each promise at its edges: an empty list, one item,
-items that repeat, words, and a list that must not change. The last
-test sorts 200 lists of random numbers and checks every answer against
-Python's `sorted()`, a second route to the same answer. Until both
-tools are written, this cell stops with an error.
+How do your two sorts compare with one way to write them? The table
+below runs the same calls on your tools and on a solution, side by side.
+The rows try each sort at its edges: an empty list, one item, items
+that repeat, words, and negative numbers. Two rows show `hands[0]`, the
+first hand from the counting cell, after a sort. Each sort is meant to
+return a new list, and leave `hands[0]` in its old order. Where a row is different, try that call on
+its own.
 
-```python exec
-id: sorting-hand-toolkit-tests
-import random
-
-for sort in [selection_sort, insertion_sort]:
-    hand = [7, 3, 12, 1, 9]
-    assert sort(hand) == [1, 3, 7, 9, 12]
-    assert hand == [7, 3, 12, 1, 9], "the original must not change"
-    assert sort([]) == []
-    assert sort([5]) == [5]
-    assert sort([4, 1, 4, 1]) == [1, 1, 4, 4]
-    assert sort(["Oisín", "Aoife", "Kwame"]) == ["Aoife", "Kwame", "Oisín"]
-    for test_number in range(200):
-        numbers = []
-        for count in range(random.randint(0, 30)):
-            numbers.append(random.randint(-50, 50))
-        assert sort(numbers) == sorted(numbers), numbers
-print("selection_sort and insertion_sort keep their promises.")
+```inputs
+for: sorting-hand-toolkit
+selection_sort(hands[0])
+hands[0]                                         # after selection_sort
+selection_sort([])
+selection_sort([5])
+selection_sort([4, 1, 4, 1])
+selection_sort(["Oisín", "Aoife", "Kwame"])
+selection_sort([12, -50, 7, 0, 7, -3, 44, -50])
+insertion_sort(hands[0])
+hands[0]                                         # after insertion_sort
+insertion_sort([])
+insertion_sort([5])
+insertion_sort([4, 1, 4, 1])
+insertion_sort(["Oisín", "Aoife", "Kwame"])
+insertion_sort([12, -50, 7, 0, 7, -3, 44, -50])
 ```
 
-```hint
-Which test does the error point at? Try `print(selection_sort([3, 1, 2]))`
-on its own. If it shows `None`, the function has no `return` yet. If
-the second test fails, check that the function sorts a copy.
-```
-
-```hint
-after: 12 errors
-title: some steps
-1. Copy the body of `selection_steps`, from `cards = hand.copy()` down
-   to `return cards`, into `selection_sort`.
-2. Take out the `print` line.
-3. Change `hand` to `values`, and `cards` to `items`, everywhere in the
-   body. Do the same for `insertion_sort`, from `insertion_steps`.
-
-**Think about:** which test would still pass if you left out `.copy()`,
-and which one would catch it?
-```
-
-<details class="dl-answer"><summary>answer</summary>
-
-Here is one answer. Yours may be different and still keep the
-promises. The tests check that.
-
-```python
+```solution
+for: sorting-hand-toolkit
 def selection_sort(values):
     """Return a new list with the items of values in ascending order,
     found by selection sort. values itself is not changed.
@@ -601,16 +578,32 @@ def insertion_sort(values):
     return items
 ```
 
-</details>
+```hint
+for: sorting-hand-toolkit
+after: 3 runs
+Which row is different? Try `print(selection_sort([3, 1, 2]))` on its
+own. If it shows `None`, the function has no `return` yet. If a
+`hands[0]` row is different, check that the function sorts a copy.
+```
 
-The loop `for sort in [selection_sort, insertion_sort]:` hands each
-tool, in turn, to the same tests. A function is a value, and a list can
-hold functions, as it holds numbers.
+```hint
+for: sorting-hand-toolkit
+after: 8 runs
+title: some steps
+1. Copy the body of `selection_steps`, from `cards = hand.copy()` down
+   to `return cards`, into `selection_sort`.
+2. Take out the `print` line.
+3. Change `hand` to `values`, and `cards` to `items`, everywhere in the
+   body. Do the same for `insertion_sort`, from `insertion_steps`.
+
+**Think about:** which rows would stay the same if you left out
+`.copy()`, and which one would be different?
+```
 
 ### Your turn
 
-If you have not written the two sorts yet, open the answer under the
-tests and copy it into the stubs.
+If you have not written the two sorts yet, open the solution under the
+table and copy it into the stubs.
 
 Sorting and searching go together. Your contacts from the last page
 were in the order they were added.
