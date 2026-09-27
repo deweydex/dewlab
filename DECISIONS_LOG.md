@@ -5544,7 +5544,7 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **The starters were run where a reader runs them.** Each was opened from the built page in the Notebook and run in Pyodide in Chromium: no errors, and every number a brief quotes (3.17 and 3.161 volts, 5.4 minutes on 6 days, a shift of 11) is what its starter prints. Two things the starters found:
 
 - `daylight.csv` gives Dublin's daylight to 0.01 of an hour, so the biggest change from one day to the next, 5.4 minutes, is shared by 6 days between 7 March and 3 April. The brief makes that its first question, instead of naming a fastest day that the data cannot pick out.
-- The Notebook can draw a sound but cannot play one. The sound brief's starter writes a `.wav` file, and the brief says where to find it: the Workbench's "Use a folder on my computer", in Chrome or Edge. A way to play a sound in the Notebook is a question for a later issue.
+- The Notebook can draw a sound but cannot play one. The sound brief's starter writes a `.wav` file, and the brief says where to find it: the Workbench's "Use a folder on my computer", in Chrome or Edge. A way to play a sound on a page and in the Notebook is #415.
 
 **Not every brief uses trigonometry or calculus.** Codes and secrets draws on counting, chance, logic and algebra; machine learning on chance, straight lines and statistics. The issue asks for trigonometry or calculus in each brief, but in a cipher it would be decoration, so the page says that most briefs use them.
 
