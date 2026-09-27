@@ -1,0 +1,1435 @@
+{
+ "area": "algebra-geometry",
+ "districts": [
+  {
+   "id": "algebraic-expressions",
+   "name": "Expressions",
+   "blurb": "Rules made of letters and numbers: what they say, and how to make them shorter or longer without changing their value."
+  },
+  {
+   "id": "solving-equations",
+   "name": "Solving equations",
+   "blurb": "Finding the numbers that make an equation true, and changing a formula so that it finds a different letter."
+  },
+  {
+   "id": "quadratics",
+   "name": "Quadratics",
+   "blurb": "Equations and curves with a squared term: three ways to solve them, where the curve turns, and the new numbers they need."
+  },
+  {
+   "id": "functions-and-graphs",
+   "name": "Functions and graphs",
+   "blurb": "Machines that take a number and return one, how to undo them and join them, and the pictures they draw."
+  },
+  {
+   "id": "lines-and-distance",
+   "name": "Lines and distance",
+   "blurb": "Points on a grid: how steep a line is, the equation of a line, and how far apart two points are."
+  },
+  {
+   "id": "measuring-shapes",
+   "name": "Measuring shapes",
+   "blurb": "How far round a shape is, how much surface it covers, and how much a solid holds."
+  },
+  {
+   "id": "trigonometry",
+   "name": "Trigonometry",
+   "blurb": "Angles, the circle that sine and cosine come from, the waves they make, and the triangles they solve."
+  },
+  {
+   "id": "calculus",
+   "name": "Calculus",
+   "blurb": "What a function gets close to, how fast it is changing at one moment, and the rules that find it quickly."
+  },
+  {
+   "id": "matrix-methods",
+   "name": "Matrices",
+   "blurb": "Grids of numbers that move pictures, solve many equations at once, and follow chances from step to step."
+  },
+  {
+   "id": "3d-graphics",
+   "name": "3D graphics",
+   "blurb": "The maths that turns a 3D scene into a flat picture on a screen, and moves and turns the things in it."
+  }
+ ],
+ "topics": [
+  {
+   "id": "expressions-and-equations",
+   "name": "Expressions and equations",
+   "district": "algebraic-expressions",
+   "plain": "An expression is a rule made of numbers, letters and operations. It has a value once you choose a number for each letter. An equation says that two expressions are equal, and an identity is an equation that is true for every number.",
+   "needs": [
+    "ext:order-of-operations"
+   ],
+   "steps": [
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "a-rule-a-question-and-a-promise",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "putting-a-number-in-for-the-letter",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "expressions-come-alive",
+     "section": "expressions-versus-equations",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.5",
+    "MIT-1.6"
+   ],
+   "replaces": [
+    "MIT-1.5"
+   ],
+   "size": "One or two sections per course (about 500 to 900 words): the first step into algebra, small on purpose. Kept apart from polynomials because functions, area formulas and balancing need an expression and an equation, not terms and coefficients."
+  },
+  {
+   "id": "polynomials",
+   "name": "Polynomials and like terms",
+   "district": "algebraic-expressions",
+   "plain": "A polynomial is a sum of terms such as 3x² and 5x. The number in front of each term is its coefficient, and the highest power is its degree. Collecting like terms adds the terms with the same power, so the expression gets shorter and keeps its value.",
+   "needs": [
+    "expressions-and-equations",
+    "ext:powers"
+   ],
+   "steps": [
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "terms-coefficients-and-a-list",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "your-turn-a-tool-that-evaluates",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "collecting-like-terms",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "expressions-come-alive",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.6"
+   ],
+   "replaces": [
+    "MIT-1.6"
+   ],
+   "size": "About one sitting on either course (DT's terms, evaluate tool and like terms; PMI's five polynomial sections). Collecting like terms is adding two polynomials in both courses, so they are one topic. Linear equations and graphs need this without expanding brackets."
+  },
+  {
+   "id": "expanding-brackets",
+   "name": "Expanding brackets",
+   "district": "algebraic-expressions",
+   "plain": "Multiplying every term in one bracket by every term in the other, then collecting like terms. Two brackets make a quadratic, and three make a cubic. (a + b)² is not a² + b².",
+   "needs": [
+    "polynomials"
+   ],
+   "steps": [
+    {
+     "tutorial": "rules-with-letters-in-them",
+     "section": "expanding-brackets-is-a-loop",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "expressions-come-alive",
+     "section": "multiplying-polynomials",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "expressions-come-alive",
+     "section": "checking-by-evaluating",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "expressions-come-alive",
+     "section": "expanding-in-your-world",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "squaring-a-sum",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.6",
+    "MIT-1.8"
+   ],
+   "replaces": [
+    "MIT-1.6",
+    "MIT-1.8"
+   ],
+   "size": "One long section in DT, three in PMI: about one sitting. Old MIT-1.6's expanding half and MIT-1.8 are taught as one move in both courses, so they merge. Factorising and completing the square need it."
+  },
+  {
+   "id": "algebraic-fractions",
+   "name": "Fractions with letters in them",
+   "district": "algebraic-expressions",
+   "plain": "Adding and simplifying fractions that have letters in them, the same way as fractions of numbers. First give them the same bottom, then add the tops, and cancel what appears on the top and the bottom.",
+   "needs": [
+    "expressions-and-equations",
+    "ext:adding-fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "fractions-with-letters-in-them",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "fractions-with-holes",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.7"
+   ],
+   "replaces": [],
+   "size": "One DT section (the drone's average speed) plus the Zen page on algebraic fractions: under one sitting each. The old list folded this into rearranging (MIT-1.7), but nothing about rearranging needs it and it needs number fractions, so it stands alone."
+  },
+  {
+   "id": "balancing-equations",
+   "name": "Doing the same to both sides",
+   "district": "solving-equations",
+   "plain": "An equation is like a balance. Any move is allowed, as long as you do the same move to both sides, so the two sides stay equal. To get a letter on its own, undo the steps in the opposite order.",
+   "needs": [
+    "expressions-and-equations"
+   ],
+   "steps": [
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "the-same-move-on-both-sides",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rearranging-formulae",
+     "section": "the-moves",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "keeping-it-level",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [
+    "PRE-2"
+   ],
+   "size": "A section in each of DT and PMI (both open their rearranging page with it), and a whole Zen page for a beginner: small, as the first step of solving should be. Solving linear equations, rearranging and inequalities each need it without the others, so it is its own topic."
+  },
+  {
+   "id": "solving-linear-equations",
+   "name": "Solving linear equations",
+   "district": "solving-equations",
+   "plain": "Finding the one value of x that makes an equation like 5x − 4 = 2x + 11 true, one move at a time, and checking it by putting it back into both sides. Any linear equation can be tidied into ax + b = 0, so x = −b/a.",
+   "needs": [
+    "balancing-equations",
+    "polynomials"
+   ],
+   "steps": [
+    {
+     "tutorial": "solving-for-x",
+     "section": "when-are-two-servers-equally-fast",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-for-x",
+     "section": "a-tool-for-any-straight-line-equation",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cracking-equations",
+     "section": "solving-linear-equations",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "Two DT sections, one PMI section: under a sitting. No descriptor names it and the old list had no topic for it, but both courses teach it and simultaneous equations need it."
+  },
+  {
+   "id": "rearranging-formulas",
+   "name": "Rearranging formulas",
+   "district": "solving-equations",
+   "plain": "Changing a formula so that it finds a different letter. Speed, distance and time are one formula written three ways. Some cases need care: the letter behind a minus sign, the letter twice, the letter on the bottom, and a square that has two roots.",
+   "needs": [
+    "balancing-equations"
+   ],
+   "steps": [
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "one-formula-three-questions",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "tools-for-any-trip",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "undoing-in-reverse-order",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "when-the-way-back-needs-care",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rearranging-formulae",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "dividing-every-term",
+     "section": null,
+     "role": "closer-look"
+    },
+    {
+     "tutorial": "the-hidden-bracket",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.7"
+   ],
+   "replaces": [
+    "MIT-1.7"
+   ],
+   "size": "Most of one page in each course, about one and a half sittings. The harder cases (letter twice, letter underneath) are not needed separately by anything later, so they stay steps."
+  },
+  {
+   "id": "linear-inequalities",
+   "name": "Solving inequalities",
+   "district": "solving-equations",
+   "plain": "Solving for a range of values, not one value: not 'x is 5' but 'x is anything above 5'. The moves are the same as for an equation, except one: multiplying or dividing both sides by a negative number flips the sign, so < becomes >.",
+   "needs": [
+    "balancing-equations",
+    "ext:the-number-line"
+   ],
+   "steps": [
+    {
+     "tutorial": "choosing-a-path",
+     "section": "pictures-on-a-number-line",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "choosing-a-path",
+     "section": "solving-an-inequality",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "choosing-a-path",
+     "section": "a-move-that-turns-the-sign-round",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cracking-equations",
+     "section": "solving-inequalities",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.11"
+   ],
+   "replaces": [
+    "MIT-1.11"
+   ],
+   "size": "Three sections of a DT programming page (choosing-a-path, placed by the programming area) and one PMI section: under a sitting. The Dewey Track teaches inequalities only there."
+  },
+  {
+   "id": "simultaneous-equations",
+   "name": "Simultaneous equations",
+   "district": "solving-equations",
+   "plain": "Two or three facts that must be true at the same time, and the values that make all of them true. With two unknowns, the answer is where two lines cross. Parallel lines never cross, so some systems have no single answer.",
+   "needs": [
+    "solving-linear-equations",
+    "graphing-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "several-unknowns-at-once",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cracking-equations",
+     "section": "simultaneous-equations",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.12"
+   ],
+   "replaces": [
+    "MIT-1.12"
+   ],
+   "size": "A whole DT page and a long PMI section: one to two sittings, two and three unknowns together. The matrix method is a separate topic because it needs matrices."
+  },
+  {
+   "id": "factorising-quadratics",
+   "name": "Factorising quadratics",
+   "district": "quadratics",
+   "plain": "Finding the two brackets that multiply to make a quadratic: expanding, run backwards. If two numbers multiply to make 0, one of them is 0, and that gives the solutions.",
+   "needs": [
+    "expanding-brackets"
+   ],
+   "steps": [
+    {
+     "tutorial": "solving-for-x",
+     "section": "when-the-unknown-is-squared",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-for-x",
+     "section": "factorising-by-inspection",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cracking-equations",
+     "section": "factorisation",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.9"
+   ],
+   "replaces": [
+    "MIT-1.9"
+   ],
+   "size": "Two short DT sections, one PMI section: well under a sitting in words, but factorising by inspection is slow to learn. PMI teaches the formula first and DT teaches it second, and complex numbers need the formula without factorising, so the two stay apart."
+  },
+  {
+   "id": "quadratic-formula",
+   "name": "The quadratic formula",
+   "district": "quadratics",
+   "plain": "A formula that solves any quadratic equation. You put in its three numbers, a, b and c. The part under the square root, the discriminant, says whether there are two solutions, one, or none on the number line.",
+   "needs": [
+    "graphing-functions",
+    "ext:square-roots"
+   ],
+   "steps": [
+    {
+     "tutorial": "solving-for-x",
+     "section": "the-quadratic-formula",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-for-x",
+     "section": "how-many-answers-the-discriminant",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-for-x",
+     "section": "when-the-square-root-says-no",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cracking-equations",
+     "section": "the-quadratic-formula",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.10"
+   ],
+   "replaces": [
+    "MIT-1.10a"
+   ],
+   "size": "Three DT sections, one PMI section: about one sitting. The discriminant is read against the picture of a parabola crossing the axis, which is why graphs come first."
+  },
+  {
+   "id": "completing-the-square",
+   "name": "Completing the square",
+   "district": "quadratics",
+   "plain": "Rewriting a quadratic as a(x − h)² + k, so that the highest or lowest point of its curve is at (h, k). Every quadratic is the same curve, moved and stretched. The same form also gives the solutions.",
+   "needs": [
+    "expanding-brackets",
+    "quadratic-formula"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-top-of-the-curve",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "parabolas",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-vertex-sign",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.4"
+   ],
+   "replaces": [
+    "MIT-3.4"
+   ],
+   "size": "One page per course, one to two sittings. Moving and stretching a graph is taught inside this topic and graphs of functions, never on its own."
+  },
+  {
+   "id": "complex-numbers",
+   "name": "Complex numbers",
+   "district": "quadratics",
+   "plain": "When the quadratic formula needs the square root of a negative number, the answers still exist. They are complex numbers, such as 3 + 2i, where i × i = −1. They sit on a plane, not on a line, and multiplying by i turns a point a quarter turn.",
+   "needs": [
+    "quadratic-formula"
+   ],
+   "steps": [
+    {
+     "tutorial": "when-there-is-no-real-answer",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "complex-roots",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.10"
+   ],
+   "replaces": [
+    "MIT-1.10b",
+    "MIT-2.1g"
+   ],
+   "size": "One page per course, about one and a half sittings. These are the only pages that teach the complex numbers, so this also succeeds the number family MIT-2.1g."
+  },
+  {
+   "id": "what-a-function-is",
+   "name": "What a function is",
+   "district": "functions-and-graphs",
+   "plain": "A function is a machine: put a number in, and exactly one number comes out. We write f(x) for the number f gives when x goes in. Its domain is the set of numbers it accepts, and its range is the set of numbers it can give.",
+   "needs": [
+    "expressions-and-equations"
+   ],
+   "steps": [
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "a-machine-with-one-slot",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "what-goes-in-and-what-comes-out",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "a-function-is-a-machine",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.1"
+   ],
+   "replaces": [
+    "MIT-3.1"
+   ],
+   "size": "Two DT sections, one PMI section: under a sitting. Graphs, inverses and composition each need it, and none needs the others."
+  },
+  {
+   "id": "inverse-functions",
+   "name": "Inverse functions",
+   "district": "functions-and-graphs",
+   "plain": "The inverse of a function undoes it: going there and back gives the number you started with. Not every function has one. Squaring turns 3 and −3 into 9, so no machine can tell which one went in.",
+   "needs": [
+    "what-a-function-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "running-it-backwards-the-inverse",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "running-a-formula-backwards",
+     "section": "the-promise-run-backwards",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "undoing-a-function",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.1"
+   ],
+   "replaces": [
+    "MIT-3.1"
+   ],
+   "size": "Two DT sections and one PMI section: about half a sitting to a sitting. Split from the function itself because the inverse sine, cosine and tangent (and the logarithm, in the number area) need it."
+  },
+  {
+   "id": "function-composition",
+   "name": "Joining functions in a row",
+   "district": "functions-and-graphs",
+   "plain": "Sending the output of one function straight into another. 'g after f' is written g(f(x)). The order matters: the same two machines in the other order usually do a different job, and a function joined to its inverse changes nothing.",
+   "needs": [
+    "what-a-function-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "machines-in-a-row-composition",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One DT section, about two-thirds of a sitting. No descriptor names it, but the chain rule is a function inside a function, so it has to be its own topic."
+  },
+  {
+   "id": "graphing-functions",
+   "name": "Graphs of functions",
+   "district": "functions-and-graphs",
+   "plain": "Drawing a function as a picture, with a point for every input. Lines, parabolas and cubics each have their own shape. Where the graph crosses the x-axis, the function is zero, and where two graphs cross, the two functions are equal.",
+   "needs": [
+    "what-a-function-is",
+    "polynomials",
+    "ext:coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "drawing-a-rule",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "a-machine-has-a-picture",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "straight-lines",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "curves-that-bend",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "drawing-functions",
+     "section": "reading-an-answer-off-the-picture",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.2"
+   ],
+   "replaces": [
+    "MIT-3.2"
+   ],
+   "size": "One page (DT) or most of one (PMI), about two sittings: linear, quadratic and cubic graphs and solving from a graph. It also carries gaps in a graph (1/x) and which curve grows faster (x² against 2^x)."
+  },
+  {
+   "id": "slope-of-a-line",
+   "name": "Slope of a line",
+   "district": "lines-and-distance",
+   "plain": "How steep a line is: how far it goes up for each step across. You can find it from any two points on the line. A slope is also a rate: how much y changes when x goes up by one. A vertical line has no slope.",
+   "needs": [
+    "ext:coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "straight-lines",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "slope-and-lines",
+     "section": "slope-as-how-fast-something-changes",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "slope-and-lines",
+     "section": "slope-in-your-world",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.2"
+   ],
+   "replaces": [
+    "MIT-4.2"
+   ],
+   "size": "The first half of a page in each course, about one sitting. Split from the equation of a line because the derivative and the tangent on the unit circle need slope and nothing else from lines."
+  },
+  {
+   "id": "equation-of-a-line",
+   "name": "Equations of straight lines",
+   "district": "lines-and-distance",
+   "plain": "Writing a straight line as an equation, y = mx + c or ax + by + c = 0, so that 'is this point on the line?' becomes a sum. Parallel lines have the same slope. The slopes of perpendicular lines multiply to −1.",
+   "needs": [
+    "slope-of-a-line",
+    "graphing-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "straight-lines",
+     "section": "a-line-as-a-rule-y-mx-c",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "straight-lines",
+     "section": "every-line-at-once-ax-by-c-0",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "straight-lines",
+     "section": "parallel-and-perpendicular",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "slope-and-lines",
+     "section": "parallel-and-perpendicular",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "slope-and-lines",
+     "section": "the-line-that-breaks-the-formula",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.1",
+    "MIT-4.2"
+   ],
+   "replaces": [
+    "MIT-4.1",
+    "MIT-4.2"
+   ],
+   "size": "The second half of a page in each course, about one sitting. Parallel and perpendicular sit here because DT teaches them with line equations and nothing needs them on their own."
+  },
+  {
+   "id": "pythagoras-and-distance",
+   "name": "Pythagoras and distance",
+   "district": "lines-and-distance",
+   "plain": "In a right-angled triangle, the two short sides squared add up to the long side squared. The gap across and the gap up between two points are two short sides, so this gives the distance between them. The midpoint is the point halfway.",
+   "needs": [
+    "ext:square-roots",
+    "ext:coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-far-apart",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "distance-and-pythagoras",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.3",
+    "MIT-4.4"
+   ],
+   "replaces": [
+    "MIT-4.3",
+    "MIT-4.4",
+    "PRE-1"
+   ],
+   "size": "One page per course, one to two sittings. The old list split Pythagoras from distance, but both courses teach them as one move, and everything later that needs Pythagoras (the unit circle, triangles) needs points on a grid as well."
+  },
+  {
+   "id": "area-and-perimeter",
+   "name": "Area and perimeter",
+   "district": "measuring-shapes",
+   "plain": "How far it is round the edge of a flat shape, and how much surface it covers. A rectangle's area is length times width, and a triangle is half a rectangle.",
+   "needs": [
+    "expressions-and-equations"
+   ],
+   "steps": [
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "around-the-edge-perimeter",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "covering-a-surface-area",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "triangles-half-a-rectangle",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "tools-for-flat-shapes",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "formulas-as-functions",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.2"
+   ],
+   "replaces": [
+    "MIT-1.2"
+   ],
+   "size": "Four short DT sections, under a sitting, plus PMI's table of formulas. Split from circles because the determinant (the area of a shape after a matrix moves it) needs area and not pi."
+  },
+  {
+   "id": "circles-and-pi",
+   "name": "Circles and pi",
+   "district": "measuring-shapes",
+   "plain": "The distance round a circle, its circumference, and the surface inside it. Both use the number pi, about 3.14: the circumference is 2πr and the area is πr².",
+   "needs": [
+    "area-and-perimeter"
+   ],
+   "steps": [
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "circles-and-pi",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "tools-for-flat-shapes",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.2"
+   ],
+   "replaces": [
+    "MIT-1.2"
+   ],
+   "size": "One DT section and its tool, about half a sitting: small, near the start. Radians (a walk round the circle) and every round solid need circles without needing anything else here."
+  },
+  {
+   "id": "volume-and-surface-area",
+   "name": "Volume and surface area",
+   "district": "measuring-shapes",
+   "plain": "How much a solid holds, and how much surface covers the outside: cuboids, cylinders, cones and spheres. Double every length, and the area grows four times and the volume eight times.",
+   "needs": [
+    "circles-and-pi"
+   ],
+   "steps": [
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "how-much-a-tin-holds-volume",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "wrapping-it-surface-area",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "tools-for-solid-shapes",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "measuring-rooms-and-tins",
+     "section": "how-much-paint-does-the-room-need",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "formulas-as-functions",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.3"
+   ],
+   "replaces": [
+    "MIT-1.3"
+   ],
+   "size": "The second half of the DT page (about one sitting) and PMI's formulas, with 'what doubling does' as the step on scaling."
+  },
+  {
+   "id": "unit-circle",
+   "name": "Sine, cosine and the unit circle",
+   "district": "trigonometry",
+   "plain": "Walk a point round a circle of radius 1. How far across it is and how far up it is are the cosine and sine of the angle you turned, and cos²θ + sin²θ = 1. The tangent is the slope, up over across. Angles can be in degrees or in radians, and Python uses radians.",
+   "needs": [
+    "pythagoras-and-distance",
+    "slope-of-a-line",
+    "circles-and-pi"
+   ],
+   "steps": [
+    {
+     "tutorial": "going-round-in-circles",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-unit-circle",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "degrees-and-radians",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.5",
+    "MIT-4.6",
+    "MIT-4.7"
+   ],
+   "replaces": [
+    "MIT-4.5",
+    "MIT-4.6a",
+    "MIT-4.6b",
+    "MIT-4.6c",
+    "MIT-4.7"
+   ],
+   "size": "One page per course, about two sittings. Five old topics merge: every later topic needs sine and cosine and radians together (Python takes radians), and nothing needs the identity, the tangent or the exact values on their own. Exact values and 'triangles on a ball' are steps."
+  },
+  {
+   "id": "sine-and-cosine-waves",
+   "name": "Sine and cosine waves",
+   "district": "trigonometry",
+   "plain": "Draw how high the point on the circle is against time, and you get a wave. Four numbers change it: how tall it is (amplitude), how often it repeats (period or frequency), where it starts (phase), and where its middle line is.",
+   "needs": [
+    "unit-circle",
+    "graphing-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "waves",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "sine-and-cosine-waves",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "why-we-have-seasons",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.3",
+    "MIT-4.6"
+   ],
+   "replaces": [
+    "MIT-3.3"
+   ],
+   "size": "One page per course, about one and a half sittings. The graph of the tangent, octaves and adding two waves are steps inside it."
+  },
+  {
+   "id": "right-triangle-trig",
+   "name": "Right-angled triangle trigonometry",
+   "district": "trigonometry",
+   "plain": "Given one angle and one side of a right-angled triangle, finding the other sides with sine, cosine or tangent (SOH-CAH-TOA). Going backwards, the inverse functions find an angle from two sides. This is how you measure a height you cannot reach, or a bearing.",
+   "needs": [
+    "unit-circle",
+    "inverse-functions",
+    "rearranging-formulas"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-tall-is-that-tree",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-triangles",
+     "section": "when-there-is-a-right-angle",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-triangles",
+     "section": "heights-you-cannot-reach",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.9"
+   ],
+   "replaces": [
+    "MIT-4.9"
+   ],
+   "size": "The first half of a page in each course, about one sitting. Finding an angle is not split off, because everything that needs the ratios also needs to find angles. Needs rearranging because a side on the bottom of a ratio (hyp = opp / sin θ) is found by changing the subject."
+  },
+  {
+   "id": "sine-and-cosine-rules",
+   "name": "The sine rule and cosine rule",
+   "district": "trigonometry",
+   "plain": "Rules for a triangle with no right angle. The cosine rule is Pythagoras with a correction, the sine rule pairs each side with the angle opposite it, and the area is half of two sides times the sine of the angle between them. The sine rule can give two triangles that both fit.",
+   "needs": [
+    "right-triangle-trig"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-tall-is-that-tree",
+     "section": "area-from-two-sides-and-the-angle-between",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-tall-is-that-tree",
+     "section": "the-cosine-rule",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-tall-is-that-tree",
+     "section": "a-tool-for-the-angle-at-a-corner",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-tall-is-that-tree",
+     "section": "the-sine-rule-when-you-cannot-reach-the-tree",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-triangles",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-4.8",
+    "MIT-4.10"
+   ],
+   "replaces": [
+    "MIT-4.8",
+    "MIT-4.10a",
+    "MIT-4.10b",
+    "MIT-4.10c"
+   ],
+   "size": "The second half of a page in each course, one sitting (DT) to two (PMI). Four old topics merge: both courses teach area, cosine rule, sine rule and the two-answer case together, and nothing later needs one without the others."
+  },
+  {
+   "id": "limits-of-functions",
+   "name": "Limits",
+   "district": "calculus",
+   "plain": "What a function gets closer and closer to, which is not always what it does when it arrives. A limit exists only when both sides agree. A function can also settle towards a value as x grows without end.",
+   "needs": [
+    "graphing-functions",
+    "factorising-quadratics"
+   ],
+   "steps": [
+    {
+     "tutorial": "getting-closer",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "approaching-a-limit",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.5"
+   ],
+   "replaces": [
+    "MIT-3.5"
+   ],
+   "size": "One page per course, about one and a half sittings. The number e and the limits of floating-point numbers are steps inside it."
+  },
+  {
+   "id": "the-derivative",
+   "name": "The derivative",
+   "district": "calculus",
+   "plain": "How fast something is changing right now, not on average. Shrink the chord between two points on a curve, and its slope settles on the slope of the curve at one point: the slope of the tangent line. Where a curve turns, the derivative is zero.",
+   "needs": [
+    "limits-of-functions",
+    "slope-of-a-line"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-fast-right-now",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rates-of-change",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "putting-the-derivative-to-work",
+     "section": null,
+     "role": "applies"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.6"
+   ],
+   "replaces": [
+    "MIT-3.6"
+   ],
+   "size": "One page per course, one to two sittings. Finding turning points with the derivative is a step here (and in the rules topic); it is too small to stand alone."
+  },
+  {
+   "id": "derivative-rules",
+   "name": "Rules for derivatives",
+   "district": "calculus",
+   "plain": "Short rules for finding a derivative without a limit every time: the power rule, and rules for adding, multiplying and dividing functions, and for one function inside another (the chain rule).",
+   "needs": [
+    "the-derivative",
+    "function-composition"
+   ],
+   "steps": [
+    {
+     "tutorial": "rules-for-change",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "derivative-rules",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-3.7"
+   ],
+   "replaces": [
+    "MIT-3.7"
+   ],
+   "size": "One page per course, one to two sittings. Not split into the simple rules and the chain rule: deep in, the learner carries the derivative as one idea, and each half would be well under a sitting. Integration appears only as a 'going further' step."
+  },
+  {
+   "id": "slope-of-a-wave",
+   "name": "The slope of a wave",
+   "district": "calculus",
+   "plain": "How fast a wave is changing at each moment. The slope of sine is cosine, so a wave changes fastest where it crosses its middle line and not at all at its top.",
+   "needs": [
+    "derivative-rules",
+    "sine-and-cosine-waves"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-slope-of-a-wave",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One PMI page, about one sitting. The old list had no topic for it; the page joins waves and derivatives, and needs the chain rule for a general wave."
+  },
+  {
+   "id": "matrices",
+   "name": "Matrices",
+   "district": "matrix-methods",
+   "plain": "A grid of numbers treated as one thing. You can add and scale grids and turn them corner to corner. A small matrix moves every point of a picture, and multiplying two matrices joins two moves into one, where the order matters.",
+   "needs": [
+    "old:CMPS-LO1a",
+    "ext:coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "grid-of-numbers",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-a-matrix-does-to-a-picture",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "multiplying-grids",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [
+    "CMPS-LO4a",
+    "CMPS-LO4b"
+   ],
+   "size": "Three short Computational Methods pages, about two sittings together. The brief's own example: deep in, 'Matrices' is one topic. Nothing later needs the grid operations without the moves and the product."
+  },
+  {
+   "id": "inverse-matrices-and-systems",
+   "name": "Inverse matrices and solving systems",
+   "district": "matrix-methods",
+   "plain": "The determinant is one number that says how much a matrix stretches areas, and whether its move can be undone. The inverse matrix undoes it. Then a whole system of equations becomes one matrix, solved one row at a time.",
+   "needs": [
+    "matrices",
+    "simultaneous-equations",
+    "area-and-perimeter"
+   ],
+   "steps": [
+    {
+     "tutorial": "undoing-it",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "solving-systems",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4",
+    "MIT-1.12"
+   ],
+   "replaces": [],
+   "size": "Two short pages, about one and a half sittings. Solving a system starts from 'undo A', so the inverse and the solving are taught as one idea."
+  },
+  {
+   "id": "matrices-in-numpy",
+   "name": "Matrices in NumPy",
+   "district": "matrix-methods",
+   "plain": "Doing every matrix job from this series in one line with NumPy, and seeing how much faster it is. In NumPy, @ multiplies two matrices and * multiplies them number by number.",
+   "needs": [
+    "inverse-matrices-and-systems"
+   ],
+   "steps": [
+    {
+     "tutorial": "matrices-in-numpy",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "One short page, under a sitting: a new tool for known ideas, so its effort is low. Kept as a topic because the graphics and Markov chain pages use NumPy."
+  },
+  {
+   "id": "markov-chains",
+   "name": "Markov chains",
+   "district": "matrix-methods",
+   "plain": "A matrix of chances for moving from one state to the next. Multiply by it again and again, and the chances settle. The same idea chooses the next word in a sentence, and it ranked pages in the first web searches.",
+   "needs": [
+    "matrices",
+    "ext:probability"
+   ],
+   "steps": [
+    {
+     "tutorial": "where-chains-lead",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [
+    "CMPS-LO4c"
+   ],
+   "size": "One page, about one and a half sittings. It succeeds CMPS-LO4c (ranking by following links), which sits in the chance-data list; this is the page that teaches it."
+  },
+  {
+   "id": "perspective-projection",
+   "name": "Perspective: 3D on a flat screen",
+   "district": "3d-graphics",
+   "plain": "Every point in a 3D scene becomes a point on a flat screen when you divide its across and up by its depth, so far things come out small. To move the camera, subtract its position first. A point behind the camera cannot be drawn.",
+   "needs": [
+    "ext:coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-point-on-the-screen",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-ball-in-orbit",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Two pages, about two and a half sittings. The camera page only extends the divide, and the cube page needs both, so they are one topic. Similar triangles are a step inside it."
+  },
+  {
+   "id": "rotating-in-3d",
+   "name": "Turning shapes in 3D",
+   "district": "3d-graphics",
+   "plain": "A matrix made from sine and cosine turns every corner of a shape about one axis. Two turns, one after the other, are one matrix: the product of the two.",
+   "needs": [
+    "perspective-projection",
+    "matrices",
+    "unit-circle"
+   ],
+   "steps": [
+    {
+     "tutorial": "turning-a-cube",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [
+    "CMPS-LO4b"
+   ],
+   "size": "One page, about one and a half sittings."
+  },
+  {
+   "id": "homogeneous-coordinates",
+   "name": "The camera as one matrix",
+   "district": "3d-graphics",
+   "plain": "No 3 × 3 matrix can slide a shape. Add a fourth number to every point, and sliding, turning and the camera's divide by depth all become 4 × 4 matrices, so a whole camera is one matrix.",
+   "needs": [
+    "rotating-in-3d"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-fourth-number",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "One page, about one and a half sittings."
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "a-tool-of-your-own",
+   "kind": "project",
+   "at": [
+    "rearranging-formulas",
+    "graphing-functions",
+    "quadratic-formula",
+    "completing-the-square",
+    "complex-numbers"
+   ],
+   "note": "PMI's project after Algebra and Functions (programming inventory). Suggested attachment only; the programming area places the page."
+  },
+  {
+   "tutorial": "a-model-of-your-own",
+   "kind": "project",
+   "at": [
+    "sine-and-cosine-waves",
+    "sine-and-cosine-rules",
+    "the-derivative",
+    "slope-of-a-wave"
+   ],
+   "note": "PMI's project after Trigonometry and Calculus (chance-data inventory). Suggested attachment only."
+  },
+  {
+   "tutorial": "a-filter-or-a-sprite",
+   "kind": "project",
+   "at": [
+    "matrices",
+    "inverse-matrices-and-systems"
+   ],
+   "note": "Computational Methods' project after Matrices (programming inventory). Suggested attachment only."
+  },
+  {
+   "tutorial": "your-own-scene",
+   "kind": "project",
+   "at": [
+    "perspective-projection",
+    "rotating-in-3d",
+    "homogeneous-coordinates"
+   ],
+   "note": "Computational Methods' project after Computer Graphics (programming inventory). Suggested attachment only."
+  }
+ ],
+ "elsewhere": [
+  {
+   "tutorial": "a-chain-reads-a-book",
+   "suggest": "chance-data",
+   "why": "Text generation: a word chain from a whole book, stored as a dictionary of dictionaries. It belongs with 'What a language model does differently' (chance-data), which builds on it; its maths need is markov-chains in this proposal, and its data structure is a programming idea."
+  },
+  {
+   "tutorial": "how-much-it-remembers",
+   "suggest": "chance-data",
+   "why": "N-gram text models: how much a chain remembers. Same text-generation series as a-chain-reads-a-book; nothing algebraic or geometric."
+  },
+  {
+   "tutorial": "whose-voice-is-this",
+   "suggest": "chance-data",
+   "why": "Scoring passages by how likely each writer's chain is to produce them (perplexity, held-back text). A probability and language-model page."
+  },
+  {
+   "tutorial": "machines-that-take-a-number",
+   "suggest": "programming",
+   "why": "Only the sections an-algorithm-is-a-function-too and functions-that-give-back-and-procedures-that-do: Python functions that return a value against procedures, and an algorithm seen as a function. The rest of the page is placed here."
+  }
+ ],
+ "outcomes_culled": [
+  {
+   "code": "CMPS-LO4d",
+   "why": "Comparing rows of numbers (nearest-neighbour search) is an idea, but no page teaches it: the dot product appears only inside matrix multiplication, and distance only in two dimensions. CMPS-LO4 itself is served by the matrix topics. A page on nearest-neighbour search would bring it back as a topic.",
+   "becomes": "metadata"
+  }
+ ],
+ "questions": [
+  {
+   "q": "'Kinds of triangle' (PRE-1) has no page. Right-angled, isosceles and equilateral triangles are each named where a page first needs them (how-far-apart, distance-and-pythagoras, the unit circle pages). Fold it away, or keep it as a planned beginner topic that needs a page?",
+   "options": [
+    "Fold it into Pythagoras and distance (as proposed)",
+    "Keep a planned topic 'Kinds of triangle' and write a page"
+   ],
+   "lean": "Fold. Every page that needs a kind of triangle names it at that moment, and a topic with no page would stand in front of Pythagoras as a door with nothing behind it."
+  },
+  {
+   "q": "Your game answer put 'Multiplying out to quadratics' (MIT-1.8) before the derivative (MIT-3.6). All four derivative pages find slopes with numbers (derivative_at) and never expand (x + h)². Keep the edge?",
+   "options": [
+    "Drop it (as proposed): the derivative needs limits and slope",
+    "Keep it: expanding before the derivative"
+   ],
+   "lean": "Drop it. The pages as written do not use expansion, so the edge would close a door for nothing. If a page later derives 2x from (x + h)², the edge comes back."
+  },
+  {
+   "q": "The three text-generation pages (a-chain-reads-a-book, how-much-it-remembers, whose-voice-is-this) sit in this area's inventory. Where do they belong?",
+   "options": [
+    "With 'What a language model does differently' in chance-data (as proposed)",
+    "A text-generation district next to Markov chains in the matrices district",
+    "Programming (dictionaries of dictionaries)"
+   ],
+   "lean": "With the language-model page. They teach chains of chances over words, scoring and perplexity, not matrices; only where-chains-lead uses a transition matrix, and it stays here."
+  },
+  {
+   "q": "The unit circle topic merges five old topics (degrees and radians, sine and cosine, the identity, tangent as slope, exact values). Is that too coarse for a learner?",
+   "options": [
+    "One topic (as proposed)",
+    "Split radians off",
+    "Split exact values off"
+   ],
+   "lean": "One topic. Both courses teach it as one page, Python needs radians from the first sine, and nothing later needs the identity, tangent or exact values alone. Split radians off only if a page ever uses sine and cosine in degrees without Python."
+  }
+ ],
+ "notes": "Two parallel courses (The Dewey Track and Programming and Maths, Integrated) teach almost every algebra, trigonometry and calculus topic, so most topics have one teaching page or section from each. A learner takes one route, so the effort table (which adds both) reads about twice the real effort for those topics. Computational Methods alone teaches the matrix and graphics topics.\n\nStep convention: where a page's sections are split between topics, a step with section null marks the page's main topic (its title names it), and the named sections of the same page also serve the other topics listed. So expressions-come-alive is whole in polynomials, rearranging-formulae whole in rearranging-formulas, straight-lines whole in slope-of-a-line, how-tall-is-that-tree whole in right-triangle-trig and solving-triangles whole in sine-and-cosine-rules; their other sections are named where they belong.\n\nSize: small topics near the start (expressions-and-equations, solving-linear-equations, circles-and-pi, function-composition, factorising-quadratics) are under a sitting per route by words; factorising is kept apart from the quadratic formula because limits need factorising (x² − 4 = (x − 2)(x + 2), cancelled) and complex numbers need the formula, and factorising by inspection takes more practice than its words suggest. matrices-in-numpy is the one light topic deep in; it is kept because it is a separate skill (a new tool, and @ against *) and where-chains-lead uses matrix_power from it. It could become an 'applies' step under matrices and inverse-matrices-and-systems instead.\n\nPages from other areas used as steps or landmarks, for the integrator to reconcile with those proposals:\n- choosing-a-path (programming): sections pictures-on-a-number-line, solving-an-inequality and a-move-that-turns-the-sign-round teach linear inequalities (MIT-1.11) for The Dewey Track, its only place. Placed in linear-inequalities.\n- keeping-it-level (number, Zen): the fullest teaching of 'do the same to both sides' (old PRE-2). Placed in balancing-equations. The number proposal probably has a topic built on this page; merge the two, keeping PRE-2 in replaces.\n- fractions-with-holes (number, Zen): algebraic fractions. Placed in algebraic-fractions with DT's section. If the number proposal also has algebraic-fractions, it is the same idea (same id on purpose).\n- the-hidden-bracket (number, closer look): hangs off rearranging-formulae#the-fraction-bar, so it is a closer look in rearranging-formulas here. If the number area puts it with order of operations, choose one.\n- numbers-and-their-families#formulas-as-functions (number): PMI's only teaching of area, perimeter and volume (claims MIT-1.2 and MIT-1.3), including 'what doubling does' (area grows by k², volume by k³). Placed in area-and-perimeter and volume-and-surface-area.\n- putting-the-derivative-to-work (programming): an 'applies' step on the-derivative. solving-by-computing (programming, Newton's method) also puts the derivative to work; left to the programming area.\n- Project landmarks a-tool-of-your-own, a-model-of-your-own, a-filter-or-a-sprite and your-own-scene are in other inventories; the 'at' lists are suggestions.\n\nOld topics from other areas this proposal also succeeds: CMPS-LO4c (chance-data list: ranking by following links) in markov-chains, because where-chains-lead teaches it; MIT-2.1g (number list: complex numbers) in complex-numbers, because these are the only pages that teach them.\n\nHidden topics (no old equivalent): solving-linear-equations, function-composition, algebraic-fractions, slope-of-a-wave, inverse-matrices-and-systems, matrices-in-numpy, perspective-projection, homogeneous-coordinates. Ideas found in the pages but kept as steps, since each is one section and nothing needs it on its own: moving and stretching graphs (drawing-functions#curves-that-bend, parabolas#every-quadratic-is-the-same-curve, the wave's phase and midline); turning points found with the derivative (rates-of-change#the-derivative-as-a-function, rules-for-change#back-to-the-top-of-the-curve; putting-the-derivative-to-work leans on it); integration (derivative-rules#going-further-running-it-backwards, about 200 words); the number e (getting-closer#a-limit-at-infinity); identities (rules-with-letters-in-them, expressions-come-alive); the determinant as area scale and Cramer's rule; the dot product (multiplying-grids#where-the-rule-comes-from); bearings and Snell's law (how-tall-is-that-tree); angles of a triangle add to 180 degrees on the flat, not on a ball (going-round-in-circles#triangles-on-a-ball); similar triangles (a-point-on-the-screen#why-dividing-works); Bézier curve weights (rules-with-letters-in-them, the-top-of-the-curve). Vectors as a named idea are not taught anywhere; if a page on vectors or nearest-neighbour search is written, CMPS-LO4d comes back as a topic.\n\nNeeds across areas: ext:order-of-operations, ext:powers, ext:square-roots, ext:adding-fractions, ext:the-number-line, ext:coordinates (Zen's two-lines-at-right-angles), ext:probability, and old:CMPS-LO1a (grids, lists of lists) for matrices. Other areas will want: markov-chains (the text-generation pages), inverse-functions (logarithms as the inverse of powers), the-derivative and derivative-rules (solving-by-computing, putting-the-derivative-to-work), graphing-functions and polynomials (a-polynomial-class in FOOP).\n\nEvidence overridden: decisions.yaml has MIT-4.6 before MIT-4.5 and MIT-4.9 before MIT-4.8; both pairs now sit inside one topic each. MIT-1.11 before MIT-1.12 (game answer) is reading order, not a need, so no edge. MIT-4.1 before MIT-1.12 becomes graphing-functions before simultaneous-equations, since both courses draw the two crossing lines in their graphing page before the lines page. MIT-1.12 'level' with CMPS-LO4 becomes simultaneous-equations before inverse-matrices-and-systems, since the matrix page opens with the system already understood."
+}
