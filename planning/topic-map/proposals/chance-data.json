@@ -1,0 +1,928 @@
+{
+ "area": "chance-data",
+ "districts": [
+  {
+   "id": "counting-and-chance",
+   "name": "Counting and chance",
+   "blurb": "Count every way something can happen, turn the counts into chances, and check them by letting the computer try it many times."
+  },
+  {
+   "id": "combined-chances",
+   "name": "Chances that combine",
+   "blurb": "Combine two chances, see what changes when one event changes another, and ask whether a result could be luck."
+  },
+  {
+   "id": "data-and-charts",
+   "name": "Data and charts",
+   "blurb": "Where data comes from, what kind it is, how to count it, and which chart shows it honestly."
+  },
+  {
+   "id": "averages-and-spread",
+   "name": "Averages and spread",
+   "blurb": "One number for what is typical, one for how far the values spread, and the bell shape that many sets of data make."
+  },
+  {
+   "id": "simulation-and-models",
+   "name": "Simulations and models",
+   "blurb": "Ask the computer for random numbers, then use them to estimate, to test a queue, and to move a model forward in time."
+  },
+  {
+   "id": "machine-learning",
+   "name": "Machine learning",
+   "blurb": "Programs that learn from examples: a model that corrects its mistakes, a picture reader, the language models behind chatbots, and how to judge them."
+  }
+ ],
+ "topics": [
+  {
+   "id": "counting-outcomes",
+   "name": "Listing and counting outcomes",
+   "district": "counting-and-chance",
+   "plain": "You list every way something can end, missing none and counting none twice. Then you count them without listing them: if one choice has 3 options and the next has 4, together they have 3 × 4 = 12.",
+   "needs": [
+    "ext:nested-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "counting-every-outfit",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "listing-the-cases",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "a-practical-application-password-strength",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "maths-that-runs-the-world",
+     "section": "running-out-of-numbers",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.1",
+    "MIT-5.2"
+   ],
+   "replaces": [
+    "MIT-5.1",
+    "MIT-5.2"
+   ],
+   "size": "One Dewey page (about 1.8 sittings), or two short sections of the integrated counting page. Both routes teach the list and the multiplication together, and probability by counting uses both (6 x 6 = 36 outcomes), so nothing needs the list without the principle. Merged for that reason, and because listing on its own is closer to an activity than an idea."
+  },
+  {
+   "id": "orders-and-choices",
+   "name": "Orders and choices",
+   "district": "counting-and-chance",
+   "plain": "You count the ways to put things in order, to fill the first few places, and to choose a group when the order does not matter. These counts are called factorials, permutations and combinations.",
+   "needs": [
+    "counting-outcomes"
+   ],
+   "steps": [
+    {
+     "tutorial": "orders-and-choices",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "factorials-the-foundation",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "permutations-order-matters",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "combinations-order-does-not-matter",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "counting-carefully",
+     "section": "the-dinner-table-answered",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.3",
+    "MIT-5.4",
+    "MIT-5.5"
+   ],
+   "replaces": [
+    "MIT-5.3",
+    "MIT-5.4",
+    "MIT-5.5"
+   ],
+   "size": "One page on each route: about 2 sittings on the Dewey Track, 1 on the integrated course. The factorial exists here to build permutations, and combinations are permutations divided down; both routes teach all three on one page, and nothing outside needs the factorial on its own, so one topic."
+  },
+  {
+   "id": "probability-by-counting",
+   "name": "Probability by counting",
+   "district": "counting-and-chance",
+   "plain": "A probability says how likely something is, as a number from 0 (it cannot happen) to 1 (it is certain). When every outcome is equally likely, you count the outcomes you want and divide by all of them.",
+   "needs": [
+    "counting-outcomes",
+    "ext:fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "a-scale-from-0-to-1",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "counting-equally-likely-outcomes",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "rolling-ten-thousand-times",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "counting-the-cases",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.6",
+    "MIT-5.7",
+    "CMPS-LO2"
+   ],
+   "replaces": [
+    "MIT-5.6",
+    "MIT-5.7"
+   ],
+   "size": "Two sections on each route, under one sitting, which suits its place near the start. The 0-to-1 scale is a step, not a topic: the integrated page teaches the scale and equal likelihood in one section, and nothing uses the scale without counting cases. The integrated page's opening simulation is the hook for the counting, so it sits here."
+  },
+  {
+   "id": "chance-by-simulation",
+   "name": "Finding a chance by simulation",
+   "district": "counting-and-chance",
+   "plain": "You let the computer repeat a chance experiment many times, and count how often something happens. The share gets closer to the true chance as the runs grow, but slowly, and a few runs can be far from it.",
+   "needs": [
+    "probability-by-counting",
+    "ext:python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "letting-python-toss-the-coin",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "a-tool-that-runs-it-many-times",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "rain-on-a-grid",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "why-the-two-answers-differ",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "how-close-is-close",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "small-samples",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.6",
+    "CMPS-LO3"
+   ],
+   "replaces": [],
+   "size": "Four sections of How likely is it?, one of the integrated probability page, and a closer look: about one sitting. Relative frequency and the law of large numbers had no topic of their own. Kept apart from the Monte Carlo topic because the Computational Methods route reaches Monte Carlo without it, and Monte Carlo adds areas, an error that shrinks like 1/sqrt(n), and accuracy against precision."
+  },
+  {
+   "id": "combining-chances",
+   "name": "And, or, not: combining chances",
+   "district": "combined-chances",
+   "plain": "You find the chance that two things both happen, that one or the other happens, and that something happens at least once in many tries. The birthday problem uses all three.",
+   "needs": [
+    "probability-by-counting"
+   ],
+   "steps": [
+    {
+     "tutorial": "chances-that-combine",
+     "section": "two-sixes-at-once",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "chances-that-combine",
+     "section": "one-or-the-other",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "chances-that-combine",
+     "section": "when-both-can-happen",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "chances-that-combine",
+     "section": "not-and-at-least-once",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "chances-that-combine",
+     "section": "a-tool-for-at-least-once",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "chances-that-combine",
+     "section": "the-birthday-problem",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "events-are-sets",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "independent-events",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "maths-that-runs-the-world",
+     "section": "the-birthday-problem-inside-every-computer",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.8",
+    "CMPS-LO2"
+   ],
+   "replaces": [
+    "MIT-5.8a",
+    "MIT-5.8b"
+   ],
+   "size": "Six sections of Chances that combine (about 1.7 sittings on the Dewey Track) and two sections of the integrated page, which teaches not, or and and in one table. Eight steps, but only two pages. The old split into 'both' and 'either' made two half-sitting topics; the later topics use and, or and not together (the gambler's mistake is adding where he should multiply), so they merge. At least once and the birthday problem are steps: nothing outside needs them."
+  },
+  {
+   "id": "conditional-probability",
+   "name": "When one chance changes another",
+   "district": "combined-chances",
+   "plain": "Sometimes one event changes the chance of the next, as when a card you draw is not put back in the deck. You count inside a smaller group: the chance of B, given that A happened. A medical test and the Monty Hall puzzle both depend on it.",
+   "needs": [
+    "combining-chances",
+    "chance-by-simulation"
+   ],
+   "steps": [
+    {
+     "tutorial": "chances-that-combine",
+     "section": "when-one-changes-the-other",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "one-draw-changes-the-next",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "a-test-for-a-rare-disease",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-are-the-chances",
+     "section": "given-which",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "three-doors",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "maths-that-runs-the-world",
+     "section": "three-doors-and-thousands-of-letters",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.8",
+    "CMPS-LO2"
+   ],
+   "replaces": [
+    "MIT-5.8c",
+    "CMPS-LO2c"
+   ],
+   "size": "One section on the Dewey Track; about 1.8 sittings on the integrated course (dependence, the medical test, given which, and the Monty Hall page). Kept apart from and/or/not because it has its own formula and its own traps, and only the integrated route goes past dependence. The Monty Hall page is a step here: it is the classic puzzle of a chance that changes, and nothing needs it on its own. Needs simulation because the disease test and Monty Hall are both settled by simulating before they are counted."
+  },
+  {
+   "id": "could-it-be-luck",
+   "name": "Could it be luck?",
+   "district": "combined-chances",
+   "plain": "You ask how often pure chance would give a result like the one you saw. Seven heads in ten tosses happens often with a fair coin, and seventy in a hundred almost never does. The counts of heads make the binomial distribution.",
+   "needs": [
+    "chance-by-simulation",
+    "orders-and-choices"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-likely-is-it",
+     "section": "seven-heads-in-ten",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "go-further-the-binomial-distribution",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO2"
+   ],
+   "replaces": [],
+   "size": "One section on each route, under one sitting. A hidden topic: the first test of a claim against chance (a hypothesis test and a p-value, deliberately unnamed on the page) and the binomial distribution. Its own topic because it needs both combinations and simulation, and the Dewey Track teaches it before it combines chances."
+  },
+  {
+   "id": "information-and-surprise",
+   "name": "Surprise and information",
+   "district": "combined-chances",
+   "plain": "Some news tells you more than other news. A result you expected tells you little, and a surprising one tells you a lot, so both can be measured on one scale, in bits.",
+   "needs": [
+    "probability-by-counting",
+    "ext:logarithms"
+   ],
+   "steps": [],
+   "outcomes": [
+    "CMPS-LO2",
+    "CMPS-LO6"
+   ],
+   "replaces": [
+    "CMPS-LO2e"
+   ],
+   "size": "Planned: no page teaches it yet. The descriptors CMPS-LO2 and CMPS-LO6 name information theory, and the earlier split made it a topic on purpose so it would not quietly drop. The nearest existing material is perplexity, on the language model page and the writing-style page."
+  },
+  {
+   "id": "samples-and-bias",
+   "name": "Samples, and who is missing",
+   "district": "data-and-charts",
+   "plain": "Most data covers only part of what we want to know about. You ask who collected it, how, and who is missing, because the way a sample is chosen can make some things look common and hide others.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "where-the-data-comes-from",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "limits-and-judgement",
+     "section": "what-the-data-leaves-out",
+     "role": "applies"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO2"
+   ],
+   "replaces": [
+    "CMPS-LO2b"
+   ],
+   "size": "One section of the Statistics page, under one sitting. Small, but population, sample and sampling bias are an idea apart from any average, a learner can check it alone, and the machine learning judgement page puts it to work on training data."
+  },
+  {
+   "id": "data-kinds-and-frequency",
+   "name": "Kinds of data and frequency tables",
+   "district": "data-and-charts",
+   "plain": "Data comes in kinds: labels with no order, labels with an order, counts, and measurements. You count how often each value appears in a frequency table, and put measured numbers into equal groups, called bins, to draw a histogram.",
+   "needs": [
+    "ext:python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "four-kinds-of-data",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "counting-a-frequency-table",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "a-tool-for-counting",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "histograms-for-measured-numbers",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "data-types",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "frequency-distributions",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.9",
+    "MIT-5.11"
+   ],
+   "replaces": [
+    "MIT-5.9",
+    "MIT-5.11"
+   ],
+   "size": "Four sections of Kinds of data (about 1.2 sittings) or two of Statistics. The kinds of data are learned to decide how to count and draw a column (a frequency table for labels, bins for measurements); both routes teach the kinds and then the counting, back to back, and nothing needs one without the other, so one topic."
+  },
+  {
+   "id": "honest-charts",
+   "name": "Choosing an honest chart",
+   "district": "data-and-charts",
+   "plain": "Each chart suits one kind of question: bars and pies for categories, lines for change over time, scatter plots for two numbers together. A chart made from true numbers can still mislead, for example when a bar does not start at zero, or when two things that rise together are read as cause and effect.",
+   "needs": [
+    "data-kinds-and-frequency"
+   ],
+   "steps": [
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "bars-and-pies-for-categories",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "stem-and-leaf-every-value-kept",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "lines-for-change-over-time",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kinds-of-data-and-honest-charts",
+     "section": "a-chart-that-tells-the-truth",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "why-draw-the-data",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "choosing-the-right-chart",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "writing-reusable-plotting-functions",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "how-a-chart-can-mislead",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "numbers-and-a-chart-together",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "good-practice",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.10"
+   ],
+   "replaces": [
+    "MIT-5.10"
+   ],
+   "size": "Four sections of the Dewey page and most of the integrated Charts page: about one sitting on each route. Ten steps across two pages. Misleading charts come straight after choosing a chart on both routes, and nothing needs either one alone, so one topic, as the old 'Choosing a display' was. Scatter plots and correlation (with the confounder) are steps here: one section and one bullet, and nothing needs them."
+  },
+  {
+   "id": "mean-median-mode",
+   "name": "Mean, median and mode",
+   "district": "averages-and-spread",
+   "plain": "There are three ways to say what is typical. The mean is the total divided equally among the values, the median is the middle value once the values are in order, and the mode is the most common value.",
+   "needs": [
+    "ext:python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "what-is-typical",
+     "section": "share-it-out-equally-the-mean",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-is-typical",
+     "section": "the-middle-one-in-the-line-the-median",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-is-typical",
+     "section": "the-most-common-the-mode",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "measures-of-central-tendency",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.12"
+   ],
+   "replaces": [
+    "MIT-5.12a"
+   ],
+   "size": "Three sections of What is typical? (about 0.8 sittings) or one of Statistics. Split from When averages mislead because spread needs the mean but not the trouble with skewed data."
+  },
+  {
+   "id": "when-averages-mislead",
+   "name": "When averages mislead",
+   "district": "averages-and-spread",
+   "plain": "A few values far from the rest pull the mean towards them, and the median hardly moves. You learn which average to trust when the data is lopsided.",
+   "needs": [
+    "mean-median-mode"
+   ],
+   "steps": [
+    {
+     "tutorial": "what-is-typical",
+     "section": "when-the-three-disagree",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-is-typical",
+     "section": "a-lopsided-world",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "when-the-mean-misleads",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.13"
+   ],
+   "replaces": [
+    "MIT-5.13"
+   ],
+   "size": "Two sections on the Dewey route, one on the integrated: well under a sitting. Small, but a learner can say and show which average to trust for skewed data, a short check confirms it, and the descriptor asks for it."
+  },
+  {
+   "id": "spread-of-data",
+   "name": "Spread: range and standard deviation",
+   "district": "averages-and-spread",
+   "plain": "Two sets of numbers can have the same average and still be nothing alike. The range, the standard deviation and a box plot each say how far the values spread out from the middle.",
+   "needs": [
+    "mean-median-mode",
+    "ext:square-roots"
+   ],
+   "steps": [
+    {
+     "tutorial": "what-is-typical",
+     "section": "how-spread-out-the-range",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-is-typical",
+     "section": "how-far-from-the-mean-on-average",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-is-typical",
+     "section": "the-standard-deviation",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "measures-of-spread",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-sense-of-data",
+     "section": "go-further-percentiles-and-box-plots",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-5.12"
+   ],
+   "replaces": [
+    "MIT-5.12b",
+    "MIT-5.12c"
+   ],
+   "size": "Three sections of What is typical? (about 0.9 sittings), and spread plus percentiles and box plots on the integrated page. The range is a step: nothing needs it without the standard deviation, and both pages use it only to show why a better measure is wanted. Percentiles and box plots are a 'go further' step: nothing needs them."
+  },
+  {
+   "id": "normal-distribution",
+   "name": "The bell curve",
+   "district": "averages-and-spread",
+   "plain": "Many things made by adding many small random parts have the same bell shape, called the normal distribution. In a bell shape, about 68% of the values are within one standard deviation of the mean, and about 95% within two.",
+   "needs": [
+    "spread-of-data",
+    "data-kinds-and-frequency"
+   ],
+   "steps": [
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "go-further-the-central-limit-theorem",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "pictures-worth-numbers",
+     "section": "go-further-the-6895997-rule",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO2"
+   ],
+   "replaces": [],
+   "size": "Two 'go further' sections of the Charts page, about half a sitting, deep enough that a learner carries the standard deviation and the histogram as single ideas. A hidden topic: the central limit theorem and the 68-95-99.7 rule are ideas of their own, a learner meets the name everywhere, and they need both spread and histograms."
+  },
+  {
+   "id": "random-numbers-and-seeds",
+   "name": "Random numbers and seeds",
+   "district": "simulation-and-models",
+   "plain": "A computer makes numbers that look random but come from a calculation. You ask for them in the shape you need, pick from a list with or without repeats, and set a seed so that a run can be repeated exactly.",
+   "needs": [
+    "ext:list-comprehensions"
+   ],
+   "steps": [
+    {
+     "tutorial": "leaving-it-to-chance",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO2"
+   ],
+   "replaces": [
+    "CMPS-LO2d"
+   ],
+   "size": "One page, about 1.4 sittings. Seeds and choosing with or without replacement are taught together, and every later simulation page uses both."
+  },
+  {
+   "id": "monte-carlo",
+   "name": "Estimating with random darts",
+   "district": "simulation-and-models",
+   "plain": "You throw random points at a square and count how many land inside a shape. The share gives the shape's area, and even π. This is the Monte Carlo method: more points make the answer better, slowly, and runs can be accurate without being precise.",
+   "needs": [
+    "random-numbers-and-seeds"
+   ],
+   "steps": [
+    {
+     "tutorial": "counting-darts",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO3",
+    "CMPS-LO13"
+   ],
+   "replaces": [
+    "CMPS-LO3",
+    "CMPS-LO13"
+   ],
+   "size": "One page, about 1.4 sittings, including accuracy against precision, which the time-steps page reuses. It reaches the settling idea from random numbers alone, without the probability pages, which is why it does not need Finding a chance by simulation."
+  },
+  {
+   "id": "queue-simulation",
+   "name": "Simulating a queue",
+   "district": "simulation-and-models",
+   "plain": "You simulate things arriving at random and a server clearing them. The wait grows slowly at first, then very fast as the server gets close to full. Then you ask what the model ignores, and whether that matters for your question.",
+   "needs": [
+    "random-numbers-and-seeds",
+    "probability-by-counting"
+   ],
+   "steps": [
+    {
+     "tutorial": "when-a-queue-never-clears",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO3",
+    "CMPS-LO6",
+    "CMPS-LO7",
+    "CMPS-LO11"
+   ],
+   "replaces": [
+    "CMPS-LO6",
+    "CMPS-LO7",
+    "CMPS-LO11"
+   ],
+   "size": "One page, about 1.2 sittings, including 'Is this a good model?', where the model is changed and checked again. Needs probability because every arrival is a chance ('arrival_prob'), and the average arrivals per step come from it."
+  },
+  {
+   "id": "time-step-simulation",
+   "name": "Simulating in time steps",
+   "district": "simulation-and-models",
+   "plain": "You move a falling ball forward one short step at a time. Then you check the steps against a formula, see how shorter steps shrink the error, and see how a small error can grow over many steps.",
+   "needs": [
+    "ext:while-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "stepping-forward-in-time",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO3",
+    "CMPS-LO7",
+    "CMPS-LO11",
+    "CMPS-LO13"
+   ],
+   "replaces": [
+    "CMPS-LO3",
+    "CMPS-LO7",
+    "CMPS-LO13"
+   ],
+   "size": "One page, about 1.3 sittings. The page says its real subject is how far to trust a simulation: it separates the model from the simulation of it, checks one against a formula, and shows an error that grows. Nothing is random, so it does not need the random-number topic."
+  },
+  {
+   "id": "perceptron",
+   "name": "A model that learns from mistakes",
+   "district": "machine-learning",
+   "plain": "A perceptron is a small model that multiplies each input by a weight and decides from the total. It is wrong at first, and it corrects its weights after each mistake. Then you test it on examples it never saw while it learned.",
+   "needs": [
+    "ext:dot-product"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-model-that-corrects-itself",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO7",
+    "CMPS-LO11"
+   ],
+   "replaces": [
+    "CMPS-LO11"
+   ],
+   "size": "One page, about 1.5 sittings: the model, training, and testing on unseen examples. Training and test examples are a step here; later pages build on them through this topic."
+  },
+  {
+   "id": "classifying-pictures",
+   "name": "Telling many kinds of picture apart",
+   "district": "machine-learning",
+   "plain": "You build a reader for several digits from one perceptron for each digit, and take the digit with the highest total. A table of its mistakes shows which digits it confuses, and more examples make it better.",
+   "needs": [
+    "perceptron",
+    "ext:python-dictionaries"
+   ],
+   "steps": [
+    {
+     "tutorial": "telling-many-pictures-apart",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One page, about 0.9 sittings, deep in the course, so the perceptron is carried as one idea. It adds classes, the highest-total rule and the confusion matrix, which the judgement page needs."
+  },
+  {
+   "id": "language-models",
+   "name": "How a language model writes",
+   "district": "machine-learning",
+   "plain": "A language model writes one piece at a time and chooses each piece by chance, like a Markov chain. You try what it does differently: a temperature, pieces smaller than words, a score for a whole passage, and weights it learns instead of a table of counts.",
+   "needs": [
+    "ext:markov-chain-text"
+   ],
+   "steps": [
+    {
+     "tutorial": "what-a-language-model-does-differently",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One page, about 1.1 sittings, deep in. Its six differences answer one question together, so they are steps. The last section compares learned weights with the perceptron, but the page can be started without it, so the perceptron is not a need."
+  },
+  {
+   "id": "judging-a-model",
+   "name": "Judging what a model can do",
+   "district": "machine-learning",
+   "plain": "You test where a model fails, what its data is missing, and whose work it learned from. Then you check a claim about a model: accurate on what, compared with what, and for whom?",
+   "needs": [
+    "classifying-pictures",
+    "ext:markov-chain-text"
+   ],
+   "steps": [
+    {
+     "tutorial": "limits-and-judgement",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO13"
+   ],
+   "replaces": [],
+   "size": "One page, about 1.1 sittings. Its tests run on the digit reader and on a chain from a book, so it needs both."
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "a-chart-that-tells-the-truth",
+   "kind": "project",
+   "at": [
+    "honest-charts",
+    "data-kinds-and-frequency",
+    "mean-median-mode"
+   ],
+   "note": "Capstone of the integrated Data, Chance and Logic series: one honest chart and one that lies, from the same data."
+  },
+  {
+   "tutorial": "two-bots-and-a-test",
+   "kind": "project",
+   "at": [
+    "language-models",
+    "judging-a-model",
+    "ext:markov-chain-text"
+   ],
+   "note": "Capstone of the Machine Learning course: two chain bots and a test that tells them apart, scored on held-back seeds."
+  }
+ ],
+ "elsewhere": [
+  {
+   "tutorial": "a-model-of-your-own",
+   "suggest": "algebra-geometry",
+   "why": "It is the project for the Trigonometry and Calculus series: models built from lines, the unit circle, waves, limits and derivatives. The word 'model' in its title put it in this area."
+  }
+ ],
+ "outcomes_culled": [],
+ "questions": [
+  {
+   "q": "Should 'Kinds of data' come before averages? decisions.yaml says yes (MIT-5.9 before MIT-5.12 and MIT-5.13, 'settled, after going round twice'). Both courses teach averages first (What is typical? before Kinds of data; Statistics' averages before its Data types section), and the kinds are motivated by 'which average is allowed', which is the brief's discover-first order.",
+   "options": [
+    "No need either way (this proposal): averages can be started without the kinds, and the kinds without averages.",
+    "Kinds of data before averages, as decided before.",
+    "Averages before kinds of data, as both courses teach it."
+   ],
+   "lean": "No need either way. Neither is needed to start the other; making either one a need closes a door that both routes show is open."
+  },
+  {
+   "q": "The Machine Learning course is split between two areas: its Text generation pages (a-chain-reads-a-book, how-much-it-remembers, whose-voice-is-this) went to algebra-geometry because they claim CMPS-LO4, while the rest are here. Should the text-generation chains sit in the machine-learning district, next to How a language model writes?",
+   "options": [
+    "Yes: move the three text-generation pages into machine learning as a 'Machines that write' topic or two; where-chains-lead (transition matrices, PageRank) stays with matrices.",
+    "No: keep all Markov chain pages with matrices, and let machine learning point to them across regions."
+   ],
+   "lean": "Yes for the three text-generation pages. They are the first series of the Machine Learning course, the language model page is written as a comparison with them, and their idea is chance (the next word chosen by counts), not matrix arithmetic."
+  },
+  {
+   "q": "Information theory (old CMPS-LO2e) has no page. Keep it as a planned topic, or take it off the map?",
+   "options": [
+    "Keep it as a planned topic with no steps (this proposal).",
+    "Cull it to metadata until a page exists."
+   ],
+   "lean": "Keep it planned. CMPS-LO2 and CMPS-LO6 both name information theory, and the earlier split made it a topic so the gap would stay visible. A short page on surprise in bits could build on the perplexity the language model page already computes."
+  },
+  {
+   "q": "'How far to trust a simulation' (accuracy against precision, checking against a known answer, what a model leaves out, errors that grow) is taught in sections of three pages: counting-darts#more-darts-better-on-average, when-a-queue-never-clears#is-this-a-good-model-of-a-real-queue, and most of stepping-forward-in-time. Should it be a topic of its own?",
+   "options": [
+    "No: keep each simulation page whole in its own topic, and let those topics serve CMPS-LO7, CMPS-LO11 and CMPS-LO13 (this proposal).",
+    "Yes: gather those sections into one topic at the end of the Simulations district, needing the three simulation topics."
+   ],
+   "lean": "No. Nothing later needs the idea on its own, a topic built from sections of three pages would need all three pages anyway, and it would leave the time-steps topic too small. The idea is named in each topic's description."
+  },
+  {
+   "q": "decisions.yaml splits MIT-5.8 into 'Combining with and', 'Combining with or' and 'Conditional probability'. This proposal merges and, or and not (with at least once and the birthday problem) into one topic, and keeps conditional probability apart. Is that the right cut?",
+   "options": [
+    "Two topics: and/or/not, and conditional probability (this proposal).",
+    "Three topics, as decided before: and, or, conditional.",
+    "Four: and, or, at least once, conditional."
+   ],
+   "lean": "Two. Split three ways, 'both' and 'either' are each about half a sitting, and the later topics use them together. Conditional probability has its own formula and traps, and only the integrated route teaches it."
+  }
+ ],
+ "notes": "Pages: 24 in this area; 22 are steps, 2 projects are landmarks, 1 page (a-model-of-your-own) is elsewhere. Cross-area loose ends for the integrator: (1) Old topic CMPS-LO4c (Ranking by following links) is taught only in where-chains-lead#ranking-a-small-web, which is in the algebra-geometry inventory. It is not placed here, so the validator warns; it belongs in the replaces of that area's Markov chain topic. (2) maths-that-runs-the-world#codes-that-fix-a-flipped-bit is context for bits-that-flip (parity bits, in the number area); the page's other three sections are placed here as context steps. (3) when-two-methods-agree (programming inventory) is a closer look at a simulation and a count that agree; it follows three-doors in the integrated course and fits as a closer-look step in chance-by-simulation. (4) a-simulation-of-your-own (programming inventory) is the Simulation series capstone of Computational Methods; attach it as a project landmark to random-numbers-and-seeds, monte-carlo, queue-simulation and time-step-simulation. (5) kinds-of-data-and-honest-charts#counting-a-frequency-table also teaches Python dictionaries (dictionary, key, .keys(), KeyError) for Dewey Track learners; the programming area's dictionaries topic may want it as a step. (6) The Computational Methods route has no probability page, but queue-simulation needs probability-by-counting (arrival chances); the integrator should know this puts a maths-course topic under a CM topic. Ext needs used: ext:nested-loops, ext:fractions, ext:python-functions, ext:python-lists, ext:list-comprehensions, ext:square-roots, ext:while-loops, ext:dot-product (the perceptron's total; taught in multiplying-grids and comprehensions-and-grids), ext:python-dictionaries, ext:logarithms, and ext:markov-chain-text (a chain that writes from a book: a-chain-reads-a-book, with how-much-it-remembers and whose-voice-is-this). Size choices: two routes (Dewey Track and integrated course) teach most of the chance and data topics, so a topic often has one step list per route and the validator's step count overstates the effort; each learner does one route. The honest-charts, data-kinds-and-frequency and combining-chances warnings about many teaching steps were checked against the split test: each is two pages, one per route, about one to two sittings. Hidden topics (no old topic named them): chance-by-simulation, could-it-be-luck, normal-distribution, perceptron, classifying-pictures, language-models, judging-a-model. No descriptor outcome in this area is culled: every MIT-5.x and CMPS-LO2, 3, 6, 7, 11, 13 outcome is served."
+}
