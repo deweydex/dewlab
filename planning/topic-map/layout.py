@@ -15,7 +15,7 @@ import build  # noqa
 random.seed(11)
 graph = json.load(open(sys.argv[1]))
 out_path = sys.argv[2]
-INV = {r["slug"]: r for r in json.load(open(Path(__file__).parent / "inventory.json"))}
+INV = {r["slug"]: r for r in json.load(open(Path(__file__).parent / "generated" / "inventory.json"))}
 BASE = "https://deweydex.github.io/dewlab/"
 
 regions = graph["regions"]

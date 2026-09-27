@@ -21,7 +21,8 @@ errors, warns = [], []
 E = errors.append
 W = warns.append
 
-inv = {r["slug"]: r for r in json.load(open(HERE / "inventory.json"))}
+GEN = HERE / "generated"
+inv = {r["slug"]: r for r in json.load(open(GEN / "inventory.json"))}
 try:
     doc = json.load(open(path))
 except Exception as exc:
@@ -164,7 +165,7 @@ for c in replaced:
     if c not in old:
         W(f"replaces names {c}, which is not an old topic code")
 if mode == "proposal":
-    mine = json.load(open(HERE / "old-topics-by-area.json")).get(area, [])
+    mine = json.load(open(GEN / "old-topics-by-area.json")).get(area, [])
     for c in mine:
         if c not in replaced and c not in culled:
             W(f"old topic {c} ({old[c]['name']}) is not in any replaces or outcomes_culled")

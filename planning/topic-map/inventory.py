@@ -6,7 +6,8 @@ import yaml
 sys.path.insert(0, "/home/user/dewlab")
 import build
 
-OUT = Path(__file__).parent
+OUT = Path(__file__).parent / "generated"
+OUT.mkdir(exist_ok=True)
 topics = build.load_topics()
 strands_fine = build.load_strands()
 strands = yaml.safe_load(open("/home/user/dewlab/planning/curriculum/strands.yaml"))

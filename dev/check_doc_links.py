@@ -75,7 +75,7 @@ PATH_SUFFIXES = {".md", ".py", ".js", ".css", ".html", ".yaml", ".yml",
 # Paths that are real and deliberately absent from a clean checkout: build
 # output, fetched runtimes, and the like. Each is gitignored.
 GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
-             "node_modules/", "__pycache__/")
+             "node_modules/", "__pycache__/", "planning/topic-map/generated/")
 
 GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
                    "editor.html", "all-notes.html", "search-index.json",

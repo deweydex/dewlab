@@ -110,7 +110,7 @@ specific over generic (`python-lists`, not `lists`; `sql-joins`, not `joins`).
 
 ## Evidence you have
 
-- `planning/topic-map/inventory-<area>.json`: your area's pages. Per page: `slug`,
+- `planning/topic-map/generated/inventory-<area>.json`: your area's pages. Per page: `slug`,
   `title`, `kind` (tutorial, context, closer-look, project, orientation),
   `placements` (course and series), `words`, `cells`, `first_paragraph`,
   `headings` (with `anchor`), `glossary` (terms the page introduces), `covers`
@@ -118,9 +118,9 @@ specific over generic (`python-lists`, not `lists`; `sql-joins`, not `joins`).
   topic codes those claims map to), `path` (the markdown file — open it when
   the inventory is not enough, especially to tell whether a page teaches one
   idea or several).
-- `planning/topic-map/inventory.json`: every page, all areas (to check a page you
+- `planning/topic-map/generated/inventory.json`: every page, all areas (to check a page you
   want to name in `elsewhere` or `ext:`).
-- `planning/topic-map/old-topics-by-area.json`: the old topics that fall in your
+- `planning/topic-map/generated/old-topics-by-area.json`: the old topics that fall in your
   area. Account for every one: in some new topic's `replaces`, or in
   `outcomes_culled`.
 - `planning/curriculum/topics.yaml`, `outcomes.yaml`, `out-of-scope.yaml`,

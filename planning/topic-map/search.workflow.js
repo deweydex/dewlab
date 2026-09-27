@@ -113,7 +113,7 @@ function proposerPrompt(area, lens) {
 
 ${COMMON}
 
-Your pages: ${T}/inventory-${area.id}.json. The old topics to account for: the "${area.id}" list in ${T}/old-topics-by-area.json.
+Your pages: ${T}/generated/inventory-${area.id}.json. The old topics to account for: the "${area.id}" list in ${T}/generated/old-topics-by-area.json.
 
 ${LENS[lens]}
 
@@ -134,7 +134,7 @@ ${COMMON}
 
 Proposal A (built bottom-up from the pages): ${a}
 Proposal B (built top-down from the learner): ${b}
-The area's pages: ${T}/inventory-${area.id}.json (open page markdown when you need to check a claim).
+The area's pages: ${T}/generated/inventory-${area.id}.json (open page markdown when you need to check a claim).
 
 Produce one reconciled file in the same format, where every topic also carries "agreement": "both" | "A" | "B" | "merged".
 - Same idea in both (names and ids may differ): keep it as "both", taking the better name, plain text and step list; check steps against the pages.
@@ -171,7 +171,7 @@ const integrated = await agent(`You integrate dewlab's reconciled topic areas in
 
 ${COMMON}
 
-Inputs: ${AREAS.map((a) => `${T}/reconciled/${a.id}.json`).join(', ')}. All pages: ${T}/inventory.json.
+Inputs: ${AREAS.map((a) => `${T}/reconciled/${a.id}.json`).join(', ')}. All pages: ${T}/generated/inventory.json.
 
 Write ${graphFile} in the brief's format, with these differences for the whole map:
 - Add "regions": [{"id", "name", "blurb"}] — the map's countries, about eight to eleven, named for learners. Search areas are not regions: split or join as the topics demand (a region for machine learning, or for making software, only if the topics warrant it). Every district gets a "region" field; regions hold about two to six districts each. Add "neighbours": [[regionA, regionB], ...] for regions that should border each other on the map, from the needs that cross between them.
@@ -196,7 +196,7 @@ const critiques = await parallel(CRITICS.map((c) => () =>
 
 ${COMMON} You write no file: return findings only.
 
-The map: ${graphFile} (validate it yourself with python3 ${T}/validate.py graph ${graphFile} to see the effort table and warnings). All pages: ${T}/inventory.json; page markdown under /home/user/dewlab/tutorials/<slug>/<slug>.md.
+The map: ${graphFile} (validate it yourself with python3 ${T}/validate.py graph ${graphFile} to see the effort table and warnings). All pages: ${T}/generated/inventory.json; page markdown under /home/user/dewlab/tutorials/<slug>/<slug>.md.
 
 Be specific and evidenced: each finding names the ids, the pages and headings that show the problem, and the exact change. High severity only for problems a learner or teacher would hit. Prefer twenty real findings to sixty weak ones.`, { label: `critic:${c.key}`, phase: 'Critique', schema: FINDINGS })
     .then((r) => ({ key: c.key, findings: (r && r.findings) || [] }))))
@@ -209,7 +209,7 @@ const revised = await agent(`You revise dewlab's proposed topic map in the light
 
 ${COMMON}
 
-The map: ${graphFile}. Write the revised map to ${finalFile} (leave ${graphFile} as it is). All pages: ${T}/inventory.json; page markdown under /home/user/dewlab/tutorials/<slug>/<slug>.md.
+The map: ${graphFile}. Write the revised map to ${finalFile} (leave ${graphFile} as it is). All pages: ${T}/generated/inventory.json; page markdown under /home/user/dewlab/tutorials/<slug>/<slug>.md.
 
 The findings (JSON):
 ${JSON.stringify(allFindings)}
