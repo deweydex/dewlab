@@ -1,0 +1,1413 @@
+{
+ "area": "programming",
+ "districts": [
+  {
+   "id": "starting-python",
+   "name": "Starting with Python",
+   "blurb": "What an algorithm is, your first lines of Python, and giving values names and kinds."
+  },
+  {
+   "id": "decisions-and-loops",
+   "name": "Decisions and loops",
+   "blurb": "Letting a program choose which lines run, and run them again and again."
+  },
+  {
+   "id": "functions",
+   "name": "Functions",
+   "blurb": "Giving a group of steps a name, what it can see, what it promises, and a function that calls itself."
+  },
+  {
+   "id": "lists-and-dictionaries",
+   "name": "Lists, grids and dictionaries",
+   "blurb": "Keeping many values together: in order, in rows and columns, or under names."
+  },
+  {
+   "id": "searching-and-sorting",
+   "name": "Searching and sorting",
+   "blurb": "Finding one thing among many, putting things in order, and how the work grows as the list grows."
+  },
+  {
+   "id": "harder-problems",
+   "name": "Algorithms for hard problems",
+   "blurb": "Visiting every part of a tree or a map, three ways to attack a hard problem, and solving an equation by computing."
+  },
+  {
+   "id": "objects-and-classes",
+   "name": "Objects and classes",
+   "blurb": "Building a program out of objects: classes, the rules they keep, how to plan them, and classes built from other classes."
+  },
+  {
+   "id": "fixing-mistakes",
+   "name": "Finding and fixing mistakes",
+   "blurb": "Reading what Python says when it stops, tracking a bug to its cause, and testing that code does what it promises."
+  },
+  {
+   "id": "programs-for-people",
+   "name": "Programs for people",
+   "blurb": "Code that other people can read, use and build with you, and how Python compares with other languages."
+  }
+ ],
+ "topics": [
+  {
+   "id": "what-an-algorithm-is",
+   "name": "What an algorithm is",
+   "district": "starting-python",
+   "plain": "An algorithm is a list of clear steps, in order, that finishes a task. You can plan one in plain words, called pseudocode, before you write any code, and you can spot the ones already around you.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "four-questions",
+     "section": "a-game-of-snakes-and-ladders",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "four-questions",
+     "section": "a-recipe",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "recipes-are-algorithms",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "first-steps",
+     "section": "what-is-an-algorithm",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "first-steps",
+     "section": "pseudocode-planning-before-coding",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.1",
+    "PDP-LO2",
+    "PDP-LO5",
+    "PDP-LO6"
+   ],
+   "replaces": [
+    "MIT-6.1",
+    "PDP-LO2",
+    "PDP-LO5"
+   ],
+   "size": "About one sitting in each course: two sections of Algorithms, pseudocode and your first Python, or Recipes are algorithms with two sections of Four questions. The old list split this into three (what an algorithm is, algorithms in the real world, solving in sequence), but every page teaches them together and nothing later needs one without the others. Pseudocode stays a step: only Planning a program uses it, and it needs this whole topic."
+  },
+  {
+   "id": "first-lines-of-python",
+   "name": "Your first lines of Python",
+   "district": "starting-python",
+   "plain": "Running a cell of Python, printing a result, and using Python as a calculator: + - * / and the three less familiar ones, // for whole divisions, % for the remainder and ** for powers.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "first-steps",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "first-steps-cm",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "four-questions",
+     "section": "your-first-cell",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "four-questions",
+     "section": "the-same-move-in-python",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "powers-in-python",
+     "section": null,
+     "role": "closer-look"
+    },
+    {
+     "tutorial": "dividing-in-python",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO4",
+    "FOOP-LO2"
+   ],
+   "replaces": [],
+   "size": "Under one sitting of new material, which is right at the very start. Each course opens with its own page (Algorithms, pseudocode and your first Python; Running Python in a cell; Four questions), so a learner reads one of them and the two closer looks. The old list had no topic for running code at all: it began at 'the parts of a program'."
+  },
+  {
+   "id": "python-variables",
+   "name": "Variables: names for values",
+   "district": "starting-python",
+   "plain": "Giving a value a name with =, so a later line can use it. The name can be given a new value at any time, and = in Python is an instruction, not a statement that two things are equal.",
+   "needs": [
+    "first-lines-of-python"
+   ],
+   "steps": [
+    {
+     "tutorial": "storing-and-computing",
+     "section": "variables-giving-names-to-things",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "recipes-are-algorithms",
+     "section": "names-that-hold-values",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "equals-three-ways",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO4",
+    "FOOP-LO2"
+   ],
+   "replaces": [
+    "PDP-LO4"
+   ],
+   "size": "Small in words, a full sitting for a beginner, because = is where many people first get stuck (it has its own closer look). Kept apart from kinds of data because the Dewey Track teaches names on page 3 and kinds of number two pages later."
+  },
+  {
+   "id": "python-data-types",
+   "name": "Numbers, text and true or false",
+   "district": "starting-python",
+   "plain": "The kinds of value Python keeps: whole numbers, decimals, text, and True or False. Changing one kind into another, splitting text into its letters, asking a person to type something, and putting values into a sentence.",
+   "needs": [
+    "python-variables"
+   ],
+   "steps": [
+    {
+     "tutorial": "storing-and-computing",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "two-kinds-of-number-in-python",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO4",
+    "FOOP-LO1"
+   ],
+   "replaces": [
+    "FOOP-LO1",
+    "PDP-LO4"
+   ],
+   "size": "Most of one median page (Variables, data types and text) for a beginner. The Dewey Track meets int and float on Numbers a computer can hold, a page in the number area; that one section is listed here so a Dewey learner has a step too."
+  },
+  {
+   "id": "python-decisions",
+   "name": "Making decisions with if",
+   "district": "decisions-and-loops",
+   "plain": "Asking a question that is True or False, and letting the answer choose which lines run: if, elif and else, with and, or and not to join two questions into one.",
+   "needs": [
+    "python-data-types"
+   ],
+   "steps": [
+    {
+     "tutorial": "making-decisions",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "choosing-a-path",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO6",
+    "FOOP-LO2"
+   ],
+   "replaces": [
+    "PDP-LO6a"
+   ],
+   "size": "One page in each course, about one sitting. The inequality sections of Choosing a path belong to algebra (see elsewhere). Joining conditions with and, or and not stays a step: the truth-table pages in the number area teach it again for the Dewey Track."
+  },
+  {
+   "id": "python-for-loops",
+   "name": "Repeating with a for loop",
+   "district": "decisions-and-loops",
+   "plain": "Doing the same steps for each value in a range or a list, and keeping a running total or a count as you go. A loop can hold an if, and it can hold another loop.",
+   "needs": [
+    "python-decisions"
+   ],
+   "steps": [
+    {
+     "tutorial": "repeating-yourself",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doing-it-again",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-total-that-starts-again",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO6",
+    "FOOP-LO2"
+   ],
+   "replaces": [
+    "PDP-LO6b"
+   ],
+   "size": "About one sitting: most of Repeating steps with loops or Doing it again, and the closer look on total = 0. Split from while loops because lists, sums and grids need only this half. Loops inside loops stay a step: nothing needs them that does not also need this."
+  },
+  {
+   "id": "python-while-loops",
+   "name": "Repeating until something changes",
+   "district": "decisions-and-loops",
+   "plain": "A while loop repeats its steps as long as a question is still True, so it can stop when something changes, even when nobody knows in advance how many times that will take.",
+   "needs": [
+    "python-decisions"
+   ],
+   "steps": [
+    {
+     "tutorial": "repeating-yourself",
+     "section": "while-loops-repeat-until-done",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doing-it-again",
+     "section": "until-something-is-true-while",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO6"
+   ],
+   "replaces": [
+    "PDP-LO6b"
+   ],
+   "size": "One section in each course, under a sitting even for a beginner. It is its own topic because binary search, menus that wait for 'quit' and asking again until an answer makes sense need it, while lists and sums do not."
+  },
+  {
+   "id": "sigma-notation",
+   "name": "Sigma notation: sums written short",
+   "district": "decisions-and-loops",
+   "plain": "The short way mathematicians write 'add up all of these' (the Greek letter sigma, Σ) or 'multiply all of these' (pi, Π). You read one as a loop with a counter.",
+   "needs": [
+    "python-for-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "repeating-yourself",
+     "section": "sigma-notation-mathematics-meets-loops",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doing-it-again",
+     "section": "sigma-a-loop-written-by-mathematicians",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doing-it-again",
+     "section": "pi-multiplying-instead-of-adding",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.4"
+   ],
+   "replaces": [
+    "MIT-6.4"
+   ],
+   "size": "One or two sections, under a sitting. The loop comes first and the notation names it afterwards, so this needs for loops. Its own topic because statistics formulas (the mean, the standard deviation) and series in other areas need the notation specifically."
+  },
+  {
+   "id": "python-functions",
+   "name": "Writing your own functions",
+   "district": "functions",
+   "plain": "Giving a group of steps a name with def, passing values in, and getting an answer from it with return. Small functions can call each other to make a bigger one.",
+   "needs": [
+    "python-for-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "recipes-are-algorithms",
+     "section": "a-name-for-a-whole-recipe",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "writing-your-own-functions",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "functions-that-give-back-and-procedures-that-do",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-reusable-tools",
+     "section": "functions-calling-functions",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO8",
+    "FOOP-LO4"
+   ],
+   "replaces": [
+    "PDP-LO8"
+   ],
+   "size": "About one sitting: most of Writing your own functions. The Dewey Track teaches def and return on Machines that take a number, a page in algebra, so one of its sections is listed here. Scope and a function's promise are split off because recursion and objects need scope, and testing and documenting need the promise, while almost everything else needs only this."
+  },
+  {
+   "id": "function-scope",
+   "name": "What a function can see",
+   "district": "functions",
+   "plain": "Names made inside a function belong to that one call and are gone when it ends. Values go in by position or by name, and a function can see some names from outside but should not depend on them.",
+   "needs": [
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "writing-your-own-functions",
+     "section": "scope-where-variables-live",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "what-a-function-can-see",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-reusable-tools",
+     "section": "variable-scope-revisited",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO8"
+   ],
+   "replaces": [
+    "PDP-LO8"
+   ],
+   "size": "Two sections for Programming Foundations; one long page (What a function can see, about two sittings) for the Dewey Track. Recursion needs 'a fresh space for every call' specifically, and methods in a class need the difference between a local name and one kept on the object."
+  },
+  {
+   "id": "function-promises",
+   "name": "What a function promises",
+   "district": "functions",
+   "plain": "Deciding which inputs a function accepts and what it gives back for each, what it does with an input it cannot handle, and writing that promise at the top of the function as a docstring.",
+   "needs": [
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "writing-your-own-functions",
+     "section": "functions-as-input-output-machines",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "machines-that-take-a-number",
+     "section": "an-algorithm-is-a-function-too",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-reusable-tools",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "code-other-people-can-read",
+     "section": "a-docstring-is-a-promise",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "documenting-a-class",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.2",
+    "PDP-LO7",
+    "FOOP-LO9"
+   ],
+   "replaces": [
+    "MIT-6.2",
+    "PDP-LO7"
+   ],
+   "size": "About one sitting in each course, from different pages. It joins 'an algorithm as a function on a domain of inputs' (MIT-6.2) with docstrings, because the pages teach them as one idea: the promise, and writing it down. Documenting a class is the object course's version."
+  },
+  {
+   "id": "recursion",
+   "name": "Recursion: a function that calls itself",
+   "district": "functions",
+   "plain": "A function can solve a problem by calling itself on a smaller piece of it, like counting the files in folders inside folders. It needs a case small enough to answer at once, or it never stops.",
+   "needs": [
+    "function-scope",
+    "python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-function-that-calls-itself",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "finding-everything-inside-a-folder",
+     "section": "walking-it-with-recursion",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.8",
+    "CMPS-LO1"
+   ],
+   "replaces": [
+    "CMPS-LO1c"
+   ],
+   "size": "One long page for the Dewey Track (about two sittings); one section for Computational Methods, which then walks the tree in the next topic. Split from trees because making change by trying every combination needs recursion but not trees."
+  },
+  {
+   "id": "python-lists",
+   "name": "Lists: many values in order",
+   "district": "lists-and-dictionaries",
+   "plain": "Keeping many values under one name, in order. Reaching one by its position, counting from 0, taking a slice, changing a value, adding two lists, and visiting a list one position at a time.",
+   "needs": [
+    "python-for-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "lists-and-sequences",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-row-of-numbers",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.3",
+    "MIT-6.5",
+    "MIT-6.7"
+   ],
+   "replaces": [
+    "MIT-6.3a",
+    "MIT-6.3b",
+    "MIT-6.7"
+   ],
+   "size": "One page in Programming Foundations; one long page (about two sittings) in the Dewey Track. Going through a list by position (the old 'iterating by index') and adding lists element by element (the old 'arrays') are sections of these pages, and nothing needs them apart from lists."
+  },
+  {
+   "id": "list-comprehensions",
+   "name": "Building a list in one line",
+   "district": "lists-and-dictionaries",
+   "plain": "A list comprehension is a loop that builds a list, written on one line. It can keep only the values that pass a test, and it can make a sequence from a rule.",
+   "needs": [
+    "python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "comprehensions-and-grids",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.3",
+    "MIT-6.2"
+   ],
+   "replaces": [],
+   "size": "About half of Comprehensions, grids and aliasing, under a sitting. Its own topic because the matrix and random-number pages build nearly every list this way, without needing grids. The page's sections on sequences as functions and on the dot product go with it."
+  },
+  {
+   "id": "python-grids",
+   "name": "Grids: lists inside a list",
+   "district": "lists-and-dictionaries",
+   "plain": "Keeping rows and columns, like a picture or a board, as a list of lists. You reach one value with two positions: first the row, then the column.",
+   "needs": [
+    "list-comprehensions"
+   ],
+   "steps": [
+    {
+     "tutorial": "comprehensions-and-grids",
+     "section": "a-grid-is-a-list-of-lists",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO1",
+    "MIT-6.5"
+   ],
+   "replaces": [
+    "CMPS-LO1a"
+   ],
+   "size": "One section, well under a sitting. Kept as a topic because matrices, pixel pictures and mazes need grids specifically; the grid pages there build every grid with a comprehension."
+  },
+  {
+   "id": "list-aliasing",
+   "name": "Two names for one list",
+   "district": "lists-and-dictionaries",
+   "plain": "When one list has two names, a change made through either name appears in both. How to make a real copy when you need one, and why a grid made the short way can be one row seen three times.",
+   "needs": [
+    "python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-row-of-numbers",
+     "section": "two-names-for-one-list",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "comprehensions-and-grids",
+     "section": "two-names-for-one-list",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "two-names-one-list",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.3"
+   ],
+   "replaces": [],
+   "size": "A section and a closer look, under a sitting. The old list never named it. It is a topic because later pages point back to it by name (the aliasing trap in the matrix pages, the copy a sort makes first, the 'dimmed copy' bug) and a learner can check it: predict when a change shows through another name."
+  },
+  {
+   "id": "python-dictionaries",
+   "name": "Dictionaries: looking up by name",
+   "district": "lists-and-dictionaries",
+   "plain": "Keeping values under names, called keys, instead of positions, so a program can look one up, change it, check whether a key is there, or count how often things happen.",
+   "needs": [
+    "python-lists"
+   ],
+   "steps": [
+    {
+     "tutorial": "looking-things-up-by-name",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO8",
+    "MIT-6.5"
+   ],
+   "replaces": [],
+   "size": "One median page, one sitting. The old list had no topic for dictionaries, though classes, folder trees, maps and the cache in 'making change' all build on them."
+  },
+  {
+   "id": "linear-and-binary-search",
+   "name": "Searching: linear and binary search",
+   "district": "searching-and-sorting",
+   "plain": "Finding one value in a list: look at every item in turn, or, when the list is sorted, look only in the half where the value must be, again and again. Halving is why the second way is so fast.",
+   "needs": [
+    "python-lists",
+    "python-functions",
+    "python-while-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "finding-things",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "finding-things-fast",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.8",
+    "MIT-6.6"
+   ],
+   "replaces": [
+    "MIT-6.8a",
+    "MIT-6.6"
+   ],
+   "size": "One page in each course (about two sittings in the Dewey Track). Divide and conquer is named on these pages, after binary search; the only other use is bisection, which builds on binary search, so it is a step here and not a topic."
+  },
+  {
+   "id": "sorting-algorithms",
+   "name": "Sorting a list",
+   "district": "searching-and-sorting",
+   "plain": "Putting a list in order one swap at a time: selection sort, insertion sort and bubble sort, and Python's own sorted(), with a key when the order is not the obvious one.",
+   "needs": [
+    "python-lists",
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "putting-things-in-order",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "sorting-a-hand-of-cards",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.8",
+    "PDP-LO2"
+   ],
+   "replaces": [
+    "MIT-6.8b"
+   ],
+   "size": "One page in each course, one to two sittings. Comparing the sorts' speed is split off into the next topic, where the Dewey Track gives it a whole page."
+  },
+  {
+   "id": "how-work-grows",
+   "name": "How work grows with size",
+   "district": "searching-and-sorting",
+   "plain": "Judging an algorithm by how its steps grow as the input grows, not by one small example: in step with the size, by halvings, by the square, or faster still. The best case, the usual case and the worst case can differ.",
+   "needs": [
+    "linear-and-binary-search",
+    "sorting-algorithms"
+   ],
+   "steps": [
+    {
+     "tutorial": "putting-things-in-order",
+     "section": "comparing-our-sorts",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "racing-the-sorts",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "three-ways-to-make-change",
+     "section": "how-the-work-grows",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO5"
+   ],
+   "replaces": [
+    "CMPS-LO5"
+   ],
+   "size": "One page (Racing the sorts) for the Dewey Track; a section each in Programming Foundations and Computational Methods. Counting looks and comparisons stays inside searching and sorting, where it is the reason to care; this topic names the pattern afterwards."
+  },
+  {
+   "id": "tree-and-graph-walks",
+   "name": "Walking trees and maps",
+   "district": "harder-problems",
+   "plain": "Some structures branch, like folders inside folders, and some join in loops, like streets on a map. Visiting every part, depth first or breadth first, and finding the shortest way between two places.",
+   "needs": [
+    "recursion",
+    "python-dictionaries"
+   ],
+   "steps": [
+    {
+     "tutorial": "finding-everything-inside-a-folder",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-shortest-way-there",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO1",
+    "CMPS-LO9"
+   ],
+   "replaces": [
+    "CMPS-LO1b"
+   ],
+   "size": "Two consecutive pages in Computational Methods, about two sittings. Trees and graphs are one topic because they are always taught together and nothing needs one without the other: the map search reuses the tree's breadth-first walk. Graphs were never named in the old list."
+  },
+  {
+   "id": "problem-solving-strategies",
+   "name": "Three strategies for hard problems",
+   "district": "harder-problems",
+   "plain": "Three ways to attack a hard problem: try every possibility, remember answers you have already found, or take the best-looking step each time and accept an answer that may not be the best.",
+   "needs": [
+    "recursion",
+    "python-dictionaries",
+    "how-work-grows"
+   ],
+   "steps": [
+    {
+     "tutorial": "three-ways-to-make-change",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO9"
+   ],
+   "replaces": [
+    "CMPS-LO9"
+   ],
+   "size": "Most of one long page, about one and a half sittings. It needs recursion (brute force calls itself), dictionaries (the cache) and how work grows (choosing a strategy weighs speed against certainty)."
+  },
+  {
+   "id": "solving-equations-numerically",
+   "name": "Solving an equation by computing",
+   "district": "harder-problems",
+   "plain": "Finding where a curve crosses zero with a program instead of algebra: squeeze the answer between two guesses and halve the gap again and again, or follow the tangent line towards zero (Newton's method).",
+   "needs": [
+    "linear-and-binary-search",
+    "ext:the-derivative"
+   ],
+   "steps": [
+    {
+     "tutorial": "solving-by-computing",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-6.6"
+   ],
+   "replaces": [],
+   "size": "One long page in the Dewey Track's Change unit, about two sittings. The old list had no topic for it. Bisection is binary search on a number line; Newton's method needs the derivative, which is in algebra and geometry."
+  },
+  {
+   "id": "python-classes",
+   "name": "Classes and objects",
+   "district": "objects-and-classes",
+   "plain": "A class is a blueprint that says what an object has (its fields) and what it can do (its methods). An object is one thing built from that blueprint, with its own values, and its methods use the same moves as any program: storing, order, choices and loops.",
+   "needs": [
+    "python-functions",
+    "python-dictionaries"
+   ],
+   "steps": [
+    {
+     "tutorial": "objects-and-classes",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-moves-you-already-know",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO3",
+    "FOOP-LO1",
+    "FOOP-LO2"
+   ],
+   "replaces": [
+    "FOOP-LO3"
+   ],
+   "size": "The first two pages of the object course, about one and a half sittings. The course starts from a list of dictionaries and asks why that is not enough, so dictionaries come first."
+  },
+  {
+   "id": "encapsulation",
+   "name": "Keeping an object's rules inside it",
+   "district": "objects-and-classes",
+   "plain": "Putting the rules about an object's data in its methods, so every caller meets them, and keeping the data behind those methods. Giving the class more methods that use each other, and values that every object of the class shares.",
+   "needs": [
+    "python-classes"
+   ],
+   "steps": [
+    {
+     "tutorial": "keeping-details-inside-an-object",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "one-class-many-methods",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO3",
+    "FOOP-LO4",
+    "FOOP-LO8"
+   ],
+   "replaces": [
+    "FOOP-LO3",
+    "FOOP-LO4",
+    "FOOP-LO8"
+   ],
+   "size": "Two pages, about two sittings. A class with many methods goes here, not with classes and objects, because it builds on the encapsulated class from the page before it ('your class, second version') and nothing else needs it on its own."
+  },
+  {
+   "id": "designing-classes",
+   "name": "Designing classes from a description",
+   "district": "objects-and-classes",
+   "plain": "Reading a description written in words and deciding which classes a program needs, what each one is responsible for, and which others it works with, before any code is written.",
+   "needs": [
+    "python-classes"
+   ],
+   "steps": [
+    {
+     "tutorial": "from-a-description-to-classes",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO7"
+   ],
+   "replaces": [
+    "FOOP-LO7"
+   ],
+   "size": "One page, one sitting. A skill of its own that a short check can confirm: given a description, name the classes, their jobs and their partners."
+  },
+  {
+   "id": "inheritance-and-composition",
+   "name": "One class built from others",
+   "district": "objects-and-classes",
+   "plain": "Building a new class on one it is a kind of (inheritance), or giving a class objects of other classes to hold (composition), and deciding which fits: 'is a' or 'has a'.",
+   "needs": [
+    "python-classes"
+   ],
+   "steps": [
+    {
+     "tutorial": "one-parent-many-children",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "when-is-a-breaks",
+     "section": null,
+     "role": "closer-look"
+    },
+    {
+     "tutorial": "objects-inside-objects",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO3",
+    "FOOP-LO6",
+    "FOOP-LO7"
+   ],
+   "replaces": [
+    "FOOP-LO3",
+    "FOOP-LO6"
+   ],
+   "size": "Two pages and a closer look, about two sittings. Merged because they are always taught together, the closer look is about choosing between them, and nothing needs one without the other."
+  },
+  {
+   "id": "reading-error-messages",
+   "name": "Reading an error message",
+   "district": "fixing-mistakes",
+   "plain": "What Python is telling you when it stops: the kind of error, the line, and the trail of calls that led there. Errors found before a program starts, errors while it runs, and mistakes that give no error at all.",
+   "needs": [
+    "python-data-types"
+   ],
+   "steps": [
+    {
+     "tutorial": "reading-an-error-message",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "when-python-says-no",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO9"
+   ],
+   "replaces": [
+    "PDP-LO9"
+   ],
+   "size": "One page in each course (Reading an error message, or When Python says no), one to two sittings. The two pages are alternatives, so the effort table counts this topic twice over."
+  },
+  {
+   "id": "debugging",
+   "name": "Finding a bug",
+   "district": "fixing-mistakes",
+   "plain": "Finding why a program goes wrong: reading a traceback through several functions, printing values at the right moment, tracing the code by hand in a table, and stepping through it with a debugger and the other tools of a code editor.",
+   "needs": [
+    "reading-error-messages",
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "when-it-goes-wrong",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-tools-around-your-code",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "does-it-work",
+     "section": "a-walkthrough-by-hand",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "does-it-work",
+     "section": "stepping-through-with-a-debugger",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO9",
+    "PDP-LO10",
+    "FOOP-LO5",
+    "FOOP-LO10"
+   ],
+   "replaces": [
+    "PDP-LO10",
+    "FOOP-LO5"
+   ],
+   "size": "One page or two sections in each course, about one sitting. The development environment (the old FOOP-LO5) is folded in: its only page teaches it by finding a bug inside a class, and the editor sections alone are under half a sitting."
+  },
+  {
+   "id": "bug-to-root-cause",
+   "name": "Tracking a bug to its cause",
+   "district": "fixing-mistakes",
+   "plain": "Finding the line that caused a bug, starting from a report of what went wrong: make a guess, test it and write both down, check halfway, make the example smaller, and fix the cause, not only the symptom.",
+   "needs": [
+    "reading-error-messages",
+    "python-lists",
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "finding-where-it-went-wrong",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO8",
+    "CMPS-LO10"
+   ],
+   "replaces": [
+    "CMPS-LO10"
+   ],
+   "size": "One page, one to one and a half sittings. Kept apart from finding a bug: it is a method for bugs that give no error, and Computational Methods teaches it without the other debugging pages."
+  },
+  {
+   "id": "testing-code",
+   "name": "Testing that code works",
+   "district": "fixing-mistakes",
+   "plain": "Checking code against inputs whose answers you already know, with assert, including unusual inputs at the edges and answers that are only close enough. Many tests run together, and a test written before a fix.",
+   "needs": [
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "building-reusable-tools",
+     "section": "testing-as-a-habit",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "does-it-work",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "testing-what-a-class-does",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO10",
+    "FOOP-LO10"
+   ],
+   "replaces": [
+    "PDP-LO10"
+   ],
+   "size": "A section or a page in each course, about one sitting. Testing a class is the object course's version of the same idea, so it is a step here, not a topic of its own."
+  },
+  {
+   "id": "readable-code",
+   "name": "Code other people can read",
+   "district": "programs-for-people",
+   "plain": "Names, comments and layout that let somebody else, or you in a month, understand code without asking. Reviewing someone's code with a checklist, and changing code without changing what it does.",
+   "needs": [
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "does-it-work",
+     "section": "names-and-comments-a-stranger-can-read",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "code-other-people-can-read",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "critique-and-reflection",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO11",
+    "PDP-LO7"
+   ],
+   "replaces": [
+    "PDP-LO11"
+   ],
+   "size": "One and a half to two sittings for the Dewey Track, under one for Programming Foundations. Code review stays a step: nothing needs it apart from readable code, and both courses teach the two together."
+  },
+  {
+   "id": "programs-for-users",
+   "name": "A program someone else can use",
+   "district": "programs-for-people",
+   "plain": "Turning code in cells into a program that runs from start to end, asks a person what to do, continues until they choose to stop, copes when they type something unexpected, and runs outside this website.",
+   "needs": [
+    "python-functions",
+    "python-while-loops"
+   ],
+   "steps": [
+    {
+     "tutorial": "from-cells-to-a-program",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-front-end-for-a-class",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "FOOP-LO11",
+    "PDP-LO7"
+   ],
+   "replaces": [
+    "FOOP-LO11"
+   ],
+   "size": "Most of one page in each course, about one sitting. From cells to a program and A front end teach the same moves (a menu loop, checking input, keeping the deciding apart from the asking), one with functions and one with classes."
+  },
+  {
+   "id": "planning-a-program",
+   "name": "Planning a program in releases",
+   "district": "programs-for-people",
+   "plain": "Deciding what a first version will do before you write code, planning its steps and its functions, agreeing what 'done' means, and building it in small releases that each work.",
+   "needs": [
+    "what-an-algorithm-is",
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-program-of-your-own",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "from-cells-to-a-program",
+     "section": "three-releases-of-a-small-game",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-it-together",
+     "section": "design-before-code",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-it-together",
+     "section": "building-in-small-releases",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-it-together",
+     "section": "agreeing-what-done-means",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO8",
+    "PDP-LO7",
+    "PDP-LO6"
+   ],
+   "replaces": [
+    "CMPS-LO8"
+   ],
+   "size": "About one sitting of teaching, then weeks of doing. Split from team work because the solo project (A program of your own) needs planning and releases and no team."
+  },
+  {
+   "id": "team-programming",
+   "name": "Building software as a team",
+   "district": "programs-for-people",
+   "plain": "Designing, building, releasing and reviewing one program with other people: roles, written agreements about whose code calls whose, testing as you go, and a meeting afterwards to learn from how it went.",
+   "needs": [
+    "planning-a-program",
+    "testing-code",
+    "readable-code"
+   ],
+   "steps": [
+    {
+     "tutorial": "from-cells-to-a-program",
+     "section": "templates-for-a-team",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "building-it-together",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO12"
+   ],
+   "replaces": [
+    "PDP-LO12"
+   ],
+   "size": "Most of one page for the Dewey Track, one section for Programming Foundations: about one sitting of teaching. The team project briefs themselves are landmarks. It stays a topic, not metadata: roles, interface agreements, releases and reviews are practices a learner can show."
+  },
+  {
+   "id": "github-issues-and-pull-requests",
+   "name": "Issues and pull requests",
+   "district": "programs-for-people",
+   "plain": "Two ways people work together on a project on GitHub: an issue reports a problem in the open, and a pull request proposes a change for somebody else to review.",
+   "needs": [
+    "ext:github-account"
+   ],
+   "steps": [
+    {
+     "tutorial": "issues-and-pull-requests",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One short page with no cells, near the start of the web and database courses: small, as a beginner topic should be. The old list never named Git or GitHub. The other Git pages (how Git keeps history, commit and push, forks) are in the web area."
+  },
+  {
+   "id": "programming-languages",
+   "name": "How programming languages differ",
+   "district": "programs-for-people",
+   "plain": "What changes from one language to the next, and what stays the same: machine code, assembly and languages people can read, compilers and interpreters, and different ways of organising a program.",
+   "needs": [
+    "python-lists",
+    "python-functions"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-we-got-here",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "when-python-says-no",
+     "section": "compilers-linkers-and-python",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "many-languages-one-idea",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO3",
+    "PDP-LO9"
+   ],
+   "replaces": [
+    "PDP-LO3"
+   ],
+   "size": "One page in each course, one to two sittings. The history in these pages is a landmark (PDP-LO1 is culled); the binary and hexadecimal sections of How programming languages came to be also serve the number area (see elsewhere)."
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "how-this-course-is-built",
+   "kind": "orientation",
+   "at": [
+    "what-an-algorithm-is",
+    "first-lines-of-python"
+   ],
+   "note": "The Dewey Track's letter to the reader about how the course teaches."
+  },
+  {
+   "tutorial": "four-questions",
+   "kind": "orientation",
+   "at": [
+    "first-lines-of-python",
+    "what-an-algorithm-is"
+   ],
+   "note": "Also steps in both topics. Its 'four questions' (what is named, promised, when, in which space) are the Dewey Track's lens for every page, not an idea to check."
+  },
+  {
+   "tutorial": "a-program-of-your-own",
+   "kind": "project",
+   "at": [
+    "planning-a-program",
+    "python-functions",
+    "python-dictionaries"
+   ],
+   "note": "Also the teaching step for planning a program: the solo project of Programming Foundations."
+  },
+  {
+   "tutorial": "the-team-project",
+   "kind": "project",
+   "at": [
+    "team-programming"
+   ],
+   "note": "The team project brief for Programming Foundations and the integrated course."
+  },
+  {
+   "tutorial": "building-it-together",
+   "kind": "project",
+   "at": [
+    "team-programming",
+    "planning-a-program"
+   ],
+   "note": "Its 'the brief' and 'choose a world' sections are the Dewey Track's team project brief; the rest teaches team work."
+  },
+  {
+   "tutorial": "bringing-it-all-together",
+   "kind": "project",
+   "at": [
+    "planning-a-program",
+    "python-functions",
+    "python-lists",
+    "python-grids"
+   ],
+   "note": "The integrated course's capstone: seven briefs across programming and maths (pictures, sound, codes, simulations, electronics, machine learning, sky and sea)."
+  },
+  {
+   "tutorial": "a-puzzle-of-your-own",
+   "kind": "project",
+   "at": [
+    "tree-and-graph-walks"
+   ],
+   "note": "Computational Methods' algorithms project: a maze or puzzle the computer solves by graph search."
+  },
+  {
+   "tutorial": "a-polynomial-class",
+   "kind": "project",
+   "at": [
+    "encapsulation",
+    "ext:polynomials"
+   ],
+   "note": "A kind: tutorial page that calls itself a project: one class built a method at a time."
+  },
+  {
+   "tutorial": "your-world-playable",
+   "kind": "project",
+   "at": [
+    "inheritance-and-composition",
+    "programs-for-users",
+    "testing-code",
+    "function-promises"
+   ],
+   "note": "The object course's last page: the whole series in one program somebody else can play."
+  },
+  {
+   "tutorial": "where-programming-came-from",
+   "kind": "context",
+   "at": [
+    "programming-languages"
+   ],
+   "note": "A history, from Lovelace to Python (PDP-LO1, culled). How programming languages came to be opens with the same history."
+  }
+ ],
+ "elsewhere": [
+  {
+   "tutorial": "a-filter-or-a-sprite",
+   "suggest": "algebra-geometry",
+   "why": "The Matrices series' project: a landmark at the matrix topics (moving pictures, combining moves). It also draws on python-grids here."
+  },
+  {
+   "tutorial": "your-own-scene",
+   "suggest": "algebra-geometry",
+   "why": "The Computer Graphics series' project: a landmark at the 3D transform and camera-matrix topics."
+  },
+  {
+   "tutorial": "a-simulation-of-your-own",
+   "suggest": "chance-data",
+   "why": "The Simulation series' project: a landmark at the random-number and simulation topics."
+  },
+  {
+   "tutorial": "a-tool-of-your-own",
+   "suggest": "algebra-geometry",
+   "why": "The Algebra and Functions series' project: a landmark at the formula, graph and equation topics. It also draws on python-functions here."
+  },
+  {
+   "tutorial": "putting-the-derivative-to-work",
+   "suggest": "algebra-geometry",
+   "why": "Four short projects that put the derivative to work (curves, edges in a picture, the best line through data, walking downhill): a project landmark at the derivative topics. Gradient descent may matter to machine learning too."
+  },
+  {
+   "tutorial": "when-two-methods-agree",
+   "suggest": "chance-data",
+   "why": "A closer look at the Monty Hall page: two methods (a simulation and a count) can agree and share one mistake. Its misconception belongs with checking a probability by simulation; testing-code could link to it."
+  },
+  {
+   "tutorial": "choosing-a-path",
+   "suggest": "algebra-geometry",
+   "why": "Sections only: pictures-on-a-number-line, solving-an-inequality and a-move-that-turns-the-sign-round teach linear inequalities (old MIT-1.11). The rest of the page is a step in python-decisions."
+  },
+  {
+   "tutorial": "how-we-got-here",
+   "suggest": "number",
+   "why": "Sections only: the-only-language-the-machine-understands and assembly-and-why-hexadecimal-exists teach binary and hexadecimal (MIT-1.4), and they are the integrated course's only page for it. The page is also a step in programming-languages."
+  }
+ ],
+ "outcomes_culled": [
+  {
+   "code": "PDP-LO1",
+   "why": "A history of programming, not an idea a short check could confirm.",
+   "becomes": "landmark"
+  },
+  {
+   "code": "CMPS-LO12",
+   "why": "Personal attributes (initiative, persistence, lateral thinking) are named at the end of the debugging page, but they are habits, not something to learn and check.",
+   "becomes": "metadata"
+  }
+ ],
+ "questions": [
+  {
+   "q": "Should the last three districts here (Finding and fixing mistakes, Programs for people) become a region of their own, 'Making software', apart from 'Programming'?",
+   "options": [
+    "One region, Programming, with nine districts",
+    "Two regions: Programming (Python, algorithms, objects) and Making software (errors, bugs, tests, readable code, releases, teams, Git)"
+   ],
+   "lean": "Two regions. The brief already names 'making software' as a likely region, the web area holds most of the Git pages that belong with it, and nine districts is a lot for one region."
+  },
+  {
+   "q": "Where should 'Solving an equation by computing' (bisection and Newton's method, from the Dewey Track's Change unit) live?",
+   "options": [
+    "Here, in Algorithms for hard problems",
+    "In algebra and geometry, beside the derivative"
+   ],
+   "lean": "Here. Bisection is binary search on a number line, and the page is about algorithms that approximate; it needs the derivative only for Newton's method, which is one ext: need."
+  },
+  {
+   "q": "Team programming (PDP-LO12): a topic, or metadata for the teacher's view? design.md's example culls it as 'keeping evidence'.",
+   "options": [
+    "A topic (this proposal)",
+    "Culled as metadata, with the briefs as landmarks"
+   ],
+   "lean": "A topic. Building it together teaches roles, interface agreements, releases, reviews, a definition of done and a retrospective, which a learner can show. Only the 'teams of three to five' and evidence parts are course requirements."
+  },
+  {
+   "q": "Several topics hold parallel pages from different courses (Reading an error message and When Python says no; Finding things and Finding things fast). Should the map show which step belongs to which course?",
+   "options": [
+    "No: steps in reading order are enough",
+    "Yes: tag each step with its courses"
+   ],
+   "lean": "Tag them. A learner in one course reads one of the pair, and the effort table counts both, so topics with alternatives look twice as big as they are."
+  }
+ ],
+ "notes": "Convention for split pages: a whole-page step (section null) means the page apart from any sections that another topic lists as its own steps. So repeating-yourself is a step in python-for-loops, while its while-loop and sigma sections are steps in python-while-loops and sigma-notation. Cross-area steps: I listed three sections of pages from other areas because they teach a programming topic to the Dewey Track, which has no page of its own for it: machines-that-take-a-number#functions-that-give-back-and-procedures-that-do (python-functions), machines-that-take-a-number#an-algorithm-is-a-function-too (function-promises) and numbers-a-computer-can-hold#two-kinds-of-number-in-python (python-data-types). The owning area keeps the rest of those pages. Overlaps the integrator should know: numbers-a-computer-can-hold also teaches /, //, % and the order of operations, like first-lines-of-python; true-false-and-every-case (number) teaches and, or and not again for the Dewey Track; collections-without-repeats (number) is the only page on Python sets, which the-shortest-way-there also uses; making-decisions#classifying-numbers... applies if/elif to N, Z, Q and R; finding-things-fast#how-many-halvings and doubling-and-halving#why-binary-search-is-so-quick connect logarithms to binary search; a-chain-reads-a-book (algebra) uses a dictionary of dictionaries and needs python-dictionaries; grid-of-numbers and the other matrix pages need python-grids, list-comprehensions and list-aliasing (they name 'the aliasing trap'); multiplying-grids teaches the dot product again, after comprehensions-and-grids. Git: issues-and-pull-requests is the only Git page in this inventory; how-git-keeps-history, the-two-loops, your-copy-of-the-starter and publish-it are in web, a-github-account in databases. They would make one Git district in a 'making software' region. ext: needs used: ext:the-derivative (solving-equations-numerically), ext:github-account (github-issues-and-pull-requests); landmark ext:polynomials (a-polynomial-class). Hidden ideas folded into topics rather than made topics: graphs and shortest paths (in tree-and-graph-walks), stacks and queues (tree walks), memoization and greedy choice (problem-solving-strategies), closures and keyword arguments (function-scope), refactoring and code review (readable-code), main() and input checking (programs-for-users), the debugger and the code editor (debugging), floating-point tolerance (testing-code, dividing-in-python). Size: beginner topics (variables, while loops, sigma, grids) are under a sitting of words on purpose; the effort table's figures for topics with parallel pages from different courses count both pages, so they overstate what one learner reads."
+}
