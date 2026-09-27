@@ -39,7 +39,7 @@ On this page we:
 - draw a point going round a circle against time, and get a wave
 - make a wave taller or shorter: its amplitude
 - make it repeat faster or slower: its frequency and its period
-- add `wave` to the *toolkit*{.term}, and draw the voltage in an Irish socket
+- add `wave` to the toolkit, and draw the voltage in an Irish socket
 - find the notes of a piano, and see that an octave is a doubling
 - start a wave late, and use that to cancel a noise
 - draw the tangent, which repeats but is not a wave
@@ -172,9 +172,9 @@ FuncAnimation(figure, draw_frame, frames=41, interval=100)
 At one turn a second, the right side draws two humps in two seconds.
 At two turns a second, it draws four, squeezed into the same space.
 The circle looks the same, only faster. The wave changes shape. The
-animation loops. Run the *cell*{.term} again to watch it from the start.
+animation loops. Run the cell again to watch it from the start.
 
-A *function*{.term} whose graph repeats the same piece for ever is *periodic*.
+A function whose graph repeats the same piece for ever is *periodic*.
 The sine wave repeats every $360^\circ$, because after a whole turn the
 point is back where it started.
 
@@ -554,7 +554,7 @@ hides it a little.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a wave's amplitude $A$, frequency $f$ and period $T$; a note's *name*{.term}, for a frequency; the phase, for how far along a wave starts |
+| What is named here? | a wave's amplitude $A$, frequency $f$ and period $T$; a note's name, for a frequency; the phase, for how far along a wave starts |
 | What is promised? | `wave(amplitude, frequency, time)` promises $A\sin(2\pi f t)$; one period later, a wave is back at the same height |
 | What happens when? | turns first, $f \times t$, then radians, then the sine, then the amplitude; a wave half a turn late cancels the one before it |
 | What does this space let us do? | time goes on for ever, so a wave can repeat for ever; `math.sin` takes radians; a sine wave is a model of a sound, never the whole of one |

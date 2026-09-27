@@ -20,7 +20,7 @@ covers:
 
 # When there is no real answer: complex numbers
 
-Type `2j` into a Python *cell*{.term}, and Python does not complain. It shows
+Type `2j` into a Python cell, and Python does not complain. It shows
 `2j` back. Now type `2j * 2j`, and Python gives `(-4+0j)`, which is −4.
 So `2j` is a number that squares to make a negative. On the last page,
 no real number could do that. Python has been keeping a number that
@@ -46,9 +46,9 @@ On this page we:
 > $\mathbb{R}$, and builds a bigger space around them, the complex
 > numbers. Every real number is still there, and almost every move we
 > could make before still works. The last section finds the one that
-> does not. The *name*{.term} "imaginary", which we will meet, comes from
+> does not. The name "imaginary", which we will meet, comes from
 > history. It is not a
-> sign that these numbers are less useful than the others. Your *toolkit*{.term}
+> sign that these numbers are less useful than the others. Your toolkit
 > is loaded, with `evaluate`, `solve_quadratic` and `close_enough`.
 
 ## Warm-up

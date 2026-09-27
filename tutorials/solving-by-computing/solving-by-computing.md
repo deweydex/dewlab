@@ -48,7 +48,7 @@ On this page we:
 
 - trap $\sqrt{2}$ between two guesses, using a sign change
 - halve the gap between the guesses again and again, which is binary
-  search on a number line, and add `bisect_root` to the *toolkit*{.term}
+  search on a number line, and add `bisect_root` to the toolkit
 - follow a tangent down to zero, which is Newton's method, and add
   `newton` to the toolkit
 - race the two methods, and count their steps
@@ -103,7 +103,7 @@ another way, we look for a *root*{.term} of the rule $x^2 - 2$. A root is an $x$
 where the rule gives 0, as on
 [Drawing a rule](tutorial:drawing-a-rule#a-tool-that-draws-any-rule).
 
-Let's try a few guesses. Before you run the *cell*{.term}, which two whole
+Let's try a few guesses. Before you run the cell, which two whole
 numbers do you think $\sqrt{2}$ sits between?
 
 ```python exec
@@ -133,7 +133,7 @@ guesses squeezes it into a smaller space.
 
 How should we choose the next guess? On
 [Finding things fast](tutorial:finding-things-fast#binary-search-halve-what-is-left),
-*binary search*{.term} looked at the middle of a sorted *list*{.term}, and ignored the
+*binary search*{.term} looked at the middle of a sorted list, and ignored the
 half where the *target*{.term} could not be. We can do the same on a number
 line.
 
@@ -283,7 +283,7 @@ had one?
 ```
 
 How does your `bisect_root` compare with one way to write it? The table
-below runs the same calls on your *function*{.term} and on a solution, side by
+below runs the same calls on your function and on a solution, side by
 side. It tries `square_gap` and the two rules from the start of this
 section. Some rows are not calls to `bisect_root`. They
 give the same root another way, so you can compare. While the body is

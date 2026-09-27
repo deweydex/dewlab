@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `solve_linear` and
+Your toolkit is loaded on this page, including `solve_linear` and
 `solve_quadratic` from the tutorial, and `evaluate`, `plot_rule` and
 `close_enough` from earlier pages. As on the tutorial, every answer
 gets checked by putting it back in.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: solving-practice-warm-up
@@ -349,7 +349,7 @@ about a loop like `for x in solve_quadratic(a, b, c):`.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The promise is "a *list*{.term} of the real roots". When there are none, an
+The promise is "a list of the real roots". When there are none, an
 empty list keeps that promise exactly. It says "no real roots" in the
 same shape as "two roots" or "one root".
 

@@ -14,12 +14,12 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including the travel and
+Your toolkit is loaded on this page, including the travel and
 temperature tools from the tutorial.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: running-a-practice-warm-up
@@ -163,7 +163,7 @@ print(megabits_to_megabytes(100))
 
 An assert prints nothing when it holds, so the only line is `12.5`. A 100 Mb/s
 connection downloads 12.5 MB a second. A known value checks the factor.
-A round trip checks that the two *functions*{.term} undo each other, and it
+A round trip checks that the two functions undo each other, and it
 would still pass if both used a factor other than 8. The two kinds of
 test find different problems.
 

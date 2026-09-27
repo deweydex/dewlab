@@ -39,7 +39,7 @@ On this page we:
 - combine them with `and`, `or`, `not`, and "one or the other, not both"
 - list every case of a rule in a truth table, with a loop
 - count the rows, and find *binary*{.term} counting hiding inside them
-- add `truth_table` to the *toolkit*{.term}, and use it on a digit display
+- add `truth_table` to the toolkit, and use it on a digit display
 
 > **The space we're in.** Every value on this page is True or False.
 > There is nothing in between: no "maybe", no "half working". Real life
@@ -127,7 +127,7 @@ A *loop* repeats some lines, once for each value in a list. The line
 `paid_up` as False, then once with it as True". That is all we need from
 loops for now. We learn them properly in Unit 3.
 
-How many lines will this *cell*{.term} print? Guess before you run it.
+How many lines will this cell print? Guess before you run it.
 
 ```python exec
 id: true-false-and-2
@@ -321,7 +321,7 @@ hand, but a computer does not mind.
 So far we wrote new loops for every rule. Let's make one tool that
 prints the truth table of any rule we give it.
 
-First, a rule becomes a *function*{.term}. Here are the three rules we have met
+First, a rule becomes a function. Here are the three rules we have met
 so far. Each takes Boolean values in and returns one Boolean value.
 
 ```python exec
@@ -345,7 +345,7 @@ print(unlock(True, False))
 ```
 
 Here is something new. A function is a value too, so we can pass the
-rule itself to another function, without brackets after its *name*{.term}.
+rule itself to another function, without brackets after its name.
 `truth_table(unlock, ["paid_up", "dock_working"])` passes the rule
 `unlock`, and the names of its two inputs. Then `truth_table` can call
 `unlock` once for every row.

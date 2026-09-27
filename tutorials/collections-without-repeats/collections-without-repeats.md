@@ -43,7 +43,7 @@ Martians, and find out how many words they share.
 
 On this page we:
 
-- turn a *list*{.term} into a set, and see what a set keeps and what it drops
+- turn a list into a set, and see what a set keeps and what it drops
 - ask whether a value is in a set, with `in`, written $\in$ in maths
 - find what two sets share, what either one has, and what one has that
   the other does not, first for playlists and then for two real books
@@ -120,7 +120,7 @@ Each list has 7 songs, and each set has 6. The set kept "Linger" once
 and "Zombie" once, because a set only records whether a value is in it.
 
 Look at the order of the last line. It is not the order of the list,
-and it may change if you run the *cell*{.term} again. A set makes no promise
+and it may change if you run the cell again. A set makes no promise
 about order. When the order matters to us, `sorted(my_songs)` gives the
 songs as a list, in alphabetical order.
 
@@ -436,7 +436,7 @@ print(both <= either)
 ```
 
 It prints `True False False`, then `True` and `True`. A finite set can be listed.
-An infinite one needs a rule, and a *function*{.term} is a rule we can run.
+An infinite one needs a rule, and a function is a rule we can run.
 
 ```question
 id: collections-infinite-2
@@ -584,7 +584,7 @@ practice with loops and lists.
 
 We chose the built-in sets because the subject here is the language:
 $\cap$, $\cup$, $\setminus$ and $\in$, and what each one means. Each
-symbol is a *name*{.term} for a move, and a reader who knows the names can read
+symbol is a name for a move, and a reader who knows the names can read
 a maths book, a SQL query and a Python program with the same ideas.
 One loop checked one promise, and the rest of the page could be about
 meaning.

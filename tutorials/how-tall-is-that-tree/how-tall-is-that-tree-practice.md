@@ -14,11 +14,11 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `angle_between` from the
+Your toolkit is loaded on this page, including `angle_between` from the
 tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not loaded, so each *cell*{.term} starts with `import math`.
+not loaded, so each cell starts with `import math`.
 
 ## Warm-up
 
@@ -97,7 +97,7 @@ ladder at 4 up for 1 out has the same shape, and the same angle.
 **4. Explain.** A ramp rises from the path to a door. From the angle at
 the bottom of the ramp, the *rise*{.term} is the opposite side. From the angle at
 the top, between the ramp and the door's wall, which side is opposite?
-Why can one side have two *names*{.term}?
+Why can one side have two names?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -335,7 +335,7 @@ one on each side of the *y-axis*{.term}, so they have the same sine. When the
 sine rule gives you a sine and you go back to an angle, both 30° and
 150° fit. If the other angles still leave room, there are two triangles.
 
-`math.asin` is a *function*{.term}, and a function gives one answer for each
+`math.asin` is a function, and a function gives one answer for each
 *input*{.term}. So it always picks the angle from −90° to 90°. The other answer,
 $180^\circ$ minus that, is yours to check. To test it, add up the
 angles, and see if both choices stay under 180°.

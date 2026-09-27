@@ -14,14 +14,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page: `frequency_table`, `all_pairs`,
+Your toolkit is loaded on this page: `frequency_table`, `all_pairs`,
 `combinations`, `simulate`, `count_if` and the rest from earlier pages.
 A *set*{.term} prints its *elements*{.term} in an order of its own, so the answers print
 `sorted(...)` wherever the order matters to a reader.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: collections-practice-warm-up
@@ -39,7 +39,7 @@ b, a and n. `set` reads a *string*{.term} letter by letter, the way a
 
 </details>
 
-**2. Make.** A game uses two small pictures. Each *list*{.term} below is the
+**2. Make.** A game uses two small pictures. Each list below is the
 colour of every *pixel*{.term} in one picture, as a hex code from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 How many different colours do the two pictures use between them? That
@@ -331,7 +331,7 @@ It prints `7`. The line has nine words, and "row" is three of them.
 
 **12. Make.** A Python program needs three *packages*, collections of
 extra code other people wrote: `numpy`, `pandas` and `matplotlib`.
-Write a *function*{.term} `can_run(needed, installed)` that gives True when
+Write a function `can_run(needed, installed)` that gives True when
 everything needed is installed on a computer. Then print what is
 missing from the second computer.
 

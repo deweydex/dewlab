@@ -40,7 +40,7 @@ On this page we:
 - put chances on a scale from 0 to 1
 - find a chance by counting *outcomes*{.term} that are equally likely
 - let Python toss coins and roll dice, with the `random` *module*{.term}
-- add `simulate` to the *toolkit*{.term}, a tool that runs a chance *experiment*{.term}
+- add `simulate` to the toolkit, a tool that runs a chance *experiment*{.term}
   many times, and counts
 - use it on rain falling on a grid, and watch the grid fill
 - see why a simulation and the exact answer differ a little, and how
@@ -178,7 +178,7 @@ are equally likely, so we count pairs.
 
 ### Your turn
 
-1. Change the *cell*{.term} so that it counts the outcomes where the two dice
+1. Change the cell so that it counts the outcomes where the two dice
    show the same number: a double. Guess the answer first.
 2. Change it again to count sums of 10 or more.
 3. Write each answer as a fraction, a decimal and a percentage.
@@ -245,7 +245,7 @@ a little every time.
 We will want to run many different experiments many times. So let's
 make one tool that does it for any experiment.
 
-The experiment itself becomes a *function*{.term} with no *inputs*{.term}, which we call
+The experiment itself becomes a function with no *inputs*{.term}, which we call
 a *trial*. It returns True when the event happens, and False when it
 does not. Here are two:
 
@@ -265,7 +265,7 @@ print(heads(), roll_six())
 ```
 
 On [True, false and every case](tutorial:true-false-and-every-case) we
-passed a rule to `truth_table` without brackets after its *name*{.term}. We do
+passed a rule to `truth_table` without brackets after its name. We do
 the same here. `simulate(heads, 1000)` passes the trial `heads`
 itself, so that `simulate` can call it 1,000 times.
 

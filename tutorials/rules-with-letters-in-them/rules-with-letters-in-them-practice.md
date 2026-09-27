@@ -13,10 +13,10 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `evaluate` from the
+Your toolkit is loaded on this page, including `evaluate` from the
 tutorial and `close_enough` from
 [Does it work?](tutorial:does-it-work#close-enough). The tutorial's
-`expand_brackets` was a page *cell*{.term}, not a toolkit tool, so the stretch
+`expand_brackets` was a page cell, not a toolkit tool, so the stretch
 section copies it in. Schlomo and Schlomi, who are learning Python too,
 have ideas in a few of the problems.
 
@@ -73,7 +73,7 @@ print("True for every value tried.")
 
 </details>
 
-**3. Make.** Write the *list*{.term} of *coefficients*{.term} for $4x^3 - x + 9$. Then use
+**3. Make.** Write the list of *coefficients*{.term} for $4x^3 - x + 9$. Then use
 `evaluate` to find its value at $x = 2$, and check it with Python's own
 arithmetic.
 
@@ -191,7 +191,7 @@ At $x = 0$ the two sides would be 11 and $-5$.
 
 **8. Fix.** Schlomi, who is learning Python too, wrote her own version
 of `evaluate`. $x^3 - 4x$ and $x^2 - 4$ are both 0 at $x = 2$. Her
-*function*{.term} gives 0 for the first one, but 4 for the second. Can you find
+function gives 0 for the first one, but 4 for the second. Can you find
 the line that does not do what she meant, and change it?
 
 ```python exec

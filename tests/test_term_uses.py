@@ -73,3 +73,24 @@ def test_check_reads_a_marked_term(tmp_path):
         [{"term": "matrix", "kind": "concept", "definition": "a grid", "origin": EARLIER}],
     )
     assert term_uses.unmatched_marks(page) == ["elephant (names no concept)"]
+
+
+def test_a_frequent_term_is_marked_only_near_its_start(monkeypatch):
+    monkeypatch.setattr(term_uses, "course_orders", lambda: {
+        "One": ["intro", "next", "later"],
+        "Two": ["later", "other"],
+    })
+    monkeypatch.setattr(term_uses, "windows", lambda: {
+        "One": {"cell": ({"intro", "intro-practice", "next"}, 1.0)},
+        "Two": {},
+    })
+    assert not term_uses.after_its_start("next", "cells")
+    assert term_uses.after_its_start("intro-practice", "cell") is False
+    assert term_uses.after_its_start("next-practice", "cell")
+    # Past the start in One, but Two lists "later" too and marks "cell"
+    # everywhere, so the mark stays.
+    assert not term_uses.after_its_start("later", "cell")
+    # A term no course windows is never past its start.
+    assert not term_uses.after_its_start("later", "matrix")
+    # Only courses that list the page count.
+    assert not term_uses.after_its_start("other", "cell")

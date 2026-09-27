@@ -44,7 +44,7 @@ On this page we:
 > fair. For birthdays we assume 365 days, each one equally likely, and
 > ignore 29 February. Real birthdays are not quite that even. We use
 > Python's `random` *module*{.term}, and `simulate`, `product`, `all_pairs` and
-> `combinations` from your *toolkit*{.term}.
+> `combinations` from your toolkit.
 
 ## Warm-up
 
@@ -143,7 +143,7 @@ print("100,000 games:  ", simulate(two_sixes, 100000))
 ```
 
 The exact answer is about 0.0278. The simulated answers are close, and
-change each time you run the *cell*{.term}. That is the *law of large numbers*{.term} from
+change each time you run the cell. That is the *law of large numbers*{.term} from
 [How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ).
 The more games we play, the closer the answers stay to the exact one.
 
@@ -177,7 +177,7 @@ Which kind of shuffle do you think gives the better chance?
 
 The songs are numbered 1 to 10, and songs 1 and 2 are the favourites.
 One new move is in this cell: `first in favourites` is True when
-`first` is one of the values in the *list*{.term} `favourites`.
+`first` is one of the values in the list `favourites`.
 
 ```python exec
 id: chances-playlist-1
@@ -337,7 +337,7 @@ P(\text{at least one six}) = 1 - \left(\frac{5}{6}\right)^4$$
 
 Which do you expect to be closer to the *simulation*{.term}: the gambler's
 $\frac{2}{3}$, or the complement? Inside `six_in_four`, `return True`
-stops the *function*{.term} as soon as one six appears.
+stops the function as soon as one six appears.
 
 ```python exec
 id: chances-not-1

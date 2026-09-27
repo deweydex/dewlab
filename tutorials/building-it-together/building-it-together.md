@@ -29,7 +29,7 @@ covers:
 
 # The team project: design, build, release and review
 
-You have a *toolkit*{.term} of about sixty *functions*{.term}, written and tested across
+You have a toolkit of about sixty functions, written and tested across
 this course. Each one is small. What happens when you join them into
 something bigger: a weather station, a game, a map of other worlds, a
 display that draws numbers in *pixels*{.term}?
@@ -42,8 +42,8 @@ practice.
 > **The space we're in.** A team of three to five, or one person,
 > working over several weeks, with a teacher who agrees the plan. A
 > team can use any tested function in any member's toolkit. The page's
-> Python runs in a browser, so values a user would type are *names*{.term} at
-> the top of a *cell*{.term}. Most of what goes wrong in a team project is about people, not code.
+> Python runs in a browser, so values a user would type are names at
+> the top of a cell. Most of what goes wrong in a team project is about people, not code.
 
 ## Warm-up
 

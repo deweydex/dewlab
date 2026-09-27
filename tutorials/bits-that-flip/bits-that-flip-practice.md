@@ -11,12 +11,12 @@ Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
 anything.
 
-Your *toolkit*{.term} is loaded on this page, so `parity_bit`, `to_binary`,
+Your toolkit is loaded on this page, so `parity_bit`, `to_binary`,
 `to_hex`, `truth_table` and `same_rule` are all ready to use.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems. Type a line, and run it.
+Use this cell for any of the warm-up problems. Type a line, and run it.
 
 ```python exec
 id: bits-practice-scratch-1
@@ -122,7 +122,7 @@ A mask of all 1s flips every bit. So `1010` becomes `0101`.
 </details>
 
 **7. Fix.** Schlomi, who is learning Python too, wrote her own *parity*{.term}
-*function*{.term}, to be sure she understood it. It passes the first test, but not
+function, to be sure she understood it. It passes the first test, but not
 the second. Find why, and change it.
 
 ```python exec
@@ -315,7 +315,7 @@ uses the promise of `parity_bit` to keep its own.
 </details>
 
 **13. Predict.** Two players' scores are kept in `score_a` and `score_b`.
-This cell swaps them without a third *name*{.term}, using XOR three times. Follow
+This cell swaps them without a third name, using XOR three times. Follow
 it by hand in binary. What does it print?
 
 ```python
