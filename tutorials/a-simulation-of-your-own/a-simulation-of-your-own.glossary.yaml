@@ -1,0 +1,11 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# The Simulation series' making task. Everything it uses was introduced
+# earlier in the series; the one new term is the forest world's.
+entries:
+  - term: cellular automaton
+    kind: concept
+    definition: >
+      A grid of cells in which every cell follows the same simple rules,
+      looking only at its neighbours, to decide its next state. A forest
+      of empty cells, trees and fires, stepped forward in time, is one.

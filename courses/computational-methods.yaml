@@ -14,7 +14,8 @@ description: >-
 
   After the Python come matrices, and the pictures they move and turn on a
   screen; text generated from the words of a book; simulations of chance,
-  queues, a model that corrects itself and a ball falling through time; algorithms that search and make
+  queues, a model that corrects itself, a ball falling through time and a
+  simulation of your own; algorithms that search and make
   change; and finding where a program went wrong.
 
 
@@ -67,6 +68,7 @@ contents:
   - a-model-that-corrects-itself
   - when-a-queue-never-clears
   - stepping-forward-in-time
+  - a-simulation-of-your-own
 - title: Algorithms
   tutorials:
   - finding-everything-inside-a-folder

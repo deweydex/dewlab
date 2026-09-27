@@ -371,6 +371,7 @@ groups:
       - a-model-that-corrects-itself
       - when-a-queue-never-clears
       - stepping-forward-in-time
+      - a-simulation-of-your-own
 
   - key: problem-solving-and-debugging
     name: Solving problems and finding faults
