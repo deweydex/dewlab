@@ -218,6 +218,10 @@ DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
 # the exec cell above it, or to the one its `for:` line names.
 SOLUTION_HEADER_RE = re.compile(r"^\s*(for|title)\s*:\s*(.*)$")
 INPUTS_HEADER_RE = re.compile(r"^\s*(for|guess)\s*:\s*(.*)$")
+# The ```typed block: the lines input() reads when nobody can type, in the
+# comparison and in the build. Only `for:` is a header; every other line is
+# one line typed, exactly as written.
+TYPED_HEADER_RE = re.compile(r"^\s*(for)\s*:\s*(.*)$")
 DEFAULT_SOLUTION_TITLE = "One way to do it"
 # A line holding only `---` ends a solution's code and starts its notes.
 SOLUTION_NOTES_RE = re.compile(r"^---[ \t]*$", re.MULTILINE)
@@ -284,7 +288,7 @@ ROOT_HREF = 'href="dlroot:'
 WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
 WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
-# One project of a "choose your project" page (DECISIONS_LOG 7.284): the
+# One project of a "choose your project" page (DECISIONS_LOG 7.286): the
 # opening tag on a line of its own, an id from the page's `projects:`
 # frontmatter, and a matching `</div>`. See project_spans().
 PROJECT_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-project" data-project="(?P<project>[^"]*)">[ \t]*$')
@@ -316,6 +320,9 @@ class Cell:
     # order, and the one inputs block the comparison evaluates.
     solutions: list["Solution"] = field(default_factory=list)
     inputs: "Inputs | None" = None
+    # The lines a ```typed block gives input() when nobody can type: the
+    # comparison, and the build's run of the page and its solutions.
+    typed: list[str] | None = None
     # `tests: <cell id>` on a cell of the reader's own tests names the cell
     # they test; `tested_by` is the other end, set on that cell.
     tests_for: str | None = None
@@ -390,6 +397,15 @@ class Inputs:
     cell: str
     cases: list[Case]
     guess: bool = False
+
+
+@dataclass
+class Typed:
+    """A ```typed fence: the lines `input()` reads, in order, wherever
+    nobody can type them."""
+
+    cell: str
+    lines: list[str]
 
 
 @dataclass
@@ -571,7 +587,7 @@ class Tutorial:
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     # A "choose your project" page's projects, each with the ids of the
-    # cells inside it, in source order (7.284). Empty on most pages.
+    # cells inside it, in source order (7.286). Empty on most pages.
     project_cells: dict[str, list[str]] = field(default_factory=dict)
     notes: list[Note] = field(default_factory=list)
     # Where this page sits: every course that lists it, in courses/index.yaml
@@ -1045,6 +1061,26 @@ def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
     return Inputs(cell=cell, cases=cases, guess=TOOLKIT_VALUES[guess])
 
 
+def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed:
+    """A ```typed fence: `for:`, then one line for each time `input()`
+    reads, kept exactly as written, spaces included, since a program that
+    strips what it is given is one worth testing. A blank line between two
+    others is an empty line typed; blank lines at either end are not."""
+    lines = body.split("\n")
+    header = _block_header(lines, TYPED_HEADER_RE)
+    cell = header.get("for") or previous_cell
+    if not cell:
+        fail(path, "a typed fence has no exec cell above it and no `for:` "
+                   "line naming one")
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+    if not lines:
+        fail(path, f"the typed block for cell {cell!r} has no lines in it")
+    return Typed(cell=cell, lines=lines)
+
+
 def parse_toolkit_reference(body: str, path: Path) -> tuple[str, str]:
     """A ```python toolkit-reference fence: its `for:` line, naming the
     toolkit cell it completes, and the code under it. Never shown to a
@@ -1361,7 +1397,21 @@ SURPRISES_HTML = (
 )
 
 
-def render_inputs(block: Inputs, has_solution: bool) -> str:
+def render_typed(lines: list[str]) -> str:
+    """The line under a comparison that says what it types for `input()`,
+    so a reader can see where their code's answers came from."""
+    shown = " ".join(
+        f"<code>{html.escape(line)}</code>" if line else "(an empty line)"
+        for line in lines
+    )
+    return (
+        '<p class="dl-compare-typed">Nobody can type during the comparison. '
+        "When the code calls <code>input()</code>, the comparison types these "
+        f"lines, in order, and each case starts again at the first: {shown}</p>"
+    )
+
+
+def render_inputs(block: Inputs, has_solution: bool, typed: list[str] | None = None) -> str:
     """The comparison table an ```inputs fence becomes (#312).
 
     Each case is a row. The reader's column, and the solution's when the
@@ -1369,7 +1419,8 @@ def render_inputs(block: Inputs, has_solution: bool) -> str:
     runtime fills them. With `guess: yes`, a column of text boxes comes
     first, for what the reader expects each case to give. Nothing in the
     table says right or wrong: a row where the two sides differ is marked
-    "different", in words as well as colour."""
+    "different", in words as well as colour. A cell with a ```typed block
+    says under the table what the comparison types."""
     safe_cell = html.escape(block.cell, quote=True)
     heads = ['<th scope="col">Input</th>']
     if block.guess:
@@ -1399,6 +1450,7 @@ def render_inputs(block: Inputs, has_solution: bool) -> str:
         f'<thead><tr>{"".join(heads)}</tr></thead>'
         f'<tbody>{"".join(rows)}</tbody>'
         "</table>"
+        f'{render_typed(typed) if typed else ""}'
         '<div class="dl-compare-actions">'
         f'<button type="button" class="dl-btn dl-btn-compare">{label}</button>'
         '<span class="dl-compare-status" role="status"></span>'
@@ -1413,6 +1465,7 @@ def place_cell_blocks(page_html: str, solutions: list[Solution], inputs_blocks: 
     Run before place_blocks(), like place_hints(), so the maths a
     solution's notes add is still there to render."""
     has_solution = {cell.id for cell in cells if cell.solutions}
+    typed = {cell.id: cell.typed for cell in cells if cell.typed}
     for index, solution in enumerate(solutions):
         placeholder = f"<!--dewlab-solution-{index}-->"
         if placeholder not in page_html:
@@ -1425,7 +1478,8 @@ def place_cell_blocks(page_html: str, solutions: list[Solution], inputs_blocks: 
             raise BuildError(f"the inputs for cell {block.cell!r} were lost during "
                              "markdown conversion")
         page_html = page_html.replace(placeholder,
-                                      render_inputs(block, block.cell in has_solution))
+                                      render_inputs(block, block.cell in has_solution,
+                                                    typed.get(block.cell)))
     return page_html
 
 
@@ -1766,7 +1820,7 @@ PROJECT_FIELDS = ("title", "question", "make", "maths", "data")
 
 def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     """A "choose your project" page's projects, from its `projects:`
-    frontmatter (7.284): each id, in order, with its title, the curious
+    frontmatter (7.286): each id, in order, with its title, the curious
     question its card leads with, what the reader makes, the maths and the
     data it uses, and an optional picture. `own: true` marks the project of
     the reader's own, which gets the wide card under the grid."""
@@ -1848,7 +1902,7 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
 
 
 def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[Cell]) -> dict[str, list[str]]:
-    """Each project's cells, by id, for the progress counts (7.284)."""
+    """Each project's cells, by id, for the progress counts (7.286)."""
     known = {cell.id for cell in cells}
     return {
         project: [found for found in re.findall(r"^id:\s*(\S+)\s*$", body[start:end], re.M)
@@ -1858,7 +1912,7 @@ def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[C
 
 
 def render_project_chooser(projects: dict[str, dict]) -> str:
-    """A "choose your project" page's cards and comparison table (7.284):
+    """A "choose your project" page's cards and comparison table (7.286):
     a 2×2 grid, each card led by its curious question, the reader's own
     project as a wide card under it, then the projects side by side. Each
     card is a link to its project, so without JavaScript it still takes
@@ -1910,7 +1964,7 @@ def render_project_chooser(projects: dict[str, dict]) -> str:
 
 def place_projects(body_html: str, projects: dict[str, dict], path: Path) -> str:
     """Give each project its anchor, and put the cards and table just before
-    the first one (7.284)."""
+    the first one (7.286)."""
     if not projects:
         return body_html
     if body_html.count('<div class="dl-project"') != len(projects):
@@ -1946,8 +2000,10 @@ def extract_blocks(
     the same way by its `app:` name; a `solution` or `inputs` fence
     becomes a block attached to its cell (#312), and a `predict` fence
     one that leaves no placeholder, since render_cell() draws it above
-    its cell (#313); any other fence becomes an illustrative, read-only
-    block.
+    its cell (#313); a `typed` fence gives its cell the lines `input()`
+    reads when nobody can type, and leaves no placeholder either, since
+    render_inputs() says what it types; any other fence becomes an
+    illustrative, read-only block.
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
@@ -1959,6 +2015,7 @@ def extract_blocks(
     app_cells: list[AppCell] = []
     solutions: list[Solution] = []
     inputs_blocks: list[Inputs] = []
+    typed_blocks: list[Typed] = []
     predictions: list[Predict] = []
     hints_per_cell: dict[str, int] = {}
     used_site_names: set[str] = set()
@@ -2025,6 +2082,11 @@ def extract_blocks(
                                               cells[-1].id if cells else None))
             placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
+        if info and info[0] == "typed":
+            typed_blocks.append(parse_typed(match.group("body"), path,
+                                            cells[-1].id if cells else None))
+            placed.append(("typed block", typed_blocks[-1].cell, world))
+            return ""
         if len(info) >= 2 and info[1] == "challenge":
             language = info[0]
             if language not in CHALLENGE_LANGS:
@@ -2149,6 +2211,16 @@ def extract_blocks(
         if cell.inputs is not None:
             fail(path, f"cell {cell.id!r} has two inputs blocks — put every case in one")
         cell.inputs = block
+    for block in typed_blocks:
+        cell = by_id.get(block.cell)
+        if cell is None:
+            fail(path, f"a typed block names a cell this tutorial does not have: {block.cell!r}")
+        if cell.type != "python":
+            fail(path, f"cell {cell.id!r} is a {cell.type} cell; only a Python cell "
+                       "can have typed lines")
+        if cell.typed is not None:
+            fail(path, f"cell {cell.id!r} has two typed blocks — put every line in one")
+        cell.typed = block.lines
     for prediction in predictions:
         cell = by_id.get(prediction.cell)
         if cell is None:
@@ -4509,7 +4581,7 @@ def progress_attrs(tutorial: Tutorial) -> str:
     than a "0/0"."""
     if not tutorial.cells:
         return ""
-    # A choose-your-project page's projects count only once started (7.284),
+    # A choose-your-project page's projects count only once started (7.286),
     # so the badge needs to know which cells are whose.
     projects = (f' data-projects="{html.escape(json.dumps(tutorial.project_cells), quote=True)}"'
                 if tutorial.project_cells else "")
@@ -4878,9 +4950,9 @@ if timed:
 missing = None  # the first package a cell asked for and this Python lacks
 
 
-async def run(code, name):
+async def run(code, name, typed=None):
     global missing
-    tt._begin(name, tt._RecordingSink(), code)
+    tt._begin(name, tt._RecordingSink(), code, typed=typed)
     if timed:
         signal.alarm(job["seconds"])
     try:
@@ -4902,12 +4974,14 @@ async def main():
         await run(code, "toolkit")
     report = []
     for cell in job["cells"]:
-        await run(cell["code"], cell["id"])
+        await run(cell["code"], cell["id"], cell.get("typed"))
         if "solution" in cell:
             if timed:
                 signal.alarm(job["seconds"])
+            typed = json.dumps(cell["typed"]) if cell.get("typed") else None
             try:
-                result = json.loads(await tt.compare(cell["solution"], json.dumps(cell["inputs"])))
+                result = json.loads(await tt.compare(
+                    cell["solution"], json.dumps(cell["inputs"]), None, typed))
             except Slow:
                 result = {"solutionError": "the solution did not finish", "rows": []}
             finally:
@@ -4969,7 +5043,8 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
     for cell in seen:
         if cell.type != "python":
             continue
-        cells.append({"id": cell.id, "code": cell.code})
+        cells.append({"id": cell.id, "code": cell.code}
+                     | ({"typed": cell.typed} if cell.typed else {}))
         if not checked(cell):
             continue
         cases = [{"expr": case.expr, "label": case.label}
@@ -4978,7 +5053,8 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         # runs in its own copy of the namespace the cell above left.
         for solution in cell.solutions:
             cells.append({"id": cell.id, "code": "", "solution": solution.code,
-                          "inputs": cases})
+                          "inputs": cases}
+                         | ({"typed": cell.typed} if cell.typed else {}))
     job = {
         "assets": str(RUNTIME_TOOLS), "data": str(DATA), "sqlite": tutorial.has_sql,
         # A web address data/ keeps a copy of runs against that copy, as a
@@ -5015,6 +5091,10 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                   f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
                   f"{result['missingModule']}", file=sys.stderr)
             continue
+        if problem and problem.startswith("EOFError"):
+            fail(tutorial.path, f"the solution for cell {cell!r} calls input(), and "
+                                "nobody can type in the build — give the cell a ```typed "
+                                f"block with enough lines for it ({problem})")
         if problem:
             fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
                                 "build ran it after the page's earlier cells")
@@ -5996,6 +6076,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             | ({"inputs": [{"expr": case.expr, "label": case.label}
                            for case in c.inputs.cases]} if c.inputs else {})
             | ({"guess": True} if c.inputs and c.inputs.guess else {})
+            | ({"typed": c.typed} if c.typed else {})
             | ({"tests": c.tested_by} if c.tested_by else {})
             | ({"predict": c.predict.type} if c.predict else {})
             for c in tutorial.cells
@@ -6536,6 +6617,8 @@ DEWMINI_ASSET_FILES = (
     # Imported by pyodide-engine.js: what a cell's widgets hold, and its
     # sliders.
     "cell-widgets.js",
+    # Imported by both engine files: how input() waits for a typed line.
+    "input-wait.js",
     # Imported by dewmini.js for its Library search — the one idea of
     # word matching every search box shares.
     "search-words.js",

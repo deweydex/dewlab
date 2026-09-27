@@ -27,8 +27,8 @@ covers:
 
 # What a function can see: scope and parameters
 
-You write a *function*{.term} that calculates how fast a file downloaded, and
-inside it you give the speed a *name*{.term}. On the next line, outside the
+You write a function that calculates how fast a file downloaded, and
+inside it you give the speed a name. On the next line, outside the
 function, you ask Python to print that name. Python says it has never
 heard of it. The name was there a moment ago. Where did it go, and what
 can a function see?
@@ -39,7 +39,7 @@ On this page we:
 - see which names a function can read from the page around it
 - find out why a function cannot change a page's name with `=`
 - hand values to a function by position and by name
-- hand a function a *list*{.term}, and see why that is different
+- hand a function a list, and see why that is different
 - find out how a function made inside another one keeps what it needs
 - ask of any function: what does it need, and where does it get it?
 
@@ -48,7 +48,7 @@ On this page we:
 > usually deletes it when the call ends. From inside that space, a
 > function can read the names on the page around it, but a new name made
 > with `=` stays inside. Those rules are almost never written down. This
-> page is about them. Your *toolkit*{.term} from every earlier page
+> page is about them. Your toolkit from every earlier page
 > is loaded here, as usual.
 
 ## Warm-up
@@ -126,7 +126,7 @@ A *local name* is a name made inside a function. It exists only inside
 that function, and only while one call is running. The *scope* of a name
 is the part of a program where the name can be seen. So the scope of
 `megabytes_per_second` is the inside of `download_speed`, and the last
-line of the *cell*{.term} is outside it.
+line of the cell is outside it.
 
 You can picture each call as a small room, built when the call starts
 and removed when it ends. The only thing carried out of the room is

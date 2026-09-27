@@ -14,14 +14,14 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `slope` and
+Your toolkit is loaded on this page, including `slope` and
 `line_through` from the tutorial, `close_enough` from
 [Does it work?](tutorial:does-it-work) and `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule).
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: straight-practice-warm-up
@@ -361,7 +361,7 @@ by drawing both lines with `plot_rule`, with `plt.axis("equal")`.
    as in `line_through`.
 3. Return the *pair*{.term}.
 
-**Think about:** which slope `m` makes this *function*{.term} fail, and what
+**Think about:** which slope `m` makes this function fail, and what
 kind of line would the answer be?
 
 </details>
@@ -445,7 +445,7 @@ careful: what space are the two numbers in each pair measured in?
    with the next one.
 2. Turn the distance into metres first, so that across and up use the
    same unit.
-3. Keep the slopes in a *list*{.term}, and use `largest` from your toolkit.
+3. Keep the slopes in a list, and use `largest` from your toolkit.
 
 **Think about:** what would the steepest slope be if you forgot to
 turn km into m? Would anyone cycle up it?

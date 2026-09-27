@@ -40,7 +40,7 @@ On this page we:
 - put a point on a circle of *radius*{.term} 1, and name its two *coordinates*{.term}
   cosine and sine
 - see why `math.cos(90)` is not 0, and meet radians
-- add `point_on_circle` to the *toolkit*{.term}, and draw a clock with it
+- add `point_on_circle` to the toolkit, and draw a clock with it
 - send four planets round the Sun with it, on NASA's numbers
 - find some points exactly, with Pythagoras
 - draw a triangle on a ball whose angles add up to 270°
@@ -96,7 +96,7 @@ minutes. So each minute moves it $360 \div 60 = 6$ degrees. The hour
 hand is slower. It makes a whole turn in 12 hours, so each hour moves it
 $360 \div 12 = 30$ degrees, and each minute moves it half a degree.
 
-Before you run the *cell*{.term}, where is the hour hand at 10:10? Is it on the
+Before you run the cell, where is the hour hand at 10:10? Is it on the
 10, or a little past it?
 
 ```python exec
@@ -154,7 +154,7 @@ anticlockwise. Where are you?
   - (0, 0) is the centre, not a point on the circle.
 ```
 
-For angles in between, we need a *name*{.term} for each coordinate. For a point
+For angles in between, we need a name for each coordinate. For a point
 on the unit circle at angle $\theta$ (the Greek letter theta, which
 maths often uses for an angle):
 
@@ -166,7 +166,7 @@ maths often uses for an angle):
 <img src="point-on-the-unit-circle.svg" alt="The unit circle, radius 1, with its centre where the two axes cross, and the points (1, 0), (0, 1), (−1, 0) and (0, −1) marked. A line of length 1 goes from the centre to a point on the circle, at an angle θ above the line across. From the point, a dashed line drops straight down to the line across, and meets it at a right angle. The distance across, along the axis, is marked cos θ, and the distance up, the dashed line, is marked sin θ. The point is marked (cos θ, sin θ).">
 
 So the point is $(\cos\theta, \sin\theta)$, and from the quarter
-turns, $\cos 90^\circ = 0$. Sine and cosine are *functions*{.term}, as on
+turns, $\cos 90^\circ = 0$. Sine and cosine are functions, as on
 [Machines that take a number](tutorial:machines-that-take-a-number). An
 angle goes in, and a number between −1 and 1 comes out.
 

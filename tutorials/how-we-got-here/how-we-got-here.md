@@ -41,7 +41,7 @@ What will the first line print?
 
 It prints 42, and then `True`. `0b101010` is *binary*, the way a computer
 stores 42, and Python shows it the way people write it. Underneath every
-program on every page so far, everything was patterns like that one.
+*program*{.term} on every page so far, everything was patterns like that one.
 
 This is the last page of the series, and it looks back: at a program
 written before there was a machine to run it, at the on-and-off patterns
@@ -60,8 +60,8 @@ and it was never finished in his lifetime.
 **Ada Lovelace** was translating a paper about the machine into English.
 The paper was by an Italian engineer, Luigi Menabrea, and it was written
 in French. Lovelace added notes of her own, and one of them described,
-step by step, how the Engine could calculate a sequence of numbers, with
-loops and with conditional branching. That means the Engine chooses its
+step by step, how the Engine could calculate a *sequence*{.term} of numbers, with
+*loops*{.term} and with conditional branching. That means the Engine chooses its
 next step from a result, as `if` and `else` do. Her notes were longer than the paper
 she was translating.
 
@@ -129,7 +129,7 @@ without thinking, with ten in place of two.
 
 ### Your turn
 
-Try these by hand first, and write your working as comments. Then check
+Try these by hand first, and write your working as *comments*{.term}. Then check
 each one with the functions above.
 
 1. What is binary `11001` in base 10?
@@ -596,7 +596,7 @@ print(basket.total())
 it says the answer is the sum of the prices, and leaves the loop to
 Python. 3 is object-oriented: the basket holds its prices, and adding to
 it and totalling it are things the basket does. The clues matter most.
-They are a changing variable, a description of the answer, and a thing
+They are a changing *variable*{.term}, a description of the answer, and a thing
 that carries its own data.
 
 </details>

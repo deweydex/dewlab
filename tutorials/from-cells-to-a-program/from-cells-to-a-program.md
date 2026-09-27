@@ -1,7 +1,7 @@
 ---
 title: "From cells to a program"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 covers:
   a-loop-that-waits-for-quit:
     covers: [PDP-LO6]
@@ -53,39 +53,36 @@ on, assumes all of it.
 
 `input("Choose: ")` shows its prompt, waits for the person to type
 something and press Enter, and returns what they typed, always as a
-string. A cell on this page cannot wait for typing. So here the typing is
-written in advance, in a list, and a small function takes the place of
-`input()`. `.pop(0)` takes the first element out of a list and returns
-it.
+string. When a cell on this page calls `input()`, a box appears after the
+prompt. Type your answer in the box, then press Enter.
+
+Run this cell, and try each choice. What happens when you type a choice
+that is not on the menu?
 
 ```python exec
 id: a-loop-that-waits-for-quit-1
-typed = ["1", "MEET ME", "2", "9"]
-
-def ask(prompt):
-    """Stand in for input(): give back the next typed answer."""
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
+count = 0
 
 while True:
     print("1: shout a message   2: count the messages   9: quit")
-    choice = ask("Choose: ")
+    choice = input("Choose: ")
     if choice == "9":
         break
     elif choice == "1":
-        message = ask("Message: ")
+        message = input("Message: ")
         print(message.upper() + "!")
+        count = count + 1
     elif choice == "2":
-        print("That was the only one.")
+        print("Messages so far:", count)
     else:
         print("There is no choice", choice)
 print("Goodbye.")
 ```
 
-Change `typed` and run it again: try a choice that is not on the menu. On
-your own computer, the whole of `ask` becomes one line, `ask = input`, and
-the same program waits for a real person.
+The program keeps asking until you choose 9. While it waits, the cell's
+**Run** button is **Stop**: press it to leave without choosing 9. This is
+the same program you would run on your own computer, and there it waits
+for you in the same way.
 
 The menu is a `while True` loop with one way out: the choice that says
 quit. Everything else goes round again. Every program that talks to a
@@ -93,25 +90,18 @@ person uses that shape, from a cash machine to a game.
 
 ### Your turn
 
-Can you add a choice `3`, which prints the message backwards? The typed
-answers already try it.
+Can you add a choice `3`, which prints the message backwards? Try it
+with `NOON`, and then with `OTTER`.
 
 ```python exec
 id: your-turn-1
-typed = ["3", "NOON", "3", "OTTER", "9"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 while True:
     print("1: shout a message   9: quit")
-    choice = ask("Choose: ")
+    choice = input("Choose: ")
     if choice == "9":
         break
     elif choice == "1":
-        message = ask("Message: ")
+        message = input("Message: ")
         print(message.upper() + "!")
     else:
         print("There is no choice", choice)
@@ -125,23 +115,16 @@ backwards.
 ```
 
 ```solution
-typed = ["3", "NOON", "3", "OTTER", "9"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 while True:
     print("1: shout a message   3: backwards   9: quit")
-    choice = ask("Choose: ")
+    choice = input("Choose: ")
     if choice == "9":
         break
     elif choice == "1":
-        message = ask("Message: ")
+        message = input("Message: ")
         print(message.upper() + "!")
     elif choice == "3":
-        message = ask("Message: ")
+        message = input("Message: ")
         print(message[::-1])
     else:
         print("There is no choice", choice)
@@ -149,6 +132,14 @@ print("Goodbye.")
 ---
 NOON stays NOON, and OTTER becomes RETTO. The menu line needs changing
 too, or nobody knows choice 3 is there.
+```
+
+```typed
+3
+NOON
+3
+OTTER
+9
 ```
 
 ## Asking until the answer makes sense
@@ -159,19 +150,14 @@ it, and the kindest answer is usually to say what it wanted, and ask
 again. `.isdigit()` is `True` when a string is all digits, so `int()` can
 read it.
 
+Run this cell, and type `seven` first, then `30`, then `7`.
+
 ```python exec
 id: asking-until-the-answer-makes-sense-1
-typed = ["seven", "30", "7"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 def ask_shift():
     """Keep asking until the answer is a whole number from 1 to 25."""
     while True:
-        text = ask("Shift, 1 to 25: ")
+        text = input("Shift, 1 to 25: ")
         if text.isdigit() and 1 <= int(text) <= 25:
             return int(text)
         print("Please type a whole number from 1 to 25.")
@@ -236,13 +222,6 @@ call it.
 
 ```python exec
 id: one-place-to-start-main-1
-typed = ["1", "HELLO", "3", "9"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 def encode(message, shift):
     """Give back message with each capital moved shift places along."""
     coded = ""
@@ -257,7 +236,7 @@ def encode(message, shift):
 def ask_shift():
     """Keep asking until the answer is a whole number from 1 to 25."""
     while True:
-        text = ask("Shift, 1 to 25: ")
+        text = input("Shift, 1 to 25: ")
         if text.isdigit() and 1 <= int(text) <= 25:
             return int(text)
         print("Please type a whole number from 1 to 25.")
@@ -265,11 +244,11 @@ def ask_shift():
 def main():
     """Code messages until the person chooses to quit."""
     while True:
-        choice = ask("1: code a message   9: quit   Choose: ")
+        choice = input("1: code a message   9: quit   Choose: ")
         if choice == "9":
             break
         if choice == "1":
-            message = ask("Message: ").upper()
+            message = input("Message: ").upper()
             shift = ask_shift()
             print(encode(message, shift))
     print("Goodbye.")
@@ -301,14 +280,12 @@ computer:
    Thonny, <https://thonny.org>, which comes with Python and a simple
    editor, and suits a first program well.
 2. Copy your program into a file ending in `.py`, such as `codebreaker.py`.
-   Replace `typed` and your `ask` function with `ask = input`.
 3. Run it: Thonny's Run button, or `python codebreaker.py` in a terminal.
-   Now `input()` waits for you.
+   `input()` waits for you there, as it did on this page.
 
 Without installing anything, the [Notebook](../compose/notebook.html) runs
-Python in the browser, and keeps files. It cannot wait for typing either,
-so keep your `ask` there, and swap it for `input` when the program moves
-to a computer.
+Python in the browser, and keeps files. `input()` waits for typing there
+too.
 
 To share the file, send it, or keep it on GitHub, the way the web-authoring
 pages do. [Creating a GitHub account](tutorial:a-github-account) shows
@@ -329,13 +306,6 @@ one word, written into the code. It asks once, and says whether the answer is ri
 id: three-releases-of-a-small-game-1
 import random
 
-typed = ["KITE"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 def encode(message, shift):
     coded = ""
     for character in message:
@@ -349,7 +319,7 @@ def encode(message, shift):
 word = "OTTER"
 shift = random.randint(1, 25)
 print("Decode this:", encode(word, shift))
-guess = ask("Your answer: ").upper()
+guess = input("Your answer: ").upper()
 if guess == word:
     print("Yes!")
 else:
@@ -369,13 +339,6 @@ score, and answers checked with care. A guess is compared in capitals, so
 id: three-releases-of-a-small-game-2
 import random
 
-typed = ["1", "otter", "1", "BADGER", "2", "9"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 def encode(message, shift):
     coded = ""
     for character in message:
@@ -390,7 +353,7 @@ def play_round(word):
     """Play one round with word. Give back True if the player read it."""
     shift = random.randint(1, 25)
     print("Decode this:", encode(word, shift))
-    guess = ask("Your answer: ").upper()
+    guess = input("Your answer: ").upper()
     if guess == word:
         print("Yes!")
         return True
@@ -402,7 +365,7 @@ def main():
     rounds = 0
     score = 0
     while True:
-        choice = ask("1: play   2: score   9: quit   Choose: ")
+        choice = input("1: play   2: score   9: quit   Choose: ")
         if choice == "9":
             break
         elif choice == "1":
@@ -482,8 +445,8 @@ Release 2, 14 November
 ## Looking back
 
 What was the hardest part of this page to picture: a loop that only ends
-when told to, a function standing in for a person typing, or a program
-that starts at `main()`? What would you try, to make it clearer to
+when told to, a question asked again until the answer makes sense, or a
+program that starts at `main()`? What would you try, to make it clearer to
 yourself?
 
 A challenge: build Release 1 of a game of your own, in any world you
@@ -491,16 +454,9 @@ like, on the same shape: a loop, a way to quit, and an answer checked with
 care.
 
 ```python challenge
-typed = ["1", "9"]
-
-def ask(prompt):
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 def main():
     while True:
-        choice = ask("1: play   9: quit   Choose: ")
+        choice = input("1: play   9: quit   Choose: ")
         if choice == "9":
             break
         # Your game's one round goes here.

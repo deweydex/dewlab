@@ -15,14 +15,14 @@ it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
 open them. Each one is one answer. Yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page: `selection_sort` and
+Your toolkit is loaded on this page: `selection_sort` and
 `insertion_sort` from the tutorial, `linear_search` and `binary_search`
 from the page before, and `smallest`, `median` and the rest from
 earlier pages.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: sorting-hand-practice-warm-up
@@ -38,7 +38,7 @@ check.
 <details class="dl-answer"><summary>answer</summary>
 
 `file_sizes` still holds `[34, 7, 61, 12]`, in the old order. Both
-toolkit sorts promise a new *list*{.term}, and leave the one they are given
+toolkit sorts promise a new list, and leave the one they are given
 alone. `insertion_sort(file_sizes)[0]` is 7. Index 0 of the sorted list
 is the smallest value, the smallest file.
 
@@ -138,7 +138,7 @@ print("The lowest battery is at", ranking[0], "percent")
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The last line of the error mentions `'NoneType'`. Which *name*{.term} holds
+1. The last line of the error mentions `'NoneType'`. Which name holds
    `None`?
 2. Print `ranking` on its own. Then print `battery`.
 3. What does `.sort()` return, and what does it change?
@@ -265,7 +265,7 @@ the loop leaves them out.
 
 **8. Fix.** Schlomi, who is learning Python too, writes a selection
 sort for the lengths of songs, in seconds. Her first line, `items =
-values`, is meant to make a list of her own to work on. The *function*{.term}
+values`, is meant to make a list of her own to work on. The function
 returns a sorted list, as it promises. But it breaks the other half
 of its promise. Run it, find what happens to `song_lengths`, and
 change the line that causes it.

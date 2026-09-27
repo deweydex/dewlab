@@ -17,7 +17,7 @@ under it.
 
 ## 1. Allowed names
 
-Which of these can be variable names in Python? For the ones that cannot,
+Which of these can be *variable*{.term} names in Python? For the ones that cannot,
 can you say why?
 
 `total`, `2nd_place`, `first name`, `_hidden`, `class`, `Total`,
@@ -139,7 +139,7 @@ The arithmetic is the same, and now the code says what it is about.
 
 ## 5. What type is it
 
-Say the type of each of these, then check with `type()` in the cell:
+Say the type of each of these, then check with `type()` in the *cell*{.term}:
 `42`, `42.0`, `"42"`, `True`, `4 / 2`, `4 // 2`, `"4" + "2"`.
 
 ```python exec
@@ -249,7 +249,7 @@ Python does not read what the text says. Try `bool(0)`, `bool("")` and
 
 ## 10. 25 plus 1 is 251
 
-A program asks somebody to type their age with `input()`, then adds 1. It
+A *program*{.term} asks somebody to type their age with `input()`, then adds 1. It
 prints `251` instead of `26`. What happened?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -376,7 +376,7 @@ with. A third is not exact in decimal for the same reason.
 ## 14. Hours and minutes
 
 Can you change a number of minutes into hours and minutes, with clear
-names, and print it with an f-string?
+names, and print it with an *f-string*{.term}?
 
 ```python exec
 id: hours-and-minutes-1
@@ -400,7 +400,7 @@ print(f"{total_minutes} minutes is {hours} hours and {minutes} minutes")
 
 ## 15. Counting in cents
 
-A shop's till stores prices in euro as floats. Adding up fifty items at
+A shop's till stores prices in euro as *floats*{.term}. Adding up fifty items at
 €0.10 gives €4.999999999999998. What should the till store instead?
 
 <details class="dl-answer"><summary>answer</summary>

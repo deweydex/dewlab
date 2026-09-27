@@ -34,7 +34,7 @@ That is about two thirds of a second. But almost every page you load
 comes back in about a fifth of a second. Is the status page lying? Or
 is "average" hiding something?
 
-One *list*{.term} of numbers can have three
+One list of numbers can have three
 different "typical" values, all honest, and they can disagree by more
 than three times. The people who run the world's biggest websites know
 this, and it changes which number they watch.
@@ -43,7 +43,7 @@ On this page we:
 
 - find three different "typical" values for one list: the mean, the
   median and the mode
-- add `mean`, `median` and `mode` to the *toolkit*{.term}
+- add `mean`, `median` and `mode` to the toolkit
 - see when the three disagree, and why, with response times and with
   real data from 261 places
 - ask how spread out a list is: first the range, then "how far from the
@@ -142,10 +142,10 @@ def mean(values):
 ```
 
 How does your `mean` compare with one way to write it? The table below
-runs the same calls on your *function*{.term} and on a solution, side by side.
+runs the same calls on your function and on a solution, side by side.
 Rows three and four show the "share it out" meaning. If every load took
 the mean, the pot would hold the same total as before. So the mean
-times the count gives the total. Until your `mean` is written, the *cells*{.term}
+times the count gives the total. Until your `mean` is written, the cells
 below that use `mean` stop with an error, or show `None` where a number
 should be.
 

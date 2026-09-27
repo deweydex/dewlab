@@ -182,12 +182,12 @@ too_hot = temperature >= 80
 print(too_hot)
 ```
 
-A condition's answer is a value, so we can give it a *name*{.term}, like any
+A condition's answer is a value, so we can give it a name, like any
 other value.
 
 ### Your turn
 
-1. In the first *cell*{.term} above, change `temperature = 79` to
+1. In the first cell above, change `temperature = 79` to
    `temperature = -3`. Before you run it, guess the three answers.
 2. In the cell below, set `temperature` to any value you like.
 3. Write a line that prints True when `temperature` is 35 or more.
@@ -366,7 +366,7 @@ A laptop has a fan with several speeds. The word `elif` is short for "else if". 
 checks the conditions from the top, one after another. It takes the
 first path whose condition is True, and skips every path after it.
 
-Here is a fan rule as a *function*{.term}, which returns a speed. The limits
+Here is a fan rule as a function, which returns a speed. The limits
 are made up.
 
 ```python exec

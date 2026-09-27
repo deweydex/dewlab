@@ -18,7 +18,7 @@ useful kind. It shows you exactly which row you had not pictured.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: true-false-practice-warm-up
@@ -274,7 +274,7 @@ True, the difference between inclusive and exclusive "or" disappears.
 **10. Predict.** In a three-input truth table, the rows count up in
 *binary*{.term} from 000 to 111, with False as 0 and True as 1. Counting the
 first row as row 0, which row is `True, False, True`? Check with
-`to_binary` from your *toolkit*{.term}.
+`to_binary` from your toolkit.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -291,7 +291,7 @@ This prints `101`. Counting from row 0, row 5 is the sixth row printed.
 **11. Another way.** Schlomo, who is learning Python too, does not
 trust `!=` as XOR. He wants the rule to say what the English says: "at
 least one, but not both". Write his sentence with `or`, `and` and `not`,
-as a *function*{.term} `xor_in_words(a, b)`. Then check whether his column is the
+as a function `xor_in_words(a, b)`. Then check whether his column is the
 same as the column for `a != b`.
 
 <details class="dl-answer"><summary>answer</summary>

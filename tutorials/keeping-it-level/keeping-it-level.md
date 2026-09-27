@@ -230,7 +230,7 @@ So the box holds
 {4|9|36}.
 ```
 
-Sharing into equal groups is *dividing*{.term}. Multiplying by 3 is undone by
+Sharing into equal groups is dividing. Multiplying by 3 is undone by
 dividing by 3.
 
 ```question

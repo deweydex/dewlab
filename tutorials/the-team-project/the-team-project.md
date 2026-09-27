@@ -1,7 +1,7 @@
 ---
 title: "The Team Project"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 covers:
   what-you-are-being-asked-to-do:
     covers: [PDP-LO12]
@@ -78,18 +78,11 @@ it does. A plan is not a release, and neither is most of a program.
 
 **Most teams make Release 1 too big.** It should feel almost too
 small to show anyone. Here is a Release 1 of a text adventure: two rooms,
-one way between them, and a way to quit.
+one way between them, and a way to quit. Run it, and type `north`, then
+`east`, then `south`, then `quit`.
 
 ```python exec
 id: three-releases-not-one-deadline-1
-typed = ["north", "east", "south", "quit"]
-
-def ask(prompt):
-    """Stand in for input(): give back the next typed answer."""
-    answer = typed.pop(0)
-    print(prompt + answer)
-    return answer
-
 exits = {
     "hall": {"north": "library"},
     "library": {"south": "hall"},
@@ -98,7 +91,7 @@ exits = {
 room = "hall"
 while True:
     print("You are in the", room + ". Exits:", ", ".join(exits[room]))
-    move = ask("Where now? ")
+    move = input("Where now? ")
     if move == "quit":
         break
     if move in exits[room]:

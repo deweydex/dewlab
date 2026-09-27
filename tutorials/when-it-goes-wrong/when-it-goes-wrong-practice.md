@@ -60,7 +60,7 @@ What will it do?
 
 <details class="dl-answer"><summary>why</summary>
 
-It raises a `KeyError: 'E'`. The right-hand side runs first, and it asks for a key
+It raises a `KeyError: 'E'`. The right-hand side runs first, and it asks for a *key*{.term}
 that is not there yet. `counts.get("E", 0) + 1` starts it at 0.
 
 </details>
@@ -86,7 +86,7 @@ such as `numbers`, fixes it. Restart Python, or reload the page, to get
 
 ## 4. Two things to find
 
-Run this, and read the traceback. Which line failed, and which line is
+Run this, and read the *traceback*{.term}. Which line failed, and which line is
 responsible?
 
 ```python exec
@@ -124,7 +124,7 @@ that failed?
 <details class="dl-answer"><summary>answer</summary>
 
 The line that failed is often correct, and the cause is earlier in the
-program. A value is made in one place and used in another. The chain shows
+*program*{.term}. A value is made in one place and used in another. The chain shows
 how the bad value travelled, call by call, so you can trace it to where
 it came from.
 
@@ -165,7 +165,7 @@ loop's last value. Give each loop its own name: `row` and `column`, say.
 <div class="dl-world" data-world="secret-messages">
 
 This is meant to count the Es in a word. It runs, and gives 0 for every
-word. Can you find the bug, fix it, and add a test that catches it?
+word. Can you find the bug, fix it, and add a *test*{.term} that catches it?
 
 ```python exec
 id: counting-in-the-wrong-thing-1--secret-messages
@@ -214,7 +214,7 @@ is why a test on `"SKY"` passes the bug.
 <div class="dl-world" data-world="pixel-art">
 
 This is meant to return one column of a picture, top to bottom. It
-works on some pictures. Can you find the bug, fix it, and add a test that
+works on some pictures. Can you find the bug, fix it, and add a *test*{.term} that
 catches it?
 
 ```python exec
@@ -264,7 +264,7 @@ which is lucky: that at least says something is wrong.
 ## 8. Where it stops being right
 
 This is meant to count the words longer than four letters. It gives 0.
-Add a labelled `print` inside the loop, and find where it goes wrong.
+Add a labelled `print` inside the *loop*{.term}, and find where it goes wrong.
 
 ```python exec
 id: where-it-stops-being-right-1
@@ -291,7 +291,7 @@ the answer 2: BRIDGE and TONIGHT.
 
 This is meant to decode a message by moving each letter back. It gives
 nonsense. Test each piece on its own, with a letter whose answer you know,
-and find the one with the bug.
+and find the one with the *bug*{.term}.
 
 ```python exec
 id: test-the-pieces-1
@@ -373,15 +373,15 @@ own, with its own message, at the place the problem was found.
 ## 12. From earlier: nearly in order
 
 From *Sorting a list: bubble, insertion and selection sort*. A list is
-already sorted except for its last element. Which of the three sorts does
+already *sorted*{.term} except for its last *element*{.term}. Which of the three sorts does
 least work on it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-Insertion sort does least work. Every element but the last is already in place, so each
+*Insertion sort*{.term} does least work. Every element but the last is already in place, so each
 costs one comparison, and only the last is moved back to where it belongs.
-Selection sort still searches the whole unsorted part every time, and
-bubble sort, without a flag, still makes every comparison.
+*Selection sort*{.term} still searches the whole unsorted part every time, and
+*bubble sort*{.term}, without a flag, still makes every comparison.
 
 </details>
 

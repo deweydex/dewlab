@@ -190,9 +190,9 @@ entries:
     python: input
     kind: function
     definition: >
-      Waits for someone to type, and gives back what they typed, as a
-      string. It needs a keyboard, so the cells on these pages do not use
-      it.
+      Waits for someone to type, and returns what they typed, as a
+      string. On these pages, a box appears in the cell's output for the
+      typing.
     example: 'input("How many seconds? ")'
   - term: toolkit
     kind: concept

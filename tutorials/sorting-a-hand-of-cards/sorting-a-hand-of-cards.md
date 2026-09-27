@@ -35,7 +35,7 @@ it down. One of the two ways people
 sort cards does almost no work on a hand that is already in order. The
 other does exactly as much work on that hand as on any other.
 
-On the last page, *binary search*{.term} needed a sorted *list*{.term}, and Python's
+On the last page, *binary search*{.term} needed a sorted list, and Python's
 `sorted()` made one for us. This page shows how sorting works inside.
 
 On this page we:
@@ -46,7 +46,7 @@ On this page we:
 - count the comparisons each one makes, and find that the starting
   order matters to one of them
 - promise a new sorted list and leave the old one alone
-- add `selection_sort` and `insertion_sort` to the *toolkit*{.term}
+- add `selection_sort` and `insertion_sort` to the toolkit
 
 > **The space we're in.** We work with a list of values that can be compared with
 > `<`: numbers, or words, which compare the way a dictionary orders
@@ -163,7 +163,7 @@ print(hand)
 ```
 
 It prints `[1, 3, 12, 1, 9]`. There are two Aces, and the 7 is gone.
-The first line pointed `hand[0]` at the Ace. That was the only *name*{.term}
+The first line pointed `hand[0]` at the Ace. That was the only name
 the 7 had, so it was lost. By the time the second line ran, `hand[0]`
 was already 1.
 
@@ -198,7 +198,7 @@ far. (A name like `smallest = ...` would hide the toolkit tool.)
 
 The outer loop picks the `place` to fill: 0, then 1, then 2, and so on.
 It stops one short of the end, because when every other card is in
-place, the last one must be too. The *function*{.term} works on a copy made with
+place, the last one must be too. The function works on a copy made with
 `.copy()`, so the hand it is given stays as it was.
 
 Before you run it, write down on paper what the hand will look like
@@ -261,7 +261,7 @@ conditions joined by `and`, as on
 
 The `while` line is the hardest line on this page to read. If it
 feels tangled, read it aloud as "while there is a card to the left,
-and that card is higher", or run the *cell*{.term} with a hand of three cards
+and that card is higher", or run the cell with a hand of three cards
 first and watch what moves.
 
 Before you run it, which card do you think moves the furthest?

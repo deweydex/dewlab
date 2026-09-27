@@ -493,3 +493,23 @@ def test_a_node_label_keeps_the_words_before_a_colon():
         "Lists: keeping many values in order"
     assert cm.node_label("Tutorial 14: Expressions Come Alive") == \
         "Expressions Come Alive"
+
+
+class TestALaterUseIsNotAnIntroduction:
+    def test_a_marked_later_use_reads_as_the_plain_word(self, tmp_path, monkeypatch):
+        # `*matrix*{.term}` marks a later use for the hover definition. It is
+        # not an introduction, and its `{.term}` is not the word "term".
+        (tmp_path / "mod").mkdir(parents=True)
+        (tmp_path / "mod" / "sample.md").write_text(
+            "# Sample\n\nA new *vector* here, and a *matrix*{.term} from before.\n"
+        )
+        monkeypatch.setattr(cm, "TUTORIALS", tmp_path)
+        tutorial = cm.Tutorial(
+            slug="sample", title="Sample", course="mod", series="s", order=1,
+            sections=[],
+        )
+        prose = cm.prose_of(tutorial)
+        found = [plain or bold for plain, bold in cm.EMPHASIS_RE.findall(prose)]
+        assert found == ["vector"]
+        assert "matrix from before" in prose
+        assert "term" not in prose

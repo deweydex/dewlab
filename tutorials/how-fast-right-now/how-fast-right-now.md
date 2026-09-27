@@ -45,7 +45,7 @@ On this page we:
 - find its average speed between two times, as the *slope*{.term} of a chord
 - shrink the chord, and watch the average speeds settle
 - name the number they settle on: the derivative
-- add `derivative_at` to the *toolkit*{.term}, and see why its step is one
+- add `derivative_at` to the toolkit, and see why its step is one
   millionth
 - draw the tangent line, the straight line the curve looks like up close
 
@@ -245,7 +245,7 @@ As the second stone moves up towards the first, the two ends of the
 chord close in. The blue line through them is drawn long, so you can
 see its direction. It turns a little less on each frame, and settles.
 The slope above the graph falls to about 11.02. The animation loops.
-Run the *cell*{.term} again to watch it from the start.
+Run the cell again to watch it from the start.
 
 ## The derivative is a limit
 

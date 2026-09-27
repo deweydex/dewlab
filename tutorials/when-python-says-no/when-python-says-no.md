@@ -22,7 +22,7 @@ covers:
 # When Python says no: reading error messages
 
 You press Run, and instead of an answer, red text appears under the
-*cell*{.term}. For a moment it can feel like a judgement on you. In fact, Python
+cell. For a moment it can feel like a judgement on you. In fact, Python
 is telling you, as exactly as it can, which move it could not make, and
 where. Every programmer sees these messages every day, including the
 ones who wrote Python.
@@ -35,7 +35,7 @@ On this page we:
 
 - read an error message from its last line up
 - meet the five errors people see most often when they start
-- follow an error back through two *functions*{.term} to the line responsible
+- follow an error back through two functions to the line responsible
 - see how Python's messages compare with a compiler's and a linker's
 - fix a broken piece of display code, one error at a time
 
@@ -106,7 +106,7 @@ Python stops, and shows this report. A report like this is called a
 We read a traceback from the bottom up. The last line has three parts:
 
 1. **The kind of error**, before the colon: `NameError`.
-2. **What happened**, after the colon: the *name*{.term} `numbr` is not defined.
+2. **What happened**, after the colon: the name `numbr` is not defined.
 3. **Sometimes, a suggestion**: did you mean `number`?
 
 Then the lines above say where: line 2 of this cell, with a copy of

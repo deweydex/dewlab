@@ -7,7 +7,7 @@ version: 2026.09.26.1
 # Starting a total: a closer look at total = 0
 
 In [Repeating steps with loops](tutorial:repeating-yourself#sigma-notation-mathematics-meets-loops),
-`total = 0` sat above every loop that added things up. What happens when
+`total = 0` sat above every *loop*{.term} that added things up. What happens when
 that line moves inside the loop? Here are two ideas. Both are reasonable,
 and they cannot both be true.
 
@@ -67,7 +67,7 @@ A recipe works the same way. "Start with an empty bowl" is said once, and
 nobody empties the bowl again at every step. So a line that looks like
 preparation feels like something that happens once, before the real work.
 
-Python reads a program differently. It does not look at the whole program
+Python reads a *program*{.term} differently. It does not look at the whole program
 and decide what is true. It takes one line at a time, and each line is an
 action it takes when it reaches it. `total = 0` is not a fact about
 `total`. It is an instruction: make `total` 0, now.
