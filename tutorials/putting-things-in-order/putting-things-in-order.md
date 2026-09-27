@@ -62,7 +62,7 @@ print(numbers)
 ```
 
 `a, b = b, a` works because Python calculates the whole right-hand side
-first, and only then gives the *values*{.term} to the names on the left. Many other
+first, and only then gives the values to the names on the left. Many other
 languages need a spare *variable*{.term}: `spare = a`, then `a = b`, then
 `b = spare`.
 

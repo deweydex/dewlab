@@ -66,7 +66,7 @@ not there.
 |---|---|
 | `IndexError` | You asked for a position the list does not have. |
 | `KeyError` | You asked for a *key*{.term} the dictionary does not have. The message shows the key you asked for. |
-| `AttributeError` | You asked a *value*{.term} for something it does not have, such as a method. Often the value is not the type you thought. |
+| `AttributeError` | You asked a value for something it does not have, such as a method. Often the value is not the type you thought. |
 | `TypeError: '...' object is not callable` | You put brackets after something that is not a function. Often a name you gave a value was already the name of a function. |
 
 ### Your turn

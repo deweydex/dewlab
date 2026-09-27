@@ -94,3 +94,12 @@ def test_a_frequent_term_is_marked_only_near_its_start(monkeypatch):
     assert not term_uses.after_its_start("later", "matrix")
     # Only courses that list the page count.
     assert not term_uses.after_its_start("other", "cell")
+
+
+def test_a_plain_plural_is_a_use(tmp_path):
+    page = _page(
+        tmp_path,
+        "<p>Both functions return a list.</p>",
+        [{"term": "function", "kind": "concept", "definition": "a tool", "origin": EARLIER}],
+    )
+    assert [name for name, count, around in term_uses.candidates(page)] == ["function"]

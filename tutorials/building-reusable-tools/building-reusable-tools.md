@@ -166,7 +166,7 @@ different answers.
 
 Small, tested functions can be built into bigger ones. The *standard
 deviation* measures how spread out numbers are round their mean. For every
-*value*{.term} in a list:
+value in a list:
 
 1. Find the mean.
 2. For each value, take its difference from the mean, and square it.

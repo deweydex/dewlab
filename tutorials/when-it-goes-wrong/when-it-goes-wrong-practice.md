@@ -124,7 +124,7 @@ that failed?
 <details class="dl-answer"><summary>answer</summary>
 
 The line that failed is often correct, and the cause is earlier in the
-*program*{.term}. A *value*{.term} is made in one place and used in another. The chain shows
+*program*{.term}. A value is made in one place and used in another. The chain shows
 how the bad value travelled, call by call, so you can trace it to where
 it came from.
 

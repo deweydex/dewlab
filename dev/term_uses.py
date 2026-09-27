@@ -14,6 +14,7 @@ Prose is what the author wrote: a cell, with its label and report panel,
 and a predict block's buttons are left out. A longer term holding a shorter
 one wins ("selection sort" is not a use of "selection"), and a term with a
 capital (None, ASCII) is matched as written, so "there is none" is not None.
+A plain plural counts, so a page that only says "functions" lists *function*.
 
 Reads the built site, so run `python3 build.py` first.
 
@@ -244,7 +245,7 @@ def candidates(page: Path) -> list[tuple[str, int, str]]:
             if len(longer) > len(name) and re.search(rf"\b{re.escape(name)}\b", longer, re.I):
                 searched = re.sub(rf"\b{re.escape(longer)}\b", " ", searched, flags=re.I)
         flags = 0 if name != name.lower() else re.I
-        uses = list(re.finditer(rf"\b{re.escape(name)}\b", searched, flags))
+        uses = list(re.finditer(rf"\b{re.escape(name)}(s|es)?\b", searched, flags))
         if uses:
             first = uses[0]
             around = searched[max(0, first.start() - 60): first.end() + 60].strip()

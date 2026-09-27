@@ -74,7 +74,7 @@ the function is for.
 
 ## 4. The middle value
 
-The *median* is the middle *value*{.term} of a list once it is *sorted*{.term}. With an even
+The *median* is the middle value of a list once it is *sorted*{.term}. With an even
 number of values, it is the mean of the two in the middle. Can you write
 `median(numbers)`, and add tests of your own?
 

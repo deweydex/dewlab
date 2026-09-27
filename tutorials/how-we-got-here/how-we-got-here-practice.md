@@ -111,7 +111,7 @@ They are 255, 127 and 80. This colour is called coral.
 
 ## 7. Reading hex without int
 
-Can you write `read_hex(text)`, which gives the *value*{.term} of a hex string like
+Can you write `read_hex(text)`, which gives the value of a hex string like
 `"2A"`, without `int(text, 16)`? `digits.index(character)` gives where a
 character is in the string `digits`.
 

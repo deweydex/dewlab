@@ -549,7 +549,7 @@ print("Object-oriented:", NumberList(numbers).doubled())
 ```
 
 The procedural version says *how*, step by step. The comprehension says
-*what*. The functional version treats `double` as a *value*{.term}, handed to
+*what*. The functional version treats `double` as a value, handed to
 another function, as `sorted()` was handed a `key=`. And the
 object-oriented version makes a new kind of thing, a `NumberList`, that
 carries its values and knows how to double them. `self` is the particular
