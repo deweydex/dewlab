@@ -519,17 +519,18 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   makes the mistakes, but this module uses "somebody" or an unnamed
   worked line instead. The mistake belongs to no one, and there is no
   name to translate.
-- **Colour words** (in progress). Some pictures tell parts apart only by
-  colour, and the pages name the parts by colour. Measured under
-  simulated colour blindness, the yellow, green and blue tints stay
-  apart for red-green colour blindness in both themes, but green and
-  blue merge for tritanopia, and a colour's name does not help a reader
-  who cannot match it. The plan: the prose names each part by what it
-  is as well as its colour, and a new "patterns in pictures" display
-  setting, off by default, adds stripes and dots to the tinted parts.
-- **Glossary files** (in progress). No Zen page has a
-  `<slug>.glossary.yaml` yet, so none of its terms reach the reference
-  panel or the definitions shown on hover (7.273).
+- **Colour words** (done, 7.279). Measured under simulated colour
+  blindness, the yellow, green and blue tints stay apart for red-green
+  colour blindness in both themes, but green and blue merge for
+  tritanopia. The prose now names each part by where it is as well as
+  its colour, and the display setting *Patterns in pictures*, off by
+  default and on under high contrast, lays a different pattern over each
+  tint. A new picture gets its patterns from `add_patterns()` in
+  `dev/graphics/palette.py`, which `zen.py` already calls.
+- **Glossary files** (done, 7.279). Every Zen tutorial page has a
+  `<slug>.glossary.yaml`. A new page needs one too, written to
+  `.claude/skills/tutorial-glossary/SKILL.md`; a later use of a term is
+  marked `*term*{.term}`.
 - **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
   in the site's theme colours, so they read in light, dark and high
   contrast.
