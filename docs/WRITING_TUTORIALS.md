@@ -691,6 +691,74 @@ variant with a neutral prompt and no solution. An inputs block there gives a
 **Try these on your code** button, and the table has only the reader's
 column.
 
+<a id="choose-your-project"></a>
+### Choose your project
+
+A world changes a task's setting. A project changes the job an idea does
+(DECISIONS_LOG 7.288): where one idea has several good uses, a page offers
+two to four short projects, and a project of the reader's own, and the
+reader picks one. A page can have worlds, projects, or both.
+
+The frontmatter names each project, with what its card and the comparison
+table show:
+
+```yaml
+projects:
+  best-line:
+    title: The best line through data
+    question: How fast has life expectancy in Ireland been rising?
+    make: the line that fits the data best
+    maths: the slope of an error, set to 0 (least squares)
+    data: Ireland's life expectancy, 1990 to 2019
+    picture: card-best-line.svg      # optional, in the tutorial's folder
+  own:
+    title: A project of your own
+    question: Where does something you care about turn, or change fastest?
+    make: a finder for your own rule or numbers
+    maths: flat or steep, whichever your question needs
+    data: a rule or a list of numbers you choose
+    own: true                        # the wide card under the grid; last
+```
+
+The `question` leads the card, so write it as the thing a curious reader
+would want to know. Each project is a wrapper in the page, in the same
+order, opening with its own `##` heading:
+
+````markdown
+<div class="dl-project" data-project="best-line">
+
+## Project 3: The best line through data
+
+…the project, cells and all…
+
+</div>
+````
+
+**What the reader sees.** Just before the first project, the build puts a
+grid of cards, each led by its question, the project of your own as a wide
+card under it, and a table with the projects side by side. The projects
+start closed, showing only their headings. A card or a row opens that
+project and goes to it; its heading opens and closes it; "Try another
+project" at its end goes back to the cards. What a reader opened, or
+worked in, stays open next time. Without JavaScript every project is open
+and every card is a link.
+
+**Rules that keep it working.** Nothing after the projects may rely on a
+particular one: the toolkit and the unit's product use only the shared
+opening. A project counts towards the page's progress once the reader has
+run one of its cells, so doing one of four never reads as a quarter done;
+"run all" and the export leave out a project the reader has not opened.
+The project of your own has a brief and an empty cell, and no solution to
+compare with.
+
+**What the build refuses:** a project id that is not a key like
+`best-line`, a project missing one of the five fields, a picture not in the
+tutorial's folder, more than one project marked `own`, an `own` project
+that is not last, a project with no wrapper, a wrapper for a project the
+frontmatter does not list, wrappers in a different order, a wrapper inside
+another or with no `</div>`, a wrapper that does not open with a `##`
+heading, and an opening tag that shares its line with other text.
+
 ---
 
 ## Code students only read

@@ -168,13 +168,19 @@ them, so the reader tests somebody else's reasoning before their own:
 - They make mistakes; the reader never gets called one.
 
 **Choose your project.** Where one idea has several good uses, the page
-offers two to four short projects and the reader picks one: "choose one
-of these, or do more than one if you like". Each project is complete on
-its own, is a few cells long, and ends with its own check. The first
-use is Unit 9, where the derivative finds the bottom of a letter's curve,
-the edge of a shape in an image, the best line through data, or the
-lowest point of a cost by walking downhill (gradient descent). A mixed
-page may offer a choice of products in the same way.
+offers two to four short projects and a project of the reader's own, and
+the reader picks one: "one is enough, and you can come back for another".
+Each project is complete on its own, is a few cells long, and ends by
+setting what it found beside what was expected. The first use is Unit 9,
+where the derivative finds the bottom of a letter's curve, the edge of a
+shape in an image, the best line through data, or the lowest point of a
+cost by walking downhill (gradient descent). Each unit's mixed page offers
+a choice of products in the same way. The page shows a grid of cards, each
+led by a curious question, then a table of the projects side by side; the
+projects start closed and a card opens one (7.288,
+`docs/WRITING_TUTORIALS.md#choose-your-project`). Projects are not worlds:
+the track uses no worlds yet, and a project changes the job, not the
+setting.
 
 ## 5. The units
 
@@ -453,11 +459,12 @@ Toolkit gains `derivative_at`, `bisect_root`, `newton`.
 
 9.5 is the first "choose your project" page (§4): after a short shared
 opening (a slope of 0 marks a turn, a large slope marks fast change) the
-reader picks one or more of four self-contained projects, each ending in
-its own `check()`: the bottom of a letter drawn with a cubic Bézier curve,
-an edge in a row of pixels and in a small picture, the least-squares line
-through Ireland's life expectancy, and gradient descent. It has no practice
-page: each project is its own practice, and the mixed page follows.
+reader picks one or more of four self-contained projects, or one of their
+own, each ending by setting what it found beside what was expected: the
+bottom of a letter drawn with a cubic Bézier curve, an edge in a row of
+pixels and in a small picture, the least-squares line through Ireland's
+life expectancy, and gradient descent. It has no practice page: each
+project is its own practice, and the mixed page follows.
 
 Unit product (on `mixed-change`): a best-moment finder, `best_point`, that
 finds a rule's top or bottom (the letter's bowl first) and the moment it
