@@ -1,5 +1,6 @@
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
+import { waitForLine } from "./input-wait.js";
 
 let pyodide = null; // the Pyodide interpreter, once boot() finishes
 let tools = null; // the imported tutorial_tools Python module
@@ -277,9 +278,22 @@ async function runCell(cellId, code, expect, label) {
 
 /* The comparison view (#312): tutorial_tools.compare() evaluates the
  * inputs against copies of the page namespace, so nothing the reader has
- * is changed by asking. A JSON string back, like run_cell_report(). */
-async function compare(solution, inputs, tests) {
-  return JSON.parse(await tools.compare(solution ?? null, inputs, tests ?? null));
+ * is changed by asking. `typed` is the cell's ```typed lines as JSON, for
+ * input() to read. A JSON string back, like run_cell_report(). */
+async function compare(solution, inputs, tests, typed) {
+  return JSON.parse(await tools.compare(solution ?? null, inputs, tests ?? null, typed ?? null));
+}
+
+/* input() waits here for the page to answer (assets/input-wait.js). Given to
+ * tutorial_tools as its live reader once the page has sent the buffer; a
+ * page that is not cross-origin isolated never sends one, and input() then
+ * says it cannot wait. */
+function readLine(inputBuffer, prompt, cellId) {
+  return waitForLine(
+    inputBuffer,
+    () => post({ type: "input-request", cellId, prompt }),
+    () => pyodide.checkInterrupt(),
+  );
 }
 
 async function resetPageState() {
@@ -361,10 +375,12 @@ self.onmessage = async (ev) => {
       respond("ok");
     } else if (msg.type === "set-interrupt-buffer") {
       pyodide.setInterruptBuffer(new Int32Array(msg.buffer));
+    } else if (msg.type === "set-input-buffer") {
+      tools._set_live_reader((prompt, cellId) => readLine(msg.buffer, prompt, cellId));
     } else if (msg.type === "run-cell") {
       respond(await runCell(msg.cellId, msg.code, msg.expect, msg.label));
     } else if (msg.type === "compare") {
-      respond(await compare(msg.solution, msg.inputs, msg.tests));
+      respond(await compare(msg.solution, msg.inputs, msg.tests, msg.typed));
     } else if (msg.type === "reset-page-state") {
       await resetPageState();
       respond("ok");

@@ -110,6 +110,9 @@ Then, on a machine with the network off (or with everything but
 - [ ] the page loads with no failed requests
 - [ ] adding a Python cell and running `print(6 * 7)` prints `42`
 - [ ] the Stop button interrupts a `while True: pass`
+- [ ] a cell running `print("Hi " + input("Name? "))` shows a box after
+      `Name? `; typing `Ada` and pressing Enter prints `Name? Ada` and
+      `Hi Ada` (`assets/input-wait.js`, 7.284)
 - [ ] a text cell with `Solve $x^2 = 4$.` renders as real maths, with no
       failed request for `katex.bundle.js`, `katex.min.css`, or a font
       (DECISIONS_LOG.md 7.107 — the offline copy carries all three so a

@@ -27,6 +27,10 @@ is an expression, a table drawn as a table, and a chart drawn as a picture. If
 something goes wrong, you get an error message trimmed down to your own line
 rather than a wall of text you did not write.
 
+Some programs ask you something with `input()`. Then a box appears in the
+cell's output, after the question. Type your answer, then press Enter, and
+the program continues. To stop a program while it waits, press **Stop**.
+
 The cells on one page share their variables from top to bottom, so a cell near
 the end can use something a cell near the start set up. Each page starts fresh,
 though, so a variable from one tutorial is not there on the next. The Dewey

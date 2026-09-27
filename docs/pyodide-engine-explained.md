@@ -131,6 +131,19 @@ This only works when the browser actually handed out a
 cross-origin isolation — the reason every page that uses this module
 registers a COI service worker.
 
+**The input buffer.** `input()` is the same problem the other way round:
+Python in the Worker has to stop and wait for a line, and a thread that
+is waiting cannot read a message. So `bootWorker()` sends a second
+`SharedArrayBuffer`, the input buffer, whenever it sends the interrupt
+buffer. When a cell calls `input()`, the Worker posts `"input-request"`,
+`askForLine()` puts a box after the prompt in that cell's output, and
+Enter writes the line into the buffer (`assets/input-wait.js`, and
+[`input-wait-explained.md`](input-wait-explained.md)).
+`requestInterrupt()` also ends a wait, so Stop stops a program that is
+waiting for typing, and `restart()` removes the box. On the main-thread
+fallback nothing can wait for a box, so `bootMainThread()` gives Python
+the browser's own dialog (`askInDialog()`) instead.
+
 ---
 
 ## Where to look for something specific
