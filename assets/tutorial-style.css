@@ -159,7 +159,7 @@
   }
 }
 
-/* Patterns in pictures (DECISIONS_LOG 7.282). A generated picture can
+/* Patterns in pictures (DECISIONS_LOG 7.283). A generated picture can
  * carry a copy of each tinted area filled with stripes or dots
  * (dev/graphics/palette.py, add_patterns), so a reader who cannot tell
  * the tints apart can still tell the parts apart. The copy is hidden
@@ -3997,7 +3997,8 @@ p code, li code {
    `position: fixed` elements, not one toolbar with a shared wrapper
    (initReferenceLookup()'s own comment says why). */
 .dl-lookup,
-.dl-highlight-btn {
+.dl-highlight-btn,
+.dl-myword-btn {
   position: fixed;
   z-index: 45;
   font: inherit;
@@ -4019,7 +4020,9 @@ p code, li code {
 .dl-lookup:hover,
 .dl-lookup:focus-visible,
 .dl-highlight-btn:hover,
-.dl-highlight-btn:focus-visible {
+.dl-highlight-btn:focus-visible,
+.dl-myword-btn:hover,
+.dl-myword-btn:focus-visible {
   color: var(--dl-orange);
   border-color: var(--dl-orange);
 }
@@ -4027,8 +4030,9 @@ p code, li code {
 /* Printing a page should not print a transient button, and a reader who
    has turned motion or chrome down does not need it either. */
 @media print {
-  .dl-lookup, .dl-highlight-btn, .dl-highlight-popover, .dl-def-popover { display: none !important; }
-  .dl-def { text-decoration: none; }
+  .dl-lookup, .dl-highlight-btn, .dl-myword-btn, .dl-highlight-popover, .dl-def-popover,
+  .dl-myword-popover { display: none !important; }
+  .dl-def, .dl-myword { text-decoration: none; }
 }
 
 /* A term the author marked shows its definition on hover, tap or focus
@@ -4050,7 +4054,8 @@ em.term, .term em { font-style: normal; }
   border-radius: 2px;
 }
 
-.dl-def-popover {
+.dl-def-popover,
+.dl-myword-popover {
   position: fixed;
   z-index: 46;
   width: min(20rem, calc(100vw - 1rem));
@@ -4064,8 +4069,10 @@ em.term, .term em { font-style: normal; }
   font-size: 0.9rem;
   line-height: 1.45;
 }
-.dl-def-popover p { margin: 0.25rem 0 0.4rem; }
-.dl-def-popover button {
+.dl-def-popover p,
+.dl-myword-popover p { margin: 0.25rem 0 0.4rem; }
+.dl-def-popover button,
+.dl-myword-popover button {
   font: inherit;
   font-size: 0.82rem;
   padding: 0;
@@ -4788,3 +4795,64 @@ em.term, .term em { font-style: normal; }
   font-size: 0.72rem;
   color: var(--dl-muted);
 }
+
+/* My words (#340; assets/my-words.js). A saved word is marked where it
+   appears again with a thin dashed line, so it is not mistaken for a term
+   the author marked (.dl-def's dotted one). */
+.dl-myword {
+  text-decoration: underline dashed;
+  text-decoration-color: var(--dl-orange);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  cursor: help;
+}
+.dl-myword:focus-visible {
+  outline: 2px solid var(--dl-orange);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+.dl-word-form {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.6rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.4rem;
+}
+.dl-word-form[hidden] { display: none; }
+.dl-word-label { font-weight: 600; font-size: 0.85rem; }
+.dl-word-input,
+.dl-words-search {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--dl-panel-border, var(--dl-muted));
+  border-radius: 0.3rem;
+  background: var(--dl-bg, transparent);
+  color: var(--dl-fg);
+  min-width: 0;
+}
+.dl-words-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0.4rem 0;
+}
+.dl-words-search { flex: 1 1 10rem; }
+.dl-words-controls .dl-seg { flex: 0 0 auto; }
+.dl-words-controls .dl-seg button { white-space: nowrap; }
+.dl-words-list { list-style: none; margin: 0; padding: 0; }
+.dl-word-group { margin: 0.6rem 0 0; }
+.dl-word-page { margin: 0 0 0.25rem; font-weight: 600; font-size: 0.85rem; }
+.dl-word-item {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-left: 3px solid var(--dl-orange);
+  background: var(--dl-panel-bg);
+}
+.dl-word-item p { margin: 0.15rem 0; font-size: 0.88rem; }
+.dl-word-empty { color: var(--dl-muted); font-style: italic; }
+.dl-word-sentence,
+.dl-word-definition { color: var(--dl-muted); }
+.dl-word-actions .dl-btn { font-size: 0.8rem; padding: 0.15rem 0.5rem; }

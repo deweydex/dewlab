@@ -333,7 +333,7 @@ def test_the_settings_panel_switches_theme_font_and_width(page):
 
 def test_patterns_in_pictures_show_when_asked_for_or_with_high_contrast(page):
     # A generated picture carries its pattern layer always; the setting only
-    # decides whether it is seen (DECISIONS_LOG 7.282).
+    # decides whether it is seen (DECISIONS_LOG 7.283).
     page.evaluate("""() => {
         const ns = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(ns, "svg");
