@@ -46,8 +46,10 @@ sense.
 3. **Output sinks** — the three classes described above.
 4. **Cell state** — `_CellContext` (everything true about one cell while
    it's running), the module-level `_current` cell, `_page_globals` (the
-   one namespace every cell on a page shares), and `_StreamWriter` (how
-   `print()` gets redirected into a cell's output).
+   one namespace every cell on a page shares), `_StreamWriter` (how
+   `print()` gets redirected into a cell's output), and `_Stdin` (where
+   `input()` reads from: a cell's ```typed lines, or the reader typing,
+   through the reader the page sets with `_set_live_reader()`).
 5. **Value rendering** — `_render_value` and everything it depends on:
    detecting a DataFrame, a matplotlib figure, or a plotting "artist," and
    turning each into the right kind of HTML.
@@ -115,6 +117,24 @@ matters, because if it didn't, the *next* thing that tried to print
 (another cell, or dewlab's own code) would end up writing into a cell
 that had already finished.
 
+`sys.stdin` gets the same treatment, which is how `input()` works on a
+page without dewlab replacing `input()` itself. With `sys.stdout`
+replaced, Python's own `input()` prints its prompt there and then calls
+`sys.stdin.readline()`, so `_begin()` puts a `_Stdin` in place. Its
+`readline()` takes the next line from a list, when it was given one (the
+build passes a cell's ```typed lines), or asks `_live_reader`, the
+function the page's engine set with `_set_live_reader()`: in a Worker,
+one that blocks until the reader presses Enter in a box under the cell
+(`assets/input-wait.js`); on the main thread, the browser's own dialog.
+The prompt it hands that function is `_CellContext.line`, what has been
+printed since the last newline, which `_StreamWriter` keeps up to date.
+Either way, `_Stdin` prints the line after the prompt, as a terminal
+shows what was typed, so the output reads like the session it was.
+With no list and no reader, which is a Worker on a page that never became
+cross-origin isolated, `input()` raises an `EOFError` that says so in
+words. A `_Stdin(live=False)` never waits for anyone; `compare()` uses
+one.
+
 **Binding a closure's variables early.** Several widget functions build a
 JavaScript event handler as a small Python function defined right there,
 e.g. `_mount_widget`'s `on_change`. Giving it default-argument values
@@ -167,7 +187,11 @@ more detail; it's worth reading once, since the same shape shows up in
   do not. `_statements()`/`_run_statement()` run a reader's own test
   cell one statement at a time on both sides. Printed output is
   swallowed and any new figure closed, so nothing lands in the next
-  cell. `build.py`'s `check_solutions()` imports this same module in a
+  cell. Nobody can type during a comparison, so `input()` reads the
+  cell's ```typed lines (`typed_json`), starting again at the first line
+  for the solution's run and for each case on each side, as a program
+  run with its input from a file would; with none, it raises.
+  `build.py`'s `check_solutions()` imports this same module in a
   separate Python and calls this same function, so what the build
   checks is what a reader sees.
 - **"What does the page learn about a run beyond its output?"** —
