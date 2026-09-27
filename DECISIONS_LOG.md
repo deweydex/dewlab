@@ -5362,7 +5362,6 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 *Cost to change: the sixteen new page ids and their question ids become a contract once a class has used them. A title is one line in a page's frontmatter. A picture is one entry in `dev/graphics/zen.py`'s `DIAGRAMS`.*
 
-
 ---
 
 **7.271 — Text Generation: a book of your own, and a chain that names the writer of a passage it has never seen.** The content issue (#331), part of #306.
