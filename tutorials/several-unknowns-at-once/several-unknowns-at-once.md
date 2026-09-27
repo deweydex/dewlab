@@ -89,7 +89,7 @@ and the number of text requests $c$. The first fact, in symbols, is
 
 $$a + c = 230$$
 
-Is that enough to find $a$? Try some *pairs*{.term}: 200 images and 30 pages
+Is that enough to find $a$? Try some pairs: 200 images and 30 pages
 of text, or 115 and 115. Each one makes 230. The cell counts every
 pair of whole numbers that fits. How many do you expect?
 
@@ -126,7 +126,7 @@ equations that must be true at the same time, for the same unknowns,
 are called *simultaneous equations*. The pair that makes them all true
 is their *solution*.
 
-The *search*{.term} worked because the answers had to be whole numbers under
+The search worked because the answers had to be whole numbers under
 231. If the unknowns were measured amounts, such as sizes in megabytes,
 there would be far too many cases to try. We need a method.
 

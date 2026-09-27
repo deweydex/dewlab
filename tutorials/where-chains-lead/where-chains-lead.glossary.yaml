@@ -28,9 +28,8 @@ entries:
     kind: concept
     definition: >
       The stationary distribution is the state vector that stays the same
-      when you multiply it by the transition matrix again. For chains like
-      the ones on this page, the state vector settles on it wherever it
-      started.
+      when you multiply it by the transition matrix again. For many chains,
+      the state vector settles on it wherever it started.
     example: "pi @ P == pi"
   - term: random surfer
     kind: concept

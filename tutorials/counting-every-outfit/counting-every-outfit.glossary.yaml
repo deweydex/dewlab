@@ -28,8 +28,9 @@ entries:
   - term: pair
     kind: concept
     definition: >
-      A pair is two values in round brackets, in a fixed order. It is a
-      tuple with two values in it.
+      A pair is two values in round brackets, in a fixed order, like
+      ("H", 4). Python calls a group of values in round brackets a tuple,
+      so a pair is a tuple with two values in it.
     example: '("white shirt", "jeans")'
   - term: fundamental principle of counting
     kind: formula

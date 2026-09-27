@@ -31,8 +31,8 @@ entries:
   - term: "inverse(m)"
     kind: function
     definition: >
-      The function you write on this page. For a 2×2 matrix [[a, b], [c, d]]
-      it swaps a and d, changes the signs of b and c, and divides every
-      entry by the determinant. It raises a ValueError when the determinant
-      is 0.
+      Returns the inverse of a 2×2 matrix [[a, b], [c, d]]. It swaps a and
+      d, changes the signs of b and c, and divides every entry by the
+      determinant. It raises a ValueError when the determinant is 0. You
+      write it in Inverse matrices.
     example: "inverse([[0, -1], [1, 0]]) gives [[0.0, 1.0], [-1.0, 0.0]]"

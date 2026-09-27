@@ -2,7 +2,7 @@
 title: "Solving equations: linear, quadratic and simultaneous — Practice"
 practice_for: cracking-equations
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 worlds:
   music: A band, its gigs and its tickets. The numbers are made up.
   electronics: Batteries, resistors and the voltages between them.
@@ -179,13 +179,13 @@ def solve_quadratic(a, b, c):
     d = b * b - 4 * a * c
     if d > 0:
         root = math.sqrt(d)
-        return ((-b + root) / (2 * a), (-b - root) / (2 * a))
+        return [(-b + root) / (2 * a), (-b - root) / (2 * a)]
     if d == 0:
-        return (-b / (2 * a),)
-    return ()
+        return [-b / (2 * a)]
+    return []
 
 
-for coeffs in [(1, -4, 3), (1, -2, 1), (1, 0, 5), (1, 0, -9)]:
+for coeffs in [[1, -4, 3], [1, -2, 1], [1, 0, 5], [1, 0, -9]]:
     print(coeffs, "->", solve_quadratic(*coeffs))
 ```
 
@@ -255,20 +255,20 @@ def solve_quadratic(a, b, c):
     """Real roots of ax^2 + bx + c = 0."""
     if a == 0:
         if b == 0:
-            return ()
-        return (-c / b,)
+            return []
+        return [-c / b]
     d = b * b - 4 * a * c
     if d > 0:
         root = math.sqrt(d)
-        return ((-b + root) / (2 * a), (-b - root) / (2 * a))
+        return [(-b + root) / (2 * a), (-b - root) / (2 * a)]
     if d == 0:
-        return (-b / (2 * a),)
-    return ()
+        return [-b / (2 * a)]
+    return []
 ```
 
 With $a = 0$ the equation is linear, $bx + c = 0$, and its one solution
 is $-\frac{c}{b}$, as in `solve_linear`. The new version returns
-`(2.0,)`.
+`[2.0]`.
 
 </details>
 

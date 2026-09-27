@@ -1,7 +1,7 @@
 ---
 title: "Solving equations: linear, quadratic and simultaneous"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 covers:
   solving-linear-equations:
     touches: [MIT-1.7]
@@ -194,14 +194,14 @@ find roots for these equations after all.
 
 Can you write `solve_quadratic(a, b, c)`? It takes the three numbers in
 the order they appear in $ax^2 + bx + c$, and returns the real
-solutions as a tuple: two roots, one root, or none.
+solutions as a list: two roots, one root, or none.
 
 ```python exec
 id: your-turn-3
 import math
 
 def solve_quadratic(a, b, c):
-    """The real roots of ax^2 + bx + c = 0, as a tuple."""
+    """The real roots of ax^2 + bx + c = 0, as a list."""
     # Your code here.
 ```
 
@@ -215,10 +215,10 @@ after: 3 errors
 title: the steps, in words
     SET discriminant = b^2 - 4*a*c
     IF discriminant > 0:
-        RETURN ((-b + sqrt(discriminant)) / (2*a), (-b - sqrt(discriminant)) / (2*a))
+        RETURN [(-b + sqrt(discriminant)) / (2*a), (-b - sqrt(discriminant)) / (2*a)]
     IF discriminant == 0:
-        RETURN (-b / (2*a),)
-    RETURN ()
+        RETURN [-b / (2*a)]
+    RETURN []
 ```
 
 ```inputs
@@ -232,17 +232,16 @@ solve_quadratic(2, 3, -2)     # 2x^2 + 3x - 2 = 0
 
 ```solution
 def solve_quadratic(a, b, c):
-    """The real roots of ax^2 + bx + c = 0, as a tuple."""
+    """The real roots of ax^2 + bx + c = 0, as a list."""
     discriminant = b ** 2 - 4 * a * c
     if discriminant > 0:
         root = math.sqrt(discriminant)
-        return ((-b + root) / (2 * a), (-b - root) / (2 * a))
+        return [(-b + root) / (2 * a), (-b - root) / (2 * a)]
     if discriminant == 0:
-        return (-b / (2 * a),)
-    return ()
+        return [-b / (2 * a)]
+    return []
 ---
-A tuple of one needs its comma: `(-b / (2 * a),)`. An empty tuple
-means there are no real roots.
+An empty list, `[]`, means there are no real roots.
 ```
 
 ### Checking a root
@@ -281,10 +280,10 @@ def verify_roots(a, b, c, roots):
 
 ```inputs
 guess: yes
-verify_roots(1, -4, 3, (1, 3))
-verify_roots(1, -4, 3, (1, 2))           # 2 is not a root
-verify_roots(3, -7, 2, (2, 1 / 3))       # 1/3 is stored as 0.333...
-verify_roots(1, 0, 5, ())                # no roots to check
+verify_roots(1, -4, 3, [1, 3])
+verify_roots(1, -4, 3, [1, 2])           # 2 is not a root
+verify_roots(3, -7, 2, [2, 1 / 3])       # 1/3 is stored as 0.333...
+verify_roots(1, 0, 5, [])                # no roots to check
 ```
 
 ```solution
@@ -351,10 +350,10 @@ def solve_quadratic(a, b, c):
     discriminant = b ** 2 - 4 * a * c
     if discriminant > 0:
         root = math.sqrt(discriminant)
-        return ((-b + root) / (2 * a), (-b - root) / (2 * a))
+        return [(-b + root) / (2 * a), (-b - root) / (2 * a)]
     if discriminant == 0:
-        return (-b / (2 * a),)
-    return ()
+        return [-b / (2 * a)]
+    return []
 
 
 def bracket(root):
