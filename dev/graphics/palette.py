@@ -35,7 +35,8 @@ SANS = "'Helvetica Neue', Inter, system-ui, sans-serif"
 # stylesheet hides that class unless the reader turns on "Patterns in
 # pictures" or high contrast, so a picture looks the same as before for
 # everyone else. Each tint has its own pattern, so a part can be named by
-# its pattern as well as its colour.
+# its pattern as well as its colour. Every generator writes through
+# `finished()`, at the end of this file, which adds the layer.
 PATTERN_FOR = {
     FILL_AMBER: "stripes",        # stripes one way: /
     FILL_BLUE: "back-stripes",    # stripes the other way: \
@@ -99,3 +100,10 @@ def add_patterns(svg: str, prefix: str) -> str:
     )
     opening_end = patterned.index(">", patterned.index("<svg")) + 1
     return patterned[:opening_end] + f'<defs class="dl-pattern-defs">{defs}</defs>' + patterned[opening_end:]
+
+
+def finished(relative: str, draw) -> str:
+    """The picture a script writes at `relative`: what `draw()` returns,
+    with its pattern layer. Scripts write this, and the tests compare the
+    committed file with it."""
+    return add_patterns(draw(), "dlp-" + relative.replace("/", "-").removesuffix(".svg"))

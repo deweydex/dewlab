@@ -167,6 +167,15 @@
 .dl-pattern { display: none; }
 :root[data-patterns="on"] .dl-pattern,
 :root[data-contrast="high"] .dl-pattern { display: inline; opacity: 0.55; }
+/* Text on a patterned part gets a halo in the page colour, as a map
+ * labels a hatched region, so the stripes never run through a letter. */
+:root[data-patterns="on"] svg:has(.dl-pattern) text,
+:root[data-contrast="high"] svg:has(.dl-pattern) text {
+  paint-order: stroke;
+  stroke: var(--dl-bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
 
 :root[data-motion="reduced"] *,
 :root[data-motion="reduced"] *::before,

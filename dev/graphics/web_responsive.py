@@ -27,6 +27,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from palette import FILL_AMBER, FILL_BLUE, FILL_GREEN, INK, MONO, MUTED, PANEL, RULE  # noqa: E402
+from palette import finished  # noqa: E402
 from web_authoring import LABEL_PT, SMALL_PT, TUTORIALS, _caption, _cell, _drawing, _elements  # noqa: E402
 
 PANEL_GAP = 56
@@ -396,7 +397,7 @@ def main() -> int:
     changed = 0
     for relative, draw in sorted(DIAGRAMS.items()):
         target = TUTORIALS / relative
-        fresh = draw()
+        fresh = finished(relative, draw)
         if target.exists() and target.read_text() == fresh:
             print(f"  unchanged  {relative}")
             continue
