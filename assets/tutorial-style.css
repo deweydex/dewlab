@@ -4847,3 +4847,10 @@ em.term, .term em { font-style: normal; }
 .dl-word-sentence,
 .dl-word-definition { color: var(--dl-muted); }
 .dl-word-actions .dl-btn { font-size: 0.8rem; padding: 0.15rem 0.5rem; }
+
+/* A sound from play() (#415; tutorial_tools.py): the browser's own audio
+   player, with how long the sound is and its rate underneath. */
+.dl-sound { margin: 0.5rem 0; }
+.dl-sound audio { display: block; width: 100%; max-width: 26rem; }
+.dl-sound figcaption { margin-top: 0.2rem; font-size: 0.85rem; color: var(--dl-muted); }
+.dl-sound-note { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--dl-orange); }

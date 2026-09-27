@@ -55,6 +55,7 @@ __all__ = [
     "image_input",
     "show",
     "show_table",
+    "play",
     "load_csv",
     "load_text",
     "run_query",
@@ -1271,6 +1272,84 @@ def show_table(frame, max_rows: int = 20, caption: str | None = None) -> None:
     """Render a DataFrame or Series as a table, truncated to `max_rows`."""
     cell = _require_cell()
     cell.sink.append_html(_table_html(frame, max_rows=max_rows, caption=caption))
+
+
+# The longest sound play() will make. A second at 44,100 samples a second
+# is about 118 KB once encoded, and a cell's output is saved with the page
+# (tutorial-runtime.js drops any output over 100 KB only when storage is
+# already full), so a minute is a sensible ceiling for a lesson.
+PLAY_LONGEST_SECONDS = 60
+
+
+def _wav_bytes(samples: list[float], rate: int) -> tuple[bytes, int]:
+    """16-bit mono WAV bytes for samples between -1 and 1, and how many
+    samples had to be cut to fit that range."""
+    import array
+    import wave
+
+    clipped = 0
+    levels = array.array("h")
+    for sample in samples:
+        if sample > 1 or sample < -1:
+            clipped += 1
+            sample = 1.0 if sample > 1 else -1.0
+        levels.append(int(round(sample * 32767)))
+    if sys.byteorder == "big":  # WAV is little-endian, whatever the machine
+        levels.byteswap()
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as out:
+        out.setnchannels(1)
+        out.setsampwidth(2)
+        out.setframerate(rate)
+        out.writeframes(levels.tobytes())
+    return buffer.getvalue(), clipped
+
+
+def play(samples, rate: int = 8000, label: str | None = None) -> None:
+    """Show a player for a sound, under the cell (#415).
+
+    `samples` is a list of numbers from -1 to 1, one for each moment of the
+    sound, and `rate` is how many of them make one second. Python in the
+    browser cannot reach the speakers itself, so the sound goes into the
+    output as a WAV file inside an ordinary audio player, and the reader
+    presses play: a browser never starts a sound on its own, and a class
+    full of pages that did would be loud. A sample beyond -1 or 1 is cut
+    to fit, and the output says how many were, because that is what makes
+    a sound crackle."""
+    cell = _require_cell()
+    if hasattr(samples, "tolist"):  # a numpy array
+        samples = samples.tolist()
+    try:
+        samples = [float(sample) for sample in samples]
+    except (TypeError, ValueError):
+        raise TypeError("play() needs a list of numbers, one for each sample") from None
+    if not isinstance(rate, int) or isinstance(rate, bool) or not 1000 <= rate <= 192000:
+        raise ValueError("play()'s rate is samples a second: a whole number from 1000 to 192000")
+    if not samples:
+        raise ValueError("play() needs at least one sample")
+    seconds = len(samples) / rate
+    if seconds > PLAY_LONGEST_SECONDS:
+        raise ValueError(
+            f"That sound is {seconds:.0f} seconds long. play() plays up to "
+            f"{PLAY_LONGEST_SECONDS} seconds: try a shorter list of samples."
+        )
+    data, clipped = _wav_bytes(samples, rate)
+    source = "data:audio/wav;base64," + base64.b64encode(data).decode("ascii")
+    parts = [f"{seconds:.2f} seconds at {rate:,} samples a second"]
+    if label:
+        parts.insert(0, str(label))
+    note = ""
+    if clipped:
+        note = (
+            f'<p class="dl-sound-note">{clipped:,} of the {len(samples):,} samples were '
+            "beyond -1 or 1, so they were cut to fit. That is what makes a sound crackle.</p>"
+        )
+    cell.sink.append_html(
+        '<figure class="dl-sound">'
+        f'<audio controls preload="metadata" src="{source}"></audio>'
+        f'<figcaption>{html.escape(" · ".join(parts))}</figcaption>'
+        f"{note}</figure>"
+    )
 
 
 def _widget_id(explicit: str | None, label: str) -> str:

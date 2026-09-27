@@ -1,7 +1,7 @@
 ---
 title: "Make it: a model of your own, built from angles and waves"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.09.27.1
 worlds:
   sea-and-sky: Find a ship's place from the bearings of two lighthouses. The numbers are made up.
   sound: Build a chord from sine waves, and see how its notes fit together.
@@ -105,7 +105,10 @@ Some questions your model could answer:
 - How many beats a second do the piano's notes make against the exact
   fractions?
 - What does a chord of notes that do not fit well, such as 440 and 466
-  Hz, look like when you draw it?
+  Hz, look like when you draw it? What does it sound like?
+
+The cell draws the piano's chord and plays it. `play()` takes a list of
+samples between -1 and 1, and how many of them make one second.
 
 ```python exec
 id: make-it-yours-1--sound
@@ -124,6 +127,10 @@ seconds = [i / 100000 for i in range(2001)]    # 20 milliseconds
 fig, ax = plt.subplots(figsize=(8, 3))
 ax.plot([s * 1000 for s in seconds], [sum(n(s) for n in piano) for s in seconds])
 ax.set_xlabel("milliseconds")
+
+# Two seconds of the chord, 8,000 samples each second. Three notes added
+# together can reach 3, so dividing by 3 keeps every sample between -1 and 1.
+play([sum(n(i / 8000) for n in piano) / 3 for i in range(16000)], rate=8000)
 ```
 
 </div>

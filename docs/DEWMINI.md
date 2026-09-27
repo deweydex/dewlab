@@ -134,6 +134,7 @@ copied:
 |---|---|
 | `show(*values, label=None)` | Show one or more values in the middle of a cell, not just at the end |
 | `show_table(frame, max_rows=20, caption=None)` | Show a DataFrame or Series as a table |
+| `play(samples, rate=8000, label=None)` | A player for a sound: a list of samples from -1 to 1, and how many of them make a second. Press play to hear it |
 | `text_input(label="", value="", id=None)` | A text box — read what was typed with `.value`. **See the note below.** |
 | `dropdown(label="", options=(), value=None, id=None)` | A menu — read the choice with `.value`. **See the note below.** |
 | `slider(label="", low=0, high=10, step=None, value=None, id=None)` | A slider — read where it is with `.value`. Moving it runs the cell again. **See the note below.** |
