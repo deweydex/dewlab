@@ -1,7 +1,7 @@
 ---
 title: "Making change: brute force, memoization and greedy algorithms"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.27.1
 covers:
   trying-every-combination:
     covers: [CMPS-LO9]
@@ -11,8 +11,17 @@ covers:
   the-greedy-shortcut:
     covers: [CMPS-LO9]
     touches: [CMPS-LO5]
+  how-the-work-grows:
+    covers: [CMPS-LO5]
+  how-many-ways:
+    covers: [CMPS-LO9]
   choosing-a-strategy:
     covers: [CMPS-LO9]
+worlds:
+  mazes-and-dungeons: A dungeon merchant who takes gems as payment.
+  maps-and-networks: A post office with stamps of odd values.
+  collections: A collection of the old Irish coins, from before 1971.
+  puzzles: A dragon kingdom with coins of its own.
 ---
 
 # Making change: brute force, memoization and greedy algorithms
@@ -34,9 +43,11 @@ Try it in your head before you run the cell.
 ```python exec
 id: trying-every-combination-1
 TOKENS = [1, 3, 4]
+calls = {"brute force": 0, "cached": 0}    # for counting calls, later on this page
 
 def fewest_tokens_brute_force(amount, denominations):
     """Fewest tokens for amount, trying every denomination at every step."""
+    calls["brute force"] += 1
     if amount == 0:
         return 0
     best = None
@@ -116,6 +127,7 @@ amount.
 ```python exec
 id: remembering-what-we-already-worked-out-1
 def fewest_tokens_cached(amount, denominations, cache=None):
+    calls["cached"] += 1
     if cache is None:
         cache = {}
     if amount == 0:
@@ -146,35 +158,41 @@ whether we reached 2 from 6 by taking a 4, or from 5 by taking a 3. So
 the first time we find the answer for 2, we have found it for every
 path that ever reaches 2.
 
-How much work does it save? The next cell times both functions on larger
-and larger amounts.
+That is also when a cache would *not* be safe. Suppose the till held
+only three `3`s. Then the fewest for 2 would depend on how many `3`s
+the path had used up already, and an answer stored on one path could be
+wrong on another. A cache is safe when the answer depends only on the
+question asked, and on nothing that changes along the way.
+
+How much work does it save? Timing the two would depend on the
+computer, so the next cell counts something that does not: how many
+times each function is called. The `calls` dictionary counts them.
 
 ```python exec
 id: remembering-what-we-already-worked-out-2
-import time
-
-for amount in [10, 15, 20, 22, 24]:
-    start = time.perf_counter()
+for amount in [10, 12, 14, 16, 18, 20, 22, 24]:
+    calls["brute force"] = 0
+    calls["cached"] = 0
     fewest_tokens_brute_force(amount, TOKENS)
-    brute_time = time.perf_counter() - start
-
-    start = time.perf_counter()
     fewest_tokens_cached(amount, TOKENS)
-    cached_time = time.perf_counter() - start
-
-    print(f"amount={amount}: brute force {brute_time:.4f}s, cached {cached_time:.6f}s")
+    print(f"amount={amount}: brute force {calls['brute force']:>6} calls, cached {calls['cached']} calls")
 ```
 
-Each time the amount goes up by 2, brute force takes two or three times
-as long. The cached version hardly changes. The two do not do the same
-work. Brute force walks every path of choices, and meets the same
-smaller amounts again and again along different paths. For an amount of
-20 it calls itself 20,736 times. The cached version finds each amount
-from 0 to 20 once, and after that only looks it up. That makes 56 calls.
+```predict
+type: number
+
+For an amount of 10, the cached version makes 26 calls, and for 12 it
+makes 32. How many will it make for 24?
+```
+
+Brute force walks every path of choices, and meets the same smaller
+amounts again and again along different paths. For an amount of 20 it
+calls itself 20,736 times. The cached version finds each amount from 0
+to 20 once, and after that only looks it up. That makes 56 calls.
 
 ### Your turn
 
-1. Time `fewest_tokens_cached` at `amount=100`.
+1. Count the calls `fewest_tokens_cached` makes for `amount=100`.
 2. Now think about `fewest_tokens_brute_force` at the same amount. Before
    you run anything, predict: would it finish in under a second? Why?
 
@@ -184,8 +202,55 @@ to run it to answer the question.
 
 ```python exec
 id: remembering-what-we-already-worked-out-3
-hint: You do not need to pass a cache={} argument. The function makes a new, empty cache on each call. Use time.perf_counter() before and after the call, as the cell above does.
+hint: Set calls["cached"] = 0, call fewest_tokens_cached(100, TOKENS), then print calls["cached"]. For brute force, look at how many times as many calls each step of 2 makes in the table above.
 ```
+
+## How the work grows
+
+Look at the table again, down each column. Every time the amount goes
+up by 2, brute force makes about 2.6 times as many calls as before. The
+cached version makes 6 more.
+
+```python exec
+id: how-the-work-grows-1
+import matplotlib.pyplot as plt
+
+amounts = list(range(2, 25, 2))
+brute_calls = []
+cached_calls = []
+for amount in amounts:
+    calls["brute force"] = 0
+    calls["cached"] = 0
+    fewest_tokens_brute_force(amount, TOKENS)
+    fewest_tokens_cached(amount, TOKENS)
+    brute_calls.append(calls["brute force"])
+    cached_calls.append(calls["cached"])
+
+plt.plot(amounts, brute_calls, marker="o", label="brute force")
+plt.plot(amounts, cached_calls, marker="o", label="cached")
+plt.yscale("log")
+plt.xlabel("amount")
+plt.ylabel("calls (log scale)")
+plt.legend()
+```
+
+The scale up the side is a *log scale*: each step up multiplies by 10,
+so a count that multiplies by the same amount each time draws a
+straight line. Brute force's line climbs steadily across the page.
+
+These two ways of growing have names. Brute force's count is
+multiplied by a fixed amount for each step up in the size of the
+problem: that is *exponential* growth, and it overwhelms any computer
+soon. The cached count grows by a fixed amount for each step: that is
+*linear* growth, and doubling the amount only doubles the work. At 100,
+the cached version makes 296 calls. Brute force would make about
+$10^{21}$.
+
+Counting steps like this, and watching how the count grows as the
+problem gets bigger, is how people compare algorithms without a
+stopwatch. [Searching a list: linear and binary
+search](tutorial:finding-things) counted the steps of two searches in
+the same way.
 
 ## The greedy shortcut
 
@@ -237,8 +302,23 @@ for amount in [6, 41, 63]:
 
 For every amount tried here, the fast shortcut and the slower, certain
 method agree. That is a property of this set of coin values. It is not
-true of greedy shortcuts in general. The `[1, 3, 4]` tokens above show
-that a greedy shortcut can be wrong, and nothing tells you when it is.
+true of greedy shortcuts in general. Here is a kingdom that mints coins
+of 1, 7 and 10 crowns.
+
+```python exec
+id: the-greedy-shortcut-4
+KINGDOM_COINS = [1, 7, 10]
+
+for amount in [14, 15, 21]:
+    greedy = fewest_tokens_greedy(amount, KINGDOM_COINS)
+    guaranteed = fewest_tokens_cached(amount, KINGDOM_COINS)
+    print(f"amount={amount}: greedy={greedy}, guaranteed correct={guaranteed}")
+```
+
+For 14 crowns, greedy takes a 10 and four 1s: five coins, where two 7s
+would do. For 15, six coins where three would do. For 21 the two
+agree. A greedy shortcut can be wrong, by a lot, and nothing tells you
+when it is.
 
 ### Your turn
 
@@ -257,10 +337,71 @@ hint: A for loop over range(1, 41) can print the amount, the greedy answer and t
 
 With these tokens, the two methods never disagree by more than one
 token. They disagree at `6`, `10`, `14`, `18` and so on. These are the
-amounts that leave `2` after greedy has taken all the `4`s it can. For the last
-`6` of the amount, greedy uses a `4` and two `1`s, where two `3`s would
-do. Other token values can make greedy much worse, as the practice
-page shows.
+amounts that leave `2` after greedy has taken all the `4`s it can. For
+the last `6` of the amount, greedy uses a `4` and two `1`s, where two
+`3`s would do. The kingdom's coins make greedy much worse.
+
+## How many ways?
+
+A different question: how many different handfuls of tokens make the
+amount? Two handfuls with the same tokens in a different order count
+as one. List the handfuls for `6` with tokens of 1, 3 and 4 before you
+run the cell.
+
+```python exec
+id: how-many-ways-1
+def count_ways(amount, coins):
+    """How many different handfuls of coins make the amount. Order does not matter."""
+    if amount == 0:
+        return 1
+    if amount < 0 or not coins:
+        return 0
+    return count_ways(amount - coins[0], coins) + count_ways(amount, coins[1:])
+
+print(count_ways(6, TOKENS))
+```
+
+```predict
+type: number
+
+How many handfuls make 6?
+```
+
+Four: six 1s; three 1s and a 3; two 3s; two 1s and a 4. The last line
+of the function splits every handful into two kinds. Either it uses at
+least one of the first coin, `coins[0]`, and then the rest of it makes
+`amount - coins[0]`. Or it uses none of the first coin, and then it is
+made from `coins[1:]` alone. No handful is both kinds, so nothing is
+counted twice.
+
+The same questions are asked again and again, so a cache helps here
+too. What should the key be? The answer depends on the amount and on
+which coins are still allowed, and on nothing else, so those two make a
+safe key.
+
+```python exec
+id: how-many-ways-2
+def count_ways_cached(amount, coins, cache=None):
+    """count_ways, remembering each (amount, coins left) it has answered."""
+    if cache is None:
+        cache = {}
+    if amount == 0:
+        return 1
+    if amount < 0 or not coins:
+        return 0
+    key = (amount, len(coins))
+    if key not in cache:
+        cache[key] = (count_ways_cached(amount - coins[0], coins, cache)
+                      + count_ways_cached(amount, coins[1:], cache))
+    return cache[key]
+
+print(count_ways_cached(100, ORDINARY_COINS))
+```
+
+There are 4,562 different handfuls of euro coins, up to 50 cent, that
+make one euro. `len(coins)` is enough to say which coins are left,
+because `coins[1:]` always drops from the front: the same length means
+the same coins.
 
 ## Choosing a strategy
 
@@ -295,6 +436,164 @@ greedy shortcut's risk, in return for its speed.
 A vending machine gives change in euro coins, `[1, 2, 5, 10, 20, 50]`
 cents, after every purchase, many times a minute. Which of the three
 strategies would you use? Why?
+
+## Your world
+
+Can you write `greedy_gaps(limit, coins)`? It returns every amount from
+1 to `limit` where the greedy shortcut uses more coins than the fewest
+possible.
+
+<div class="dl-world" data-world="mazes-and-dungeons">
+
+A merchant deep in the dungeon takes gems worth 1, 5, 6 and 9 gold. For which amounts does greedy use too many?
+
+```python exec
+id: your-world-1--mazes-and-dungeons
+DUNGEON_GEMS = [1, 5, 6, 9]
+
+
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    # Your code here.
+```
+
+```hint
+For each amount in `range(1, limit + 1)`, compare
+`fewest_tokens_greedy(amount, coins)` with
+`fewest_tokens_cached(amount, coins)`, and keep the amounts where they
+differ.
+```
+
+```inputs
+greedy_gaps(30, DUNGEON_GEMS)
+len(greedy_gaps(100, DUNGEON_GEMS))
+greedy_gaps(100, [1, 2, 5, 10, 20, 50])
+```
+
+```solution
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    return [amount for amount in range(1, limit + 1)
+            if fewest_tokens_greedy(amount, coins) != fewest_tokens_cached(amount, coins)]
+---
+Up to 30 gold, greedy pays too many gems for ten amounts, starting at 11: a 9 and two 1s, where a 5 and a 6 would do. Up to 100, forty amounts. The euro coins never trip greedy up, at any amount up to 100.
+```
+
+</div>
+
+<div class="dl-world" data-world="maps-and-networks">
+
+A post office sells stamps worth 1, 4, 9 and 16 cents: the square numbers. For which amounts does greedy use too many?
+
+```python exec
+id: your-world-1--maps-and-networks
+STAMPS = [1, 4, 9, 16]
+
+
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    # Your code here.
+```
+
+```hint
+For each amount in `range(1, limit + 1)`, compare
+`fewest_tokens_greedy(amount, coins)` with
+`fewest_tokens_cached(amount, coins)`, and keep the amounts where they
+differ.
+```
+
+```inputs
+greedy_gaps(30, STAMPS)
+len(greedy_gaps(100, STAMPS))
+greedy_gaps(100, [1, 2, 5, 10, 20, 50])
+```
+
+```solution
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    return [amount for amount in range(1, limit + 1)
+            if fewest_tokens_greedy(amount, coins) != fewest_tokens_cached(amount, coins)]
+---
+For 12 cents, greedy sticks a 9 and three 1s on the letter, where three 4s would do. Up to 30, seven amounts go wrong; up to 100, thirty-eight. The euro coins never trip greedy up, at any amount up to 100.
+```
+
+</div>
+
+<div class="dl-world" data-world="collections">
+
+Before Ireland's coins went decimal in 1971, there were 12 pence in a shilling. The coins included the penny, the threepence and the sixpence, the shilling, the florin (24 pence) and the half crown (30 pence). For which amounts does greedy use too many?
+
+```python exec
+id: your-world-1--collections
+OLD_COINS = [1, 3, 6, 12, 24, 30]
+
+
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    # Your code here.
+```
+
+```hint
+For each amount in `range(1, limit + 1)`, compare
+`fewest_tokens_greedy(amount, coins)` with
+`fewest_tokens_cached(amount, coins)`, and keep the amounts where they
+differ.
+```
+
+```inputs
+greedy_gaps(60, OLD_COINS)
+len(greedy_gaps(100, OLD_COINS))
+greedy_gaps(100, [1, 2, 5, 10, 20, 50])
+```
+
+```solution
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    return [amount for amount in range(1, limit + 1)
+            if fewest_tokens_greedy(amount, coins) != fewest_tokens_cached(amount, coins)]
+---
+Greedy does well with the old coins until 48 pence: there it takes a half crown, a shilling and a sixpence, where two florins would do. Six amounts in a row go wrong, from 48 to 53, and twelve up to 100. The half crown, at 30, is what trips it up. The euro coins never do, at any amount up to 100.
+```
+
+</div>
+
+<div class="dl-world" data-world="puzzles">
+
+The dragon kingdom mints coins worth 1, 6 and 10 scales. For which amounts does greedy use too many?
+
+```python exec
+id: your-world-1--puzzles
+DRAGON_COINS = [1, 6, 10]
+
+
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    # Your code here.
+```
+
+```hint
+For each amount in `range(1, limit + 1)`, compare
+`fewest_tokens_greedy(amount, coins)` with
+`fewest_tokens_cached(amount, coins)`, and keep the amounts where they
+differ.
+```
+
+```inputs
+greedy_gaps(30, DRAGON_COINS)
+len(greedy_gaps(100, DRAGON_COINS))
+greedy_gaps(100, [1, 2, 5, 10, 20, 50])
+```
+
+```solution
+def greedy_gaps(limit, coins):
+    """Every amount up to limit where greedy uses more coins than it needs."""
+    return [amount for amount in range(1, limit + 1)
+            if fewest_tokens_greedy(amount, coins) != fewest_tokens_cached(amount, coins)]
+---
+Greedy first goes wrong at 12 scales: a 10 and two 1s, where two 6s would do. Up to 30, twelve amounts go wrong, and up to 100, fifty-four: more than half. The euro coins never trip greedy up, at any amount up to 100.
+```
+
+</div>
 
 ## Where to read more
 

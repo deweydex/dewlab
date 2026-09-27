@@ -51,6 +51,7 @@
     "math.sqrt": "math.sqrt(x, /)",
     "math.tan": "math.tan(x, /)",
     "ord": "ord(character, /)",
+    "os.walk": "os.walk(top, topdown=True, onerror=None, followlinks=False)",
     "print": "print(*args, sep=' ', end='\\n', file=None, flush=False)",
     "random.choice": "random.choice(seq)",
     "random.choices": "random.choices(population, weights=None, *, cum_weights=None, k=1)",

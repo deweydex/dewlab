@@ -112,7 +112,9 @@ def a_folder_of_folders() -> str:
     walk pushes and pops on it.
     """
     return tree_renderer.render(Node("photos", note="2 files", children=[
-        Node("2025", note="1 file"),
+        Node("2025", note="1 file", children=[
+            Node("summer", note="1 file"),
+        ]),
         Node("2026", note="no files", children=[
             Node("trip", note="2 files"),
         ]),
