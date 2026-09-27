@@ -1,7 +1,7 @@
 ---
 title: "Random numbers: pseudo-random numbers and seeds"
 year: "2026-2027"
-version: 2026.09.22.1
+version: 2026.09.27.1
 covers:
   asking-the-machine-for-a-number:
     covers: [CMPS-LO2]
@@ -12,6 +12,11 @@ covers:
     touches: [CMPS-LO3]
   choosing-from-a-list:
     covers: [CMPS-LO2]
+worlds:
+  living-systems: A diver's survey of the fish on a coral reef.
+  queues-and-crowds: The orders at a busy café.
+  spread: A rumour, passed from person to person.
+  space-and-physics: A speck of dust, knocked left and right at random.
 ---
 
 # Random numbers: pseudo-random numbers and seeds
@@ -80,10 +85,10 @@ hint: Call randint twice and add the results. Storing each roll in its own varia
 The next cell does something that looks like a mistake.
 
 It builds a list of five dice rolls with a list comprehension, which we
-met in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
-The loop variable is called `_`. Python programmers use the name `_` for
-a loop variable the loop never uses. Here the loop only needs to run five
-times.
+met in [Comprehensions, grids and
+aliasing](tutorial:comprehensions-and-grids). The loop variable is
+called `_`. Python programmers use the name `_` for a loop variable the
+loop never uses. Here the loop only needs to run five times.
 
 ```python exec
 id: the-same-numbers-twice-1
@@ -139,12 +144,12 @@ is true, as we will see below. For simulation, it is almost the opposite.
 Think about what you did to find a seed that gives a 1. You ran an
 experiment, and you can run it again and get the same result.
 
-Now imagine that a simulation, like the one in
-[Simulating a queue: stable and unstable queues](tutorial:when-a-queue-never-clears),
-gives a strange result, such as a queue that never clears. You want to
-know why. With truly random numbers, that run is gone forever. You cannot
-repeat it, step through it, or show it to anyone else. With a seed, you
-write down one whole number, and the whole run comes back exactly.
+Now imagine that a simulation, like the one in [Simulating a queue: how
+busy is too busy?](tutorial:when-a-queue-never-clears), gives a strange
+result, such as a queue that never clears. You want to know why. With
+truly random numbers, that run is gone forever. You cannot repeat it,
+step through it, or show it to anyone else. With a seed, you write down
+one whole number, and the whole run comes back exactly.
 
 Scientists need to be able to run an experiment again and check it.
 Being able to repeat a run exactly is called *reproducibility*, and it is
@@ -289,6 +294,243 @@ hint: Ask yourself whether a name goes back into the hat after it is drawn. To c
 names = ["Aoife", "Brendan", "Ciara", "Dara", "Eimear", "Fionn", "Gráinne"]
 ```
 
+## Your world
+
+Every task below sets its own seed inside the function, as
+`one_experiment` did. So the same call always gives the same answer,
+and a classmate can check yours.
+
+<div class="dl-world" data-world="living-systems">
+
+A diver swims along a reef and notes each fish on the way. On this
+reef, 60% of the fish are damselfish, 30% are wrasse and 10% are
+parrotfish. Can you write `survey(fish, seed)`? It sets the seed, uses
+`random.choices` with those weights to make a list of `fish` sightings,
+and returns how many were parrotfish.
+
+```python exec
+id: your-world-1--living-systems
+import random
+
+
+def survey(fish, seed):
+    """How many parrotfish, in a survey of this many fish."""
+    # Your code here.
+```
+
+```hint
+`random.choices(["damselfish", "wrasse", "parrotfish"], weights=[60, 30,
+10], k=fish)` draws the sightings, with replacement. `.count("parrotfish")`
+counts one kind in the list.
+```
+
+```inputs
+survey(20, 1)
+survey(20, 2)
+survey(2000, 1)
+```
+
+```solution
+import random
+
+
+def survey(fish, seed):
+    """How many parrotfish, in a survey of this many fish."""
+    random.seed(seed)
+    seen = random.choices(["damselfish", "wrasse", "parrotfish"], weights=[60, 30, 10], k=fish)
+    return seen.count("parrotfish")
+---
+In 20 fish, seed 1 sees 2 parrotfish and seed 2 sees 4: one survey
+says 10% and the other 20%. In 2,000 fish, seed 1 sees 198, very close
+to 10%. A short survey can be far out, by luck alone. `choices`, with
+replacement, is right here: seeing one parrotfish does not make the
+next one less likely.
+```
+
+</div>
+
+<div class="dl-world" data-world="queues-and-crowds">
+
+At a busy café, half of the customers order coffee, 30% order tea and
+20% order hot chocolate. Can you write `orders(customers, seed)`? It
+sets the seed, uses `random.choices` with those weights, and returns a
+dictionary of how many of each drink were ordered.
+
+```python exec
+id: your-world-1--queues-and-crowds
+import random
+
+
+def orders(customers, seed):
+    """How many of each drink, for this many customers."""
+    # Your code here.
+```
+
+```hint
+`random.choices(["coffee", "tea", "hot chocolate"], weights=[5, 3, 2],
+k=customers)` makes the list of orders. Then count each drink with
+`.count()`, and put the counts in a dictionary.
+```
+
+```inputs
+orders(30, 1)
+orders(30, 2)
+orders(1000, 1)["coffee"]
+```
+
+```solution
+import random
+
+
+def orders(customers, seed):
+    """How many of each drink, for this many customers."""
+    random.seed(seed)
+    drinks = random.choices(["coffee", "tea", "hot chocolate"], weights=[5, 3, 2], k=customers)
+    return {drink: drinks.count(drink) for drink in ["coffee", "tea", "hot chocolate"]}
+---
+With seed 1, 19 of 30 customers order coffee; with seed 2, only 15. A
+café that ordered its milk from one morning's count could be well out.
+Over 1,000 customers, 473 order coffee, close to half. The weights `[5,
+3, 2]` work like the counts in a chain: 5 parts in 10 is a half.
+```
+
+</div>
+
+<div class="dl-world" data-world="spread">
+
+One person knows a rumour. Every day, each person who knows it tells
+one other person, chosen at random from everyone, who may know it
+already. Can you write `days_to_spread(people, seed)`? It sets the
+seed, and returns how many days pass before everyone knows.
+
+```python exec
+id: your-world-1--spread
+import random
+
+
+def days_to_spread(people, seed):
+    """Days until all of `people` know the rumour, starting from person 0."""
+    # Your code here.
+```
+
+```hint
+Keep a set of the people who know, starting with `{0}`. Each day, make
+a list with one `random.choice(range(people))` for each person who
+knows, and add them all to the set. Count the days until the set has
+`people` in it.
+```
+
+```inputs
+days_to_spread(30, 1)
+days_to_spread(30, 2)
+days_to_spread(300, 1)
+```
+
+```solution
+import random
+
+
+def days_to_spread(people, seed):
+    """Days until all of `people` know the rumour, starting from person 0."""
+    random.seed(seed)
+    knows = {0}
+    days = 0
+    while len(knows) < people:
+        told = [random.choice(range(people)) for _ in knows]
+        knows.update(told)
+        days += 1
+    return days
+---
+A class of 30 all know in 9 days with seed 1, and 11 with seed 2. A
+school of 300 all know in 14 days: ten times the people, and only five
+more days. The number who know roughly doubles each day at first,
+because everyone who knows is telling someone. Try 3,000.
+```
+
+</div>
+
+<div class="dl-world" data-world="space-and-physics">
+
+A speck of dust in the air is knocked by molecules from every side. In
+this simple model it moves along a line, one step left or one step
+right, chosen at random each time. Can you write `walk(steps, seed)`? It
+sets the seed and returns where the speck finishes, counting from 0.
+
+```python exec
+id: your-world-1--space-and-physics
+import random
+
+
+def walk(steps, seed):
+    """Where the speck ends, after this many random steps of -1 or +1."""
+    # Your code here.
+```
+
+```hint
+Start at `position = 0`. Each step, add `random.choice([-1, 1])`.
+```
+
+```inputs
+walk(100, 1)
+walk(100, 2)
+walk(10000, 1)
+```
+
+```solution
+import random
+
+
+def walk(steps, seed):
+    """Where the speck ends, after this many random steps of -1 or +1."""
+    random.seed(seed)
+    position = 0
+    for _ in range(steps):
+        position += random.choice([-1, 1])
+    return position
+---
+After 100 steps, seed 1 ends at 8 and seed 2 back at 0. After 10,000
+steps, seed 1 is at -110. The speck does not go anywhere on purpose,
+but it wanders further the longer it runs: about 10 steps from the
+start after 100 steps, and about 100 after 10,000. That is the square
+root of the number of steps, the same $\sqrt{n}$ the darts page meets.
+```
+
+</div>
+
+## Lab bench
+
+Every number this experiment uses is named at the top of the cell.
+Change them, run it, and see what happens.
+
+```python exec
+id: lab-bench-1
+import random
+import matplotlib.pyplot as plt
+
+SEED = 42       # change it for another run
+ROLLS = 1000    # how many times to roll
+SIDES = 6       # the number of faces on the die
+
+random.seed(SEED)
+rolls = [random.randint(1, SIDES) for _ in range(ROLLS)]
+counts = [rolls.count(face) for face in range(1, SIDES + 1)]
+print(counts)
+
+plt.bar(range(1, SIDES + 1), counts)
+plt.xlabel("face")
+plt.ylabel("times rolled")
+```
+
+Choose one of these questions, or ask one of your own:
+
+1. How uneven are the counts with 60 rolls? With 60,000?
+2. Can you find a seed where, in 60 rolls, one face comes up twice as
+   often as another?
+3. Change the cell to roll two dice and add them. Which total comes up
+   most often, and why?
+4. A die with 20 faces is used in some games. How many rolls does it
+   need before its counts look as even as a six-sided die's at 1,000?
+
 ## Reflection
 
 The word *random* has a narrower meaning now than it had at the start of
@@ -320,13 +562,15 @@ managing secrets.* <https://docs.python.org/3/library/secrets.html>. This
 page covers the cases where a predictable number is a weakness, not a
 feature.
 
-Downey, A. B. (2015). *Think Python* (2nd ed.). O'Reilly. Chapter 13 builds a
-word-frequency study on `random` and is a good next step if the "choose a
-thing, not a number" half of this tutorial was the interesting part.
+Downey, A. B. (2015). *Think Python* (2nd ed.). O'Reilly. Chapter 13
+builds a word-frequency study on `random` and is a good next step if the
+"choose a thing, not a number" half of this tutorial was the interesting
+part.
 
-Matsumoto, M. and Nishimura, T. (1998). *Mersenne Twister: A 623-dimensionally
-equidistributed uniform pseudo-random number generator.* ACM Transactions on
-Modeling and Computer Simulation, 8(1), 3–30.
+Matsumoto, M. and Nishimura, T. (1998). *Mersenne Twister: A
+623-dimensionally equidistributed uniform pseudo-random number
+generator.* ACM Transactions on Modeling and Computer Simulation, 8(1),
+3–30.
 <https://doi.org/10.1145/272991.272995>. The algorithm behind Python's own
 generator. It is much harder than anything in this series. We include it
 because you can go and check the claim that an algorithm makes the
