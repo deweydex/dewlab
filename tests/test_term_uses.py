@@ -37,3 +37,39 @@ def test_prose_skips_what_the_page_adds_round_them():
         assert chrome not in words
     for skipped in ("float", "x^2", "matrix link"):
         assert skipped not in words
+
+
+def _page(tmp_path, body, glossary):
+    import json
+    manifest = json.dumps({"glossary": glossary})
+    path = tmp_path / "page.html"
+    path.write_text(
+        f'<main class="dl-page" id="dl-body">{body}</main>'
+        f'<script type="application/json" id="dewlab-manifest">{manifest}</script>'
+    )
+    return path
+
+
+EARLIER = {"title": "Earlier", "href": "earlier.html"}
+
+
+def test_a_longer_term_wins_and_a_capital_is_matched_as_written(tmp_path):
+    page = _page(
+        tmp_path,
+        "<p>We met selection sort, and there is none left over.</p>",
+        [
+            {"term": "selection", "kind": "concept", "definition": "if/else", "origin": EARLIER},
+            {"term": "selection sort", "kind": "concept", "definition": "a sort"},
+            {"term": "None", "kind": "concept", "definition": "no value", "origin": EARLIER},
+        ],
+    )
+    assert term_uses.candidates(page) == []
+
+
+def test_check_reads_a_marked_term(tmp_path):
+    page = _page(
+        tmp_path,
+        '<p>A <em class="term">matrix</em> and an <em class="term">elephant</em>.</p>',
+        [{"term": "matrix", "kind": "concept", "definition": "a grid", "origin": EARLIER}],
+    )
+    assert term_uses.unmatched_marks(page) == ["elephant"]

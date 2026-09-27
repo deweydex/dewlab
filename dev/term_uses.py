@@ -10,6 +10,11 @@ appears in its prose as a whole word, unmarked, with the sentence around
 the first appearance. An author reads each and marks the ones that mean the
 term.
 
+Prose is what the author wrote: a cell, with its label and report panel,
+and a predict block's buttons are left out. A longer term holding a shorter
+one wins ("selection sort" is not a use of "selection"), and a term with a
+capital (None, ASCII) is matched as written, so "there is none" is not None.
+
 Reads the built site, so run `python3 build.py` first.
 
     python3 dev/term_uses.py                 # every page
@@ -44,6 +49,7 @@ SKIP_TAGS = {"pre", "code", "script", "style", "h1", "h2", "h3", "h4", "h5", "h6
              "a", "em", "summary", "button"}
 SKIP_CLASSES = {"dl-cell", "dl-math", "dl-predict-sure", "dl-predict-unsure",
                 "dl-predict-after", "dl-predict-footer", "dl-compare", "dl-world-chooser"}
+TAG_RE = re.compile(r"<[^>]+>")
 VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
              "meta", "source", "track", "wbr"}
 
@@ -94,18 +100,27 @@ def candidates(page: Path) -> list[tuple[str, int, str]]:
     if not found:
         return []
     manifest = json.loads(found.group(1))
-    inherited = [e for e in manifest.get("glossary") or [] if e.get("kind") == "concept" and e.get("origin")]
+    concepts = [e for e in manifest.get("glossary") or [] if e.get("kind") == "concept"]
     words = re.sub(r"\s+", " ", prose(text))
+    every = [part.strip() for entry in concepts for part in entry["term"].split(",")]
+    names = [part.strip() for entry in concepts if entry.get("origin") for part in entry["term"].split(",")]
     rows = []
-    for entry in inherited:
-        for name in (part.strip() for part in entry["term"].split(",")):
-            if len(name) < 3:
-                continue
-            uses = list(re.finditer(rf"\b{re.escape(name)}\b", words, re.I))
-            if uses:
-                first = uses[0]
-                around = words[max(0, first.start() - 60): first.end() + 60].strip()
-                rows.append((name, len(uses), around))
+    for name in names:
+        if len(name) < 3:
+            continue
+        # A longer term that holds this one wins: "selection sort" is not a
+        # use of "selection". A name with a capital (None, ASCII) is matched
+        # as written, so "there is none" is not None.
+        searched = words
+        for longer in every:
+            if len(longer) > len(name) and re.search(rf"\b{re.escape(name)}\b", longer, re.I):
+                searched = re.sub(rf"\b{re.escape(longer)}\b", " ", searched, flags=re.I)
+        flags = 0 if name != name.lower() else re.I
+        uses = list(re.finditer(rf"\b{re.escape(name)}\b", searched, flags))
+        if uses:
+            first = uses[0]
+            around = searched[max(0, first.start() - 60): first.end() + 60].strip()
+            rows.append((name, len(uses), around))
     return rows
 
 
