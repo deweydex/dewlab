@@ -135,7 +135,7 @@ diagram.
 
 </aside>
 
-Before you run the next *cell*{.term}, guess how many laptops are in each of the
+Before you run the next cell, guess how many laptops are in each of the
 four regions. The four numbers must add to 20.
 
 The cell draws the diagram. It is the longest cell on this page, and you
@@ -433,7 +433,7 @@ for name in sorted(laptops):
 print(len(two_yes), two_yes)
 ```
 
-`sorted(laptops)` gives the names as a *list*{.term} in alphabetical order, so
+`sorted(laptops)` gives the names as a list in alphabetical order, so
 the loop visits them in the same order every time. The inner loop asks
 the three questions of one laptop. The same eight names come out, so the
 two routes agree.
@@ -587,7 +587,7 @@ print("at least one:", inside, " none:", checked - inside)
 ```
 
 The line `updates, antivirus_total, backups = 34, 25, 18` names three
-values at once, in order: the first *name*{.term} gets the first value. (The
+values at once, in order: the first name gets the first value. (The
 name `antivirus` is already the set from the first cell, so the total
 gets a name of its own.) Then the answers: 17, 10 and 7 laptops have
 only one; 9, 5 and 3 have exactly two, which makes 17; 54 have at least

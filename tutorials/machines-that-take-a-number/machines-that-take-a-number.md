@@ -25,7 +25,7 @@ covers:
 A weather station, a phone and a 3D printer all know the temperature.
 But the small chip that senses it knows nothing about degrees. It produces
 a voltage, and a rule turns that voltage into a temperature. The
-rule takes one number in and gives one number out. That is a *function*{.term}.
+rule takes one number in and gives one number out. That is a function.
 
 Here is the question for this page. Give the rule a voltage the chip
 could never make, and it answers −350 °C. That is colder than anything
@@ -41,7 +41,7 @@ On this page we:
 - tell a function that returns a value from one that only does
   something
 - run a function backwards, with its inverse
-- join two functions into one, and add `compose` to the *toolkit*{.term}
+- join two functions into one, and add `compose` to the toolkit
 
 > **The space we're in.** Most functions on this page take one number
 > and return one number. We work in the *real numbers*{.term}, $\mathbb{R}$,
@@ -98,12 +98,12 @@ Maths writes that rule like this:
 
 $$f(x) = 100x - 50$$
 
-We read $f(x)$ as "f of x". The letter $f$ is the function's *name*{.term}, $x$
+We read $f(x)$ as "f of x". The letter $f$ is the function's name, $x$
 stands for the input, and the right-hand side is the rule. So $f(0.75)$
 means "put 0.75 in the slot": $f(0.75) = 100 \times 0.75 - 50 = 25$.
 This way of writing a function is called *function notation*.
 
-Python writes the same rule with `def`. Before you run the *cell*{.term}, what
+Python writes the same rule with `def`. Before you run the cell, what
 will each line show?
 
 ```python exec

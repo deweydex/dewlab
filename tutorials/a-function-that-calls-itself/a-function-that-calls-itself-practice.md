@@ -11,12 +11,12 @@ Each answer is hidden until you open it. Each one is one answer.
 Yours may be different and work too. Where a problem asks you to predict,
 the prediction is the exercise, so make one before you run anything.
 
-Your *toolkit*{.term} is loaded on this page, so `count_items` is ready to use,
+Your toolkit is loaded on this page, so `count_items` is ready to use,
 and so are `factorial`, `total` and the rest.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: calls-itself-practice-scratch-1
@@ -90,7 +90,7 @@ reach its base case, for any whole number from 0 up?
 
 The base case is the `if seconds == 0:` *branch*{.term}. It prints "Lift off!"
 and makes no more calls. The recursive case is the last two lines: print
-the number, then hand `seconds - 1` to the same *function*{.term}.
+the number, then hand `seconds - 1` to the same function.
 
 Each call hands on a number one smaller. Starting from a whole number,
 0 or more, the numbers go down one at a time, so they must land on 0.
@@ -118,7 +118,7 @@ print(count_items(playlists))    # 8
 ```
 
 There are three in "Chill", four in "Workout" with its remixes, and
-one on its own, so 8 songs. The playlists' names are in comments, not in the *lists*{.term},
+one on its own, so 8 songs. The playlists' names are in comments, not in the lists,
 so they are not counted as songs.
 
 </details>
@@ -348,7 +348,7 @@ print(sum_nested(archive))    # 2465
 ```
 
 There are 2,465 KB inside. Only one thing changed from `count_items`: a file adds its
-own size, where a photo added 1. The running *name*{.term} is `running`, not
+own size, where a photo added 1. The running name is `running`, not
 `total`, so the toolkit's `total` stays available.
 
 </details>

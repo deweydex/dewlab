@@ -23,7 +23,7 @@ covers:
 
 # Writing your own functions
 
-Here is a small program with a secret in it. What will appear under the
+Here is a small *program*{.term} with a secret in it. What will appear under the
 cell when you run it?
 
 ```python exec
@@ -45,7 +45,7 @@ What will appear under the cell?
 
 Nothing appears. `def` teaches Python a new name, `secret`, and what the
 name means. It does not run the lines under it. They run only when we
-*call* the function, with its name and a pair of brackets:
+*call* the *function*{.term}, with its name and a pair of brackets:
 
 ```python exec
 id: defining-a-function-2
@@ -416,7 +416,7 @@ print(with_discount(50))
 ```
 
 The same input, 50, gave 45.0 and then 37.5. The answer depends on
-`discount_rate`, a variable outside the function, so we cannot know what
+`discount_rate`, a *variable*{.term} outside the function, so we cannot know what
 `with_discount(50)` gives by looking at the call. A *pure function* is one
 whose output depends only on its inputs. Pure functions are the easiest to
 understand, to test and to trust. `with_discount` becomes pure if the rate
@@ -638,7 +638,7 @@ A variable's *scope* is the part of the program where that variable
 exists. A variable we create inside a function has *local scope*: it
 exists only while that function is running.
 
-Look at the last line of the next cell. It is a comment, so it does not
+Look at the last line of the next cell. It is a *comment*{.term}, so it does not
 run. What do you think would happen if it did run?
 
 ```python exec

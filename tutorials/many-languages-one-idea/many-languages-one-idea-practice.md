@@ -14,9 +14,9 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Python and *SQL*{.term} *cells*{.term} run on this page. *JavaScript*{.term}, *BASIC*{.term} and one other
+Python and *SQL*{.term} cells run on this page. *JavaScript*{.term}, *BASIC*{.term} and one other
 language are shown to read. Each answer says what they print, and each
-was checked by running it outside this page. Your *toolkit*{.term} is loaded,
+was checked by running it outside this page. Your toolkit is loaded,
 including `mean` from [What is typical?](tutorial:what-is-typical) and
 `count_if` from [A row of numbers](tutorial:a-row-of-numbers).
 
@@ -160,7 +160,7 @@ SELECT title FROM song_tbl WHERE plays > AVG(plays);
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The error says `misuse of aggregate function AVG()`. An aggregate is
-   a *function*{.term} that turns a whole column into one value.
+   a function that turns a whole column into one value.
 2. `WHERE` looks at one row at a time. Can one row know the average of
    the whole column?
 3. In the tutorial, how did the rainfall query get the average into its
@@ -217,7 +217,7 @@ prints a space before each positive number.
 **8. Make.** Here is a JavaScript function that counts how many of a
 game server's answer times, in milliseconds, were longer than a limit.
 Write it in Python as `count_over(values, limit)`, and check that it
-gives 3 for the same *list*{.term}.
+gives 3 for the same list.
 
 ```js
 function countOver(values, limit) {
@@ -402,7 +402,7 @@ puts sum / temps.length
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Find the list, and the *name*{.term} that holds the running sum.
+1. Find the list, and the name that holds the running sum.
 2. `each do |t| ... end` is Ruby's "for each": which Python line does
    the same job?
 3. The sum is 61, and there are 4 temperatures. Which Python operator

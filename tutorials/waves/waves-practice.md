@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer. Yours may be different and work too.
 
-Your *toolkit*{.term} is loaded on this page, including `wave` from the tutorial
+Your toolkit is loaded on this page, including `wave` from the tutorial
 and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not loaded. Each *cell*{.term} that needs it starts with `import math`.
+not loaded. Each cell that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -162,7 +162,7 @@ shape of the coast change it, but it is a useful first model.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, wrote her own wave
-*function*{.term}. A quarter of a second into a 1 Hz wave, the wave should be
+function. A quarter of a second into a 1 Hz wave, the wave should be
 at its top, 1. Hers is somewhere else. What does her function do with a
 quarter of a second, and what needs to change?
 

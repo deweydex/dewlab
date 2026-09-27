@@ -35,7 +35,7 @@ On this page we:
 - see one formula answer three different questions
 - rearrange a formula by doing the same move to both sides
 - undo a temperature formula, step by step, in reverse order
-- write *functions*{.term} that undo each other, and check them both ways
+- write functions that undo each other, and check them both ways
 - find where a rearranged formula needs a smaller space
 - add and simplify fractions that have letters in them
 
@@ -43,7 +43,7 @@ On this page we:
 > seconds, degrees. A formula here is a rule that stays true, and we may
 > do any move to it, as long as we do the same move to both sides. We
 > usually do not say it, but a formula with a division in it has no
-> answer when the bottom of the fraction is 0. Your *toolkit*{.term} is loaded,
+> answer when the bottom of the fraction is 0. Your toolkit is loaded,
 > with every function from the earlier pages.
 
 ## Warm-up
@@ -80,7 +80,7 @@ With letters, $s$ for speed, $d$ for distance and $t$ for time:
 $$s = \frac{d}{t}$$
 
 Let's check it on the space station. It goes 42,700 km in 92.9
-minutes, which is $92.9 \times 60$ seconds. Before you run the *cell*{.term},
+minutes, which is $92.9 \times 60$ seconds. Before you run the cell,
 guess: is its speed nearer 1 km a second, or 10?
 
 ```python exec
@@ -252,7 +252,7 @@ def distance_travelled(speed, time):
     return speed * time
 ```
 
-Inside `travel_time`, the *name*{.term} `speed` means the number it was given,
+Inside `travel_time`, the name `speed` means the number it was given,
 not the function above it. A later page,
 [What a function can see](tutorial:what-a-function-can-see), is about
 exactly that.

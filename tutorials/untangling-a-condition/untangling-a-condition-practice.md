@@ -11,7 +11,7 @@ Each answer is hidden until you open it. Many problems ask you to guess
 before you run anything. The guess is the real exercise, so make one
 first, even if you are unsure.
 
-`same_rule` and `truth_table` come from your *toolkit*{.term}, so every *cell*{.term} on
+`same_rule` and `truth_table` come from your toolkit, so every cell on
 this page can use them.
 
 ## Warm-up
@@ -180,7 +180,7 @@ print(same_rule_draft(grey_out_a, grey_out_c, 2))   # should be False
 1. Look at the first row the loop checks, `(False, False)`. Do the two
    rules agree there?
 2. After that `if`, which line runs next?
-3. How many rows has the loop looked at when the *function*{.term} returns?
+3. How many rows has the loop looked at when the function returns?
 
 **Think about:** when is it safe to say "these rules are the same"?
 

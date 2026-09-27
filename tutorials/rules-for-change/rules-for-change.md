@@ -24,7 +24,7 @@ covers:
 
 # Rules for change: the sum, product, quotient and chain rules
 
-Your *toolkit*{.term}'s `derivative_at` can find the *slope*{.term} of any curve, at any
+Your toolkit's `derivative_at` can find the *slope*{.term} of any curve, at any
 point. Ask it about $x^2$ at 3, and it says about 6. At 5, it says about
 10. Each answer is one number, not quite exact, and it comes with no
 reason, like a machine that never explains itself. Is there a
@@ -86,7 +86,7 @@ What does `derivative_at(rule, 2)` work out?
 
 ## A pattern in the slopes: the power rule
 
-Let's start with a table. The *cell*{.term} asks `derivative_at` for the slopes
+Let's start with a table. The cell asks `derivative_at` for the slopes
 of $x^2$, $x^3$ and $x^4$ at the whole numbers from 1 to 5, and rounds
 them to 4 places. Before you run it, guess the slope of $x^2$ at 4.
 
@@ -142,7 +142,7 @@ tall is 5 times as steep. And a number on its own, such as 7, has
 slope 0, because its graph is a flat line.
 
 Five rows are a pattern, not a check. This helper checks a slope rule
-against `derivative_at` at every point in a *list*{.term}.
+against `derivative_at` at every point in a list.
 
 ```python exec
 id: rules-for-power-2

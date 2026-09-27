@@ -10,7 +10,7 @@ worlds:
 
 # Lists and looping over them — Practice
 
-These problems are on lists, and three more are from earlier pages. With indexing
+These problems are on *lists*{.term}, and three more are from earlier pages. With indexing
 and slicing, you learn more by trying things than by solving them in your
 head, so run the cells, change them, and test your guesses. Try each problem before you
 open anything under it.
@@ -43,7 +43,7 @@ cell.
 (a) 10. (b) 30. (c) 50. (d) An `IndexError`: `list index out of range`.
 (e) 5.
 
-A list of 5 elements has indexes 0 to 4, so the last one is always
+A list of 5 *elements*{.term} has indexes 0 to 4, so the last one is always
 `len(xs) - 1`. There is no index 5. Say it out loud a few times,
 until it stops being a surprise.
 
@@ -51,7 +51,7 @@ until it stops being a surprise.
 
 ## 2. Slices
 
-With `xs = [10, 20, 30, 40, 50]`, what does each slice give?
+With `xs = [10, 20, 30, 40, 50]`, what does each *slice*{.term} give?
 
 - (a) `xs[1:3]`
 - (b) `xs[:2]`
@@ -129,7 +129,7 @@ is still `"NOON"`.
 
 ## 5. Ten squares
 
-Can you build `squares`, the first ten square numbers, with a loop?
+Can you build `squares`, the first ten square numbers, with a *loop*{.term}?
 
 ```python exec
 id: ten-squares-1
@@ -399,7 +399,7 @@ when `number` is not in the list yet.
 <div class="dl-world" data-world="secret-messages">
 
 Doubled letters are a clue when breaking a code. In English, EE, LL, SS and
-OO are common. Can you build `doubles`, the index of every letter that is
+OO are common. Can you build `doubles`, the *index*{.term} of every letter that is
 the same as the one after it?
 
 ```python exec
@@ -436,7 +436,7 @@ stops one early, so `index + 1` never runs off the end.
 <div class="dl-world" data-world="pixel-art">
 
 An *edge* in a picture is where dark meets light. Can you build `edges`,
-the index of every pixel below 128 whose right-hand neighbour is 128 or
+the *index*{.term} of every pixel below 128 whose right-hand neighbour is 128 or
 more?
 
 ```python exec

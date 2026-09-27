@@ -94,7 +94,7 @@ no exact decimal form (0.333…). 0.1 is stored as the nearest number the
 computer can hold, and multiplying by 3 makes the small difference bigger.
 
 So two calculations that should give the same decimal can differ in the
-last few digits. Later pages compare floats by asking whether they are
+last few digits. Later pages compare *floats*{.term} by asking whether they are
 close, not whether they are exactly the same.
 
 ## Where to read more

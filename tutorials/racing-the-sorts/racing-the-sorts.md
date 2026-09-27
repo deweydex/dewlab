@@ -43,7 +43,7 @@ billion times apart.
 
 On this page we:
 
-- make random *lists*{.term} of 10, 100 and 1,000 numbers, and count the
+- make random lists of 10, 100 and 1,000 numbers, and count the
   *comparisons*{.term} each sort makes
 - plot the counts, and see the shape of the growth before we name it
 - *sort*{.term} a real list that is nearly in order already
@@ -54,7 +54,7 @@ On this page we:
 
 > **The space we're in.** We use lists of numbers, and the two sorts from
 > [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards), which
-> your *toolkit*{.term} now holds. Random numbers come from the `random` *module*{.term},
+> your toolkit now holds. Random numbers come from the `random` *module*{.term},
 > as on [How likely is it?](tutorial:how-likely-is-it). We usually
 > do not say it, but every comparison of two numbers takes about the
 > same time, whatever the numbers are. So we can count comparisons to
@@ -153,7 +153,7 @@ def insertion_count(values):
 
 ## Ten, a hundred, a thousand
 
-Now the race. The *cell*{.term} makes one random list of each size, and gives
+Now the race. The cell makes one random list of each size, and gives
 the same list to both sorts, so that each race is fair. *Selection sort*{.term}
 makes $\frac{n(n-1)}{2}$ comparisons on $n$ values, whatever their
 order. So you can calculate its column before you run the cell. What do
@@ -511,7 +511,7 @@ for racer in [selection_sort, insertion_sort, shell_sort, sorted]:
 ```
 
 Your times will differ from anyone else's, and from run to run.
-(`racer.__name__` is the *name*{.term} each *function*{.term} was given when it was
+(`racer.__name__` is the name each function was given when it was
 made.) Two things usually hold, though.
 
 First, `sorted()` is far ahead of all three: often more than ten times

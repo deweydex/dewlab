@@ -14,14 +14,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, from every earlier page of the
+Your toolkit is loaded on this page, from every earlier page of the
 course. Every survey and check here is made up, so that the numbers stay small
 enough to check by eye. A pencil and a quick sketch of the circles help
 with almost every problem.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: circles-practice-warm-up
@@ -190,7 +190,7 @@ $0 + 2 + 1$, speak exactly two: Chloe, Iris and Kasia.
 
 </details>
 
-**6. Fix.** Schlomi, who is learning Python too, wants a *function*{.term} that
+**6. Fix.** Schlomi, who is learning Python too, wants a function that
 finds "exactly two" from a report's totals. Her idea is to add the
 three pairs, then take away the middle, because the middle is not "exactly
 two". She tries it on the tutorial's laptops: their pairs are 7, 3 and
@@ -406,7 +406,7 @@ where the two groups share nothing.
 ## Stretch
 
 **12. Make.** Write a function `exactly(groups, everyone, k)`. `groups`
-is a *list*{.term} of sets, and the function returns the set of values in
+is a list of sets, and the function returns the set of values in
 `everyone` that are in exactly `k` of the groups. Test it on the
 laptops: `exactly([updated, antivirus, backed_up], laptops, 2)` should
 have 8 names. Then use it to check that the sizes for `k` = 0, 1, 2 and 3 add

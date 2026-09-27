@@ -16,7 +16,7 @@ may be different and work too. Several problems ask you to guess
 first. Guesses about chance often miss, for everybody, and a guess that
 misses is the most useful kind here.
 
-Your *toolkit*{.term} is loaded on this page: `simulate` from the tutorial, and
+Your toolkit is loaded on this page: `simulate` from the tutorial, and
 `combinations`, `all_pairs`, `total` and the rest from earlier pages.
 *Simulations*{.term} are left to chance, so your numbers will differ a little
 from the ones in the answers. That is expected, and the tutorial's
@@ -24,7 +24,7 @@ section "Why the two answers differ" says why.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: likely-practice-warm-up
@@ -46,7 +46,7 @@ equally likely, and 13 of the 52 *outcomes*{.term} are in the *event*{.term} "a 
 
 **2. Make.** A tiny image has 10 *pixels*{.term}: 3 red, 5 green and 2 blue. A
 program picks one pixel at random. Find the probability that it is
-green, in Python, using *names*{.term} for the three counts.
+green, in Python, using names for the three counts.
 
 <details class="dl-answer"><summary>answer</summary>
 

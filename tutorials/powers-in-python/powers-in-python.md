@@ -45,7 +45,7 @@ to do with powers. That is the dangerous part. There is no error to warn
 you.
 
 Can you find two numbers where `^` and `**` give the same answer? Try a
-few in the cell.
+few in the *cell*{.term}.
 
 <details class="dl-answer"><summary>one pair that does it</summary>
 

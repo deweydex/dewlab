@@ -14,14 +14,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your *toolkit*{.term} is loaded on this page, including `bisect_root` and
+Your toolkit is loaded on this page, including `bisect_root` and
 `newton` from the tutorial, `derivative_at` from
 [How fast, right now?](tutorial:how-fast-right-now) and
 `solve_quadratic` from [Solving for x](tutorial:solving-for-x).
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: solving-by-practice-warm-up

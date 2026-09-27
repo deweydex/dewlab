@@ -19,7 +19,7 @@ Skip a problem if it does not interest you, and come back to it later.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: choosing-practice-warm-up
@@ -379,7 +379,7 @@ needs exactly one answer, and her three `if` lines gave three.
 </details>
 
 **11. Fix.** A home heating app says a room is comfortable from 18 to 22
-degrees, both included. For 18 degrees, this *function*{.term} says `False`. Can
+degrees, both included. For 18 degrees, this function says `False`. Can
 you find the part of the line that does not do what the *docstring*{.term} says,
 and fix it?
 

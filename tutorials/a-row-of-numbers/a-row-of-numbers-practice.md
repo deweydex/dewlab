@@ -13,12 +13,12 @@ predict, the prediction is the exercise, so make one before you run
 anything. A guess that is different from what Python shows is the most
 useful kind. It shows you exactly where to look.
 
-Your *toolkit*{.term} is loaded on this page, so `largest`, `smallest` and
+Your toolkit is loaded on this page, so `largest`, `smallest` and
 `count_if` are ready to use, and so are `total`, `between` and the rest.
 
 ## Warm-up
 
-Use this *cell*{.term} for any of the warm-up problems.
+Use this cell for any of the warm-up problems.
 
 ```python exec
 id: row-practice-scratch-1
@@ -40,7 +40,7 @@ print(len(playlist))
 The cell prints `Linger`, then `Salty Dog`, then `4`.
 
 Index 1 is the second song, because the first is at index 0. Index −1
-is the last song, whatever the length of the *list*{.term}. And `len` counts
+is the last song, whatever the length of the list. And `len` counts
 the songs: four.
 
 </details>
@@ -124,9 +124,9 @@ those step counts.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write a test: a *function*{.term} that takes one step count and returns True
+1. Write a test: a function that takes one step count and returns True
    when it is more than 10,000.
-2. Hand the test to `count_if`, without brackets after its *name*{.term}.
+2. Hand the test to `count_if`, without brackets after its name.
 3. For the new list, start with `[]`, and `append` inside an `if`.
 
 **Think about:** how can you check the two answers against each other?
