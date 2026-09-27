@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page, including `distance` and
+Your *toolkit*{.term} is loaded on this page, including `distance` and
 `midpoint` from the tutorial and `slope` from
 [Straight lines](tutorial:straight-lines). `math` is not loaded. Each
-cell that needs it starts with `import math`.
+*cell*{.term} that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -44,7 +44,7 @@ print(distance((-2, 0), (3, 0)))
 From $(1, 1)$ to $(4, 5)$ is 3 across and 4 up, the 3, 4, 5 triangle
 again. The midpoint of $(0, 0)$ and $(8, 2)$ is halfway in each
 direction. From $-2$ to 3 on one row is 5. If we square the difference and then
-take the square root, we get its size, with no sign.
+take the *square root*{.term}, we get its size, with no sign.
 
 </details>
 
@@ -58,8 +58,8 @@ flag, in a straight line?
 print(distance((0, 0), (105, 68)))
 ```
 
-About 125.1 m. The two sides of the pitch meet at a right angle at
-every corner, so the diagonal is the hypotenuse:
+About 125.1 m. The two sides of the pitch meet at a *right angle*{.term} at
+every corner, so the diagonal is the *hypotenuse*{.term}:
 $\sqrt{105^2 + 68^2} = \sqrt{15649}$.
 
 </details>
@@ -84,7 +84,7 @@ the maths is the same.
 
 </details>
 
-**4. Predict.** A circle has its centre at $(0, 0)$ and a radius of 5.
+**4. Predict.** A circle has its centre at $(0, 0)$ and a *radius*{.term} of 5.
 Is the point $(3, 4)$ inside it, outside it, or on its edge? What does
 this print?
 
@@ -189,7 +189,7 @@ square root changes nothing.
 
 **7. Another way.** In the tutorial's first picture of Pythagoras, the
 tilted square has corners at $(3, 0)$, $(7, 3)$, $(4, 7)$ and
-$(0, 4)$. Find its area a second way: measure one side with
+$(0, 4)$. Find its *area*{.term} a second way: measure one side with
 `distance`, and square it. Then check that all four sides are the same
 length.
 
@@ -334,7 +334,7 @@ import random
 ```
 
 **13. Make.** In the game, the right-hand wall of the screen is the
-vertical line $x = 300$. A ball of radius 10 starts with its centre at
+*vertical line*{.term} $x = 300$. A ball of radius 10 starts with its centre at
 $(200, 150)$ and moves 12 pixels right each frame. The distance from
 the ball's centre to the wall is `abs(300 - x)`. In which frame does
 the ball first touch the wall? By how much does it overlap then?
@@ -432,7 +432,7 @@ It prints `False` three times. In frame 0 the ball is 60 pixels away,
 too far to touch. In frame 1 it is 40 pixels away on the other side,
 still too far. Between the two frames it passed right through the
 player, but the game only checks where the ball is at each frame, not
-where it went in between. This is tunnelling. In frame 2 the ball has
+where it went in between. This is *tunnelling*{.term}. In frame 2 the ball has
 gone. Schlomi's test found the case her checker misses.
 
 One fix is to move a fast ball in smaller steps, and check after each
@@ -457,8 +457,8 @@ An answer might weigh a few things, and can choose either way.
 - **Time.** Stating and checking is quicker, and leaves more time to
   use the theorem.
 - **What a check can say.** A check on a few triangles says the rule
-  worked for those. A proof says why it must work for every
-  right-angled triangle.
+  worked for those. A *proof*{.term} says why it must work for every
+  *right-angled triangle*{.term}.
 - **What you remember.** Some people remember a picture long after the
   formula has gone, and can rebuild the formula from it.
 - **Trust in pictures.** A picture proof asks you to trust that the

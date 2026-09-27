@@ -20,7 +20,7 @@ covers:
 
 # When there is no real answer: complex numbers
 
-Type `2j` into a Python cell, and Python does not complain. It shows
+Type `2j` into a Python *cell*{.term}, and Python does not complain. It shows
 `2j` back. Now type `2j * 2j`, and Python gives `(-4+0j)`, which is −4.
 So `2j` is a number that squares to make a negative. On the last page,
 no real number could do that. Python has been keeping a number that
@@ -29,7 +29,7 @@ does it keep one ready?
 
 I think this is the strangest page in the unit. The new numbers look
 like a trick at first. By the end, they turn a shape
-on a screen, and every quadratic has its roots.
+on a screen, and every *quadratic*{.term} has its *roots*{.term}.
 
 On this page we:
 
@@ -42,13 +42,13 @@ On this page we:
 - solve every quadratic, and check each root by putting it back
 - find what the bigger space takes away
 
-> **The space we're in.** This page starts in the real numbers,
+> **The space we're in.** This page starts in the *real numbers*{.term},
 > $\mathbb{R}$, and builds a bigger space around them, the complex
 > numbers. Every real number is still there, and almost every move we
 > could make before still works. The last section finds the one that
-> does not. The name "imaginary", which we will meet, comes from
+> does not. The *name*{.term} "imaginary", which we will meet, comes from
 > history. It is not a
-> sign that these numbers are less useful than the others. Your toolkit
+> sign that these numbers are less useful than the others. Your *toolkit*{.term}
 > is loaded, with `evaluate`, `solve_quadratic` and `close_enough`.
 
 ## Warm-up
@@ -97,7 +97,7 @@ print(solve_quadratic(1, 0, 1))
 Every square is 0 or more. A negative times a negative is positive, a
 positive times a positive is positive, and 0 times 0 is 0. So
 $x^2 = -1$, which is $x^2 + 1 = 0$, has no answer in $\mathbb{R}$, and
-your `solve_quadratic` returns an empty list.
+your `solve_quadratic` returns an *empty list*{.term}.
 
 We have been here before. On
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#families-of-numbers),
@@ -117,7 +117,7 @@ and then find what it lets us do.
 
 <aside class="dl-note" id="no-real-note-history">
 
-**A name meant as an insult.** Gerolamo Cardano met square roots of
+**A name meant as an insult.** Gerolamo Cardano met *square roots*{.term} of
 negative numbers in his book *Ars Magna*, in 1545, and called them
 useless. Rafael Bombelli, in his *Algebra* of 1572, wrote down the
 rules for adding and multiplying them, and used them to find real
@@ -225,7 +225,7 @@ for turn in range(5):
 ```
 
 `1`, then `1j`, then `(-1+0j)`, then `(-0-1j)`, which is $-i$, then
-`(1-0j)`, which is 1 again. (A float can carry a sign on 0, and $-0$
+`(1-0j)`, which is 1 again. (A *float*{.term} can carry a sign on 0, and $-0$
 equals 0.) On the plane, that is right, then up, then left, then down,
 then back to the start. Each multiply by $i$ turns the
 point a quarter turn about 0, against the clock.
@@ -282,7 +282,7 @@ shape stay the same. One multiply by `1j` turns every point at once.
 
 Back to the job the last page left unfinished. `math.sqrt` refuses a
 negative number, because it works in $\mathbb{R}$. Python has a second
-module, `cmath`, with the same functions for $\mathbb{C}$. What do you
+*module*{.term}, `cmath`, with the same functions for $\mathbb{C}$. What do you
 think `cmath.sqrt(-4)` gives?
 
 ```python exec
@@ -318,7 +318,7 @@ print(solve_quadratic_complex(1, 3, -40))
 
 There is no `if`. Nothing can fail now, so there is no case to leave
 out. $x^2 + 1 = 0$ has roots $-i$ and $i$. $x^2 - 2x + 5 = 0$ has roots
-$1 - 2i$ and $1 + 2i$. And the sprite sheet from the last page still
+$1 - 2i$ and $1 + 2i$. And the *sprite sheet*{.term} from the last page still
 has its roots, −8 and 5, now written with `+0j`.
 
 Look at the two roots of $x^2 - 2x + 5$. They have the same real part,

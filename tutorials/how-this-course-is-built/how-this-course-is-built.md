@@ -10,7 +10,7 @@ Dear reader,
 
 This course is built a little differently, and I would like to tell you
 how, and why. Every course is full of choices: what comes first, what
-gets a name, what counts as an answer. The person learning almost never
+gets a *name*{.term}, what counts as an answer. The person learning almost never
 hears about them. So here are mine. You are allowed to judge them, and
 to tell me when one of them is not working for you.
 
@@ -56,7 +56,7 @@ Some of the most interesting maths asks where.
 (Many of us were told at school that 4 − 5 was "not allowed". It was
 allowed all along. Nobody had shown us the space where it works.)
 
-**Guess before you run.** Before a cell shows you something new, the
+**Guess before you run.** Before a *cell*{.term} shows you something new, the
 page asks you to guess what will happen. Your guess will often miss.
 Mine do too. A guess that misses is the most useful kind. It points
 straight at the idea to look at again. Nobody marks it.

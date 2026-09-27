@@ -40,12 +40,12 @@ On this page we:
 - tell four kinds of data apart: nominal, ordinal, discrete and
   continuous
 - count how often each value appears, in a frequency table, and add
-  `frequency_table` to your toolkit
+  `frequency_table` to your *toolkit*{.term}
 - draw a bar chart, a pie chart, a histogram, a stem-and-leaf plot and a
   line chart, each for the data it suits
 - draw the misleading chart from the advert, and an honest one beside it
 
-> **The space we're in.** We use lists of values, from
+> **The space we're in.** We use *lists*{.term} of values, from
 > [A row of numbers](tutorial:a-row-of-numbers), and matplotlib, which
 > draws charts once we write `import matplotlib.pyplot as plt`. We use one
 > real dataset, life expectancy by country and year, from Our World in
@@ -160,8 +160,8 @@ survey is made up, but it is the kind of answer a real class gives.
 Which way to travel do you think is the most common? How would your own
 class answer?
 
-The next cell counts them with a new kind of collection. A *dictionary*
-is a collection of names, each pointing at a value. The names are
+The next *cell*{.term} counts them with a new kind of collection. A *dictionary*
+is a collection of *names*{.term}, each pointing at a value. The names are
 called *keys*. We write one with curly brackets, a key, a colon and its
 value: `{"bus": 7, "car": 6}`. Then `counts["bus"]` is 7. On
 [A row of numbers](tutorial:a-row-of-numbers#counting-from-0),
@@ -209,7 +209,7 @@ usually written with a row for each value:
 
 On What is typical?, `journeys.count("bus")` would have counted one
 value. A frequency table counts every value at once, in one pass
-through the list. The most common value is the mode, from
+through the list. The most common value is the *mode*{.term}, from
 [What is typical?](tutorial:what-is-typical). In a frequency table you
 can see it at once. It is the bus. And each frequency divided by 20 is a relative
 frequency, as on
@@ -266,7 +266,7 @@ def frequency_table(values):
 ```
 
 Run the toolkit cell. How does your `frequency_table` compare with one
-way to write it? The table below runs the same calls on your function
+way to write it? The table below runs the same calls on your *function*{.term}
 and on a solution, side by side. Until the body is written,
 `frequency_table` returns `None`, so your column shows `None` in the
 first three rows, and an error in the fourth.
@@ -313,7 +313,7 @@ values of a dictionary without their keys, and `total` from
 the keys without their values.
 
 Python has the same tool already, as `Counter` in its `collections`
-module. When we write our own, we see what it does inside.
+*module*{.term}. When we write our own, we see what it does inside.
 
 ## Bars and pies, for categories
 

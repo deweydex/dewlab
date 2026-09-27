@@ -46,9 +46,9 @@ On this page we:
 - find out which lists binary search works on, and which it does not
 - meet logarithms again, as "how many halvings"
 - plot the number of looks as the list grows
-- add `linear_search` and `binary_search` to the toolkit
+- add `linear_search` and `binary_search` to the *toolkit*{.term}
 
-> **The space we're in.** We work with lists, with indexes that start
+> **The space we're in.** We work with *lists*{.term}, with indexes that start
 > at 0, as on [A row of numbers](tutorial:a-row-of-numbers). We usually
 > do not say it, but a computer looks at one item of a list at a time, and
 > "finding" means looking and comparing, again and again. It does not
@@ -101,7 +101,7 @@ the *target*, sits in a list. A *linear search* looks at each item in
 turn, from the front, until it finds the target or runs out of items.
 "Linear" means "in a line". It goes along the list one step at a time.
 
-Before you run the cell, count: how many names will Python look at to
+Before you run the *cell*{.term}, count: how many names will Python look at to
 find Niamh?
 
 ```python exec
@@ -123,7 +123,7 @@ print("Niamh is at index", find_contact(contacts, "Niamh"))
 
 It takes five looks, and Niamh is at index 4. The loop runs by index,
 as on [A row of numbers](tutorial:a-row-of-numbers#going-through-by-index).
-When the names match, `return i` ends the whole function at once, so
+When the names match, `return i` ends the whole *function*{.term} at once, so
 the loop does not go on to Oisín.
 
 What if the name is not there? Guess what this prints, and how many
@@ -151,7 +151,7 @@ space, −1 is a real index. Always check the answer before you use it.
 How long a search takes depends on how many times it looks. So let's
 count. Here is the same search, with a counter in place of the
 printing. The counter starts at 0 before the loop and goes up by 1
-each time round, like a running total.
+each time round, like a *running total*{.term}.
 
 ```python exec
 id: finding-fast-count-1
@@ -236,7 +236,7 @@ dictionary does, so `"Aoife" < "Kwame"` is True.
 A *binary search* finds a target in a sorted list by looking at the
 middle item and removing the half the target cannot be in, again
 and again. "Binary" means "in two". Each look splits what is left into
-two halves. Here is the plan in pseudocode:
+two halves. Here is the plan in *pseudocode*{.term}:
 
 ```text
 SET low TO the first index, and high TO the last index
@@ -391,7 +391,7 @@ everything to its left". In an unsorted list, one look says nothing
 about the other items, and the only move that works is to look at all
 of them.
 
-That is why the promise belongs in the function's name and docstring:
+That is why the promise belongs in the function's *name*{.term} and *docstring*{.term}:
 `binary_search(sorted_values, target)`. It also tells us what a phone
 does. Programs that hold many names usually keep them sorted, so that
 they can halve, not read every name. Keeping a list sorted takes work
@@ -551,7 +551,7 @@ target is not there.
 1. For `linear_search`, start from `find_contact` at the top of the
    page, and delete the `print` line.
 2. For `binary_search`, start from `binary_steps`, and delete the
-   `print` line and the comment.
+   `print` line and the *comment*{.term}.
 
 ```python exec
 id: finding-fast-toolkit
@@ -612,7 +612,7 @@ def binary_search(sorted_values, target):
 How do your two searches compare with one way to write them? The table
 below runs the same calls on your tools and on a solution, side by side.
 The rows try the edges: the first item, the last item,
-an empty list, and a target that is not there. The last three rows use
+an *empty list*{.term}, and a target that is not there. The last three rows use
 a list of 50 even numbers, from 0 to 98. They search for its first and
 last items, and for an odd number, which is never in it. Where a row is
 different, try that call on its own.

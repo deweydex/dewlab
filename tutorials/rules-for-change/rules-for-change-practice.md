@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `derivative_at` from
+Your *toolkit*{.term} is loaded on this page, including `derivative_at` from
 [How fast, right now?](tutorial:how-fast-right-now), `compose` from
 [Machines that take a number](tutorial:machines-that-take-a-number)
 and `close_enough` from [Does it work?](tutorial:does-it-work). Run the
-first cell before any other. It gives you `slopes_agree` and the list
+first *cell*{.term} before any other. It gives you `slopes_agree` and the *list*{.term}
 of `points` from the tutorial.
 
 ## Warm-up
@@ -43,7 +43,7 @@ for step in range(-30, 31):
 print("slopes_agree is ready.")
 ```
 
-**1. Predict.** By the power rule, what is the slope of $x^5$ at
+**1. Predict.** By the power rule, what is the *slope*{.term} of $x^5$ at
 $x = 2$? Then check with `derivative_at`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -58,7 +58,7 @@ print(derivative_at(fifth_power, 2))
 ```
 
 It prints a number very close to 80, such as `80.00000000230045`.
-That is the chord's estimate, different in the ninth decimal place.
+That is the *chord*{.term}'s estimate, different in the ninth decimal place.
 
 </details>
 
@@ -113,8 +113,8 @@ the app?
 <details class="dl-answer"><summary>answer</summary>
 
 Server B's graph is a flat line. The time does not change as the crowd
-changes. A slope says how much the output changes for each step of the
-input, and here it changes by nothing. For someone using the app, each
+changes. A slope says how much the *output*{.term} changes for each step of the
+*input*{.term}, and here it changes by nothing. For someone using the app, each
 extra thousand people add 0 ms. Server A's slope is 2. Each extra
 thousand people add 2 ms.
 
@@ -131,7 +131,7 @@ id: rules-for-practice-core
 
 **5. Make.** A picture on a phone screen grows as you spread two
 fingers. After $t$ tenths of a second, it is $4 + 0.2t$ cm wide and
-$3 + 0.1t$ cm high. Use the product rule to find how fast its area is
+$3 + 0.1t$ cm high. Use the product rule to find how fast its *area*{.term} is
 growing after 10 tenths of a second. Check with `derivative_at`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -273,9 +273,9 @@ $(3x + 2)^{20}$ that would be a long job, and the chain rule is one line.
 
 </details>
 
-**9. Make.** A weather balloon is being filled. Its radius, in metres,
+**9. Make.** A weather balloon is being filled. Its *radius*{.term}, in metres,
 is $1 + 0.1t$ after $t$ seconds. Use `compose` and your toolkit's
-`sphere_volume` to write its volume as a rule of time. How fast is the
+`sphere_volume` to write its *volume*{.term} as a rule of time. How fast is the
 volume growing after 10 seconds? Find it with the chain rule, then
 check.
 
@@ -385,7 +385,7 @@ There is more than one good answer. Here are some things to weigh:
   told it. A found rule is often easier to remember.
 - A check at 61 points catches almost every rule that does not hold,
   but it is not a
-  proof. A rule could agree at those points and fail somewhere else.
+  *proof*{.term}. A rule could agree at those points and fail somewhere else.
 - A proof from limits shows *why* each rule holds, and a reader who
   follows it can rebuild a rule they have forgotten.
 - Proofs from limits need a lot of algebra, and a reader who

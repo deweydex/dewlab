@@ -33,14 +33,14 @@ moves explain how light is trapped inside a glass cable.
 
 On this page we:
 
-- name the three sides of a right-angled triangle from one of its angles
+- name the three sides of a *right-angled triangle*{.term} from one of its angles
 - find the tree's height from a distance and an angle
 - go backwards, from two sides to an angle, and find a bearing on a map
 - follow a ray of light into water, with Snell's law
-- find a triangle's area from two sides and the angle between them
-- solve triangles with no right angle, with the cosine rule and the sine
+- find a triangle's *area*{.term} from two sides and the angle between them
+- solve triangles with no *right angle*{.term}, with the cosine rule and the sine
   rule
-- add `angle_between` to the toolkit
+- add `angle_between` to the *toolkit*{.term}
 
 > **The space we're in.** A flat plane, with points as `(x, y)` tuples.
 > We say angles in degrees, and Python's `math` works in radians, as on
@@ -92,7 +92,7 @@ right angle.
 On [Going round in circles](tutorial:going-round-in-circles), a point
 turned round a circle, and its x and y came from the cosine and the
 sine. A right-angled triangle is a piece of that picture. Your line of
-sight is a radius, and the tree is the point's height. The cell draws
+sight is a *radius*{.term}, and the tree is the point's height. The *cell*{.term} draws
 it with `point_on_circle` from your toolkit.
 
 ```python exec
@@ -124,7 +124,7 @@ print(top)
 The top corner sits on the circle. We name the sides from the 35° angle
 at your eye:
 
-- the hypotenuse, from
+- the *hypotenuse*{.term}, from
   [How far apart?](tutorial:how-far-apart#squares-on-the-sides-pythagoras),
   is the longest side, across from the right angle: your line of sight;
 - the *opposite* side is the side across the triangle from the angle:
@@ -132,12 +132,12 @@ at your eye:
 - the *adjacent* side is the short side that touches the angle: the
   level line.
 
-From the treetop, the names would swap.
+From the treetop, the *names*{.term} would swap.
 
 The adjacent side is the point's x, the hypotenuse times the cosine. The
 opposite side is its y, the hypotenuse times the sine. And the
 [tangent](tutorial:going-round-in-circles#a-third-name-tangent) was
-rise over run. In the triangle, that is opposite over adjacent.
+*rise*{.term} over run. In the triangle, that is opposite over adjacent.
 
 Will the three ratios match `math.sin`, `math.cos` and `math.tan`?
 
@@ -237,7 +237,7 @@ print(math.degrees(math.atan(1 / 10)))
 
 It is about 50°. That is more than 45°, because the Spire is taller than you are far
 from it. The second line is the hall's ramp from
-[Straight lines](tutorial:straight-lines#how-steep-is-a-ramp), a slope
+[Straight lines](tutorial:straight-lines#how-steep-is-a-ramp), a *slope*{.term}
 of 1:10. Its angle is under 6°, and still too steep for a ramp that
 long.
 
@@ -257,7 +257,7 @@ the same fraction. The division loses the signs.
 `math.atan2(y, x)` takes the two sides separately and keeps their
 signs, so it works in any direction. Maths measures angles from east,
 anticlockwise, with `atan2(north, east)`. A bearing is measured from
-north, clockwise. If we swap the two inputs, `atan2(east, north)` makes
+north, clockwise. If we *swap*{.term} the two *inputs*{.term}, `atan2(east, north)` makes
 both changes at once. Predict each bearing, then run it.
 
 ```python exec
@@ -453,7 +453,7 @@ and then `math.acos` gives the angle.
 ## A tool for the angle at a corner
 
 Games and maps often know three points and want the angle at the middle
-one. Is the player facing the ball? Here is a toolkit function for
+one. Is the player facing the ball? Here is a toolkit *function*{.term} for
 that, with the cosine rule run backwards inside it. The body is yours:
 
 1. Use `distance` to find the two sides that meet at `q`, and the side
@@ -559,8 +559,8 @@ title: some steps
 The `max` and `min` line in the solution is there because of the row
 "a straight line, with rounding". Three points on a straight line
 make an angle of 180°, whose cosine is −1. But 0.1 and 0.2 are not exact
-in binary, so the sum comes out a tiny bit below −1, such as
-−1.0000000000000002. That is outside the domain of `math.acos`, which
+in *binary*{.term}, so the sum comes out a tiny bit below −1, such as
+−1.0000000000000002. That is outside the *domain*{.term} of `math.acos`, which
 stops with `ValueError: math domain error`. The `max` and `min` line
 moves it back to −1. The last row is about the space we are in. It
 adds the three angles of a flat triangle, and they make 180°.

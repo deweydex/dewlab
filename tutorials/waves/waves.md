@@ -39,17 +39,17 @@ On this page we:
 - draw a point going round a circle against time, and get a wave
 - make a wave taller or shorter: its amplitude
 - make it repeat faster or slower: its frequency and its period
-- add `wave` to the toolkit, and draw the voltage in an Irish socket
+- add `wave` to the *toolkit*{.term}, and draw the voltage in an Irish socket
 - find the notes of a piano, and see that an octave is a doubling
 - start a wave late, and use that to cancel a noise
 - draw the tangent, which repeats but is not a wave
 
 > **The space we're in.** We measure time in seconds, starting from 0. Python's
-> `math.sin` and `math.cos` take radians, as on
+> `math.sin` and `math.cos` take *radians*{.term}, as on
 > [Going round in circles](tutorial:going-round-in-circles#python-measures-angles-another-way),
 > and your `point_on_circle` takes degrees. One thing is rarely said.
 > A real sound is never a perfect sine wave. A sine wave is the
-> simplest sound there is, and it is the model we build the others from.
+> simplest sound there is, and it is the *model*{.term} we build the others from.
 
 ## Warm-up
 
@@ -90,7 +90,7 @@ ear feels the air pressure go up and down, again and again.
 
 A point going round a circle also goes up and down, again and again, if
 we watch only its height. Picture the point on
-the unit circle from
+the *unit circle*{.term} from
 [Going round in circles](tutorial:going-round-in-circles#a-circle-of-radius-1).
 It starts at $(1, 0)$ and goes round twice. Each step, we write down
 how far it has turned and how high it is. Then we draw the height
@@ -172,9 +172,9 @@ FuncAnimation(figure, draw_frame, frames=41, interval=100)
 At one turn a second, the right side draws two humps in two seconds.
 At two turns a second, it draws four, squeezed into the same space.
 The circle looks the same, only faster. The wave changes shape. The
-animation loops. Run the cell again to watch it from the start.
+animation loops. Run the *cell*{.term} again to watch it from the start.
 
-A function whose graph repeats the same piece for ever is *periodic*.
+A *function*{.term} whose graph repeats the same piece for ever is *periodic*.
 The sine wave repeats every $360^\circ$, because after a whole turn the
 point is back where it started.
 
@@ -345,7 +345,7 @@ Try `print(wave(1, 1, 0.25))` on its own. What came back? The formula is
 $A \sin(2\pi f t)$: which name is $A$, which is $f$, and which is $t$?
 ```
 
-Now the wall socket. A socket in Ireland is rated at 230 volts. (A volt
+Now the wall socket. A socket in Ireland is rated at 230 *volts*{.term}. (A volt
 measures the push behind an electric current.) The 230 is a kind of
 average of the swing: the steady voltage that would heat a kettle just
 as much. The top of the swing, its amplitude, is $\sqrt{2}$ times more.
@@ -375,7 +375,7 @@ The voltage swings between about +325 and −325 volts, twice in 40
 milliseconds. That swing is the "alternating" in alternating current.
 On
 [When there is no real answer](tutorial:when-there-is-no-real-answer),
-engineers wrote it as a complex number turning on a plane. Here is the
+engineers wrote it as a *complex number*{.term} turning on a plane. Here is the
 same turn, seen from the side: a point going round, drawn as its
 height.
 
@@ -445,10 +445,10 @@ for step in range(13):
 ```
 
 The first line shows that $2^{1/12}$, multiplied by itself 12 times,
-makes `2.000000000000001`: 2, apart from a float's rounding. Twelve
+makes `2.000000000000001`: 2, apart from a *float*{.term}'s rounding. Twelve
 steps up from 440 end at 880.0, one octave up. Middle C is 9
 semitones below the A, at $440 \times 2^{-9/12} \approx 261.63$ Hz. A
-negative power counts halvings, as $2^{-3}$ did on
+negative *power*{.term} counts halvings, as $2^{-3}$ did on
 [Doubling and halving](tutorial:doubling-and-halving#halving-down-to-1).
 
 People can hear from about 20 Hz to about 20,000 Hz. That is 1,000
@@ -509,7 +509,7 @@ such as an engine's hum, because each repeat is like the one before.
 ## Tangent repeats but is not a wave
 
 On the last page, the tangent was $\frac{\sin\theta}{\cos\theta}$, the
-slope of the line out to the point. Is its graph a wave too? The cell
+*slope*{.term} of the line out to the point. Is its graph a wave too? The cell
 skips the angles within $5^\circ$ of $90^\circ$ and $270^\circ$,
 where the cosine is 0 or close to it.
 
@@ -554,7 +554,7 @@ hides it a little.
 
 | The question | On this page |
 |---|---|
-| What is named here? | a wave's amplitude $A$, frequency $f$ and period $T$; a note's name, for a frequency; the phase, for how far along a wave starts |
+| What is named here? | a wave's amplitude $A$, frequency $f$ and period $T$; a note's *name*{.term}, for a frequency; the phase, for how far along a wave starts |
 | What is promised? | `wave(amplitude, frequency, time)` promises $A\sin(2\pi f t)$; one period later, a wave is back at the same height |
 | What happens when? | turns first, $f \times t$, then radians, then the sine, then the amplitude; a wave half a turn late cancels the one before it |
 | What does this space let us do? | time goes on for ever, so a wave can repeat for ever; `math.sin` takes radians; a sine wave is a model of a sound, never the whole of one |

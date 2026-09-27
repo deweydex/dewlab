@@ -22,20 +22,20 @@ covers:
 # When Python says no: reading error messages
 
 You press Run, and instead of an answer, red text appears under the
-cell. For a moment it can feel like a judgement on you. In fact, Python
+*cell*{.term}. For a moment it can feel like a judgement on you. In fact, Python
 is telling you, as exactly as it can, which move it could not make, and
 where. Every programmer sees these messages every day, including the
 ones who wrote Python.
 
 This page is about reading them. Our code comes from the digit display
-this unit is building. It finds a number's digits, and a pixel's row and
+this unit is building. It finds a number's digits, and a *pixel*{.term}'s row and
 column, with a mistake in each on purpose.
 
 On this page we:
 
 - read an error message from its last line up
 - meet the five errors people see most often when they start
-- follow an error back through two functions to the line responsible
+- follow an error back through two *functions*{.term} to the line responsible
 - see how Python's messages compare with a compiler's and a linker's
 - fix a broken piece of display code, one error at a time
 
@@ -106,7 +106,7 @@ Python stops, and shows this report. A report like this is called a
 We read a traceback from the bottom up. The last line has three parts:
 
 1. **The kind of error**, before the colon: `NameError`.
-2. **What happened**, after the colon: the name `numbr` is not defined.
+2. **What happened**, after the colon: the *name*{.term} `numbr` is not defined.
 3. **Sometimes, a suggestion**: did you mean `number`?
 
 Then the lines above say where: line 2 of this cell, with a copy of
@@ -140,7 +140,7 @@ Smithsonian's National Museum of American History.
 
 On [Four questions for any puzzle](tutorial:four-questions), `*` did
 one job with numbers and another with text. The same is true of `+`.
-It adds two numbers, and it joins two strings. What do you think happens
+It adds two numbers, and it joins two *strings*{.term}. What do you think happens
 when we ask it to join a string and a number? Run it to check.
 
 ```python exec
@@ -158,7 +158,7 @@ TypeError: can only concatenate str (not "int") to str
 A *TypeError* means a move was used on the wrong kind of value.
 "Concatenate" is a long word for "join". `str` is Python's short name for
 a string, so the message says: I can only join a string to a string, and
-you gave me an int.
+you gave me an *int*{.term}.
 
 The move `+` is fine in the space of numbers, and fine in the space of
 strings. It has no meaning between them. Python will not guess what we
@@ -269,7 +269,7 @@ most recently.
 
 ### Your turn
 
-Your toolkit has `digit_at` from
+Your *toolkit*{.term} has `digit_at` from
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold),
 already loaded on this page. Its third input is the base.
 

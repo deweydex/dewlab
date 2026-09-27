@@ -36,8 +36,8 @@ answers it at once, and shows more too.
 
 On this page we:
 
-- draw a rule as every pair $(x, y)$ at once, and add `plot_rule` to
-  the toolkit
+- draw a rule as every *pair*{.term} $(x, y)$ at once, and add `plot_rule` to
+  the *toolkit*{.term}
 - read where a graph crosses zero, and check it by substituting
 - draw straight lines, parabolas and cubics, find where two graphs
   meet, and watch a ball fly along its graph
@@ -45,7 +45,7 @@ On this page we:
   $x^2$ and $2^x$
 - see what a graph shows that a table hides
 
-> **The space we're in.** We work with pairs of real numbers, drawn on a flat grid.
+> **The space we're in.** We work with pairs of *real numbers*{.term}, drawn on a flat grid.
 > One line runs across and one runs up, and they cross at 0. A computer
 > cannot draw every real number. It calculates a few hundred points and
 > joins them with short straight lines. We usually do not say it, but a
@@ -77,7 +77,7 @@ accepts.
 ## A table, then a picture
 
 Let's start with a table. For each whole number $x$ from $-3$ to 3, the
-cell prints $x$ and then $x^2 - 4$. Where do you expect the value to be
+*cell*{.term} prints $x$ and then $x^2 - 4$. Where do you expect the value to be
 0?
 
 ```python exec
@@ -104,7 +104,7 @@ a negative $y$ means "go down".
 **Whose grid?** Placing a point by two numbers is often called
 Cartesian coordinates, after the French thinker René Descartes. His
 book *La Géométrie*, from 1637, showed how to turn a curve into an
-equation, and an equation into a curve.
+*equation*{.term}, and an equation into a curve.
 
 </aside>
 
@@ -128,9 +128,9 @@ plt.axvline(0, color="grey")
 
 The dots make a U. `"o"` asks for dots with no line between them. But
 what happens between the dots? The rule has a value at $x = 0.5$ and at
-$x = 2.71$ too. The *graph* of a function is the picture of every pair
-$(x, f(x))$, for every $x$ in its domain. We write the rule as
-$y = f(x)$, so that $y$ names the output.
+$x = 2.71$ too. The *graph* of a *function*{.term} is the picture of every pair
+$(x, f(x))$, for every $x$ in its *domain*{.term}. We write the rule as
+$y = f(x)$, so that $y$ names the *output*{.term}.
 
 ## A tool that draws any rule
 
@@ -170,11 +170,11 @@ def plot_rule(rule, low, high):
 ```
 
 The loop is the table from the last section, with 401 rows in place of
-7. The rest draws. `rule.__name__` is the name the rule was given with
+7. The rest draws. `rule.__name__` is the *name*{.term} the rule was given with
 `def`, which `plot_rule` uses as a label. The two `if` lines draw an
 axis only where 0 is in view.
 
-`plot_rule` is a procedure, as on
+`plot_rule` is a *procedure*{.term}, as on
 [Machines that take a number](tutorial:machines-that-take-a-number#functions-that-give-back-and-procedures-that-do).
 It draws, and returns `None`. Now the whole of $y = x^2 - 4$:
 
@@ -209,7 +209,7 @@ servers could do the job. Server A answers in 8 milliseconds (ms,
 thousandths of a second), plus 2 ms for every thousand people using the
 app at that moment. Server B answers in 20 ms, however many people use
 it. (The numbers are made up, and real servers slow down in more
-complicated ways, so a straight line is a model.) Which server is
+complicated ways, so a straight line is a *model*{.term}.) Which server is
 faster? It depends on how many people are using the app. Here are both
 on one picture. `plt.legend()` shows which line is which. Before you
 run it, predict the shape of each line.
@@ -253,7 +253,7 @@ print(server_a(5), server_a(7))
 
 With 6 thousand people, both answer in 20 ms. With 5 thousand, server A
 takes 18 ms, and with 7 thousand it takes 22. The graph gave the
-answer, and substitution checked it.
+answer, and *substitution*{.term} checked it.
 [Solving for x](tutorial:solving-for-x) finds the same answer with no
 picture at all.
 
@@ -274,7 +274,7 @@ id: drawing-a-lines-your-turn
 Back to the goalkeeper. In a simple model with rounded numbers, a ball
 kicked straight up at 20 metres a second is $20t - 5t^2$ metres high,
 $t$ seconds after the kick. (The model leaves out the air. The 5 is half
-of 10, the pull of gravity rounded: about 10 metres a second, every
+of 10, the pull of *gravity*{.term} rounded: about 10 metres a second, every
 second.) What shape will its graph be? Where will it cross zero?
 
 ```python exec
@@ -342,12 +342,12 @@ landing time is a root of the rule, and
 picture. The animation loops. Run the cell again to watch it from the
 start.
 
-The graph of a quadratic function is a curve called a *parabola*. When
-the $x^2$ term has a positive coefficient, as in $x^2 - 4$, the
+The graph of a *quadratic*{.term} function is a curve called a *parabola*. When
+the $x^2$ *term*{.term} has a positive *coefficient*{.term}, as in $x^2 - 4$, the
 parabola opens upwards, like a U. When it is negative, as in
 $-5t^2 + 20t$, it opens downwards.
 
-What about a cubic? On the last page, three brackets made a cubic. Here
+What about a *cubic*{.term}? On the last page, three brackets made a cubic. Here
 is $x^3 - 4x$, which is $x(x - 2)(x + 2)$, using `evaluate`. How many
 times do you think it will cross the x-axis?
 
@@ -410,7 +410,7 @@ plot_rule(one_over, -5, 5)
 Read the last line of the error, as on
 [When Python says no](tutorial:when-python-says-no):
 `ZeroDivisionError: float division by zero`. One of the 401 points was
-exactly 0.0, a float 0, and $\frac{1}{0}$ has no value. So 0 is not in the domain of
+exactly 0.0, a *float*{.term} 0, and $\frac{1}{0}$ has no value. So 0 is not in the domain of
 this function. The graph has a gap there. We can draw it in two pieces,
 one on each side of the gap:
 

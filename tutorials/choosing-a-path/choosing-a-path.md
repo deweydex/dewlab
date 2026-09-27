@@ -40,7 +40,7 @@ On this page we:
 - ask Python questions that have the answer True or False
 - solve an inequality: how many minutes of video fit on a phone?
 - let a program choose a path with `if`, `elif` and `else`
-- add our first decision tool to the toolkit: `between`
+- add our first decision tool to the *toolkit*{.term}: `between`
 
 > **The space we're in.** We use the whole numbers and decimals from
 > Unit 1, and Python's own ways of comparing them. Every question on this
@@ -182,12 +182,12 @@ too_hot = temperature >= 80
 print(too_hot)
 ```
 
-A condition's answer is a value, so we can give it a name, like any
+A condition's answer is a value, so we can give it a *name*{.term}, like any
 other value.
 
 ### Your turn
 
-1. In the first cell above, change `temperature = 79` to
+1. In the first *cell*{.term} above, change `temperature = 79` to
    `temperature = -3`. Before you run it, guess the three answers.
 2. In the cell below, set `temperature` to any value you like.
 3. Write a line that prints True when `temperature` is 35 or more.
@@ -345,7 +345,7 @@ spaces.
 
 On [Recipes are algorithms](tutorial:recipes-are-algorithms), a robot
 making tea chose a path with "if they take milk, add milk". That shape
-was called selection. Here is the same shape, with Python doing the
+was called *selection*{.term}. Here is the same shape, with Python doing the
 choosing.
 
 Any True or False value can be a condition, including a name:
@@ -366,7 +366,7 @@ A laptop has a fan with several speeds. The word `elif` is short for "else if". 
 checks the conditions from the top, one after another. It takes the
 first path whose condition is True, and skips every path after it.
 
-Here is a fan rule as a function, which returns a speed. The limits
+Here is a fan rule as a *function*{.term}, which returns a speed. The limits
 are made up.
 
 ```python exec
@@ -488,7 +488,7 @@ Now let's make a tool from this. The cell below is a toolkit cell, like
 the one where you finished `to_hex` on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 Later pages can use what you write here. The first line of the function and its promise are written for you.
-Replace the comment with one `return` line that keeps the promise.
+Replace the *comment*{.term} with one `return` line that keeps the promise.
 
 ```python exec
 id: choosing-between-toolkit

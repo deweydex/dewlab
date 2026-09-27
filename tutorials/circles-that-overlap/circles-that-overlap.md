@@ -32,11 +32,11 @@ many laptops have exactly two of the three?
 
 There are three yes-or-no questions and twenty laptops. It sounds like
 a job for a pencil. But three circles do the job better, and the
-circles are a truth table drawn as a picture.
+circles are a *truth table*{.term} drawn as a picture.
 
 On this page we:
 
-- draw two sets as two circles in a box, and name every region
+- draw two *sets*{.term} as two circles in a box, and name every region
 - count the laptops in either circle, without counting any twice
 - draw three circles, and find all eight of their regions
 - answer the team's question in two different ways, and check that
@@ -48,7 +48,7 @@ On this page we:
 > [Collections without repeats](tutorial:collections-without-repeats).
 > A set holds each value once, in no order, and Python finds unions,
 > intersections and differences for us. Every set on this page sits
-> inside one universal set, here the laptops that were checked. A
+> inside one *universal set*{.term}, here the laptops that were checked. A
 > report usually does not say this, but it matters. "Every laptop without
 > backups" means nothing until we say which laptops we mean. Every
 > check on this page is made up, so that the numbers stay small enough
@@ -135,7 +135,7 @@ diagram.
 
 </aside>
 
-Before you run the next cell, guess how many laptops are in each of the
+Before you run the next *cell*{.term}, guess how many laptops are in each of the
 four regions. The four numbers must add to 20.
 
 The cell draws the diagram. It is the longest cell on this page, and you
@@ -219,7 +219,7 @@ set keeps no order. The picture shows why the two lines agree. The
 union is all three parts inside the circles, and taking away the
 overlap leaves the two outer parts. A name is in `updated ^ antivirus`
 when exactly one of "updated" and "has antivirus" is true for it, the
-exclusive or of
+*exclusive or*{.term} of
 [True, false and every case](tutorial:true-false-and-every-case#exclusive-or-exactly-one).
 
 ### Your turn
@@ -255,7 +255,7 @@ circles counts each circle once, and the 7 laptops in the overlap are
 in both circles, so they were counted twice. To count them once, take the
 overlap away once.
 
-The cardinality of a set, $|A|$, is the number of its elements, as on
+The *cardinality*{.term} of a set, $|A|$, is the number of its elements, as on
 [Collections without repeats](tutorial:collections-without-repeats#two-playlists).
 So $|U_p| = 10$, and $|U_p \cap A| = 7$. In words: the number in either set is the number in
 the first, plus the number in the second, minus the number in both. In
@@ -433,7 +433,7 @@ for name in sorted(laptops):
 print(len(two_yes), two_yes)
 ```
 
-`sorted(laptops)` gives the names as a list in alphabetical order, so
+`sorted(laptops)` gives the names as a *list*{.term} in alphabetical order, so
 the loop visits them in the same order every time. The inner loop asks
 the three questions of one laptop. The same eight names come out, so the
 two routes agree.
@@ -587,7 +587,7 @@ print("at least one:", inside, " none:", checked - inside)
 ```
 
 The line `updates, antivirus_total, backups = 34, 25, 18` names three
-values at once, in order: the first name gets the first value. (The
+values at once, in order: the first *name*{.term} gets the first value. (The
 name `antivirus` is already the set from the first cell, so the total
 gets a name of its own.) Then the answers: 17, 10 and 7 laptops have
 only one; 9, 5 and 3 have exactly two, which makes 17; 54 have at least
@@ -599,7 +599,7 @@ is the one that catches most miscounts in a filled diagram: every region
 must be 0 or more. If a step gives −2 laptops, one of the totals was
 miscounted, or copied down with a slip. A count of laptops is a whole
 number from 0 up. A region outside that space tells you something is
-wrong with the data.
+wrong with the *data*{.term}.
 
 ### Your turn
 
