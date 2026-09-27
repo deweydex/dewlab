@@ -4,7 +4,7 @@ practice_for: same-amount-different-names
 year: "2026-2027"
 version: 2026.09.26.1
 worlds:
-  numbers: Ordinary numbers, like 3 and 12.
+  numbers: Normal numbers, like 3 and 10.
   squiggles: Shapes like ♡ and △, which can stand for any number.
   letters: Letters like n and k, which can stand for any number.
 ---

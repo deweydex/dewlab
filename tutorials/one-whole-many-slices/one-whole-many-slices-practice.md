@@ -4,7 +4,7 @@ practice_for: one-whole-many-slices
 year: "2026-2027"
 version: 2026.09.26.1
 worlds:
-  numbers: Ordinary numbers, like 3 and 12.
+  numbers: Normal numbers, like 3 and 10.
   squiggles: Shapes like ♡ and △, which can stand for any number.
   letters: Letters like n and k, which can stand for any number.
 ---
@@ -207,7 +207,7 @@ missing. That slice is one millionth of a pizza. Nobody would notice it.
 Why is $\frac{12}{12}$ the same amount of pizza as $\frac{3}{3}$, when
 12 is so much bigger than 3?
 
-<details class="dl-answer"><summary>one good answer</summary>
+<details class="dl-answer"><summary>one answer</summary>
 
 Both are every slice of one pizza. The pizza for 12/12 was cut into
 more slices, so each slice is smaller. More slices, each smaller, make
