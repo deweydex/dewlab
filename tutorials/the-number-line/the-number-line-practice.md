@@ -38,8 +38,8 @@ type: fill-in-the-blank
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. 5/2 is 5 halves. 4 halves make 2 wholes. One half is left over.
-2. −3/2 is the partner of 3/2. First find 3/2 on the right of 0.
-3. Its partner is as far from 0, on the left.
+2. −3/2 is the opposite of 3/2. First find 3/2 on the right of 0.
+3. Its opposite is as far from 0, on the left.
 
 **Think about:** 3/2 is one and a half.
 
@@ -60,8 +60,8 @@ steps to the right of 0. Which two are the same number?
 - 4 degrees below zero, and −4
   - Below zero is to the left of 0, 4 steps away.
 - −4, and 4 steps to the right of 0
-  - These are partners. They are the same distance from 0, on
-    opposite sides.
+  - These are opposites. They are the same distance from 0, on
+    different sides.
 - 4 degrees below zero, and 4 steps to the right of 0
   - Both are 4 away from 0. One is below zero, and the other is above.
 ```
@@ -158,9 +158,9 @@ type: fill-in-the-blank
 
 1. Picture the piece of line from 0 to 1, cut into 10 equal steps.
 2. 1/10 is one small step from 0. 9/10 is one small step from 1.
-3. The negative numbers are the partners, on the left of 0.
+3. The negative numbers are the opposites, on the left of 0.
 
-**Think about:** −9/10 is the partner of 9/10.
+**Think about:** −9/10 is the opposite of 9/10.
 
 **Try this next:** is −1/2 closer to 0 or to −1?
 
@@ -344,7 +344,7 @@ print(sorted([-1, -3, -5, 2]))
 <details class="dl-answer"><summary>one way through it</summary>
 
 The order is −5, −3, −1, 2. The cell prints `[-5, -3, -1, 2]`. The
-worked line put the negative numbers in the order of their partners: 1,
+worked line put the negative numbers in the order of their opposites: 1,
 3, 5. On the left of 0, the order is the other way. −5 is furthest to
 the left, so it is the smallest.
 
@@ -411,7 +411,7 @@ Start at −999. Move 999 steps to the right. You land on
 2. −999 is 999 steps from 0. Which way is 0 from −999?
 3. A number on the left of 0 is smaller than any number on the right.
 
-**Think about:** a number and its partner are the same distance from
+**Think about:** a number and its opposite are the same distance from
 0.
 
 **Try this next:** start at −1/2 and move 1/2 to the right.

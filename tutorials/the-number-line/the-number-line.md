@@ -159,9 +159,11 @@ of 0.
 ```
 
 3 is also 3 steps from 0, on the right. So −3 and 3 are the same
-distance from 0, on opposite sides. We call 3 the *partner* of −3. Every
-number on the right of 0 has a partner on the left, as far from 0 as
-it is.
+distance from 0, on different sides. We call 3 the *opposite* of −3.
+Every number on the right of 0 has an opposite on the left, as far from
+0 as it is. (This is a different idea from the partner of a fraction on
+[Dividing fractions: how many fit?](tutorial:how-many-fit). That partner
+is the fraction turned over.)
 
 <div class="dl-world" data-world="numbers">
 
@@ -169,7 +171,7 @@ it is.
 id: a-name-for-below-zero-2--numbers
 type: fill-in-the-blank
 
-The partner of 7 is
+The opposite of 7 is
 {−7|0|8}.
 
 It is
@@ -185,7 +187,7 @@ steps from 0.
 id: a-name-for-below-zero-2--squiggles
 type: fill-in-the-blank
 
-♡ is a number on the right of 0. Its partner, −♡, is on the
+♡ is a number on the right of 0. Its opposite, −♡, is on the
 {left|right}
 of 0.
 
@@ -202,7 +204,7 @@ steps from 0.
 id: a-name-for-below-zero-2--letters
 type: fill-in-the-blank
 
-n is a number on the right of 0. Its partner, −n, is on the
+n is a number on the right of 0. Its opposite, −n, is on the
 {left|right}
 of 0.
 
@@ -230,7 +232,7 @@ Where is the dot for −1/2?
 - Halfway between −1 and 0
   - It is half a step to the left of 0.
 - Halfway between 0 and 1
-  - That is the place of 1/2, its partner on the right.
+  - That is the place of 1/2, its opposite on the right.
 - Between −2 and −1
   - −2 is two whole steps from 0. −1/2 is only half a step away.
 ```
@@ -380,7 +382,7 @@ of n.
 </div>
 
 The heart can be any number, on either side of 0. The move is the
-same. A letter in algebra means the same thing.
+same. That is all a letter in algebra means.
 
 ## A checking machine
 
@@ -527,7 +529,7 @@ bigger. Write it in the Notes panel or on paper, or say it aloud.
 
 Every number has a place on one line. The whole numbers have ticks, the
 same distance apart. Fractions sit between the ticks. A negative number
-sits to the left of 0, as far from 0 as its partner on the right. A
+sits to the left of 0, as far from 0 as its opposite on the right. A
 number further to the right is bigger, on both sides of 0. Adding moves
 to the right, and taking away moves to the left. Your way of saying it
 may be clearer than ours.
