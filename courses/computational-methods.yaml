@@ -82,4 +82,10 @@ contents:
   tutorials:
   - finding-where-it-went-wrong
 mixed:
+- mixed-programming
 - mixed-matrices
+- mixed-graphics
+- mixed-text-generation
+- mixed-simulation
+- mixed-algorithms
+- mixed-computational-methods

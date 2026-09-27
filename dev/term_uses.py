@@ -23,7 +23,7 @@ Reads the built site, so run `python3 build.py` first.
     python3 dev/term_uses.py --common        # terms marked only near the start
 
 `--common` lists, for each course, the terms marked only near the start
-(7.280): the site's own words (cell, toolkit, illustration) and any term
+(7.281): the site's own words (cell, toolkit, illustration) and any term
 the course uses on three in five of its pages after introducing it. They
 are marked only on the tutorial that introduces them and the next three,
 with their practice pages, and the candidate list leaves them out after
@@ -103,7 +103,7 @@ STOPWORDS = {"a", "an", "the", "and", "or", "of", "to", "in", "on", "for", "is",
              "are", "with", "by", "at", "from", "your", "what", "how"}
 
 ROOT = Path(__file__).resolve().parent.parent
-# Two kinds of term are marked only near the start (DECISIONS_LOG 7.280): the
+# Two kinds of term are marked only near the start (DECISIONS_LOG 7.281): the
 # site's own furniture, which a reader uses on every page, and a term a
 # course uses on three in five of its pages after introducing it. Meeting either
 # every page or two keeps it fresh; a definition on the fortieth page is

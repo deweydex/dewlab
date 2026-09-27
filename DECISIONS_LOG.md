@@ -5517,7 +5517,21 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 
 *Cost to change: small. A mark is a few characters in a page; `term_uses.py --check` finds any that stop resolving.*
 
-**7.280 — A term the reader meets every page or two is marked only near its start; the site's own words the same.** Josh, 27 September 2026, choosing between the pilot on Programming Foundations (#413, about a sixth of the candidates marked) and 7.279 (seven in ten): "lets find something in between the pilot and 7.279... but yes no words that are part of the app itself except in the beginning".
+---
+
+**7.280 — Every series of Computational Methods gets a mixed set, and Computational Methods, the integrated course and OOP each get a cumulative one.** The content issue (#335), part of #306.
+
+**Computational Methods.** Four new series sets: `mixed-graphics`, `mixed-text-generation`, `mixed-simulation` and `mixed-algorithms`, next to the existing `mixed-matrices`. The Python fundamentals series shares its pages with Programming Foundations, so `mixed-programming` is listed on this course too; a set can sit on several courses, and it keeps its default course, the first in `courses/index.yaml` to list it. Problem Solving has one page, the debugging gym, which the issue lets serve as its own set. The cumulative `mixed-computational-methods` takes the critique's ideas: a flat matrix, why two seeded sentences differ, a walk that prints after its insides, a Parsons problem that rebuilds `generate2`, greedy change's first failure, a loop that never ends, shared birthdays simulated and then calculated, "which tool?", and a Monte Carlo estimate of "the" in the reader's book. It ends with two bots from the reader's book and a test of their own, and points to `two-bots-and-a-test` for more.
+
+**Other courses.** `mixed-maths-and-programming` draws on every series of the integrated course, programming and mathematics together; `mixed-calculus` already gives Calculus its interleaved practice. `mixed-objects-and-more` reaches past the OOP course's own set into lists, dictionaries, sorting and recursion, with objects. Machine Learning lists `mixed-text-generation` for the text series it shares, and Programming Design Principles lists `mixed-programming` for its Programming Foundations series. The Dewey Track and the Zen of Slashes and Surds already had a set for every series.
+
+**Format.** Problems are unlabelled. Code problems are blocks, with a hint, and two solutions, "with what you've met so far" and "a shorter way you'll meet later", where a shorter way exists; mathematics done by hand gets a hint fold and a "one way through it" fold. Each set ends with a world section in its series' worlds, and a world cell never depends on a function the reader was asked to write earlier on the page, since at build time that function is still the empty stub. Every number in a note is what the cells print.
+
+**Left out.** Database Methods, Web Authoring and Full Stack have no mixed sets. The issue's list of what is missing does not name them, and their work (SQL, HTML and CSS, a whole application) does not fit a set of Python problems; whether they need one is a question for a later issue.
+
+*Cost to change: small. Seven new pages, and every cell id in them, become a contract on 2 October. No existing id changed.*
+
+**7.281 — A term the reader meets every page or two is marked only near its start; the site's own words the same.** Josh, 27 September 2026, choosing between the pilot on Programming Foundations (#413, about a sixth of the candidates marked) and 7.279 (seven in ten): "lets find something in between the pilot and 7.279... but yes no words that are part of the app itself except in the beginning".
 
 **The rule.** 7.279's rule stands: the first use on a page that means the term, and never the everyday sense. Two kinds of term are marked only on the tutorial that introduces them and the next three, with their practice pages:
 - **the site's own words**: *cell*, *toolkit* and *illustration*, the three the glossary defines;
