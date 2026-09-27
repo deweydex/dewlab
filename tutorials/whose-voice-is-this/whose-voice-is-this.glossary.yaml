@@ -1,8 +1,9 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 # This tutorial reuses load_text(), dictionaries of dictionaries, and
 # str.find()/str.index() as already introduced in the series' first
-# tutorial. The one new thing is a lambda, used to sort followers by
-# their counts.
+# tutorial. New here: a lambda, used to sort followers by their counts;
+# the running header a scan leaves behind; and scoring a passage under a
+# chain, with perplexity named as the refined version.
 entries:
   - term: lambda
     python: lambda
@@ -11,3 +12,31 @@ entries:
       Makes a small function in one line, with no name. It is handy as
       the key= of sorted() or max(), to say what to sort or compare by.
     example: "sorted(followers.items(), key=lambda kv: -kv[1])"
+  - term: running header
+    kind: concept
+    definition: >
+      The line printed at the top of every page of a book, usually a title
+      and a page number. A scan of the book keeps it, so it lands in the
+      middle of the text and has to be cleaned out.
+  - term: score (of a passage)
+    kind: concept
+    definition: >
+      How well a chain fits a passage: the average of the probabilities
+      the chain gives each next word in it, with 0 for any pair of words
+      the chain has never seen. A passage scores higher under the chain
+      built from the book it looks more like.
+    example: "score(dewey_train, passage)"
+  - term: held-back text
+    kind: concept
+    definition: >
+      Part of the data kept out of what a model is built from, so that the
+      model can be tested on text it has never seen. A chain always does
+      well on the text it was built from, so a test on that text says
+      little.
+  - term: perplexity
+    kind: concept
+    definition: >
+      The score language models are tested with. It combines the
+      probabilities a model gives each next word by multiplying them, and
+      is turned round so that a lower perplexity means the model was less
+      surprised by the text.

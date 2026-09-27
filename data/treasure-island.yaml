@@ -1,0 +1,28 @@
+# Attribution for data/treasure-island.txt.
+# Shown in the reference sidebar of any tutorial that declares this dataset,
+# so a reader can trace the text they are working with back to its source.
+
+source: >
+  Project Gutenberg eBook of Treasure Island, by Robert Louis Stevenson (eBook #120).
+
+url: https://www.gutenberg.org/ebooks/120
+
+license: >
+  Public domain in the United States. Project Gutenberg's own licence terms
+  apply to redistribution — see the file itself, which carries them in full.
+  https://www.gutenberg.org/policy/license.html
+
+snapshot: 2026-09-26
+
+trimmed: >
+  Only the line endings, changed from Windows (CRLF) to plain new lines, to
+  match the other books here. Otherwise the file is Project Gutenberg's own
+  plain-text edition as it stood when it was saved (released 26 February 2006, most recently updated 4 September 2026, as its header
+  says), header and licence footer included. It has no live source: the text
+  does not change, and Project Gutenberg does not let pages on other websites
+  read its files.
+
+description: >
+  The complete novel of pirates and a sea voyage, first published as a book in 1883, exactly as Project Gutenberg distributes it — including its own
+  header and licence footer, which a tutorial strips out before treating the
+  file as prose.
