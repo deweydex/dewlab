@@ -35,7 +35,7 @@ On this page we:
 - see one formula answer three different questions
 - rearrange a formula by doing the same move to both sides
 - undo a temperature formula, step by step, in reverse order
-- write functions that undo each other, and check them both ways
+- write *functions*{.term} that undo each other, and check them both ways
 - find where a rearranged formula needs a smaller space
 - add and simplify fractions that have letters in them
 
@@ -43,7 +43,7 @@ On this page we:
 > seconds, degrees. A formula here is a rule that stays true, and we may
 > do any move to it, as long as we do the same move to both sides. We
 > usually do not say it, but a formula with a division in it has no
-> answer when the bottom of the fraction is 0. Your toolkit is loaded,
+> answer when the bottom of the fraction is 0. Your *toolkit*{.term} is loaded,
 > with every function from the earlier pages.
 
 ## Warm-up
@@ -67,7 +67,7 @@ type: fill-in-the-blank
 A floor is 5 m long and 4 m wide. Its area is {20} square metres.
 ```
 
-Keep that floor in mind. If a floor has an area of 20 square metres and
+Keep that floor in mind. If a floor has an *area*{.term} of 20 square metres and
 is 5 m long, how wide is it? If you said 4 m, you ran a formula
 backwards.
 
@@ -80,7 +80,7 @@ With letters, $s$ for speed, $d$ for distance and $t$ for time:
 $$s = \frac{d}{t}$$
 
 Let's check it on the space station. It goes 42,700 km in 92.9
-minutes, which is $92.9 \times 60$ seconds. Before you run the cell,
+minutes, which is $92.9 \times 60$ seconds. Before you run the *cell*{.term},
 guess: is its speed nearer 1 km a second, or 10?
 
 ```python exec
@@ -252,7 +252,7 @@ def distance_travelled(speed, time):
     return speed * time
 ```
 
-Inside `travel_time`, the name `speed` means the number it was given,
+Inside `travel_time`, the *name*{.term} `speed` means the number it was given,
 not the function above it. A later page,
 [What a function can see](tutorial:what-a-function-can-see), is about
 exactly that.
@@ -476,7 +476,7 @@ Body temperature, 37 °C, comes back as `37.0`. And −40 comes back as
 But 1 °C comes back as `0.9999999999999984`. Nothing is broken in
 the two functions. As on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
-a float is very close to the true value, and each step of the trip adds
+a *float*{.term} is very close to the true value, and each step of the trip adds
 a tiny error. So for a float, "we arrive where we started" means "we
 arrive very, very close". For now we round before we compare. The next page,
 [Does it work?](tutorial:does-it-work), builds a better tool for this.
@@ -541,21 +541,21 @@ print(travel_time(1, 0))
 The first line prints `0`. The second stops with a `ZeroDivisionError`.
 The question has no answer, because a parked rover never arrives. The
 formula $d = s \times t$ accepts a speed of 0, and the rearranged
-$t = \frac{d}{s}$ does not. So rearranging can make the domain smaller.
-That is why the docstring of `travel_time` says "speed must not be 0".
+$t = \frac{d}{s}$ does not. So rearranging can make the *domain*{.term} smaller.
+That is why the *docstring*{.term} of `travel_time` says "speed must not be 0".
 The promise says which numbers it works for.
 
 The second place is a square. On
 [Measuring rooms and tins](tutorial:measuring-rooms-and-tins), the area
 of a circle was $A = \pi r^2$. The James Webb Space Telescope collects
 light over 25.4 square metres of mirror. If that were one round mirror,
-what would its radius be?
+what would its *radius*{.term} be?
 
 We want $r$ as the subject. First, divide both sides by $\pi$:
 
 $$\frac{A}{\pi} = r^2$$
 
-Then undo the square with a square root:
+Then undo the square with a *square root*{.term}:
 
 $$r = \sqrt{\frac{A}{\pi}}$$
 
@@ -720,7 +720,7 @@ steps left out.
 | the same move on both sides | the rule that keeps a formula true while we rearrange it |
 | substituting back | putting an answer into the formula it came from, to check it |
 | undoing in reverse order | the last step forwards is the first step back |
-| a smaller domain | a rearranged formula can refuse inputs the first one accepted, like a speed of 0 |
+| a smaller domain | a rearranged formula can refuse *inputs*{.term} the first one accepted, like a speed of 0 |
 | algebraic fraction | a fraction with a letter in it, like $\frac{d}{20}$ |
 | denominator, common denominator | the bottom of a fraction; a bottom number several fractions can share |
 | `speed`, `travel_time`, `distance_travelled` | your toolkit's three forms of $s = \frac{d}{t}$ |

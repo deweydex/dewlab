@@ -14,11 +14,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `close_enough`.
+Your *toolkit*{.term} is loaded on this page, including `close_enough`.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: does-it-practice-warm-up
@@ -39,14 +39,14 @@ print(close_enough(2, 2))
 It prints `True`, `False`, `True`, `True`.
 
 `0.1 + 0.2` is off from 0.3 by far less than a billionth. 9.99 and 10
-are 0.01 apart, which is more than the default tolerance, but less than
+are 0.01 apart, which is more than the default *tolerance*{.term}, but less than
 0.05. And two equal numbers are 0 apart, which is never more than any
 tolerance.
 
 </details>
 
-**2. Make.** A video player shows how long a video is, in hours. Write three test
-cases, with `assert`, for this function: one from a fact you know, one
+**2. Make.** A video player shows how long a video is, in hours. Write three
+*test cases*{.term}, with `assert`, for this *function*{.term}: one from a fact you know, one
 at an edge, and one that uses a second route.
 
 ```python
@@ -83,7 +83,7 @@ Give an example from this unit.
 <details class="dl-answer"><summary>answer</summary>
 
 Python only reports an error when it cannot make a move, such as
-dividing by zero or using a name that points at nothing. It has no idea
+dividing by zero or using a *name*{.term} that points at nothing. It has no idea
 what the function was meant to do. So a function can run with no error
 and still break its promise. The tutorial's `to_celsius` ran, and said
 water boils at about 194 °C. Only a test case, such as "32 °F should
@@ -93,8 +93,8 @@ kept.
 
 </details>
 
-**4. Predict.** A fitness app adds up three days of steps. Make a trace
-table with the columns `day_steps` and `steps`, one row for each time
+**4. Predict.** A fitness app adds up three days of steps. Make a
+*trace table*{.term} with the columns `day_steps` and `steps`, one row for each time
 round the loop, and use it to predict what the cell prints. Then run it.
 
 ```python
@@ -196,14 +196,14 @@ def close_enough_again(a, b, tolerance=1e-9):
     return abs(a - b) <= tolerance
 ```
 
-Now all three pass. Testing only `(5, 1)` would have missed this bug.
+Now all three pass. *Testing*{.term} only `(5, 1)` would have missed this *bug*{.term}.
 
 </details>
 
 **7. Fix.** Schlomi, who is learning Python too, writes a function for
 a photo app that makes a picture 10% wider. The test fails. Run it. Which
-one does not say what Schlomi meant: the code, the comment or the
-docstring? Change it.
+one does not say what Schlomi meant: the code, the *comment*{.term} or the
+*docstring*{.term}? Change it.
 
 ```python exec
 id: does-it-practice-fix-wider
@@ -301,7 +301,7 @@ and 2, where many different rules happen to agree.
 </details>
 
 **10. Make.** This function from a camera app works, but nobody can
-tell what it does. Rename it and its inputs with words, add a docstring, and
+tell what it does. Rename it and its *inputs*{.term} with words, add a docstring, and
 test that your version gives the same answers as the old one for three
 different sets of values.
 
@@ -317,7 +317,7 @@ def calc(x, y, z):
 2. `t` is `x` times `y`. What do you get when you multiply a picture's
    width by its height?
 3. The last line divides by 8 and then by a million. How many bits are
-   in a byte?
+   in a *byte*{.term}?
 
 **Think about:** which names would let a stranger guess what the
 function does without running it?
@@ -326,7 +326,7 @@ function does without running it?
 
 <details class="dl-answer"><summary>answer</summary>
 
-`x` and `y` are a photo's width and height in pixels, and `z` is how
+`x` and `y` are a photo's width and height in *pixels*{.term}, and `z` is how
 many bits each pixel uses. The answer is the photo's size in megabytes.
 
 ```python
@@ -357,7 +357,7 @@ answer. Yours may be different and work too.
 </details>
 
 **11. Another way.** Python has its own tool for this job,
-`math.isclose(a, b)`. Run both tools on the pairs below. On which pairs
+`math.isclose(a, b)`. Run both tools on the *pairs*{.term} below. On which pairs
 do they disagree? The first number in the third pair is the distance to
 the Moon, in metres.
 
@@ -598,8 +598,8 @@ this one are often at the edges, so put your tests there.
 </details>
 
 **16. Explain.** The tutorial page had you write a trace table by hand
-before it showed you `step_through`. Some teachers would show the debugger
-first, and skip the hand trace. For a short function you have never seen
+before it showed you `step_through`. Some teachers would show the *debugger*{.term}
+first, and skip the hand *trace*{.term}. For a short function you have never seen
 before, which would you do first, and why? Is there a function where you
 would skip the hand trace altogether?
 

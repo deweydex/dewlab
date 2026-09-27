@@ -14,12 +14,12 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page, including `total` from
+Your *toolkit*{.term} is loaded on this page, including `total` from
 [Doing it again](tutorial:doing-it-again), `combinations` from
 [Orders and choices](tutorial:orders-and-choices) and `insertion_sort`
 from [Sorting a hand of cards](tutorial:sorting-a-hand-of-cards). The
 tutorial's `bernoulli_numbers` is not a toolkit tool, so the Core
-section starts with a cell that defines it again.
+section starts with a *cell*{.term} that defines it again.
 
 ## Warm-up
 
@@ -52,7 +52,7 @@ written. Half of two thirds is one third.
 
 **2. Explain.** Babbage borrowed punched cards from Jacquard's weaving
 loom. What did one card tell the loom to do, and what could one card
-tell the Analytical Engine to do? Why was the same idea useful for both?
+tell the *Analytical Engine*{.term} to do? Why was the same idea useful for both?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -75,7 +75,7 @@ room in London, and used it to explain his engine's cards to visitors.
 
 </aside>
 
-**3. Predict.** What is the first item of this sorted list?
+**3. Predict.** What is the first item of this sorted *list*{.term}?
 
 ```python
 languages = [(1995, "JavaScript"), (1964, "BASIC"), (1991, "Python")]
@@ -90,7 +90,7 @@ year, and 1964 is the smallest.
 </details>
 
 **4. Make.** How many years passed between Lovelace's notes (1843) and
-ENIAC being shown to the public (1946)? And between BASIC at Dartmouth
+ENIAC being shown to the public (1946)? And between *BASIC*{.term} at Dartmouth
 (1964) and the BBC Micro (1981)? Calculate them in the cell.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -108,7 +108,7 @@ that could run them. After that, change came much faster.
 ## Core
 
 This cell defines the tutorial's `bernoulli_numbers` again, with the
-names the problems below use. Run it first.
+*names*{.term} the problems below use. Run it first.
 
 ```python exec
 id: where-prog-practice-core
@@ -140,7 +140,7 @@ print(bernoulli_numbers(5))
 ```
 
 **5. Predict.** Lovelace called the numbers she kept $B_1, B_3, B_5,
-B_7$. Which of today's Bernoulli numbers is her $B_5$, and what is its
+B_7$. Which of today's *Bernoulli numbers*{.term} is her $B_5$, and what is its
 value? Decide, then check with `bernoulli_numbers(7)`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -156,8 +156,8 @@ our 2, 4, 6, 8. Add 1 to her number to get ours.
 
 </details>
 
-**6. Fix.** This is the tutorial's function with one change. As in
-the printed table of Note G, the two numbers of one division have been
+**6. Fix.** This is the tutorial's *function*{.term} with one change. As in
+the printed table of *Note G*{.term}, the two numbers of one division have been
 swapped. Run it, compare the results with the tutorial's table, and
 swap them back.
 
@@ -184,7 +184,7 @@ print(bernoulli_swapped(5))
    down.
 3. Which line makes each new number? Which two things does it divide?
 
-**Think about:** why a single swap spoils every number after it, not
+**Think about:** why a single *swap*{.term} spoils every number after it, not
 only one.
 
 </details>
@@ -305,7 +305,7 @@ the "numbers" are in it.
 <details class="dl-answer"><summary>answer</summary>
 
 There are many answers. A music app keeps each note as numbers: a
-pitch is a frequency, such as 440 for the A on
+*pitch*{.term} is a frequency, such as 440 for the A on
 [Waves](tutorial:waves), and a length is a time. A photo is a grid of
 colours, each three numbers, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).

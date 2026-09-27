@@ -15,13 +15,13 @@ it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
 open them. Each one is one answer. Yours may be different and work too.
 
-Your toolkit is loaded on this page: `linear_search` and
+Your *toolkit*{.term} is loaded on this page: `linear_search` and
 `binary_search` from the tutorial, and `largest`, `mean`, `total` and
 the rest from earlier pages.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: finding-fast-practice-warm-up
@@ -39,12 +39,12 @@ in the cell above.
 
 `linear_search(towns, "Galway")` gives 2. Galway is the third town, and
 indexes start at 0. `linear_search(towns, "Sligo")` gives −1, because
-Sligo is not in the list. The search looked at all four towns first.
+Sligo is not in the *list*{.term}. The *search*{.term} looked at all four towns first.
 
 </details>
 
 **2. Predict.** A sorted list holds the 16 teams in a cup draw. At
-most, how many looks does a binary search need to find one team? Find
+most, how many looks does a *binary search*{.term} need to find one team? Find
 it by halving on paper, then check it with a loop.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -59,7 +59,7 @@ it by halving on paper, then check it with a loop.
 
 <details class="dl-answer"><summary>answer</summary>
 
-$16 \to 8 \to 4 \to 2 \to 1$ is 4 halvings, so the worst case is
+$16 \to 8 \to 4 \to 2 \to 1$ is 4 halvings, so the *worst case*{.term} is
 $4 + 1 = 5$ looks. $\log_2 16 = 4$, because $2^4 = 16$.
 
 ```python
@@ -96,7 +96,7 @@ the search has looked at all six files.
 </details>
 
 **4. Explain.** Schlomo, who is learning Python too, writes his own
-search. It returns 0 when the target is not there. His reason is that 0
+search. It returns 0 when the *target*{.term} is not there. His reason is that 0
 is the usual number for "nothing". What happens when he
 uses his search?
 
@@ -183,7 +183,7 @@ print(find_network(networks, "Station-WiFi"))
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Follow the loop by hand for "Station-WiFi". What happens at `i = 0`?
-2. `return` ends the whole function at once. How many names does this
+2. `return` ends the whole *function*{.term} at once. How many names does this
    function ever look at?
 3. When do we really know that a name is not there?
 
@@ -360,7 +360,7 @@ expectancy fell. It
 passed 70 in 1960, at 70.17, and fell back to 69.64 in 1961. A binary
 search that looks at one year and sees 69.64 decides that every
 earlier year is lower, which is false. For
-a list like this, a linear search from the front is the move that
+a list like this, a *linear search*{.term} from the front is the move that
 keeps its promise.
 
 </details>

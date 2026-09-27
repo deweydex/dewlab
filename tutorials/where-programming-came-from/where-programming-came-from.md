@@ -28,7 +28,7 @@ covers:
 In 1843, a woman in London published a program for a machine that did
 not exist. The machine was never finished, and nobody ran her program for
 more than a hundred years. When people finally did run it, they found a
-bug in it. What did her program do? And what would it look like if we
+*bug*{.term} in it. What did her program do? And what would it look like if we
 wrote it today, in the Python you have been writing all along?
 
 I think this is one of the strangest stories in computing. The first
@@ -88,7 +88,7 @@ to follow any list of instructions it was given.
 
 The design had two main parts, and both are still inside every
 computer. The *store* held numbers while the machine worked, like the
-names in a Python program. The *mill* did the arithmetic, like the part
+*names*{.term} in a Python program. The *mill* did the arithmetic, like the part
 of a computer that adds and multiplies. The instructions came in on
 punched cards: stiff cards with holes in them.
 
@@ -162,10 +162,10 @@ them in a book published in 1713, after his death. Seki Takakazu found the
 same numbers in Japan, and his work was published a year earlier.
 
 Each Bernoulli number is found from the ones before it. That makes them
-a job that suits a machine: a loop, with a list that grows. The only
-trouble is that they are fractions, and floats would round them, as on
+a job that suits a machine: a loop, with a *list*{.term} that grows. The only
+trouble is that they are fractions, and *floats*{.term} would round them, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).
-Python has a module for exact fractions. What do you expect each line
+Python has a *module*{.term} for exact fractions. What do you expect each line
 to print?
 
 ```python exec
@@ -192,8 +192,8 @@ In symbols, for each $m$ from 1 on:
 $$\sum_{k=0}^{m} \binom{m+1}{k} B_k = 0$$
 
 This is a modern way to write the rule, not the one Lovelace's table
-used. It gives the same numbers. The cell uses `combinations` from your
-toolkit. Before you run it, guess: will every Bernoulli number be a
+used. It gives the same numbers. The *cell*{.term} uses `combinations` from your
+*toolkit*{.term}. Before you run it, guess: will every Bernoulli number be a
 different fraction?
 
 ```python exec
@@ -228,7 +228,7 @@ for hers, ours in [(1, 2), (3, 4), (5, 6), (7, 8)]:
 
 Her $B_7$ is $-\frac{1}{30}$. Much later, people who ran her table on
 modern computers found one line, operation 4, where the two numbers of
-a division had been swapped. That one swap makes the table give
+a division had been swapped. That one *swap*{.term} makes the table give
 $-\frac{25621}{630}$ in place of $-\frac{1}{30}$. It may have been the
 printer's slip and not hers. Either way, it is often called the oldest
 bug on record, and it tells us something I find comforting. The first
@@ -288,7 +288,7 @@ itself could do the translation. Many people at the time did not. She said later
 do arithmetic. Between 1951 and 1952 she wrote the A-0 system for the
 UNIVAC I. It took short names for pieces of
 code that were kept in a library, and it put the machine's program
-together from them. It is often called the first compiler, the kind of
+together from them. It is often called the first *compiler*{.term}, the kind of
 tool you met on
 [When Python says no](tutorial:when-python-says-no#compilers-linkers-and-python).
 This was a program whose job was to write another program.
@@ -329,7 +329,7 @@ from 1 to 10. It is to read, not to run:
 ```
 
 Every line has a number, and the numbers give the order. Do you
-recognise the loop? It is the running total from
+recognise the loop? It is the *running total*{.term} from
 [Doing it again](tutorial:doing-it-again#a-running-total).
 
 Then BASIC moved into homes. Microsoft's first product, in 1975, was a BASIC
@@ -362,7 +362,7 @@ the same language, grown up.
 
 ## A timeline you can run
 
-Here is the story so far as a list of pairs: a year and an event. The
+Here is the story so far as a list of *pairs*{.term}: a year and an event. The
 list is not in order, on purpose. What does `sorted` do to a list of
 pairs? Predict, then run it.
 

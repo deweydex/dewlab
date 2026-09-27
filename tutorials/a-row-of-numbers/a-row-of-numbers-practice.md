@@ -13,12 +13,12 @@ predict, the prediction is the exercise, so make one before you run
 anything. A guess that is different from what Python shows is the most
 useful kind. It shows you exactly where to look.
 
-Your toolkit is loaded on this page, so `largest`, `smallest` and
+Your *toolkit*{.term} is loaded on this page, so `largest`, `smallest` and
 `count_if` are ready to use, and so are `total`, `between` and the rest.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: row-practice-scratch-1
@@ -40,7 +40,7 @@ print(len(playlist))
 The cell prints `Linger`, then `Salty Dog`, then `4`.
 
 Index 1 is the second song, because the first is at index 0. Index −1
-is the last song, whatever the length of the list. And `len` counts
+is the last song, whatever the length of the *list*{.term}. And `len` counts
 the songs: four.
 
 </details>
@@ -124,9 +124,9 @@ those step counts.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Write a test: a function that takes one step count and returns True
+1. Write a test: a *function*{.term} that takes one step count and returns True
    when it is more than 10,000.
-2. Hand the test to `count_if`, without brackets after its name.
+2. Hand the test to `count_if`, without brackets after its *name*{.term}.
 3. For the new list, start with `[]`, and `append` inside an `if`.
 
 **Think about:** how can you check the two answers against each other?
@@ -206,7 +206,7 @@ neighbour needs one fewer time round than there are values.
 </details>
 
 **7. Fix.** Schlomo, who is learning Python too, is writing a photo
-editor. One pixel's colour is a list of red, green and blue, from 0 to
+editor. One *pixel*{.term}'s colour is a list of red, green and blue, from 0 to
 255. He wants a brighter copy, with each part doubled, and he wants to
 keep the original so that "undo" works. His idea: give the colour a
 second name, and double through that name. After it runs, the original
@@ -264,7 +264,7 @@ print(len([4, 5] + [6, 7]))  # 4
 ```
 
 For lists, `+` joins and `*` repeats. `[0] * 5` is a handy way to start
-a list of five zeros, for example to keep five running totals.
+a list of five zeros, for example to keep five *running totals*{.term}.
 
 </details>
 
@@ -333,7 +333,7 @@ than 0, so a start of 0 would never change, and the function would return 0. For
 the biggest is −1. Starting from a real value in the list means the
 answer is always one of the values. That is what
 [Does it work?](tutorial:does-it-work#a-walkthrough-by-hand) found with
-a trace table.
+a *trace table*{.term}.
 
 </details>
 
@@ -354,7 +354,7 @@ print(count_if(week, is_cold()))
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Read the last line of the error. Which function is missing an
-   argument?
+   *argument*{.term}?
 2. Where in the last line is `is_cold` being called?
 3. Does `count_if` want the answer of a test, or the test itself?
 

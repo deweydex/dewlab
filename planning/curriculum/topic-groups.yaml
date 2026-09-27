@@ -208,6 +208,7 @@ groups:
       - a-cube-on-a-canvas
       - how-a-browser-draws-a-frame
       - how-css-draws-depth
+      - mixed-graphics
 
   - key: text-generation
     name: Generating text with Markov chains
@@ -220,6 +221,7 @@ groups:
       - a-chain-reads-a-book
       - how-much-it-remembers
       - whose-voice-is-this
+      - mixed-text-generation
 
   - key: programming-foundations
     name: Programming foundations
@@ -249,6 +251,8 @@ groups:
       - building-reusable-tools
       - when-it-goes-wrong
       - mixed-programming
+      - mixed-algorithms
+      - mixed-computational-methods
 
   - key: plot-twist-first-steps
     name: "Dewey Track: first steps in maths and code"
@@ -377,6 +381,7 @@ groups:
       - a-front-end-for-a-class
       - your-world-playable
       - mixed-programming-with-objects
+      - mixed-objects-and-more
 
   - key: big-picture
     name: How it all fits together
@@ -390,6 +395,7 @@ groups:
       - from-cells-to-a-program
       - the-team-project
       - critique-and-reflection
+      - mixed-maths-and-programming
 
   - key: machine-learning
     name: "Machine learning: programs that write and recognise"
@@ -425,6 +431,7 @@ groups:
       - when-a-queue-never-clears
       - stepping-forward-in-time
       - a-simulation-of-your-own
+      - mixed-simulation
 
   - key: problem-solving-and-debugging
     name: Solving problems and finding faults

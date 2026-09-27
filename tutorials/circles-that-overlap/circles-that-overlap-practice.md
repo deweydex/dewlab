@@ -14,14 +14,14 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, from every earlier page of the
+Your *toolkit*{.term} is loaded on this page, from every earlier page of the
 course. Every survey and check here is made up, so that the numbers stay small
 enough to check by eye. A pencil and a quick sketch of the circles help
 with almost every problem.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: circles-practice-warm-up
@@ -52,7 +52,7 @@ $4 + 3 - 2 = 5$.
 </details>
 
 **2. Make.** A café keeps its menu, and which dishes contain gluten and
-which contain dairy, as sets. A customer can eat neither. Write one line
+which contain dairy, as *sets*{.term}. A customer can eat neither. Write one line
 that gives the dishes they can have.
 
 ```python
@@ -64,7 +64,7 @@ has_dairy = {"soup", "cake", "curry", "porridge"}
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Draw two circles, gluten and dairy, inside a box for the menu.
-2. Which region holds the dishes with neither?
+2. Which *region*{.term} holds the dishes with neither?
 3. That region is the box, with both circles taken away.
 
 **Think about:** what is the box here, and why does the answer need it?
@@ -190,7 +190,7 @@ $0 + 2 + 1$, speak exactly two: Chloe, Iris and Kasia.
 
 </details>
 
-**6. Fix.** Schlomi, who is learning Python too, wants a function that
+**6. Fix.** Schlomi, who is learning Python too, wants a *function*{.term} that
 finds "exactly two" from a report's totals. Her idea is to add the
 three pairs, then take away the middle, because the middle is not "exactly
 two". She tries it on the tutorial's laptops: their pairs are 7, 3 and
@@ -394,10 +394,10 @@ set()
 7 7
 ```
 
-`set()` is how Python shows the empty set: a set with nothing in it.
+`set()` is how Python shows the *empty set*{.term}: a set with nothing in it.
 The two circles do not overlap, so $|A \cap B| = 0$, and
 inclusion–exclusion becomes plain adding: $4 + 3 - 0 = 7$. This is the
-case of "and multiplies, or adds" on
+case of "*and multiplies, or adds*{.term}" on
 [Counting every outfit](tutorial:counting-every-outfit#and-multiplies-or-adds),
 where the two groups share nothing.
 
@@ -406,7 +406,7 @@ where the two groups share nothing.
 ## Stretch
 
 **12. Make.** Write a function `exactly(groups, everyone, k)`. `groups`
-is a list of sets, and the function returns the set of values in
+is a *list*{.term} of sets, and the function returns the set of values in
 `everyone` that are in exactly `k` of the groups. Test it on the
 laptops: `exactly([updated, antivirus, backed_up], laptops, 2)` should
 have 8 names. Then use it to check that the sizes for `k` = 0, 1, 2 and 3 add
@@ -474,7 +474,7 @@ from [How likely is it?](tutorial:how-likely-is-it#a-tool-that-runs-it-many-time
 
 1. By counting: 8 of the 20 laptops have exactly two, and each laptop
    is equally likely to be picked.
-2. For `simulate`, you need a trial: a function with no inputs that
+2. For `simulate`, you need a *trial*{.term}: a function with no inputs that
    picks one laptop with `random.choice` and returns True when it is in
    exactly two sets.
 3. `random.choice` needs a list, and `sorted(laptops)` makes one.
@@ -506,7 +506,7 @@ def picks_exactly_two():
 print(simulate(picks_exactly_two, 10000))
 ```
 
-The simulation gives something near 0.4, such as 0.4031. It differs a
+The *simulation*{.term} gives something near 0.4, such as 0.4031. It differs a
 little from 0.4 every run, for the reason on
 [How likely is it?](tutorial:how-likely-is-it#why-the-two-answers-differ):
 each pick is left to chance.
@@ -528,7 +528,7 @@ how many names, and which regions they come from. Then run it.
    Tomas's, which only has a backup.
 
 **Think about:** [Bits that flip](tutorial:bits-that-flip#counting-the-1s-parity)
-and what XOR says about how many 1s there are.
+and what *XOR*{.term} says about how many 1s there are.
 
 </details>
 
@@ -542,7 +542,7 @@ print(len(odd_ones), sorted(odd_ones))
 It gives 9 names: the 7 laptops with exactly one of the three, and the
 2 with all three. Most people make Schlomo's guess. It holds for two
 sets. For three, it includes the middle as well. A name is in the
-answer when it is in an odd number of the sets: 1 or 3. That is parity, as on
+answer when it is in an odd number of the sets: 1 or 3. That is *parity*{.term}, as on
 [Bits that flip](tutorial:bits-that-flip): XOR of several bits is 1 when
 the number of 1s is odd. Aoife's laptop is in all three:
 `updated ^ antivirus` drops it, and `^ backed_up` puts it back.

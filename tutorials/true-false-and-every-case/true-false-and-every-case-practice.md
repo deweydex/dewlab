@@ -18,7 +18,7 @@ useful kind. It shows you exactly which row you had not pictured.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: true-false-practice-warm-up
@@ -59,7 +59,7 @@ This prints `True`. One reason to beep is enough, so the rule uses `or`.
 </details>
 
 **3. Explain.** A rule has four True/False inputs. Without writing the
-table, how many rows does its truth table have, and why?
+table, how many rows does its *truth table*{.term} have, and why?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -147,7 +147,7 @@ print(sensor_1 != sensor_2)
 
 <details class="dl-answer"><summary>answer</summary>
 
-`False`. For Boolean values, `!=` is XOR, which is True when exactly one
+`False`. For Boolean values, `!=` is *XOR*{.term}, which is True when exactly one
 input is True. Both sensors agree, so there is no fault to log. Somebody really
 did walk through the door.
 
@@ -272,9 +272,9 @@ True, the difference between inclusive and exclusive "or" disappears.
 </details>
 
 **10. Predict.** In a three-input truth table, the rows count up in
-binary from 000 to 111, with False as 0 and True as 1. Counting the
+*binary*{.term} from 000 to 111, with False as 0 and True as 1. Counting the
 first row as row 0, which row is `True, False, True`? Check with
-`to_binary` from your toolkit.
+`to_binary` from your *toolkit*{.term}.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -291,7 +291,7 @@ This prints `101`. Counting from row 0, row 5 is the sixth row printed.
 **11. Another way.** Schlomo, who is learning Python too, does not
 trust `!=` as XOR. He wants the rule to say what the English says: "at
 least one, but not both". Write his sentence with `or`, `and` and `not`,
-as a function `xor_in_words(a, b)`. Then check whether his column is the
+as a *function*{.term} `xor_in_words(a, b)`. Then check whether his column is the
 same as the column for `a != b`.
 
 <details class="dl-answer"><summary>answer</summary>

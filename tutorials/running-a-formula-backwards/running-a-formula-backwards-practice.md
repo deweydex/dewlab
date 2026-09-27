@@ -14,12 +14,12 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including the travel and
+Your *toolkit*{.term} is loaded on this page, including the travel and
 temperature tools from the tutorial.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: running-a-practice-warm-up
@@ -101,7 +101,7 @@ print(celsius_to_fahrenheit(fahrenheit_to_celsius(451)))
 
 This prints `232.77777777777777`, then `451.0`.
 
-The round trip returns exactly 451 this time. Sometimes a float round
+The round trip returns exactly 451 this time. Sometimes a *float*{.term} round
 trip lands exactly, and sometimes it lands very close, like the
 `0.9999999999999984` for 1 °C in the tutorial. That is why a test
 of a round trip rounds first, or asks "close enough?".
@@ -118,7 +118,7 @@ id: running-a-practice-core
 ```
 
 **5. Make.** Download speeds are given in megabits per second (Mb/s),
-but file sizes are in megabytes (MB). A byte is 8 bits, so a megabyte is
+but file sizes are in megabytes (MB). A *byte*{.term} is 8 bits, so a megabyte is
 8 megabits. Write `megabits_to_megabytes(megabits)` and its inverse,
 `megabytes_to_megabits(megabytes)`. Test each with a known value, then
 test the round trip for 50, 200 and 1,234.56. How many megabytes a
@@ -163,7 +163,7 @@ print(megabits_to_megabytes(100))
 
 An assert prints nothing when it holds, so the only line is `12.5`. A 100 Mb/s
 connection downloads 12.5 MB a second. A known value checks the factor.
-A round trip checks that the two functions undo each other, and it
+A round trip checks that the two *functions*{.term} undo each other, and it
 would still pass if both used a factor other than 8. The two kinds of
 test find different problems.
 
@@ -231,7 +231,7 @@ putting 128 bpm back into the first formula gives 180 seconds again.
 **8. Make.** A 3D printer's software estimates how long a print takes.
 Say that for one printer the rule is 3 minutes for each gram of
 plastic, plus 12 minutes to warm up. (Real estimates depend on the
-shape. This is a simple model.) The printer is free for 2 hours. What
+shape. This is a simple *model*{.term}.) The printer is free for 2 hours. What
 is the heaviest print that will finish in time? Write the rule, run it
 backwards, and check.
 
@@ -283,7 +283,7 @@ big it is? What does this say about running the rule backwards?
 
 No. Every file from 8,193 bytes up to 12,288 bytes takes 3 blocks, so
 "3 blocks" only tells you the size was somewhere in that range. Many
-inputs give the same output, so the rule is not one-to-one, and it has
+*inputs*{.term} give the same output, so the rule is not *one-to-one*{.term}, and it has
 no inverse. The best a way back can do is give a range of sizes. Like
 `round()`, the rule loses information, and nothing can get it
 back.
@@ -378,7 +378,7 @@ Check your answer with code for a 512 GB disk and a 1,000 GB disk.
 
 <details class="dl-answer"><summary>answer</summary>
 
-The common denominator is 6:
+The *common denominator*{.term} is 6:
 
 $$\frac{x}{3} + \frac{x}{6} = \frac{2x}{6} + \frac{x}{6} = \frac{3x}{6} = \frac{x}{2}$$
 
@@ -532,7 +532,7 @@ different times, so the speeds do not count equally.
 $\text{BMI} = \frac{\text{mass}}{\text{height}^2}$, with mass in kg and
 height in metres. What mass gives a BMI of 25 for someone 1.75 m tall?
 Then rearrange the formula to make height the subject, and say which
-space you need the square root in.
+space you need the *square root*{.term} in.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -562,8 +562,8 @@ zero, so the rearranged formula needs a BMI above 0.
 </details>
 
 **17. Explain.** Many people learned "change sides,
-change signs" at school. The tutorial page used "the same move on both
-sides" instead. Take $F = \frac{9}{5}C + 32$ and make $C$ the subject, once
+change signs" at school. The tutorial page used "*the same move on both sides*{.term}"
+instead. Take $F = \frac{9}{5}C + 32$ and make $C$ the subject, once
 each way. Then say which way you would teach to someone meeting
 rearranging for the first time, and why.
 

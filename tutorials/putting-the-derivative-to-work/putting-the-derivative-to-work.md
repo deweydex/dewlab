@@ -18,10 +18,10 @@ covers:
 
 # Putting the derivative to work: choose a project
 
-You have spent three pages building one idea: the slope of a curve at
+You have spent three pages building one idea: the *slope*{.term} of a curve at
 a single point. You may ask what it is for. This page answers
 with four short projects, and you choose. A font designer, a photo
-app, a scientist with a table of data, and a program that learns all
+app, a scientist with a table of *data*{.term}, and a program that learns all
 use the same idea, and each project shows one of them. Choose one,
 or do more than one if you like. None of them needs another.
 
@@ -34,7 +34,7 @@ On this page we:
   to the bottom of a curve
 - finish each project by comparing what we found with what we expected
 
-> **The space we're in.** Everything from this unit is in your toolkit:
+> **The space we're in.** Everything from this unit is in your *toolkit*{.term}:
 > `derivative_at`, `bisect_root` and `newton`, with `vertex`,
 > `solve_quadratic`, `smallest` and the rest from earlier units. Some
 > projects use rules, some use lists of measured numbers, and one uses
@@ -82,7 +82,7 @@ they cover all four projects.
 2. **Where is it steep?** A large slope, up or down, marks a place
    where things change fast. Project 2 looks for it.
 
-Here are both on one curve, the sine wave from
+Here are both on one curve, the *sine wave*{.term} from
 [Waves](tutorial:waves). Before you run it, guess: where is the slope
 0, and where is it steepest?
 
@@ -100,7 +100,7 @@ and the bottom of the wave. It is largest, near 1 or $-1$, at 0, 3.2
 and 6.0, where the wave crosses the middle. Flat means "turning here".
 Steep means "changing fast here".
 
-Here are the projects. Each takes a few cells, and each ends with a cell
+Here are the projects. Each takes a few *cells*{.term}, and each ends with a cell
 that sets what we found beside what we expected.
 
 | Project | The question | What it uses |
@@ -113,10 +113,10 @@ that sets what we found beside what we expected.
 ## Project 1: Where does the letter sit?
 
 On [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
-the bottom of a letter's bowl was a quadratic Bézier curve, and its
-lowest point was a vertex, 9 font units below the baseline. Completing
-the square found it. Many fonts use a *cubic Bézier curve* instead,
-with two control points, and then the height is a cubic in $t$.
+the bottom of a letter's bowl was a *quadratic Bézier curve*{.term}, and its
+lowest point was a *vertex*{.term}, 9 *font units*{.term} below the *baseline*{.term}.
+*Completing the square*{.term} found it. Many fonts use a *cubic Bézier curve* instead,
+with two control points, and then the height is a *cubic*{.term} in $t$.
 Completing the square does not work on a cubic. A slope of 0 does.
 
 First, the old bowl the new way, as a warm-up. Where do you expect the
@@ -189,7 +189,7 @@ the slope is 0 in two places, and `bisect_root` needs a `low` and
 
 ## Project 2: Finding an edge
 
-A photo is a grid of numbers, one brightness per pixel, from 0 for
+A photo is a grid of numbers, one brightness per *pixel*{.term}, from 0 for
 black to 255 for white, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
 Here is one row of pixels, across a dark pen stroke on white paper.
@@ -205,7 +205,7 @@ On [Getting closer](tutorial:getting-closer#when-the-two-sides-disagree),
 a perfect edge was a jump. In a real picture the jump is spread over a
 pixel or two. At the edge, the brightness changes fastest, so the
 slope is large. With pixels, the smallest step is one pixel, so the
-slope is the difference between neighbours. It is a chord one pixel
+slope is the difference between neighbours. It is a *chord*{.term} one pixel
 long. Before you run it, which differences will be biggest?
 
 ```python exec
@@ -339,7 +339,7 @@ for m in [0, 0.1, 0.2, 0.3, 0.4]:
 ```
 
 The error falls and then rises again. It has a bottom. It is a
-parabola in $m$, since every miss squared is a quadratic in $m$. So
+*parabola*{.term} in $m$, since every miss squared is a *quadratic*{.term} in $m$. So
 the best slope is where the error's slope is 0. Your toolkit can find
 it with no algebra at all.
 
@@ -386,7 +386,7 @@ Sometimes nobody can solve "slope = 0" at all, because the rule is too
 big to write down. Then a program can walk down instead. Stand
 somewhere on the curve. Find the slope where you stand. Take a small
 step the other way, downhill. Repeat. This is *gradient descent*
-("gradient" is another word for slope, as on
+("*gradient*{.term}" is another word for slope, as on
 [Straight lines](tutorial:straight-lines)).
 
 In symbols, each step is $x_{\text{new}} = x - r \times f'(x)$, where

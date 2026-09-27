@@ -46,7 +46,7 @@ const TEXTURE_DEFAULTS = {
   // query, so a reader can ask for it even on a system that hasn't.
   motion: "normal",
   // Stripes and dots over the tinted parts of a picture, for a reader who
-  // cannot tell the tints apart (7.279). High contrast shows them too.
+  // cannot tell the tints apart (7.281). High contrast shows them too.
   patterns: "off",
   // A multiplier on the code editor's own line height, independent of the
   // overall text size above — a reader who wants more air between lines of

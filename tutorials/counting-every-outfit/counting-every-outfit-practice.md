@@ -12,12 +12,12 @@ predict, the prediction is the exercise, so make one before you run
 anything. An answer shows one way. Yours may be different and work
 too.
 
-Your toolkit is loaded on this page, so `all_pairs`, `total` and
+Your *toolkit*{.term} is loaded on this page, so `all_pairs`, `total` and
 `product` are ready to use, and so is everything from earlier pages.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: counting-every-practice-scratch-1
@@ -25,7 +25,7 @@ print(all_pairs(["light", "dark"], ["small", "large"]))
 ```
 
 **1. Predict.** An app lets you choose a light or dark screen, and small
-or large text. What does the cell above print? Say how many pairs there
+or large text. What does the cell above print? Say how many *pairs*{.term} there
 are, and which one comes first and which last, before you run it.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -36,18 +36,18 @@ are, and which one comes first and which last, before you run it.
 
 There are four pairs, $2 \times 2$. The first is `('light', 'small')` and the
 last is `('dark', 'large')`. Every pair with `"light"` comes first,
-because the first list is the outer loop inside `all_pairs`.
+because the first *list*{.term} is the outer loop inside `all_pairs`.
 
 </details>
 
 **2. Make.** A board game has a spinner with three colours, red, green
-and blue, and you also toss a coin. Write the sample space by hand,
+and blue, and you also toss a coin. Write the *sample space*{.term} by hand,
 then check it with `all_pairs`.
 
 <details class="dl-answer"><summary>answer</summary>
 
 By hand: red and H, red and T, green and H, green and T, blue and H,
-blue and T. That is six outcomes.
+blue and T. That is six *outcomes*{.term}.
 
 ```python
 spinner = ["red", "green", "blue"]
@@ -172,7 +172,7 @@ by listing the outcomes and counting the ones we want.
 
 </details>
 
-**7. Fix.** Schlomo, who is learning Python too, writes a function to
+**7. Fix.** Schlomo, who is learning Python too, writes a *function*{.term} to
 list every text style a small editor offers: one font and one size. It
 gives only some of them. Find why, and change it.
 
@@ -272,7 +272,7 @@ print(three[0])
 $2 \times 2 \times 2 = 8$ outcomes. The first is `(('H', 'H'), 'H')`.
 It is the pair for the first two coins, then the third coin.
 
-This is the same count as a truth table with three inputs, $2^3 = 8$
+This is the same count as a *truth table*{.term} with three inputs, $2^3 = 8$
 rows. Heads and tails, like True and False, are a choice of two.
 
 </details>
@@ -483,6 +483,6 @@ change each other, and list a small case when you are not sure.
 
 Stand-up Maths (2016). *How many different Youtube videos are possible?*
 <https://www.youtube.com/watch?v=5Yy_unGaD-w>. How many different pictures
-can a small grey screen show? Matt Parker starts with the pixel counting
+can a small grey screen show? Matt Parker starts with the *pixel*{.term} counting
 from the tutorial and continues, up to every video that could ever exist.
 Try the first count yourself before he does. About seventeen minutes.

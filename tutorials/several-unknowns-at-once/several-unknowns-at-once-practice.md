@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `solve_simultaneous`
+Your *toolkit*{.term} is loaded on this page, including `solve_simultaneous`
 from the tutorial, `solve_linear` from
 [Solving for x](tutorial:solving-for-x) and `plot_rule` from
 [Drawing a rule](tutorial:drawing-a-rule).
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: several-unknowns-practice-warm-up
@@ -38,8 +38,8 @@ print(solve_simultaneous(1, 1, 10, 1, -1, 4))
 
 `(7.0, 3.0)`. Check: $7 + 3 = 10$, and $7 - 3 = 4$.
 
-Add the two equations, and $y$ cancels at once. So $2x = 14$, and $x = 7$.
-The determinant is $1 \times (-1) - 1 \times 1 = -2$, which is not 0,
+Add the two *equations*{.term}, and $y$ cancels at once. So $2x = 14$, and $x = 7$.
+The *determinant*{.term} is $1 \times (-1) - 1 \times 1 = -2$, which is not 0,
 so there is one answer.
 
 </details>
@@ -61,7 +61,7 @@ single answer.
 
 </details>
 
-**3. Make.** Is $x = 4$, $y = -1$ the solution of $2x + y = 7$ and
+**3. Make.** Is $x = 4$, $y = -1$ the *solution*{.term} of $2x + y = 7$ and
 $x - 3y = 7$? Check by substituting, in code.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -85,7 +85,7 @@ numbers? What does a second fact do?
 <details class="dl-answer"><summary>answer</summary>
 
 With whole numbers from 0 up, there are 13 answers: 0 images and 12
-texts, 1 and 11, and so on up to 12 and 0. With any real numbers, there
+texts, 1 and 11, and so on up to 12 and 0. With any *real numbers*{.term}, there
 are endless answers: every point on the line $t = 12 - i$.
 
 A second fact that is not the same fact again draws a second line. Two
@@ -118,7 +118,7 @@ substitute back.
 4. The six numbers, in the order `solve_simultaneous` wants, are
    `1, 1, 250, 0.13, 0.10, 29.5`.
 
-**Think about:** the answers are floats. How should you check them?
+**Think about:** the answers are *floats*{.term}. How should you check them?
 
 </details>
 
@@ -141,7 +141,7 @@ from 150. So check with `close_enough`.
 **6. Make.** A game's download is made of pictures and sounds. Two
 pictures and a sound make 8.30 MB. One picture and three sounds make
 12.40 MB. (The sizes are invented.) Find the size of each by
-elimination, by hand, in the four steps from the tutorial. Then check
+*elimination*{.term}, by hand, in the four steps from the tutorial. Then check
 with `solve_simultaneous`.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -171,7 +171,7 @@ places shows the sizes.
 **7. Fix.** Schlomo, who is learning Python too, wrote his own
 version, `solve_pair`. It has every line it needs. For the server log
 it gives (130, 100). For $3x + 2y = 80$ and $6x + 4y = 150$, there
-is no single answer. There the function stops with an error, and does
+is no single answer. There the *function*{.term} stops with an error, and does
 not return `None`.
 Can you find what to change?
 
@@ -246,7 +246,7 @@ print(solve_simultaneous(-2, 1, 1, -2, 1, -3))
 
 <details class="dl-answer"><summary>answer</summary>
 
-Two parallel lines, 4 apart, and `None`.
+Two *parallel lines*{.term}, 4 apart, and `None`.
 
 Both lines climb 2 for every 1 across, so they have the same
 steepness, and they never meet. To use `solve_simultaneous`, each rule
@@ -290,7 +290,7 @@ would you tell her? Would its line on a graph change?
 
 Here is one answer. Yours may be different and work too.
 
-Any pair that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
+Any *pair*{.term} that makes $a + c = 230$ true also makes $5a + 5c = 1150$ true,
 because both sides were multiplied by the same number. It works the
 other way too: dividing both sides by 5 brings the first equation back.
 So the two equations are true for exactly the same pairs. They are the
@@ -303,14 +303,14 @@ pair, so the fact is lost.
 
 **11. Make.** On [Solving for x](tutorial:solving-for-x), server B took
 20 ms whatever the crowd, and server A took 8 ms plus 2 ms for each
-thousand people. Write the two servers as simultaneous equations in $g$
+thousand people. Write the two servers as *simultaneous equations*{.term} in $g$
 (thousands of people) and $y$ (the time in ms), and solve them with
 `solve_simultaneous`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Server B: $y = 20$. With no $g$ in it, that is $0g + 1y = 20$.
-2. Server A: $y = 8 + 2g$. Move the $g$ term to the left:
+2. Server A: $y = 8 + 2g$. Move the $g$ *term*{.term} to the left:
    $-2g + 1y = 8$.
 3. The six numbers are `0, 1, 20, -2, 1, 8`.
 
@@ -353,8 +353,8 @@ finish.
 
 1. Name them $t$, $c$ and $p$. The three facts are $t + c + p = 10$,
    $5t + 2c + 3p = 35$ and $c = t - 1$.
-2. Put $t - 1$ in place of $c$ in the first two facts. Collect like
-   terms.
+2. Put $t - 1$ in place of $c$ in the first two facts. Collect *like
+   terms*{.term}.
 3. You now have two equations in $t$ and $p$.
 
 **Think about:** the third fact was already in the shape "$c$ equals
@@ -435,11 +435,11 @@ numbers deserves less trust.
 
 **15. Make.** On
 [The top of the curve](tutorial:the-top-of-the-curve#a-letter-that-sits-below-the-line),
-the bowl of a letter o dipped 9 font units below the baseline. That
+the bowl of a letter o dipped 9 *font units*{.term} below the *baseline*{.term}. That
 came from the font file. Could you find the dip with no font file,
-from a picture of the letter? Here are three pixels on the bottom of
+from a picture of the letter? Here are three *pixels*{.term} on the bottom of
 the bowl, across then up, in font units: $(234, 0)$, $(270, -8)$ and
-$(344, 0)$. Near its bottom, the bowl is close to a parabola,
+$(344, 0)$. Near its bottom, the bowl is close to a *parabola*{.term},
 $y = ax^2 + bx + c$, with three unknowns. Each pixel gives one fact:
 the first says $234^2 a + 234b + c = 0$.
 
@@ -491,8 +491,8 @@ the baseline. That is within a tenth of a unit of the font file's 9,
 and we used only three pixels.
 
 Why not exactly 9? There are two reasons. The pixels are rounded to whole units.
-And the letter's curve is a quadratic in $t$, how far along the curve
-we are, not quite in $x$, so a parabola in $x$ is a close model of the
+And the letter's curve is a *quadratic*{.term} in $t$, how far along the curve
+we are, not quite in $x$, so a parabola in $x$ is a close *model*{.term} of the
 bowl, not the bowl itself. Three unknowns needed three facts, and three
 pixels were enough to get this close. As problem 14 warned, measured
 facts need care. Move one pixel by a unit and see how far the bottom

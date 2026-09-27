@@ -19,7 +19,7 @@ Skip a problem if it does not interest you, and come back to it later.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: choosing-practice-warm-up
@@ -47,7 +47,7 @@ includes the value itself.
 </details>
 
 **2. Make.** A playlist app puts a "short" label on any song under three
-minutes. The length of a song is in `song_seconds`. Write the condition
+minutes. The length of a song is in `song_seconds`. Write the *condition*{.term}
 that is True for a short song, and try it with 175 and with 180.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -121,7 +121,7 @@ id: choosing-practice-core-checks
 
 **5. Make.** A web designer wants a page's photos to add up to at most
 2,000 KB, so the page loads quickly on a phone. Each photo is 300 KB.
-How many photos can the page have? Write the inequality, solve it, and
+How many photos can the page have? Write the *inequality*{.term}, solve it, and
 check your answer with code at the number of photos on either side.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -379,8 +379,8 @@ needs exactly one answer, and her three `if` lines gave three.
 </details>
 
 **11. Fix.** A home heating app says a room is comfortable from 18 to 22
-degrees, both included. For 18 degrees, this function says `False`. Can
-you find the part of the line that does not do what the docstring says,
+degrees, both included. For 18 degrees, this *function*{.term} says `False`. Can
+you find the part of the line that does not do what the *docstring*{.term} says,
 and fix it?
 
 ```python exec
@@ -424,7 +424,7 @@ def between(value, low, high):
 print("between is ready.")
 ```
 
-**12. Predict.** One colour byte can be from 0 to 255, and a dice roll
+**12. Predict.** One colour *byte*{.term} can be from 0 to 255, and a dice roll
 from 1 to 6. What does each line print? The last one is a puzzle.
 
 ```python
@@ -450,8 +450,8 @@ bigger than `high`.
 
 **13. Make.** A retro game shows your score on a display with four
 digits. Up to 9999, it shows the score in base 10. At 10000 or more the
-score no longer fits, so the game switches to hexadecimal, where four
-digits reach 65535. Use `digit_at` from your toolkit to write
+score no longer fits, so the game switches to *hexadecimal*{.term}, where four
+digits reach 65535. Use `digit_at` from your *toolkit*{.term} to write
 `score_digit(score, place)`, which returns the digit the display shows
 in `place`.
 `score_digit(2026, 3)` should give 2, and `score_digit(50000, 3)`
@@ -462,7 +462,7 @@ should give 12, the hex digit C.
 1. Look at the promise of `digit_at`. Its third input is the base, 10
    unless you say otherwise.
 2. Which condition says "10000 or more"?
-3. One branch calls `digit_at` with 16 as the third input. The other
+3. One *branch*{.term} calls `digit_at` with 16 as the third input. The other
    calls it without one.
 
 **Think about:** why 10000 switches to hex but 9999 does not. Which sign

@@ -42,15 +42,15 @@ measure exactly that number. This page finds what they measure.
 On this page we:
 
 - look at the hailstone's fall at every second, as a table and a curve
-- find its average speed between two times, as the slope of a chord
+- find its average speed between two times, as the *slope*{.term} of a chord
 - shrink the chord, and watch the average speeds settle
 - name the number they settle on: the derivative
-- add `derivative_at` to the toolkit, and see why its step is one
+- add `derivative_at` to the *toolkit*{.term}, and see why its step is one
   millionth
 - draw the tangent line, the straight line the curve looks like up close
 
 > **The space we're in.** A rule that gives the distance fallen at any
-> time, not only at whole seconds, in real numbers, with floats in the
+> time, not only at whole seconds, in *real numbers*{.term}, with *floats*{.term} in the
 > code. We can find the slope of a chord, from
 > [Straight lines](tutorial:straight-lines), and a limit, from
 > [Getting closer](tutorial:getting-closer). In a single instant,
@@ -98,15 +98,15 @@ faster. In time the push is as big as the weight, and the stone stops
 speeding up. The speed it settles at is its *terminal speed*.
 
 Here is a rule for the distance, in metres, that the hailstone has
-fallen after a number of seconds. It comes from the simplest model of
+fallen after a number of seconds. It comes from the simplest *model*{.term} of
 air resistance, where the push is proportional to the speed. Real air
 pushes in a more complicated way, so this is a model. In it, the
 terminal speed is 12 metres a second, and at the start the stone
-speeds up by 10 metres a second every second, close to gravity alone.
+speeds up by 10 metres a second every second, close to *gravity*{.term} alone.
 
 The rule uses `math.exp(x)`, which is $e^x$: the number $e$ from
 [Getting closer](tutorial:getting-closer#a-limit-at-infinity), to the
-power $x$. You do not need to know why the rule has this shape. This
+*power*{.term} $x$. You do not need to know why the rule has this shape. This
 page is about what we can learn from a rule we cannot see inside.
 
 ```python exec
@@ -153,7 +153,7 @@ How fast did it fall between 3 and 5 seconds? On
 [Running a formula backwards](tutorial:running-a-formula-backwards#one-formula-three-questions),
 average speed was distance divided by time. On
 [Straight lines](tutorial:straight-lines#slope-between-any-two-points),
-slope was rise over run. On this graph, the rise is metres and the run
+slope was *rise*{.term} over run. On this graph, the rise is metres and the run
 is seconds. So will `speed` and `slope`, both from your toolkit, give
 the same number? Guess, then run it.
 
@@ -175,8 +175,8 @@ curve is a *chord*. The stone's average speed between 3 and 5 seconds
 is the slope of the chord between them.
 
 This works for any rule, not only distance. The slope of a chord is
-the *average rate of change* of a rule between two inputs: how much the
-output changes for each step of the input, on average over the chord.
+the *average rate of change* of a rule between two *inputs*{.term}: how much the
+*output*{.term} changes for each step of the input, on average over the chord.
 Speed is the rate of change of distance.
 
 But 11.52 is an average over two seconds, and the stone was speeding up
@@ -245,7 +245,7 @@ As the second stone moves up towards the first, the two ends of the
 chord close in. The blue line through them is drawn long, so you can
 see its direction. It turns a little less on each frame, and settles.
 The slope above the graph falls to about 11.02. The animation loops.
-Run the cell again to watch it from the start.
+Run the *cell*{.term} again to watch it from the start.
 
 ## The derivative is a limit
 

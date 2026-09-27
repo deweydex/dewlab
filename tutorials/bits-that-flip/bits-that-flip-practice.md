@@ -11,12 +11,12 @@ Each answer is hidden until you open it. Where a problem asks you to
 predict, the prediction is the exercise, so make one before you run
 anything.
 
-Your toolkit is loaded on this page, so `parity_bit`, `to_binary`,
+Your *toolkit*{.term} is loaded on this page, so `parity_bit`, `to_binary`,
 `to_hex`, `truth_table` and `same_rule` are all ready to use.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems. Type a line, and run it.
+Use this *cell*{.term} for any of the warm-up problems. Type a line, and run it.
 
 ```python exec
 id: bits-practice-scratch-1
@@ -42,13 +42,13 @@ The value goes 0, then 1, then 0, then 1. That is the same as
 
 `5 ^ 5` is 0, and `5 ^ 0` is 5.
 
-In binary, 5 is `101`. XOR with itself compares each bit with the same
-bit, so every column is "the same" and gives 0. XOR with 0 is a mask with
+In *binary*{.term}, 5 is `101`. *XOR*{.term} with itself compares each *bit*{.term} with the same
+bit, so every column is "the same" and gives 0. XOR with 0 is a *mask*{.term} with
 no 1s in it, so nothing flips.
 
 </details>
 
-**3. Make.** A seven-segment display can keep which segments are lit as
+**3. Make.** A *seven-segment display*{.term} can keep which segments are lit as
 seven bits, a to g from the left. The digit 1 lights
 b and c, so it is `0b0110000`. The digit 2 lights a, b, d, e and g, so it
 is `0b1101101`. When the display counts from 1 to 2, which segments
@@ -121,8 +121,8 @@ A mask of all 1s flips every bit. So `1010` becomes `0101`.
 
 </details>
 
-**7. Fix.** Schlomi, who is learning Python too, wrote her own parity
-function, to be sure she understood it. It passes the first test, but not
+**7. Fix.** Schlomi, who is learning Python too, wrote her own *parity*{.term}
+*function*{.term}, to be sure she understood it. It passes the first test, but not
 the second. Find why, and change it.
 
 ```python exec
@@ -146,7 +146,7 @@ print(parity_draft("1110"))    # should be 1
 
 **Think about:** which bit does `parity_draft` really return?
 
-**Try this next:** find a string where `parity_draft` gives the right
+**Try this next:** find a *string*{.term} where `parity_draft` gives the right
 answer by luck, and one where it does not.
 
 </details>
@@ -207,7 +207,7 @@ which keeps the zeros at the front that `to_hex` would not print.
 
 </details>
 
-**9. Another way.** Find the parity bit of 14 without using XOR. Strings
+**9. Another way.** Find the *parity bit*{.term} of 14 without using XOR. Strings
 have a method `.count()`: `"00001110".count("1")` counts the 1s. And `% 2`,
 from [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros),
 gives the remainder after dividing by 2.
@@ -227,7 +227,7 @@ the parity bit.
 </details>
 
 **10. Explain.** A fitness watch sends your step count to your phone, one
-byte at a time, each with a parity bit. The phone finds that one byte does
+*byte*{.term} at a time, each with a parity bit. The phone finds that one byte does
 not pass the check. Can the phone tell which bit flipped? What can it do
 instead?
 
@@ -315,7 +315,7 @@ uses the promise of `parity_bit` to keep its own.
 </details>
 
 **13. Predict.** Two players' scores are kept in `score_a` and `score_b`.
-This cell swaps them without a third name, using XOR three times. Follow
+This cell swaps them without a third *name*{.term}, using XOR three times. Follow
 it by hand in binary. What does it print?
 
 ```python

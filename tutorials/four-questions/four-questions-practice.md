@@ -8,7 +8,7 @@ version: 2026.09.25.1
 # Four questions for any puzzle — Practice
 
 Each problem says what kind it is. **Predict** asks you to guess what a
-cell will show, then run it. **Make** asks you to write something small.
+*cell*{.term} will show, then run it. **Make** asks you to write something small.
 **Fix** asks you to find why code that looks fine does something else,
 and change it. **Explain** asks for an
 answer in words. **Another way** asks you to reach an answer by a second
@@ -40,7 +40,7 @@ la la
 222
 ```
 
-The first line multiplies two numbers. The second repeats the string
+The first line multiplies two numbers. The second repeats the *string*{.term}
 `"la "` twice.
 
 The third line is the surprise. `"2"` is in quote marks, so it is a
@@ -51,7 +51,7 @@ multiplies, and with a string it repeats.
 </details>
 
 **2. Explain.** In a game of football, what is named? Give at least three
-names, and say what each one points at.
+*names*{.term}, and say what each one points at.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -311,7 +311,7 @@ least the price. The machine must be switched on, and the thing you
 chose must be in stock. The number you typed must be one the machine
 knows.
 
-This is a function, as this course uses the word. Something goes in,
+This is a *function*{.term}, as this course uses the word. Something goes in,
 something comes out, and a promise says how the two are connected.
 
 </details>
