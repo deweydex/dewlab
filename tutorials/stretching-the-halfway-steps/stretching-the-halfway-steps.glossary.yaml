@@ -1,0 +1,9 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: fractional exponent
+    kind: concept
+    definition: >
+      A fractional exponent is an exponent that is a fraction, like 2/3 in
+      8^(2/3). The bottom, 3, cuts one hop of ×8 into 3 small hops of ×2.
+      The top, 2, says to take two of them, so 8^(2/3) is 2 × 2 = 4.
+    example: "print(8 ** (2/3))   # about 4"

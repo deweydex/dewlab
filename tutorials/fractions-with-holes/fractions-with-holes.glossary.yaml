@@ -1,0 +1,13 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: algebraic fraction
+    kind: concept
+    definition: >
+      An algebraic fraction is a fraction with a letter or a shape in it,
+      like 1/a or 2/♡. It adds, multiplies and divides in the same way as
+      a fraction with numbers. In books, a × b is often written ab.
+  - term: "1/a + 1/b"
+    kind: formula
+    definition: >
+      To add 1/a and 1/b, cut both into slices of the same size. Then the
+      whole has a × b slices. So 1/a + 1/b = (b + a)/(a × b).

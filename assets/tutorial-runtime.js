@@ -49,6 +49,9 @@ const TEXTURE_DEFAULTS = {
   // accessibility toggle, not tied to the system prefers-reduced-motion
   // query, so a reader can ask for it even on a system that hasn't.
   motion: "normal",
+  // Stripes and dots over the tinted parts of a picture, for a reader who
+  // cannot tell the tints apart (7.283). High contrast shows them too.
+  patterns: "off",
   // A multiplier on the code editor's own line height, independent of the
   // overall text size above — a reader who wants more air between lines of
   // code without enlarging the letters themselves.
@@ -1995,6 +1998,8 @@ function applyTexture(state) {
   else root.setAttribute("data-button-labels", state.buttons);
   if (state.motion === "normal") root.removeAttribute("data-motion");
   else root.setAttribute("data-motion", state.motion);
+  if (state.patterns === "on") root.setAttribute("data-patterns", "on");
+  else root.removeAttribute("data-patterns");
   root.style.setProperty("--dl-font-size", state.size + "px");
   root.style.setProperty("--dl-line-width", state.width + "rem");
   root.style.setProperty("--dl-code-line-height", state.codeLineHeight);
@@ -2399,7 +2404,7 @@ function inHiddenWorld(element) {
   return !!element.closest(".dl-world[hidden]");
 }
 
-/* A project (7.283) the reader has neither opened nor worked in is not
+/* A project (7.284) the reader has neither opened nor worked in is not
  * on show: "run all" and the export leave it alone. */
 function inProjectNotInPlay(element) {
   const section = projectOf(element);
@@ -5857,7 +5862,7 @@ function progressCounts(entries) {
 }
 
 function liveProgressCounts() {
-  /* A project's cells count once the reader has run one of them (7.283),
+  /* A project's cells count once the reader has run one of them (7.284),
    * so doing one project of four does not read as a quarter done. */
   const counted = cells.filter((cell) => {
     if (inHiddenWorld(cell.element)) return false;
@@ -5905,7 +5910,7 @@ function writeProgressBadges(mode) {
 }
 
 /* A choose-your-project page's total leaves out the projects the reader
- * has not started (7.283): `data-projects` lists each project's cells. */
+ * has not started (7.284): `data-projects` lists each project's cells. */
 function totalCounted(link, record, total) {
   let projects;
   try {

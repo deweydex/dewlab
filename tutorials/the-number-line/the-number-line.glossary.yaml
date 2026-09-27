@@ -1,0 +1,14 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: opposite
+    kind: concept
+    definition: >
+      The opposite of a number is the number the same distance from 0, on
+      the other side of 0. The opposite of 3 is −3, and the opposite of −3
+      is 3.
+  - term: distance
+    kind: concept
+    definition: >
+      The distance between two places on the number line is the number of
+      steps between them. From −1 to 3 is a distance of 4. A distance is
+      never below zero.

@@ -358,8 +358,9 @@ not cut anything. Why was the second sum different?
 
 A challenge: take half a pizza. Then add a quarter, then an eighth,
 then a sixteenth. Each new slice is half of the one before. The program
-below adds the first five slices. `2 ** step` is 2, then 4, then 8, and
-so on, from the page on powers. How much pizza is missing after each
+below adds the first five slices. `2 ** step` multiplies 2 by itself
+`step` times, so it is 2, then 4, then 8, and so on. The page on powers,
+later in the module, says more about `**`. How much pizza is missing after each
 step? Can you make it run 20 steps? Does the total ever reach 1?
 
 ```python challenge

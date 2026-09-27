@@ -1681,7 +1681,7 @@ def bisection_squeeze() -> str:
 
 
 # --------------------------------------------------------------------------
-# Unit 9: the choose-a-project cards (DECISIONS_LOG 7.283)
+# Unit 9: the choose-a-project cards (DECISIONS_LOG 7.284)
 #
 # Small pictures, one per card, of what each project ends with. No labels:
 # the card's question says what the picture shows, so each is decorative

@@ -1,0 +1,41 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: same shape
+    kind: concept
+    definition: >
+      Two sheets have the same shape when one is the other made bigger or
+      smaller, with nothing stretched. To test it, divide the long side by
+      the short side. Sheets with the same answer have the same shape.
+  - term: prime number
+    kind: concept
+    definition: >
+      A prime number is a whole number bigger than 1 that only 1 and itself
+      divide exactly. 2, 3, 5, 7 and 11 are prime. 9 is not prime, because
+      3 × 3 = 9.
+  - term: str()
+    kind: function
+    python: str
+    definition: >
+      Makes text from a number. str(1024) is the text "1024", with one
+      character for each digit.
+    example: "str(2 ** 10)"
+  - term: len()
+    kind: function
+    python: len
+    definition: >
+      Counts the characters in a text. So len(str(2 ** 100)) counts the
+      digits of 2 ** 100, and gives 31.
+    example: "len(str(2 ** 100))"
+  - term: whole part
+    kind: concept
+    definition: >
+      The whole part of a number is the part before the point. The whole
+      part of 30.103 is 30. A whole number n has as many digits as the
+      whole part of hops(10 → n), plus one.
+  - term: int()
+    kind: function
+    python: int
+    definition: >
+      Keeps the whole part of a number, and drops the part after the point.
+      int(30.103) is 30.
+    example: "int(136279841 * math.log10(2)) + 1"
