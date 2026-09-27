@@ -233,7 +233,7 @@ def one_outbreak(seed):
             if days_left[town] == 0:
                 del days_left[town]
                 recovered.add(town)
-        for town in new_cases:
+        for town in sorted(new_cases):    # sorted, so the order is the same on every computer
             days_left[town] = SICK_FOR
         sick_counts.append(len(days_left))
     return sick_counts, len(recovered)
