@@ -140,7 +140,7 @@ down. Which floor is it?
 
 ## A name for below zero
 
-A number below zero is called a *negative number*. We write it with a
+A number below zero is called a *negative number*{.term}. We write it with a
 short line in front: −3. We say "minus three". On the number line, the
 negative numbers are to the left of 0. Look at the first picture
 again.

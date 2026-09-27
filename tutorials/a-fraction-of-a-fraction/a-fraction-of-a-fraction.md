@@ -15,6 +15,11 @@ cut into 2 *rows*. A row is a wide strip, from one side to the other.
 The top row is blue. Where the yellow and the blue cross, the piece is
 green.
 
+Are the colours hard to tell apart? Open **Settings**, then
+**Appearance**, and turn on **Patterns in pictures**. Then the yellow
+columns have stripes one way, the blue rows have stripes the other way,
+and the green pieces, where they cross, have both.
+
 <img src="half-of-a-half.svg" alt="Two squares of the same size. The first is cut into 2 columns, and the left column is yellow. It is labelled 'a half'. The second square is cut into 2 columns and 2 rows, which make 4 equal pieces. The left column is yellow and the top row is blue. The one piece where they cross, at the top left, is green. It is labelled 'half of that half'.">
 
 ```question

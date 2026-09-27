@@ -1,0 +1,14 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: "keeping it level, the same on both sides"
+    kind: concept
+    definition: >
+      An equation stays true when we do the same thing to both sides. We
+      may take 3 from both sides, or share both sides into 3 equal groups.
+      If we change one side only, the two sides do not match any more.
+  - term: undoing in the opposite order
+    kind: concept
+    definition: >
+      To find the box, we undo the steps that built it, one at a time. The
+      last building step is the first one we undo. For 2 × □ + 1 = 9, we
+      subtract 1, and then divide by 2.

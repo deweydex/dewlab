@@ -1,0 +1,31 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "*divided*" on this page is stress, not a term. "==" is left out: the
+# Python Basics tab already has it.
+entries:
+  - term: equivalent
+    kind: concept
+    definition: >
+      Fractions are equivalent when they are the same amount. 1/2, 2/4 and
+      4/8 are equivalent. Multiply the top and the bottom by the same
+      number, and you get an equivalent fraction.
+  - term: simplifying
+    kind: concept
+    definition: >
+      Simplifying a fraction means writing it with the smallest possible
+      numbers. Divide the top and the bottom by the same number. 4/8
+      becomes 2/4, and then 1/2.
+  - term: fraction wall
+    kind: concept
+    definition: >
+      A fraction wall is a picture of bars of the same length, one under
+      another. The top bar is one whole. Each bar under it is cut into
+      more equal pieces.
+  - term: Fraction()
+    kind: function
+    python: fractions.Fraction
+    definition: >
+      Makes a fraction in Python. Fraction(4, 8) is four eighths. Python
+      always shows it with its simplest name, 1/2. The line
+      from fractions import Fraction gets the tool ready.
+    example: "Fraction(4, 8)"

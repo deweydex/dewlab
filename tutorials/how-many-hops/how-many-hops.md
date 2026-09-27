@@ -11,7 +11,7 @@ worlds:
 # Counting hops: logarithms, how many times did we multiply?
 
 Here is a line with the numbers 1, 10, 100 and 1,000 on it. Each curve
-is a *hop*. A hop multiplies by 10. Look at the picture before you
+is a *hop*{.term}. A hop multiplies by 10. Look at the picture before you
 answer.
 
 <img src="hops-of-ten.svg" alt="A number line with stops at 1, 10, 100 and 1,000. Above the line, three arcs, each labelled ×10, hop from 1 to 10, from 10 to 100 and from 100 to 1,000.">
@@ -209,7 +209,7 @@ The exponent counts it too. So hops of a power is its exponent.
 
 Python can count hops for us. Python is a language for computers. This
 program starts at 1. Then it multiplies by the base and counts, until
-it reaches the target. The *base* is the number each hop multiplies
+it reaches the target. The *base*{.term} is the number each hop multiplies
 by, and the *target* is where we want to land.
 
 ```python exec

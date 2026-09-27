@@ -11,7 +11,7 @@ worlds:
 # Stretching the halfway steps: fractional exponents, the top and the bottom
 
 Here is a line with the numbers 1, 2, 4 and 8 on it. Each curve is a
-*hop*, and a hop multiplies. The big curve on top is one hop of ×8.
+*hop*{.term}, and a hop multiplies. The big curve on top is one hop of ×8.
 Under it, three small hops each multiply by 2. Look at the small hops
 before you answer.
 

@@ -233,7 +233,7 @@ side(10)?
 
 </details>
 
-A *whole number* is a number with no fraction part: 1, 2, 3, and so
+A *whole number*{.term} is a number with no fraction part: 1, 2, 3, and so
 on. side(10) is not a whole number. It is a little more than 3. The
 next page is about sides like this.
 
@@ -317,7 +317,7 @@ square number below 30.
 
 ## Cubes of beads
 
-Beads can also make a *cube*. A cube is a box shape. It is the same
+Beads can also make a *cube*{.term}. A cube is a box shape. It is the same
 number of beads wide, high and deep. The number of beads along one edge
 is called its *edge*.
 

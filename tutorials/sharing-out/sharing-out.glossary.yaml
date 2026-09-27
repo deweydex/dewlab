@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+entries:
+  - term: crossing out, cross out
+    kind: concept
+    definition: >
+      Crossing out is drawing a line through a heart on the top and a heart
+      on the bottom. The pair is ♡/♡, which is 1. Multiplying by 1 changes
+      nothing, so we can remove the pair.
+  - term: "quotient rule, ♡ᵃ / ♡ᵇ = ♡ᵃ⁻ᵇ"
+    kind: formula
+    definition: >
+      When we divide two powers with the same base, we subtract the bottom
+      exponent from the top one. Each heart on the bottom crosses out one heart on
+      the top. The hearts that are left on the top are the answer.
+    example: "2 ** 7 / 2 ** 3   # 16.0, the same as 2 ** 4"
+  - term: quotient
+    kind: concept
+    definition: >
+      A quotient is the answer to a division. The quotient of 6 and 3 is 2.

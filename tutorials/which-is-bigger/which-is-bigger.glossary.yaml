@@ -1,0 +1,22 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# "*smaller*" on this page is stress, not a term.
+entries:
+  - term: landmark
+    kind: concept
+    definition: >
+      A landmark is a place you can see from far away, like a tall tower.
+      On a line from 0 to 1, the landmarks are 0, one half and 1. They
+      help us see where a fraction is.
+  - term: number line
+    kind: concept
+    definition: >
+      A number line is a line with numbers in order along it. Every
+      fraction has a place on it. On this page, the line starts at 0 and
+      ends at 1.
+  - term: "<"
+    kind: operator
+    definition: >
+      Asks Python if the first number is smaller than the second. True
+      means yes, and False means no.
+    example: "Fraction(2, 3) < Fraction(3, 4)"
