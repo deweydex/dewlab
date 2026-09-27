@@ -7,13 +7,11 @@ worlds:
   pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   linear-search-the-straightforward-approach:
-    covers: [MIT-6.8]
+    covers: [MIT-6.8, CMPS-LO5]
   binary-search-the-power-of-sorted-data:
-    covers: [MIT-6.8]
+    covers: [MIT-6.8, CMPS-LO5]
   divide-and-conquer:
     covers: [MIT-6.6]
-# CMPS-LO5 is taught here, but this page is not on Computational Methods,
-# so it is not claimed for that module until #333 brings it into the course.
 ---
 
 # Searching a list: linear and binary search

@@ -15,8 +15,9 @@ description: >-
   After the Python come matrices, and the pictures they move and turn on a
   screen; text generated from the words of a book; simulations of chance,
   queues, a model that corrects itself, a ball falling through time and a
-  simulation of your own; algorithms that search and make
-  change; and finding where a program went wrong.
+  simulation of your own; algorithms that search, sort, find the
+  shortest way across a map and make change, and a maze or puzzle of
+  your own; and finding where a program went wrong.
 
 
   The tasks come in worlds you choose, page by page: photos and filters,
@@ -71,8 +72,12 @@ contents:
   - a-simulation-of-your-own
 - title: Algorithms
   tutorials:
+  - finding-things
+  - putting-things-in-order
   - finding-everything-inside-a-folder
+  - the-shortest-way-there
   - three-ways-to-make-change
+  - a-puzzle-of-your-own
 - title: Problem Solving
   tutorials:
   - finding-where-it-went-wrong

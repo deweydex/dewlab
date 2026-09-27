@@ -1,0 +1,19 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# The Algorithms series' making task. Everything it uses was introduced
+# earlier in the series; "exponential" is defined in
+# three-ways-to-make-change's glossary. The two new terms are below.
+entries:
+  - term: state (of a puzzle)
+    kind: concept
+    definition: >
+      Everything you need to know about a puzzle at one moment. In a maze,
+      the state is the square you stand on. In a maze with a key, it is
+      the square and whether you hold the key.
+
+  - term: hop
+    kind: concept
+    definition: >
+      One step along one link of a network, from one computer to the
+      next. The number of hops between two computers is the number of
+      links a message crosses to get from one to the other.

@@ -5463,6 +5463,28 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 
 ---
 
+---
+
+**7.277 — Algorithms brings in search and sorting, makes recursion's order visible, adds graph search, counts the work instead of timing it, and ends with a maze or puzzle of the reader's own.** The content issue (#333), part of #306.
+
+**Search and sorting.** `finding-things` and `putting-things-in-order`, as rebuilt in Foundations part 2, open the Algorithms series. Their linear search, binary search and "comparing our sorts" sections now claim CMPS-LO5, and the comments that held the claim back until this issue are gone. They keep their own two Foundations worlds: a world is chosen per page, so the switcher on these two pages offers theirs, and the other Algorithms pages offer the four below. `finding-things` stays the default course's page, since `mit-pdp-maths-prog-integration` comes first in `courses/index.yaml`.
+
+**Worlds.** The four from the issue, chosen per page: mazes and dungeons, maps and networks, collections, and puzzles.
+
+**Recursion made visible.** `photos` gains a `2025/summer` folder, so that the recursion, `pop()` and `pop(0)` visit the folders in three different orders, and each order is a predict before its cell. The page names the first two depth-first and the third breadth-first: the difference is one argument. A real folder tree is built in a temporary folder and walked with `os.walk`. The world tasks are a path through a dungeon, the length of a river system, the oldest fossil in a museum's drawers, and the Tower of Hanoi (1,023 moves for 10 discs).
+
+**Graph search.** A new page, `the-shortest-way-there`. The breadth-first walk from the folder page runs on a town's streets and goes round in circles, so the cell stops it after 12 visits; a `visited` set, explained on the page because no earlier Computational Methods page teaches sets, ends that. `came_from` gives the way back from the harbour, and `pop()` in place of `pop(0)` reaches the library by four streets instead of two. It links to the web-ranking section of `where-chains-lead`. The world task, `shortest_way`, runs on a maze, a railway, a museum's rooms, and the water-jug puzzle (6 moves to 4 litres). A wall was added to the maze so that its shortest way is unique: the inputs are compared row by row, so two equally short answers would disagree. The reading list cites Reducible's breadth-first and depth-first videos; both titles were checked against YouTube's own record.
+
+**Making change.** Brute force at 24 takes about 15 ms, too small to show growth, so every call is counted instead: 20,736 calls at 20 against the cached version's 56. The page says why the cache is safe (the fewest tokens depend only on the amount) and when it would not be (a till with a limited number of each coin). A new section, "How the work grows", plots both counts on a log scale and names exponential and linear growth; brute force at 100 would make about $10^{21}$ calls. "How many ways?" counts handfuls, 4,562 of them for €1 in coins up to 50c. A kingdom's coins, `[1, 7, 10]`, give greedy's failure a fantasy currency, and each world has its own currency for the task that lists where greedy goes wrong.
+
+**The making task.** `a-puzzle-of-your-own` ends the series. Its `solve(start, moves, is_goal)` is the graph page's search with two changes: it asks for a state's moves only when it reaches that state, because the first puzzle (add 1 or double, from 1 to 10) has a map with no end; and it returns how many states it found. The four starters are a dungeon with a locked door, where the state is the square and whether you hold the key (17 steps, 62 states); a college network, and the three computers whose failure would split it; Carroll's Doublets from 1879, where the search finds a different five-step chain from HEAD to TAIL than Carroll's own; and the farmer, wolf, goat and cabbage (7 crossings, 10 of 16 states). "How big is your puzzle?" ties the state count to the exponential growth on the making-change page.
+
+**Practice.** All three practice pages move to blocks. Every `shortest_way` input on the graph page has exactly one shortest answer, counted in each world, for the reason above.
+
+*Cost to change: small. `the-shortest-way-there`, `a-puzzle-of-your-own` and every new cell id, including the world cells, become a contract on 2 October. No page id changed. Five cell ids went, before that date: `walking-it-without-recursion-2` on the folder page, and four on the practice pages that moved to blocks.*
+
+---
+
 **7.278 — A short machine-learning course: text generation, learning from pictures, what a language model does differently, and limits and judgement.** The content issue (#338), part of #306.
 
 **The course.** `courses/machine-learning.yaml`, listed in `courses/index.yaml` straight after Computational Methods. The shared pages (the three text-generation pages and the perceptron) come first in Computational Methods' file, so that stays their default course and their address; they are the same files in both courses, so the two cannot drift apart. The card says who the course is for, what you make, and the worlds. The description names the Python it needs, from Computational Methods' first series, since it has no Python series of its own.

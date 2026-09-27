@@ -1,0 +1,44 @@
+# Generated per .claude/skills/tutorial-glossary/SKILL.md.
+#
+# Algorithms series. Checked against every other glossary file in
+# computational-methods -- no overlap. "breadth-first" and "depth-first"
+# are used here but defined in finding-everything-inside-a-folder's
+# glossary, earlier in the series; "state diagram" in where-chains-lead
+# is a different idea from a graph's nodes.
+entries:
+  - term: graph (nodes and edges)
+    kind: concept
+    definition: >
+      A graph is a collection of things and the links between them. The things
+      are its nodes, and the links are its edges. A map of places joined
+      by streets is a graph, and so is the web, with pages joined by
+      links.
+
+  - term: node
+    kind: concept
+    definition: >
+      One of the things in a graph: a place on a map, a page on the web,
+      a folder in a folder tree.
+
+  - term: edge
+    kind: concept
+    definition: >
+      A link between two nodes of a graph: a street between two places,
+      or a link from one page to another. An edge that goes in one
+      direction only, like a one-way street, is called a directed edge.
+
+  - term: set
+    python: set
+    kind: concept
+    definition: >
+      A collection, like a list, that holds each value only once. Asking
+      whether a value is in a set is quick, even when the set is large.
+    example: "visited = {'station'}"
+
+  - term: "add()"
+    python: set.add
+    kind: function
+    definition: >
+      Puts one value in a set. If the value is there already, nothing
+      changes.
+    example: "visited.add('market')"
