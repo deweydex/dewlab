@@ -663,5 +663,6 @@ PR that touches the runtime or the editor.
 | The reference's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
 | What one tutorial's reference actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |
 | Highlight-to-look-up (the button a selection offers) | `initReferenceLookup()` in `assets/tutorial-runtime.js`; `.dl-lookup` in `assets/tutorial-style.css` |
+| My words: a reader's own word list, its marks on every page, its export and import | `assets/my-words.js` (imported by the runtime, so in the standalone bundle); the **Add to my words** button in `initReferenceLookup()`; `#dl-settings-words` and `#dl-settings-words-io` in `assets/shell.html`; one `localStorage` key, `dewlab:my-words` (DECISIONS_LOG 7.282) |
 | The reference panel or toggle's look and behaviour | `assets/shell.html`, `assets/tutorial-style.css`, `initReference()`/`renderReference()` in `assets/tutorial-runtime.js` |
 | *Why* something works the way it does, before you change it | `DECISIONS_LOG.md` (numbered, searchable) |

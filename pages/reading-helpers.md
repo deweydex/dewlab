@@ -21,6 +21,14 @@ it. If you would rather not see the lines, open **Settings**, then
 a small **Look up** button appears. Press it, and the Reference opens at that
 word. If you met it on an earlier page, it links back there.
 
+**Keep your own words.** Select a word, and press **Add to my words**. Write
+what it means to you, or its translation into your own language, and press
+**Save**. On a phone, press and hold the word to select it. After that, the
+word has a thin dashed line under it wherever it appears again, on any page.
+Point at it, or tap it, to see your own meaning. Your list is in **Notes**,
+under **My words**. To keep a copy, or to move it to another browser, open
+**Settings**, then **Imports & Exports**.
+
 **Change how the page looks.** Open **Settings**, at the top right, and
 then **Appearance**. There you can choose:
 

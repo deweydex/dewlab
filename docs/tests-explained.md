@@ -98,6 +98,8 @@ counterpart, what the tutorials it writes actually build into, is
 
 *My Notes:* `test_my_notes.py` — the cross-tutorial notes/highlights page.
 
+*My words:* `test_my_words.py` — a word saved on one page and marked, with the reader's meaning, on another; the list after a reload; export and import (prose-only, no Pyodide needed).
+
 *Datasets:* `test_loading_data.py` — a live source that answers, one that
 fails, and a downloaded copy with no network (#324). The live source is
 answered by the test, never fetched. The order and shaping underneath are

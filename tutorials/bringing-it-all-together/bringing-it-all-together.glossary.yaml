@@ -1,7 +1,47 @@
 # Generated per .claude/skills/tutorial-glossary/SKILL.md.
 #
-# This tutorial says outright that it introduces no new material — it is
-# a review that recombines tools from earlier tutorials (number types,
-# polynomials, solving equations, sets as sorted lists). Nothing new to
-# define here.
-entries: []
+# A capstone brief, not a tutorial: it teaches no new Python and no new
+# mathematics. The entries are the words the page itself relies on, and
+# the words each brief introduces for its own subject.
+entries:
+  - term: capstone
+    kind: concept
+    definition: >
+      A capstone is the last project of a course: a piece of work that
+      uses what all of the course taught.
+  - term: brief
+    kind: concept
+    definition: >
+      A brief is a description of a piece of work you are asked to do:
+      what to make, and questions to think about while you make it.
+  - term: milestone
+    kind: concept
+    definition: >
+      A milestone is a point in a project where one part is finished and
+      works. A project with milestones can be shown, and used, before the
+      whole of it is done.
+  - term: pixel
+    kind: concept
+    definition: >
+      A pixel is one of the small squares that a picture on a screen is
+      made of. A program stores each pixel as a number, or as three
+      numbers for red, green and blue.
+    example: "a grey picture 64 pixels wide and 64 high is 4,096 numbers"
+  - term: sample
+    kind: concept
+    definition: >
+      In a sound, a sample is one measurement of the wave, a number. A
+      computer stores a sound as a long list of samples, taken many
+      thousands of times a second.
+  - term: capacitor
+    kind: concept
+    definition: >
+      A capacitor is an electronic part that stores electric charge. It
+      fills quickly at first, then more and more slowly, and it can empty
+      again through the circuit.
+  - term: glider
+    kind: concept
+    definition: >
+      In John Conway's Game of Life, a glider is a shape of 5 living
+      cells that moves one square across and one square down every 4
+      steps.

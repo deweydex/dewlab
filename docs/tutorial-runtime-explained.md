@@ -47,6 +47,13 @@ close to self-contained:
   the Notes panel (`refreshHighlightsList()`), and a cross-page summary
   at `all-notes.html` built from the same saved records by a separate
   file, `assets/my-notes.js`.
+- **My words** — not a section of this file but a module it imports,
+  `assets/my-words.js`: a reader's own word list for the whole site, one
+  `localStorage` key rather than one per page. `initReferenceLookup()`
+  offers **Add to my words** beside Highlight; the module fills the form
+  and list in the Notes panel, marks each saved word's first use in each
+  paragraph by wrapping it in a `span.dl-myword` (which adds no text, so
+  highlights still anchor), and exports and imports the list as a file.
 - **Progress** — the "3 of 8 cells run" summary and the contents-page
   badges.
 - **Versions** — for a tutorial with more than one release: which one a

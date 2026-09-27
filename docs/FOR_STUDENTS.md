@@ -110,6 +110,29 @@ Reference shows where you first met it.
 
 ---
 
+## Keeping your own words
+
+Select a word, or a short phrase, in the reading, and an **Add to my words**
+button appears beside **Highlight**. Press it, and the Notes panel opens at
+**My words**. It shows the word, the sentence it came from, and, if the
+Reference knows the word, what the Reference says. Write your own meaning,
+or a translation into your own language, and press **Save**. On a phone,
+press and hold a word to select it.
+
+Your list is for the whole site, not one page. Wherever a saved word appears
+again, on this page or on any other, a thin dashed line marks its first use
+in each paragraph. Point at it, tap it, or reach it with Tab, and a small box
+shows your own meaning. **My words on the page**, under Reading in Settings,
+turns the lines off.
+
+In **My words** you can search your list, show it by page or from A to Z,
+change a meaning, or delete a word. The list is saved in this browser, like
+your notes. **Export my words**, under Imports & Exports in Settings, saves
+it as a file, and **Import my words** adds a file's words to the list in
+another browser. Nothing is sent anywhere.
+
+---
+
 ## The right-hand panels
 
 Every page has three panels, opened from tabs stacked in the top-right
@@ -121,7 +144,7 @@ it wider or narrower.
 **Notes** holds a place to write your own notes on the page, whether your
 work is saving, and the buttons to export a copy, load one back in, or start
 the tutorial over. Every highlight you have made on the page is listed here
-too. At the top of it, **My notes** opens a page of its own, holding
+too, and so is **My words**, your own word list. At the top of it, **My notes** opens a page of its own, holding
 everything you have written and highlighted on every page you have opened in
 this browser.
 
@@ -146,7 +169,7 @@ several runs that did not get there, and whether the tutorials list shows
 how far you have got.
 
 **Imports & Exports** holds the ways to take a tutorial with you, described
-below.
+below, and the export and import for My words.
 
 **Give Feedback** is not one of the three panels. It has a small circle of
 its own, in the bottom-right corner of the screen, and it opens a short box

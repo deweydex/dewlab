@@ -4874,7 +4874,7 @@ Also: `planning/EXERCISES.md` now points to the templates and keeps only where t
 
 **7.240 — From cells to a program: `input()` is written in advance on the page, and the team project is set in the worlds.** The content issue (#320), part of #306.
 
-**A cell cannot wait for typing, so the page says so and writes the typing down.** *Reversed by 7.281: a cell now waits for typing, and the page uses `input()`.* `input()` needs somebody at a keyboard, and a cell running in Pyodide has no way to pause for one; the existing pages commented `input()` lines out. The new page, "From cells to a program", keeps the programs whole instead. Each keeps its answers in a list, `typed`, and a four-line `ask()` takes the next one and prints it beside its prompt, so the output reads like a session at a keyboard. The page says in the same breath that on a computer the whole of `ask` becomes `ask = input`. A reader sees `while True`, `break` and a validation loop run from start to end, and the typed list doubles as a test: change it, and the program meets different answers. A second point follows: the deciding is kept apart from the asking (`first_valid(answers, low, high)`), which is what lets a `tests:` cell check it.
+**A cell cannot wait for typing, so the page says so and writes the typing down.** *Reversed by 7.283: a cell now waits for typing, and the page uses `input()`.* `input()` needs somebody at a keyboard, and a cell running in Pyodide has no way to pause for one; the existing pages commented `input()` lines out. The new page, "From cells to a program", keeps the programs whole instead. Each keeps its answers in a list, `typed`, and a four-line `ask()` takes the next one and prints it beside its prompt, so the output reads like a session at a keyboard. The page says in the same breath that on a computer the whole of `ask` becomes `ask = input`. A reader sees `while True`, `break` and a validation loop run from start to end, and the typed list doubles as a test: change it, and the program meets different answers. A second point follows: the deciding is kept apart from the asking (`first_valid(answers, low, high)`), which is what lets a `tests:` cell check it.
 
 **`main()` is called plainly on the page.** The runtime names the page namespace `__dewlab__` (7.97), so `if __name__ == "__main__":` in a cell would skip `main()` and print nothing. The cell calls `main()`, and the guard is shown as what goes at the end of a file, with the reason.
 
@@ -5533,7 +5533,59 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 
 ---
 
-**7.281 — `input()` waits for the reader, and a ```typed block answers it where nobody can type.** Josh, 27 September 2026: "wouldn't it be better to use the one that another ide and normal python would use?"
+**7.281 — The integrated course's capstone becomes a menu of 7 briefs, and the page's world choice is the menu.** The content issue (#336), part of #306.
+
+**What it replaces.** `bringing-it-all-together` was four review problems on polynomials, equations and sets. It used nothing from trigonometry, calculus or statistics, and offered no choice. It is rewritten in place as "Capstone project: choose a brief" and keeps its id, so the course, the topic group and the old address in `courses/redirects.yaml` still reach it. Its old cell ids are gone; the ids were free until 2 October, and the new page has no cells.
+
+**The menu is the world choice.** Each brief is a world: images and pixels, sound and waves, codes and secrets, simulations and games, electronics, machine learning, and sky and sea. The chooser under the title lists them with one line each, so choosing a world is choosing a brief, and switching worlds shows the others. Building the menu from worlds needed no new code.
+
+**Each brief.** An individual version, and a group version for 2 to 4 people in which each person owns a part; how a class runs the project is the teacher's decision, and the page says so once. The same three milestones in every brief: a first working piece, something that grows (with two or three named ways to grow it), and something shared. A `python challenge` starter that opens in the Notebook. A list of where the maths appears, linking the course's own pages, and two questions to think about. The page ends with questions for every brief and a reading for each. There is no marking scheme, as the style guide asks of a project brief.
+
+**The starters were run where a reader runs them.** Each was opened from the built page in the Notebook and run in Pyodide in Chromium: no errors, and every number a brief quotes (3.17 and 3.161 volts, 5.4 minutes on 6 days, a shift of 11) is what its starter prints. Two things the starters found:
+
+- `daylight.csv` gives Dublin's daylight to 0.01 of an hour, so the biggest change from one day to the next, 5.4 minutes, is shared by 6 days between 7 March and 3 April. The brief makes that its first question, instead of naming a fastest day that the data cannot pick out.
+- The Notebook can draw a sound but cannot play one. The sound brief's starter writes a `.wav` file, and the brief says where to find it: the Workbench's "Use a folder on my computer", in Chrome or Edge. A way to play a sound on a page and in the Notebook is #415.
+
+**Not every brief uses trigonometry or calculus.** Codes and secrets draws on counting, chance, logic and algebra; machine learning on chance, straight lines and statistics. The issue asks for trigonometry or calculus in each brief, but in a cipher it would be decoration, so the page says that most briefs use them.
+
+**Outcome claims.** The old page claimed MIT-1.6, 1.8, 1.12 and 2.2 and PDP-LO10. Other pages cover each of them, and the new page claims none, like the course's other making pages (`a-tool-of-your-own`, `a-model-of-your-own`).
+
+**Glossary.** *capstone*, *brief*, *milestone*, and the words the briefs introduce: *pixel*, *sample* (in a sound), *capacitor* and *glider*. `the-team-project`, later in the course, also defines *brief*, with the same meaning.
+
+**Course file.** The series "Review Problems" is now "Capstone project", and the course description says what the capstone is.
+
+*Cost to change: small. One page rewritten under its old id, with no cells, so no new cell id becomes a contract.*
+
+---
+
+**7.282 — My words: a reader's own word list, kept in the browser, and marked where each word appears again.** Issue #340, part of #306.
+
+**What a reader does.** Selecting a word, or a phrase of up to 5 words inside one paragraph, offers **Add to my words** beside Highlight. It opens the Notes panel at a form holding the word, the sentence around it, the Reference's definition where the page's glossary has the word, and a box for the reader's own meaning or translation. The definition is found by `entryFor()` from `term-definitions.js`, the same match hover definitions use. A word already in the list opens its entry instead of making a second one.
+
+**Where the list lives.** One `localStorage` key for the whole site, `dewlab:my-words`, holding `{version: 1, words: [...]}`. Each entry holds the word, the meaning, the sentence, the page's id, title and address from the site's root, and the Reference's term and definition when there was one. Notes are kept per page (`dewlab:progress:<id>`); words are not, because the point is to see them on other pages.
+
+**A section of Notes, not a fourth corner tab.** The issue asks for a panel beside Notes. 7.185 cut the dock to three tabs and kept Notes as its own door because it was "about to grow"; a fourth tab would reopen that for a list a reader opens less often than their notes. So **My words** is a section of the Notes panel, under the highlights. It has a search box (`textMatches()`, the site's own stems), an order by page or from A to Z, and **Change** and **Delete** on each word. If it needs a tab of its own, the section moves as it is.
+
+**Marks.** Where a saved word appears again, on any page, its first use in each paragraph is wrapped in `span.dl-myword`: a thin dashed line, so it is not taken for a term the author marked (`.dl-def`'s dotted one). Hover, a tap or Tab shows the reader's meaning; Enter opens it in the form. A word matches whole, in any case, and a plain plural of its last word counts.
+- This searches the prose, which 7.94 withdrew for glossary terms, because a regex cannot tell "set a seed" from a set. Here the reader chose the word and wrote the meaning, so a mark in another sense shows the reader's own words, never the site's definition as if it applied.
+- Nothing is marked in code, cells, maths, headings, links or buttons, or in an italic the author marked as a term.
+- A span adds no text, so highlights, which anchor to text offsets, are unaffected; a test makes a highlight across a marked word. A click on a word inside a highlight opens the highlight's popover, not the word's.
+- **My words on the page**, under Reading in Settings, turns the marks off.
+
+**Export and import** sit in Settings → Imports & Exports. The file is JSON, `my-dewlab-words.json`, marked `"dewlab": "my-words"`. Importing adds the file's words; an entry with the same id keeps whichever copy was changed last, so importing one file twice changes nothing. Every field is cut to a set length and shown with `textContent`, so a file made by hand cannot put markup on the page, and a test imports one that tries. There was no site-wide export to join: this is the first file that holds data from more than one page, and it holds only the words.
+
+**Phones.** A long press selects a word, and the same button appears. The three selection buttons now wrap onto a second row when they are wider than the screen. The word and its sentence are read when the selection changes, not on the tap, since on a phone the tap can clear the selection first.
+
+**Left out.**
+- Plain-word definitions: 7.273 left them for a wider rethink of support for readers of English as a second language, so an entry carries only the Reference's definition.
+- `all-notes.html` (My notes) does not list the words.
+- `tests/e2e/test_my_words.py` runs locally, like `test_my_notes.py`. The CI browser job keeps its fixed set of chrome and layout files.
+
+*Cost to change: small. One module, imported by the runtime and so in the standalone bundle; three sections of `shell.html`; one storage key. Removing it leaves a key nothing reads.*
+
+---
+
+**7.283 — `input()` waits for the reader, and a ```typed block answers it where nobody can type.** Josh, 27 September 2026: "wouldn't it be better to use the one that another ide and normal python would use?"
 
 **Two choices that contradicted each other, and a runtime that supported neither.** `storing-and-computing` commented its `input()` lines out and told the reader to remove the `#` and run the cell, because "it waits for you to type something". `numbers-a-computer-can-hold`, its glossary, and 7.240's `ask()` pages said the opposite: the Python on the page has no keyboard. Neither was true of the runtime. It set no stdin, so every surface got Pyodide 0.28.3's default, `prompt()`. A Worker has no `prompt()`, so `input()` raised `OSError: [Errno 29] I/O error`, with no hint. On the main thread, `loadPyodide()` passes `globalThis.prompt` unbound, the call throws "Illegal invocation", and the result is the same error (checked in Chromium). A reader who followed the first page's instruction got an errno.
 

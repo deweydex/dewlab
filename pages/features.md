@@ -31,6 +31,9 @@ place.
   it or tap it.
 - **Keep your own notes.** Write down anything worth remembering as you
   read. Notes are saved in this browser.
+- **Keep your own words.** Save a word with your own meaning or
+  translation. It is marked, with your meaning, wherever it appears
+  again.
 - **Take your saved work with you.** Export your answers and notes as a
   file, then load that file back on another device.
 - **Export what you build.** Save a standalone page, print or save a PDF,
