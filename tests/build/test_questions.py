@@ -254,3 +254,30 @@ class TestQuestionMaths:
         page = built(repo)
         assert "dl-math" not in page
         assert "<option data-answer=\"true\">$5</option>" in page
+
+    def test_braces_inside_maths_are_the_maths_not_gaps(self, repo):
+        # A fill-in question's {...} is a gap only outside $...$: inside,
+        # the braces group the maths, so a power stays a power.
+        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
+                    r"From $10^{-12}$ up to $\frac{1}{8}$ is {24|12|0} hops." + "\n```\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">10^{-12}</span>' in page
+        assert '<span class="dl-math">\\frac{1}{8}</span>' in page
+        assert page.count("dl-question-gap-select") == 1
+        assert "dl-question-gap-input" not in page
+
+    def test_a_gap_next_to_maths_is_still_a_gap(self, repo):
+        # A gap that finishes a formula sits just outside its maths.
+        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
+                    r"So $5! = 5 \times$ {24}." + "\n```\n")
+        b.build()
+        page = built(repo)
+        assert '<span class="dl-math">5! = 5 \\times</span>' in page
+        assert 'data-expected="24"' in page
+
+    def test_a_question_whose_only_braces_are_maths_has_no_gap(self, repo):
+        write(repo, "```question\nid: q\ntype: fill-in-the-blank\n\n"
+                    r"Here is $2^{12}$." + "\n```\n")
+        with pytest.raises(b.BuildError, match="no {...} gap in it outside its maths"):
+            b.build()

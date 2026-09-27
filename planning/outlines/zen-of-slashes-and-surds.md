@@ -1,12 +1,10 @@
 # Outline — The Zen of Slashes and Surds
 
-**Status:** in progress. Twenty pages are written, each with its practice
-page (the closer look has none, like the other closer looks): strand 0;
-strand A pages 1 to 8 and its closer look; strand B pages 1 to 6; and
-strand C pages 1, 2, 3 and 5. Still planned: the "view from the top"
-pages, strand B's mixed challenge, strand C's pages 4 and 6, strands D
-and E, and the mixed sets. Pages marked *written* below are live; the
-rest are proposals. A written page's title is in its own frontmatter,
+**Status:** written (7.275). Every page in the plan below is written,
+with its practice page (the closer look has none, like the other closer
+looks), and the four mixed sets are `mixed-slashes`, `mixed-powers`,
+`mixed-surds-and-logs` and `mixed-zen`. The pages will change once a
+class has used them. A written page's title is in its own frontmatter,
 and can differ from the working title here.
 **Kind:** a module of its own (`courses/zen-of-slashes-and-surds.yaml`),
 for readers who struggle with mathematics. It covers the primary and
@@ -258,11 +256,9 @@ Kinds of problem to mix, beyond "simplify this":
 - **Closer to 0, to a half, or to 1?** Estimation before calculation, for
   number sense.
 - **Where does it go on the line?** Placing fractions on a number line.
-- **Spot what happened.** A worked problem by the module's recurring
-  character, who makes the mistakes and takes the blame
-  (`PEDAGOGICAL_STYLE_GUIDE.md#plain-and-alive`). Which step changed the
-  amount? The reader finds it without anyone being wrong but the
-  character.
+- **Spot what happened.** A worked problem by "somebody", or an unnamed
+  worked line (7.274: no recurring character). Which step changed the
+  amount? The reader finds it, and the mistake belongs to no one.
 - **Two paths, one answer.** From worksheet 8, question 5: simplify
   $(z^{12})^{1/6}$ two ways and see they agree.
 - **Looks scary, is simple.** From the mixed challenge: a tangle that
@@ -320,7 +316,7 @@ are listed in order. Ids of pages not yet written are proposals.
    \frac{1}{\heartsuit}$, $\frac{\triangle}{\heartsuit} \cdot
    \frac{\heartsuit}{\triangle}$. Points forward to
    `running-a-formula-backwards`.
-9. **View from the top: narrowing it down** (`narrowing-it-down`). The
+9. **View from the top: narrowing it down** (`narrowing-it-down`, written). The
    Drake equation as a chain of fractions, each factor narrowing the
    count. Then Frank and Sullivan's "one in 60 billion" as a reciprocal.
    See *The views from the top*, below.
@@ -348,10 +344,10 @@ starting with squiggles and pictures before letters.
 5. **More on the bottom** (`more-on-the-bottom`, written). Negative powers, from
    dividing when the bottom has more. Reciprocals return.
 6. **A power of a power** (`a-power-of-a-power`, written). Stacks of stacks.
-7. **Everything at once** (`everything-at-once`). The worksheet's mixed
+7. **Everything at once** (`everything-at-once`, written). The worksheet's mixed
    simplification challenge, with the "looks scary, is simple" problems
    and invent-five. Its fractional-power sections wait for strand C.
-8. **View from the top: from a virus to Voyager** (`powers-of-ten`).
+8. **View from the top: from a virus to Voyager** (`powers-of-ten`, written).
     Powers of ten and scientific notation, from the Grade 8 sequence.
     See below.
 
@@ -372,6 +368,11 @@ friendly one enough to want something shorter.
 | $\log_{10} 1000$ | **hops(10 → 1000)**: how many ×10 hops from 1 to 1000 | a row of hops, $1 \to 10 \to 100 \to 1000$ |
 | $\log_2 16$ | **folds(16)**: how many folds make 16 pieces | the folded paper from strand B |
 
+**Titles** put the friendly phrase first and the usual term straight
+after the colon (7.274): "Counting hops: logarithms, how many times did
+we multiply?". A reader who searches for the term finds the page, and
+the page itself still shows the sign last.
+
 The friendly names are written in plain text and in Python the same way
 (`side(49)`, `hops(10, 1000)`), so a reader can check one in a cell. The
 reveal is always a short section headed "The usual way to write it",
@@ -390,17 +391,17 @@ the reader can keep using whichever feels calmer.
 3. **Halfway steps** (`halfway-steps`, written). halfway(♡) is the power that,
    done twice, gives ♡. It is side(♡) again. The usual way to write it:
    $\heartsuit^{1/2}$, then $\heartsuit^{1/3}$ as edge.
-4. **Stretching the halfway steps** (`stretching-the-halfway-steps`).
+4. **Stretching the halfway steps** (`stretching-the-halfway-steps`, written).
    $\heartsuit^{2/3}$: what the top and the bottom of the fraction each
    do. The worksheet's sections 7 and 8.
 5. **How many hops?** (`how-many-hops`, written). hops(10 → 1000), folds(16),
    and counting the digits of a number as nearly the same question. The
    usual way to write it: $\log$, last.
-6. **Hops that add** (`hops-that-add`). hops for a product is the hops
+6. **Hops that add** (`hops-that-add`, written). hops for a product is the hops
    of each part added together, seen on two rulers laid side by side: a
    slide rule, the material engineers used for three hundred years.
 7. **View from the top: surds and logs in the wild**
-   (`surds-and-logs-in-the-wild`). A sheet of A4 folded in half keeps its
+   (`surds-and-logs-in-the-wild`, written). A sheet of A4 folded in half keeps its
    shape because its sides are in the ratio side(2)
    ($297/210 \approx 1.4143$). And the largest known prime,
    $2^{136279841} - 1$ (found in October 2024), has 41,024,320 digits:
@@ -408,15 +409,15 @@ the reader can keep using whichever feels calmer.
 
 ### Strand D. Seeing it (pictures and graphs)
 
-1. **The number line** (`the-number-line`). Whole numbers, fractions and
+1. **The number line** (`the-number-line`, written). Whole numbers, fractions and
    negatives in one line, and the space between them.
-2. **Two lines at right angles** (`two-lines-at-right-angles`). The grid,
+2. **Two lines at right angles** (`two-lines-at-right-angles`, written). The grid,
    and a point as two numbers.
-3. **A pattern as dots** (`a-pattern-as-dots`). Plot $1, 2, 3, \dots$
+3. **A pattern as dots** (`a-pattern-as-dots`, written). Plot $1, 2, 3, \dots$
    against $2, 4, 6, \dots$ and then against $2, 4, 8, \dots$. One makes a
    line and one makes a curve. Why?
 4. **View from the top: drawing things that differ by millions**
-   (`drawing-across-scales`). Log scales: the planets on an ordinary axis
+   (`drawing-across-scales`, written). Log scales: the planets on a normal axis
    and then on a log axis, and a scale strip from a virus to the
    observable universe.
 
@@ -426,14 +427,17 @@ Short, because the Dewey Track already teaches this
 (`rules-with-letters-in-them`, `running-a-formula-backwards`). Two or
 three pages that make those pages' first step small enough.
 
-1. **A box with something in it** (`a-box-with-something-in-it`).
+1. **A box with something in it** (`a-box-with-something-in-it`, written).
    $\square + 3 = 7$, then $x + 3 = 7$: a letter is a box.
-2. **Keeping it level** (`keeping-it-level`). The balance: do the same to
+2. **Keeping it level** (`keeping-it-level`, written). The balance: do the same to
    both sides. Undoing, one step at a time.
 
 ### Mixed sets
 
-One per strand, and one across the module. They are made mostly of the
+One each for strands A, B and C (`mixed-slashes`, `mixed-powers`,
+`mixed-surds-and-logs`, written), and one across the module
+(`mixed-zen`, written), which carries strands D and E: they are short
+enough not to need their own. They are made mostly of the
 practice kinds above, in the reader's chosen notation.
 
 ## The views from the top
@@ -511,10 +515,13 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   should still meet the early pages before the rest is written. What
   the pilot should answer: are the steps small enough, does the calm
   check help or annoy, and do readers use the notation switch.
-- **The recurring character.** The style guide allows one who makes the
-  mistakes. This module has none yet, so its "what went differently here"
-  problems use "somebody" or an unnamed worked line. A character would
-  make them warmer.
+- **No recurring character** (7.274). The style guide allows one who
+  makes the mistakes, but this module uses "somebody" or an unnamed
+  worked line instead. The mistake belongs to no one, and there is no
+  name to translate.
+- **Colour words** (open, 7.274). Some pictures tell parts apart only by
+  colour. The pages name the parts by colour, and the pictures carry no
+  pattern. Worth asking again if a reader reports it.
 - **The picture script** is `dev/graphics/zen.py`. Its SVGs are drawn
   in the site's theme colours, so they read in light, dark and high
   contrast.

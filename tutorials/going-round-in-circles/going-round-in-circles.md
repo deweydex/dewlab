@@ -64,7 +64,7 @@ id: going-round-warm-up-1
 type: fill-in-the-blank
 
 The distance all the way round a circle of radius $r$ is its
-circumference, $C = {2}\pi r$.
+circumference, $C =$ {2}$\pi r$.
 ```
 
 ```question

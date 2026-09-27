@@ -593,6 +593,368 @@ def hop_line(base: int, hops: int, halfway: bool = False) -> str:
     return drawing.tostring()
 
 
+def fraction_hops(base: int, parts: int, whole_hops: int = 1) -> str:
+    """1 to base (and on), with each ×base hop cut into `parts` equal smaller hops.
+
+    Under each stop is how far along it is, as a fraction of one whole hop:
+    0, 1/3, 2/3, 1 … . The small hops multiply by the number that, done
+    `parts` times, makes base; it is computed, and must be whole.
+    """
+    step = round(base ** (1 / parts))
+    assert step ** parts == base, f"{base} has no whole {parts}-part hop"
+    stops = parts * whole_hops + 1
+    step_w = 110
+    width = 2 * MARGIN + 60 + (stops - 1) * step_w
+    height = 2 * MARGIN + 170
+    drawing = _drawing(width, height)
+    left = MARGIN + 30
+    y = MARGIN + 100
+    drawing.add(drawing.line((left - 10, y), (left + (stops - 1) * step_w + 10, y),
+                             stroke=MUTED, stroke_width=1.2))
+    for index in range(stops):
+        x = left + index * step_w
+        whole = index % parts == 0
+        drawing.add(drawing.circle((x, y), 7 if whole else 5,
+                                   fill=FILL_AMBER if whole else FILL_BLUE,
+                                   stroke=INK, stroke_width=1.6))
+        _label(drawing, f"{step ** index:,}", x, y + 28)
+        _label(drawing, _fraction_text(Fraction(index, parts)), x, y + 52, size=12, fill=MUTED)
+        if index < stops - 1:
+            x2 = x + step_w
+            drawing.add(drawing.path(d=f"M {x + 7} {y - 8} Q {(x + x2) / 2} {y - 40} {x2 - 7} {y - 8}",
+                                     fill="none", stroke=MUTED, stroke_width=1.4))
+            _label(drawing, f"×{step}", (x + x2) / 2, y - 28, size=12, fill=MUTED)
+        if whole and index < stops - 1:
+            x2 = x + parts * step_w
+            drawing.add(drawing.path(d=f"M {x} {y - 12} Q {(x + x2) / 2} {y - 150} {x2} {y - 12}",
+                                     fill="none", stroke=INK, stroke_width=1.8))
+            _label(drawing, f"×{base}", (x + x2) / 2, y - 88)
+    _label(drawing, "how far along, in whole hops", left + (stops - 1) * step_w / 2, y + 76,
+           size=12, fill=MUTED)
+    return drawing.tostring()
+
+
+RULER_W = 600       # the slide rule's length, 1 to 10
+
+
+def slide_rule(a: int | None = None, b: int | None = None) -> str:
+    """Two rulers marked 1 to 10, each number placed at its hops of 10 from 1.
+
+    With `a` and `b`, the top ruler slides right until its 1 sits over `a`
+    on the bottom ruler; then `b` on the top ruler sits over a × b on the
+    bottom, because sliding adds the two distances.
+    """
+    shift = RULER_W * math.log10(a) if a else 0
+    width = 2 * MARGIN + RULER_W + shift + 30
+    height = 2 * MARGIN + 150
+    drawing = _drawing(width, height)
+    left = MARGIN + 15
+
+    def ruler(x0: float, top: float, fill: str, ticks_down: bool) -> None:
+        drawing.add(drawing.rect((x0, top), (RULER_W, 40), fill=fill, stroke=INK, stroke_width=1.8))
+        edge = top + 40 if not ticks_down else top
+        for n in range(1, 11):
+            x = x0 + RULER_W * math.log10(n)
+            y1 = edge - 12 if not ticks_down else edge + 12
+            drawing.add(drawing.line((x, edge), (x, y1), stroke=INK, stroke_width=1.6))
+            anchor = "start" if n == 1 else "end" if n == 10 else "middle"
+            nudge = 5 if n == 1 else -5 if n == 10 else 0
+            drawing.add(drawing.text(str(n), insert=(x + nudge, top + 25), text_anchor=anchor,
+                                     font_size=f"{LABEL_PT}px", fill=INK))
+
+    ruler(left + shift, MARGIN + 20, FILL_BLUE, ticks_down=False)
+    ruler(left, MARGIN + 60, FILL_AMBER, ticks_down=True)
+    if a and b:
+        product = a * b
+        assert product <= 10
+        for x in (left + shift, left + RULER_W * math.log10(product)):
+            drawing.add(drawing.line((x, MARGIN + 8), (x, MARGIN + 112), stroke=INK,
+                                     stroke_width=1.2, stroke_dasharray="4 3"))
+        _label(drawing, f"1 over {a}", left + shift, MARGIN + 130, size=12, fill=MUTED)
+        _label(drawing, f"{b} over {product}", left + RULER_W * math.log10(product),
+               MARGIN + 130, size=12, fill=MUTED)
+    return drawing.tostring()
+
+
+def paper_sizes() -> str:
+    """A3, A4, A5 and A6 drawn to scale, each half of the one before.
+
+    Each sheet sits in the corner of the one before it, so a reader can see
+    that halving a sheet keeps its shape. The sizes are the ISO 216 sizes in
+    millimetres.
+    """
+    sizes = [("A3", 297, 420), ("A4", 210, 297), ("A5", 148, 210), ("A6", 105, 148)]
+    scale = 0.62
+    width = 2 * MARGIN + 420 * scale + 160
+    height = 2 * MARGIN + 297 * scale + 10
+    drawing = _drawing(width, height)
+    fills = [PANEL, FILL_AMBER, FILL_BLUE, FILL_GREEN]
+    for (name, short, long_), fill in zip(sizes, fills):
+        landscape = sizes.index((name, short, long_)) % 2 == 0
+        w, h = (long_, short) if landscape else (short, long_)
+        drawing.add(drawing.rect((MARGIN, MARGIN), (w * scale, h * scale), fill=fill,
+                                 stroke=INK, stroke_width=1.8))
+        _label(drawing, name, MARGIN + w * scale - 22, MARGIN + h * scale - 10)
+    x = MARGIN + 420 * scale + 16
+    for row, (name, short, long_) in enumerate(sizes):
+        drawing.add(drawing.text(f"{name}: {short} × {long_} mm", insert=(x, MARGIN + 30 + row * 26),
+                                 font_size=f"{LABEL_PT}px", fill=INK))
+    return drawing.tostring()
+
+
+def narrowing(start: int, steps: list[tuple[Fraction, str]], unit: str = "") -> str:
+    """A bar for a count, then a shorter bar for each fraction of it that is kept.
+
+    Each step is (fraction kept, what it keeps). The counts are computed
+    here, so a bar cannot disagree with the sum the page does.
+    """
+    bar_h = 30
+    row_h = 58
+    label_w = 190
+    width = 2 * MARGIN + label_w + BAR_W + 70
+    height = 2 * MARGIN + row_h * (len(steps) + 1)
+    drawing = _drawing(width, height)
+    count = Fraction(start)
+    left = MARGIN + label_w
+    rows = [(None, "start", count)]
+    for kept, text in steps:
+        count *= kept
+        rows.append((kept, text, count))
+    for index, (kept, text, value) in enumerate(rows):
+        y = MARGIN + index * row_h + 10
+        length = max(BAR_W * float(value) / start, 2)
+        drawing.add(drawing.rect((left, y), (length, bar_h), fill=FILL_AMBER, stroke=INK,
+                                 stroke_width=1.4))
+        drawing.add(drawing.text(f"{_fraction_text(value)}{unit}", insert=(left + length + 8, y + 21),
+                                 font_size=f"{LABEL_PT}px", fill=INK))
+        drawing.add(drawing.text(text, insert=(MARGIN, y + 13), font_size=f"{LABEL_PT}px", fill=INK))
+        if kept is not None:
+            drawing.add(drawing.text(f"× {_fraction_text(kept)}", insert=(MARGIN, y + 30),
+                                     font_size="12px", fill=MUTED))
+    return drawing.tostring()
+
+
+def signed_line(marks: list[Fraction], start: int, end: int, halves: bool = False) -> str:
+    """A number line from `start` to `end`, through 0, with a dot for each mark.
+
+    Whole numbers get ticks and labels; with `halves`, the halves get small
+    ticks too. Numbers below 0 are to the left of 0, as far from it as the
+    same number above 0 is to the right.
+    """
+    span = end - start
+    height = 2 * MARGIN + 86
+    drawing = _drawing(LINE_W + 2 * MARGIN + 30, height)
+    left = MARGIN + 15
+    y = MARGIN + 46
+
+    def x_of(value: Fraction) -> float:
+        return left + float(value - start) / span * LINE_W
+
+    drawing.add(drawing.line((left - 8, y), (left + LINE_W + 8, y), stroke=INK, stroke_width=2.2))
+    for n in range(start, end + 1):
+        big = n == 0
+        drawing.add(drawing.line((x_of(Fraction(n)), y - (11 if big else 8)),
+                                 (x_of(Fraction(n)), y + (11 if big else 8)),
+                                 stroke=INK, stroke_width=2.4 if big else 1.8))
+        _label(drawing, str(n).replace("-", "−"), x_of(Fraction(n)), y + 30)
+        if halves and n < end:
+            drawing.add(drawing.line((x_of(Fraction(2 * n + 1, 2)), y - 5),
+                                     (x_of(Fraction(2 * n + 1, 2)), y + 5),
+                                     stroke=MUTED, stroke_width=1.2))
+    for mark in marks:
+        drawing.add(drawing.circle((x_of(mark), y), 6, fill=FILL_AMBER, stroke=INK,
+                                   stroke_width=1.6))
+        _label(drawing, _fraction_text(mark).replace("-", "−"), x_of(mark), y - 16)
+    return drawing.tostring()
+
+
+CELL = 34           # one square of the coordinate grid
+
+
+def coordinate_grid(points: list[tuple[int, int, str]], low: int = 0, high: int = 6) -> str:
+    """Two lines at right angles, with a grid, and a labelled dot at each point.
+
+    The across line and the up line both run from `low` to `high`. Each
+    point is (across, up, name).
+    """
+    n = high - low
+    size = n * CELL
+    width = 2 * MARGIN + size + 100
+    height = 2 * MARGIN + size + 50
+    drawing = _drawing(width, height)
+    x0 = MARGIN + 36
+    y0 = MARGIN + 14 + size
+
+    def at(a: int, u: int) -> tuple[float, float]:
+        return x0 + (a - low) * CELL, y0 - (u - low) * CELL
+
+    for k in range(n + 1):
+        drawing.add(drawing.line((x0 + k * CELL, y0), (x0 + k * CELL, y0 - size), stroke=MUTED,
+                                 stroke_width=0.8))
+        drawing.add(drawing.line((x0, y0 - k * CELL), (x0 + size, y0 - k * CELL), stroke=MUTED,
+                                 stroke_width=0.8))
+    ax, ay = at(0, 0)
+    drawing.add(drawing.line((x0, ay), (x0 + size + 14, ay), stroke=INK, stroke_width=2.2))
+    drawing.add(drawing.line((ax, y0), (ax, y0 - size - 14), stroke=INK, stroke_width=2.2))
+    for k in range(low, high + 1):
+        x, _ = at(k, 0)
+        if k != 0:
+            _label(drawing, str(k).replace("-", "−"), x, ay + 18, size=12, fill=MUTED)
+        _, y = at(0, k)
+        if k != 0:
+            _label(drawing, str(k).replace("-", "−"), ax - 12, y + 4, size=12, fill=MUTED)
+    _label(drawing, "0", ax - 10, ay + 16, size=12, fill=MUTED)
+    drawing.add(drawing.text("across", insert=(x0 + size + 18, ay + 4), font_size="12px", fill=MUTED))
+    _label(drawing, "up", ax, y0 - size - 20, size=12, fill=MUTED)
+    for a, u, name in points:
+        x, y = at(a, u)
+        drawing.add(drawing.circle((x, y), 6, fill=FILL_AMBER, stroke=INK, stroke_width=1.6))
+        _label(drawing, name, x + 13, y - 9)
+    return drawing.tostring()
+
+
+def dot_plots(rows: list[tuple[str, list[int]]], top: int) -> str:
+    """Side by side plots: 1, 2, 3 … across, and each row's numbers up.
+
+    Every plot has the same up scale, 0 to `top`, so a reader can compare
+    them: one pattern climbs in equal steps, another in bigger and bigger
+    ones.
+    """
+    plot_w, plot_h = 200, 190
+    count = len(rows)
+    width = 2 * MARGIN + count * (plot_w + 50)
+    height = 2 * MARGIN + plot_h + 60
+    drawing = _drawing(width, height)
+    for place, (title, values) in enumerate(rows):
+        x0 = MARGIN + 34 + place * (plot_w + 50)
+        y0 = MARGIN + 20 + plot_h
+        drawing.add(drawing.line((x0, y0), (x0 + plot_w, y0), stroke=INK, stroke_width=1.8))
+        drawing.add(drawing.line((x0, y0), (x0, y0 - plot_h), stroke=INK, stroke_width=1.8))
+        for tick in range(0, top + 1, max(1, top // 4)):
+            y = y0 - tick / top * plot_h
+            drawing.add(drawing.line((x0 - 4, y), (x0, y), stroke=INK, stroke_width=1.2))
+            _label(drawing, str(tick), x0 - 16, y + 4, size=11, fill=MUTED)
+        step = plot_w / (len(values) + 1)
+        for index, value in enumerate(values, start=1):
+            x = x0 + index * step
+            _label(drawing, str(index), x, y0 + 16, size=11, fill=MUTED)
+            drawing.add(drawing.circle((x, y0 - value / top * plot_h), 5, fill=FILL_AMBER,
+                                       stroke=INK, stroke_width=1.4))
+        _label(drawing, title, x0 + plot_w / 2, y0 + 40)
+    return drawing.tostring()
+
+
+# The planets' mean distance from the Sun, in millions of km: NASA's
+# Planetary Fact Sheet (nssdc.gsfc.nasa.gov/planetary/factsheet).
+PLANETS = [("Mercury", 57.9), ("Venus", 108.2), ("Earth", 149.6), ("Mars", 228.0),
+           ("Jupiter", 778.5), ("Saturn", 1432.0), ("Uranus", 2867.0), ("Neptune", 4515.0)]
+
+
+def planet_scales(log: bool) -> str:
+    """The eight planets on one line, by distance from the Sun.
+
+    On the normal scale, equal gaps are equal distances. On the hops
+    scale, equal gaps are equal ×10 hops: 10, 100, 1000, 10,000 million km.
+    """
+    width = 2 * MARGIN + LINE_W + 60
+    height = 2 * MARGIN + 240
+    drawing = _drawing(width, height)
+    left = MARGIN + 20
+    y = MARGIN + 190
+    low, high = (10, 10_000) if log else (0, 5000)
+
+    def x_of(value: float) -> float:
+        if log:
+            return left + (math.log10(value) - math.log10(low)) / (math.log10(high) - math.log10(low)) * LINE_W
+        return left + (value - low) / (high - low) * LINE_W
+
+    drawing.add(drawing.line((left, y), (left + LINE_W, y), stroke=INK, stroke_width=2))
+    ticks = [10, 100, 1000, 10_000] if log else [0, 1000, 2000, 3000, 4000, 5000]
+    for tick in ticks:
+        drawing.add(drawing.line((x_of(tick), y - 6), (x_of(tick), y + 6), stroke=INK, stroke_width=1.6))
+        _label(drawing, f"{tick:,}", x_of(tick), y + 24, size=12, fill=MUTED)
+    _label(drawing, "millions of km from the Sun", left + LINE_W / 2, y + 44, size=12, fill=MUTED)
+    inner = [x_of(distance) for _, distance in PLANETS[:4]]
+    crowded = inner[-1] - inner[0] < 60
+    for index, (name, distance) in enumerate(PLANETS):
+        x = x_of(distance)
+        drawing.add(drawing.circle((x, y), 5, fill=FILL_BLUE, stroke=INK, stroke_width=1.4))
+        if crowded and index < 4:
+            continue
+        drawing.add(drawing.text(name, insert=(x + 4, y - 12), font_size="12px", fill=INK,
+                                 transform=f"rotate(-90 {x + 4} {y - 12})"))
+    if crowded:
+        drawing.add(drawing.text("Mercury, Venus, Earth, Mars", insert=(inner[-1] + 4, y - 12),
+                                 font_size="12px", fill=INK,
+                                 transform=f"rotate(-90 {inner[-1] + 4} {y - 12})"))
+    return drawing.tostring()
+
+
+def _superscript(number: int) -> str:
+    return str(number).translate(str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹"))
+
+
+def ten_ladder(low: int, high: int) -> str:
+    """The powers of ten from 10^low to 10^high, a box each, big numbers on the right.
+
+    Each box shows the power and the number written the long way, so a
+    reader can count the zeros, or the places after the decimal point.
+    """
+    count = high - low + 1
+    box_w, box_h = 86, 58
+    width = 2 * MARGIN + count * (box_w + 8)
+    height = 2 * MARGIN + box_h + 30
+    drawing = _drawing(width, height)
+    for place, power in enumerate(range(low, high + 1)):
+        x = MARGIN + place * (box_w + 8)
+        drawing.add(drawing.rect((x, MARGIN), (box_w, box_h), rx=6,
+                                 fill=FILL_AMBER if power == 0 else PANEL,
+                                 stroke=INK, stroke_width=1.4))
+        text = f"{10 ** power:,}" if power >= 0 else "0." + "0" * (-power - 1) + "1"
+        _label(drawing, "10" + _superscript(power), x + box_w / 2, MARGIN + 24)
+        _label(drawing, text, x + box_w / 2, MARGIN + 46, size=12, fill=MUTED)
+    _label(drawing, "each box is ×10 the one on its left", width / 2, MARGIN + box_h + 22,
+           size=12, fill=MUTED)
+    return drawing.tostring()
+
+
+def balance(left: tuple[int, int], right: tuple[int, int], box: str = "?") -> str:
+    """A level balance: each pan holds (boxes, beads).
+
+    A box is a closed box with an unknown number of beads inside, drawn as
+    a square marked `box`; a bead is one bead.
+    """
+    width = 2 * MARGIN + 460
+    height = 2 * MARGIN + 190
+    drawing = _drawing(width, height)
+    cx = width / 2
+    beam_y = MARGIN + 70
+    drawing.add(drawing.polygon([(cx, beam_y), (cx - 22, MARGIN + 176), (cx + 22, MARGIN + 176)],
+                                fill=PANEL, stroke=INK, stroke_width=1.8))
+    drawing.add(drawing.line((cx - 190, beam_y), (cx + 190, beam_y), stroke=INK, stroke_width=3))
+    for side, (boxes, beads) in ((-1, left), (1, right)):
+        px = cx + side * 150
+        pan_y = beam_y + 60
+        for dx in (-70, 70):
+            drawing.add(drawing.line((px, beam_y), (px + dx, pan_y), stroke=MUTED, stroke_width=1))
+        drawing.add(drawing.path(d=f"M {px - 80} {pan_y} Q {px} {pan_y + 26} {px + 80} {pan_y}",
+                                 fill=PANEL, stroke=INK, stroke_width=1.8))
+        items = [("box", None)] * boxes + [("bead", None)] * beads
+        per_row = 6
+        for index, (kind, _) in enumerate(items):
+            row, col = divmod(index, per_row)
+            in_row = min(per_row, len(items) - row * per_row)
+            x = px - (in_row - 1) * 11 + col * 22
+            y = pan_y - 12 - row * 22
+            if kind == "box":
+                drawing.add(drawing.rect((x - 10, y - 10), (20, 20), fill=FILL_BLUE, stroke=INK,
+                                         stroke_width=1.4))
+                _label(drawing, box, x, y + 5, size=12)
+            else:
+                drawing.add(drawing.circle((x, y), 7, fill=FILL_AMBER, stroke=INK, stroke_width=1.2))
+    return drawing.tostring()
+
+
 DIAGRAMS = {
     "one-whole-many-slices/one-pizza.svg": lambda: pizza_row([(1, 0)], room_for=3),
     "one-whole-many-slices/cut-again.svg": lambda: pizza_row(
@@ -671,6 +1033,38 @@ DIAGRAMS = {
     "halfway-steps/halfway-hops.svg": lambda: hop_line(4, 2, halfway=True),
     "how-many-hops/hops-of-ten.svg": lambda: hop_line(10, 3),
     "how-many-hops/hops-of-two.svg": lambda: hop_line(2, 4),
+    "stretching-the-halfway-steps/thirds-of-eight.svg": lambda: fraction_hops(8, 3),
+    "stretching-the-halfway-steps/halves-of-nine.svg": lambda: fraction_hops(9, 2, whole_hops=2),
+    "hops-that-add/two-rulers.svg": lambda: slide_rule(),
+    "hops-that-add/two-times-three.svg": lambda: slide_rule(2, 3),
+    "hops-that-add/two-times-four.svg": lambda: slide_rule(2, 4),
+    "surds-and-logs-in-the-wild/paper-sizes.svg": paper_sizes,
+
+    # Views from the top
+    "narrowing-it-down/a-town.svg": lambda: narrowing(1000, [
+        (Fraction(1, 2), "like tea"), (Fraction(1, 5), "have a bike"),
+        (Fraction(1, 10), "can juggle")]),
+    "powers-of-ten/ten-ladder.svg": lambda: ten_ladder(-3, 3),
+
+    # Strand D: seeing it
+    "the-number-line/whole-numbers.svg": lambda: signed_line([], -5, 5),
+    "the-number-line/some-points.svg": lambda: signed_line(
+        [Fraction(-3), Fraction(-1, 2), Fraction(2), Fraction(7, 2)], -5, 5, halves=True),
+    "two-lines-at-right-angles/three-points.svg": lambda: coordinate_grid(
+        [(2, 3, "A"), (5, 1, "B"), (0, 4, "C")]),
+    "two-lines-at-right-angles/four-corners.svg": lambda: coordinate_grid(
+        [(2, 3, "A"), (-3, 2, "B"), (-2, -3, "C"), (4, -1, "D")], low=-5, high=5),
+    "a-pattern-as-dots/two-patterns.svg": lambda: dot_plots(
+        [("2, 4, 6, 8, 10", [2, 4, 6, 8, 10]), ("2, 4, 8, 16, 32", [2, 4, 8, 16, 32])], top=32),
+    "drawing-across-scales/planets-normal.svg": lambda: planet_scales(log=False),
+    "drawing-across-scales/planets-hops.svg": lambda: planet_scales(log=True),
+
+    # Strand E: the balance
+    "a-box-with-something-in-it/box-and-three.svg": lambda: balance((1, 3), (0, 7)),
+    "keeping-it-level/take-three.svg": lambda: balance((1, 0), (0, 4)),
+    "keeping-it-level/two-boxes.svg": lambda: balance((2, 1), (0, 9)),
+    "a-box-with-something-in-it/three-boxes.svg": lambda: balance((3, 0), (0, 12)),
+    "keeping-it-level/three-boxes.svg": lambda: balance((3, 0), (0, 12)),
 }
 
 

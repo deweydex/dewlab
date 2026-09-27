@@ -1,5 +1,5 @@
 ---
-title: "Sides that never end: the side of 2"
+title: "Sides that never end: surds, the square root of 2"
 year: "2026-2027"
 version: 2026.09.27.1
 worlds:
@@ -8,7 +8,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Sides that never end: the side of 2
+# Sides that never end: surds, the square root of 2
 
 Here are two grids of small squares. Inside each grid is a shaded
 square, tilted on its corner. Its corners touch the middle of each side
@@ -68,7 +68,7 @@ has an area of 2. That is what its label says.
 
 ## A square with area 2
 
-On [Undoing a square: the side of a square](tutorial:the-side-of-a-square),
+On [Undoing a square: square roots, the side of a square](tutorial:the-side-of-a-square),
 a square of 9 beads had side(9) = 3. The tilted square is not made of
 beads. But it is a square, and its area is 2. So the length of its side
 is side(2).

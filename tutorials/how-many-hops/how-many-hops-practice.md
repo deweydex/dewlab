@@ -1,5 +1,5 @@
 ---
-title: "Counting hops: how many times did we multiply? — Practice"
+title: "Counting hops: logarithms, how many times did we multiply? — Practice"
 practice_for: how-many-hops
 year: "2026-2027"
 version: 2026.09.27.1
@@ -9,7 +9,7 @@ worlds:
   letters: Letters like b and n, which can stand for any number.
 ---
 
-# Counting hops: how many times did we multiply? — Practice
+# Counting hops: logarithms, how many times did we multiply? — Practice
 
 Small problems on one idea. hops(10 → ♡) counts how many hops of ×10
 go from 1 to ♡. Try each problem before you open anything under it.
@@ -456,7 +456,7 @@ wide, 10 high and 10 deep. Each direction is one hop of ×10.
 
 ## 13. From earlier: halfway hops
 
-From *Halfway powers: two half steps make one*. halfway(10,000) is
+From *Halfway powers: fractional exponents, two half steps make one*. halfway(10,000) is
 100, because 100 × 100 is 10,000. What is hops(10 → 10,000)? And what
 is hops(10 → 100)? What do you notice?
 
