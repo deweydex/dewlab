@@ -343,6 +343,9 @@ def test_patterns_in_pictures_show_when_asked_for_or_with_high_contrast(page):
         layer.setAttribute("width", "20");
         layer.setAttribute("height", "20");
         svg.appendChild(layer);
+        const label = document.createElementNS(ns, "text");
+        label.textContent = "7";
+        svg.appendChild(label);
         document.body.appendChild(svg);
     }""")
 
@@ -355,6 +358,8 @@ def test_patterns_in_pictures_show_when_asked_for_or_with_high_contrast(page):
     page.click("#dl-settings-accessibility .dl-seg[data-texture=patterns] button[data-value=on]")
     assert page.get_attribute("html", "data-patterns") == "on"
     assert layer_display() != "none"
+    # Text in a patterned picture gets a halo, so no stripe runs through it.
+    assert page.eval_on_selector("#patterned text", "el => getComputedStyle(el).paintOrder").startswith("stroke")
 
     page.click("#dl-settings-accessibility .dl-seg[data-texture=patterns] button[data-value=off]")
     assert page.get_attribute("html", "data-patterns") is None

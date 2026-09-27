@@ -42,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from palette import (  # noqa: E402
     FILL_AMBER, FILL_BLUE, FILL_GREEN, FILL_PINK, INK, MONO, MUTED, PANEL, PAPER, RULE, SANS,
 )
+from palette import finished  # noqa: E402
 
 TUTORIALS = Path(__file__).resolve().parent.parent.parent / "tutorials"
 
@@ -1816,7 +1817,7 @@ def main() -> int:
     changed = 0
     for relative, draw in sorted(DIAGRAMS.items()):
         target = TUTORIALS / relative
-        fresh = draw()
+        fresh = finished(relative, draw)
         if target.exists() and target.read_text() == fresh:
             print(f"  unchanged  {relative}")
             continue
