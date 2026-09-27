@@ -5362,7 +5362,47 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 
 *Cost to change: the sixteen new page ids and their question ids become a contract once a class has used them. A title is one line in a page's frontmatter. A picture is one entry in `dev/graphics/zen.py`'s `DIAGRAMS`.*
 
-**7.271 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
+---
+
+**7.271 — Text Generation: a book of your own, and a chain that names the writer of a passage it has never seen.** The content issue (#331), part of #306.
+
+**Books as worlds.** Four more Project Gutenberg books, each with a provenance file in `data/`: *Dracula* (#345), *Dubliners* (#2814), *Irish Fairy Tales* (#2892) and *Treasure Island* (#120). With *The Time Machine* they are the worlds of the first two pages. The issue suggested "a book of myths"; the one tried, *A Book of Myths*, opens with a preface of dated racial theory, so James Stephens's *Irish Fairy Tales* takes its place. The third page's worlds are pairs of writers: Dewey and Montessori, Stoker and Shelley, Stevenson and Doyle.
+
+**`a-chain-reads-a-book`.** A predict asks whether "Project Gutenberg" survives the cleaning (it does, in the closing line before the END marker). The reader writes `strip_gutenberg`, which finds any file's `*** START OF` and `*** END OF` lines, and `chain_from`, and builds a chain from their book. Every sentence the page shows comes with its seed, and the closer asks the reader to make a classmate's sentence again from the book, the seed and the start word.
+
+**`how-much-it-remembers`.** The task "does `order2` have more keys than `order1`?" sat below a cell that had already printed the answer; the cell no longer prints it, and the question is a predict. The reader builds an order-2 chain from their book and finds a stretch it copied (15 of 22 words from *A Painful Case*). The practice measures the copying: with `longest_copied_run`, `order2` copies between 6 and 19 words in a row across five seeds, `order1` 3 to 5, and the share of keys with one follower climbs from about 0.6 to 0.85 to 0.95 from order 1 to 3 in every book.
+
+**`whose-voice-is-this`.** The real task. The last tenth of each book is held back, the chains are built from the rest, and a passage's score is the average probability a chain gives each next word, with 0 for a pair it never saw. Dewey's chain names 124 of his 137 held-back passages of 100 words, and every pair of writers lands near nine in ten; at 20 words, near seven in ten. Perplexity is named as the refined score, with the reason a real model never gives a word a chance of 0. A smoothed log score was tried and left out: add-one smoothing favoured whichever chain was built from the longer book (every *Dracula* passage named correctly, 26 of 75 *Frankenstein* ones). The practice shows why a close call went the wrong way: Montessori's chain has seen "dwelt" once, followed by "in", so it gives "dwelt in" a probability of 1.
+
+**Fixed while checking.** The explanation of the `education` counts said `("is", 57)` where the cell prints 58, and "every form" of the word counted 210 for Montessori; it is 227, once `_education_` (the file's italics) is counted.
+
+**Practice.** All three practice pages move to blocks, with a problem in each world and two from earlier pages.
+
+**Not done.** The issue's "done when" asks that both course files list the pages. The machine-learning course file is #338's; that issue lists these three pages as its first part.
+
+*Cost to change: small. The new ids are cells within existing pages; the world keys and the cell ids ending in a world key become a contract on 2 October.*
+
+---
+
+**7.272 — Simulation is set in four worlds, the queue page is rebuilt around waiting, and the series ends with a simulation of the reader's own.** The content issue (#332), part of #306.
+
+**The queue page.** `when-a-queue-never-clears` now times every wait: the queue is a list of arrival steps, and a wait is the step it was served minus the step it arrived. A predict asks for the average wait at 90% busy (2.3 steps, against 0.4 at 60%), and a sweep from 0.5 to 0.98 draws the hockey stick the plan promised and the page had dropped: about 1 step at 80%, 2.3 at 90%, 4.6 at 95%, 11 at 98%. For this model the average wait is exactly $u/(4(1-u))$ (binomial arrivals, one service a step, and Little's law); the page states it without the derivation, and the simulated points sit close to it except at 97% and 98%, where a run of 20,000 steps has not settled. Past full, the queue never clears. "Is this a good model?" changes one assumption, arrivals in groups, and at the same 90% busy the wait rises from 2.3 steps to 17 with groups of 4. The title becomes "how busy is too busy?".
+
+**Worlds.** The series' four worlds from the issue, chosen per page: living systems, queues and crowds, spread, and space and physics. Each page has a task in each, and each practice page a problem in each. On the queue page they are a reef's cleaning station, a spaceport's check-in, a clinic in an outbreak and a meteor camera; on the darts page, an atoll, two friends meeting at a gate, a fire stopped by a road and an asteroid's shadow, each with its exact area to compare.
+
+**The perceptron.** `sum(w * p ...)` is named as the dot product from `multiplying-grids`. The loop is called training, not a simulation, as the issue asked: a simulation's result is a picture of what might happen, training's result is the model. Its world task trains on a new pair of shapes per world, and the practice counts the pictures two flips can make from either shape. In the queues world the same picture is in the training set twice with both labels, and in the spread world two flips turn one shape into the other. The plus and cross differ in 8 pixels, so the tutorial's own misses are the model's. The page stays in Computational Methods for CMPS-LO7; listing it in the machine-learning course is #338's.
+
+**Lab benches.** Every page ends with a cell whose numbers are all named at the top, and four questions to choose from, or one of the reader's own.
+
+**The making task.** `a-simulation-of-your-own` follows `stepping-forward-in-time`: a forest regrowing after fires (a cellular automaton), one queue or a queue per till (1.0 step against 3.75 at 90% busy), a disease across a grid, and dust on random walks. It asks the reader to name one thing their simulation leaves out, and to predict whether putting it back would raise or lower the answer.
+
+**Kept.** `leaving-it-to-chance` and `counting-darts` keep their voice, and "The method has not made an error. There is no bug to find."
+
+**Practice.** All four practice pages move to blocks. Every function that draws random numbers takes a seed and sets it, so the reader's function and the solution's give the same numbers row by row.
+
+*Cost to change: small. `a-simulation-of-your-own` and the new cell ids, including every world cell, become a contract on 2 October. The queue page's title changed; its id did not.*
+
+**7.273 — The Zen of Slashes and Surds: Josh's answers to 7.270's four open questions.** Josh, 27 September 2026, choosing from four multiple-choice questions.
 
 1. **Strand C titles: the friendly name first, then the search term.** A title opens with the friendly phrase and puts the usual term straight after the colon: "Undoing a square: square roots, the side of a square", "Sides that never end: surds, the square root of 2", "Halfway powers: fractional exponents, two half steps make one", "Counting hops: logarithms, how many times did we multiply?". A reader who searches for "square root" or "logarithm" finds the page, and the scary word is still not the first thing on it. The page bodies are unchanged: inside a page, the sign still comes last (7.254). Later strand C pages follow the same pattern.
 2. **Colour words: left for now.** The pictures keep their theme colours with no pattern, and the prose keeps naming parts by colour. The question stays open in the outline, and it is worth asking again if a reader reports it.
@@ -5370,3 +5410,27 @@ Most of the HTML, CSS, SQL and OOP pages still have nothing: no channel on the l
 4. **What to write next: all of it.** The rest of strand C (C4, C6, C7), the views from the top (A9, B8), strand B's mixed challenge (B7), the mixed sets, and strands D and E.
 
 *Cost to change: a title is one line in a page's frontmatter, plus the few places another page quotes it.*
+
+**7.274 — The Zen of Slashes and Surds is written to the end of its plan: the rest of strand C, the views from the top, strands D and E, and four mixed sets.** Josh, 27 September 2026, choosing "all of it" for what to write next (7.273).
+
+**What is written.** Twelve pages, each with a practice page, and four mixed sets:
+- **Strand A:** `narrowing-it-down`, the view from the top. A made-up town is narrowed by fractions first. Then come Drake's 1961 guesses, multiplied in small steps: the smallest give 20, the largest 50,000,000, and most of the gap comes from L. Then Frank and Sullivan's "has anyone ever?" sets A = 1, so f_bt is a reciprocal: one in 60 billion for the Milky Way (their Table 1, read in the paper).
+- **Strand B:** `everything-at-once`, the mixed challenge, with the long way as the path back to any rule. `powers-of-ten` takes scientific notation from the Grade 8 sheets and checks each figure against NASA's fact sheets. It ends with Voyager 1 reaching one light-day, 25.902 billion km, on 18 November 2026. Two of the sheets' figures were off: a caesium atom's size, and a tennis ball's diameter given as its radius. The practice page uses Wikipedia's values.
+- **Strand C:** `stretching-the-halfway-steps` (the bottom of a fractional exponent cuts the hop, the top counts the small hops), `hops-that-add` (hops for a product add, then the slide rule, with its history from Wikipedia) and `surds-and-logs-in-the-wild` (why A-series paper has side(2) in it, and the 41,024,320 digits of the largest known prime, counted with hops).
+- **Strand D:** `the-number-line` (negatives meet the reader as floors and temperatures before they are named), `two-lines-at-right-angles` (across, then up, before x and y), `a-pattern-as-dots` (adding makes a line and multiplying a curve, found from the gaps) and `drawing-across-scales` (the planets on a normal scale and a hops scale, a virus to the universe in 34 hops, and Kepler's 3/2 as a challenge).
+- **Strand E:** `a-box-with-something-in-it` and `keeping-it-level`. The balance, a box before a letter, and undoing in the opposite order. It ends at the Dewey Track's `rules-with-letters-in-them` and `running-a-formula-backwards`.
+- **Mixed sets:** `mixed-slashes`, `mixed-powers`, `mixed-surds-and-logs` and `mixed-zen`. The last one needs two strands in every problem, carries D and E, and closes the module with a short paragraph that names what the reader has done. The course lists them under `mixed:`.
+
+**How it was written.** As in 7.270, the pictures came first. `dev/graphics/zen.py` gained hops cut into thirds, a slide rule, A-series paper, a narrowing chain, a powers-of-ten ladder, a number line through 0, a coordinate grid, dot plots, the planets on two scales and a balance. Seven writers then worked from one brief, and every page was read before it was committed. The reading changed these things:
+- **Opposite, not partner.** The number line called −3 and 3 "partners". Strand A already calls 5/7 and 7/5 partners, so these are now *opposites*, with a line saying the two ideas differ.
+- **Habitable zone.** "About one star in five has a planet in its habitable zone" misread n_e = 0.2. It now says "for every five stars, about one planet in a habitable zone".
+- **The tennis ball** of atoms fills about half its cube, not "a little less".
+- **Pronouns.** Luke Durant, Frank Drake and John Napier are named, not given pronouns.
+- **"Let's"** went, and **an unwatched video** (3Blue1Brown's *Triangle of Power*) was taken out, per the video library's rule.
+- **The refrain** "That is all a letter in algebra means" is on six earlier pages. The new pages keep it.
+
+**A fault this batch found.** In a fill-in question, every `{...}` is a gap, including one inside `$...$`. So `$10^{-12}$` rendered as 10^ and a typing box, on seven of the new pages. They now group with `\bgroup` and `\egroup`, and `docs/WRITING_TUTORIALS.md` says so. Some older pages have the same pattern. Two of them use it on purpose: `a-function-that-calls-itself` and `going-round-in-circles` put a gap inside a formula. The others are left for their own change.
+
+**Checked, and not.** All 69 cells run in CPython, and every figure was checked against the source the page names. The site builds, and the unit tests pass. The cells did not run in the browser, because Pyodide is unreachable from this environment. Josh's colour question (7.273) is still open. A class has not yet used the module.
+
+*Cost to change: the new page ids and their question ids become a contract once a class has used them. A picture is one entry in `DIAGRAMS`.*

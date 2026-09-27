@@ -27,6 +27,21 @@ entries:
       runs, the longer its average length gets. It does not have to grow
       fast to be unstable.
 
+  - term: utilisation
+    kind: concept
+    definition: >
+      The share of a server's capacity that the arrivals use, on average:
+      the average arrivals per step, divided by what the server can clear
+      in a step. Below 1 the queue is stable; at 1 or more it is not.
+
+  - term: hockey stick (queues)
+    kind: concept
+    definition: >
+      The shape of the average wait, drawn against the utilisation. It
+      stays nearly flat while the server has plenty of idle time, then
+      turns sharply up as the utilisation nears 1, because a burst of
+      arrivals has almost no spare time to be cleared in.
+
   - term: "min()"
     python: min
     kind: function
