@@ -365,7 +365,7 @@ makes 6. And 1,000 ÷ 0.001 is 1,000,000, with 6 zeros. Both paths give
 id: looks-scary-is-simple-1--numbers
 type: fill-in-the-blank
 
-From $10^{-12}$ up to $10^{12}$ is
+From $10^\bgroup -12\egroup$ up to $10^\bgroup 12\egroup$ is
 {24|0|12}
 hops of ×10.
 ```
@@ -378,7 +378,7 @@ hops of ×10.
 id: looks-scary-is-simple-1--squiggles
 type: fill-in-the-blank
 
-From $10^{-\heartsuit}$ up to $10^{\heartsuit}$ is
+From $10^\bgroup -\heartsuit\egroup$ up to $10^\bgroup \heartsuit\egroup$ is
 {2 × ♡|0|♡}
 hops of ×10.
 ```
@@ -391,7 +391,7 @@ hops of ×10.
 id: looks-scary-is-simple-1--letters
 type: fill-in-the-blank
 
-From $10^{-n}$ up to $10^{n}$ is
+From $10^\bgroup -n\egroup$ up to $10^\bgroup n\egroup$ is
 {2n|0|n}
 hops of ×10.
 ```

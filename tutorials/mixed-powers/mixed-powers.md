@@ -349,13 +349,13 @@ are. It does not make the number negative.
 id: three-ways-to-twelve-1--numbers
 type: fill-in-the-blank
 
-In $2^? \times 2^3 = 2^{12}$, the missing exponent is
+In $2^? \times 2^3 = 2^\bgroup 12\egroup$, the missing exponent is
 {9|4|15}.
 
-In $\left(2^?\right)^3 = 2^{12}$, the missing exponent is
+In $\left(2^?\right)^3 = 2^\bgroup 12\egroup$, the missing exponent is
 {4|9|15}.
 
-In $2^? / 2^3 = 2^{12}$, the missing exponent is
+In $2^? / 2^3 = 2^\bgroup 12\egroup$, the missing exponent is
 {15|9|4}.
 ```
 
@@ -367,15 +367,15 @@ In $2^? / 2^3 = 2^{12}$, the missing exponent is
 id: three-ways-to-twelve-1--squiggles
 type: fill-in-the-blank
 
-In $\heartsuit^? \times \heartsuit^3 = \heartsuit^{12}$, the missing
+In $\heartsuit^? \times \heartsuit^3 = \heartsuit^\bgroup 12\egroup$, the missing
 exponent is
 {9|4|15}.
 
-In $\left(\heartsuit^?\right)^3 = \heartsuit^{12}$, the missing
+In $\left(\heartsuit^?\right)^3 = \heartsuit^\bgroup 12\egroup$, the missing
 exponent is
 {4|9|15}.
 
-In $\heartsuit^? / \heartsuit^3 = \heartsuit^{12}$, the missing
+In $\heartsuit^? / \heartsuit^3 = \heartsuit^\bgroup 12\egroup$, the missing
 exponent is
 {15|9|4}.
 ```
@@ -388,13 +388,13 @@ exponent is
 id: three-ways-to-twelve-1--letters
 type: fill-in-the-blank
 
-In $c^? \times c^3 = c^{12}$, the missing exponent is
+In $c^? \times c^3 = c^\bgroup 12\egroup$, the missing exponent is
 {9|4|15}.
 
-In $\left(c^?\right)^3 = c^{12}$, the missing exponent is
+In $\left(c^?\right)^3 = c^\bgroup 12\egroup$, the missing exponent is
 {4|9|15}.
 
-In $c^? / c^3 = c^{12}$, the missing exponent is
+In $c^? / c^3 = c^\bgroup 12\egroup$, the missing exponent is
 {15|9|4}.
 ```
 

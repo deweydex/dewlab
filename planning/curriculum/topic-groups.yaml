@@ -65,12 +65,14 @@ groups:
       - how-many-hops
       - hops-that-add
       - surds-and-logs-in-the-wild
+      - mixed-surds-and-logs
       - the-number-line
       - two-lines-at-right-angles
       - a-pattern-as-dots
       - drawing-across-scales
       - a-box-with-something-in-it
       - keeping-it-level
+      - mixed-zen
 
   - key: numbers-and-algebra
     name: Numbers, expressions, and equations

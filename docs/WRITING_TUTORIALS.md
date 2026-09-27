@@ -782,6 +782,12 @@ An angle of 90 degrees is a {right angle|straight angle|acute angle}.
 The reader sees the choices shuffled, and the dropdown starts on a blank
 *choose*, so the page's word is not showing before they pick one.
 
+Every `{...}` in a fill-in-the-blank question is a gap, including one inside
+`$...$` maths: `$2^{12}$` there becomes 2^ and a typing box. When the maths
+needs a group, write it with `\bgroup` and `\egroup`, which KaTeX reads as
+`{` and `}`: `$2^\bgroup 12\egroup$`. For a number alone, `2¹²` in plain text
+needs no maths at all. Outside questions, braces in maths are only maths.
+
 A question with several gaps has one **Show the page's words** button for the
 whole sentence. Each gap then shows the page's word beside it, and what the
 student wrote stays as they wrote it.
