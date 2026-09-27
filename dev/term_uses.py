@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import html
 import json
+from html.parser import HTMLParser
 import re
 import sys
 from pathlib import Path
@@ -34,21 +35,57 @@ from pathlib import Path
 SITE = Path(__file__).resolve().parent.parent / "site" / "tutorials"
 MANIFEST_RE = re.compile(r'<script type="application/json" id="dewlab-manifest">(.*?)</script>', re.S)
 BODY_RE = re.compile(r'<main[^>]*id="dl-body"[^>]*>(.*?)</main>', re.S)
-# What is never prose: code, cells, maths, headings, links, and anything
-# already in italics (marked, or stress the author chose).
-NOT_PROSE_RE = re.compile(
-    r"<(pre|code|script|style|h[1-6]|a|em|summary|button)\b.*?</\1>"
-    r'|<span class="dl-math[^"]*">.*?</span>',
-    re.S,
-)
-TAG_RE = re.compile(r"<[^>]+>")
+# What is never prose: code, cells, maths, headings, links, anything already
+# in italics (marked, or stress the author chose), and the words the page
+# adds round the author's own: a cell's label and report panel, and a predict
+# block's buttons. Those say "cell" on every page, so leaving them in would
+# list "cell" everywhere.
+SKIP_TAGS = {"pre", "code", "script", "style", "h1", "h2", "h3", "h4", "h5", "h6",
+             "a", "em", "summary", "button"}
+SKIP_CLASSES = {"dl-cell", "dl-math", "dl-predict-sure", "dl-predict-unsure",
+                "dl-predict-after", "dl-predict-footer", "dl-compare", "dl-world-chooser"}
+VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+             "meta", "source", "track", "wbr"}
+
+
+class _Prose(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+        self.skipping: tuple[str, int] | None = None  # (tag, depth of that tag)
+
+    def handle_starttag(self, tag, attrs):
+        if tag in VOID_TAGS:
+            return
+        if self.skipping:
+            if tag == self.skipping[0]:
+                self.skipping = (tag, self.skipping[1] + 1)
+            return
+        classes = set((dict(attrs).get("class") or "").split())
+        if tag in SKIP_TAGS or classes & SKIP_CLASSES:
+            self.skipping = (tag, 1)
+        else:
+            self.parts.append(" ")
+
+    def handle_endtag(self, tag):
+        if self.skipping and tag == self.skipping[0]:
+            depth = self.skipping[1] - 1
+            self.skipping = (tag, depth) if depth else None
+            if not depth:
+                self.parts.append(" ")
+        elif not self.skipping:
+            self.parts.append(" ")
+
+    def handle_data(self, data):
+        if not self.skipping:
+            self.parts.append(data)
 
 
 def prose(page_html: str) -> str:
     match = BODY_RE.search(page_html)
-    body = match.group(1) if match else page_html
-    body = NOT_PROSE_RE.sub(" ", body)
-    return html.unescape(TAG_RE.sub(" ", body))
+    parser = _Prose()
+    parser.feed(match.group(1) if match else page_html)
+    return "".join(parser.parts)
 
 
 def candidates(page: Path) -> list[tuple[str, int, str]]:
@@ -112,6 +149,9 @@ def main(argv: list[str]) -> int:
     pages = [SITE / f"{slug}.html" for slug in argv] if argv else sorted(SITE.glob("*.html"))
     total = 0
     for page in pages:
+        if not page.exists():
+            print(f"\n{page.stem}: no such page in site/tutorials", file=sys.stderr)
+            continue
         rows = candidates(page)
         if not rows:
             continue
