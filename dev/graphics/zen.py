@@ -354,11 +354,13 @@ def joined_stacks(left: int, right: int, symbol: str = "♡") -> str:
     """Two stacks written the long way, multiplied, then joined into one.
 
     The left stack is amber and the right is blue, and the joined row keeps
-    their colours, so a reader can count where each heart came from.
+    their colours, so a reader can count where each heart came from. The
+    picture prints no sum: the page asks the reader to count, and a label
+    reading "2 + 3 = 5" would give the rule away before they find it.
     """
     sign_w = 34
     width = 2 * MARGIN + _run(left) + sign_w + _run(right) + sign_w + _run(left + right)
-    height = 2 * MARGIN + TOKEN + 26
+    height = 2 * MARGIN + TOKEN
     drawing = _drawing(width, height)
     x, y = MARGIN, MARGIN
     for _ in range(left):
@@ -371,12 +373,9 @@ def joined_stacks(left: int, right: int, symbol: str = "♡") -> str:
         x += TOKEN + TOKEN_GAP
     _label(drawing, "=", x - TOKEN_GAP + sign_w / 2, y + TOKEN / 2 + 8, size=24)
     x += sign_w - TOKEN_GAP
-    start = x
     for index in range(left + right):
         _token(drawing, x, y, symbol, FILL_AMBER if index < left else FILL_BLUE)
         x += TOKEN + TOKEN_GAP
-    _label(drawing, f"{left} + {right} = {left + right}", start + _run(left + right) / 2,
-           y + TOKEN + 22, fill=MUTED)
     return drawing.tostring()
 
 
