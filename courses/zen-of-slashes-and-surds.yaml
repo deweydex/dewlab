@@ -47,7 +47,6 @@ contents:
   - how-many-fit
   - fractions-with-holes
   - narrowing-it-down
-  - mixed-slashes
 - title: Powers, the long way and the short way
   tutorials:
   - the-long-way
@@ -58,7 +57,6 @@ contents:
   - a-power-of-a-power
   - everything-at-once
   - powers-of-ten
-  - mixed-powers
 - title: Surds and logs, undoing a power
   tutorials:
   - the-side-of-a-square
@@ -78,3 +76,6 @@ contents:
   tutorials:
   - a-box-with-something-in-it
   - keeping-it-level
+mixed:
+- mixed-slashes
+- mixed-powers
