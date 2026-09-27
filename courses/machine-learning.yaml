@@ -1,0 +1,52 @@
+title: Machine Learning
+status: beta
+card: >-
+  For anyone curious about the programs that write and recognise. You
+  build a chain that writes like a book, a reader that learns digits from
+  its mistakes, and two bots with a test that tells them apart. Choose a
+  book or a set of pictures for your tasks.
+description: >-
+  This short course looks inside the kinds of program that write text and
+  recognise pictures. It starts small, with programs you can read line by
+  line, and asks the questions that matter for the big ones.
+
+
+  It has four parts. Text generation builds a chain that writes from the
+  words of a whole book, and uses two chains to tell two writers apart.
+  Learning from pictures builds a model that corrects its own mistakes,
+  and grows it into a classifier for many kinds of picture. What a
+  language model does differently tries temperature, word pieces and
+  scoring on a real book. Limits and judgement asks where these models
+  fail, what their data leaves out, whose work they learn from, and how
+  to check a claim made about one. The course ends with two bots of your
+  own, and a test that tells them apart.
+
+
+  It needs the Python from the first series of Computational Methods:
+  lists, loops, functions and dictionaries. When a page uses something
+  from that course, such as the dot product, it links to the page that
+  explains it.
+
+
+  The tasks come in worlds you choose, page by page: five books, from The
+  Time Machine to Treasure Island, and pictures of game items, weather
+  icons, arrows and faces.
+contents:
+- title: Text generation
+  tutorials:
+  - a-chain-reads-a-book
+  - how-much-it-remembers
+  - whose-voice-is-this
+- title: Learning from pictures
+  tutorials:
+  - a-model-that-corrects-itself
+  - telling-many-pictures-apart
+- title: What a language model does differently
+  tutorials:
+  - what-a-language-model-does-differently
+- title: Limits and judgement
+  tutorials:
+  - limits-and-judgement
+  - two-bots-and-a-test
+mixed:
+- mixed-machine-learning
