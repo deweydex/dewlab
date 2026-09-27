@@ -24,8 +24,8 @@ covers:
 # Many languages, one idea
 
 Three people you might meet write code at work. One builds web pages in
-JavaScript. One asks a company's database questions in SQL. One
-remembers typing BASIC into a home computer in the 1980s. Are they
+*JavaScript*{.term}. One asks a company's database questions in SQL. One
+remembers typing *BASIC*{.term} into a home computer in the 1980s. Are they
 doing the same thing you do in Python, or something quite different?
 
 There are thousands of programming languages. That sounds like a lot to
@@ -43,7 +43,7 @@ On this page we:
   how a program is run, and where it runs
 - see what stays the same: the four questions
 
-> **The space we're in.** Python and SQL cells run here, in your
+> **The space we're in.** Python and SQL *cells*{.term} run here, in your
 > browser. The SQL cells use a small database that lives inside this
 > page and starts empty each time the page loads. JavaScript and BASIC
 > are shown to read, not to run. A programming language is a set of agreements between people and a
@@ -118,7 +118,7 @@ print("with the toolkit:", mean(rainfall_mm))
 ```
 
 The average is 5.0 mm, and three days were above it: 12.6, 7.1 and 7.0.
-Your toolkit's `mean` from
+Your *toolkit*{.term}'s `mean` from
 [What is typical?](tutorial:what-is-typical#share-it-out-equally-the-mean)
 agrees. Keep this cell in mind. Every version below does these same
 steps, or asks for these same answers.
@@ -127,7 +127,7 @@ steps, or asks for these same answers.
 
 *SQL* is a language for asking a database questions. It came from
 SEQUEL, a language that Donald Chamberlin and Raymond Boyce described
-at IBM in 1974. A database keeps its data in tables, so first we make a
+at IBM in 1974. A database keeps its *data*{.term} in tables, so first we make a
 table, with one row for each day. Run this cell. It reports how many
 rows it added.
 
@@ -169,7 +169,7 @@ SELECT AVG(rainfall_mm) FROM rain_tbl;
 
 It takes one line, and no loop. Five lines of Python became one line of SQL,
 and I think that is the biggest surprise on this page. `AVG` is a
-function that SQL gives us, the way Python gives us `len`. Now the
+*function*{.term} that SQL gives us, the way Python gives us `len`. Now the
 second part: the days above the average.
 
 ```sql exec
@@ -226,7 +226,7 @@ word on
 
 - Curly brackets `{ }` mark where a loop or an `if` starts and stops.
   Python uses indentation for the same job.
-- A new name starts with `let` or `const`. `const` promises that the
+- A new *name*{.term} starts with `let` or `const`. `const` promises that the
   name will never point at anything else.
 - Names are written `rainfallMm`, with a capital in the middle, where
   Python programmers write `rainfall_mm`. This is a habit of each
@@ -252,7 +252,7 @@ print("5" + 1)
 
 Python stops with a `TypeError`, as on
 [When Python says no](tutorial:when-python-says-no#a-move-from-another-space),
-where `+` met a string and an int. Python will not guess whether you
+where `+` met a *string*{.term} and an *int*{.term}. Python will not guess whether you
 meant a number or a piece of text.
 JavaScript guesses, and it chooses text. The two languages are two
 spaces with different rules. JavaScript's rule lets a page join
@@ -287,8 +287,8 @@ is to read, not to run:
 ```
 
 It prints `AVERAGE 5` and `DAYS ABOVE IT 3`. Every line has a number,
-and the numbers set the order. `REM` starts a comment, like `#` in
-Python. `DIM R(7)` makes room for seven numbers, like a list. The
+and the numbers set the order. `REM` starts a *comment*{.term}, like `#` in
+Python. `DIM R(7)` makes room for seven numbers, like a *list*{.term}. The
 readings sit in a `DATA` line at the end, and `READ` takes them one at a
 time.
 
@@ -303,7 +303,7 @@ text. There, the name itself says the type.
 
 A computer's hardware runs only its own machine instructions, so every
 language needs a program that translates or runs its code. You
-met the compiler, which translates a whole program first, on
+met the *compiler*{.term}, which translates a whole program first, on
 [When Python says no](tutorial:when-python-says-no#compilers-linkers-and-python).
 An *interpreter* is a program that reads another program and carries out
 its instructions as it goes. Is a language compiled or interpreted? That
@@ -320,7 +320,7 @@ Here are the differences we found, side by side:
 
 | | Python | SQL | JavaScript | BASIC, 1980s |
 |---|---|---|---|---|
-| **Syntax** | indentation marks a block | one statement, in clauses like `SELECT` and `WHERE` | `{ }` marks a block | line numbers set the order |
+| **Syntax** | indentation marks a block | one *statement*{.term}, in clauses like `SELECT` and `WHERE` | `{ }` marks a block | line numbers set the order |
 | **Types** | a value carries its type; `"5" + 1` is an error | each column's type is given when the table is made | a value carries its type; `"5" + 1` becomes text | a name ending in `$` holds text |
 | **How it runs** | compiled to simpler instructions, then interpreted | the database plans the steps itself | interpreted, and compiled while it runs | interpreted, line by line |
 | **Where it runs** | on almost any computer, and here in your browser | inside a database | in every web browser | built into a home computer |

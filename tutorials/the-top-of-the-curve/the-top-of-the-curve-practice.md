@@ -13,14 +13,14 @@ that looks fine does something else, and change it. **Explain** means answer in 
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `vertex` from the
+Your *toolkit*{.term} is loaded on this page, including `vertex` from the
 tutorial, `solve_quadratic` from
 [Solving for x](tutorial:solving-for-x) and `evaluate` from
 [Rules with letters in them](tutorial:rules-with-letters-in-them).
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: the-top-practice-warm-up
@@ -28,7 +28,7 @@ id: the-top-practice-warm-up
 ```
 
 **1. Predict.** What does this line print? Is the point it gives a
-maximum or a minimum?
+*maximum*{.term} or a *minimum*{.term}?
 
 ```python
 print(vertex(1, -4, 7))
@@ -38,9 +38,9 @@ print(vertex(1, -4, 7))
 
 `(2.0, 3.0)`, and it is a minimum.
 
-The $x$ of the vertex is $-\frac{b}{2a} = -\frac{-4}{2 \times 1} = 2$.
+The $x$ of the *vertex*{.term} is $-\frac{b}{2a} = -\frac{-4}{2 \times 1} = 2$.
 The height there is $2^2 - 4 \times 2 + 7 = 3$. The number in front of
-$x^2$ is 1, which is positive, so the parabola opens upwards like a
+$x^2$ is 1, which is positive, so the *parabola*{.term} opens upwards like a
 valley, and the vertex is its lowest point.
 
 </details>
@@ -119,7 +119,7 @@ pen, and how many squares of ground does it hold? Find it with
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. The area is width times length: $w(40 - 2w)$.
+1. The *area*{.term} is width times length: $w(40 - 2w)$.
 2. Multiply out the bracket: $40w - 2w^2$. So $a = -2$, $b = 40$ and
    $c = 0$.
 3. For the search, try every $w$ from 0 to 20 in steps of 0.1, and
@@ -148,7 +148,7 @@ print(widths[areas.index(biggest)], biggest)
 
 Both give a width of 10 blocks and 200 squares of ground. The long
 side is then $40 - 20 = 20$ blocks. The width must be between 0 and 20,
-because at 20 the long side is 0. So 0 to 20 is the domain of the rule. A
+because at 20 the long side is 0. So 0 to 20 is the *domain*{.term} of the rule. A
 game needs whole blocks, and here the best width is whole already.
 
 </details>
@@ -246,7 +246,7 @@ has that shape.
 
 **8. Another way.** A sliotar's height, in metres, $t$ seconds after it
 is struck, is $1.5 + 12t - 4.9t^2$. Find when it is highest in two
-ways: with `vertex`, and from the two roots that `solve_quadratic`
+ways: with `vertex`, and from the two *roots*{.term} that `solve_quadratic`
 gives.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -340,7 +340,7 @@ check? Your answer may weigh things this list leaves out.
 **12. Explain.** Schlomo has an idea for the letter's bowl on the
 tutorial page. "The control point is at $(260, -108)$, and it is the
 lowest of the three points. So the bowl's lowest point is 108 units
-below the baseline, at $x = 260$. No formula needed." Where does
+below the *baseline*{.term}, at $x = 260$. No formula needed." Where does
 Schlomo's idea work, and where does it stop working?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -372,7 +372,7 @@ id: the-top-practice-stretch
 ```
 
 **13. Make.** The bottom of an "s" in the same font is another
-quadratic Bézier curve. Its three heights, in font units, are 40 at the
+*quadratic Bézier curve*{.term}. Its three heights, in *font units*{.term}, are 40 at the
 start, $-70$ at the control point and 60 at the end. Multiply out
 $(1 - t)^2 \times 40 + 2t(1 - t) \times (-70) + t^2 \times 60$ to get
 $at^2 + bt + c$, check your multiplying-out with `evaluate` at a few
@@ -401,7 +401,7 @@ so it is on the letter.
 </details>
 
 **14. Another way.** Here is a way to find the $x$ of any vertex without
-roots and without completing the square. At $x = 0$, the rule
+roots and without *completing the square*{.term}. At $x = 0$, the rule
 $ax^2 + bx + c$ gives $c$. Find the *other* $x$ where it gives $c$
 again. Then use the mirror. Does your answer match $-\frac{b}{2a}$?
 Check it on $x^2 - 6x + 13$, which has no real roots.
@@ -440,7 +440,7 @@ uses a height the curve always reaches, $c$, in place of the height 0.
 **15. Make.** Here is a surprise that joins this page to
 [What is typical?](tutorial:what-is-typical#the-standard-deviation).
 Take the bus delays `[3, 7, 8, 12, 5]`. For any guess $m$, add up the
-squared distances from each value to $m$. That total is a quadratic in
+squared distances from each value to $m$. That total is a *quadratic*{.term} in
 $m$:
 
 $$5m^2 - 70m + 291$$

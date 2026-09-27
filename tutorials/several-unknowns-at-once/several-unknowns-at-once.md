@@ -39,11 +39,11 @@ On this page we:
 - draw each fact as a line, and find the answer where the lines cross
 - solve by elimination, said in words and then in symbols
 - turn elimination into a formula, and add `solve_simultaneous` to the
-  toolkit
+  *toolkit*{.term}
 - see when two facts have no single answer, and draw why
 - take the same idea to three unknowns
 
-> **The space we're in.** Equations where each unknown is only
+> **The space we're in.** *Equations*{.term} where each unknown is only
 > multiplied by a number: no squares, no unknowns multiplied together.
 > Each such equation in $x$ and $y$ draws a straight line on a flat
 > plane. The answer must make every equation true at once, and we check that by substituting it back into
@@ -89,8 +89,8 @@ and the number of text requests $c$. The first fact, in symbols, is
 
 $$a + c = 230$$
 
-Is that enough to find $a$? Try some pairs: 200 images and 30 pages
-of text, or 115 and 115. Each one makes 230. The cell counts every
+Is that enough to find $a$? Try some *pairs*{.term}: 200 images and 30 pages
+of text, or 115 and 115. Each one makes 230. The *cell*{.term} counts every
 pair of whole numbers that fits. How many do you expect?
 
 ```python exec
@@ -111,7 +111,7 @@ sent 12 KB and each page of text 5 KB.
 $$12a + 5c = 2060$$
 
 Which of the 231 pairs fits this fact too? We can check them one at a
-time, as a linear search does on
+time, as a *linear search*{.term} does on
 [Finding things fast](tutorial:finding-things-fast).
 
 ```python exec
@@ -126,7 +126,7 @@ equations that must be true at the same time, for the same unknowns,
 are called *simultaneous equations*. The pair that makes them all true
 is their *solution*.
 
-The search worked because the answers had to be whole numbers under
+The *search*{.term} worked because the answers had to be whole numbers under
 231. If the unknowns were measured amounts, such as sizes in megabytes,
 there would be far too many cases to try. We need a method.
 
@@ -139,7 +139,7 @@ here can be written as a rule that gives $c$ from $a$:
 - from the count, $c = 230 - a$;
 - from the data, $5c = 2060 - 12a$, so $c = \frac{2060 - 12a}{5}$.
 
-Each is a linear function, so each graph is a straight line. What do
+Each is a *linear*{.term} function, so each graph is a straight line. What do
 you expect to see where they meet?
 
 ```python exec
@@ -173,7 +173,7 @@ any move is allowed, if we do it to both sides. The plan, in words:
 
 1. Change one equation so that $c$ has the same number in front of it
    in both.
-2. Take one equation away from the other. The $c$ terms cancel, and
+2. Take one equation away from the other. The $c$ *terms*{.term} cancel, and
    only $a$ is left.
 3. Solve for $a$.
 4. Put $a$ back into either equation, and find $c$.
@@ -307,7 +307,7 @@ divisions, and not after?
 ```
 
 How does your `solve_simultaneous` compare with a solution? The table
-below runs the same calls on your function and on one way to write it,
+below runs the same calls on your *function*{.term} and on one way to write it,
 side by side. The first row is the server log. The last row builds two
 equations from an answer we choose, $(1.5, 4)$, and asks the tool to
 find that answer again. Where a row is different, try that call on its
@@ -444,7 +444,7 @@ print(2 * photo + song + clip, photo + 2 * song + clip, photo + song + 2 * clip)
 
 A photo is 3.5 MB, a song 2.5 MB and a clip 3.0 MB, and all three
 uploads pass the check. The big job was made of smaller promises: two
-eliminations, one call to `solve_simultaneous`, and one substitution.
+eliminations, one call to `solve_simultaneous`, and one *substitution*{.term}.
 
 Three facts for three unknowns can also find a curve from a picture.
 The practice page finds the letter's bowl from

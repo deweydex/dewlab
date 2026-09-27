@@ -15,11 +15,11 @@ answer in words. **Another
 way** means reach the same place by a second route. The answers are
 folded away until you open them.
 
-Your toolkit is loaded on this page, including `derivative_at` from the
+Your *toolkit*{.term} is loaded on this page, including `derivative_at` from the
 tutorial, `slope` and `line_through` from
 [Straight lines](tutorial:straight-lines), `speed` from
 [Running a formula backwards](tutorial:running-a-formula-backwards),
-`plot_rule` and `close_enough`. The first cell below brings back the
+`plot_rule` and `close_enough`. The first *cell*{.term} below brings back the
 falling hailstone and two small rules. Run it first.
 
 ## Warm-up
@@ -42,7 +42,7 @@ def straight_line(x):
 # Try things here
 ```
 
-**1. Predict.** What does this print? It is the slope of a chord of the
+**1. Predict.** What does this print? It is the *slope*{.term} of a *chord*{.term} of the
 curve $y = x^2$.
 
 ```python
@@ -51,9 +51,9 @@ print(slope((1, squared(1)), (3, squared(3))))
 
 <details class="dl-answer"><summary>answer</summary>
 
-`4.0`. The chord joins $(1, 1)$ and $(3, 9)$. Its rise is $9 - 1 = 8$
-and its run is $3 - 1 = 2$, so its slope is 4. That is the average rate
-of change of $x^2$ between 1 and 3.
+`4.0`. The chord joins $(1, 1)$ and $(3, 9)$. Its *rise*{.term} is $9 - 1 = 8$
+and its run is $3 - 1 = 2$, so its slope is 4. That is the *average rate of change*{.term}
+of $x^2$ between 1 and 3.
 
 </details>
 
@@ -113,7 +113,7 @@ About 1.5, printed as 1.499999996212864, and exactly 0.0.
 
 A straight line has the same slope everywhere, so its derivative is
 its slope at every point. The line climbs 1.5 for each step of 1. The
-tiny difference from 1.5 is float rounding. A flat rule never changes,
+tiny difference from 1.5 is *float*{.term} rounding. A flat rule never changes,
 so its rate of change is 0. A thousand more people add no time.
 
 </details>
@@ -128,11 +128,11 @@ id: how-fast-practice-core
 ```
 
 **5. Make.** A cup of tea is poured at 90 °C into a room at 20 °C. A
-model for its temperature, after some minutes, is
+*model*{.term} for its temperature, after some minutes, is
 $20 + 70e^{-t/10}$. This shape is Newton's law of cooling, a real law
 of physics. The hotter the tea is than the room, the faster it cools.
 (The 10 is invented. A real cup depends on the cup.)
-Write it as a function and find its rate of change at 0 minutes and at
+Write it as a *function*{.term} and find its rate of change at 0 minutes and at
 10 minutes. What does the sign of the answer mean?
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
@@ -216,7 +216,7 @@ the centred chord from $3 - h$ to $3 + h$ has slope
 
 $$\frac{(3 + h)^2 - (3 - h)^2}{2h} = \frac{12h}{2h} = 6$$
 
-for every $h$. The $h^2$ parts cancel. So for a parabola, the error of
+for every $h$. The $h^2$ parts cancel. So for a *parabola*{.term}, the error of
 a long centred chord is 0. For a curve like the hailstone's, the errors
 on the two sides only mostly cancel, and a short step is still needed.
 
@@ -256,7 +256,7 @@ Find the average rate of change from 1990 to 2000, and from 2010 to
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. Load the file and keep Ireland's rows, as on Doubling and halving.
-2. Make a dictionary from each year to its emissions:
+2. Make a *dictionary*{.term} from each year to its emissions:
    `dict(zip(years, emissions))`.
 3. Each average rate of change is the slope of a chord:
    `slope((1990, co2[1990]), (2000, co2[2000]))`.
@@ -278,13 +278,13 @@ print(slope((2010, co2[2010]), (2020, co2[2020])))
 
 From 1990 to 2000, emissions rose by about 1.23 million tonnes a year,
 from 32.9 to 45.3. From 2010 to 2020, they fell by about 0.67 million
-tonnes a year, from 41.8 to 35.1. Real data has no rule to put into
+tonnes a year, from 41.8 to 35.1. Real *data*{.term} has no rule to put into
 `derivative_at`, so a chord between two measurements is the rate of
 change we can find.
 
 </details>
 
-**10. Make.** Use the tangent line to the tea's curve at 10 minutes to
+**10. Make.** Use the *tangent line*{.term} to the tea's curve at 10 minutes to
 estimate its temperature at 12 minutes. Then compare with the rule
 itself.
 
@@ -305,7 +305,7 @@ a worse one further away.
 
 </details>
 
-**11. Predict.** On [Waves](tutorial:waves), a sound was a sine wave.
+**11. Predict.** On [Waves](tutorial:waves), a sound was a *sine wave*{.term}.
 What is the slope of $\sin x$ at $x = 0$, and at the top of the wave,
 $x = \frac{\pi}{2}$? Predict, then run it.
 
@@ -358,7 +358,7 @@ id: how-fast-practice-stretch
 # Your working for problems 13 to 15
 ```
 
-**13. Make.** The hailstone's terminal speed in this model is 12
+**13. Make.** The hailstone's *terminal speed*{.term} in this model is 12
 metres a second. At what time, to the nearest hundredth of a second,
 does it first reach 11.9 metres a second? Search with a loop, as on
 [The top of the curve](tutorial:the-top-of-the-curve#checking-with-a-fine-comb).
@@ -387,9 +387,9 @@ print(time_now)
 
 5.75 seconds. The model's speed rule is $12(1 - e^{-t/1.2})$, which
 gets closer and closer to 12 and never reaches it. In this model, the
-terminal speed is the limit of the speed at infinity. (The exact answer is
+terminal speed is the limit of the speed at *infinity*{.term}. (The exact answer is
 $1.2 \ln 120 \approx 5.745$ seconds, where $\ln$ is a logarithm with
-base $e$. The search rounds it to 5.75.)
+*base*{.term} $e$. The search rounds it to 5.75.)
 
 </details>
 

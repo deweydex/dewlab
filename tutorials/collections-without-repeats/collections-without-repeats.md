@@ -43,14 +43,14 @@ Martians, and find out how many words they share.
 
 On this page we:
 
-- turn a list into a set, and see what a set keeps and what it drops
+- turn a *list*{.term} into a set, and see what a set keeps and what it drops
 - ask whether a value is in a set, with `in`, written $\in$ in maths
 - find what two sets share, what either one has, and what one has that
   the other does not, first for playlists and then for two real books
 - take the complement of a set, and see why it needs a bigger set
   around it
 - meet the empty set, and sets too big to list, such as $\mathbb{N}$
-- make every pair from two sets, and every smaller set from one, and
+- make every *pair*{.term} from two sets, and every smaller set from one, and
   see eight screen colours appear
 - see the same moves at work in a database
 
@@ -120,7 +120,7 @@ Each list has 7 songs, and each set has 6. The set kept "Linger" once
 and "Zombie" once, because a set only records whether a value is in it.
 
 Look at the order of the last line. It is not the order of the list,
-and it may change if you run the cell again. A set makes no promise
+and it may change if you run the *cell*{.term} again. A set makes no promise
 about order. When the order matters to us, `sorted(my_songs)` gives the
 songs as a list, in alphabetical order.
 
@@ -264,7 +264,7 @@ One more move finds the songs on exactly one of the two lists, mine or
 yours but not both. That is the *symmetric difference*, written $A \,\triangle\, B$.
 Python writes it `^`. You met `^` on
 [Bits that flip](tutorial:bits-that-flip#xor-on-single-bits), as
-exclusive or: exactly one of two bits is 1. Here it means exactly one
+*exclusive or*{.term}: exactly one of two bits is 1. Here it means exactly one
 of two sets holds the song.
 
 ```python exec
@@ -278,7 +278,7 @@ intersection.
 
 ## Two books, thousands of words
 
-Now some real data. *The Lost World*, by Arthur Conan Doyle (1912),
+Now some real *data*{.term}. *The Lost World*, by Arthur Conan Doyle (1912),
 sends four explorers to a plateau in South America where dinosaurs are
 still alive. *The War of the Worlds*, by H. G. Wells (1898), lands
 Martians near London. Both books are in dewlab's data folder. How many
@@ -338,7 +338,7 @@ are not on my playlist?
 
 On
 [Chances that combine](tutorial:chances-that-combine#not-and-at-least-once),
-the complement of an event was everything that could happen except that
+the complement of an *event*{.term} was everything that could happen except that
 event. The complement of a set is the same idea. It is every element that
 is not in the set. It is written $A'$, or sometimes $A^c$.
 
@@ -378,7 +378,7 @@ print(type({}))
 ```
 
 The first line prints `set()`, which is how Python writes the empty
-set. The last line says `dict`: `{}` makes an empty dictionary, from
+set. The last line says `dict`: `{}` makes an empty *dictionary*{.term}, from
 [Kinds of data, and honest charts](tutorial:kinds-of-data-and-honest-charts#counting-a-frequency-table).
 Dictionaries came to Python before sets did, so they got the curly
 brackets first.
@@ -405,11 +405,11 @@ are sets:
 
 | Set | Its elements | Finite? |
 |---|---|---|
-| $\mathbb{N}$ | the natural numbers: 0, 1, 2, 3, … | infinite |
-| $\mathbb{Z}$ | the integers: …, −2, −1, 0, 1, 2, … | infinite |
-| $\mathbb{Q}$ | the rational numbers: every fraction of two integers | infinite |
-| $\mathbb{R}$ | the real numbers: every point on the number line | infinite |
-| $\mathbb{C}$ | the complex numbers, built in Unit 7, where −4 has a square root | infinite |
+| $\mathbb{N}$ | the *natural numbers*{.term}: 0, 1, 2, 3, … | infinite |
+| $\mathbb{Z}$ | the *integers*{.term}: …, −2, −1, 0, 1, 2, … | infinite |
+| $\mathbb{Q}$ | the *rational numbers*{.term}: every fraction of two integers | infinite |
+| $\mathbb{R}$ | the *real numbers*{.term}: every point on the number line | infinite |
+| $\mathbb{C}$ | the complex numbers, built in Unit 7, where −4 has a *square root*{.term} | infinite |
 
 Each one sits inside the next. $A \subseteq B$, said "A is a *subset*
 of B", means every element of $A$ is also in $B$. So
@@ -436,7 +436,7 @@ print(both <= either)
 ```
 
 It prints `True False False`, then `True` and `True`. A finite set can be listed.
-An infinite one needs a rule, and a function is a rule we can run.
+An infinite one needs a rule, and a *function*{.term} is a rule we can run.
 
 ```question
 id: collections-infinite-2
@@ -475,7 +475,7 @@ print(("phone", "dark") in checks)
 
 There are six checks, as the counting principle promised.
 
-Now we make every smaller set. A pixel on a screen has three small lights: red, green
+Now we make every smaller set. A *pixel*{.term} on a screen has three small lights: red, green
 and blue. Say each light can only be off or fully on. Which colours can
 the pixel show? Guess how many before you read on.
 
@@ -540,7 +540,7 @@ count: $2 \times 2 \times 2 = 2^3$. For a set of $n$ elements,
 
 $$|\mathcal{P}(A)| = 2^n$$
 
-It is the same count as the rows of a truth table on
+It is the same count as the rows of a *truth table*{.term} on
 [True, false and every case](tutorial:true-false-and-every-case#how-many-rows).
 This is not by chance. A row that says "red True, green True, blue False"
 is the colour yellow.
@@ -584,7 +584,7 @@ practice with loops and lists.
 
 We chose the built-in sets because the subject here is the language:
 $\cap$, $\cup$, $\setminus$ and $\in$, and what each one means. Each
-symbol is a name for a move, and a reader who knows the names can read
+symbol is a *name*{.term} for a move, and a reader who knows the names can read
 a maths book, a SQL query and a Python program with the same ideas.
 One loop checked one promise, and the rest of the page could be about
 meaning.

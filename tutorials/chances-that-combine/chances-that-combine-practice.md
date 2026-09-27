@@ -14,13 +14,13 @@ way** means reach the same place by a second route. The answers are
 folded away until you open them, and each shows one answer. Yours
 may be different and work too.
 
-Your toolkit is loaded on this page, `at_least_one` included, along with
+Your *toolkit*{.term} is loaded on this page, `at_least_one` included, along with
 `all_pairs`, `product`, `combinations` and `simulate` from earlier in
 the unit.
 
 ## Warm-up
 
-Use this cell for any of the warm-up problems.
+Use this *cell*{.term} for any of the warm-up problems.
 
 ```python exec
 id: chances-practice-warm-up
@@ -42,7 +42,7 @@ tails-tails, and only one of the four is two heads.
 
 </details>
 
-**2. Explain.** Which of these pairs of events are independent? Say why
+**2. Explain.** Which of these pairs of *events*{.term} are independent? Say why
 for each one.
 
 - a. Rain in Galway today, and rain in Galway tomorrow.
@@ -79,9 +79,9 @@ It prints `0.15000000000000002`. Down is the complement of up, so the
 chance is $1 - 0.85 = 0.15$. (A real server that was down on 15% of days
 would lose its customers quickly. Real ones aim for 99.9% and more.)
 
-The tiny extra at the end is the float rounding from
+The tiny extra at the end is the *float*{.term} rounding from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros).
-0.85 has no exact binary form, so Python holds a number very close to
+0.85 has no exact *binary*{.term} form, so Python holds a number very close to
 it. The answer is right to about 16 digits.
 
 </details>
@@ -106,7 +106,7 @@ way to get no head is tails three times: $\left(\frac{1}{2}\right)^3 =
 
 ## Core
 
-A scratch cell for the core problems. It brings in the `random` module
+A scratch cell for the core problems. It brings in the `random` *module*{.term}
 for the problems that simulate.
 
 ```python exec
@@ -127,7 +127,7 @@ the multiplication rule, then check it with `simulate`.
 1. The phones have nothing to do with each other, so the two events
    are independent.
 2. Multiply the two chances.
-3. For the simulation, `random.randint(1, 10) <= 4` is True 4 times in
+3. For the *simulation*{.term}, `random.randint(1, 10) <= 4` is True 4 times in
    10, the same as a 40% chance.
 
 **Think about:** what would change if the two players were friends
@@ -209,7 +209,7 @@ print(chance_of_a_wet_day(0.3, 7))
 
 1. "At least one wet day" is the complement of which event?
 2. What is the chance that one day is dry?
-3. What should be raised to the power `days`: the chance of rain, or
+3. What should be raised to the *power*{.term} `days`: the chance of rain, or
    the chance of no rain?
 
 **Think about:** what `0.3 ** 7` means in words.
@@ -401,7 +401,7 @@ more than a half? Use a `while` loop and `product`.
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. This is the birthday problem with a "year" of 12 days.
+1. This is the *birthday problem*{.term} with a "year" of 12 days.
 2. For `names` names, the chance that all buckets are different is
    the product of $\frac{12 - k}{12}$ for $k$ from 0 to `names - 1`.
 3. Start at `names = 1`, and keep adding one name while the chance of a
@@ -433,7 +433,7 @@ print(names, chance_of_shared_bucket(names))
 It prints `5` and about `0.618`. With 4 names the chance is about
 0.427, so 5 is the first count where a shared bucket is more likely
 than not. With 365 in place of 12, the same loop stops at 23. A shared
-bucket does not break the program, because it keeps a short list in each
+bucket does not break the program, because it keeps a short *list*{.term} in each
 bucket. But the birthday problem says the programmer should plan for
 it from the start.
 
@@ -520,7 +520,7 @@ print(simulate(room_of_2, 1000))
 
 The two steps are in the wrong order. The day is added to `seen` first,
 so the check `day in seen` always finds it, even for the first person.
-The function returns True at once, every time. Check first, then
+The *function*{.term} returns True at once, every time. Check first, then
 add:
 
 ```python
@@ -538,7 +538,7 @@ print(simulate(room_of_2, 100000))
 ```
 
 Now it prints a number near $\frac{1}{365} \approx 0.0027$. The
-problem was about sequence, or what happens when. Both lines did their
+problem was about *sequence*{.term}, or what happens when. Both lines did their
 jobs, and only their order had to change.
 
 </details>

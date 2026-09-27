@@ -14,9 +14,9 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Python and SQL cells run on this page. JavaScript, BASIC and one other
+Python and *SQL*{.term} *cells*{.term} run on this page. *JavaScript*{.term}, *BASIC*{.term} and one other
 language are shown to read. Each answer says what they print, and each
-was checked by running it outside this page. Your toolkit is loaded,
+was checked by running it outside this page. Your *toolkit*{.term} is loaded,
 including `mean` from [What is typical?](tutorial:what-is-typical) and
 `count_if` from [A row of numbers](tutorial:a-row-of-numbers).
 
@@ -81,7 +81,7 @@ SELECT COUNT(*) FROM song_tbl WHERE plays > 100;
 <details class="dl-answer"><summary>answer</summary>
 
 It counts 3 rows: 'Rain on the Roof' (120), 'Two Short Days' (300) and
-'Kettle Song' (210). `WHERE` keeps only the rows where the condition is true, and
+'Kettle Song' (210). `WHERE` keeps only the rows where the *condition*{.term} is true, and
 `COUNT(*)` counts what is left.
 
 </details>
@@ -160,7 +160,7 @@ SELECT title FROM song_tbl WHERE plays > AVG(plays);
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
 1. The error says `misuse of aggregate function AVG()`. An aggregate is
-   a function that turns a whole column into one value.
+   a *function*{.term} that turns a whole column into one value.
 2. `WHERE` looks at one row at a time. Can one row know the average of
    the whole column?
 3. In the tutorial, how did the rainfall query get the average into its
@@ -217,7 +217,7 @@ prints a space before each positive number.
 **8. Make.** Here is a JavaScript function that counts how many of a
 game server's answer times, in milliseconds, were longer than a limit.
 Write it in Python as `count_over(values, limit)`, and check that it
-gives 3 for the same list.
+gives 3 for the same *list*{.term}.
 
 ```js
 function countOver(values, limit) {
@@ -340,13 +340,13 @@ has no loops." What would you say back?
 <details class="dl-answer"><summary>answer</summary>
 
 One answer might say that SQL is a different style, not a lesser one. It
-is declarative, so a query says what result it wants, and the database
+is *declarative*{.term}, so a query says what result it wants, and the database
 decides the steps. The loops are still there, inside the database, where
 you do not have to write them. For questions about tables, that is
 often the clearer way to write it.
 
 You could also agree with part of what Schlomo says. SQL is made
-for one kind of job, questions about data in tables, while Python is
+for one kind of job, questions about *data*{.term} in tables, while Python is
 made for almost any job. Most programs that use a database are written
 in two languages: SQL for the questions, and another language for
 everything else.
@@ -380,7 +380,7 @@ Python prints `555`, and JavaScript prints `15`.
 In Python, a piece of text times a whole number repeats the text. In
 JavaScript, `*` only works on numbers, so it turns `"5"` into the number
 5 first. So Python refuses `+` here and allows `*`, and JavaScript
-changes its guess depending on the operator. The same symbols mean
+changes its guess depending on the *operator*{.term}. The same symbols mean
 different moves in different spaces, as on
 [Four questions for any puzzle](tutorial:four-questions#the-same-move-in-a-different-space).
 
@@ -402,7 +402,7 @@ puts sum / temps.length
 
 <details class="dl-hint"><summary>stuck? here are some steps</summary>
 
-1. Find the list, and the name that holds the running sum.
+1. Find the list, and the *name*{.term} that holds the running sum.
 2. `each do |t| ... end` is Ruby's "for each": which Python line does
    the same job?
 3. The sum is 61, and there are 4 temperatures. Which Python operator
@@ -416,8 +416,8 @@ why does `7 // 2` give 3?
 
 <details class="dl-answer"><summary>answer</summary>
 
-- **Named:** `temps`, a list of four temperatures; `sum`, a running
-  total; `t`, each temperature in turn.
+- **Named:** `temps`, a list of four temperatures; `sum`, a *running total*{.term};
+  `t`, each temperature in turn.
 - **Promised:** `puts` promises to print; `.length` promises the number
   of items.
 - **What happens when:** `sum` starts at 0, each temperature is added in
@@ -464,8 +464,8 @@ assert days_above_average([120, 45, 300, 80, 210]) == 2
 assert days_above_average([5, 5, 5]) == 0, "nothing is above itself"
 ```
 
-The function does in Python what the tutorial's SQL did with a query
-inside a query: first find the average, then compare every value with
+The function does in Python what the tutorial's SQL did with
+*a query inside a query*{.term}: first find the average, then compare every value with
 it. The last test checks an edge case. When every value is the same, none is
 above the average.
 

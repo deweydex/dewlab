@@ -23,7 +23,7 @@ covers:
 
 # Code other people can read: reviewing your toolkit
 
-Next week your team starts its project, and it will share one toolkit.
+Next week your team starts its project, and it will share one *toolkit*{.term}.
 Someone who has never seen your code opens it and finds `halvings(n)`.
 Can they tell what it does, what it needs, and what it returns,
 without asking you?
@@ -34,16 +34,16 @@ it that way. This page is about writing for that person.
 
 On this page we:
 
-- read a hard-to-read function the way a stranger would
+- read a hard-to-read *function*{.term} the way a stranger would
 - review it with a checklist built from the four questions
 - rewrite it without changing what it does, with tests checking each step
-- write docstrings a stranger can rely on, and let one check itself
+- write *docstrings*{.term} a stranger can rely on, and let one check itself
 - meet the rules a team agrees on, and a small tool that checks some
   of them
 - read your own toolkit as a stranger would
 
 > **The space we're in.** Python runs any code that is valid, however
-> it is written. Names, comments, layout and docstrings are for people,
+> it is written. *Names*{.term}, *comments*{.term}, layout and docstrings are for people,
 > and Python ignores them. So nothing on this page changes what a
 > program does. Code is read many more times than it is written. Your whole toolkit is loaded, from
 > `digit_at` to `angle_between` and beyond.
@@ -107,11 +107,11 @@ print(m(log_c))
 print(log_c)
 ```
 
-It finds the median, 14.5 °C, and that matches your toolkit's
-`median`. But look at the second line of output. The readings are now
+It finds the *median*{.term}, 14.5 °C, and that matches your toolkit's
+`median`. But look at the second line of *output*{.term}. The readings are now
 in order from coldest to warmest, and the order of the hours is gone.
 Which hour was coldest? The log can no longer say. The line `l.sort()`
-sorted the caller's own list, as `hand.sort()` did in the warm-up.
+sorted the caller's own *list*{.term}, as `hand.sort()` did in the warm-up.
 
 <img src="one-list-two-names.svg" alt="Two names, log_c, the caller's name, and l, the name inside m, both point at one list. Before l.sort(), the list is 14.5, 13.0, 12.5, 16.0, 19.5, in the order the hours arrived. After l.sort(), the same list is 12.5, 13.0, 14.5, 16.0, 19.5. Both names still point at it, so log_c shows the sorted order too.">
 
@@ -119,7 +119,7 @@ A change a function makes outside itself, beyond the value it
 returns, is called a *side effect*. Printing is a side effect too. Some
 side effects are the whole point of a function, like `plot_rule`
 drawing. This one is a surprise. A surprise side effect is often an
-expensive bug to find, because the damage appears somewhere else,
+expensive *bug*{.term} to find, because the damage appears somewhere else,
 later.
 
 It took a whole paragraph to find what nine short lines do, and
@@ -150,7 +150,7 @@ they saw, why it matters, and what they suggest.
    the number 1 in many fonts. Suggest `middle_value`, `values`,
    `show` and `result`.
 2. **Promise.** There is no docstring, so a reader cannot tell what
-   happens with an even number of values, or with an empty list.
+   happens with an even number of values, or with an *empty list*{.term}.
 3. **Order.** `len(l)//2` is calculated three times. Give it a name
    once.
 4. **Space.** `l.sort()` changes the list it was handed. Use `sorted()`,
@@ -186,7 +186,7 @@ Changing how code is written, without changing what it does, is called
 that worked. So a refactor starts with tests, written before any code
 is touched.
 
-The cell below builds a test for any median function. It compares the
+The *cell*{.term} below builds a test for any median function. It compares the
 function with your toolkit's `median` on four lists, the windowsill log
 among them. Then it checks that the list handed in comes back
 unchanged. Run it on `m`. It is meant to stop with an
@@ -260,7 +260,7 @@ a docstring was the promise a function makes, written at its top. For a
 stranger, a docstring they can rely on says four things:
 
 1. **What comes out**, in one short first line.
-2. **What must go in**: what kind of value each input is, its unit,
+2. **What must go in**: what kind of value each *input*{.term} is, its unit,
    and which values are allowed.
 3. **What happens at the edges**, and anything the function changes or
    does not change.
@@ -281,7 +281,7 @@ your own, if your `digit_at` has one. The summary comes first, and the
 details after a blank line.
 
 An example in a docstring can do more than explain. Python's `doctest`
-module finds each line that starts with `>>>` in a docstring, runs it,
+*module*{.term} finds each line that starts with `>>>` in a docstring, runs it,
 and compares the result with the line under it. So the documentation
 checks itself.
 
@@ -331,7 +331,7 @@ none. A docstring example that runs cannot stay wrong for long.
 ## Rules a team agrees on
 
 [Does it work?](tutorial:does-it-work#names-and-comments-a-stranger-can-read)
-met PEP 8, Python's coding standard, for names, comments and
+met *PEP 8*{.term}, Python's *coding standard*{.term}, for names, comments and
 indentation. A team usually agrees a few more rules. Here are the ones
 that matter most in a toolkit.
 
@@ -399,7 +399,7 @@ makes none.
 ## Your toolkit, read by a stranger
 
 Now let's run the tool on your own toolkit, a tool or two from each
-unit: the digit and pixel tools from Unit 1, the converters from Unit
+unit: the digit and *pixel*{.term} tools from Unit 1, the converters from Unit
 4, the statistics from Unit 5, and more. Pause here and guess. Which of
 your tools will get a note?
 
@@ -428,7 +428,7 @@ real problems?
 Mostly not. `a`, `b` and `c` match the quadratic formula written above
 the code. `p` and `q` are what
 [Straight lines](tutorial:straight-lines) called two points, and `x1`
-and `y1` are the first point's coordinates, as in the formula. Each
+and `y1` are the first point's *coordinates*{.term}, as in the formula. Each
 docstring says so. `a` and `b` in `close_enough` are any two numbers,
 and a longer name would say no more. `truth_table` promises to print a
 table. Printing is its job. A linter finds places worth a second look.

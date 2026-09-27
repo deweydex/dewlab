@@ -15,10 +15,10 @@ it. **Explain** means answer in words. **Another way** means reach the
 same place by a second route. The answers are folded away until you
 open them. Each one is one answer. Yours may be different and work too.
 
-Your toolkit is loaded on this page, including `halvings` from the
+Your *toolkit*{.term} is loaded on this page, including `halvings` from the
 tutorial and `binary_search` from
 [Finding things fast](tutorial:finding-things-fast). `math` is not: each
-cell that needs it starts with `import math`.
+*cell*{.term} that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -42,7 +42,7 @@ It prints `1 32 0.5`.
 
 $2^0$ is no doublings at all, which leaves 1. $2^5$ is five doublings:
 2, 4, 8, 16, 32. $2^{-1}$ is one halving of 1, which is $\frac{1}{2}$,
-and Python shows it as the float `0.5`.
+and Python shows it as the *float*{.term} `0.5`.
 
 </details>
 
@@ -96,7 +96,7 @@ of Python.
 <details class="dl-answer"><summary>answer</summary>
 
 It is more. Each month's 5% is taken of an amount that has already grown,
-so each rise is a little bigger than the last. That is compound growth.
+so each rise is a little bigger than the last. That is *compound growth*{.term}.
 `1.05 ** 10` is about 1.629, a rise of about 62.9%.
 
 Many people add the percentages first, as Schlomo did. It
@@ -188,7 +188,7 @@ not make it safe. Cooling it quickly and keeping it in the fridge does.
 
 **7. Fix.** Here is another version of `halvings`. For 8 it gives 3,
 as `halvings` does. For 1,000 it gives 10, and `halvings(1000)` is 9.
-Its docstring says it rounds down. Can you find the line that does
+Its *docstring*{.term} says it rounds down. Can you find the line that does
 not?
 
 ```python exec
@@ -251,7 +251,7 @@ than all the others together. The fix is `range(1, 65)`.
 
 </details>
 
-**9. Another way.** A hex colour like `#FF8800`, from
+**9. Another way.** A *hex colour*{.term} like `#FF8800`, from
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#how-ff8800-makes-orange),
 can be any one of 16,777,216 colours. How many doublings of 1 reach
 16,777,216? Find it three ways: with a loop, with `math.log2`, and with
@@ -295,7 +295,7 @@ An answer might weigh a few things, and can choose either way.
 - **Speed.** The textbook route is faster to write down, and exam
   questions are often written for it.
 - **What comes next.** Logarithms as counts connect to algorithms, such
-  as binary search. Logarithms as algebra connect to later maths, such
+  as *binary search*{.term}. Logarithms as algebra connect to later maths, such
   as solving equations like $1.04^k = 2$ by hand, and calculus.
 - **Awkward cases.** A count is harder to picture when the answer is
   9.97. The algebra has no trouble with that.
@@ -307,9 +307,9 @@ You might also want both, in one order or the other.
 </details>
 
 **11. Make.** The Apple M1 chip of 2020 holds 16 billion transistors.
-Say the count kept doubling every two years, as Moore's law says. In
+Say the count kept doubling every two years, as *Moore's law*{.term} says. In
 which year would a chip reach a trillion transistors, 1,000,000,000,000?
-Answer with a loop, and then with `math.log2`. This is a model, not a
+Answer with a loop, and then with `math.log2`. This is a *model*{.term}, not a
 promise. The tutorial's note says why.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -345,7 +345,7 @@ print(math.log10(1000 * 100))
 They print `16.0`, `16.0` and `5.0`.
 
 64 is 6 doublings and 1024 is 10, so $64 \times 1024$ is 16 doublings.
-The law of logarithms works in any base: `math.log10` counts
+The law of logarithms works in any *base*{.term}: `math.log10` counts
 multiplications by 10, and $1000 \times 100$ is 3 of them and then 2
 more.
 
@@ -410,7 +410,7 @@ or more.
 [A function that calls itself](tutorial:a-function-that-calls-itself#a-promise-that-uses-itself),
 a promise used itself on a smaller problem. Write
 `halvings_by_calls(n)` with no loop. It uses itself on `n // 2`. What
-is its base case? Test it against `halvings` for every number from 1 to
+is its *base case*{.term}? Test it against `halvings` for every number from 1 to
 1,000.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -511,8 +511,8 @@ player asks "Is it alive?" first.
 
 </details>
 
-**17. Fix.** Schlomi, who is learning Python too, writes a function
-for the doubling time of anything that grows by the same percent each
+**17. Fix.** Schlomi, who is learning Python too, writes a *function*{.term}
+for the *doubling time*{.term} of anything that grows by the same percent each
 year. She compares it with the logarithm, which the tutorial showed
 gives the exact doubling time. For 4% a year, the logarithm says about
 17.7 years, and her function says 1. Which line does something other

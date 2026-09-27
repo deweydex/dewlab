@@ -78,7 +78,8 @@ entries:
     kind: concept
     definition: >
       An expression is a piece of code that Python works out to one value,
-      like 3 * 6 + 14.
+      like 3 * 6 + 14. In maths, an expression with letters, like 3x + 7,
+      has a value once each letter has one.
   - term: operator
     kind: concept
     definition: >
@@ -182,8 +183,9 @@ entries:
   - term: input, output
     kind: concept
     definition: >
-      Input is a value a program is given, often typed by a person. Output
-      is what a program shows or hands back.
+      Input is a value that goes in: to a program, often typed by a person,
+      or to a function or a rule. Output is what comes out: what a program
+      shows, or what a function or a rule gives back.
   - term: "input()"
     python: input
     kind: function

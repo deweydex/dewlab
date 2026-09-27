@@ -45,6 +45,10 @@ function normalise(text) {
 /* The site's stemmer trims only longer words, so *lists* would miss
  * "list". Safe to allow here, because only an italic the author wrote as
  * the term is ever compared. */
+function words(text) {
+  return text.match(/[a-z0-9\u00c0-\u024f'′]+/g) || [];
+}
+
 function plural(singular, word) {
   return word === `${singular}s` || word === `${singular}es`;
 }
@@ -52,20 +56,39 @@ function plural(singular, word) {
 export function entryFor(text, entries) {
   const needle = normalise(text);
   if (needle.length < 2) return null;
-  const parts = entries.map((entry) => [entry, entry.term.split(",").map(normalise).filter(Boolean)]);
-  for (const [entry, names] of parts) if (names.includes(needle)) return entry;
+  // A part that is only a stopword is not a name: "order of not, and, or"
+  // is one term, not three, and an italic *or* is stress, not logic.
+  // The whole term counts too: *and multiplies, or adds* names one idea.
+  const parts = entries.map((entry) => [
+    entry, [normalise(entry.term), ...entry.term.split(",").map(normalise)]
+      .filter((name) => name && tokenize(name).length),
+  ]);
+  const needleWords = words(needle);
   const needleTokens = tokenize(needle);
-  if (!needleTokens.length) return null;
-  for (const [entry, names] of parts) {
-    for (const name of names) {
-      const tokens = tokenize(name);
-      if (tokens.length === needleTokens.length
-        && tokens.every((token, i) => token === needleTokens[i] || plural(token, needleTokens[i]))) {
-        return entry;
-      }
-    }
-  }
-  return null;
+  const matches = parts.filter(([, names]) => names.some((name) => {
+    const nameWords = words(name);
+    // Same number of words as written, so "base 2" is never "base" (the
+    // search tokenizer drops one-character words like "2").
+    if (nameWords.length !== needleWords.length) return false;
+    // The words as written, a plural allowed: the stemmer is uneven on
+    // plurals ("outcomes" and "outcome" stem differently).
+    if (nameWords.every((word, i) => word === needleWords[i] || plural(word, needleWords[i]))) return true;
+    // Then the site's stemming, for "matrices" and "matrix".
+    const tokens = tokenize(name);
+    return needleTokens.length > 0 && tokens.length === needleTokens.length
+      && tokens.every((token, i) => token === needleTokens[i]);
+  })).map(([entry]) => entry);
+  return pick(matches);
+}
+
+/* Two entries can share a word: "frequency" is a table's and a wave's.
+ * The page's own new term wins, since the page is using it in the sense
+ * it teaches; otherwise, with more than one left, no definition at all,
+ * because a guess could give the other sense. */
+function pick(matches) {
+  if (matches.length <= 1) return matches[0] || null;
+  const own = matches.filter((entry) => !entry.origin);
+  return own.length === 1 ? own[0] : null;
 }
 
 /* Marks the page's term italics and wires one shared popover. Returns an

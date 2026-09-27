@@ -44,9 +44,9 @@ On this page we:
 - see what happens at the sharp edge of a shape on a screen, where the
   two sides disagree
 - find a limit far away, at infinity, and meet the number $e$
-- see where Python's floats stop getting closer
+- see where Python's *floats*{.term} stop getting closer
 
-> **The space we're in.** The real numbers, with Python's floats
+> **The space we're in.** The *real numbers*{.term}, with Python's floats
 > standing in for them. We are allowed to take as many steps as we
 > like, each smaller than the last, and to watch where the values go.
 > In the maths, the steps can shrink for ever, but a float has a
@@ -87,7 +87,7 @@ answer: 2
 
 The first walk takes you 4 metres. The second takes you half of the 4
 metres left, so you have come 6. Then 7, then 7.5. Before you run the
-cell, guess how far you have come after ten walks.
+*cell*{.term}, guess how far you have come after ten walks.
 
 ```python exec
 id: getting-closer-door-1
@@ -165,7 +165,7 @@ print(hole_rule(2))
 
 The last line says `ZeroDivisionError: division by zero`. At $x = 2$
 the rule asks for $\frac{0}{0}$, which has no value. So 2 is outside
-the rule's domain. Let's draw the rule with `plot_rule` and mark the
+the rule's *domain*{.term}. Let's draw the rule with `plot_rule` and mark the
 missing point with an open circle, the usual sign for "no value here".
 What shape do you expect?
 
@@ -213,7 +213,7 @@ and say "the limit, as $x$ approaches 2, is 4". The value at 2 itself
 plays no part. The rule has none, and the limit is still 4.
 
 We will close in on several more numbers, so let's give the loop a
-name. `approach` is a tool for this page only. It prints the same kind
+*name*{.term}. `approach` is a tool for this page only. It prints the same kind
 of table for any rule and any point `a`.
 
 ```python exec
@@ -250,7 +250,7 @@ with no algebra.
 
 ### Your turn
 
-1. Close in on 2 for $\frac{x^3 - 8}{x - 2}$. Write it as a function,
+1. Close in on 2 for $\frac{x^3 - 8}{x - 2}$. Write it as a *function*{.term},
    then call `approach`. What limit do you see?
 2. Try `approach(hole_rule, 3)`. There is no hole at 3. How does the
    limit compare with `hole_rule(3)`?
@@ -333,7 +333,7 @@ number. The walk to the door was one too.
 Here is one with a surprise in it, and a question somebody really
 asked. On
 [Doubling and halving](tutorial:doubling-and-halving#how-long-to-double),
-a count grew by the same percent once a year: compound growth. Now
+a count grew by the same percent once a year: *compound growth*{.term}. Now
 picture a bank that pays 100% a
 year, which no real bank does. €1 becomes €2 after a year.
 
@@ -394,7 +394,7 @@ not. On
 [How a computer stores a number](tutorial:how-a-computer-stores-a-number#reading-e-16),
 the gap between two neighbouring floats near 1 was about
 $2.2 \times 10^{-16}$. So $1 + 10^{-16}$ has no float of its own.
-Python keeps it as 1, and 1 to any power is 1. At $10^{15}$, the kept
+Python keeps it as 1, and 1 to any *power*{.term} is 1. At $10^{15}$, the kept
 value of $1 + 10^{-15}$ is not quite exact, and raising it to the power
 $10^{15}$ makes that tiny error large.
 
@@ -413,7 +413,7 @@ is stored as 2, so we are back at the hole.
 
 In the maths, a step can shrink for ever. With floats, it cannot. Below
 a certain size, the step is lost. So a table of values closing in is
-strong evidence of a limit. It is not a proof, and it only works while
+strong evidence of a limit. It is not a *proof*{.term}, and it only works while
 the step is well above the size of the float gaps. The next page needs
 exactly this. It picks a step of one millionth, and says why.
 

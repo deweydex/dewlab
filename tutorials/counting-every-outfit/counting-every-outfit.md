@@ -39,7 +39,7 @@ On this page we:
 - list every outfit, with one loop inside another
 - meet experiments, outcomes, and the list of every outcome
 - find the counting principle, and check it against the list
-- add `all_pairs` to your toolkit, and list every pixel and colour
+- add `all_pairs` to your *toolkit*{.term}, and list every *pixel*{.term} and colour
 - count PINs and passwords, far too many to list
 
 > **The space we're in.** We look at choices that do not change each other.
@@ -83,7 +83,7 @@ have?
 
 Let's start smaller: three tops and two pairs of trousers. Each outfit
 is one top with one pair of trousers. How many outfits is that? Guess
-before you run the cell.
+before you run the *cell*{.term}.
 
 ```python exec
 id: counting-every-outfits-1
@@ -96,7 +96,7 @@ for top in tops:
 ```
 
 There are six outfits. This is one loop inside another, the same shape as the
-truth tables on
+*truth tables*{.term} on
 [True, false and every case](tutorial:true-false-and-every-case). Here
 is what happens when:
 
@@ -117,7 +117,7 @@ Count the ends of the twigs, and you have counted the outfits: 6.
 
 ### Your turn
 
-1. Add a fourth top to the list `tops`, and predict the new number of
+1. Add a fourth top to the *list*{.term} `tops`, and predict the new number of
    outfits before you run it.
 2. Swap the two `for` lines, so that the trousers loop is on the
    outside. Does the number of outfits change? Does the order of the
@@ -141,7 +141,7 @@ the job for us.
 
 Now a bigger experiment: toss a coin, and roll a die. One outcome is
 "heads, and a 4". We can write it as a *pair*: two values in round
-brackets, in a fixed order, like `("H", 4)`. A pair is a tuple with two
+brackets, in a fixed order, like `("H", 4)`. A pair is a *tuple*{.term} with two
 values in it. You met tuples on
 [Untangling a condition](tutorial:untangling-a-condition#checking-every-row-with-one-function).
 
@@ -226,10 +226,10 @@ print(product([len(tops), len(trousers), len(shoes)]))
 All three say 12. The loop is the proof, because it met every outfit. The
 formula is the fast way, and it agrees.
 
-Look back at the warm-up. A truth table with three inputs has 8 rows,
+Look back at the warm-up. A truth table with three *inputs*{.term} has 8 rows,
 because each input is a choice of 2: $2 \times 2 \times 2 = 2^3$. The
 $2^n$ rows on that page came from the counting principle. So did
-the 128 patterns of a seven-segment display on
+the 128 patterns of a *seven-segment display*{.term} on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times).
 Seven segments, each a choice of on or off, make $2^7$.
 

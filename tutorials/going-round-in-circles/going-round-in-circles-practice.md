@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page, including `point_on_circle` from
+Your *toolkit*{.term} is loaded on this page, including `point_on_circle` from
 the tutorial, `distance` from
 [How far apart?](tutorial:how-far-apart) and `close_enough` from
-[Does it work?](tutorial:does-it-work). `math` is not loaded. Each cell
+[Does it work?](tutorial:does-it-work). `math` is not loaded. Each *cell*{.term}
 that needs it starts with `import math`.
 
 ## Warm-up
@@ -41,8 +41,8 @@ print(math.degrees(math.pi), math.radians(360))
 `180.0 6.283185307179586`.
 
 $\pi$ radians is half a turn, which is $180^\circ$. A whole turn,
-$360^\circ$, is $2\pi$ radians, about 6.28. That is the circumference of a
-circle of radius 1.
+$360^\circ$, is $2\pi$ radians, about 6.28. That is the *circumference*{.term} of a
+circle of *radius*{.term} 1.
 
 </details>
 
@@ -61,7 +61,7 @@ print(round(x, 2), round(y, 2))
 
 Half a turn takes the seat straight across the centre, to the left-hand
 side, still level with the centre. Without `round`, `y` would be
-`1.2246467991473532e-15`. That is a float's tiny rounding error, which is 0 for
+`1.2246467991473532e-15`. That is a *float*{.term}'s tiny rounding error, which is 0 for
 any Ferris wheel.
 
 </details>
@@ -137,7 +137,7 @@ each side. What do you notice?
 
 1. Six corners evenly spaced are $360 \div 6 = 60^\circ$ apart, so the
    angles are 0, 60, 120, 180, 240 and 300: `range(0, 360, 60)`.
-2. Keep the corners in a list. To close the shape, add the first corner
+2. Keep the corners in a *list*{.term}. To close the shape, add the first corner
    again at the end.
 3. Measure from each corner to the next.
 
@@ -174,7 +174,7 @@ the tutorial, so its third side is 5 too.
 </details>
 
 **6. Fix.** Schlomo, who is learning Python too, is writing a game that
-seats players round a campfire. His function is meant to measure angles
+seats players round a campfire. His *function*{.term} is meant to measure angles
 the maths way, so a quarter turn, $90^\circ$, should be the top of the
 circle. What does it do instead, and what needs to change?
 
@@ -209,7 +209,7 @@ For a clock, it would be the one to use.
 ```
 
 **7. Predict.** Using the exact values from the tutorial, what will
-this print? Say it in surd form first.
+this print? Say it in *surd form*{.term} first.
 
 ```python
 print(point_on_circle(2, 60))
@@ -219,7 +219,7 @@ print(point_on_circle(2, 60))
 
 `(1.0000000000000002, 1.7320508075688772)`.
 
-On the unit circle, the point at $60^\circ$ is
+On the *unit circle*{.term}, the point at $60^\circ$ is
 $\left(\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$. A radius of 2 doubles
 both, so the exact point is $(1, \sqrt{3})$. Python's first number is
 a tiny way over 1, and $\sqrt{3} \approx 1.7320508$.
@@ -276,7 +276,7 @@ walks the whole circumference.
 
 **10. Explain.** The tutorial defined sine and cosine as the across and
 up of a point going round a circle. Many courses start with a
-right-angled triangle instead, and define the sine as one side divided
+*right-angled triangle*{.term} instead, and define the sine as one side divided
 by another. Which way would you have wanted to learn it first, and why?
 There is no single answer.
 
@@ -406,14 +406,14 @@ Did you guess 12? The moon makes 12 turns in the year, but the planet
 makes one turn round the sun in the same direction. The loops count
 only the turns the moon makes beyond the planet's: $12 - 1 = 11$.
 Drawing toys with toothed wheels make patterns like this, and games use
-the same maths for things in orbit.
+the same maths for things in *orbit*{.term}.
 
 </details>
 
 **14. Another way.** The triangle on the ball in the tutorial had
 angles adding up to $270^\circ$, which is $90^\circ$ more than a flat
 triangle's. In 1629, Albert Girard showed that on a ball of radius $R$,
-a triangle's area is $R^2$ times this extra angle, in radians. Use it
+a triangle's *area*{.term} is $R^2$ times this extra angle, in radians. Use it
 to find the area of that triangle on the Earth, taking $R$ as 6,371
 km. Then find the same area another way, with `sphere_surface_area`
 from your toolkit. Why do they agree?
@@ -487,7 +487,7 @@ plane go that way?
 <details class="dl-answer"><summary>answer</summary>
 
 The Earth is a ball, and the shortest path between two places on a
-ball runs along a great circle. A flat map has to stretch the ball to
+ball runs along a *great circle*{.term}. A flat map has to stretch the ball to
 lay it flat, and the usual world maps stretch the far north most. So the great circle
 looks curved on the map, and the ruler's straight line, which looks
 shorter, is longer on the real Earth.

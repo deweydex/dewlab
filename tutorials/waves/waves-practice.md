@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer. Yours may be different and work too.
 
-Your toolkit is loaded on this page, including `wave` from the tutorial
+Your *toolkit*{.term} is loaded on this page, including `wave` from the tutorial
 and `point_on_circle` from
 [Going round in circles](tutorial:going-round-in-circles). `math` is
-not loaded. Each cell that needs it starts with `import math`.
+not loaded. Each *cell*{.term} that needs it starts with `import math`.
 
 ## Warm-up
 
@@ -41,9 +41,9 @@ print(wave(2, 1, 0.25), wave(2, 1, 0.5))
 
 A 1 Hz wave takes one second to repeat. A quarter of a second is a
 quarter of the way through, where the wave is at its top: the
-amplitude, 2. Half a second is halfway, where the wave crosses its
+*amplitude*{.term}, 2. Half a second is halfway, where the wave crosses its
 middle line going down. The exact answer is 0, and
-$2.4 \times 10^{-16}$ is a float's rounding error.
+$2.4 \times 10^{-16}$ is a *float*{.term}'s rounding error.
 
 </details>
 
@@ -84,7 +84,7 @@ print(440 * 2 ** 2, 440 / 2 ** 3)
 
 `1760 55.0`.
 
-Each octave up doubles the frequency, so $440 \times 2^2 = 1760$ Hz is
+Each *octave*{.term} up doubles the frequency, so $440 \times 2^2 = 1760$ Hz is
 an A two octaves up. Each octave down halves it, so
 $440 \div 2^3 = 55$ Hz is an A three octaves down, one of the lowest
 notes on a bass guitar.
@@ -93,7 +93,7 @@ notes on a bass guitar.
 
 **4. Explain.** A resting heart beats 72 times a minute. What is its
 frequency in hertz, and its period in seconds? Is a heartbeat a
-periodic signal? Is it a sine wave?
+*periodic*{.term} signal? Is it a *sine wave*{.term}?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -118,7 +118,7 @@ import matplotlib.pyplot as plt
 # Your working for problems 5 to 12
 ```
 
-**5. Make.** The sea rises and falls about twice a day. Here is a model
+**5. Make.** The sea rises and falls about twice a day. Here is a *model*{.term}
 with made-up numbers of about the right size for the Irish coast: the
 sea goes 1.8 m above and below its average level, and one repeat takes
 12.42 hours. Measure time in hours, so the frequency is
@@ -162,7 +162,7 @@ shape of the coast change it, but it is a useful first model.
 </details>
 
 **6. Fix.** Schlomi, who is learning Python too, wrote her own wave
-function. A quarter of a second into a 1 Hz wave, the wave should be
+*function*{.term}. A quarter of a second into a 1 Hz wave, the wave should be
 at its top, 1. Hers is somewhere else. What does her function do with a
 quarter of a second, and what needs to change?
 
@@ -211,7 +211,7 @@ is back on its middle line, going down.
 </details>
 
 **8. Make.** The major scale that starts on middle C (C, D, E, F, G,
-A, B, C) goes up by these numbers of semitones from middle C: 0, 2, 4,
+A, B, C) goes up by these numbers of *semitones*{.term} from middle C: 0, 2, 4,
 5, 7, 9, 11 and 12. Middle C is 9 semitones below the 440 Hz A. Print
 each note's frequency, rounded to two decimal places.
 
@@ -254,7 +254,7 @@ for t in [0, 0.1, 0.37]:
 
 The two columns agree, apart from a rounding error: 3.0, then
 0.927..., then −0.188.... Asking the sine wave for a time an eighth of
-a second later gives the cosine wave now: a phase shift of a quarter
+a second later gives the cosine wave now: a *phase shift*{.term} of a quarter
 turn.
 
 </details>
@@ -273,7 +273,7 @@ with no error.
 
 `math.radians(90)` is a tiny bit less than $\frac{\pi}{2}$, because a
 float cannot keep all of its digits. Just before $90^\circ$, the line
-out to the point is almost straight up, and its slope is enormous. So
+out to the point is almost straight up, and its *slope*{.term} is enormous. So
 Python gives an enormous number instead of an error. A value like this
 in a program is a sign that the maths has no answer there.
 
@@ -322,7 +322,7 @@ you hear that is different, and what would be the same? And for
 
 <details class="dl-answer"><summary>answer</summary>
 
-The first pair has the same frequency, so the same pitch: the same
+The first pair has the same frequency, so the same *pitch*{.term}: the same
 note. The second sound has four times the amplitude, so it is louder.
 
 The second pair has the same amplitude but double the frequency. The
@@ -429,7 +429,7 @@ Why?
 <details class="dl-answer"><summary>answer</summary>
 
 To cancel a sound, the headphones must play its opposite, half a turn
-out of phase, at the same moment the sound arrives. An engine's hum
+out of *phase*{.term}, at the same moment the sound arrives. An engine's hum
 repeats steadily at low frequencies, so the headphones can predict its
 next repeat, and there is time to make its opposite. A cry changes
 all the time, in pitch and in loudness, and has many high frequencies.

@@ -37,10 +37,10 @@ short tool of yours answers both.
 On this page we:
 
 - measure how far a clock hand has turned, in degrees
-- put a point on a circle of radius 1, and name its two coordinates
+- put a point on a circle of *radius*{.term} 1, and name its two *coordinates*{.term}
   cosine and sine
 - see why `math.cos(90)` is not 0, and meet radians
-- add `point_on_circle` to the toolkit, and draw a clock with it
+- add `point_on_circle` to the *toolkit*{.term}, and draw a clock with it
 - send four planets round the Sun with it, on NASA's numbers
 - find some points exactly, with Pythagoras
 - draw a triangle on a ball whose angles add up to 270°
@@ -88,7 +88,7 @@ $\sqrt{0.6^2 + 0.8^2}$.
 ## A turn in 360 pieces
 
 A whole turn is split into 360 equal pieces, called *degrees*, and
-written $360^\circ$. A quarter turn is $90^\circ$, a right angle. Half a
+written $360^\circ$. A quarter turn is $90^\circ$, a *right angle*{.term}. Half a
 turn is $180^\circ$.
 
 In one hour, a clock's minute hand makes a whole turn: 360 degrees in 60
@@ -96,7 +96,7 @@ minutes. So each minute moves it $360 \div 60 = 6$ degrees. The hour
 hand is slower. It makes a whole turn in 12 hours, so each hour moves it
 $360 \div 12 = 30$ degrees, and each minute moves it half a degree.
 
-Before you run the cell, where is the hour hand at 10:10? Is it on the
+Before you run the *cell*{.term}, where is the hour hand at 10:10? Is it on the
 10, or a little past it?
 
 ```python exec
@@ -154,7 +154,7 @@ anticlockwise. Where are you?
   - (0, 0) is the centre, not a point on the circle.
 ```
 
-For angles in between, we need a name for each coordinate. For a point
+For angles in between, we need a *name*{.term} for each coordinate. For a point
 on the unit circle at angle $\theta$ (the Greek letter theta, which
 maths often uses for an angle):
 
@@ -166,7 +166,7 @@ maths often uses for an angle):
 <img src="point-on-the-unit-circle.svg" alt="The unit circle, radius 1, with its centre where the two axes cross, and the points (1, 0), (0, 1), (−1, 0) and (0, −1) marked. A line of length 1 goes from the centre to a point on the circle, at an angle θ above the line across. From the point, a dashed line drops straight down to the line across, and meets it at a right angle. The distance across, along the axis, is marked cos θ, and the distance up, the dashed line, is marked sin θ. The point is marked (cos θ, sin θ).">
 
 So the point is $(\cos\theta, \sin\theta)$, and from the quarter
-turns, $\cos 90^\circ = 0$. Sine and cosine are functions, as on
+turns, $\cos 90^\circ = 0$. Sine and cosine are *functions*{.term}, as on
 [Machines that take a number](tutorial:machines-that-take-a-number). An
 angle goes in, and a number between −1 and 1 comes out.
 
@@ -178,7 +178,7 @@ means $(\cos\theta)^2$.)
 
 ## Python measures angles another way
 
-Python has sine and cosine in the `math` module, as `math.sin` and
+Python has sine and cosine in the `math` *module*{.term}, as `math.sin` and
 `math.cos`. We know that $\cos 90^\circ = 0$. So what will this print?
 
 ```python exec
@@ -198,7 +198,7 @@ counting degrees, we could measure how far it has walked along the
 edge. That walk is the angle in *radians*. One radian is the angle
 where the walk along the edge is as long as the radius.
 
-A whole turn walks the whole circumference, $2\pi r$. With $r = 1$,
+A whole turn walks the whole *circumference*{.term}, $2\pi r$. With $r = 1$,
 that is $2\pi$, about 6.28. So:
 
 $$360^\circ = 2\pi \text{ radians} \qquad 180^\circ = \pi \text{ radians} \qquad 90^\circ = \frac{\pi}{2} \text{ radians}$$
@@ -227,7 +227,7 @@ print(math.degrees(1))
 now the sine is `1.0`. One radian is about $57.3^\circ$.
 
 The cosine is `6.123233995736766e-17`, a number so small it is 0 for
-any clock. $\frac{\pi}{2}$ has endless digits, and a float keeps only
+any clock. $\frac{\pi}{2}$ has endless digits, and a *float*{.term} keeps only
 about 16 of them, so the angle is not quite exact, and nor is its
 cosine.
 The context page
@@ -424,7 +424,7 @@ The short hand points just past the 10, and the long hand at the 2.
 A clock hand turns at a steady speed round a circle. So, very nearly,
 does a planet. Its path round the Sun is an *orbit*. Real orbits are
 slightly stretched circles, Mercury's the most. We draw them as
-circles. That is a model, and a close one.
+circles. That is a *model*{.term}, and a close one.
 
 The file `planet-orbits.csv` holds NASA's numbers for each planet: its
 average distance from the Sun, in millions of kilometres, and how many
@@ -508,7 +508,7 @@ $\sin 60^\circ = \sqrt{1 - \frac{1}{4}} = \frac{\sqrt{3}}{2}$.
 across and up swapped. So $\cos 30^\circ = \frac{\sqrt{3}}{2}$ and
 $\sin 30^\circ = \frac{1}{2}$.
 
-A number like $\sqrt{2}$ or $\sqrt{3}$, left as a square root because it
+A number like $\sqrt{2}$ or $\sqrt{3}$, left as a *square root*{.term} because it
 has no exact decimal, is called a *surd*.
 $\frac{\sqrt{2}}{2}$ is written in *surd form*. It is exact, and
 `0.7071067811865476` is not. Do the surds agree with Python?
@@ -535,8 +535,8 @@ squared, and the surd was not.
 
 ### A third name: tangent
 
-Draw a line from the centre out to the point. Its rise is $\sin\theta$
-and its run is $\cos\theta$, so its slope, from
+Draw a line from the centre out to the point. Its *rise*{.term} is $\sin\theta$
+and its run is $\cos\theta$, so its *slope*{.term}, from
 [Straight lines](tutorial:straight-lines#slope-between-any-two-points),
 is rise over run. This slope
 has its own name, the *tangent*:
@@ -589,7 +589,7 @@ which never meet. On a ball, the straightest paths are the *great
 circles*, the circles as big as the ball itself, like the equator and
 the lines of longitude. Any two great circles meet. Our two lines of
 longitude both cross the equator at right angles, and still they meet
-at the Pole. The ball has no parallel lines.
+at the Pole. The ball has no *parallel lines*{.term}.
 
 A small triangle on a ball is almost flat, and its angles add up to
 just over $180^\circ$. So a football pitch seems to keep the
@@ -598,7 +598,7 @@ flat rule, while a pilot crossing an ocean uses the rules of the ball.
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page defined sine and cosine as the across and up of a point on a
-circle. Many courses start with a right-angled triangle instead. There,
+circle. Many courses start with a *right-angled triangle*{.term} instead. There,
 the sine is the opposite side over the longest side, and so on.
 
 The triangle route is quick for measuring heights and distances, which

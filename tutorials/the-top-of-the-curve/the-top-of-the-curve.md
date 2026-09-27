@@ -41,12 +41,12 @@ On this page we:
 
 - hunt for the lowest point of a letter's curve in a table
 - draw the curve, and name the point where it turns
-- see that the turning point sits halfway between the roots
-- rewrite a quadratic so that we can read its top or bottom from it
-- add `vertex` to the toolkit, and check it with a search in tiny steps
+- see that the turning point sits halfway between the *roots*{.term}
+- rewrite a *quadratic*{.term} so that we can read its top or bottom from it
+- add `vertex` to the *toolkit*{.term}, and check it with a search in tiny steps
 
 > **The space we're in.** Quadratics, $ax^2 + bx + c$, with $a$ not 0,
-> over the real numbers. A letter's curve is only drawn for some inputs,
+> over the *real numbers*{.term}. A letter's curve is only drawn for some *inputs*{.term},
 > and we will say which. We check every answer on this page by
 > putting it back into the rule, in code. Your
 > toolkit is loaded, with `evaluate`, `plot_rule` and `solve_quadratic`
@@ -110,7 +110,7 @@ gives a quadratic in $t$:
 
 $$y = 400t^2 - 440t + 112$$
 
-The cell calculates the height both ways, at every tenth from 0 to 1.
+The *cell*{.term} calculates the height both ways, at every tenth from 0 to 1.
 Before you run it, where do you think the curve is lowest?
 
 ```python exec
@@ -129,7 +129,7 @@ for tenths in range(0, 11):
 
 The two columns agree, so the expanded rule is the same rule. The
 heights fall below the baseline and come back up. (One row says
-`-0.0`. That float is a tiny amount below 0, and rounding keeps the
+`-0.0`. That *float*{.term} is a tiny amount below 0, and rounding keeps the
 minus sign.) There is no single lowest row: at 0.5 and at 0.6 the height is
 $-8$, a tie.
 
@@ -194,14 +194,14 @@ plt.xlabel("t")
 plt.ylabel("height in font units")
 ```
 
-It is a parabola, like the goalkeeper's kick on
+It is a *parabola*{.term}, like the goalkeeper's kick on
 [Drawing a rule](tutorial:drawing-a-rule#curves-that-bend-parabolas-and-cubics).
 A parabola has exactly one turning point, and that point is called the
 *vertex*.
 
-When $a$, the coefficient of $x^2$, is positive, the parabola opens
+When $a$, the *coefficient*{.term} of $x^2$, is positive, the parabola opens
 upwards, like a valley, and the vertex is its lowest point. The lowest
-value a function reaches is its *minimum*. The bowl's $a$ is 400, so
+value a *function*{.term} reaches is its *minimum*. The bowl's $a$ is 400, so
 its height has a minimum, $-9$.
 
 When $a$ is negative, the parabola opens downwards, like a hill, and
@@ -220,7 +220,7 @@ engineer at Renault, who used them in the 1960s to describe car bodies
 to a machine. Paul de Casteljau found the same curves a few years
 earlier at Citroën, but his work stayed a company secret. TrueType
 fonts draw with the quadratic curves on this page. PostScript fonts use
-cubic ones, with two control points.
+*cubic*{.term} ones, with two control points.
 
 </aside>
 
@@ -293,7 +293,7 @@ drawing anything.
 How do we get the second form from the first? On
 [Rules with letters in them](tutorial:rules-with-letters-in-them#a-move-that-works-once),
 $(x + n)^2 = x^2 + 2nx + n^2$ for any number $n$. So a bracket squared
-makes an $x$ term with twice its number. We want $-6x$, so we halve
+makes an $x$ *term*{.term} with twice its number. We want $-6x$, so we halve
 $-6$ and get $-3$: $(x - 3)^2 = x^2 - 6x + 9$. That is 4 short of
 $x^2 - 6x + 13$, so we add 4:
 
@@ -460,20 +460,20 @@ because it checks the formula with nothing but arithmetic.
 
 What does the rule assume? The parabola goes on for ever, but the
 letter only uses the piece from $t = 0$ to $t = 1$. That piece is the
-rule's domain here. The vertex is inside it, so the vertex is the
+rule's *domain*{.term} here. The vertex is inside it, so the vertex is the
 lowest point of the piece. If a vertex is outside the domain, the
 lowest point of the piece is at one of its ends. The picture and the
 table would show that. The formula alone would not.
 
 Could we find the curve from a photo of a letter, with no font file?
-Three pixels on the curve would give three equations in three
+Three pixels on the curve would give three *equations*{.term} in three
 unknowns, $a$, $b$ and $c$. That is the next page,
 [Several unknowns at once](tutorial:several-unknowns-at-once#three-unknowns).
 
 ### Your turn
 
 A ball thrown straight up is at a height of about $1.8 + 15t - 4.9t^2$
-metres after $t$ seconds. (A model: it leaves out the air.)
+metres after $t$ seconds. (A *model*{.term}: it leaves out the air.)
 
 1. Is there a maximum or a minimum? Say why before you run anything.
 2. Use `vertex` to find when the ball is highest, and how high it gets.
@@ -507,7 +507,7 @@ its own. Unit 9 comes back to this bowl with that idea.
 
 | The question | On this page |
 |---|---|
-| What is named here? | $t$ for how far along a curve we are; the vertex $(h, k)$; a quadratic named by its list of coefficients |
+| What is named here? | $t$ for how far along a curve we are; the vertex $(h, k)$; a quadratic named by its *list*{.term} of coefficients |
 | What is promised? | `vertex(a, b, c)` promises the turning point; vertex form promises the same rule, written to show its top or bottom |
 | What happens when? | the search tries every thousandth in order and keeps the smallest; completing the square halves $b$ first, then corrects the number at the end |
 | What does this space let us do? | a real square is never negative, so the vertex is a true top or bottom; a letter's curve only uses $t$ from 0 to 1 |
@@ -525,7 +525,7 @@ its own. Unit 9 comes back to this bowl with that idea.
 | completing the square | rewriting $ax^2 + bx + c$ as $a(x - h)^2 + k$ |
 | vertex form | $a(x - h)^2 + k$, whose vertex is $(h, k)$ |
 | $x = -\frac{b}{2a}$ | where the vertex of $ax^2 + bx + c$ is |
-| `vertex(a, b, c)` | your toolkit tool: the turning point, as a pair $(x, y)$ |
+| `vertex(a, b, c)` | your toolkit tool: the turning point, as a *pair*{.term} $(x, y)$ |
 
 For another route to the same curve, the integrated course has
 [Parabolas: completing the square](tutorial:parabolas).

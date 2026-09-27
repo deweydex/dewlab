@@ -5482,3 +5482,21 @@ Every `\bgroup` is gone, and the pages use normal braces. `docs/WRITING_TUTORIAL
 **Practice.** All three practice pages move to blocks. Every `shortest_way` input on the graph page has exactly one shortest answer, counted in each world, for the reason above.
 
 *Cost to change: small. `the-shortest-way-there`, `a-puzzle-of-your-own` and every new cell id, including the world cells, become a contract on 2 October. No page id changed. Five cell ids went, before that date: `walking-it-without-recursion-2` on the folder page, and four on the practice pages that moved to blocks.*
+
+---
+
+**7.278 — The Dewey Track marks its later uses of terms, and the hover lookup learns four things from doing it.** Follows 7.273.
+
+**The pass.** `dev/term_uses.py` listed 1,678 places on the track's 97 pages (tutorials and practice pages) where an inherited concept appears unmarked. Each was read in its sentence against the definition the page would show. 1,195 became `*word*{.term}`, at most one per term per page, on the first use that means the term. The rest stay plain: an everyday sense ("set a seed", "a piece of string", "power-up"), the English "and", a word inside a longer term ("base case", "binary search"), or a use only in code, maths, link text or a solution fence. Every mark was then loaded in a browser and shows a definition.
+
+**What the pass found in the lookup.**
+- **A comma is not always a list.** "order of not, and, or" is one term. Split, it made a bare "and" and "or" into names, so an italic *or* written for stress would have shown the logic definition. A comma part that is only a stopword now names nothing, and the whole term counts as a name as well (*and multiplies, or adds*).
+- **Two entries can share a word.** A table's frequency and a wave's are two concepts. The page's own new term wins; otherwise the word shows nothing, because a guess could give the other sense. `term_uses.py --check` lists such marks, and two were taken out.
+- **Words are compared as written first.** The search stemmer is uneven on plurals ("outcomes" and "outcome" stem differently) and drops one-character words, so "base 2" looked like "base". Matching now needs the same number of words, allows a plain plural, and uses stemming only after that.
+- **A later use reads in plain type** (7.273's follow-up), so it does not look like an introduction.
+
+**Two definitions widened**, where the track uses the word more broadly than its glossary did: *input, output* now covers a function's and a rule's, and *expression* covers maths with letters.
+
+**Left for a decision** (listed for Josh, not changed): the glossary has only one sense for *base* (a power's, not a number base), *index* (a subscript, not a list position), *sequence* (control flow, not a maths sequence), *sample* (sound), *gap* (Shell sort's) and *branch* (an `if`'s, not a tree diagram's), so uses in the other sense stay unmarked. *nominal* and *discrete* sit inside entries titled "categorical data: nominal, ordinal" and "numerical data: discrete, continuous" and can never be matched alone. *solution* is a concept and also the word every comparison table uses for the model answer.
+
+*Cost to change: small. A mark is a few characters in a page; `term_uses.py --check` finds any that stop resolving.*

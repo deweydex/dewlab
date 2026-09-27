@@ -14,10 +14,10 @@ answer in words. **Another way** means reach the same place by a second
 route. The answers are folded away until you open them. Each is one
 answer, and yours may be different and work too.
 
-Your toolkit is loaded on this page. The tutorial's `quick_review` and
-`check_median_tool` are not loaded. They were page cells, so a problem
+Your *toolkit*{.term} is loaded on this page. The tutorial's `quick_review` and
+`check_median_tool` are not loaded. They were page *cells*{.term}, so a problem
 that needs one gives it again. Schlomo and Schlomi, who are learning Python
-too, wrote two of the functions below.
+too, wrote two of the *functions*{.term} below.
 
 ## Warm-up
 
@@ -29,8 +29,8 @@ id: code-other-practice-warm-up
 ```
 
 **1. Predict.** A music app has this function. What do the last two
-lines print? Is there a side effect, and would a stranger expect it
-from the name?
+lines print? Is there a *side effect*{.term}, and would a stranger expect it
+from the *name*{.term}?
 
 ```python
 def add_track(playlist, track):
@@ -47,10 +47,10 @@ print(morning)
 
 It prints `3`, then `['Dreams', 'Zombie', 'Linger']`.
 
-`append` changes the list that `morning` points at, so the function has
+`append` changes the *list*{.term} that `morning` points at, so the function has
 a side effect. Here the name says "add", so a stranger would probably
 expect the playlist to change. The function also returns the new
-length, which the name does not say. A docstring can say both:
+length, which the name does not say. A *docstring*{.term} can say both:
 
 ```python
 def add_track(playlist, track):
@@ -66,7 +66,7 @@ def add_track(playlist, track):
 
 **2. Make.** A download manager calculates how long a file will take
 like this. Rewrite it with names that say what goes in and what comes
-out, a docstring, and a named constant for each magic number. Then
+out, a docstring, and a *named constant*{.term} for each *magic number*{.term}. Then
 check with `assert` that your version agrees with this one for files
 of 0, 5, 700 and 4,500 MB at 100 megabits a second.
 
@@ -75,7 +75,7 @@ def dl_time(size, speed):
     return size * 8 / speed + 2
 ```
 
-(A byte is 8 bits, and the 2 is the seconds it takes to connect before
+(A *byte*{.term} is 8 *bits*{.term}, and the 2 is the seconds it takes to connect before
 anything arrives.)
 
 <details class="dl-answer"><summary>answer</summary>
@@ -109,8 +109,8 @@ bytes?
 
 </details>
 
-**3. Explain.** A reviewer leaves this comment on a classmate's game
-code: "This is a mess. Who names a variable `x2`?" Rewrite it as a
+**3. Explain.** A *reviewer*{.term} leaves this comment on a classmate's game
+code: "This is a mess. Who names a *variable*{.term} `x2`?" Rewrite it as a
 review comment the writer can act on. What does yours give them that
 the first did not?
 
@@ -235,7 +235,7 @@ doctest.run_docstring_examples(image_megabytes, globals(), name="image_megabytes
 <details class="dl-answer"><summary>answer</summary>
 
 Only the third. The report says it expected `0` and got `0.0`. The `/`
-always gives a float, and `doctest` compares the text Python prints,
+always gives a *float*{.term}, and `doctest` compares the text Python prints,
 not the number. The number is 0 either way. Only the example's text
 differs. If you write `0.0` in the docstring, it matches.
 
@@ -351,7 +351,7 @@ They could change, to `megabytes` and `seconds`. `p` and `q` match the
 maths written above `slope`, where two points are called $p$ and $q$.
 `mb` and `s` come from no formula. They are short forms a stranger has
 to decode, and the docstring does not say what they stand for: is `mb`
-megabytes or megabits? The linter's note is the same in both cases.
+megabytes or megabits? The *linter*{.term}'s note is the same in both cases.
 The reason behind the name differs, and only a person can judge
 that.
 
@@ -471,8 +471,8 @@ doctest.run_docstring_examples(light_minutes, globals(), name="light_minutes")
 **12. Explain.** Schlomo wrote this for his weather station. His chip
 reads a little high, so he put its error in a name at the top, where
 he can find it and change it. The function
-works when the page first runs. Which question from the review
-checklist does it raise, and what could happen later? Write the review
+works when the page first runs. Which question from the
+*review checklist*{.term} does it raise, and what could happen later? Write the review
 comment you would leave.
 
 ```python
@@ -486,7 +486,7 @@ def corrected(celsius):
 <details class="dl-answer"><summary>answer</summary>
 
 It raises the fourth question, "what does this space let us do?". The
-function needs `offset`, and it takes it from outside, a hidden input.
+function needs `offset`, and it takes it from outside, a *hidden input*{.term}.
 If a later cell sets `offset` for a second chip, `corrected` quietly
 gives different answers for the first one, and its own code looks the
 same as before.
@@ -494,7 +494,7 @@ same as before.
 Schlomo's idea of a name at the top is the named-constant habit, and a
 constant that truly never changes can live there. This one is
 different for every chip. A review comment: "`corrected` reads
-`offset` from the page. Could it come in as a parameter,
+`offset` from the page. Could it come in as a *parameter*{.term},
 `offset=1.5`, so the function says what it needs and a test can check
 it for each chip?"
 

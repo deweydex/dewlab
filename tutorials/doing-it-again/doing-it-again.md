@@ -37,7 +37,7 @@ On this page we:
 - keep a running total, and count with `range()`
 - read sigma, $\sum$, and pi, $\prod$: loops written by mathematicians
 - repeat until something is true, with `while`
-- add `total` and `product` to your toolkit
+- add `total` and `product` to your *toolkit*{.term}
 
 > **The space we're in.** Numbers, and lines of Python that run from the
 > top down. New on this page: a few lines can run again and again. Our
@@ -84,7 +84,7 @@ many lines are printed in all?
 We drop the ball from 100 cm, which is 1 metre. It keeps 80% of its
 height at each bounce, so the first bounce goes up to 80 cm, and the
 second to 80% of that, 64 cm. How high is the tenth bounce? Guess
-before you run the cell.
+before you run the *cell*{.term}.
 
 ```python exec
 id: doing-it-ball-1
@@ -95,7 +95,7 @@ print(100 * keep ** 10)
 ```
 
 The tenth bounce reaches about 10.7 cm. (The tiny 6 at the end of
-`10.737418240000006` is float rounding, as on
+`10.737418240000006` is *float*{.term} rounding, as on
 [Everything is ones and zeros](tutorial:everything-is-ones-and-zeros#why-01-02-is-not-03).)
 
 <aside class="dl-note" id="doing-it-note-tennis">
@@ -111,12 +111,12 @@ at 80%, is bouncier.
 But the question at the top needs every bounce, added up. We need to
 "do this again, once for each bounce". On
 [Recipes are algorithms](tutorial:recipes-are-algorithms#steps-that-repeat-and-steps-that-choose)
-we called that repetition.
+we called that *repetition*{.term}.
 
 ## Doing it for each
 
 Here are the first five bounce heights, to the nearest centimetre, and
-a plan in pseudocode:
+a plan in *pseudocode*{.term}:
 
 ```text
 SET bounces TO the five heights, first to fifth
@@ -126,7 +126,7 @@ SAY the ball is still bouncing
 ```
 
 In Python, the square brackets make a *list*: a row of values, kept in
-order, under one name. Unit 5 looks at lists properly. How many lines
+order, under one *name*{.term}. Unit 5 looks at lists properly. How many lines
 will the cell print? Count before you run it.
 
 ```python exec
@@ -270,8 +270,8 @@ print(middle, "bounces")
 ```
 
 There are seven, from the 4th to the 10th. This small program keeps
-values under names, which is *storage*. It chooses with `if`, which is selection, and
-repeats with `for`, which is iteration. Those are the three shapes of
+values under names, which is *storage*. It chooses with `if`, which is *selection*{.term}, and
+repeats with `for`, which is *iteration*{.term}. Those are the three shapes of
 step from [Recipes are algorithms](tutorial:recipes-are-algorithms), and
 they can build any program. When we plan a program from them, that
 is called *structured design*.
@@ -448,7 +448,7 @@ $$\prod_{k=1}^{5} r_k = r_1 \times r_2 \times r_3 \times r_4 \times r_5$$
 
 where $r_k$ is the fraction kept at bounce $k$. This is *pi notation*.
 It is like sigma, but it multiplies instead of adding. Every $r_k$ is 0.8 here, so
-the product is $0.8^5$. A power is a product of one number. For example, $2^{10}$ on
+the product is $0.8^5$. A *power*{.term} is a product of one number. For example, $2^{10}$ on
 [Numbers a computer can hold](tutorial:numbers-a-computer-can-hold#powers-and-how-many-times)
 is $\prod_{i=1}^{10} 2$.
 
@@ -457,7 +457,7 @@ is $\prod_{i=1}^{10} 2$.
 When does a bounce first come up less than 1 cm? This time we do not
 know how many times to go round. We know when to stop.
 
-A *while loop* runs its body for as long as a condition is True. It
+A *while loop* runs its body for as long as a *condition*{.term} is True. It
 checks the condition before each round, and ends as soon as the
 condition is False. Guess the bounce first.
 
@@ -676,13 +676,13 @@ title: some steps
 not inside it?
 ```
 
-Here is one thing about names. `total` is now a function. If a later cell says
+Here is one thing about names. `total` is now a *function*{.term}. If a later cell says
 `total = 0`, the name points at 0 instead, and the tool is gone from that
 page. That is why this page used names like `travelled` and `kept`.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-Python already has `sum()`, and `math.prod()` in its `math` module.
+Python already has `sum()`, and `math.prod()` in its `math` *module*{.term}.
 Most programmers use them, for good reasons. They are tested, fast and
 well known.
 
