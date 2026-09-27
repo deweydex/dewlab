@@ -10,7 +10,7 @@ worlds:
 
 # Lists and looping over them — Practice
 
-These problems are on lists, and three more are from earlier pages. With indexing
+These problems are on *lists*{.term}, and three more are from earlier pages. With indexing
 and slicing, you learn more by trying things than by solving them in your
 head, so run the cells, change them, and test your guesses. Try each problem before you
 open anything under it.
@@ -43,7 +43,7 @@ cell.
 (a) 10. (b) 30. (c) 50. (d) An `IndexError`: `list index out of range`.
 (e) 5.
 
-A list of 5 elements has indexes 0 to 4, so the last one is always
+A list of 5 *elements*{.term} has indexes 0 to 4, so the last one is always
 `len(xs) - 1`. There is no index 5. Say it out loud a few times,
 until it stops being a surprise.
 
@@ -129,7 +129,7 @@ is still `"NOON"`.
 
 ## 5. Ten squares
 
-Can you build `squares`, the first ten square numbers, with a loop?
+Can you build `squares`, the first ten square numbers, with a *loop*{.term}?
 
 ```python exec
 id: ten-squares-1

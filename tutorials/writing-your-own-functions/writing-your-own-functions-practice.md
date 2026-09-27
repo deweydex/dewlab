@@ -10,7 +10,7 @@ worlds:
 
 # Writing your own functions — Practice
 
-These problems are on functions, with three from earlier pages. Where a problem gives
+These problems are on *functions*{.term}, with three from earlier pages. Where a problem gives
 you cases to try, write what you think each one gives in the guess column
 first, then try them on your code.
 
@@ -73,7 +73,7 @@ And `describe_pet("Tom", "cat", "grey")`? Try them.
 `cat is a Tom.`, then two errors:
 `TypeError: describe_pet() missing 1 required positional argument:
 'animal'`, and `TypeError: describe_pet() takes 2 positional arguments but
-3 were given`. Arguments are matched to parameters by position, so the
+3 were given`. Arguments are matched to *parameters*{.term} by position, so the
 order matters and the number must match. Both messages name the function,
 and the first even names the parameter that got nothing.
 
@@ -92,7 +92,7 @@ def shout(word):
 
 <details class="dl-answer"><summary>answer</summary>
 
-`NameError: name 'shout' is not defined`. Python runs a program from the
+`NameError: name 'shout' is not defined`. Python runs a *program*{.term} from the
 top down, and on the first line the `def` has not run yet. Put the `def`
 first, and the call after it.
 
@@ -227,7 +227,7 @@ straight to `return False`.
 ## 8. One step too far in
 
 Somebody wrote `has_factor` with the last line indented one step further,
-inside the loop. Can you find what goes wrong, and fix it?
+inside the *loop*{.term}. Can you find what goes wrong, and fix it?
 
 ```python exec
 id: one-step-too-far-in-1
@@ -339,7 +339,7 @@ these are pure?
 
 - (a) `def double(x): return x * 2`
 - (b) `def price_with_tax(price): return price * (1 + tax_rate)`, where
-  `tax_rate` is a variable outside the function
+  `tax_rate` is a *variable*{.term} outside the function
 - (c) `def roll(): return random.randint(1, 6)`, where
   `random.randint(1, 6)` gives a random whole number from 1 to 6
 - (d) `def area(r): return 3.14159 * r * r`

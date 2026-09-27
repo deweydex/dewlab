@@ -20,7 +20,7 @@ covers:
 
 # Comprehensions, grids and aliasing
 
-Here is a list of squares built twice: once with a loop, the way
+Here is a *list*{.term} of squares built twice: once with a *loop*{.term}, the way
 [Lists and looping over them](tutorial:lists-and-sequences) built lists,
 and once on a single line. Will the two lists be the same?
 
@@ -44,7 +44,7 @@ What will the last line print?
   - They are two separate lists, so they cannot be equal.
 ```
 
-It prints `True`. `==` compares what two lists hold, element by element,
+It prints `True`. `==` compares what two lists hold, *element*{.term} by element,
 and both hold `[1, 4, 9, 16, 25]`. The one-line version is a
 *comprehension*, and this page starts with it. Then a whole picture goes
 into a list of lists. Then we meet the thing about lists most likely to
@@ -128,7 +128,7 @@ print("".join(word[0] for word in words))
 ```
 
 The first two lines both print 500. The second has no square brackets.
-When a comprehension is the only thing inside a function's brackets, you
+When a comprehension is the only thing inside a *function*{.term}'s brackets, you
 can drop its square brackets. It is then a *generator expression*. It makes
 its values one at a time, and passes each one to the function, without building a
 list first.
@@ -238,7 +238,7 @@ the column: down, then across. A graph gives x first, across, so the two
 orders are easy to confuse. Swap the two numbers and run it again.
 
 To draw the grid, a loop visits each row, and a loop inside it visits
-each value in that row, as the nested loops did in
+each value in that row, as the *nested loops*{.term} did in
 [Repeating steps with loops](tutorial:repeating-yourself):
 
 ```python exec
@@ -414,7 +414,7 @@ name as a label on it: `copy = row` puts a second label on the same box,
 so a change made through one name shows through the other. Two names for
 one value is called *aliasing*.
 
-To get a separate list, make one. `row[:]`, a slice from the start to the
+To get a separate list, make one. `row[:]`, a *slice*{.term} from the start to the
 end, is a new list with the same elements, and so is `list(row)`.
 
 ```python exec
@@ -749,7 +749,7 @@ shows how to make it refuse on purpose.
 ## Looking back
 
 Two names for one list is the idea on this page most likely to surprise
-you, weeks from now, in a program much longer than these. When is it
+you, weeks from now, in a *program*{.term} much longer than these. When is it
 useful that a function can change the list it was given? When does it
 cause trouble?
 

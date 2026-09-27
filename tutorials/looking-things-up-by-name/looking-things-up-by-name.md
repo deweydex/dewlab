@@ -33,7 +33,7 @@ What will it print?
   - A dictionary is looked up by position, like a list.
 ```
 
-It prints `EQW`, which is CAB in code. A list finds a value by its position. A
+It prints `EQW`, which is CAB in code. A *list*{.term} finds a value by its position. A
 dictionary finds a value by a name we choose, here a letter. Most of this
 page is about that one change, and what it makes easy: a cipher's key, a
 picture's palette, and counting how often each thing appears.
@@ -58,7 +58,7 @@ print(len(palette))
 
 To look up a value, write the dictionary's name, then the key in square
 brackets: `palette["r"]`. The brackets are the ones a list uses for an
-index, with a key inside them where a list would have a position. `len()`
+*index*{.term}, with a key inside them where a list would have a position. `len()`
 counts the pairs. Python shows the strings with single quotes when it
 prints a dictionary. Single and double quotes mean the same thing.
 
@@ -283,7 +283,7 @@ What will the last line print?
 ```
 
 It prints `False`. `in` checks the keys of a dictionary, and does not look
-at the values. With `if`, it lets a program decide before it looks
+at the values. With `if`, it lets a *program*{.term} decide before it looks
 anything up:
 
 ```python exec
@@ -319,7 +319,7 @@ such as a space in a message, `.get()` with a sensible default continues.
 
 A `for` loop can loop over a dictionary. Each time round, it gives a key.
 `.items()` gives each pair instead, as a key and a value together, the way
-`enumerate()` gave an index and an element in
+`enumerate()` gave an index and an *element*{.term} in
 [Lists and looping over them](tutorial:lists-and-sequences).
 
 ```python exec
@@ -425,7 +425,7 @@ depends on whether an unknown character is a mistake.
 ## Counting things
 
 How often does each letter appear in a piece of text? We do not know the
-letters before we start, so we cannot make a variable for each. A
+letters before we start, so we cannot make a *variable*{.term} for each. A
 dictionary can do it. Each letter is a key, and its count is the value.
 
 ```
@@ -451,7 +451,7 @@ print(counts)
 ```
 
 This is the *accumulator pattern*{.term} again, with one accumulator for each key.
-`.get()` makes the loop shorter. Why is the default 0 here?
+`.get()` makes the *loop*{.term} shorter. Why is the default 0 here?
 
 ```python exec
 id: counting-things-2
@@ -625,7 +625,7 @@ one by one, use a list. And the two work together. A dictionary's value
 can be a list, as the palette of colours was.
 
 For each of these, would you use a list or a dictionary? Write your
-answer, and your reason, as a comment in the cell.
+answer, and your reason, as a *comment*{.term} in the cell.
 
 1. The ten songs in a playlist, in the order they play.
 2. The number of goals each player on a team has scored.

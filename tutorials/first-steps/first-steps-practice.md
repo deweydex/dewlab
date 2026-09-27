@@ -10,7 +10,7 @@ worlds:
 
 # Algorithms, pseudocode and your first Python — Practice
 
-Problems on the operators, `print()`, algorithms and pseudocode. Most are
+Problems on the operators, `print()`, *algorithms*{.term} and *pseudocode*{.term}. Most are
 short. Try each one before you open anything under it. Say what you think
 first, then run it.
 
@@ -28,7 +28,7 @@ tolerance: 0.01
 What will it print?
 ```
 
-Now try `9 + 4 * 2`, `(9 + 4) * 2` and `(20 - 6) / 3` in the cell. What does
+Now try `9 + 4 * 2`, `(9 + 4) * 2` and `(20 - 6) / 3` in the *cell*{.term}. What does
 each give, and why?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -223,7 +223,7 @@ What will it print?
 
 ## 10. A toast algorithm
 
-Here is an *algorithm*{.term} for making toast. Where would a machine get stuck
+Here is an algorithm for making toast. Where would a machine get stuck
 following it?
 
 ```
@@ -236,7 +236,7 @@ following it?
 
 Step 2 does not say how long to wait, or what to wait *for*. A machine
 cannot follow "Wait". It can follow "While the toaster has not popped,
-wait", because that step names what ends the waiting. Every loop needs
+wait", because that step names what ends the waiting. Every *loop*{.term} needs
 something like this.
 
 Something else is missing too: nobody switches the toaster on.
@@ -353,7 +353,7 @@ It gives the same answer, but it hides what each number means.
 
 ## 14. Why plan at all
 
-Why write *pseudocode*{.term} at all, when you could write the Python straight
+Why write pseudocode at all, when you could write the Python straight
 away?
 
 <details class="dl-answer"><summary>one good answer</summary>
@@ -365,7 +365,7 @@ about Python. Pseudocode lets you finish the first before you start the
 second. Then, when the code does something you did not expect,
 you know which of the two to look at.
 
-For a three-line program, pseudocode is more than you need. Keep the habit
+For a three-line *program*{.term}, pseudocode is more than you need. Keep the habit
 anyway. You will not notice the moment a problem grows past three lines.
 
 </details>

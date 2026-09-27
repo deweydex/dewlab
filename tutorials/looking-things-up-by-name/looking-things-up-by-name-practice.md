@@ -189,7 +189,7 @@ from `"H"` works because H is a key. Starting from `""` would stop with a
 
 ## 7. By first letter
 
-Can you set `groups` to a *dictionary*{.term} that keeps the words in lists, by
+Can you set `groups` to a *dictionary*{.term} that keeps the words in *lists*{.term}, by
 their first letter?
 
 ```python exec
@@ -256,7 +256,7 @@ up.
 
 A key has been kept as two lists, in matching order. Can you set `key` to
 one dictionary, with each plain letter as a *key*{.term} and its code letter as the
-value?
+*value*{.term}?
 
 ```python exec
 id: two-lists-into-one-1
@@ -420,7 +420,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-`{'A': 'Q', 'B': 'W'}`. A dictionary is mutable, like a list, so the same
+`{'A': 'Q', 'B': 'W'}`. A dictionary is *mutable*{.term}, like a list, so the same
 thing happens. `spare = key` gives one dictionary a second name. For a
 separate copy, write `spare = dict(key)`.
 
@@ -448,7 +448,7 @@ What will the last line print?
 <details class="dl-answer"><summary>why</summary>
 
 `3 Z`. The second number given to `enumerate()` is where the counting
-starts. The list's own indexes are still 0 to 2.
+starts. The list's own *indexes*{.term} are still 0 to 2.
 
 </details>
 
@@ -464,7 +464,7 @@ From *Reading an error message*. Which error does each of these raise?
 
 (a) A `ValueError`, because `int()` wants a whole number written in
 digits, and 12.5 has a point. `float("12.5")` works. (b) An `IndexError`,
-because three elements have indexes 0 to 2. (c) A `TypeError`, because
+because three *elements*{.term} have indexes 0 to 2. (c) A `TypeError`, because
 `+` will not join a string to a number.
 
 </details>

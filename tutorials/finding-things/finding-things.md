@@ -51,7 +51,7 @@ page writes, and the reason it is so much quicker than the other.
 ## Linear search: the straightforward approach
 
 In the *search problem*, we want to find one item in a collection.
-*Linear search* checks each element in turn, from the start of the list,
+*Linear search* checks each *element*{.term} in turn, from the start of the list,
 and stops when it finds the target, or when it reaches the end. You would
 use it to look for a friend's name on a guest list in no order.
 
@@ -136,7 +136,7 @@ Count the shaded cells in each row, from top to bottom: fifteen, then
 seven, then three, then one. Binary search is quick because it halves the
 range each time. Most mistakes happen in the halving too. `mid - 1` and
 `mid + 1` make the range smaller each time. If either is wrong, the range can stop
-shrinking, and the loop never ends.
+shrinking, and the *loop*{.term} never ends.
 
 ### Your turn
 
@@ -354,7 +354,7 @@ happens very often.
 
 Binary search is our first example of *divide and conquer*: split a
 problem into smaller pieces, solve the pieces, and combine the answers. It
-is one of the most useful ideas in the design of algorithms. A phone finds
+is one of the most useful ideas in the design of *algorithms*{.term}. A phone finds
 a contact this way. You find a page in a book this way. A doctor who
 halves the possible causes with each test works this way too.
 

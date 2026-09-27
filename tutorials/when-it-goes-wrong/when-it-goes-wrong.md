@@ -45,13 +45,13 @@ What will it print?
   - `counts` is made inside the loop, so `return` cannot see it.
 ```
 
-It prints `{'A': 1}`. `counts = {}` is inside the loop, so every time
-round, the dictionary is deleted and started again, and only the last
+It prints `{'A': 1}`. `counts = {}` is inside the *loop*{.term}, so every time
+round, the *dictionary*{.term} is deleted and started again, and only the last
 letter survives. One line is indented one step too far, and nothing
 complains.
 
 [Reading an error message](tutorial:reading-an-error-message) met the three
-kinds of wrong in programs of a few lines. Since then, programs have grown:
+kinds of wrong in *programs*{.term} of a few lines. Since then, programs have grown:
 loops, lists, dictionaries, and functions that call functions. Bigger
 programs bring new errors, longer *tracebacks*{.term}, and *logical errors*{.term} that hide
 much better. Most cells on this page are meant to fail, or to give a wrong
@@ -65,14 +65,14 @@ not there.
 | Error | What it means |
 |---|---|
 | `IndexError` | You asked for a position the list does not have. |
-| `KeyError` | You asked for a key the dictionary does not have. The message shows the key you asked for. |
-| `AttributeError` | You asked a value for something it does not have, such as a method. Often the value is not the type you thought. |
+| `KeyError` | You asked for a *key*{.term} the dictionary does not have. The message shows the key you asked for. |
+| `AttributeError` | You asked a *value*{.term} for something it does not have, such as a method. Often the value is not the type you thought. |
 | `TypeError: '...' object is not callable` | You put brackets after something that is not a function. Often a name you gave a value was already the name of a function. |
 
 ### Your turn
 
 Before you run each cell, decide which error it will raise, and write it in
-the comment. Then run it, and read the last line.
+the *comment*{.term}. Then run it, and read the last line.
 
 ```python exec
 id: errors-from-lists-and-dictionaries-1
@@ -122,7 +122,7 @@ with `append`.
 It raises a `TypeError: 'int' object is not callable`. The loop works, but
 `max = 0` gave the name `max` to a number, so `max` is no longer Python's
 function. Any name can be reused this way, which is a good reason never to
-call a variable `max`, `sum`, `list` or `str`.
+call a *variable*{.term} `max`, `sum`, `list` or `str`.
 
 </details>
 
@@ -251,7 +251,7 @@ What will it print?
 It prints `True False False`. `return` ends the function at once, so the
 `else` stops the search after the first letter. T is not a vowel, and TREE is
 never looked at again. The `return False` belongs after the loop, once
-every letter has been checked. It passes a test on `"EGG"` and on
+every letter has been checked. It passes a *test*{.term} on `"EGG"` and on
 `"SKY"`, which is why it survives.
 
 The second kind changes something the caller did not expect to change.
@@ -274,7 +274,7 @@ If the order of `readings` mattered, the time they were taken, say, it is
 now lost, and nothing said so. `sorted(numbers)` would have left it alone.
 
 The third kind changes a list while a loop uses it. `.remove(value)`
-takes the first element equal to `value` out of a list. This is meant to
+takes the first *element*{.term} equal to `value` out of a list. This is meant to
 take every 0 out of a row.
 
 ```python exec

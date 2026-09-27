@@ -20,7 +20,7 @@ copied.
 ## An experiment
 
 This cell does the same thing twice: once with a number, and once with a
-list.
+*list*{.term}.
 
 ```python exec
 id: an-experiment-1

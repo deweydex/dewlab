@@ -84,7 +84,7 @@ often enough.
 A *test* gives a function an input whose answer we already know, and
 checks that the function gives that answer. Python has a statement for
 it. `assert` is followed by something that should be `True`. If it is,
-nothing happens. If it is not, the program stops with an `AssertionError`.
+nothing happens. If it is not, the *program*{.term} stops with an `AssertionError`.
 
 ```python exec
 id: testing-as-a-habit-1
@@ -166,7 +166,7 @@ different answers.
 
 Small, tested functions can be built into bigger ones. The *standard
 deviation* measures how spread out numbers are round their mean. For every
-value in a list:
+*value*{.term} in a list:
 
 1. Find the mean.
 2. For each value, take its difference from the mean, and square it.
@@ -423,7 +423,7 @@ value can round it.
 
 Our functions now call other functions, so it is worth checking *scope*{.term},
 from [Writing your own functions](tutorial:writing-your-own-functions).
-Each function has its own workspace, and the variables made inside it
+Each function has its own workspace, and the *variables*{.term} made inside it
 disappear when it finishes.
 
 ```python exec
@@ -442,7 +442,7 @@ print(with_border(6))
 It gives a `NameError`, because `edge` exists only inside `with_border`.
 That is a help, not a nuisance. Many functions can each have a variable
 called `total` or `edge`, and none of them clashes with another.
-Information goes in only through parameters, and leaves only through
+Information goes in only through *parameters*{.term}, and leaves only through
 `return`.
 
 ## Looking back

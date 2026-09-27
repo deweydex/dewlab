@@ -194,7 +194,7 @@ gives `"even"` when the condition is true, and `"odd"` when it is not.
 
 ## 7. And, or, not
 
-This cell prints every result of `and` and `or`. It uses a loop, which is
+This cell prints every result of `and` and `or`. It uses a *loop*{.term}, which is
 in [Repeating steps with loops](tutorial:repeating-yourself). For now, you
 only need its output.
 
@@ -343,7 +343,7 @@ What will it print?
 It prints `no`, with no error. Python stops checking an `and` as soon as
 one side is `False`, because nothing on the right could make the whole
 thing `True`. This is called *short-circuiting*, and here it guards the
-division. Swap the two conditions, and the program stops with a
+division. Swap the two conditions, and the *program*{.term} stops with a
 `ZeroDivisionError`.
 
 </details>

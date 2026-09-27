@@ -13,7 +13,7 @@ covers:
 
 # A program of your own
 
-Here is a whole program. Before you run it, what do you think the second
+Here is a whole *program*{.term}. Before you run it, what do you think the second
 line of its output will be?
 
 ```python exec
@@ -126,7 +126,7 @@ anything at all. It should feel almost too small to show anyone.
 
 - [ ] it runs from the top, on a freshly loaded page, with no errors;
 - [ ] it does one thing a person could use, however small;
-- [ ] a comment at the top gives its name, a version number and the date;
+- [ ] a *comment*{.term} at the top gives its name, a version number and the date;
 - [ ] each function's name says what it does, and a comment under its
   `def` line says what goes in and what comes out;
 - [ ] you have tried it on at least three inputs whose answers you knew

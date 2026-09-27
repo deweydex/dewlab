@@ -10,7 +10,7 @@ worlds:
 
 # Designing and testing good functions — Practice
 
-Problems on *docstrings*{.term}, *edge cases*{.term} and tests, and three from earlier
+Problems on *docstrings*{.term}, *edge cases*{.term} and *tests*{.term}, and three from earlier
 pages. Where a problem has a cell of tests under it, those tests are
 yours. Add to them, and they run against your function and against a
 solution. Try each problem before you open anything under it.
@@ -74,7 +74,7 @@ the function is for.
 
 ## 4. The middle value
 
-The *median* is the middle value of a list once it is sorted. With an even
+The *median* is the middle *value*{.term} of a list once it is *sorted*{.term}. With an even
 number of values, it is the mean of the two in the middle. Can you write
 `median(numbers)`, and add tests of your own?
 
@@ -124,7 +124,7 @@ and Python's own `max`.
 <details class="dl-answer"><summary>answer</summary>
 
 An empty list breaks all three: `mean` divides by zero, `median` asks for
-an element of an empty list, and `max([])` raises a `ValueError`. `mean`
+an *element*{.term} of an empty list, and `max([])` raises a `ValueError`. `mean`
 also breaks on a list holding a string, and `max` does not:
 `max(["b", "a"])` is `"b"`. So it is worth being clear which of your
 assumptions is "numbers" and which is "not empty".
@@ -199,7 +199,7 @@ What will it do?
 
 It stops with an `AssertionError`, though the function is fine.
 `(0.1 + 0.2) / 2` is `0.15000000000000002`: most decimals cannot be
-stored exactly. A test that checks two floats for exact equality tests
+stored exactly. A test that checks two *floats*{.term} for exact equality tests
 how the computer stores numbers, not your code. Check that they are close
 instead: `assert abs(mean([0.1, 0.2]) - 0.15) < 1e-9`.
 
@@ -222,7 +222,7 @@ bug hunt on the tutorial page had three versions ready to show it.
 ## 10. A test that checks for an error
 
 How can a test check that `mean([])` raises a `ValueError`, when an error
-stops the program?
+stops the *program*{.term}?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -448,7 +448,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-The answer is `['A', 'B', 'C']`. `sorted()` takes anything a loop can use,
+The answer is `['A', 'B', 'C']`. `sorted()` takes anything a *loop*{.term} can use,
 and always returns a list. `"".join(sorted("CAB"))` makes it a string
 again.
 
@@ -484,7 +484,7 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 The answer is `HERON`, with no error. The search said "not there" with
-−1, and the caller used it as an index, which picks the last element. A
+−1, and the caller used it as an *index*{.term}, which picks the last element. A
 caller must check for −1 before using the answer. If the search raised
 an error in place of returning −1, nobody could forget the check.
 

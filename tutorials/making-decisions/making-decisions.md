@@ -24,7 +24,7 @@ covers:
 # Making decisions with if, elif and else
 
 A Caesar shift moves letters, and leaves a space or a question mark where
-it is. So before a program changes a character, it has to ask what kind of
+it is. So before a *program*{.term} changes a character, it has to ask what kind of
 character it is. Python can answer questions like that with `True` or
 `False`. What do you think this cell prints?
 
@@ -80,7 +80,7 @@ both beginners and people who have programmed for years.
 experiment that shows the difference.
 
 Before you run the next cell, write what you think each line prints in the
-comment beside it.
+*comment*{.term} beside it.
 
 ```python exec
 id: your-turn-1

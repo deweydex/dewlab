@@ -21,7 +21,7 @@ not 0?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 is a real index: the first element. A search that returned 0 for "not
+0 is a real index: the first *element*{.term}. A search that returned 0 for "not
 there" would look the same as one that found the target first. −1 is never
 an index that a search finds, so it can only mean "not there". In Python
 it is a real index too, the last element, so a caller who forgets to check
@@ -46,7 +46,7 @@ look at everything before it can say no.
 
 ## 3. The last one
 
-Can you write `last_index(items, target)`, which gives the index of the
+Can you write `last_index(items, target)`, which gives the *index*{.term} of the
 *last* place the target appears, or −1?
 
 ```python exec
@@ -148,7 +148,7 @@ Why does binary search calculate `mid = (low + high) // 2`, and not
 
 <details class="dl-answer"><summary>answer</summary>
 
-`/` always gives a float, even when the answer is whole: `(0 + 14) / 2` is
+`/` always gives a *float*{.term}, even when the answer is whole: `(0 + 14) / 2` is
 `7.0`. A list index must be a whole number, so `items[7.0]` stops with a
 `TypeError: list indices must be integers or slices, not float`. `//`
 divides and rounds down, so it always gives a whole number.
@@ -170,7 +170,7 @@ It needs 10 and 20. Ten halvings cover 2¹⁰ = 1,024 items, and twenty cover
 ## 8. Where it would go
 
 Can you write `where_it_goes(items, target)`, which gives the index where
-`target` would go in the sorted list `items` to keep it sorted? If the
+`target` would go in the *sorted*{.term} list `items` to keep it sorted? If the
 target is there already, it gives the index of the first one.
 
 ```python exec
@@ -365,7 +365,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-The answer is `HMS`. `-3` is the cut three places from the end, and a slice with no
+The answer is `HMS`. `-3` is the cut three places from the end, and a *slice*{.term} with no
 second number runs to the end.
 
 </details>
@@ -418,7 +418,7 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 The answer is `{'B': 1, 'A': 3, 'N': 2}`. `.get(letter, 0)` gives 0 the
-first time a letter appears, so there is no `KeyError`. The keys stay in the order
+first time a letter appears, so there is no `KeyError`. The *keys*{.term} stay in the order
 they were added: B first, because BANANA starts with B.
 
 </details>

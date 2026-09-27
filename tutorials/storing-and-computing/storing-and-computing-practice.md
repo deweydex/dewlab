@@ -139,7 +139,7 @@ The arithmetic is the same, and now the code says what it is about.
 
 ## 5. What type is it
 
-Say the type of each of these, then check with `type()` in the cell:
+Say the type of each of these, then check with `type()` in the *cell*{.term}:
 `42`, `42.0`, `"42"`, `True`, `4 / 2`, `4 // 2`, `"4" + "2"`.
 
 ```python exec
@@ -249,7 +249,7 @@ Python does not read what the text says. Try `bool(0)`, `bool("")` and
 
 ## 10. 25 plus 1 is 251
 
-A program asks somebody to type their age with `input()`, then adds 1. It
+A *program*{.term} asks somebody to type their age with `input()`, then adds 1. It
 prints `251` instead of `26`. What happened?
 
 <details class="dl-answer"><summary>answer</summary>

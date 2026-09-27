@@ -38,7 +38,7 @@ What will it print?
 ```
 
 It prints `ME`. The list keeps four words under one name, in order, and
-Python counts their positions from 0. Most programs work with many values,
+Python counts their positions from 0. Most *programs*{.term} work with many values,
 not one: every letter of a message, every pixel in a row. Here we keep them
 in a list, choose the ones we want, and do something with each of them in
 turn.
@@ -236,7 +236,7 @@ The middle three are `[80, 120, 160]`. Printing them first matters: after
 
 ## Building lists with loops
 
-An empty list, `[]`, can be filled one element at a time. Here a loop
+An empty list, `[]`, can be filled one element at a time. Here a *loop*{.term}
 builds the alphabet, with `chr()` from
 [Variables, data types and text](tutorial:storing-and-computing). How long
 will the list be?

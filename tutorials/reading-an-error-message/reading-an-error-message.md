@@ -32,7 +32,7 @@ print(mesage)
 
 The last line of what comes back says `NameError: name 'mesage' is not
 defined`, and then, most likely, `Did you mean: 'message'?`. Python read
-the whole program, ran the first two lines, and stopped at the third,
+the whole *program*{.term}, ran the first two lines, and stopped at the third,
 because nothing called `mesage` exists. It says which line, which name,
 and even what you probably meant.
 
@@ -153,7 +153,7 @@ two names side by side make no sense.
 Did the third one say `IndentationError`? That is a special kind of
 `SyntaxError`, for lines that are not indented the way Python expects.
 The message even names the `if` on line 3 that needed an indented line
-after it. (Line 1 is the comment.)
+after it. (Line 1 is the *comment*{.term}.)
 
 Look again at the fourth one. Python is doing something clever there.
 When a bracket is opened and not closed, Python keeps reading past it,
@@ -299,7 +299,7 @@ Here is the same report again, with its parts marked.
 then describes it. That is what went wrong. The lines above it say
 where: the cell, the line number, and a copy of the line, with a marker
 under the part that failed. The words `in <module>` mean that the line is
-in the main part of the program. Once our programs have functions, which
+in the main part of the program. Once our programs have *functions*{.term}, which
 we meet later, a traceback can name other places too.
 
 Now look closer. The line that failed is line 5. But is line 5 wrong? It
