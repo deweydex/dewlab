@@ -159,7 +159,7 @@
   }
 }
 
-/* Patterns in pictures (DECISIONS_LOG 7.281). A generated picture can
+/* Patterns in pictures (DECISIONS_LOG 7.282). A generated picture can
  * carry a copy of each tinted area filled with stripes or dots
  * (dev/graphics/palette.py, add_patterns), so a reader who cannot tell
  * the tints apart can still tell the parts apart. The copy is hidden

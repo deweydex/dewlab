@@ -519,7 +519,7 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   makes the mistakes, but this module uses "somebody" or an unnamed
   worked line instead. The mistake belongs to no one, and there is no
   name to translate.
-- **Colour words** (done, 7.281). Measured under simulated colour
+- **Colour words** (done, 7.282). Measured under simulated colour
   blindness, the yellow, green and blue tints stay apart for red-green
   colour blindness in both themes, but green and blue merge for
   tritanopia. The prose now names each part by where it is as well as
@@ -527,7 +527,7 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   default and on under high contrast, lays a different pattern over each
   tint. A new picture gets its patterns from `add_patterns()` in
   `dev/graphics/palette.py`, which `zen.py` already calls.
-- **Glossary files** (done, 7.281). Every Zen tutorial page has a
+- **Glossary files** (done, 7.282). Every Zen tutorial page has a
   `<slug>.glossary.yaml`. A new page needs one too, written to
   `.claude/skills/tutorial-glossary/SKILL.md`; a later use of a term is
   marked `*term*{.term}`.

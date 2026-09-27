@@ -28,7 +28,7 @@ MONO = "'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace"
 SANS = "'Helvetica Neue', Inter, system-ui, sans-serif"
 
 
-# Patterns for readers who cannot tell the tints apart (DECISIONS_LOG 7.281).
+# Patterns for readers who cannot tell the tints apart (DECISIONS_LOG 7.282).
 #
 # A tinted area keeps its tint. `add_patterns()` lays a copy of it on top,
 # filled with stripes, and gives the copy the class `dl-pattern`. The

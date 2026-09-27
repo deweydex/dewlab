@@ -1,7 +1,7 @@
 """The pattern layer `dev/graphics/palette.py` adds to a tinted picture.
 
 A reader who cannot tell the tints apart turns on "Patterns in pictures"
-(DECISIONS_LOG 7.281); these check what the generator writes for that
+(DECISIONS_LOG 7.282); these check what the generator writes for that
 setting to show. The stylesheet's half, that the layer stays hidden until
 the setting or high contrast is on, is checked in the browser tests.
 """
