@@ -23,6 +23,7 @@ only have to read the one that matches what you are here to do.
 | Use a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
 | Find an answer about getting started | [`docs/FAQ.md`](docs/FAQ.md) |
 | Write or edit a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
+| Understand why the pages teach the way they do, and which rules bend | [`docs/HOW_DEWLAB_THINKS.md`](docs/HOW_DEWLAB_THINKS.md) |
 | Change the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Report a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
 | Use the Notebook, the Python workspace with no tutorial | [`docs/DEWMINI.md`](docs/DEWMINI.md) |

@@ -17,6 +17,11 @@ it is written, and why. Cite a part of that guide by its anchor, as
 `PEDAGOGICAL_STYLE_GUIDE.md#voice`, never by a section number:
 `dev/check_doc_links.py` checks the anchor exists, and fails on a number.
 
+[`HOW_DEWLAB_THINKS.md`](HOW_DEWLAB_THINKS.md) is the long version of that
+guide's reasons: where each came from, how far it bends, and which of the
+rules here the build enforces, which it only reports, and which it leaves to
+you.
+
 ---
 
 <a id="page-templates"></a>

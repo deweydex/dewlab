@@ -5719,4 +5719,6 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 
 **What still blocks, and why.** The build's refusals. The generated files for the topic game, the topic editor and the pair reports: only an edit to `planning/curriculum/` trips them, and a stale game once offered fourteen topics that no longer existed. The tests in `tests/test_handwritten_classes.py` that read particular pages and check that the numbers their prose states follow from their own code. They look like pins on one page's teaching, and they are the "every number is run" rule (`PEDAGOGICAL_STYLE_GUIDE.md#code`) applied to prose.
 
+**Also.** `docs/HOW_DEWLAB_THINKS.md`, a first draft, sets out the reasons behind the style guide as reasoning to weigh rather than law, and says which of three tiers each kind of rule is in: enforced, reported, or left to the author.
+
 *Cost to change: a warning is easier to ignore than a failure, so the map and the documents about the project will drift further between tidy-ups than they did, and a maintainer has to look at the house-style job now and then. Going back is removing the marker lines, the `|| [ $? -eq 1 ]`, and the `house-style` job.*
