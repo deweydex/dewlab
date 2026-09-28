@@ -68,7 +68,8 @@ body { background: var(--sea); color: var(--ink); font-family: var(--serif); ove
 .ring { fill: none; stroke: var(--ring); stroke-width: 1; stroke-dasharray: 2 5; }
 .road { fill: none; stroke: var(--road); stroke-width: 1.2; transition: opacity .2s; }
 .road.bridge { stroke: var(--orange); stroke-dasharray: 6 5; opacity: .75; }
-#app[data-lod="1"] .road:not(.bridge) { opacity: 0; }
+#app[data-lod="1"] .road { opacity: 0; }
+#app[data-lod="2"] .road.bridge { opacity: .3; }
 #app.no-roads .road { opacity: 0 !important; }
 .road.lit-in { stroke: var(--road-strong); stroke-width: 2.4; opacity: 1 !important; stroke-dasharray: none; }
 .road.lit-out { stroke: var(--orange); stroke-width: 2.4; opacity: 1 !important; stroke-dasharray: none; }

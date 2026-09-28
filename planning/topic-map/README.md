@@ -17,10 +17,9 @@ To run the search from a fresh checkout:
     python3 planning/topic-map/inventory.py
     # then run search.workflow.js with Claude Code's Workflow tool
 
-Status, 27 September 2026: parked. All six area proposals are in
-`proposals/` and pass the validator; `design.md` is the technical and
-interaction design. Not done yet: integrating the proposals into one map,
-the three critics, and the revision. To pick up, run `inventory.py`, then
-the workflow; it re-runs the proposers unless the Workflow tool can resume
-the earlier run, so to save tokens, cut the script down to its
-integrate-onwards stages and point it at the committed proposals.
+Status, 28 September 2026: the search is finished. `graph-final.json` is the
+proposed map (185 topics, 41 districts, 11 regions, every page placed), after
+integration, three critics and a revision; `graph.json` is the map before the
+critics. `planning/TOPIC_MAP.md` sets out what it holds, the twelve decisions
+it needs from Josh, and the build plan from `design.md`. To rerun only the
+stages after the search, pass the workflow `{from: 'integrate'}`.

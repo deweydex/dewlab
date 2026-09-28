@@ -58,6 +58,22 @@ for c in codes:
 for pair in graph.get("neighbours") or []:
     if len(pair) == 2 and pair[0] in rid and pair[1] in rid and pair[0] != pair[1]:
         cross[frozenset(pair)] += 2
+# A page that is a step in topics of two regions ties them too, more weakly
+# than a need does: it is how the web regions, which need nothing outside
+# themselves, still show what they sit beside.
+page_regions = collections.defaultdict(set)
+for c in codes:
+    for s_ in topics[c].get("steps") or []:
+        page_regions[s_["tutorial"]].add(reg_of[c])
+for lm in graph.get("landmarks") or []:
+    for a in lm.get("at") or []:
+        if a in reg_of:
+            page_regions[lm["tutorial"]].add(reg_of[a])
+for rs in page_regions.values():
+    for a, b in itertools.combinations(sorted(rs), 2):
+        cross[frozenset((a, b))] += 0.5
+
+STRANGERS = 40  # the cost of two unrelated regions sharing a border
 
 def ring_cost(order):
     pos = {r: i for i, r in enumerate(order)}
@@ -68,20 +84,33 @@ def ring_cost(order):
         d = abs(pos[a] - pos[b])
         d = min(d, n - d)
         cost += k * d * d
+    for i in range(n):
+        if not cross.get(frozenset((order[i], order[(i + 1) % n]))):
+            cost += STRANGERS
     return cost
 
 if len(rid) <= 9:
     best = min(([rid[0], *p] for p in itertools.permutations(rid[1:])), key=ring_cost)
 else:
-    best = rid[:]
-    improved = True
-    while improved:
-        improved = False
-        for i in range(1, len(best) - 1):
-            for j in range(i + 1, len(best)):
-                cand = best[:i] + best[i:j + 1][::-1] + best[j + 1:]
-                if ring_cost(cand) < ring_cost(best):
-                    best, improved = cand, True
+    # Too many regions to try every order, and one run of reversals stops at
+    # the first dead end. So run it from many starting orders and keep the best.
+    def two_opt(seq):
+        improved = True
+        while improved:
+            improved = False
+            for i in range(1, len(seq) - 1):
+                for j in range(i + 1, len(seq)):
+                    cand = seq[:i] + seq[i:j + 1][::-1] + seq[j + 1:]
+                    if ring_cost(cand) < ring_cost(seq):
+                        seq, improved = cand, True
+        return seq
+    shuffler = random.Random(3)
+    best = two_opt(rid[:])
+    for _ in range(400):
+        start = rid[:1] + shuffler.sample(rid[1:], len(rid) - 1)
+        cand = two_opt(start)
+        if ring_cost(cand) < ring_cost(best):
+            best = cand
 order = best
 
 # ---------- district order inside each region
@@ -356,11 +385,20 @@ def clear_spot(members, inside, cx, cy, hard=90):
                 best_l = (score, x, y)
     return [round(best_l[1]), round(best_l[2])] if best_l else [round(cx), round(cy)]
 
+# Region names are wide and letter-spaced; at the whole-map zoom one letter
+# is about 55 map units, so two small neighbouring regions can print one name
+# over the other. Each name keeps clear of the names already placed.
 region_label = {}
-for r in order:
+placed_labels = []
+def clear_of_labels(x, y, name):
+    half = len(name) * 55 / 2
+    return all(abs(x - px) > half + ph or abs(y - py) > 130 for px, py, ph in placed_labels)
+for r in sorted(order, key=lambda r: -sum(1 for c in codes if reg_of[c] == r)):
     mem = [pos[c] for c in codes if reg_of[c] == r]
     cx, cy = sum(p[0] for p in mem) / len(mem), sum(p[1] for p in mem) / len(mem)
-    region_label[r] = clear_spot(mem, lambda j, i, f=fields[r]: f[j][i] > 0.08, cx, cy)
+    name = next(x["name"] for x in regions if x["id"] == r)
+    region_label[r] = clear_spot(mem, lambda j, i, f=fields[r], n=name: f[j][i] > 0.08 and clear_of_labels(minx + i * STEP, miny + j * STEP, n), cx, cy)
+    placed_labels.append((region_label[r][0], region_label[r][1], len(name) * 55 / 2))
 district_label = {}
 for d in dsector:
     mem = [pos[c] for c in codes if dist_of[c] == d]
@@ -429,6 +467,6 @@ data = {
     "questions": graph.get("questions") or [],
 }
 json.dump(data, open(out_path, "w"), separators=(",", ":"))
-print("regions", order, file=sys.stderr)
+print("regions", order, "ring cost", ring_cost(order), file=sys.stderr)
 print("towns", len(codes), "districts", len(dsector), "landmarks", len(lm_pos), "depth", max(tier.values()), file=sys.stderr)
 print({c["title"]: len(c["path"]) for c in course_routes}, file=sys.stderr)
