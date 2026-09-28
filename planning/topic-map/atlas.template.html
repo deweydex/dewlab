@@ -346,6 +346,17 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   const overlay = document.getElementById("overlay");
   const panel = document.getElementById("panel");
   const pbody = document.getElementById("pbody");
+
+  // A new version of this page can arrive while an old one is still open, and
+  // run its script in the same document. The older copy must let go of the
+  // shared elements first, or two copies draw the map at once, each with its
+  // own zoom.
+  if (window.__atlasTeardown) window.__atlasTeardown();
+  const life = new AbortController();
+  const listen = (el, type, fn, opts) => el.addEventListener(type, fn, { ...(opts || {}), signal: life.signal });
+  window.__atlasTeardown = () => { life.abort(); if (anim) cancelAnimationFrame(anim); };
+  world.replaceChildren();
+  overlay.replaceChildren();
   const NS = "http://www.w3.org/2000/svg";
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -578,6 +589,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     if (!animate || reduced) { view.k = k; view.x = x; view.y = y; render(); return; }
     const from = { ...view }, t0 = performance.now(), dur = 520;
     const step = (now) => {
+      if (life.signal.aborted) return;
       const u = Math.min(1, (now - t0) / dur);
       const e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
       // interpolate zoom in log space so it feels even
@@ -605,7 +617,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   // ---------- pointer: pan, pinch, wheel
   const pts = new Map();
   let moved = false, last = null, pinch0 = null;
-  stage.addEventListener("pointerdown", (e) => {
+  listen(stage, "pointerdown", (e) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     moved = false;
@@ -615,7 +627,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
       pinch0 = { d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k };
     }
   });
-  stage.addEventListener("pointermove", (e) => {
+  listen(stage, "pointermove", (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pts.size === 2 && pinch0) {
@@ -641,14 +653,14 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     stage.classList.remove("dragging");
     setTimeout(() => { moved = false; }, 0);
   };
-  stage.addEventListener("pointerup", up);
-  stage.addEventListener("pointercancel", up);
-  stage.addEventListener("wheel", (e) => {
+  listen(stage, "pointerup", up);
+  listen(stage, "pointercancel", up);
+  listen(stage, "wheel", (e) => {
     e.preventDefault();
     const rect = stage.getBoundingClientRect();
     zoomAt(Math.exp(-e.deltaY * 0.0016), e.clientX - rect.left, e.clientY - rect.top);
   }, { passive: false });
-  stage.addEventListener("dblclick", (e) => {
+  listen(stage, "dblclick", (e) => {
     if (e.target.closest(".town")) return;
     const rect = stage.getBoundingClientRect();
     zoomAt(1.8, e.clientX - rect.left, e.clientY - rect.top);
@@ -657,13 +669,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   document.getElementById("zin").onclick = () => zoomCentre(1.5);
   document.getElementById("zout").onclick = () => zoomCentre(1 / 1.5);
   document.getElementById("zfit").onclick = () => fitAll(true);
-  document.addEventListener("keydown", (e) => {
+  listen(document, "keydown", (e) => {
     if (e.target.matches("input, select")) return;
     if (e.key === "+" || e.key === "=") zoomCentre(1.3);
     else if (e.key === "-") zoomCentre(1 / 1.3);
     else if (e.key === "Escape") select(null);
   });
-  addEventListener("resize", render);
+  listen(window, "resize", render);
 
   // ---------- the graph
   function ancestors(code) {
@@ -877,7 +889,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     openPanel();
   }
   function openPanel() { panel.classList.remove("collapsed"); }
-  pbody.addEventListener("click", (e) => {
+  listen(pbody, "click", (e) => {
     const go = e.target.closest("[data-go]");
     if (go) { select(go.dataset.go, true); return; }
     const lmb = e.target.closest("[data-lm]");
@@ -922,7 +934,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   // ---------- search
   const q = document.getElementById("q");
   const results = document.getElementById("results");
-  q.addEventListener("input", () => {
+  listen(q, "input", () => {
     const s = q.value.trim().toLowerCase();
     if (!s) { results.replaceChildren(); return; }
     const words = s.split(/\s+/);
@@ -936,8 +948,8 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
       ? hits.map(({ t }) => `<li><button type="button" data-go="${esc(t.code)}">${esc(t.name)}<small>${esc(districtById.get(t.district).name)}</small></button></li>`).join("")
       : `<li style="padding:6px 4px;font-size:14px;color:var(--muted)">Nothing called that yet.</li>`;
   });
-  q.addEventListener("keydown", (e) => { if (e.key === "Enter") { const b = results.querySelector("button"); if (b) b.click(); } });
-  results.addEventListener("click", (e) => {
+  listen(q, "keydown", (e) => { if (e.key === "Enter") { const b = results.querySelector("button"); if (b) b.click(); } });
+  listen(results, "click", (e) => {
     const b = e.target.closest("[data-go]");
     if (b) { select(b.dataset.go, true); results.replaceChildren(); q.value = ""; }
   });
