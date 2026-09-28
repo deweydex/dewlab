@@ -66,6 +66,21 @@ misconception it tackles; a context page is a side street of its owner's
 topic, unless it teaches an idea other topics need, in which case it is a
 town (the cascade, how Git keeps history, how a browser fetches a page).
 
+### The map's voice
+
+The map introduces itself as **the land of maths and computing**: countries,
+towns, roads, landmarks and a square in the middle where every traveller
+starts. The fantasy is in the framing, and it follows the style guide's rule
+that a metaphor comes after the plain statement, never instead of it
+(`PEDAGOGICAL_STYLE_GUIDE.md#plain-language`). So the page first says what the
+map is in plain words, and only then uses the land's voice. Each region has a
+plain `blurb` and, after it, one line of `lore` in `graph-final.json` ("Chance
+and data: probability, statistics, charts and simulations. *Nothing in this
+country is certain, but some things are very likely.*"). The words stay
+common ones, with no archaic ones like "realm" or "yonder", because a reader
+may be working in a second language. Town names stay plain, because decision
+1 relies on a learner finding "binary" or "testing" by name.
+
 ## How it was found
 
 `BRIEF.md` in the working folder is the rule book the agents worked to. Its

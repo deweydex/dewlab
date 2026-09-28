@@ -3,57 +3,68 @@
   {
    "id": "number",
    "name": "Number",
-   "blurb": "Where numbers sit on a line, fractions, powers, roots and logarithms, in small steps."
+   "blurb": "Where numbers sit on a line, fractions, powers, roots and logarithms, in small steps.",
+   "lore": "The oldest country on the map. People counted here long before anyone built a computer."
   },
   {
    "id": "logic-and-binary",
    "name": "Logic and binary",
-   "blurb": "How a computer keeps every number as ones and zeros, and the rules of true, false and sets that its decisions follow."
+   "blurb": "How a computer keeps every number as ones and zeros, and the rules of true, false and sets that its decisions follow.",
+   "lore": "The people of this country answer every question with yes or no."
   },
   {
    "id": "algebra",
    "name": "Algebra and graphs",
-   "blurb": "Letters for numbers, equations and how to solve them, functions and the graphs they draw, and how fast a graph is changing."
+   "blurb": "Letters for numbers, equations and how to solve them, functions and the graphs they draw, and how fast a graph is changing.",
+   "lore": "Every unknown here has a letter, and every letter can be found."
   },
   {
    "id": "shape-and-space",
    "name": "Shape and space",
-   "blurb": "Measuring shapes, triangles and the circle that sine and cosine come from, and grids of numbers that move pictures in 2D and 3D."
+   "blurb": "Measuring shapes, triangles and the circle that sine and cosine come from, and grids of numbers that move pictures in 2D and 3D.",
+   "lore": "The surveyors of the land live here. They measure mountains with nothing but a triangle."
   },
   {
    "id": "chance-and-data",
    "name": "Chance and data",
-   "blurb": "Counting what can happen, finding chances, reading and drawing data honestly, and letting a computer simulate what happens."
+   "blurb": "Counting what can happen, finding chances, reading and drawing data honestly, and letting a computer simulate what happens.",
+   "lore": "Nothing in this country is certain, but some things are very likely."
   },
   {
    "id": "machine-learning",
    "name": "Machine learning",
-   "blurb": "Programs that learn from examples: a chain that writes like a book, a reader that learns from its mistakes, and how to judge them."
+   "blurb": "Programs that learn from examples: a chain that writes like a book, a reader that learns from its mistakes, and how to judge them.",
+   "lore": "The youngest country on the map. Its borders still move every year."
   },
   {
    "id": "programming",
    "name": "Programming",
-   "blurb": "Writing programs in Python: first lines, decisions and loops, functions, lists and dictionaries, algorithms, and objects."
+   "blurb": "Writing programs in Python: first lines, decisions and loops, functions, lists and dictionaries, algorithms, and objects.",
+   "lore": "The biggest city in the land. Most roads cross it at least once."
   },
   {
    "id": "making-software",
    "name": "Making software",
-   "blurb": "Programs other people can use and trust: fixing mistakes, testing, code others can read, and working as a team."
+   "blurb": "Programs other people can use and trust: fixing mistakes, testing, code others can read, and working as a team.",
+   "lore": "The workshops of the land. Broken things come here to be mended."
   },
   {
    "id": "databases",
    "name": "Databases",
-   "blurb": "Keeping data in tables, asking them questions in SQL, linking tables together, and moving data in and out."
+   "blurb": "Keeping data in tables, asking them questions in SQL, linking tables together, and moving data in and out.",
+   "lore": "The great library. Every row has its place, and a good question finds it."
   },
   {
    "id": "web-pages",
    "name": "Building web pages",
-   "blurb": "HTML says what each part of a page is, CSS says how it looks and where it sits, and a little more makes it move."
+   "blurb": "HTML says what each part of a page is, CSS says how it looks and where it sits, and a little more makes it move.",
+   "lore": "The builders live here. Everything in this country is made of tags."
   },
   {
    "id": "websites",
    "name": "Websites and browsers",
-   "blurb": "The tools you build with, putting a site on the web, what a browser does with it, and making it work for everyone who visits."
+   "blurb": "The tools you build with, putting a site on the web, what a browser does with it, and making it work for everyone who visits.",
+   "lore": "The harbour of the land. Finished pages leave from here for the rest of the world."
   }
  ],
  "neighbours": [

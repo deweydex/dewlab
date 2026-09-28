@@ -443,6 +443,7 @@ def step_out(s):
 data = {
     "regions": [{"id": r, "name": next(x["name"] for x in regions if x["id"] == r),
                  "blurb": next(x.get("blurb", "") for x in regions if x["id"] == r),
+                 "lore": next(x.get("lore", "") for x in regions if x["id"] == r),
                  "label": region_label[r], "land": land[r],
                  "count": sum(1 for c in codes if reg_of[c] == r)} for r in order],
     "districts": [{"id": d, "name": districts[d]["name"], "blurb": districts[d].get("blurb", ""),
