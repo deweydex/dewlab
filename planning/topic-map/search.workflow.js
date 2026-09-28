@@ -108,13 +108,21 @@ and fix every error until it reports 0 errors; act on warnings that are right. R
 }
 
 // the design spec is being researched by a separate agent outside this workflow
-phase('Search')
-const perArea = await parallel(AREAS.map((area) => () =>
-  agent(proposerPrompt(area), { label: `propose:${area.id}`, phase: 'Search', schema: PROPOSAL_SUMMARY })
-    .then((r) => ({ area: area.id, proposal: r }))))
-const areasDone = perArea.filter(Boolean).filter((x) => x.proposal)
-log(`proposals for ${areasDone.length} of ${AREAS.length} areas`)
-if (areasDone.length < AREAS.length) log(`missing: ${AREAS.map((a) => a.id).filter((id) => !areasDone.some((x) => x.area === id)).join(', ')}`)
+// Pass args {from: 'integrate'} to start from the committed proposals
+// instead of searching again, which would overwrite them.
+const fromIntegrate = !!(args && args.from === 'integrate')
+let areasDone = AREAS.map((a) => ({ area: a.id, proposal: 'committed' }))
+if (fromIntegrate) {
+  log('starting from the committed proposals; the search stage is skipped')
+} else {
+  phase('Search')
+  const perArea = await parallel(AREAS.map((area) => () =>
+    agent(proposerPrompt(area), { label: `propose:${area.id}`, phase: 'Search', schema: PROPOSAL_SUMMARY })
+      .then((r) => ({ area: area.id, proposal: r }))))
+  areasDone = perArea.filter(Boolean).filter((x) => x.proposal)
+  log(`proposals for ${areasDone.length} of ${AREAS.length} areas`)
+  if (areasDone.length < AREAS.length) log(`missing: ${AREAS.map((a) => a.id).filter((id) => !areasDone.some((x) => x.area === id)).join(', ')}`)
+}
 
 phase('Integrate')
 const graphFile = `${T}/graph.json`
