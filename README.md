@@ -27,6 +27,7 @@ only have to read the one that matches what you are here to do.
 | Change the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Report a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
 | Use the Notebook, the Python workspace with no tutorial | [`docs/DEWMINI.md`](docs/DEWMINI.md) |
+| Run an exam in the browser, and mark it | [dewmark](https://github.com/deweydex/dewmark), which began here and has its own repository |
 | Decide whether to teach with dewlab | keep reading here |
 
 ---
@@ -109,7 +110,6 @@ setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared datasets, each with a yaml saying where it came from
 assets/          the page template, styles, runtime, editors, and vendored libraries
 compose/         the Notebook and the Workspace (dewmini and dewmini web in the code)
-dewmark/         the exam track — specifications for authoring, sitting, and marking exams
 build.py         markdown in, site/ out
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist
