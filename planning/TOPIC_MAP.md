@@ -66,6 +66,18 @@ misconception it tackles; a context page is a side street of its owner's
 topic, unless it teaches an idea other topics need, in which case it is a
 town (the cascade, how Git keeps history, how a browser fetches a page).
 
+### How the land is laid out
+
+The towns that need nothing first stand together on the Prerequisite Plains,
+round the tower, in one shared colour. The countries ring the plains, each
+split into counties (its districts) with dotted borders, each country in its
+own hue. `layout.py` finds the shape by letting the map settle into a
+low-energy state. Every town pushes the others away, harder across a border.
+A prerequisite pulls like a spring. Each town is drawn to the middle of its
+county and its country, and depth is a gentle pull outward. An earlier layout
+fixed each town's distance from the middle by its depth, which turned a long
+chain of prerequisites into a spike.
+
 ### The map's voice
 
 The map introduces itself as **Comath, the land of maths and computing**:

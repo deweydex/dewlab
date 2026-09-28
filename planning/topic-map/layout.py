@@ -183,53 +183,124 @@ for t in range(max(tier.values()) + 1):
         pad = (hi - lo) * 0.1
         for i, c in enumerate(members):
             ang[c] = lo + pad + (hi - lo - 2 * pad) * (i + 0.5) / len(members)
-pos = {c: [radius(tier[c]) * math.cos(ang[c]), radius(tier[c]) * math.sin(ang[c])] for c in codes}
+# A town that needs nothing first stands in the Prerequisite Plains, the shared
+# ground round the tower, on its own country's side. Every other town lives in
+# its country, and the countries ring the plains.
+plains = {c for c in codes if tier[c] == 0}
+PLAINS_R = 400
 
-# ---------- force pass
-ITER = 380
+def start_r(c):
+    return PLAINS_R if c in plains else 760 + 170 * (tier[c] - 1) ** 0.75
+
+pos = {c: [start_r(c) * math.cos(ang[c]), start_r(c) * math.sin(ang[c])] for c in codes}
+
+# ---------- settling: the map finds a low-energy state
+# The polar layout above is only where towns start. They then settle under
+# forces until the map is at rest. Every town pushes every other away, harder
+# across a county or country border. A prerequisite pulls like a spring. Each
+# town is drawn to the middle of its county and, more weakly, of its country;
+# each country is held in its own direction from the tower; and depth is a
+# gentle pull outward, not a ring, so a long chain of needs no longer makes a
+# spike.
+def target_r(c):
+    return start_r(c)
+
+home = {}
+for r in order:
+    lo, hi = sector[r]
+    mid = (lo + hi) / 2
+    members = [c for c in codes if reg_of[c] == r and c not in plains] or [c for c in codes if reg_of[c] == r]
+    mean_r = sum(target_r(c) for c in members) / len(members)
+    home[r] = (mean_r * math.cos(mid), mean_r * math.sin(mid))
+    home_dir = home
+
+edges = [(p_, c) for c in codes for p_ in needs[c]]
+ITER = 700
 for it in range(ITER):
-    cool = 1 - it / ITER
-    move = {c: [0.0, 0.0] for c in codes}
+    temp = 1 - it / ITER
+    fx = {c: 0.0 for c in codes}
+    fy = {c: 0.0 for c in codes}
     for i, a_ in enumerate(codes):
         ax, ay = pos[a_]
+        da, ra = dist_of[a_], reg_of[a_]
         for b_ in codes[i + 1:]:
             bx, by = pos[b_]
-            dx, dy = ax - bx, (ay - by) * 1.9
+            dx, dy = ax - bx, (ay - by) * 1.6  # labels are wide, so vertical neighbours count as closer
+            if a_ in plains and b_ in plains:
+                R = 175  # the plains are shared ground, with no borders
+            elif a_ in plains or b_ in plains:
+                R = 240
+            else:
+                R = 190 if dist_of[b_] == da else 240 if reg_of[b_] == ra else 330
             d2 = dx * dx + dy * dy
-            if d2 < SPACING * SPACING:
-                dd = math.sqrt(d2) or 0.01
-                push = (SPACING - dd) / dd * 0.5
-                move[a_][0] += dx * push
-                move[a_][1] += dy * push / 1.9
-                move[b_][0] -= dx * push
-                move[b_][1] -= dy * push / 1.9
+            if d2 < R * R:
+                d = math.sqrt(d2) or 0.01
+                f = (R - d) / d * 0.5
+                fx[a_] += dx * f
+                fy[a_] += dy * f / 1.6
+                fx[b_] -= dx * f
+                fy[b_] -= dy * f / 1.6
+    for p_, c in edges:
+        (x1, y1), (x2, y2) = pos[p_], pos[c]
+        dx, dy = x2 - x1, y2 - y1
+        d = math.hypot(dx, dy) or 0.01
+        same_d, same_r = dist_of[p_] == dist_of[c], reg_of[p_] == reg_of[c]
+        L = 150 if same_d else 230 if same_r else 380
+        k = 0.04 if same_r else 0.008
+        if p_ in plains or c in plains:
+            L, k = 300, 0.01  # a road out of the plains is long and pulls gently
+        f = (d - L) * k / d
+        fx[c] -= dx * f
+        fy[c] -= dy * f
+        fx[p_] += dx * f
+        fy[p_] += dy * f
+    cen_d = {}
+    for d_ in dsector:
+        m = [pos[c] for c in codes if dist_of[c] == d_ and c not in plains]
+        if m:
+            cen_d[d_] = (sum(q[0] for q in m) / len(m), sum(q[1] for q in m) / len(m))
+    cen_r = {}
+    for r in order:
+        m = [pos[c] for c in codes if reg_of[c] == r and c not in plains] or [pos[c] for c in codes if reg_of[c] == r]
+        cen_r[r] = (sum(q[0] for q in m) / len(m), sum(q[1] for q in m) / len(m))
     for c in codes:
         x, y = pos[c]
-        for p in needs[c]:
-            px, py = pos[p]
-            k = 0.012 if dist_of[p] == dist_of[c] else 0.004
-            move[c][0] += (px - x) * k
-            move[c][1] += (py - y) * k
-            move[p][0] -= (px - x) * k / 2
-            move[p][1] -= (py - y) * k / 2
+        if c in plains:
+            # on the plains: keep to the ring round the tower, on the side
+            # facing its own country
+            hx, hy = home[reg_of[c]]
+            hr = math.hypot(hx, hy) or 1.0
+            fx[c] += (hx / hr * PLAINS_R - x) * 0.015
+            fy[c] += (hy / hr * PLAINS_R - y) * 0.015
+            rad = math.hypot(x, y) or 0.01
+            pull = (PLAINS_R - rad) * 0.05
+            if rad < 220:
+                pull += (220 - rad) * 0.3
+            fx[c] += x / rad * pull
+            fy[c] += y / rad * pull
+            continue
+        cx, cy = cen_d[dist_of[c]]
+        fx[c] += (cx - x) * 0.03
+        fy[c] += (cy - y) * 0.03
+        rx, ry = cen_r[reg_of[c]]
+        fx[c] += (rx - x) * 0.008
+        fy[c] += (ry - y) * 0.008
+        hx, hy = home[reg_of[c]]
+        fx[c] += (hx - rx) * 0.03
+        fy[c] += (hy - ry) * 0.03
+        rad = math.hypot(x, y) or 0.01
+        pull = (target_r(c) - rad) * 0.02
+        if rad < 640:
+            pull += (640 - rad) * 0.15  # countries keep off the plains
+        fx[c] += x / rad * pull
+        fy[c] += y / rad * pull
+    cap = 4 + 36 * temp
     for c in codes:
-        x, y = pos[c]
-        x += move[c][0] * 0.35 * cool
-        y += move[c][1] * 0.35 * cool
-        rad = math.hypot(x, y)
-        rad += (radius(tier[c]) - rad) * 0.18
-        th = math.atan2(y, x)
-        lo, hi = dsector[dist_of[c]]
-        mid = (lo + hi) / 2
-        while th - mid > math.pi:
-            th -= 2 * math.pi
-        while th - mid < -math.pi:
-            th += 2 * math.pi
-        # districts are soft walls, regions hard ones
-        rlo, rhi = sector[reg_of[c]]
-        slack = (hi - lo) * 0.25
-        th = min(max(th, max(lo - slack, rlo + 0.015)), min(hi + slack, rhi - 0.015))
-        pos[c] = [rad * math.cos(th), rad * math.sin(th)]
+        mx, my = fx[c] * 0.35, fy[c] * 0.35
+        m = math.hypot(mx, my)
+        if m > cap:
+            mx, my = mx / m * cap, my / m * cap
+        pos[c] = [pos[c][0] + mx, pos[c][1] + my]
 
 # ---------- landmarks sit beside the first topic they draw on
 lm_pos = []
@@ -258,21 +329,21 @@ STEP = 20
 nx = int((maxx - minx) / STEP) + 2
 ny = int((maxy - miny) / STEP) + 2
 SIG = 95.0
-dens = {r: [[0.0] * nx for _ in range(ny)] for r in order}
-anchors = [(pos[c][0], pos[c][1], reg_of[c], 1.0) for c in codes]
+dens = {r: [[0.0] * nx for _ in range(ny)] for r in order + ["plains"]}
+anchors = [(pos[c][0], pos[c][1], "plains" if c in plains else reg_of[c], 1.0) for c in codes]
+anchors.append((0.0, 0.0, "plains", 1.3))
+for k in range(10):
+    a_ = 2 * math.pi * k / 10
+    anchors.append((190 * math.cos(a_), 190 * math.sin(a_), "plains", 1.0))
 for lm, (x, y) in lm_pos:
     at = [a for a in lm.get("at") or [] if a in reg_of]
-    if at:
-        anchors.append((x, y, reg_of[at[0]], 0.8))
-for r in order:
-    lo, hi = sector[r]
-    mid = (lo + hi) / 2
-    for k in range(3):
-        rad = 130 + k * 140
-        anchors.append((rad * math.cos(mid), rad * math.sin(mid), r, 0.9))
+    if at and not lm.get("tower"):
+        anchors.append((x, y, "plains" if at[0] in plains else reg_of[at[0]], 0.8))
 for c in codes:
     for p in needs[c]:
         (x1, y1), (x2, y2) = pos[p], pos[c]
+        if p in plains or c in plains:
+            continue
         if reg_of[p] == reg_of[c]:
             for f in (0.33, 0.66):
                 anchors.append((x1 + (x2 - x1) * f, y1 + (y2 - y1) * f, reg_of[c], 0.55))
@@ -294,7 +365,7 @@ for ax, ay, r, w in anchors:
 THRESH = 0.32
 
 def field_for(r):
-    others = [dens[s] for s in order if s != r]
+    others = [dens[s] for s in order + ["plains"] if s != r]
     mine = dens[r]
     out = [[0.0] * nx for _ in range(ny)]
     for j in range(ny):
@@ -306,7 +377,7 @@ def field_for(r):
     return out
 
 def total_field():
-    return [[sum(dens[s][j][i] for s in order) - THRESH for i in range(nx)] for j in range(ny)]
+    return [[sum(dens[s][j][i] for s in order + ["plains"]) - THRESH for i in range(nx)] for j in range(ny)]
 
 TABLE = {1: [(3, 0)], 2: [(0, 1)], 3: [(3, 1)], 4: [(1, 2)], 5: [(3, 0), (1, 2)], 6: [(0, 2)], 7: [(3, 2)],
          8: [(2, 3)], 9: [(2, 0)], 10: [(0, 1), (2, 3)], 11: [(2, 1)], 12: [(1, 3)], 13: [(1, 0)], 14: [(0, 3)]}
@@ -370,7 +441,44 @@ def to_path(loops):
 
 fields = {r: field_for(r) for r in order}
 land = {r: to_path(chain(marching(fields[r]))) for r in order}
+
+# A county is the part of its country nearest its own towns. Its density
+# comes from its towns and the needs between them; it wins a patch of the
+# country where it beats every other county of that country.
+ddens = {d: [[0.0] * nx for _ in range(ny)] for d in dsector}
+d_anchors = [(pos[c][0], pos[c][1], dist_of[c], 1.0) for c in codes if c not in plains]
+for c in codes:
+    for p_ in needs[c]:
+        if dist_of[p_] == dist_of[c] and p_ not in plains and c not in plains:
+            (x1, y1), (x2, y2) = pos[p_], pos[c]
+            d_anchors.append(((x1 + x2) / 2, (y1 + y2) / 2, dist_of[c], 0.6))
+for ax, ay, d_, w in d_anchors:
+    gi, gj = int((ax - minx) / STEP), int((ay - miny) / STEP)
+    grid = ddens[d_]
+    for j in range(max(0, gj - reach), min(ny, gj + reach + 1)):
+        yy = miny + j * STEP - ay
+        row = grid[j]
+        for i in range(max(0, gi - reach), min(nx, gi + reach + 1)):
+            xx = minx + i * STEP - ax
+            row[i] += w * math.exp(-(xx * xx + yy * yy) / (2 * SIG * SIG))
+county = {}
+for r in order:
+    ds = dseq[r]
+    rf = fields[r]
+    for d_ in ds:
+        others = [ddens[o] for o in ds if o != d_]
+        mine = ddens[d_]
+        f = [[0.0] * nx for _ in range(ny)]
+        for j in range(ny):
+            rrow, mrow = rf[j], mine[j]
+            orows = [o[j] for o in others]
+            for i in range(nx):
+                best = max((o[i] for o in orows), default=-1.0)
+                f[j][i] = min(rrow[i], mrow[i] - best)
+        county[d_] = to_path(chain(marching(f)))
 coast = to_path(chain(marching(total_field())))
+plains_field = field_for("plains")
+plains_land = to_path(chain(marching(plains_field)))
 
 def clear_spot(members, inside, cx, cy, hard=90):
     best_l = None
@@ -448,15 +556,17 @@ data = {
                  "label": region_label[r], "land": land[r],
                  "count": sum(1 for c in codes if reg_of[c] == r)} for r in order],
     "districts": [{"id": d, "name": districts[d]["name"], "blurb": districts[d].get("blurb", ""),
+                   "land": county.get(d, ""), "shade": dseq[districts[d]["region"]].index(d),
                    "region": districts[d]["region"], "label": district_label[d],
                    "count": sum(1 for c in codes if dist_of[c] == d)} for d in dsector],
     "coast": coast,
-    "rings": [radius(t) for t in range(max(tier.values()) + 1)],
+    "rings": [],
+    "plains": {"land": plains_land, "label": [0, 250]},
     "bounds": [round(minx), round(miny), round(maxx - minx), round(maxy - miny)],
     "towns": [{
         "code": c, "name": topics[c]["name"], "plain": topics[c].get("plain", ""),
         "district": dist_of[c], "region": reg_of[c], "needs": needs[c], "tier": tier[c],
-        "x": round(pos[c][0]), "y": round(pos[c][1]), "weight": weight[c],
+        "x": round(pos[c][0]), "y": round(pos[c][1]), "weight": weight[c], "plains": c in plains,
         "state": "taught" if any(s.get("role") == "teaches" for s in topics[c].get("steps") or []) else "planned",
         "steps": [step_out(s) for s in topics[c].get("steps") or [] if s.get("tutorial") in INV],
         "agreement": topics[c].get("agreement", ""),

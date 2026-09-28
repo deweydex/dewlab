@@ -18,17 +18,11 @@
   --visited: #2c7a4b;
   --halo: rgba(253, 252, 250, 0.92);
   --shadow: rgba(27, 42, 74, 0.16);
-  --land-1: #ece2c6;
-  --land-2: #dde6c6;
-  --land-3: #eed9c7;
-  --land-4: #d2e4d6;
-  --land-5: #d8dbec;
-  --land-6: #e6ddcf;
-  --land-7: #cde2e2;
-  --land-8: #ecd6df;
-  --land-9: #e4e0c2;
-  --land-10: #d6dfe9;
-  --land-11: #e9d9d0;
+  --land-s: 44%;
+  --land-l: 85%;
+  --plains: #eff0d9;
+  --county-line: rgba(27, 42, 74, 0.26);
+  --border-line: rgba(27, 42, 74, 0.5);
   --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
   --mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 }
@@ -40,8 +34,7 @@
     --muted: #98a2b3; --rule: #2a3140; --coast: #4f6676; --road: rgba(210, 222, 245, 0.22);
     --road-strong: rgba(225, 233, 248, 0.85); --ring: rgba(210, 222, 245, 0.10); --visited: #5cc488;
     --halo: rgba(22, 27, 35, 0.9); --shadow: rgba(0, 0, 0, 0.45);
-    --land-1: #39331f; --land-2: #2e3723; --land-3: #3d2d22; --land-4: #213428; --land-5: #282d42; --land-6: #36302a;
-    --land-7: #1f3435; --land-8: #3a2733; --land-9: #33331f; --land-10: #232d3a; --land-11: #3a2c26;
+    --land-s: 20%; --land-l: 23%; --plains: #2c2f23; --county-line: rgba(225, 233, 248, 0.22); --border-line: rgba(225, 233, 248, 0.45);
   }
 }
 :root[data-theme="dark"] {
@@ -51,8 +44,7 @@
   --muted: #98a2b3; --rule: #2a3140; --coast: #4f6676; --road: rgba(210, 222, 245, 0.22);
   --road-strong: rgba(225, 233, 248, 0.85); --ring: rgba(210, 222, 245, 0.10); --visited: #5cc488;
   --halo: rgba(22, 27, 35, 0.9); --shadow: rgba(0, 0, 0, 0.45);
-  --land-1: #39331f; --land-2: #2e3723; --land-3: #3d2d22; --land-4: #213428; --land-5: #282d42; --land-6: #36302a;
-  --land-7: #1f3435; --land-8: #3a2733; --land-9: #33331f; --land-10: #232d3a; --land-11: #3a2c26;
+  --land-s: 20%; --land-l: 23%; --plains: #2c2f23; --county-line: rgba(225, 233, 248, 0.22); --border-line: rgba(225, 233, 248, 0.45);
 }
 html, body { height: 100%; }
 body { background: var(--sea); color: var(--ink); font-family: var(--serif); overflow: hidden; }
@@ -64,7 +56,11 @@ body { background: var(--sea); color: var(--ink); font-family: var(--serif); ove
 
 .coast { fill: none; stroke: var(--coast); stroke-width: 2.2; }
 .coast-fill { fill: var(--paper); }
-.land { fill-rule: evenodd; stroke: var(--paper); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.land { fill-rule: evenodd; stroke: none; }
+.plains { fill: var(--plains); fill-rule: evenodd; }
+.county { fill-rule: evenodd; stroke: var(--county-line); stroke-width: 1; stroke-dasharray: 2 4; }
+.border { fill: none; stroke: var(--border-line); stroke-width: 1.5; stroke-dasharray: 7 4; }
+.plains-label { font-style: italic; letter-spacing: .18em; }
 .ring { fill: none; stroke: var(--ring); stroke-width: 1; stroke-dasharray: 2 5; }
 .road { fill: none; stroke: var(--road); stroke-width: 1.2; transition: opacity .2s; }
 .road.bridge { stroke: var(--orange); stroke-dasharray: 6 5; opacity: .75; }
@@ -332,7 +328,10 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   const data = JSON.parse(document.getElementById("atlas-data").textContent);
   const towns = data.towns;
   const byCode = new Map(towns.map((t) => [t.code, t]));
-  data.regions.forEach((r, i) => { r.tone = (i % 11) + 1; r.full = r.fancy ? `${r.fancy} (${r.name})` : r.name; });
+  data.regions.forEach((r, i) => { r.hue = Math.round((30 + i * 137.508) % 360); r.full = r.fancy ? `${r.fancy} (${r.name})` : r.name; });
+  // a county is a slightly lighter or darker shade of its country
+  const SHADES = [0, 3.5, -3, 2, -4.5, 1.5, -1.5];
+  const landColour = (r, shade) => `hsl(${r.hue} var(--land-s) calc(var(--land-l) + ${SHADES[(shade || 0) % SHADES.length]}%))`;
   const regionById = new Map(data.regions.map((r) => [r.id, r]));
   const districtById = new Map(data.districts.map((d) => [d.id, d]));
   const landmarksAt = new Map(towns.map((t) => [t.code, []]));
@@ -374,7 +373,12 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   const clip = el("clipPath", { id: "coastclip" }, defs);
   el("path", { d: data.coast }, clip);
   el("path", { d: data.coast, class: "coast-fill" }, world);
-  for (const r of data.regions) el("path", { d: r.land, class: "land", fill: `var(--land-${r.tone})`, "vector-effect": "non-scaling-stroke" }, world);
+  if (data.plains) el("path", { d: data.plains.land, class: "plains" }, world);
+  for (const r of data.regions) el("path", { d: r.land, class: "land", style: `fill:${landColour(r, 0)}` }, world);
+  for (const d of data.districts) {
+    if (d.land) el("path", { d: d.land, class: "county", style: `fill:${landColour(regionById.get(d.region), d.shade)}`, "vector-effect": "non-scaling-stroke" }, world);
+  }
+  for (const r of data.regions) el("path", { d: r.land, class: "border", "vector-effect": "non-scaling-stroke" }, world);
   const rings = el("g", { "clip-path": "url(#coastclip)" }, world);
   for (const rad of data.rings) el("circle", { cx: 0, cy: 0, r: rad, class: "ring", "vector-effect": "non-scaling-stroke" }, rings);
   el("path", { d: data.coast, class: "coast", "vector-effect": "non-scaling-stroke" }, world);
@@ -409,6 +413,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     overlay.appendChild(d);
     return { r, node: d };
   });
+  if (data.plains) {
+    const n = document.createElement("div");
+    n.className = "region-label plains-label";
+    n.textContent = "The Prerequisite Plains";
+    overlay.appendChild(n);
+    regionLabels.push({ r: { label: data.plains.label }, node: n });
+  }
   const districtLabels = data.districts.map((d) => {
     const n = document.createElement("div");
     n.className = "district-label";
@@ -460,7 +471,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 
   // ---------- view
   // four levels: regions, districts, towns, and a town's own streets
-  function lodFor(k) { return k < 0.24 ? 1 : k < 0.55 ? 2 : k < 1.1 ? 3 : 4; }
+  // The levels are set against the scale that shows the whole land, so the
+  // first view is always country names alone, whatever size the land is.
+  let baseK = null;
+  function lodFor(k) {
+    const b = baseK || 0.2;
+    return k < b * 1.3 ? 1 : k < b * 2.6 ? 2 : k < b * 5 ? 3 : 4;
+  }
   function render() {
     world.setAttribute("transform", `translate(${view.x} ${view.y}) scale(${view.k})`);
     const lod = lodFor(view.k);
@@ -550,7 +567,11 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
     flyTo(k, (vb.left + vb.right) / 2 - cx * k, (vb.top + vb.bottom) / 2 - cy * k, animate);
   }
-  function fitAll(animate) { fitTo(bx, by, bx + bw, by + bh, animate); }
+  function fitAll(animate) {
+    const vb = viewportBox(), pad = 40;
+    baseK = Math.min((vb.right - vb.left - pad * 2) / bw, (vb.bottom - vb.top - pad * 2) / bh, 2);
+    fitTo(bx, by, bx + bw, by + bh, animate);
+  }
   let anim = null;
   function flyTo(k, x, y, animate) {
     if (anim) cancelAnimationFrame(anim);
@@ -751,7 +772,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     const beenHere = visited.has(t.code);
     pbody.innerHTML = `
       <button type="button" class="close" data-close aria-label="Close">×</button>
-      <div class="eyebrow"><span class="swatch" style="background:var(--land-${r.tone})"></span>${esc(r.full)} · ${esc(dname)} · ${depthWords[t.tier]}</div>
+      <div class="eyebrow"><span class="swatch" style="background:${landColour(r, 0)}"></span>${t.plains ? "The Prerequisite Plains · " : ""}${esc(r.full)} · ${esc(dname)}${t.plains ? "" : " · " + depthWords[t.tier]}</div>
       <h2>${esc(t.name)}</h2>
       <p>${esc(t.plain)}</p>
       ${r.lore ? `<p class="lore"><em>${esc(r.fancy || r.name)}. ${esc(r.lore)}</em></p>` : ""}
@@ -808,14 +829,16 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
         <i style="width:9px;height:9px;transform:rotate(45deg);border:2px solid var(--orange)"></i><span>A landmark: a project, or a place to begin. It uses the towns near it.</span>
         <i style="width:12px;height:12px;border-radius:50%;background:var(--visited)"></i><span>A town you have been to.</span>
         <i style="width:20px;border-top:2px dashed var(--orange)"></i><span>A road into another country.</span>
-        <i style="width:20px;height:12px;border:1px dashed var(--muted);border-radius:50%"></i><span>Each ring is one more step from the tower. The first ring is the Prerequisite Plains.</span>
+        <i style="width:18px;height:12px;background:var(--plains);border:1px solid var(--rule)"></i><span>The Prerequisite Plains. Their towns need nothing first.</span>
+        <i style="width:20px;border-top:1.5px dashed var(--border-line)"></i><span>A border between two countries.</span>
+        <i style="width:20px;border-top:1px dotted var(--county-line)"></i><span>A border between two counties. A county is a district inside a country.</span>
       </div>
       <h3>The countries and their districts</h3>
       <ul class="regions">${data.regions.map((r) => {
         const ds = data.districts.filter((d) => d.region === r.id);
         const inR = towns.filter((t) => t.region === r.id);
         const been = inR.filter((t) => visited.has(t.code)).length;
-        return `<li><details><summary class="country"><span class="swatch" style="background:var(--land-${r.tone})"></span><span class="cname">${esc(r.full)}${r.lore ? `<em>${esc(r.lore)}</em>` : ""}</span><small class="num">${been ? been + " of " : ""}${inR.length}</small></summary><p class="lore">${esc(r.blurb || "")}</p>${ds.map((d) => {
+        return `<li><details><summary class="country"><span class="swatch" style="background:${landColour(r, 0)}"></span><span class="cname">${esc(r.full)}${r.lore ? `<em>${esc(r.lore)}</em>` : ""}</span><small class="num">${been ? been + " of " : ""}${inR.length}</small></summary><p class="lore">${esc(r.blurb || "")}</p>${ds.map((d) => {
           const list = towns.filter((t) => t.district === d.id).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
           return `<details><summary>${esc(d.name)}<small class="num">${list.length}</small></summary><div class="links">${list.map((t) => townButton(t.code)).join("")}</div></details>`;
         }).join("")}</details></li>`;
