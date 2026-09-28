@@ -68,9 +68,12 @@ town (the cascade, how Git keeps history, how a browser fetches a page).
 
 ### The map's voice
 
-The map introduces itself as **the land of maths and computing**: countries,
-towns, roads, landmarks and a square in the middle where every traveller
-starts. The fantasy is in the framing, and it follows the style guide's rule
+The map introduces itself as **Comath, the land of maths and computing**:
+countries, towns, roads and landmarks, with the Tower of Unknowing in the
+middle where every traveller starts, and the Prerequisite Plains around it
+(the towns that need nothing first). Each region has a whimsical name with its
+real name beside it, "Python City (Programming)", and the tower keeps the
+orientation pages. The fantasy is in the framing, and it follows the style guide's rule
 that a metaphor comes after the plain statement, never instead of it
 (`PEDAGOGICAL_STYLE_GUIDE.md#plain-language`). So the page first says what the
 map is in plain words, and only then uses the land's voice. Each region has a

@@ -115,6 +115,7 @@ body { background: var(--sea); color: var(--ink); font-family: var(--serif); ove
   text-shadow: 0 0 4px var(--halo);
 }
 #app[data-lod="1"] .region-label { font-size: 15px; opacity: .8; }
+.region-label small { display: block; font-size: 10.5px; letter-spacing: .12em; text-transform: none; font-style: italic; margin-top: 2px; }
 #app[data-lod="2"] .region-label { opacity: .3; }
 #app[data-lod="3"] .region-label, #app[data-lod="4"] .region-label { opacity: 0; }
 .district-label {
@@ -160,6 +161,8 @@ body { background: var(--sea); color: var(--ink); font-family: var(--serif); ove
 .street-list b { display: block; font-weight: normal; font-size: 14.5px; line-height: 1.35; color: var(--orange); }
 .street-list em { display: block; font-style: normal; font-size: 13px; color: var(--ink); }
 .street-list small { display: block; font: 10.5px var(--mono); color: var(--muted); letter-spacing: .04em; margin-top: 3px; }
+.lore-intro { color: var(--muted); }
+.key i svg { width: 100%; height: 100%; display: block; }
 .lore { font-size: 14px !important; line-height: 1.5; color: var(--muted); margin: 2px 0 8px 18px !important; }
 #panel > .body > .lore { margin-left: 0 !important; }
 .badge { font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; color: var(--muted); }
@@ -171,11 +174,15 @@ body { background: var(--sea); color: var(--ink); font-family: var(--serif); ove
 .regions summary.country small { padding-top: 3px; }
 .regions details details summary { font-size: 14px; color: var(--ink); }
 .start-mark {
-  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
-  font: 11px/1.25 var(--mono); letter-spacing: .08em; text-transform: uppercase;
-  color: var(--orange); text-align: center; white-space: nowrap;
+  position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer;
+  background: none; border: 0; padding: 0; color: var(--orange);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font: 10.5px/1.25 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  text-align: center; white-space: nowrap;
   text-shadow: 0 0 4px var(--halo), 0 0 4px var(--halo);
 }
+.start-mark svg { width: 20px; height: 24px; filter: drop-shadow(0 0 2px var(--halo)); }
+.start-mark:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
 
 /* chrome */
 .card {
@@ -325,7 +332,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   const data = JSON.parse(document.getElementById("atlas-data").textContent);
   const towns = data.towns;
   const byCode = new Map(towns.map((t) => [t.code, t]));
-  data.regions.forEach((r, i) => { r.tone = (i % 11) + 1; });
+  data.regions.forEach((r, i) => { r.tone = (i % 11) + 1; r.full = r.fancy ? `${r.fancy} (${r.name})` : r.name; });
   const regionById = new Map(data.regions.map((r) => [r.id, r]));
   const districtById = new Map(data.districts.map((d) => [d.id, d]));
   const landmarksAt = new Map(towns.map((t) => [t.code, []]));
@@ -398,7 +405,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   const regionLabels = data.regions.map((r) => {
     const d = document.createElement("div");
     d.className = "region-label";
-    d.textContent = r.name;
+    d.innerHTML = r.fancy ? `${esc(r.fancy)}<small>${esc(r.name)}</small>` : esc(r.name);
     overlay.appendChild(d);
     return { r, node: d };
   });
@@ -409,11 +416,16 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     overlay.appendChild(n);
     return { d, node: n };
   });
-  const start = document.createElement("div");
+  const TOWER_SVG = '<svg viewBox="0 0 18 22" aria-hidden="true"><path d="M1 21V9h2V3h3v3h2V3h2v3h2V3h3v6h2v12z" fill="currentColor" stroke="var(--paper)" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.5 21v-4.5a1.5 1.5 0 0 1 3 0V21z" fill="var(--paper)"/></svg>';
+  const tower = data.tower || {};
+  const start = document.createElement("button");
+  start.type = "button";
   start.className = "start-mark";
-  start.innerHTML = "✦<br>start here";
+  start.innerHTML = `${TOWER_SVG}<span>Tower of<br>Unknowing</span>`;
+  start.setAttribute("aria-label", "The Tower of Unknowing, where every traveller starts");
+  start.addEventListener("click", () => { if (!moved) showTower(); });
   overlay.appendChild(start);
-  const landmarkNodes = data.landmarks.map((lm) => {
+  const landmarkNodes = data.landmarks.filter((lm) => !lm.tower).map((lm) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "landmark";
@@ -439,7 +451,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     const d = 7 + Math.sqrt(t.weight / maxW) * 11;
     b.style.setProperty("--d", d.toFixed(1) + "px");
     b.innerHTML = `<span class="dot"></span><span class="name">${esc(t.name)}</span>`;
-    b.setAttribute("aria-label", `${t.name}. ${districtById.get(t.district).name}, ${regionById.get(t.region).name}, ${depthWords[t.tier]}.`);
+    b.setAttribute("aria-label", `${t.name}. ${districtById.get(t.district).name}, ${regionById.get(t.region).full}, ${depthWords[t.tier]}.`);
     b.addEventListener("click", (ev) => { if (moved) { ev.preventDefault(); return; } select(t.code, true); });
     overlay.appendChild(b);
     return { t, b, d, w: 0 };
@@ -575,7 +587,6 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   stage.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    stage.setPointerCapture(e.pointerId);
     moved = false;
     last = { x: e.clientX, y: e.clientY };
     if (pts.size === 2) {
@@ -595,7 +606,11 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
       return;
     }
     const dx = e.clientX - last.x, dy = e.clientY - last.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) { moved = true; stage.classList.add("dragging"); }
+    if (!moved && Math.abs(dx) + Math.abs(dy) > 3) {
+      moved = true;
+      stage.classList.add("dragging");
+      try { stage.setPointerCapture(e.pointerId); } catch (err) { /* the pointer may already be gone */ }
+    }
     if (moved) { view.x += dx; view.y += dy; last = { x: e.clientX, y: e.clientY }; render(); }
   });
   const up = (e) => {
@@ -736,10 +751,10 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     const beenHere = visited.has(t.code);
     pbody.innerHTML = `
       <button type="button" class="close" data-close aria-label="Close">×</button>
-      <div class="eyebrow"><span class="swatch" style="background:var(--land-${r.tone})"></span>${esc(r.name)} · ${esc(dname)} · ${depthWords[t.tier]}</div>
+      <div class="eyebrow"><span class="swatch" style="background:var(--land-${r.tone})"></span>${esc(r.full)} · ${esc(dname)} · ${depthWords[t.tier]}</div>
       <h2>${esc(t.name)}</h2>
       <p>${esc(t.plain)}</p>
-      ${r.lore ? `<p class="lore"><em>${esc(r.name)}. ${esc(r.lore)}</em></p>` : ""}
+      ${r.lore ? `<p class="lore"><em>${esc(r.fancy || r.name)}. ${esc(r.lore)}</em></p>` : ""}
       <div class="actions">
         <button type="button" class="primary" data-directions>How do I get here?</button>
         <button type="button" class="secondary" data-been aria-pressed="${beenHere}">${beenHere ? "✓ I have been here" : "I have been here"}</button>
@@ -779,30 +794,53 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   function showHome() {
     pbody.innerHTML = `
       <div class="eyebrow">A map of dewlab</div>
-      <h2>The land of maths and computing</h2>
+      <h2>Comath, the land of maths and computing</h2>
       <p>This is a map of every topic on dewlab. Each topic is a town. Towns that belong together sit together in the same country.</p>
-      <p>Every traveller starts in the square in the middle. The further a town is from the square, the more you need to know before you go there. No road is closed. You can walk to any town you like, and the map will show you the way.</p>
+      <p>Every traveller starts at the Tower of Unknowing, in the middle of the land. The further a town is from the tower, the more you need to know before you go there. No road is closed. You can walk to any town you like, and the map will show you the way.</p>
+      <p>Around the tower lie the Prerequisite Plains. No town on the plains needs anything first.</p>
+      <p class="lore-intro"><em>${esc(tower.lore || "")}</em></p>
       <p>The closer you look, the more the land shows. First come the countries, then their districts, then every town. Closest of all are the pages inside a town, like its streets.</p>
       <h3>How to read the map</h3>
       <div class="key">
+        <i style="width:16px;height:19px;color:var(--orange)">${TOWER_SVG}</i><span>The Tower of Unknowing, where every traveller starts.</span>
         <i style="width:14px;height:14px;border-radius:50%;background:var(--town)"></i><span>A town is one topic. A bigger town has more topics built on it.</span>
         <i style="width:12px;height:12px;border-radius:50%;border:2px dashed var(--town)"></i><span>A town still being built. No page teaches it yet.</span>
         <i style="width:9px;height:9px;transform:rotate(45deg);border:2px solid var(--orange)"></i><span>A landmark: a project, or a place to begin. It uses the towns near it.</span>
         <i style="width:12px;height:12px;border-radius:50%;background:var(--visited)"></i><span>A town you have been to.</span>
         <i style="width:20px;border-top:2px dashed var(--orange)"></i><span>A road into another country.</span>
-        <i style="width:20px;height:12px;border:1px dashed var(--muted);border-radius:50%"></i><span>Each ring is one more step from the square.</span>
+        <i style="width:20px;height:12px;border:1px dashed var(--muted);border-radius:50%"></i><span>Each ring is one more step from the tower. The first ring is the Prerequisite Plains.</span>
       </div>
       <h3>The countries and their districts</h3>
       <ul class="regions">${data.regions.map((r) => {
         const ds = data.districts.filter((d) => d.region === r.id);
         const inR = towns.filter((t) => t.region === r.id);
         const been = inR.filter((t) => visited.has(t.code)).length;
-        return `<li><details><summary class="country"><span class="swatch" style="background:var(--land-${r.tone})"></span><span class="cname">${esc(r.name)}${r.lore ? `<em>${esc(r.lore)}</em>` : ""}</span><small class="num">${been ? been + " of " : ""}${inR.length}</small></summary><p class="lore">${esc(r.blurb || "")}</p>${ds.map((d) => {
+        return `<li><details><summary class="country"><span class="swatch" style="background:var(--land-${r.tone})"></span><span class="cname">${esc(r.full)}${r.lore ? `<em>${esc(r.lore)}</em>` : ""}</span><small class="num">${been ? been + " of " : ""}${inR.length}</small></summary><p class="lore">${esc(r.blurb || "")}</p>${ds.map((d) => {
           const list = towns.filter((t) => t.district === d.id).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
           return `<details><summary>${esc(d.name)}<small class="num">${list.length}</small></summary><div class="links">${list.map((t) => townButton(t.code)).join("")}</div></details>`;
         }).join("")}</details></li>`;
       }).join("")}</ul>
     `;
+  }
+  function showTower() {
+    select(null);
+    const first = towns.filter((t) => !t.needs.length);
+    const pages = data.landmarks.filter((lm) => lm.tower);
+    pbody.innerHTML = `
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <div class="eyebrow">Landmark · where every traveller starts</div>
+      <h2>${esc(tower.name || "The Tower of Unknowing")}</h2>
+      <p>${esc(tower.plain || "")}</p>
+      <p class="lore-intro"><em>${esc(tower.lore || "")}</em></p>
+      ${pages.length ? `<h3>Pages kept in the tower</h3><ul class="ways">${pages.map((lm) => `<li><a href="${esc(lm.href)}" target="_blank" rel="noopener"><b>${esc(lm.title)}</b></a></li>`).join("")}</ul>` : ""}
+      <h3>${esc((tower.plains || {}).name || "Roads from the tower")} · ${first.length} towns</h3>
+      <p>${esc((tower.plains || {}).plain || "")}</p>
+      ${data.regions.map((r) => {
+        const here = first.filter((t) => t.region === r.id);
+        return here.length ? `<p class="lore" style="margin:10px 0 4px!important">${esc(r.full)}</p><div class="links">${here.map((t) => townButton(t.code)).join("")}</div>` : "";
+      }).join("")}
+    `;
+    openPanel();
   }
   function showLandmark(lm) {
     select(null);

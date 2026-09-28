@@ -444,6 +444,7 @@ data = {
     "regions": [{"id": r, "name": next(x["name"] for x in regions if x["id"] == r),
                  "blurb": next(x.get("blurb", "") for x in regions if x["id"] == r),
                  "lore": next(x.get("lore", "") for x in regions if x["id"] == r),
+                 "fancy": next(x.get("fancy", "") for x in regions if x["id"] == r),
                  "label": region_label[r], "land": land[r],
                  "count": sum(1 for c in codes if reg_of[c] == r)} for r in order],
     "districts": [{"id": d, "name": districts[d]["name"], "blurb": districts[d].get("blurb", ""),
@@ -463,9 +464,11 @@ data = {
     "landmarks": [{"slug": lm["tutorial"], "title": INV.get(lm["tutorial"], {}).get("title", lm["tutorial"]),
                    "kind": lm.get("kind"), "at": [a for a in lm.get("at") or [] if a in topics],
                    "href": f"{BASE}tutorials/{lm['tutorial']}.html",
+                   "tower": bool(lm.get("tower")),
                    "x": round(p[0]), "y": round(p[1])} for lm, p in lm_pos],
     "courses": course_routes,
     "questions": graph.get("questions") or [],
+    "tower": graph.get("tower") or {},
 }
 json.dump(data, open(out_path, "w"), separators=(",", ":"))
 print("regions", order, "ring cost", ring_cost(order), file=sys.stderr)
