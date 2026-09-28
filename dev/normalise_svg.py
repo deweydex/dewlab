@@ -200,8 +200,8 @@ def main(argv):
         failed = 0
         for path in sorted(ROOT.rglob("*.svg")):
             relative = str(path.relative_to(ROOT))
-            # site/ is generated, and dewmark is its own project.
-            if relative.startswith(("site/", "dewmark/")):
+            # site/ is generated.
+            if relative.startswith("site/"):
                 continue
             problems = needs_work(path.read_text())
             if problems:

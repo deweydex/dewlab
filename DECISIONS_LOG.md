@@ -5741,3 +5741,10 @@ A reader meets both every page or two, so they stay fresh without help, and a do
 **Also.** `docs/HOW_DEWLAB_THINKS.md`, a first draft, sets out the reasons behind the style guide as reasoning to weigh rather than law, and says which of three tiers each kind of rule is in: enforced, reported, or left to the author.
 
 *Cost to change: a warning is easier to ignore than a failure, so the map and the documents about the project will drift further between tidy-ups than they did, and a maintainer has to look at the house-style job now and then. Going back is removing the marker lines, the `|| [ $? -eq 1 ]`, and the `house-style` job.*
+
+**7.292 — dewmark leaves for its own repository, and `/dewmark/` becomes a redirect.** Josh, 27 September 2026: "lets make this focused on dewmark the repo which might involve moving some stuff out of dewlab (as right now dewmark is also a folder in there)."
+
+dewmark, the exam track, was built in `dewmark/` from 2026-08-31 (2f23c03d) and shared no code with the rest of dewlab. Its history was extracted with `git filter-repo --subdirectory-filter dewmark` into deweydex/dewmark, where each imported commit names its dewlab commit in an `Imported-from:` trailer and its pull-request number as `deweydex/dewlab#N`. This removes the folder, the `dewmark` job in `tests.yml`, and the exclusion that kept `dev/normalise_svg.py` out of it. `build.py` no longer copies the marking workbench to `site/dewmark/`; it writes a redirect there instead, to dewmark's own home page, in the pattern of the `compose/` redirects, because the address has been live since 2026-09-03 and may be bookmarked. The README keeps one row pointing to the new repository. Entry 7.179, which compares the `question` fence with dewmark's grammar, stays as written: it is history. The two projects share a vocabulary for question types, not code; what dewmark takes from dewlab in future it copies, with a record of the source commit.
+
+*Cost to change: bringing dewmark back would mean another extraction the other way. Dropping the redirect loses nothing but old bookmarks.*
+

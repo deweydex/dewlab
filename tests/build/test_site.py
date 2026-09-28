@@ -634,15 +634,9 @@ class TestAssetVersions:
         assert first.group(1) != after.group(1)
 
 
-def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_published_when_present_and_skipped_when_not(
+def test_the_topic_pair_game_and_the_topic_editor_are_published_when_present_and_skipped_when_not_and_dewmark_redirects(
     repo, monkeypatch
 ):
-    # Nothing on the site links to /dewmark/, so a broken copy step would go
-    # unnoticed until somebody typed the address.
-    workbench = repo / "dewmark" / "workbench"
-    workbench.mkdir(parents=True)
-    (workbench / "index.html").write_text("<h1>dewmark marking workbench</h1>")
-    monkeypatch.setattr(b, "DEWMARK_WORKBENCH", workbench)
     # The pair game's README is written for somebody reading the
     # repository, not a visitor.
     game = repo / "topic_tree_game"
@@ -662,9 +656,10 @@ def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_publ
 
     b.build()
 
-    published = b.OUT / "dewmark" / "index.html"
-    assert published.is_file()
-    assert published.read_text() == (workbench / "index.html").read_text()
+    # dewmark moved to its own repository; its old address redirects there.
+    # Nothing on the site links to /dewmark/, so a broken stub would go
+    # unnoticed until somebody typed the address.
+    assert b.DEWMARK_HOME in (b.OUT / "dewmark" / "index.html").read_text()
     # The topic pair game is published without its README.
     assert (b.OUT / "topic_tree_game" / "index.html").is_file()
     assert (b.OUT / "topic_tree_game" / "help.html").is_file()
@@ -677,11 +672,10 @@ def test_the_marking_workbench_the_topic_pair_game_and_the_topic_editor_are_publ
     # With the source folders gone, a rebuild is silent — no error, and
     # nothing left behind from the previous build.
     shutil.rmtree(b.OUT)
-    for path in (workbench, game, editor):
+    for path in (game, editor):
         shutil.rmtree(path)
     b.build()
 
-    assert not (b.OUT / "dewmark").exists()
     assert not (b.OUT / "topic_tree_game").exists()
     assert not (b.OUT / "topic_editor").exists()
 

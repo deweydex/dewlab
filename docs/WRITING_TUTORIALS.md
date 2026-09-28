@@ -902,7 +902,8 @@ Pyodide.
 
 A question whose answer a run would show belongs in a predict block instead,
 above the cell that shows it. A graded, secret answer is not this format's job
-at all: that is dewmark, a separate program, for exams.
+at all: that is [dewmark](https://github.com/deweydex/dewmark), a separate
+program, for exams.
 
 ---
 

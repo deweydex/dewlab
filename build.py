@@ -126,7 +126,6 @@ SETUP = ROOT / "setup"
 DATA = ROOT / "data"
 ASSETS = ROOT / "assets"
 COMPOSE = ROOT / "compose"
-DEWMARK_WORKBENCH = ROOT / "dewmark" / "workbench"
 TOPIC_GAME = ROOT / "topic_tree_game"
 TOPIC_EDITOR = ROOT / "topic_editor"
 SHELL = ASSETS / "shell.html"
@@ -6676,6 +6675,29 @@ DEWMINI_ASSET_FILES = (
 # a page the build wrote).
 COMPOSE_REDIRECTS = ("dewmini.html", "dewminiweb.html")
 
+# dewmark, the exam track, lived in dewmark/ and its marking workbench was
+# published at /dewmark/ until it moved to its own repository and site
+# (DECISIONS_LOG.md 7.292). The old address is kept, as a redirect to
+# dewmark's home page, for anyone who bookmarked it; the stub follows the
+# compose/ redirects' pattern, keeping a query string and a #hash.
+DEWMARK_HOME = "https://deweydex.github.io/dewmark/"
+DEWMARK_REDIRECT = f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>location.replace("{DEWMARK_HOME}" + location.search + location.hash);</script>
+<meta http-equiv="refresh" content="0; url={DEWMARK_HOME}">
+<link rel="canonical" href="{DEWMARK_HOME}">
+<meta name="robots" content="noindex">
+<title>This page has moved</title>
+</head>
+<body>
+<p>dewmark, the exam tools, has moved to its own site. If it does not open
+on its own, <a href="{DEWMARK_HOME}">open it here</a>.</p>
+</body>
+</html>
+"""
+
 
 def write_dewmini_bundle() -> Path | None:
     """The downloadable Notebook (download/notebook/, zipped as
@@ -7953,9 +7975,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT / "compose", ignore_errors=True)
         shutil.copytree(COMPOSE, OUT / "compose")
 
-    if DEWMARK_WORKBENCH.is_dir():
-        shutil.rmtree(OUT / "dewmark", ignore_errors=True)
-        shutil.copytree(DEWMARK_WORKBENCH, OUT / "dewmark")
+    # The old address of dewmark's marking workbench, now a redirect.
+    shutil.rmtree(OUT / "dewmark", ignore_errors=True)
+    (OUT / "dewmark").mkdir(parents=True)
+    (OUT / "dewmark" / "index.html").write_text(DEWMARK_REDIRECT)
 
     if TOPIC_GAME.is_dir():
         shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
