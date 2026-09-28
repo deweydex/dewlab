@@ -11,7 +11,7 @@
    "id": "logic-and-binary",
    "name": "Logic and binary",
    "blurb": "How a computer keeps every number as ones and zeros, and the rules of true, false and sets that its decisions follow.",
-   "lore": "The people of this country answer every question with yes or no.",
+   "lore": "Two small islands in the sea. The people here answer every question with yes or no.",
    "fancy": "The Isles of Yes and No"
   },
   {
@@ -26,7 +26,8 @@
    "name": "Shape and space",
    "blurb": "Measuring shapes, triangles and the circle that sine and cosine come from, and grids of numbers that move pictures in 2D and 3D.",
    "lore": "The surveyors of the land live here. They measure mountains with nothing but a triangle.",
-   "fancy": "The Triangle Mountains"
+   "fancy": "The Triangle Mountains",
+   "terrain": "mountains"
   },
   {
    "id": "chance-and-data",
@@ -40,7 +41,8 @@
    "name": "Machine learning",
    "blurb": "Programs that learn from examples: a chain that writes like a book, a reader that learns from its mistakes, and how to judge them.",
    "lore": "The youngest country on the map. Its borders still move every year.",
-   "fancy": "The Forest of Learning Machines"
+   "fancy": "The Forest of Learning Machines",
+   "terrain": "forest"
   },
   {
    "id": "programming",
@@ -73,9 +75,73 @@
   {
    "id": "websites",
    "name": "Websites and browsers",
-   "blurb": "The tools you build with, putting a site on the web, what a browser does with it, and making it work for everyone who visits.",
+   "blurb": "Putting a site on the web, what a browser does with it, and making it work for everyone who visits.",
    "lore": "The harbour of the land. Finished pages leave from here for the rest of the world.",
    "fancy": "Browser Harbour"
+  },
+  {
+   "id": "tools",
+   "name": "Your tools",
+   "blurb": "A code editor to write in, and GitHub to keep your work safe and share it.",
+   "lore": "No traveller leaves the island without a good editor and a safe place to keep their work.",
+   "fancy": "The Tool Market"
+  }
+ ],
+ "continents": [
+  {
+   "id": "first-steps",
+   "kind": "start",
+   "name": "Where to start",
+   "fancy": "The Island of First Steps",
+   "blurb": "The Tower of Unknowing stands in the middle. The Prerequisite Plains lie around it, and the Tool Market is beside them.",
+   "lore": "Bridges leave this island in every direction. Each one leads somewhere harder.",
+   "regions": [
+    "tools"
+   ]
+  },
+  {
+   "id": "mathematics",
+   "name": "Mathematics",
+   "fancy": "The Old Country",
+   "blurb": "Number, algebra and graphs, and shape and space.",
+   "lore": "Its roads were built long ago, and every one of them still goes where it always went.",
+   "regions": [
+    "number",
+    "algebra",
+    "shape-and-space"
+   ]
+  },
+  {
+   "id": "programming-and-data",
+   "name": "Programming and data",
+   "fancy": "The New World",
+   "blurb": "Programming in Python, chance and data, machine learning, and software that other people can use.",
+   "lore": "Nothing here is more than a hundred years old, and some of it was built last week.",
+   "regions": [
+    "programming",
+    "making-software",
+    "chance-and-data",
+    "machine-learning"
+   ]
+  },
+  {
+   "id": "the-web",
+   "name": "The web and databases",
+   "fancy": "The Wide Web",
+   "blurb": "Web pages, websites and the browsers that show them, and databases that keep data in tables.",
+   "lore": "Travellers come here to visit one page, and leave three hours later.",
+   "regions": [
+    "web-pages",
+    "websites",
+    "databases"
+   ]
+  },
+  {
+   "id": "yes-and-no",
+   "kind": "islands",
+   "regions": [
+    "logic-and-binary"
+   ]
   }
  ],
  "neighbours": [
@@ -130,6 +196,10 @@
   [
    "programming",
    "shape-and-space"
+  ],
+  [
+   "tools",
+   "websites"
   ]
  ],
  "districts": [
@@ -351,7 +421,7 @@
   },
   {
    "id": "git-and-github",
-   "region": "websites",
+   "region": "tools",
    "name": "Your tools: an editor and GitHub",
    "blurb": "A free GitHub account, an editor for your files, your own copy of a project, how Git keeps its history, and issues and pull requests."
   },

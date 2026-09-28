@@ -43,6 +43,21 @@ if mode == "graph":
     for d in districts.values():
         if d.get("region") not in regions:
             E(f"district {d.get('id')} names region {d.get('region')!r}, which is not in regions")
+    # Continents are optional; when there are any, every region is on exactly one.
+    conts = doc.get("continents") or []
+    if conts:
+        on = collections.Counter(r for c in conts for r in c.get("regions") or [])
+        for r in sorted(regions):
+            if on[r] != 1:
+                E(f"region {r} is on {on[r]} continents, not one")
+        for r in on:
+            if r not in regions:
+                E(f"a continent names region {r!r}, which is not in regions")
+        if sum(1 for c in conts if c.get("kind") == "start") > 1:
+            E("more than one continent is the start")
+        for c in conts:
+            if not ID.match(c.get("id") or ""):
+                E(f"continent id {c.get('id')!r} is not kebab-case")
 for i, dup in collections.Counter(tids).items():
     if dup > 1:
         E(f"topic id {i} is used {dup} times")
