@@ -8,8 +8,10 @@ how it gets built. The working folder is `planning/topic-map/`; its
 `design.md` has the full technical and interaction design, and
 `graph-final.json` the proposed map itself.
 
-Status, 28 September 2026: **proposed, not decided.** Nothing the build reads
-has changed. The prototype, built from `graph-final.json`, is the dewlab
+Status, 28 September 2026: **proposed, with Josh's answers to its twelve
+questions applied** (see [Josh's decisions](#joshs-decisions)). Nothing the
+build reads has changed, except that the library loans quiz moved in Database
+Methods (decision 11). The prototype, built from `graph-final.json`, is the dewlab
 Atlas (a private claude.ai page; ask for the link).
 
 ## Why the tree goes
@@ -35,25 +37,25 @@ data under it had drifted:
 
 | | The old tree | The proposed map |
 |---|---|---|
-| Topics | 142, one per outcome or part of one | 185, found from what the pages teach |
+| Topics | 142, one per outcome or part of one | 189, found from what the pages teach |
 | Pages placed | 193 of 274 (by `covers:` claims) | all 274 |
 | Grouping | 6 columns in `strands.yaml`, unused by the tree | 11 regions, 41 districts |
-| Ideas never named before | — | 56 topics with no old equivalent |
+| Ideas never named before | — | 60 topics with no old equivalent |
 | Not ideas | mixed in as topics | 32 landmarks (projects, orientation, review); 9 outcomes culled to landmarks or teacher-only metadata |
-| Planned, no page yet | 1 | 2 |
+| Planned, no page yet | 1 | 7, one for every gap |
 
 The regions and their districts (topics in brackets):
 
-- **Number:** Number basics (3); Fractions (7); Powers (6); Roots and logarithms (7)
+- **Number:** Number basics (5); Fractions (7); Powers (6); Roots and logarithms (7)
 - **Logic and binary:** Numbers in a computer (4); Sets and logic (4)
 - **Algebra and graphs:** Letters and expressions (3); Solving equations (5); Quadratics (4); Functions and their graphs (4); Grids and straight lines (4); Calculus (5)
-- **Shape and space:** Measuring shapes (3); Triangles and trigonometry (5); Matrices and 3D pictures (5)
+- **Shape and space:** Measuring shapes (4); Triangles and trigonometry (5); Matrices and 3D pictures (6)
 - **Chance and data:** Counting and chance (4); Chances that combine (4); Data, charts and averages (5); Simulations and models (5)
 - **Machine learning:** Machines that write (3); Machines that learn (3)
 - **Programming:** Starting with Python (4); Decisions and loops (4); Writing functions (4); Lists, grids and dictionaries (3); Algorithms (5); Objects and classes (5)
-- **Making software:** Finding and fixing mistakes (3); Programs for people (5)
+- **Making software:** Finding and fixing mistakes (3); Programs for people (4)
 - **Databases:** Tables and queries (4); Linked tables (5); Data in and out (4)
-- **Building web pages:** HTML: the parts of a page (6); CSS: how a page looks (6); Layout and screen sizes (7); Movement and interaction (6)
+- **Building web pages:** HTML: the parts of a page (7); CSS: how a page looks (6); Layout and screen sizes (7); Movement and interaction (6)
 - **Websites and browsers:** Your tools: an editor and GitHub (5); Publishing and fixing a site (4); How a browser works (5); Pages everyone can use (4); Building a whole site (3)
 
 The levels on screen follow the data: region names from far out, district
@@ -93,46 +95,45 @@ them together. Counted on one route, effort runs from about 950 to 1,500
 words a topic near the start to about 2,000 to 2,950 deep in, which is the
 shape the rule asks for. Question 8 below would make that visible on the map.
 
-## Decisions for Josh
+<a id="joshs-decisions"></a>
+## Josh's decisions
 
-Each has a recommendation; the evidence is in `graph-final.json` under
-`questions`.
+Answered 28 September 2026. The questions, with their evidence and the
+options offered, stay in `graph-final.json` under `questions`, each now with
+its `answer`. Ten follow the recommendation; decisions 7 and 9 do not, and
+changed the map.
 
-1. **Eleven regions.** Keep Logic and binary apart from Number, Machine
-   learning apart from Chance and data, the web as two regions, and Making
-   software as a small region of its own? *Recommended: eleven as drawn;
-   at the widest zoom only region names show, so these are how a learner
-   finds testing, binary or machine learning.*
-2. **Ten web context pages as towns** (the cascade, Git's history, the four
-   "How a browser…" pages, who reads a page, colour contrast, keyboards,
-   where a form's answers go), plus how a computer stores a number.
-   *Recommended: towns, since a learner looks for "the cascade" by name.*
-3. **Truth tables before Venn diagrams?** Your pair answer says so; the
-   integrated course teaches Venn first. *Recommended: no need either way.*
-4. **The derivative needing expanded brackets?** Your game answer says so;
-   the four derivative pages never expand. *Recommended: no need.*
-5. **Kinds of data before averages?** `decisions.yaml` says so; both courses
-   teach averages first. *Recommended: no need either way.*
-6. **Combining chances:** two topics (and/or/not; conditional) or the three
-   `decisions.yaml` settled? *Recommended: two.*
-7. **Team programming** (PDP-LO12): a topic, or teacher-only metadata?
-   *Recommended: a topic, "Building software as a team".*
-8. **Tag each step with its courses,** so a town shows the learner's own
-   route first and the size check counts one route? *Recommended: yes.*
-9. **Gaps with no page:** decimals, percentages and ratio; multiplying
-   negative numbers; kinds of triangle; information theory; COUNT and
-   GROUP BY; HTML lists and tables; vectors and nearest neighbours.
-   *Recommended: keep the two planned towns and write GROUP BY and
-   multiplying negatives first; four later towns lean on the latter.*
-10. **All the power rules at once:** a review landmark or a topic?
-    *Recommended: landmark.*
-11. **The library loans quiz** assumes the college timetable page but sits
-    before it in Database Methods. *Recommended: move it after.*
-12. **Polynomials need Python lists,** because both teaching pages keep a
-    polynomial as a list from the first cell. That puts the rest of algebra
-    behind a first Python course and the derivative at depth 10.
-    *Recommended: keep it, and plan a paper page on like terms for the Zen
-    module, which removes the need.*
+1. **Regions:** eleven, as drawn.
+2. **Web context pages:** towns of their own.
+3. **Truth tables and Venn diagrams:** no need either way.
+4. **The derivative and expanded brackets:** no need.
+5. **Kinds of data and averages:** no need either way.
+6. **Combining chances:** two topics, and/or/not together and conditional
+   probability apart.
+7. **Team programming** (PDP-LO12): teacher-only metadata. Its town is off the
+   map; the team briefs stay as landmarks beside planning, testing and readable
+   code.
+8. **Courses on steps:** yes. Each step carries its courses, so a town shows a
+   learner their own route first and the size check counts one route. The
+   design builds this into the map's data.
+9. **Gaps:** a planned town for every one. Five were added beside the two
+   already there: decimals, percentages and ratio; multiplying negative
+   numbers; kinds of triangle; lists and tables in HTML; comparing rows of
+   numbers (which brings CMPS-LO4d back from the culled list). No existing
+   town needs a planned one, because directions would then send a learner
+   through a page that does not exist. Inverse functions, complex numbers and
+   inequalities lean on multiplying negatives; those needs are added when its
+   page is written.
+10. **All the power rules at once:** a review landmark.
+11. **The library loans quiz:** moved to the end of "A database with several
+    tables" in `courses/database-methods.yaml`, after the college timetable it
+    assumes.
+12. **Polynomials and Python lists:** the need stays, and a paper page on terms
+    and like terms is planned for the Zen module, which will remove it.
+
+Pages this sets to write, in order: multiplying negative numbers and COUNT
+with GROUP BY first, then the paper page on like terms, then the other
+planned towns.
 
 ## How it gets built
 
@@ -163,7 +164,6 @@ files are deleted. `design.md` names each PR's tests and the documents it has
 to update, lists the 23 decision-log entries it supersedes or amends, and
 raises 13 further questions of its own.
 
-Before the first PR: Josh's answers to the twelve questions above, and a pass
-over `graph-final.json` for names and needs that read wrong to someone who
-teaches from it. The Atlas's review layer marks the 25 towns the critics
+Before the first PR: a pass over `graph-final.json` for names and needs that
+read wrong to someone who teaches from it. The Atlas's review layer marks the 25 towns the critics
 created or reshaped, which is where to start.

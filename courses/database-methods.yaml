@@ -24,7 +24,6 @@ contents:
   tutorials:
   - sql-practice
   - the-tentacular-plushies-quiz
-  - the-library-loans-quiz
 - title: A database with several tables
   tutorials:
   - designing-a-table-before-you-build-it
@@ -35,3 +34,4 @@ contents:
   - exporting-a-query-to-a-file
   - a-form-that-writes-a-row
   - a-college-timetable
+  - the-library-loans-quiz
