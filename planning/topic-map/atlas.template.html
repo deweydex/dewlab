@@ -1,0 +1,904 @@
+<title>dewlab Atlas</title>
+<style>
+:root {
+  --sea: #e3ebee;
+  --sea-line: #d2dde2;
+  --paper: #fdfcfa;
+  --ink: #1a1a1a;
+  --navy: #1b2a4a;
+  --town: #1b2a4a;
+  --orange: #b8541a;
+  --orange-soft: rgba(184, 84, 26, 0.18);
+  --muted: #5f6b7a;
+  --rule: #ddd6ca;
+  --coast: #8199a6;
+  --road: rgba(27, 42, 74, 0.28);
+  --road-strong: rgba(27, 42, 74, 0.8);
+  --ring: rgba(27, 42, 74, 0.13);
+  --visited: #2c7a4b;
+  --halo: rgba(253, 252, 250, 0.92);
+  --shadow: rgba(27, 42, 74, 0.16);
+  --land-1: #ece2c6;
+  --land-2: #dde6c6;
+  --land-3: #eed9c7;
+  --land-4: #d2e4d6;
+  --land-5: #d8dbec;
+  --land-6: #e6ddcf;
+  --land-7: #cde2e2;
+  --land-8: #ecd6df;
+  --land-9: #e4e0c2;
+  --land-10: #d6dfe9;
+  --land-11: #e9d9d0;
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --mono: "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --sea: #0f151c; --sea-line: #18212b; --paper: #161b23; --ink: #e6e3dd;
+    --navy: #b9c8e6; --town: #e3e9f5; --orange: #e0803f; --orange-soft: rgba(224, 128, 63, 0.22);
+    --muted: #98a2b3; --rule: #2a3140; --coast: #4f6676; --road: rgba(210, 222, 245, 0.22);
+    --road-strong: rgba(225, 233, 248, 0.85); --ring: rgba(210, 222, 245, 0.10); --visited: #5cc488;
+    --halo: rgba(22, 27, 35, 0.9); --shadow: rgba(0, 0, 0, 0.45);
+    --land-1: #39331f; --land-2: #2e3723; --land-3: #3d2d22; --land-4: #213428; --land-5: #282d42; --land-6: #36302a;
+    --land-7: #1f3435; --land-8: #3a2733; --land-9: #33331f; --land-10: #232d3a; --land-11: #3a2c26;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --sea: #0f151c; --sea-line: #18212b; --paper: #161b23; --ink: #e6e3dd;
+  --navy: #b9c8e6; --town: #e3e9f5; --orange: #e0803f; --orange-soft: rgba(224, 128, 63, 0.22);
+  --muted: #98a2b3; --rule: #2a3140; --coast: #4f6676; --road: rgba(210, 222, 245, 0.22);
+  --road-strong: rgba(225, 233, 248, 0.85); --ring: rgba(210, 222, 245, 0.10); --visited: #5cc488;
+  --halo: rgba(22, 27, 35, 0.9); --shadow: rgba(0, 0, 0, 0.45);
+  --land-1: #39331f; --land-2: #2e3723; --land-3: #3d2d22; --land-4: #213428; --land-5: #282d42; --land-6: #36302a;
+  --land-7: #1f3435; --land-8: #3a2733; --land-9: #33331f; --land-10: #232d3a; --land-11: #3a2c26;
+}
+html, body { height: 100%; }
+body { background: var(--sea); color: var(--ink); font-family: var(--serif); overflow: hidden; }
+#app { position: relative; height: 100%; overflow: hidden; }
+#stage { position: absolute; inset: 0; touch-action: none; cursor: grab; }
+#stage.dragging { cursor: grabbing; }
+#land { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+
+.coast { fill: none; stroke: var(--coast); stroke-width: 2.2; }
+.coast-fill { fill: var(--paper); }
+.land { fill-rule: evenodd; stroke: var(--paper); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.ring { fill: none; stroke: var(--ring); stroke-width: 1; stroke-dasharray: 2 5; }
+.road { fill: none; stroke: var(--road); stroke-width: 1.2; transition: opacity .2s; }
+.road.bridge { stroke: var(--orange); stroke-dasharray: 6 5; opacity: .75; }
+#app[data-lod="1"] .road { opacity: 0; }
+#app[data-lod="2"] .road.bridge { opacity: .3; }
+#app.no-roads .road { opacity: 0 !important; }
+.road.lit-in { stroke: var(--road-strong); stroke-width: 2.4; opacity: 1 !important; stroke-dasharray: none; }
+.road.lit-out { stroke: var(--orange); stroke-width: 2.4; opacity: 1 !important; stroke-dasharray: none; }
+.route-casing { fill: none; stroke: var(--paper); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+.route { fill: none; stroke: var(--orange); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+.line-casing { fill: none; stroke: var(--paper); stroke-width: 8; stroke-linejoin: round; stroke-linecap: round; opacity: .9; }
+.line { fill: none; stroke: var(--navy); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; opacity: .85; }
+
+/* towns are buttons laid over the drawing so they stay the same size at any zoom */
+.town {
+  position: absolute; left: 0; top: 0; pointer-events: auto;
+  border: 0; background: none; padding: 0; margin: 0; color: var(--ink);
+  font: inherit; cursor: pointer; display: block; width: 0; height: 0;
+}
+.town .dot {
+  position: absolute; left: 0; top: 0; width: var(--d); height: var(--d);
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: var(--town); border: 2px solid var(--paper); box-sizing: content-box;
+}
+.town[data-state="planned"] .dot { background: var(--paper); border: 2px dashed var(--town); }
+.town.visited .dot { background: var(--visited); }
+.town .name {
+  position: absolute; left: 0; top: calc(var(--d) / 2 + 4px); transform: translateX(-50%);
+  white-space: nowrap; font-size: 12.5px; line-height: 1.2; color: var(--ink);
+  text-shadow: 0 0 3px var(--halo), 0 0 3px var(--halo), 0 0 6px var(--halo);
+}
+.town.hide-label .name { visibility: hidden; }
+.town.selected .dot { outline: 3px solid var(--orange); outline-offset: 2px; }
+.town.selected .name, .town.on-route .name { font-weight: bold; visibility: visible; }
+.town.on-route .dot { box-shadow: 0 0 0 4px var(--orange-soft); }
+.town:focus-visible { outline: none; }
+.town:focus-visible .dot { outline: 3px solid var(--orange); outline-offset: 3px; }
+.town .stop {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -150%);
+  font: 600 10px/1 var(--mono); background: var(--orange); color: var(--paper);
+  border-radius: 8px; padding: 3px 5px; margin-top: calc(var(--d) / -2 - 4px);
+}
+.region-label {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+  font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--navy);
+  white-space: nowrap; opacity: .55; transition: opacity .25s;
+  text-shadow: 0 0 4px var(--halo);
+}
+#app[data-lod="1"] .region-label { font-size: 15px; opacity: .8; }
+#app[data-lod="2"] .region-label { opacity: .3; }
+#app[data-lod="3"] .region-label, #app[data-lod="4"] .region-label { opacity: 0; }
+.district-label {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+  font-size: 12.5px; font-style: italic; letter-spacing: .06em; color: var(--muted);
+  white-space: nowrap; opacity: 0; transition: opacity .25s; text-shadow: 0 0 4px var(--halo), 0 0 4px var(--halo);
+}
+#app[data-lod="2"] .district-label { opacity: .95; }
+#app[data-lod="3"] .district-label { opacity: .55; }
+.landmark {
+  position: absolute; left: 0; top: 0; pointer-events: auto; border: 0; background: none; padding: 0;
+  font: inherit; color: var(--navy); cursor: pointer; width: 0; height: 0; opacity: 0; transition: opacity .25s;
+}
+.landmark .glyph {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) rotate(45deg);
+  width: 9px; height: 9px; background: var(--paper); border: 2px solid var(--orange);
+}
+.landmark .name {
+  position: absolute; left: 10px; top: 0; transform: translateY(-50%); white-space: nowrap;
+  font-size: 11.5px; font-style: italic; color: var(--muted); visibility: hidden;
+  text-shadow: 0 0 3px var(--halo), 0 0 3px var(--halo);
+}
+#app[data-lod="2"] .landmark, #app[data-lod="3"] .landmark, #app[data-lod="4"] .landmark { opacity: 1; }
+#app[data-lod="4"] .landmark .name, .landmark.lit .name { visibility: visible; }
+.landmark:focus-visible .glyph { outline: 3px solid var(--orange); outline-offset: 3px; }
+.streets {
+  position: absolute; left: 0; top: 0; pointer-events: auto; list-style: none; margin: 0; padding: 6px 0 0 14px;
+  border-left: 2px solid var(--orange); max-width: 250px; display: none;
+}
+#app[data-lod="3"] .streets.on, #app[data-lod="4"] .streets.on { display: block; }
+.streets li { margin: 0 0 3px; font-size: 12px; line-height: 1.3; position: relative; }
+.streets li::before { content: ""; position: absolute; left: -19px; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); border: 2px solid var(--paper); }
+.streets li.side::before { background: var(--paper); border: 2px solid var(--orange); }
+.streets a { color: var(--ink); text-decoration: none; background: var(--halo); padding: 1px 4px; border-radius: 3px; }
+.streets a:hover { color: var(--orange); }
+.streets small { font: 9.5px var(--mono); color: var(--muted); letter-spacing: .05em; text-transform: uppercase; margin-left: 4px; }
+#app.review .town[data-agreement="both"] .dot { background: var(--town); }
+#app.review .town[data-agreement="A"] .dot, #app.review .town[data-agreement="B"] .dot { background: #c89b2c; }
+#app.review .town[data-agreement="merged"] .dot { background: #7a5cc4; }
+#app.review .town[data-agreement="critic"] .dot { background: var(--orange); }
+.street-list { list-style: none; padding: 0 !important; display: grid; gap: 6px; counter-reset: st; }
+.street-list li { margin: 0 !important; }
+.street-list a { display: grid; grid-template-columns: 22px 1fr; gap: 8px; text-decoration: none; color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; }
+.street-list a:hover { border-color: var(--orange); }
+.street-list .n { font: 600 11px/20px var(--mono); text-align: center; border-radius: 10px; height: 20px; background: var(--orange); color: var(--paper); }
+.street-list .side .n { background: none; color: var(--orange); border: 1.5px solid var(--orange); box-sizing: border-box; }
+.street-list b { display: block; font-weight: normal; font-size: 14.5px; line-height: 1.35; color: var(--orange); }
+.street-list em { display: block; font-style: normal; font-size: 13px; color: var(--ink); }
+.street-list small { display: block; font: 10.5px var(--mono); color: var(--muted); letter-spacing: .04em; margin-top: 3px; }
+.badge { font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; color: var(--muted); }
+.regions details details { margin-left: 18px; }
+.regions details details summary { font-size: 14px; color: var(--ink); }
+.start-mark {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+  font: 11px/1.25 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--orange); text-align: center; white-space: nowrap;
+  text-shadow: 0 0 4px var(--halo), 0 0 4px var(--halo);
+}
+
+/* chrome */
+.card {
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 10px;
+  box-shadow: 0 6px 22px var(--shadow);
+}
+#top {
+  position: absolute; left: 16px; top: calc(12px + env(safe-area-inset-top, 0px));
+  width: min(360px, calc(100% - 32px)); padding: 12px 14px 12px; z-index: 5;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.brand b { font-size: 19px; color: var(--navy); }
+.brand b::after { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); margin-left: 3px; vertical-align: 2px; }
+.brand span { font: 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.brand .proto { margin-left: auto; font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--orange); border: 1px solid currentColor; border-radius: 4px; padding: 2px 5px; }
+#q {
+  width: 100%; box-sizing: border-box; font: 15px var(--serif); color: var(--ink);
+  background: var(--sea); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 10px;
+}
+#q:focus-visible { outline: 2px solid var(--orange); outline-offset: 1px; }
+#results { list-style: none; margin: 6px 0 0; padding: 0; max-height: 40vh; overflow: auto; }
+#results li button {
+  width: 100%; text-align: left; background: none; border: 0; padding: 6px 4px; font: 14px var(--serif);
+  color: var(--ink); cursor: pointer; border-radius: 5px; display: flex; justify-content: space-between; gap: 8px;
+}
+#results li button:hover, #results li button:focus-visible { background: var(--sea); outline: none; }
+#results small { font: 10.5px var(--mono); color: var(--muted); letter-spacing: .05em; white-space: nowrap; }
+
+#controls {
+  position: absolute; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 5;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+}
+.zoom { display: flex; }
+.zoom button, .chip {
+  font: 12px var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--rule);
+  padding: 7px 11px; cursor: pointer; min-height: 34px;
+}
+.zoom button:first-child { border-radius: 8px 0 0 8px; }
+.zoom button:last-child { border-radius: 0 8px 8px 0; }
+.zoom button + button { border-left: 0; }
+.layers { padding: 10px 12px; display: grid; gap: 8px; width: 250px; }
+.layers h3 { margin: 0; font: 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: normal; }
+.layers label { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.layers select { font: 13px var(--serif); color: var(--ink); background: var(--sea); border: 1px solid var(--rule); border-radius: 6px; padding: 6px; width: 100%; }
+.row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border-radius: 999px; font-size: 11.5px; padding: 5px 10px; min-height: 0; }
+.chip:hover, .zoom button:hover { border-color: var(--orange); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+#panel {
+  position: absolute; right: 16px; top: calc(12px + env(safe-area-inset-top, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: 380px; z-index: 6; display: flex; flex-direction: column; overflow: hidden;
+}
+#panel .body { overflow: auto; padding: 18px 20px 22px; }
+#panel h2 { font-size: 23px; line-height: 1.2; margin: 4px 0 10px; color: var(--navy); text-wrap: balance; font-weight: normal; }
+#panel h3 { font: 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 20px 0 8px; font-weight: normal; }
+#panel p { font-size: 15.5px; line-height: 1.55; margin: 0 0 10px; }
+#panel ul { margin: 0; padding-left: 18px; }
+#panel li { font-size: 14.5px; line-height: 1.5; margin-bottom: 6px; }
+.eyebrow { font: 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; border: 1px solid var(--rule); }
+.close { float: right; background: none; border: 0; font: 20px var(--serif); color: var(--muted); cursor: pointer; padding: 0 2px; line-height: 1; }
+.ways { list-style: none; padding: 0 !important; display: grid; gap: 8px; }
+.ways li { margin: 0 !important; }
+.ways a { display: block; text-decoration: none; color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 9px 11px; }
+.ways a:hover { border-color: var(--orange); }
+.ways a b { display: block; font-weight: normal; font-size: 14.5px; line-height: 1.35; color: var(--orange); }
+.ways a small { display: block; font: 10.5px var(--mono); color: var(--muted); letter-spacing: .04em; margin-top: 4px; }
+.links { display: flex; flex-wrap: wrap; gap: 6px; }
+.links button { font: 13.5px var(--serif); background: var(--sea); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+.links button:hover { border-color: var(--orange); }
+.links button.done { border-color: var(--visited); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 4px; }
+.primary { font: 13px var(--mono); background: var(--orange); color: var(--paper); border: 0; border-radius: 8px; padding: 9px 13px; cursor: pointer; }
+.secondary { font: 13px var(--mono); background: none; color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 9px 13px; cursor: pointer; }
+.steps { list-style: none; padding: 0 !important; counter-reset: s; display: grid; gap: 8px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 8px; margin: 0 !important; }
+.steps li::before { content: counter(s); font: 600 11px/22px var(--mono); text-align: center; background: var(--orange); color: var(--paper); border-radius: 11px; height: 22px; }
+.steps button { background: none; border: 0; padding: 0; text-align: left; font: 15px var(--serif); color: var(--ink); cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.steps small { display: block; font: 10.5px var(--mono); color: var(--muted); margin-top: 2px; }
+.note { font-size: 13.5px !important; color: var(--muted); border-left: 3px solid var(--orange); padding-left: 10px; }
+.regions { list-style: none; padding: 0 !important; }
+.regions > li { margin: 0 0 4px !important; }
+.regions details summary { cursor: pointer; font-size: 15px; padding: 5px 0; display: flex; align-items: center; gap: 8px; }
+.regions details summary small { margin-left: auto; font: 10.5px var(--mono); color: var(--muted); }
+.regions .links { padding: 4px 0 10px 18px; }
+.key { display: grid; grid-template-columns: 22px 1fr; gap: 6px 8px; align-items: center; font-size: 13.5px; }
+.key i { display: block; margin: auto; }
+.num { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 760px) {
+  #top { padding: 10px 12px; }
+  .layers { width: auto; }
+  #controls { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); left: 12px; }
+  #controls .layers { display: none; }
+  #controls.open .layers { display: grid; }
+  #panel { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-height: 52%; border-radius: 14px 14px 0 0; }
+  #panel.collapsed { max-height: 74px; }
+  #panel .body { padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+  #controls { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+  .grab { display: block; width: 40px; height: 4px; border-radius: 2px; background: var(--rule); margin: 8px auto 0; border: 0; padding: 0; cursor: pointer; }
+}
+@media (min-width: 761px) { .grab, .layers-toggle { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="app" data-lod="1">
+  <div id="stage">
+    <svg id="land" aria-hidden="true"><g id="world"></g></svg>
+    <div id="overlay"></div>
+  </div>
+
+  <div id="top" class="card">
+    <div class="brand"><b>dewlab</b><span>Atlas</span><em class="proto" title="A design prototype of the proposed topic map, 27 September 2026">prototype</em></div>
+    <label for="q" class="sr" style="position:absolute;left:-9999px">Find a topic</label>
+    <input id="q" type="search" placeholder="Find a topic, like logarithms" autocomplete="off">
+    <ul id="results" role="listbox" aria-label="Topics that match"></ul>
+  </div>
+
+  <div id="controls">
+    <div class="zoom">
+      <button type="button" id="zout" aria-label="Zoom out">−</button>
+      <button type="button" id="zfit">whole map</button>
+      <button type="button" id="zin" aria-label="Zoom in">+</button>
+      <button type="button" class="layers-toggle" id="ltoggle" aria-expanded="false">layers</button>
+    </div>
+    <div class="layers card">
+      <h3>Layers</h3>
+      <label><input type="checkbox" id="roads" checked> Roads between topics</label>
+      <label><input type="checkbox" id="review"> How each topic was found</label>
+      <div>
+        <label for="course" style="margin-bottom:5px">A course as a route</label>
+        <select id="course"><option value="">None</option></select>
+      </div>
+      <h3>Where I have been</h3>
+      <div class="row">
+        <button type="button" class="chip" id="sample">Try a sample learner</button>
+        <button type="button" class="chip" id="clear">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <aside id="panel" class="card" aria-live="polite">
+    <button type="button" class="grab" id="grab" aria-label="Show or hide the panel"></button>
+    <div class="body" id="pbody"></div>
+  </aside>
+</div>
+
+<script id="atlas-data" type="application/json">/*DATA*/</script>
+<script>
+(function () {
+  "use strict";
+  const data = JSON.parse(document.getElementById("atlas-data").textContent);
+  const towns = data.towns;
+  const byCode = new Map(towns.map((t) => [t.code, t]));
+  data.regions.forEach((r, i) => { r.tone = (i % 11) + 1; });
+  const regionById = new Map(data.regions.map((r) => [r.id, r]));
+  const districtById = new Map(data.districts.map((d) => [d.id, d]));
+  const landmarksAt = new Map(towns.map((t) => [t.code, []]));
+  for (const lm of data.landmarks) for (const a of lm.at) landmarksAt.get(a).push(lm);
+  const children = new Map(towns.map((t) => [t.code, []]));
+  for (const t of towns) for (const n of t.needs) children.get(n).push(t.code);
+
+  const app = document.getElementById("app");
+  const stage = document.getElementById("stage");
+  const svg = document.getElementById("land");
+  const world = document.getElementById("world");
+  const overlay = document.getElementById("overlay");
+  const panel = document.getElementById("panel");
+  const pbody = document.getElementById("pbody");
+  const NS = "http://www.w3.org/2000/svg";
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const view = { k: 0.3, x: 0, y: 0 };
+  let selected = null;
+  let route = [];
+  let courseLine = null;
+  let visited = new Set();
+  try { visited = new Set(JSON.parse(localStorage.getItem("atlas:visited") || "[]")); } catch (e) {}
+  function saveVisited() { try { localStorage.setItem("atlas:visited", JSON.stringify([...visited])); } catch (e) {} }
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const depthWords = ["needs nothing first", "one step in", "two steps in", "three steps in", "four steps in", "five steps in", "six steps in", "seven steps in", "eight steps in"];
+
+  // ---------- the drawing
+  const [bx, by, bw, bh] = data.bounds;
+  el("rect", { x: bx - 4000, y: by - 4000, width: bw + 8000, height: bh + 8000, fill: "var(--sea)" }, world);
+  const defs = el("defs", {}, world);
+  const clip = el("clipPath", { id: "coastclip" }, defs);
+  el("path", { d: data.coast }, clip);
+  el("path", { d: data.coast, class: "coast-fill" }, world);
+  for (const r of data.regions) el("path", { d: r.land, class: "land", fill: `var(--land-${r.tone})`, "vector-effect": "non-scaling-stroke" }, world);
+  const rings = el("g", { "clip-path": "url(#coastclip)" }, world);
+  for (const rad of data.rings) el("circle", { cx: 0, cy: 0, r: rad, class: "ring", "vector-effect": "non-scaling-stroke" }, rings);
+  el("path", { d: data.coast, class: "coast", "vector-effect": "non-scaling-stroke" }, world);
+
+  const roadLayer = el("g", {}, world);
+  const roads = [];
+  for (const t of towns) {
+    for (const n of t.needs) {
+      const a = byCode.get(n);
+      const mx = (a.x + t.x) / 2, my = (a.y + t.y) / 2;
+      // bow each road a little, away from the centre, so parallel roads separate
+      const len = Math.hypot(t.x - a.x, t.y - a.y) || 1;
+      const nx = -(t.y - a.y) / len, ny = (t.x - a.x) / len;
+      const side = (mx * nx + my * ny) > 0 ? 1 : -1;
+      const bow = Math.min(60, len * 0.12) * side;
+      const p = el("path", {
+        d: `M${a.x} ${a.y} Q${mx + nx * bow} ${my + ny * bow} ${t.x} ${t.y}`,
+        class: "road" + (a.region !== t.region ? " bridge" : ""),
+        "vector-effect": "non-scaling-stroke",
+      }, roadLayer);
+      roads.push({ from: n, to: t.code, node: p });
+    }
+  }
+  const lineLayer = el("g", {}, world);
+  const routeLayer = el("g", {}, world);
+
+  // ---------- towns, region names, the start
+  const regionLabels = data.regions.map((r) => {
+    const d = document.createElement("div");
+    d.className = "region-label";
+    d.textContent = r.name;
+    overlay.appendChild(d);
+    return { r, node: d };
+  });
+  const districtLabels = data.districts.map((d) => {
+    const n = document.createElement("div");
+    n.className = "district-label";
+    n.textContent = d.name;
+    overlay.appendChild(n);
+    return { d, node: n };
+  });
+  const start = document.createElement("div");
+  start.className = "start-mark";
+  start.innerHTML = "✦<br>start here";
+  overlay.appendChild(start);
+  const landmarkNodes = data.landmarks.map((lm) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "landmark";
+    b.innerHTML = `<span class="glyph"></span><span class="name">${esc(lm.title)}</span>`;
+    b.setAttribute("aria-label", `${lm.title}, a ${lm.kind}`);
+    b.addEventListener("click", () => { if (!moved) showLandmark(lm); });
+    overlay.appendChild(b);
+    return { lm, b };
+  });
+  const streets = document.createElement("ol");
+  streets.className = "streets";
+  streets.setAttribute("aria-label", "Pages in this topic");
+  overlay.appendChild(streets);
+
+  const maxW = Math.max(...towns.map((t) => t.weight));
+  const townNodes = towns.map((t) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "town";
+    b.dataset.code = t.code;
+    b.dataset.state = t.state;
+    b.dataset.agreement = t.agreement || "";
+    const d = 7 + Math.sqrt(t.weight / maxW) * 11;
+    b.style.setProperty("--d", d.toFixed(1) + "px");
+    b.innerHTML = `<span class="dot"></span><span class="name">${esc(t.name)}</span>`;
+    b.setAttribute("aria-label", `${t.name}. ${districtById.get(t.district).name}, ${regionById.get(t.region).name}, ${depthWords[t.tier]}.`);
+    b.addEventListener("click", (ev) => { if (moved) { ev.preventDefault(); return; } select(t.code, true); });
+    overlay.appendChild(b);
+    return { t, b, d, w: 0 };
+  });
+  requestAnimationFrame(() => { for (const n of townNodes) n.w = n.b.querySelector(".name").offsetWidth; render(); });
+
+  // ---------- view
+  // four levels: regions, districts, towns, and a town's own streets
+  function lodFor(k) { return k < 0.24 ? 1 : k < 0.55 ? 2 : k < 1.1 ? 3 : 4; }
+  function render() {
+    world.setAttribute("transform", `translate(${view.x} ${view.y}) scale(${view.k})`);
+    const lod = lodFor(view.k);
+    app.dataset.lod = lod;
+    const W = stage.clientWidth, H = stage.clientHeight;
+    const at = (x, y) => [x * view.k + view.x, y * view.k + view.y];
+    for (const { r, node } of regionLabels) {
+      const [sx, sy] = at(r.label[0], r.label[1]);
+      node.style.transform = `translate(${sx}px, ${sy}px) translate(-50%, -50%)`;
+    }
+    for (const { d, node } of districtLabels) {
+      const [sx, sy] = at(d.label[0], d.label[1]);
+      node.style.transform = `translate(${sx}px, ${sy}px) translate(-50%, -50%)`;
+    }
+    for (const { lm, b } of landmarkNodes) {
+      const [sx, sy] = at(lm.x, lm.y);
+      b.style.transform = `translate(${sx}px, ${sy}px)`;
+      b.classList.toggle("lit", selected != null && lm.at.includes(selected));
+    }
+    start.style.transform = `translate(${view.x}px, ${view.y}px) translate(-50%, -50%)`;
+    // labels: most important first, skip any that would collide (as a street map does)
+    const placed = [];
+    const obstacle = (node, sx, sy) => {
+      const w = node.offsetWidth, h = node.offsetHeight;
+      placed.push([sx - w / 2 - 4, sy - h / 2 - 2, sx + w / 2 + 4, sy + h / 2 + 2]);
+    };
+    // region names go down first at the widest view, district names at the middle one
+    if (lod === 1) for (const { r, node } of regionLabels) obstacle(node, ...at(r.label[0], r.label[1]));
+    if (lod === 2) for (const { d, node } of districtLabels) obstacle(node, ...at(d.label[0], d.label[1]));
+    if (lod >= 3 && selected) {
+      const t = byCode.get(selected);
+      const [sx, sy] = at(t.x, t.y);
+      streets.style.transform = `translate(${sx + 10}px, ${sy + 30}px)`;
+      placed.push([sx, sy + 20, sx + streets.offsetWidth + 20, sy + 30 + streets.offsetHeight]);
+    }
+    const order = townNodes.slice().sort((a, b) => prio(b) - prio(a));
+    const minWeight = lod === 1 ? 1e9 : lod === 2 ? 4 : 0;
+    for (const n of order) {
+      const sx = n.t.x * view.k + view.x, sy = n.t.y * view.k + view.y;
+      n.b.style.transform = `translate(${sx}px, ${sy}px)`;
+      const off = sx < -200 || sy < -100 || sx > W + 200 || sy > H + 100;
+      n.b.style.visibility = off ? "hidden" : "";
+      if (off) continue;
+      const forced = n.t.code === selected || route.includes(n.t.code);
+      let show = forced || n.t.weight >= minWeight || (lod >= 2 && courseLine && courseLine.includes(n.t.code));
+      const rect = [sx - n.w / 2 - 3, sy + n.d / 2 + 2, sx + n.w / 2 + 3, sy + n.d / 2 + 20];
+      if (show && !forced) {
+        for (const p of placed) if (rect[0] < p[2] && rect[2] > p[0] && rect[1] < p[3] && rect[3] > p[1]) { show = false; break; }
+      }
+      if (show) placed.push(rect);
+      n.b.classList.toggle("hide-label", !show);
+    }
+  }
+  function prio(n) {
+    let p = n.t.weight;
+    if (n.t.code === selected) p += 1000;
+    if (route.includes(n.t.code)) p += 500;
+    if (visited.has(n.t.code)) p += 3;
+    return p;
+  }
+  function viewportBox() {
+    const W = stage.clientWidth, H = stage.clientHeight;
+    const wide = W > 760;
+    return { left: wide ? 16 : 0, top: wide ? 0 : 110, right: wide ? W - 412 : W, bottom: wide ? H : H * 0.5 };
+  }
+  function fitTo(x0, y0, x1, y1, animate, maxK) {
+    const vb = viewportBox();
+    const pad = 40;
+    const k = Math.min((vb.right - vb.left - pad * 2) / (x1 - x0), (vb.bottom - vb.top - pad * 2) / (y1 - y0), maxK || 2);
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    flyTo(k, (vb.left + vb.right) / 2 - cx * k, (vb.top + vb.bottom) / 2 - cy * k, animate);
+  }
+  function fitAll(animate) { fitTo(bx, by, bx + bw, by + bh, animate); }
+  let anim = null;
+  function flyTo(k, x, y, animate) {
+    if (anim) cancelAnimationFrame(anim);
+    if (!animate || reduced) { view.k = k; view.x = x; view.y = y; render(); return; }
+    const from = { ...view }, t0 = performance.now(), dur = 520;
+    const step = (now) => {
+      const u = Math.min(1, (now - t0) / dur);
+      const e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      // interpolate zoom in log space so it feels even
+      view.k = Math.exp(Math.log(from.k) + (Math.log(k) - Math.log(from.k)) * e);
+      const fx = from.x + (x - from.x) * e, fy = from.y + (y - from.y) * e;
+      view.x = fx; view.y = fy;
+      render();
+      if (u < 1) anim = requestAnimationFrame(step);
+    };
+    anim = requestAnimationFrame(step);
+  }
+  function zoomAt(factor, px, py) {
+    const k = Math.max(0.08, Math.min(2.6, view.k * factor));
+    const f = k / view.k;
+    view.x = px - (px - view.x) * f;
+    view.y = py - (py - view.y) * f;
+    view.k = k;
+    render();
+  }
+  function centreOn(t, k) {
+    const vb = viewportBox();
+    flyTo(k, (vb.left + vb.right) / 2 - t.x * k, (vb.top + vb.bottom) / 2 - t.y * k, true);
+  }
+
+  // ---------- pointer: pan, pinch, wheel
+  const pts = new Map();
+  let moved = false, last = null, pinch0 = null;
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    stage.setPointerCapture(e.pointerId);
+    moved = false;
+    last = { x: e.clientX, y: e.clientY };
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      pinch0 = { d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k };
+    }
+  });
+  stage.addEventListener("pointermove", (e) => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2 && pinch0) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      const rect = stage.getBoundingClientRect();
+      zoomAt((pinch0.k * d / pinch0.d) / view.k, (a.x + b.x) / 2 - rect.left, (a.y + b.y) / 2 - rect.top);
+      moved = true;
+      return;
+    }
+    const dx = e.clientX - last.x, dy = e.clientY - last.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) { moved = true; stage.classList.add("dragging"); }
+    if (moved) { view.x += dx; view.y += dy; last = { x: e.clientX, y: e.clientY }; render(); }
+  });
+  const up = (e) => {
+    pts.delete(e.pointerId);
+    if (pts.size < 2) pinch0 = null;
+    if (pts.size === 1) last = [...pts.values()][0];
+    stage.classList.remove("dragging");
+    setTimeout(() => { moved = false; }, 0);
+  };
+  stage.addEventListener("pointerup", up);
+  stage.addEventListener("pointercancel", up);
+  stage.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    zoomAt(Math.exp(-e.deltaY * 0.0016), e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive: false });
+  stage.addEventListener("dblclick", (e) => {
+    if (e.target.closest(".town")) return;
+    const rect = stage.getBoundingClientRect();
+    zoomAt(1.8, e.clientX - rect.left, e.clientY - rect.top);
+  });
+  function zoomCentre(f) { const vb = viewportBox(); zoomAt(f, (vb.left + vb.right) / 2, (vb.top + vb.bottom) / 2); }
+  document.getElementById("zin").onclick = () => zoomCentre(1.5);
+  document.getElementById("zout").onclick = () => zoomCentre(1 / 1.5);
+  document.getElementById("zfit").onclick = () => fitAll(true);
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, select")) return;
+    if (e.key === "+" || e.key === "=") zoomCentre(1.3);
+    else if (e.key === "-") zoomCentre(1 / 1.3);
+    else if (e.key === "Escape") select(null);
+  });
+  addEventListener("resize", render);
+
+  // ---------- the graph
+  function ancestors(code) {
+    const out = new Set();
+    const walk = (c) => { for (const n of byCode.get(c).needs) if (!out.has(n)) { out.add(n); walk(n); } };
+    walk(code);
+    return out;
+  }
+  function orderForTravel(codes) {
+    return [...codes].sort((a, b) => byCode.get(a).tier - byCode.get(b).tier || byCode.get(a).name.localeCompare(byCode.get(b).name));
+  }
+  function light(code) {
+    for (const r of roads) {
+      r.node.classList.toggle("lit-in", code != null && r.to === code);
+      r.node.classList.toggle("lit-out", code != null && r.from === code);
+    }
+  }
+  function drawRoute(codes) {
+    routeLayer.replaceChildren();
+    for (const n of townNodes) {
+      n.b.classList.toggle("on-route", codes.includes(n.t.code));
+      const old = n.b.querySelector(".stop");
+      if (old) old.remove();
+    }
+    if (!codes.length) return;
+    const path = codes.map((c, i) => `${i ? "L" : "M"}${byCode.get(c).x} ${byCode.get(c).y}`).join(" ");
+    el("path", { d: path, class: "route-casing", "vector-effect": "non-scaling-stroke" }, routeLayer);
+    el("path", { d: path, class: "route", "vector-effect": "non-scaling-stroke" }, routeLayer);
+    codes.forEach((c, i) => {
+      if (i === codes.length - 1) return;
+      const n = townNodes.find((x) => x.t.code === c);
+      const s = document.createElement("span");
+      s.className = "stop";
+      s.textContent = i + 1;
+      n.b.appendChild(s);
+    });
+  }
+  function drawCourse(id) {
+    lineLayer.replaceChildren();
+    courseLine = null;
+    if (!id) return;
+    const c = data.courses.find((x) => x.id === id);
+    if (!c || !c.path.length) return;
+    courseLine = c.path;
+    const d = c.path.map((code, i) => `${i ? "L" : "M"}${byCode.get(code).x} ${byCode.get(code).y}`).join(" ");
+    el("path", { d, class: "line-casing", "vector-effect": "non-scaling-stroke" }, lineLayer);
+    el("path", { d, class: "line", "vector-effect": "non-scaling-stroke" }, lineLayer);
+  }
+  function paintVisited() {
+    for (const n of townNodes) n.b.classList.toggle("visited", visited.has(n.t.code));
+  }
+
+  // ---------- the panel
+  const ROLE = { teaches: "", "closer-look": "a closer look", context: "background", applies: "put to work" };
+  function courseLabel(s) { return s.courses.length ? s.courses.join(" · ") : "on no course yet"; }
+  // consecutive sections of one page read as one street with several doors
+  function streetGroups(t) {
+    const out = [];
+    for (const st of t.steps) {
+      const last = out[out.length - 1];
+      if (last && last.slug === st.slug && last.role === st.role) {
+        if (st.section) last.sections.push({ name: st.section, href: st.href });
+        continue;
+      }
+      out.push({ ...st, sections: st.section ? [{ name: st.section, href: st.href }] : [] });
+    }
+    return out;
+  }
+  function fillStreets(t) {
+    if (!t) { streets.classList.remove("on"); streets.replaceChildren(); return; }
+    streets.innerHTML = streetGroups(t).map((g) => `<li class="${g.role === "teaches" ? "" : "side"}"><a href="${esc(g.href)}" target="_blank" rel="noopener">${esc(g.title.split(":")[0])}</a>${g.sections.length > 1 ? `<small>${g.sections.length} parts</small>` : ""}${ROLE[g.role] ? `<small>${ROLE[g.role]}</small>` : ""}</li>`).join("");
+    streets.classList.toggle("on", t.steps.length > 0);
+  }
+  function townButton(code) {
+    const t = byCode.get(code);
+    return `<button type="button" data-go="${esc(code)}" class="${visited.has(code) ? "done" : ""}">${esc(t.name)}</button>`;
+  }
+  function select(code, fly) {
+    selected = code;
+    for (const n of townNodes) n.b.classList.toggle("selected", n.t.code === code);
+    light(code);
+    fillStreets(code ? byCode.get(code) : null);
+    if (!code) { route = []; drawRoute([]); showHome(); render(); try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} return; }
+    const t = byCode.get(code);
+    if (route.length && !route.includes(code)) { route = []; drawRoute([]); }
+    showTown(t);
+    try { history.replaceState(null, "", "#" + code); } catch (e) {}
+    if (fly) centreOn(t, Math.max(view.k, 0.62)); else render();
+  }
+  function showTown(t) {
+    const r = regionById.get(t.region);
+    const dname = districtById.get(t.district).name;
+    const kids = children.get(t.code);
+    let n = 0;
+    const groups = streetGroups(t);
+    const stepsHtml = groups.length
+      ? `<ol class="street-list">${groups.map((g) => {
+          const main = g.role === "teaches";
+          if (main) n += 1;
+          const parts = g.sections.length ? `<em>${g.sections.map((x) => esc(x.name)).join(" · ")}</em>` : "";
+          return `<li class="${main ? "" : "side"}"><a href="${esc(g.href)}" target="_blank" rel="noopener"><span class="n">${main ? n : "·"}</span><span><b>${esc(g.title)}</b>${parts}<small>${ROLE[g.role] ? esc(ROLE[g.role]) + " · " : ""}${esc(courseLabel(g))}</small></span></a></li>`;
+        }).join("")}</ol>`
+      : `<p class="note">No page teaches this yet. On the map it is a town still being built.</p>`;
+    const teachingPages = groups.filter((g) => g.role === "teaches").length;
+    const lms = landmarksAt.get(t.code);
+    const found = { both: "found by both searches", A: "found by one search", B: "found by one search", merged: "two searches, merged", critic: "added in review" }[t.agreement];
+    const beenHere = visited.has(t.code);
+    pbody.innerHTML = `
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <div class="eyebrow"><span class="swatch" style="background:var(--land-${r.tone})"></span>${esc(r.name)} · ${esc(dname)} · ${depthWords[t.tier]}</div>
+      <h2>${esc(t.name)}</h2>
+      <p>${esc(t.plain)}</p>
+      ${found ? `<p><span class="badge">${found}</span></p>` : ""}
+      <div class="actions">
+        <button type="button" class="primary" data-directions>How do I get here?</button>
+        <button type="button" class="secondary" data-been aria-pressed="${beenHere}">${beenHere ? "✓ I have been here" : "I have been here"}</button>
+      </div>
+      <div id="dir"></div>
+      <h3>The streets · ${teachingPages} page${teachingPages === 1 ? "" : "s"}</h3>
+      ${stepsHtml}
+      <h3>Needs first</h3>
+      ${t.needs.length ? `<div class="links">${t.needs.map(townButton).join("")}</div>` : `<p>Nothing. You could start here today.</p>`}
+      ${kids.length ? `<h3>Leads to</h3><div class="links">${kids.map(townButton).join("")}</div>` : ""}
+      ${lms.length ? `<h3>Landmarks that use it</h3><div class="links">${lms.map((lm) => `<button type="button" data-lm="${esc(lm.slug)}">◆ ${esc(lm.title)}</button>`).join("")}</div>` : ""}
+    `;
+    if (route.length && route[route.length - 1] === t.code) showDirections(t);
+    openPanel();
+  }
+  function showDirections(t) {
+    const todo = orderForTravel([...ancestors(t.code)].filter((c) => !visited.has(c)));
+    route = [...todo, t.code];
+    drawRoute(route);
+    const box = pbody.querySelector("#dir");
+    const doneCount = [...ancestors(t.code)].filter((c) => visited.has(c)).length;
+    if (!todo.length) {
+      box.innerHTML = `<p class="note">${t.needs.length ? "You have been to everything this needs. Go straight in." : "Nothing comes first. Go straight in."}</p>`;
+    } else {
+      box.innerHTML = `
+        <h3>Directions · ${todo.length} stop${todo.length === 1 ? "" : "s"} first</h3>
+        ${doneCount ? `<p class="note">${doneCount} of the places on the way are behind you already, so they are left out.</p>` : ""}
+        <ol class="steps">${todo.map((c) => {
+          const s = byCode.get(c);
+          const first = s.steps.find((x) => x.role === "teaches");
+          return `<li><div><button type="button" data-go="${esc(c)}">${esc(s.name)}</button><small>${first ? esc(first.title) : "no page yet"}</small></div></li>`;
+        }).join("")}</ol>`;
+    }
+    const xs = route.map((c) => byCode.get(c).x), ys = route.map((c) => byCode.get(c).y);
+    fitTo(Math.min(...xs) - 80, Math.min(...ys) - 80, Math.max(...xs) + 80, Math.max(...ys) + 80, true, 0.9);
+  }
+  function showHome() {
+    const pagesOnMap = new Set(towns.flatMap((t) => t.steps.map((s) => s.slug)).concat(data.landmarks.map((l) => l.slug)));
+    pbody.innerHTML = `
+      <div class="eyebrow">What this is</div>
+      <h2>Every topic, laid out like a country</h2>
+      <p>Topics that belong together sit together. The further a place is from the start, the more you need before it. Zoom in and the map shows more: first the subjects, then their districts, then every topic, and closest of all the pages inside a topic, like streets in a town.</p>
+      <p class="note">${esc(data.caption || "")} ${towns.length} topics in ${data.districts.length} districts and ${data.regions.length} regions, with ${pagesOnMap.size} pages placed.</p>
+      <h3>How to read it</h3>
+      <div class="key">
+        <i style="width:14px;height:14px;border-radius:50%;background:var(--town)"></i><span>A topic. Bigger means more topics build on it.</span>
+        <i style="width:12px;height:12px;border-radius:50%;border:2px dashed var(--town)"></i><span>A topic no page teaches yet.</span>
+        <i style="width:9px;height:9px;transform:rotate(45deg);border:2px solid var(--orange)"></i><span>A landmark: a project or a starting point that draws on several topics.</span>
+        <i style="width:12px;height:12px;border-radius:50%;background:var(--visited)"></i><span>Somewhere you have been.</span>
+        <i style="width:20px;border-top:2px dashed var(--orange)"></i><span>A road from one subject into another.</span>
+        <i style="width:20px;height:12px;border:1px dashed var(--muted);border-radius:50%"></i><span>Each ring is one more step from the start.</span>
+      </div>
+      <div id="reviewkey" ${app.classList.contains("review") ? "" : "hidden"}>
+        <h3>How each topic was found</h3>
+        <div class="key">
+          <i style="width:12px;height:12px;border-radius:50%;background:var(--town)"></i><span>Both searches found it.</span>
+          <i style="width:12px;height:12px;border-radius:50%;background:#c89b2c"></i><span>One search found it; the reconciler kept it.</span>
+          <i style="width:12px;height:12px;border-radius:50%;background:#7a5cc4"></i><span>The searches cut it differently; merged.</span>
+          <i style="width:12px;height:12px;border-radius:50%;background:var(--orange)"></i><span>Added or reshaped in review.</span>
+        </div>
+      </div>
+      <h3>Places, by region and district</h3>
+      <ul class="regions">${data.regions.map((r) => {
+        const ds = data.districts.filter((d) => d.region === r.id);
+        const inR = towns.filter((t) => t.region === r.id);
+        const been = inR.filter((t) => visited.has(t.code)).length;
+        return `<li><details><summary><span class="swatch" style="background:var(--land-${r.tone})"></span>${esc(r.name)}<small class="num">${been ? been + " of " : ""}${inR.length}</small></summary>${ds.map((d) => {
+          const list = towns.filter((t) => t.district === d.id).sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+          return `<details><summary>${esc(d.name)}<small class="num">${list.length}</small></summary><div class="links">${list.map((t) => townButton(t.code)).join("")}</div></details>`;
+        }).join("")}</details></li>`;
+      }).join("")}</ul>
+    `;
+  }
+  function showLandmark(lm) {
+    select(null);
+    pbody.innerHTML = `
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <div class="eyebrow">Landmark · ${esc(lm.kind)}</div>
+      <h2>${esc(lm.title)}</h2>
+      <ul class="ways"><li><a href="${esc(lm.href)}" target="_blank" rel="noopener"><b>Open the page</b><small>${esc(lm.slug)}</small></a></li></ul>
+      ${lm.at.length ? `<h3>It draws on</h3><div class="links">${lm.at.map(townButton).join("")}</div>` : ""}
+    `;
+    openPanel();
+  }
+  function openPanel() { panel.classList.remove("collapsed"); }
+  pbody.addEventListener("click", (e) => {
+    const go = e.target.closest("[data-go]");
+    if (go) { select(go.dataset.go, true); return; }
+    const lmb = e.target.closest("[data-lm]");
+    if (lmb) { const lm = data.landmarks.find((x) => x.slug === lmb.dataset.lm); if (lm) showLandmark(lm); return; }
+    if (e.target.closest("[data-close]")) { select(null); return; }
+    if (e.target.closest("[data-directions]")) { showDirections(byCode.get(selected)); render(); return; }
+    if (e.target.closest("[data-been]")) {
+      if (visited.has(selected)) visited.delete(selected); else visited.add(selected);
+      saveVisited(); paintVisited();
+      const keep = route.length && route[route.length - 1] === selected;
+      showTown(byCode.get(selected));
+      if (keep) showDirections(byCode.get(selected));
+      render();
+    }
+  });
+  document.getElementById("grab").onclick = () => panel.classList.toggle("collapsed");
+  const lt = document.getElementById("ltoggle");
+  lt.onclick = () => { const c = document.getElementById("controls"); c.classList.toggle("open"); lt.setAttribute("aria-expanded", c.classList.contains("open")); };
+
+  // ---------- layers
+  document.getElementById("roads").onchange = (e) => app.classList.toggle("no-roads", !e.target.checked);
+  document.getElementById("review").onchange = (e) => {
+    app.classList.toggle("review", e.target.checked);
+    const k = document.getElementById("reviewkey");
+    if (k) k.hidden = !e.target.checked;
+  };
+  const courseSel = document.getElementById("course");
+  for (const c of data.courses) {
+    const o = document.createElement("option");
+    o.value = c.id;
+    o.textContent = c.path.length ? `${c.title} (${c.path.length} topics)` : `${c.title} (names no topics)`;
+    courseSel.appendChild(o);
+  }
+  courseSel.onchange = () => {
+    drawCourse(courseSel.value);
+    const c = data.courses.find((x) => x.id === courseSel.value);
+    if (c && !c.path.length) {
+      select(null);
+      pbody.insertAdjacentHTML("afterbegin", `<p class="note"><b>${esc(c.title)}</b> has ${c.tutorials} tutorial${c.tutorials === 1 ? "" : "s"}, and none of them names a topic, so the course leaves no trace on the map or on the current topic tree.</p>`);
+    } else if (c) {
+      const xs = c.path.map((x) => byCode.get(x).x), ys = c.path.map((x) => byCode.get(x).y);
+      fitTo(Math.min(...xs) - 60, Math.min(...ys) - 60, Math.max(...xs) + 60, Math.max(...ys) + 60, true, 0.8);
+    }
+    render();
+  };
+  document.getElementById("sample").onclick = () => {
+    // someone a few weeks into the course for adults returning to maths, if it is on the map
+    const pick = ["zen-of-slashes-and-surds", "computational-methods"].map((id) => data.courses.find((c) => c.id === id)).find((c) => c && c.path.length >= 8);
+    visited = new Set((pick ? pick.path : []).slice(0, 14));
+    saveVisited(); paintVisited();
+    if (selected) select(selected, false); else showHome();
+    render();
+  };
+  document.getElementById("clear").onclick = () => {
+    visited = new Set(); saveVisited(); paintVisited();
+    if (selected) select(selected, false); else showHome();
+    render();
+  };
+
+  // ---------- search
+  const q = document.getElementById("q");
+  const results = document.getElementById("results");
+  q.addEventListener("input", () => {
+    const s = q.value.trim().toLowerCase();
+    if (!s) { results.replaceChildren(); return; }
+    const words = s.split(/\s+/);
+    const hits = towns.map((t) => {
+      const name = t.name.toLowerCase();
+      const hay = [t.name, t.plain, districtById.get(t.district).name, ...t.steps.map((x) => x.title + " " + (x.section || ""))].join(" ").toLowerCase();
+      if (!words.every((w) => hay.includes(w))) return null;
+      return { t, score: (name.startsWith(s) ? 3 : 0) + (name.includes(s) ? 2 : 0) + t.weight / 100 };
+    }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 8);
+    results.innerHTML = hits.length
+      ? hits.map(({ t }) => `<li><button type="button" data-go="${esc(t.code)}">${esc(t.name)}<small>${esc(districtById.get(t.district).name)}</small></button></li>`).join("")
+      : `<li style="padding:6px 4px;font-size:14px;color:var(--muted)">Nothing called that yet.</li>`;
+  });
+  q.addEventListener("keydown", (e) => { if (e.key === "Enter") { const b = results.querySelector("button"); if (b) b.click(); } });
+  results.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-go]");
+    if (b) { select(b.dataset.go, true); results.replaceChildren(); q.value = ""; }
+  });
+
+  // ---------- open
+  paintVisited();
+  showHome();
+  fitAll(false);
+  const hash = decodeURIComponent(location.hash.slice(1));
+  if (byCode.has(hash)) select(hash, true);
+})();
+</script>

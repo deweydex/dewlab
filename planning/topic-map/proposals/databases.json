@@ -1,0 +1,435 @@
+{
+  "area": "databases",
+  "districts": [
+    {
+      "id": "tables-and-queries",
+      "name": "Tables and queries",
+      "blurb": "Making a table, adding rows to it, and asking it questions in SQL."
+    },
+    {
+      "id": "linked-tables",
+      "name": "Linked tables",
+      "blurb": "Keeping data in several tables that point at each other, planning them, and joining them again in a query."
+    },
+    {
+      "id": "moving-data-in-and-out",
+      "name": "Data in and out",
+      "blurb": "Bringing real data into a database from a file or a form, and saving answers as a chart or a file."
+    }
+  ],
+  "topics": [
+    {
+      "id": "sql-tables",
+      "name": "Making a table in SQL",
+      "district": "tables-and-queries",
+      "plain": "A database keeps its data in tables, with one row for each thing and one column for each fact about it. Three SQL statements make a table, add rows to it and show what it holds.",
+      "needs": [],
+      "steps": [
+        {
+          "tutorial": "a-table-is-a-list-of-rows",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO1",
+        "DBM-LO2"
+      ],
+      "replaces": [
+        "DBM-LO1",
+        "DBM-LO2a",
+        "DBM-LO2b"
+      ],
+      "size": "One long first page (about 1,800 words, two cells): what a table and a database are, where databases show up, then CREATE TABLE, INSERT and SELECT *, data types, an automatic primary key and the _tbl naming rule. It is one activity, building one table and reading it back, and nothing later needs the words 'row' and 'column' without the statements that make them, so the old split into tables, statements and 'where databases show up' is merged. Where databases show up is a section, not an idea of its own."
+    },
+    {
+      "id": "sql-filtering-and-sorting",
+      "name": "Filtering and sorting rows",
+      "district": "tables-and-queries",
+      "plain": "Asking a table for only the columns and rows you want, with a condition after WHERE, and putting the answer in order with ORDER BY.",
+      "needs": [
+        "sql-tables"
+      ],
+      "steps": [
+        {
+          "tutorial": "asking-questions-of-a-table",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO3",
+        "DBM-LO4",
+        "DBM-LO5"
+      ],
+      "replaces": [
+        "DBM-LO3",
+        "DBM-LO5"
+      ],
+      "size": "One beginner page (about 1,050 words): naming columns, WHERE with the six comparisons, ORDER BY ASC and DESC. UPDATE and DELETE need WHERE but not ORDER BY, yet ORDER BY on its own is a few paragraphs that nothing needs by itself, so it stays a step here rather than a topic. 'SQL as a query language' was never taught apart from writing these queries, so its old topic folds in here."
+    },
+    {
+      "id": "sql-updating-and-deleting",
+      "name": "Changing and deleting rows",
+      "district": "tables-and-queries",
+      "plain": "Changing values in rows that are already there with UPDATE, and removing rows with DELETE, without changing more rows than you meant to.",
+      "needs": [
+        "sql-filtering-and-sorting"
+      ],
+      "steps": [
+        {
+          "tutorial": "changing-what-is-in-it",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO4"
+      ],
+      "replaces": [
+        "DBM-LO4"
+      ],
+      "size": "One beginner page (about 830 words). It is its own topic because joins, design and the data pages all need filtering but none needs UPDATE or DELETE. It needs WHERE: both statements pick their rows with one, and the page's main lesson is what happens without it."
+    },
+    {
+      "id": "sql-counting-and-averaging",
+      "name": "Counting and averaging rows",
+      "district": "tables-and-queries",
+      "plain": "Asking a table for one number about many rows: how many there are, their average, or the largest.",
+      "needs": [
+        "sql-filtering-and-sorting"
+      ],
+      "steps": [
+        {
+          "tutorial": "sql-practice",
+          "section": "exercise-5-count",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "many-languages-one-idea",
+          "section": "the-same-job-in-sql",
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [],
+      "replaces": [],
+      "size": "A hidden topic. No Database Methods page teaches COUNT, AVG or MAX as its main idea: COUNT(*) arrives in a practice hint and again in the timetable's build cell, and the only real teaching is the SQL section of 'Many languages, one idea' in the Dewey Track (AVG, COUNT(*), MAX and a query inside a query). Together they are well under one sitting. Counting and totals are something every learner of SQL would name, and grouping (GROUP BY, the descriptor's pivot table) is taught nowhere, so it stays a topic; see the question on adding a page."
+    },
+    {
+      "id": "sql-joins",
+      "name": "Joining two tables",
+      "district": "linked-tables",
+      "plain": "Keeping two kinds of thing in two tables, linked by a column that holds the other table's key, and combining the matching rows in one query with JOIN.",
+      "needs": [
+        "sql-filtering-and-sorting"
+      ],
+      "steps": [
+        {
+          "tutorial": "a-second-table-and-a-join",
+          "section": null,
+          "role": "teaches"
+        },
+        {
+          "tutorial": "sets-in-databases",
+          "section": "every-pair-cross-join",
+          "role": "context"
+        },
+        {
+          "tutorial": "sets-in-databases",
+          "section": "a-join-keeps-the-pairs-that-match",
+          "role": "context"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO5"
+      ],
+      "replaces": [],
+      "size": "One short beginner page (about 740 words): why data is split into two tables, the foreign key, JOIN ... ON and table.column. The two context sections of 'Sets in databases' (a number-area context page) show a JOIN as every pair of rows, then only the pairs that match; they are side reading, not a need. Kept apart from LEFT JOIN because design, the timetable and the library quiz all need a plain JOIN and never LEFT JOIN."
+    },
+    {
+      "id": "sql-left-join",
+      "name": "When a join drops rows",
+      "district": "linked-tables",
+      "plain": "A JOIN keeps only the rows whose values match exactly. LEFT JOIN keeps every row from the first table and leaves a gap where there was no match, so you can see which rows had no partner.",
+      "needs": [
+        "sql-joins"
+      ],
+      "steps": [
+        {
+          "tutorial": "joining-two-real-tables",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO5"
+      ],
+      "replaces": [],
+      "size": "A hidden topic: one short page (about 510 words) on a real dataset, where 'USA' and 'United States' never meet, then LEFT JOIN, then fixing the spelling. It is smaller than one sitting, but it is a distinct idea a learner names (inner and outer joins), and nothing later needs it, so folding it into 'Joining two tables' would make every later topic wait for it. The first cell reloads the CSV table from the loading page, but a learner can run it without that topic, so it is not a need."
+    },
+    {
+      "id": "designing-a-database",
+      "name": "Designing a database",
+      "district": "linked-tables",
+      "plain": "Deciding what tables a problem needs, what one row of each one is, and which columns point at other tables. Then building those tables in SQL.",
+      "needs": [
+        "sql-joins"
+      ],
+      "steps": [
+        {
+          "tutorial": "designing-a-table-before-you-build-it",
+          "section": null,
+          "role": "teaches"
+        },
+        {
+          "tutorial": "a-college-timetable",
+          "section": "five-tables-for-one-timetable",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "a-college-timetable",
+          "section": "building-it",
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO9",
+        "DBM-LO10"
+      ],
+      "replaces": [
+        "DBM-LO9",
+        "DBM-LO10"
+      ],
+      "size": "One page and two sections, about 1,600 words: one kind of thing per table, a column type for every column, one-to-many links and the entity relationship diagram, then the timetable's five-table design (four tables of things, one of events), dates written so they sort, FOREIGN KEY ... REFERENCES, dropping tables in reverse order and the doubled quote. Designing and building are merged because they are always taught together and nothing needs the design without the build. It needs a plain JOIN: the join is the concrete reason to split tables, and the design page names what the join page already did."
+    },
+    {
+      "id": "many-to-many-links",
+      "name": "Many-to-many links",
+      "district": "linked-tables",
+      "plain": "When a book can have several authors and an author several books, a third table holds the pairs: one row for each book and author that belong together.",
+      "needs": [
+        "designing-a-database"
+      ],
+      "steps": [
+        {
+          "tutorial": "the-library-loans-quiz",
+          "section": "task-2-a-book-can-have-more-than-one-author",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "the-library-loans-quiz",
+          "section": "task-4-add-authors-books-and-authorships",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "the-library-loans-quiz",
+          "section": "task-6-two-questions-for-your-database",
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO9",
+        "DBM-LO10"
+      ],
+      "replaces": [],
+      "size": "A hidden topic, taught only inside the library loans quiz: the junction table and a primary key made of two columns (task 2), filling it so one book has two authors and one author two books (task 4), and joining through it and across three tables, with IS NULL for a loan not yet returned (task 6). About one sitting deep in the course. The rest of the quiz is building practice, so the page is also a project landmark."
+    },
+    {
+      "id": "sql-self-join",
+      "name": "Joining a table to itself",
+      "district": "linked-tables",
+      "plain": "Joining several tables in one query, and comparing a table's rows with each other under two names, for example to find two bookings of one room at the same time.",
+      "needs": [
+        "designing-a-database"
+      ],
+      "steps": [
+        {
+          "tutorial": "a-college-timetable",
+          "section": "asking-it-real-questions",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "a-college-timetable",
+          "section": "finding-a-clash",
+          "role": "teaches"
+        },
+        {
+          "tutorial": "a-college-timetable",
+          "section": "the-same-idea-for-a-teacher",
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO5"
+      ],
+      "replaces": [],
+      "size": "A hidden topic: the query half of the timetable page, about 1,100 words. It covers three JOINs in one query with AS names for columns, the overlap test (each session starts before the other ends), the self-join with two names for one table, and s1.session_id < s2.session_id to skip a row matched with itself. It needs 'Designing a database' because it queries the five tables that topic designs and builds; the design and build half of the same page is that topic's last two steps."
+    },
+    {
+      "id": "importing-csv-data",
+      "name": "Loading real data into a table",
+      "district": "moving-data-in-and-out",
+      "plain": "Reading a file of real data into Python as a table, tidying its column names and checking what is missing, and then writing it into the database so SQL can ask it questions.",
+      "needs": [
+        "sql-filtering-and-sorting"
+      ],
+      "steps": [
+        {
+          "tutorial": "working-with-tables",
+          "section": null,
+          "role": "teaches"
+        },
+        {
+          "tutorial": "loading-a-real-dataset",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO8"
+      ],
+      "replaces": [
+        "DBM-LO8"
+      ],
+      "size": "Two pages, about 1,470 words, one sitting. The first is a hidden idea (pandas and the DataFrame: a table in Python, filtered the way WHERE filters), but it exists to prepare the second ('To do that, Python needs a table of its own'), they are always taught together, and nothing in this area needs a DataFrame without the CSV: the sharing pages need both. So they merge. Needs filtering because the pandas page teaches its filter as the Python form of WHERE, and the loading page ends with a SELECT."
+    },
+    {
+      "id": "sharing-query-results",
+      "name": "Sharing a query's result",
+      "district": "moving-data-in-and-out",
+      "plain": "Bringing a query's answer into Python, and then showing it as a line chart or saving it as a CSV file that someone else can open in a spreadsheet.",
+      "needs": [
+        "importing-csv-data"
+      ],
+      "steps": [
+        {
+          "tutorial": "charting-a-querys-result",
+          "section": null,
+          "role": "teaches"
+        },
+        {
+          "tutorial": "exporting-a-query-to-a-file",
+          "section": null,
+          "role": "teaches"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO7"
+      ],
+      "replaces": [
+        "DBM-LO7"
+      ],
+      "size": "Two short pages (about 430 and 400 words). Both start the same way, read_sql turning a query's result into a DataFrame (the reverse of to_sql), and then one draws a chart and one writes a CSV. Apart, each would be half a sitting deep in the course; together they are one sitting, nothing needs one without the other, and the old topic already held both. Needs the loading topic for the DataFrame, to_sql and the CSV shape it reverses."
+    },
+    {
+      "id": "query-behind-a-form",
+      "name": "The query behind a form",
+      "district": "moving-data-in-and-out",
+      "plain": "When someone presses submit on a form, their answers become the values in one INSERT. The database adds them to a table as a new row.",
+      "needs": [
+        "sql-tables"
+      ],
+      "steps": [
+        {
+          "tutorial": "a-form-that-writes-a-row",
+          "section": null,
+          "role": "teaches"
+        },
+        {
+          "tutorial": "a-page-that-reads-from-a-database",
+          "section": "asking-the-database-not-just-reading-it",
+          "role": "applies"
+        }
+      ],
+      "outcomes": [
+        "DBM-LO6"
+      ],
+      "replaces": [
+        "DBM-LO6"
+      ],
+      "size": "One short page (about 500 words, one cell), close to the start in what it needs: only INSERT and an automatic key. It stays a topic because it is the one place the course connects a database to a form, and the web area's Full Stack page takes it further (a visitor's typed text filling a ? placeholder in a query). That page is listed as 'applies', not 'teaches', because it also needs JavaScript, which this page does not."
+    }
+  ],
+  "landmarks": [
+    {
+      "tutorial": "sql-practice",
+      "kind": "review",
+      "at": [
+        "sql-tables",
+        "sql-filtering-and-sorting",
+        "sql-counting-and-averaging"
+      ],
+      "note": "Five short exercises, one per idea: naming columns, WHERE, INSERT, ORDER BY, COUNT. Its COUNT exercise is also a teaching step, because nothing else in Database Methods teaches COUNT."
+    },
+    {
+      "tutorial": "the-tentacular-plushies-quiz",
+      "kind": "project",
+      "at": [
+        "sql-tables",
+        "sql-filtering-and-sorting",
+        "sql-joins"
+      ],
+      "note": "Build a two-table shop database to a brief, with self-checks and hints. It adds nothing new except PRAGMA table_info in a hint and FOREIGN KEY in the worked answer. It is where DBM-LO10 (build to a brief) and DBM-LO11 (hints and self-checks) are first practised."
+    },
+    {
+      "tutorial": "the-library-loans-quiz",
+      "kind": "project",
+      "at": [
+        "designing-a-database",
+        "many-to-many-links",
+        "sql-joins"
+      ],
+      "note": "A five-table library built task by task with self-checks. Tasks 2, 4 and 6 are the teaching steps of 'Many-to-many links'; tasks 1, 3 and 5 are building practice. It refers back to the college timetable, so it belongs after it."
+    }
+  ],
+  "elsewhere": [
+    {
+      "tutorial": "a-github-account",
+      "suggest": "web",
+      "why": "It creates a GitHub account for publishing a site and for the report doors. It teaches nothing about databases. It belongs with the web area's GitHub and publishing pages (publish-it, the-two-loops, how-git-keeps-history) and with issues-and-pull-requests. Database Methods lists it only as setup."
+    }
+  ],
+  "outcomes_culled": [
+    {
+      "code": "DBM-LO11",
+      "why": "A working habit (reading hints, error messages and self-checks), not an idea a learner can say they know. The two self-checked quizzes are where it is practised, and both are project landmarks.",
+      "becomes": "landmark"
+    }
+  ],
+  "questions": [
+    {
+      "q": "No Database Methods page teaches counting, averaging or grouping rows. COUNT(*) appears only in a practice hint and in the timetable's build cell. AVG, MAX and a query inside a query are taught in the SQL section of 'Many languages, one idea' (Dewey Track). GROUP BY, which is the query behind a pivot table (the descriptor's own example for DBM-LO3), is taught nowhere; only pandas' groupby appears, in the charting page. Should Database Methods gain a page on this?",
+      "options": [
+        "Add a short page after 'Filtering and sorting rows': COUNT, SUM, AVG, MIN, MAX, then GROUP BY",
+        "Keep the topic with its two borrowed steps and add no page",
+        "Drop the topic and leave COUNT as a step inside filtering"
+      ],
+      "lean": "Add the page. Totals per group are one of the first things a learner asks a real table, and the topic is already on the map with thin steps."
+    },
+    {
+      "q": "The library loans quiz sits in the Practice series, before 'A database with several tables', but it says it differs from 'a college timetable' and uses 'every table on the earlier pages in this module'. It is also the only page that teaches many-to-many links and a two-column key. Should its place in the course change?",
+      "options": [
+        "Move it to the end of 'A database with several tables', after a-college-timetable",
+        "Leave the course order and let the map show it after the timetable"
+      ],
+      "lean": "Move it. The page itself assumes the timetable, and the map puts its topic after 'Designing a database'."
+    },
+    {
+      "q": "'Sets in databases' (a number-area context page) is the only page that teaches UNION, INTERSECT, EXCEPT and SELECT DISTINCT. By the context rule it is a context step in the number area's sets topic, because no database topic needs it. Should the databases region also hold a topic for it?",
+      "options": [
+        "Leave it as a context step for sets, plus the two context steps on 'Joining two tables' given here",
+        "Add a databases topic, 'Combining query results', taught by that page and needing only the sets topic"
+      ],
+      "lean": "Leave it as context. Nothing in Database Methods needs it, and a topic taught only by another area's context page would be hard to find in its course."
+    },
+    {
+      "q": "'The query behind a form' is one 500-word page. The web area's Full Stack page ('A page that reads from a database') is the other half of the same idea: a visitor's input filling a query. Should they be one topic?",
+      "options": [
+        "Keep two topics: this one in databases, the Full Stack page in web, needing 'Filtering and sorting rows'",
+        "Merge them into one topic, 'A database behind a web page'"
+      ],
+      "lean": "Keep two. The Full Stack page needs JavaScript and the DOM; the form page needs only INSERT. Merging would make a Database Methods learner wait for JavaScript."
+    }
+  ],
+  "notes": "Bottom-up, in course order: a-github-account (GitHub setup; elsewhere, web); a-table-is-a-list-of-rows (table, row, column, database, where databases show up, CREATE TABLE/INSERT/SELECT *, types, automatic primary key, naming rule); asking-questions-of-a-table (column lists, WHERE and comparisons, ORDER BY); changing-what-is-in-it (UPDATE, DELETE, DROP TABLE, keys keep their numbers); a-second-table-and-a-join (foreign key, JOIN ... ON, table.column); sql-practice (a review with a first COUNT); plushies quiz (build to a brief, PRAGMA table_info); library quiz (junction table, composite key, NULL and IS NULL, three-table joins); designing-a-table-before-you-build-it (one kind of thing per table, types, one-to-many, ERD with PK, FK and crow's foot); working-with-tables (pandas, DataFrame, boolean filter, mean); loading-a-real-dataset (CSV, load_csv, renaming, isna, to_sql, IN, AND, LIMIT); joining-two-real-tables (exact-text matching, LEFT JOIN, fix the data, SELECT DISTINCT); charting-a-querys-result (read_sql, groupby, plt.plot with a legend); exporting-a-query-to-a-file (read_sql, to_csv, a query is not its result); a-form-that-writes-a-row (a submission is an INSERT); a-college-timetable (five-table design, sortable dates and times, FOREIGN KEY REFERENCES, drop order, doubled quote, three JOINs with AS, overlap test, self-join).\n\nTop-down, from the course description ('a table, then several joined together, ask questions of them in SQL, with the Python that reads the answers'), the series titles and the descriptor: tables; filtering and sorting; changing rows; counting and grouping; joins; outer joins; joining many tables and self-joins; design and keys; many-to-many; constraints; missing values; importing; exporting and charting; forms; databases behind a website. There are two gaps. Counting and grouping had no topic, so 'Counting and averaging rows' is added, with thin steps and a question about adding a page. Set operations live on the number area's context page (see the question). Constraints (FOREIGN KEY REFERENCES, NOT NULL) are steps inside 'Designing a database'. Missing values and NULL are spread over three pages as steps (isna while cleaning, the gap LEFT JOIN leaves, IS NULL in the library quiz), and no page teaches them as their main idea, so they are not a topic. Subqueries appear only in 'Many languages, one idea' and in an answer fold on 'Sets in databases': a step, not a topic. A database behind a website is the web area's Full Stack page.\n\nPages from other areas named here as extra steps: many-languages-one-idea#the-same-job-in-sql (programming; its main placement is the programming area's languages topic), sets-in-databases (number; its main placement is the sets topic, as context), a-page-that-reads-from-a-database (web; the Full Stack topic, which should need sql-filtering-and-sorting). The integrator may drop these extra steps if it prefers a page in one region only.\n\nFor other areas: the web area's Full Stack topic needs sql-filtering-and-sorting (its queries use WHERE, ORDER BY and LIKE) and the web area's JavaScript and DOM topics. Several chance-data and programming pages call load_csv and filter a DataFrame (df[df.country == 'Ireland']) with their own short explanation. If any of their topics truly needs pandas without SQL, split working-with-tables out of 'Loading a CSV file into a table' as its own topic, 'Tables in Python with pandas'.\n\nContent notes found on the way (not map decisions): the charting page uses a Python for loop and a generator expression in ', '.join(...), and Database Methods never teaches either, though a learner can change the country list without them. The loading page uses IN, AND and LIMIT without naming them. The plushies quiz's worked answer uses NOT NULL, which no page explains."
+}

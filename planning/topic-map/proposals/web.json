@@ -1,0 +1,1345 @@
+{
+ "area": "web",
+ "districts": [
+  {
+   "id": "tools-and-publishing",
+   "name": "Tools and publishing",
+   "blurb": "The editor, GitHub, Git and the browser's own tools that you use to build a site, publish it and fix it."
+  },
+  {
+   "id": "html-basics",
+   "name": "HTML: the parts of a page",
+   "blurb": "Tags that say what each part of a page is: headings, sections, images, links and menus."
+  },
+  {
+   "id": "css-styling",
+   "name": "CSS: how a page looks",
+   "blurb": "Rules that choose elements and change how they look: colours, sizes, spacing, names, and which rule wins."
+  },
+  {
+   "id": "page-layout",
+   "name": "Layout and screen sizes",
+   "blurb": "Where the boxes on a page sit, in a row or a grid, on a wide screen and on a phone."
+  },
+  {
+   "id": "movement-and-interaction",
+   "name": "Movement and interaction",
+   "blurb": "Pages that answer a pointer or a key, and things that move, turn and show depth."
+  },
+  {
+   "id": "web-accessibility",
+   "name": "Pages everyone can use",
+   "blurb": "Making a page work for people who listen to it, use only a keyboard, see colour less clearly, or feel unwell when things move."
+  },
+  {
+   "id": "how-a-browser-works",
+   "name": "How a browser works",
+   "blurb": "What a browser does between a web address and a moving picture on the screen."
+  },
+  {
+   "id": "building-a-whole-site",
+   "name": "Building a whole site",
+   "blurb": "Planning a site of several pages, giving it one menu, keeping its images small, and writing down what you built."
+  },
+  {
+   "id": "forms-and-data",
+   "name": "Forms and data",
+   "blurb": "Fields a visitor types into, where their answers go, and a page that shows rows from a database."
+  }
+ ],
+ "topics": [
+  {
+   "id": "code-editor",
+   "name": "Choosing a code editor",
+   "district": "tools-and-publishing",
+   "plain": "An editor is a program for changing the plain text files a website is made of. You can install one, such as VS Code, or use the one on GitHub's website with nothing to install.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "an-editor",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO3"
+   ],
+   "replaces": [
+    "WA-LO3"
+   ],
+   "size": "One short page for a beginner. Kept apart from forking because Database Methods and Issues and pull requests use the editor without the starter copy."
+  },
+  {
+   "id": "forking-a-repository",
+   "name": "Your own copy of a project",
+   "district": "tools-and-publishing",
+   "plain": "Making your own copy of another person's repository on GitHub, as a fork or from a template, and choosing how to open it: in the browser, as a download, or as a clone.",
+   "needs": [
+    "ext:github-account"
+   ],
+   "steps": [
+    {
+     "tutorial": "your-copy-of-the-starter",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO3"
+   ],
+   "replaces": [],
+   "size": "One short page. Publishing needs it, and the project starter repeats it as a landmark, so it stands on its own."
+  },
+  {
+   "id": "github-pages",
+   "name": "Publishing a site with GitHub Pages",
+   "district": "tools-and-publishing",
+   "plain": "GitHub Pages turns the files in a repository into a real website, free, at an address like username.github.io/repository-name. The home page must be a file called index.html.",
+   "needs": [
+    "forking-a-repository"
+   ],
+   "steps": [
+    {
+     "tutorial": "publish-it",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO13"
+   ],
+   "replaces": [
+    "WA-LO13"
+   ],
+   "size": "One short page for a beginner; the two loops and fetching a page both start from a published site."
+  },
+  {
+   "id": "saving-and-publishing-changes",
+   "name": "Saving and publishing a change",
+   "district": "tools-and-publishing",
+   "plain": "Two loops you repeat all the time. On your computer you save a file and refresh the browser. On GitHub you commit, push and wait a minute for the site to rebuild.",
+   "needs": [
+    "github-pages",
+    "code-editor"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-two-loops",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO13"
+   ],
+   "replaces": [],
+   "size": "One page. It is the working habit every later 'now in your own site' section uses, and Git history and troubleshooting build on it."
+  },
+  {
+   "id": "git-history",
+   "name": "How Git keeps history",
+   "district": "tools-and-publishing",
+   "plain": "What a commit holds, why git add comes before git commit, and how the commits of a project form a history you can read, on your own computer and on GitHub.",
+   "needs": [
+    "saving-and-publishing-changes"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-git-keeps-history",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "A context page made a topic: it teaches Git itself (snapshots, the staging area, history, branches), which the brief names as a hidden topic and which pull requests and forks lean on. About one sitting."
+  },
+  {
+   "id": "browser-inspector",
+   "name": "Looking inside a page: the inspector",
+   "district": "tools-and-publishing",
+   "plain": "A tool built into every browser that shows the HTML and CSS behind a page, lists the rules that affect each part, and shows errors from loading it.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "the-inspector",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO10",
+    "WA-LO3"
+   ],
+   "replaces": [
+    "WA-LO10"
+   ],
+   "size": "One page, taught before any HTML. Many later pages (the cascade, layout, the footer, flexbox or grid, troubleshooting) open it."
+  },
+  {
+   "id": "fixing-a-broken-page",
+   "name": "Finding and fixing mistakes",
+   "district": "tools-and-publishing",
+   "plain": "The checks that find the usual problems: a blank page, a stylesheet that does nothing, an image that will not show, an unclosed tag or brace, and a change that does not appear.",
+   "needs": [
+    "browser-inspector",
+    "css-rules-and-selectors",
+    "saving-and-publishing-changes"
+   ],
+   "steps": [
+    {
+     "tutorial": "troubleshooting",
+     "section": "a-page-or-a-style-doesnt-look-right",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "troubleshooting",
+     "section": "my-code-has-a-mistake-i-cant-find",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "troubleshooting",
+     "section": "nothing-changed-after-i-edited-something",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "troubleshooting",
+     "section": "github-wont-take-my-changes",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-a-browser-fetches-a-page",
+     "section": "why-a-refresh-can-show-an-old-page",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO10"
+   ],
+   "replaces": [
+    "WA-LO10"
+   ],
+   "size": "The web sections of one reference page, about one sitting. Its SQL and 'this site' sections are not web ideas and are left off. A skill a short check can confirm: find the mistake in a broken page."
+  },
+  {
+   "id": "html-page-structure",
+   "name": "Tags, elements, head and body",
+   "district": "html-basics",
+   "plain": "A web page is a plain text file. Tags mark what each piece of text is, and an attribute adds detail to a tag. Every page has a head, for facts about the page, and a body, for what a visitor sees.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "a-page-is-files",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-skeleton",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "size": "Two very short pages, under one sitting together. Everything later needs both, and they are always taught one after the other, so one topic."
+  },
+  {
+   "id": "semantic-html",
+   "name": "Headings and tags that describe content",
+   "district": "html-basics",
+   "plain": "Choosing a tag for what the content is, not for how it looks: heading levels, strong and em, and containers such as nav, header, main and section.",
+   "needs": [
+    "html-page-structure"
+   ],
+   "steps": [
+    {
+     "tutorial": "headings-and-emphasis",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "sections-that-mean-something",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO8"
+   ],
+   "size": "Two short pages, about one sitting. Both teach the same idea, meaning over looks, and nothing needs one without the other."
+  },
+  {
+   "id": "images-on-a-page",
+   "name": "Placing an image",
+   "district": "html-basics",
+   "plain": "The img tag puts a picture on a page. Its src attribute says where the file is, and figure and figcaption add a caption under it.",
+   "needs": [
+    "html-page-structure"
+   ],
+   "steps": [
+    {
+     "tutorial": "images-and-alt-text",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO8"
+   ],
+   "size": "One page, shared with file-paths: its 'two kinds of address' section is the start of that topic. Alt text, image sizes and flexible images all need it."
+  },
+  {
+   "id": "file-paths",
+   "name": "Paths: finding a file",
+   "district": "html-basics",
+   "plain": "A path is the address of a file inside your own site, starting from the page that uses it. A slash goes into a folder, two dots go up one folder, and capital letters count.",
+   "needs": [
+    "images-on-a-page"
+   ],
+   "steps": [
+    {
+     "tutorial": "images-and-alt-text",
+     "section": "two-kinds-of-address",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "images-and-file-size",
+     "section": "an-images-folder",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "troubleshooting",
+     "section": "an-image-wont-show",
+     "role": "applies"
+    }
+   ],
+   "outcomes": [
+    "WA-LO8"
+   ],
+   "replaces": [],
+   "size": "A hidden topic. Two sections, small, but links, stylesheets and an images folder all need paths without needing img, so the split test makes it its own topic."
+  },
+  {
+   "id": "links-and-menus",
+   "name": "Links and menus",
+   "district": "html-basics",
+   "plain": "An a tag makes a link to another page, another site, an email address, or a place further down the same page. A menu is a list of links inside a nav tag.",
+   "needs": [
+    "file-paths",
+    "semantic-html"
+   ],
+   "steps": [
+    {
+     "tutorial": "three-kinds-of-link",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "navigation",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO8"
+   ],
+   "size": "Two short pages, about one sitting. Nothing later needs links without menus or menus without links, and they are taught one after the other."
+  },
+  {
+   "id": "css-rules-and-selectors",
+   "name": "CSS rules, selectors and classes",
+   "district": "css-styling",
+   "plain": "A CSS rule has a selector, which chooses elements, and declarations, which say how they look. A stylesheet holds the rules for many pages, and a class lets a rule reach only some elements.",
+   "needs": [
+    "html-page-structure"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-rule-and-where-it-lives",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "selectors-and-classes",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "Two short pages, about one sitting. Almost every CSS page after the first uses class selectors, so nothing needs rules without selectors."
+  },
+  {
+   "id": "css-colours-and-variables",
+   "name": "Colours and CSS variables",
+   "district": "css-styling",
+   "plain": "Writing a colour as a name or a hex code, and storing a value once in a CSS variable so that many rules can use it.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "variables-and-colour",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page. Its last section, the contrast check, is also the first step of colour-contrast. BEM needs the variables and contrast needs the colours."
+  },
+  {
+   "id": "css-box-model",
+   "name": "The box model",
+   "district": "css-styling",
+   "plain": "Every element is a box with three layers around its content: padding, a border and a margin. Two margins that meet can join into one.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-box",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page. The page width topic and flexbox both need it on its own."
+  },
+  {
+   "id": "css-text-and-units",
+   "name": "Text size and units",
+   "district": "css-styling",
+   "plain": "Measuring sizes in px or rem, how rem follows the root font size, and placing text on the left, the right or the centre with text-align.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "text-and-units",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page. Colour contrast needs it (text a reader can make bigger), and nothing needs it with the box model, so it stands alone."
+  },
+  {
+   "id": "css-cascade",
+   "name": "Which rule wins: the cascade",
+   "district": "css-styling",
+   "plain": "When two rules set the same thing on one element, the more precise selector wins, and between equal selectors the later rule wins. Some properties, such as colour, pass down to the elements inside.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "which-rule-wins",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "A context page made a topic: the cascade, specificity and inheritance are a hidden topic the brief names, and no tutorial teaches them. A long page, one to two sittings."
+  },
+  {
+   "id": "css-class-names",
+   "name": "Naming classes so they stay tidy",
+   "district": "css-styling",
+   "plain": "A naming pattern, BEM, of block, element and modifier, so that a class name says what it is for. A modifier can set a variable again to change one part of the page.",
+   "needs": [
+    "css-colours-and-variables"
+   ],
+   "steps": [
+    {
+     "tutorial": "css-variables-and-bem",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page, a little deeper in. It needs variables for its scoped override; nothing needs it."
+  },
+  {
+   "id": "page-width-and-centring",
+   "name": "Centring content and placing footers",
+   "district": "page-layout",
+   "plain": "Stopping content from growing too wide with max-width, centring it with auto margins, and keeping a footer at the bottom of a short page.",
+   "needs": [
+    "css-box-model"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-container",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "footer-at-the-bottom",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "Two pages, about one sitting. Both use an auto margin to take the leftover space, and the footer page says so. Nothing needs the footer on its own, so it is a step here."
+  },
+  {
+   "id": "css-position",
+   "name": "A header that stays in view",
+   "district": "page-layout",
+   "plain": "The position property changes how an element moves as the page scrolls. With position: sticky and top: 0, a header stays at the top.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "position-and-the-sticky-header",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-a-browser-lays-out-a-page",
+     "section": "how-the-values-of-position-fit-together",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page, with the layout page's section on all five values of position as background."
+  },
+  {
+   "id": "css-media-queries",
+   "name": "Media queries",
+   "district": "page-layout",
+   "plain": "CSS that applies only when a condition is true, usually a screen width. A breakpoint is the width where the layout changes, and a phone needs the viewport line in the head.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "media-queries",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "designing-for-many-screens",
+     "section": null,
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page, with its background page on the viewport tag, mobile-first and choosing breakpoints. Grid and the site menu need it without flexible images, so the two stay apart."
+  },
+  {
+   "id": "flexible-images",
+   "name": "Images that fit the screen",
+   "district": "page-layout",
+   "plain": "Two declarations, max-width: 100% and height: auto, let an image shrink to fit a narrow screen and keep its shape.",
+   "needs": [
+    "images-on-a-page",
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "flexible-images",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "designing-for-many-screens",
+     "section": "images-on-a-narrow-screen",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One short page. It cannot join media queries (grid needs those without it) or images (it needs CSS), so it is a small topic of its own."
+  },
+  {
+   "id": "css-flexbox",
+   "name": "Flexbox: boxes in a row",
+   "district": "page-layout",
+   "plain": "display: flex puts boxes side by side in a row, which can wrap onto a new line. Grow, shrink and basis decide how the boxes share the space.",
+   "needs": [
+    "css-box-model"
+   ],
+   "steps": [
+    {
+     "tutorial": "flexbox-first-steps",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "cards-in-a-row",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "Two pages, one to two sittings. The second only takes apart flex: 1 1 80px from the first, so they are one idea. A hidden topic the old list swallowed into 'Styling pages with CSS'."
+  },
+  {
+   "id": "css-grid",
+   "name": "Grid: rows and columns",
+   "district": "page-layout",
+   "plain": "display: grid places boxes in rows and columns at once. Named areas describe a whole page as a small map, and auto-fit lets a grid choose its own number of columns.",
+   "needs": [
+    "css-media-queries"
+   ],
+   "steps": [
+    {
+     "tutorial": "named-grid-areas",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-grid-gallery",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "flexbox-or-grid",
+     "section": null,
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "Two pages, about one sitting, with the flexbox-or-grid comparison as background. The named-areas page swaps its map inside a media query."
+  },
+  {
+   "id": "order-on-screen",
+   "name": "Screen order and HTML order",
+   "district": "page-layout",
+   "plain": "The order property moves a box on screen, but the Tab key and screen readers still follow the HTML. When the order matters, change the HTML instead.",
+   "needs": [
+    "css-flexbox",
+    "hover-and-focus-states"
+   ],
+   "steps": [
+    {
+     "tutorial": "order-on-screen",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "flexbox-or-grid",
+     "section": "when-the-screen-order-and-the-html-order-differ",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [],
+   "size": "One page. It needs a flex row and the idea of keyboard focus; nothing needs it."
+  },
+  {
+   "id": "hover-and-focus-states",
+   "name": "Hover and focus",
+   "district": "movement-and-interaction",
+   "plain": "Styling a button while a pointer is over it, and while the keyboard has reached it. A transition on the button's own rule makes the change smooth both ways.",
+   "needs": [
+    "css-rules-and-selectors"
+   ],
+   "steps": [
+    {
+     "tutorial": "hover-and-focus",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page. Transforms, screen order and keyboard accessibility all start from it."
+  },
+  {
+   "id": "transforms-and-transitions",
+   "name": "Transforms and transitions",
+   "district": "movement-and-interaction",
+   "plain": "transform moves, resizes or turns an element without moving anything around it. transition makes a change happen smoothly, over a set time.",
+   "needs": [
+    "hover-and-focus-states"
+   ],
+   "steps": [
+    {
+     "tutorial": "transitions-and-transforms",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-a-browser-draws-a-frame",
+     "section": "why-transform-and-opacity-move-smoothly",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page. Kept apart from keyframes because the checkbox hack needs transitions but not keyframes."
+  },
+  {
+   "id": "keyframe-animation",
+   "name": "Animation with keyframes",
+   "district": "movement-and-interaction",
+   "plain": "A @keyframes rule names the stages of an animation, and the animation property says how long it takes and how often it repeats. It needs no trigger.",
+   "needs": [
+    "transforms-and-transitions"
+   ],
+   "steps": [
+    {
+     "tutorial": "keyframes-and-the-checkbox-hack",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One short page. 3D in CSS needs it on its own."
+  },
+  {
+   "id": "checkbox-hack",
+   "name": "Opening and closing with a checkbox",
+   "district": "movement-and-interaction",
+   "plain": "A hidden checkbox, a label joined to it, and a :checked rule can show and hide content with no JavaScript. HTML's own details element does the same job, and works with a keyboard.",
+   "needs": [
+    "transforms-and-transitions"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-checkbox-hack",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "movement-focus-and-keyboards",
+     "section": "a-question-that-opens-built-into-html",
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "One page, with details and summary from the accessibility page as background."
+  },
+  {
+   "id": "css-3d",
+   "name": "Depth and 3D in CSS",
+   "district": "movement-and-interaction",
+   "plain": "perspective gives a flat page depth, so nearer things look bigger. With rotateY and translateZ, flat boxes can circle a sun or make a turning cube, and the order of the transforms matters.",
+   "needs": [
+    "keyframe-animation"
+   ],
+   "steps": [
+    {
+     "tutorial": "an-orbit-in-css",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-cube-in-css",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-ball-that-faces-you",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-css-draws-depth",
+     "section": null,
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO9"
+   ],
+   "size": "Three pages, about two and a half sittings, deep in the course where transforms and keyframes are carried as single ideas. The cube teaches transform order and the ball uses it at once, so they stay together."
+  },
+  {
+   "id": "canvas-animation",
+   "name": "Drawing frames on a canvas",
+   "district": "movement-and-interaction",
+   "plain": "A canvas is a rectangle of pixels that JavaScript draws on. An animation loop clears it, moves things a little, draws them again and asks for the next frame. Far things are drawn first.",
+   "needs": [
+    "css-3d"
+   ],
+   "steps": [
+    {
+     "tutorial": "drawing-frames-with-javascript",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-cube-on-a-canvas",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "Two pages, one and a half sittings, deep in. The cube page reuses the first page's loop and projection, and nothing needs the first without the second. It does by hand what 3D in CSS let the browser do, so that comes first."
+  },
+  {
+   "id": "who-reads-a-page",
+   "name": "Screen readers and search engines",
+   "district": "web-accessibility",
+   "plain": "Other readers use a page's HTML, not its picture. A screen reader reads the page aloud from the browser's accessibility tree, and a search engine reads the same meaning.",
+   "needs": [
+    "semantic-html"
+   ],
+   "steps": [
+    {
+     "tutorial": "who-reads-a-page",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2"
+   ],
+   "replaces": [],
+   "size": "A context page made a topic: it is the reason behind every semantic choice in the HTML series, and accessibility is a hidden topic the brief names. About one sitting."
+  },
+  {
+   "id": "alt-text",
+   "name": "Describing images with alt text",
+   "district": "web-accessibility",
+   "plain": "The alt attribute describes an image in words, for a screen reader or for a picture that fails to load. An empty alt tells a screen reader to skip a decoration.",
+   "needs": [
+    "images-on-a-page"
+   ],
+   "steps": [
+    {
+     "tutorial": "describing-an-image",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO8"
+   ],
+   "size": "One page. Its own skill, what makes a good description, which a short check can confirm."
+  },
+  {
+   "id": "colour-contrast",
+   "name": "Colour contrast and text size",
+   "district": "web-accessibility",
+   "plain": "A contrast ratio says how easy text is to read on its background, and the web's accessibility guidelines ask for at least 4.5 to 1. Readers who make their text bigger need sizes in rem, not px.",
+   "needs": [
+    "css-colours-and-variables",
+    "css-text-and-units"
+   ],
+   "steps": [
+    {
+     "tutorial": "variables-and-colour",
+     "section": "now-in-your-own-site",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "colour-contrast-and-text-size",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [],
+   "size": "The contrast check on the colours page, then its background page, which names the ratio and adds rgb(), hsl() and text size. About one sitting. Made a topic because contrast is the accessibility idea a finished design is checked against."
+  },
+  {
+   "id": "keyboards-focus-and-movement",
+   "name": "Keyboards, focus and movement",
+   "district": "web-accessibility",
+   "plain": "Using a page with the keyboard alone, keeping the focus outline visible, treating hover as an extra, and giving less movement to people who ask their device for it.",
+   "needs": [
+    "keyframe-animation",
+    "checkbox-hack"
+   ],
+   "steps": [
+    {
+     "tutorial": "movement-focus-and-keyboards",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [],
+   "size": "A context page made a topic: tab order, :focus-visible, the skip link and prefers-reduced-motion are taught nowhere else. One and a half sittings. It discusses the checkbox hack's weakness and turning animations off, so it needs both."
+  },
+  {
+   "id": "browser-fetches-a-page",
+   "name": "How a browser fetches a page",
+   "district": "how-a-browser-works",
+   "plain": "What happens between typing a web address and seeing the page: finding the right computer, asking it for each file, getting a reply, and keeping copies for next time.",
+   "needs": [
+    "github-pages"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-a-browser-fetches-a-page",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "A context page made a topic: addresses, DNS, requests, responses and the cache are how a browser works, and sending a form needs the idea of a request to a server. About one sitting."
+  },
+  {
+   "id": "browser-reads-html",
+   "name": "How a browser reads HTML",
+   "district": "how-a-browser-works",
+   "plain": "A browser reads an HTML file from top to bottom and builds a tree of elements, each one inside another. It fixes small mistakes, treats several spaces as one, and skips comments.",
+   "needs": [
+    "html-page-structure"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-a-browser-reads-html",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2"
+   ],
+   "replaces": [],
+   "size": "A context page made a topic: the document tree, void elements and character references are taught nowhere else, and the tree is what the inspector, selectors and the accessibility tree all show. About one sitting."
+  },
+  {
+   "id": "css-normal-flow",
+   "name": "How a browser places boxes",
+   "district": "how-a-browser-works",
+   "plain": "Where a browser puts each box when no layout rule moves it: block boxes stack and inline boxes wrap like words. It also covers what width measures, and every value of position.",
+   "needs": [
+    "page-width-and-centring",
+    "css-position"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-a-browser-lays-out-a-page",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO9"
+   ],
+   "replaces": [],
+   "size": "A context page made a topic: normal flow, display, box-sizing, position: absolute and z-index are taught nowhere else, and later layout (flexbox's box-sizing, absolute boxes in 3D) draws on them. A long page, one to two sittings."
+  },
+  {
+   "id": "browser-draws-a-frame",
+   "name": "How a browser draws each frame",
+   "district": "how-a-browser-works",
+   "plain": "A screen shows many still pictures a second. For each one the browser finds the styles, places the boxes, then paints them, which is why some movement is smoother than other movement.",
+   "needs": [
+    "canvas-animation"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-a-browser-draws-a-frame",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "A context page made a topic, the last part of how a browser works. About one sitting. It explains requestAnimationFrame and speed on fast screens from the canvas pages, so it comes after them."
+  },
+  {
+   "id": "planning-and-documenting-a-site",
+   "name": "Planning and documenting a site",
+   "district": "building-a-whole-site",
+   "plain": "Before building, a site map says what each page is for and how the pages connect, and a wireframe sketches each layout. Afterwards, a README says what you built, and a maintenance plan says how to keep it current.",
+   "needs": [
+    "links-and-menus"
+   ],
+   "steps": [
+    {
+     "tutorial": "planning-a-site",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "documenting-what-you-built",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO4",
+    "WA-LO7",
+    "WA-LO11"
+   ],
+   "replaces": [
+    "WA-LO4",
+    "WA-LO7",
+    "WA-LO11"
+   ],
+   "size": "Two short pages, about one sitting. They are the two halves of one job, the documents that go with a site: the documenting page opens by setting its README beside the plan."
+  },
+  {
+   "id": "site-menu",
+   "name": "One menu across a whole site",
+   "district": "building-a-whole-site",
+   "plain": "The same menu, in the same order, on every page, with aria-current marking the page you are on. On a phone, the links stack into one column.",
+   "needs": [
+    "links-and-menus",
+    "css-flexbox",
+    "css-media-queries"
+   ],
+   "steps": [
+    {
+     "tutorial": "pages-and-navigation",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "navigation-on-a-phone",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO4",
+    "WA-LO9"
+   ],
+   "replaces": [
+    "WA-LO4"
+   ],
+   "size": "Two very short pages, under one sitting, both about the site's menu. Each alone would be far too small at this depth, and nothing needs either."
+  },
+  {
+   "id": "image-file-size",
+   "name": "Image formats and file size",
+   "district": "building-a-whole-site",
+   "plain": "JPEG suits a photo, PNG suits a screenshot or a logo, and SVG suits flat shapes. Resizing and compressing a photo can make its file many times smaller, so the page loads fast.",
+   "needs": [
+    "images-on-a-page"
+   ],
+   "steps": [
+    {
+     "tutorial": "images-and-file-size",
+     "section": "choosing-a-format",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "images-and-file-size",
+     "section": "keeping-file-size-down",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "image-formats-and-compression",
+     "section": null,
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "WA-LO4"
+   ],
+   "replaces": [
+    "WA-LO4"
+   ],
+   "size": "Two sections of a short page, with a full background page on pixels and compression. About one sitting. The design principle of access speed."
+  },
+  {
+   "id": "html-form-fields",
+   "name": "Form fields and labels",
+   "district": "forms-and-data",
+   "plain": "A label names a form field, and its for attribute joins it to the field's id. type=\"email\" and required check an answer before the form is sent.",
+   "needs": [
+    "html-page-structure"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-form",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "WA-LO2",
+    "WA-LO8"
+   ],
+   "replaces": [
+    "WA-LO8"
+   ],
+   "size": "One very short page, early enough to stay small. Sending a form and the full-stack search box both need it."
+  },
+  {
+   "id": "sending-a-form",
+   "name": "Where a form's answers go",
+   "district": "forms-and-data",
+   "plain": "When a form is sent, the browser sends each field's name and answer to an address the form names. A server must be there to receive them, and it has to check every answer again.",
+   "needs": [
+    "html-form-fields",
+    "browser-fetches-a-page"
+   ],
+   "steps": [
+    {
+     "tutorial": "what-happens-when-a-form-is-sent",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "A context page made a topic: name/value pairs, get and post, servers and validation are taught nowhere else, and Database Methods' form-to-a-row page leans on them. About one sitting."
+  },
+  {
+   "id": "page-reads-database",
+   "name": "A page that reads a database",
+   "district": "forms-and-data",
+   "plain": "A page's own script sends a query to a database and turns each row of the result into part of the page. A placeholder keeps a visitor's typed text out of the query itself.",
+   "needs": [
+    "old:DBM-LO5",
+    "html-form-fields"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-page-that-reads-from-a-database",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "The one Full Stack page, short but deep: the learner brings SQL and HTML as single ideas. Split into rows and search it would be two tiny topics, so one."
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "how-the-pieces-fit",
+   "kind": "orientation",
+   "at": [
+    "code-editor",
+    "saving-and-publishing-changes",
+    "github-pages"
+   ],
+   "note": "The welcome page: meets the four tools and previews the path from a change to a published page, which the two loops then teach."
+  },
+  {
+   "tutorial": "your-copy-of-the-project-starter",
+   "kind": "project",
+   "at": [
+    "forking-a-repository",
+    "planning-and-documenting-a-site"
+   ],
+   "note": "Opens the five-page site project: a second fork, then planning.md first."
+  },
+  {
+   "tutorial": "project-ideas",
+   "kind": "project",
+   "at": [
+    "forking-a-repository",
+    "css-flexbox",
+    "css-grid",
+    "page-reads-database",
+    "colour-contrast"
+   ],
+   "note": "Ideas to build, each naming what it needs first. Its database section points into the databases area."
+  },
+  {
+   "tutorial": "conclusions-and-next-steps",
+   "kind": "orientation",
+   "at": [
+    "github-pages",
+    "html-page-structure",
+    "css-rules-and-selectors"
+   ],
+   "note": "The course's closing page: a short history of HTML and CSS (WA-LO1) and other ways to build a site (WA-LO5). Both are culled outcomes."
+  },
+  {
+   "tutorial": "how-html-and-css-got-here",
+   "kind": "context",
+   "at": [
+    "html-page-structure",
+    "css-rules-and-selectors"
+   ],
+   "note": "Background history for the closing page: versions, deprecated tags, and checking browser support."
+  },
+  {
+   "tutorial": "faq",
+   "kind": "orientation",
+   "at": [],
+   "note": "Course-wide questions (accounts, grading, where work is saved). Tied to no topic; best placed at the map's start."
+  },
+  {
+   "tutorial": "quick-reference",
+   "kind": "review",
+   "at": [
+    "html-page-structure",
+    "css-rules-and-selectors",
+    "css-text-and-units"
+   ],
+   "note": "A look-up sheet for HTML, CSS and units. Its SQL section belongs with the databases area."
+  }
+ ],
+ "elsewhere": [],
+ "outcomes_culled": [
+  {
+   "code": "WA-LO1",
+   "why": "A history of HTML and CSS, not an idea a learner does.",
+   "becomes": "landmark",
+   "page": "conclusions-and-next-steps"
+  },
+  {
+   "code": "WA-LO5",
+   "why": "A survey of other authoring tools (WordPress, Carrd, Solo), not an idea.",
+   "becomes": "landmark",
+   "page": "conclusions-and-next-steps"
+  },
+  {
+   "code": "WA-LO6",
+   "why": "Keeping evidence of a project is a course requirement, not an idea. The README in planning-and-documenting-a-site is where that evidence is written.",
+   "becomes": "metadata"
+  },
+  {
+   "code": "WA-LO12",
+   "why": "Using code generators is a survey of tools, and no page teaches it; dewlab teaches HTML and CSS by hand instead.",
+   "becomes": "metadata"
+  },
+  {
+   "code": "WA-LO14",
+   "why": "Applying design principles to a real site is the project itself, not a separate idea. The principles are in planning-and-documenting-a-site, site-menu, image-file-size and colour-contrast.",
+   "becomes": "landmark",
+   "page": "your-copy-of-the-project-starter"
+  }
+ ],
+ "questions": [
+  {
+   "q": "Ten of the fifteen context pages here are made topics (the cascade, Git history, the four 'How a browser...' pages, who reads a page, colour contrast, keyboards and movement, sending a form), because each teaches an idea no tutorial teaches and the brief names these as hidden topics. But most are leaves: every such page says 'you do not need it to finish' its owner page, so almost nothing needs them. Should they stay topics, or become context steps in their owners' topics?",
+   "options": [
+    "Keep them as topics (a 'How a browser works' district, the cascade, Git, accessibility)",
+    "Make them context steps, and keep topics only for tutorial pages",
+    "Keep only the ones the brief names (cascade, Git, how a browser works, accessibility) and fold colour contrast and sending a form into their owners"
+   ],
+   "lean": "Keep them as topics. A learner would look for 'the cascade', 'Git' or 'how a browser fetches a page' on the map, and as context steps they would be hidden inside topics named for something else."
+  },
+  {
+   "q": "The tools district (editor, fork, GitHub Pages, the two loops, Git history, the inspector) is shared: Database Methods opens with the same GitHub account and editor pages, and programming's Issues and pull requests links to the editor. Where should these topics live?",
+   "options": [
+    "In the web region, with ext needs from the other areas",
+    "In a shared 'Tools' district of a making-software region, with a-github-account and issues-and-pull-requests beside them"
+   ],
+   "lean": "A shared tools district, since three courses start there; the inspector could stay in the web region."
+  },
+  {
+   "q": "Troubleshooting sits on the reference shelf and reads as a checklist. Is it a topic (a skill: find the mistake in a broken page, serving WA-LO10) or a review landmark?",
+   "options": [
+    "A topic, as proposed",
+    "A review landmark, with WA-LO10 served by the inspector alone"
+   ],
+   "lean": "A topic: getting unstuck is a skill beginners need named on the map, and a broken page makes a fair short check."
+  },
+  {
+   "q": "Nothing teaches HTML tables or lists as such. Lists appear inside the menu page; tables are used without explanation on the Full Stack page. Add a planned topic?",
+   "options": [
+    "Add a planned 'Lists and tables' topic in HTML",
+    "Leave it; note the gap"
+   ],
+   "lean": "Leave it for now, but note it for the next page to be written: the Full Stack page is the only place a table is needed."
+  }
+ ],
+ "notes": "Bottom-up: 67 pages -> 45 topics in 9 districts, 7 landmarks, nothing elsewhere. Top-down check against the Web Authoring and Full Stack descriptions ('structure with HTML, looks with CSS, work for every visitor, publish a small site'; 'a page whose own script reads a database') found every named idea covered except HTML tables and lists (see questions). Hidden topics the old list never named: file paths, the cascade, Flexbox, Grid, normal flow, the document tree, how a browser fetches a page and draws a frame, accessibility (screen readers, alt text, contrast, keyboards and movement), Git history, screen order vs HTML order, BEM naming, 3D in CSS, canvas animation, sending a form, and the full-stack page. Old WA-LO9 ('Styling pages with CSS', 20+ pages) is split across 17 CSS topics; WA-LO2 and WA-LO8 across the HTML topics; WA-LO4, WA-LO7 and WA-LO11 meet in planning-and-documenting-a-site. Culled: WA-LO1 and WA-LO5 (history and tool survey, landmark conclusions-and-next-steps), WA-LO6 and WA-LO12 (metadata), WA-LO14 (the project itself, landmark). Cross-area: ext:github-account is databases' a-github-account; old:DBM-LO5 (WHERE and ORDER BY, asking-questions-of-a-table) is what the Full Stack page's queries need. Databases' a-form-that-writes-a-row probably needs html-form-fields or sending-a-form. Programming's issues-and-pull-requests links to code-editor and would sit well after forking-a-repository; git-history explains its branches. The canvas and 3D pages repeat Computational Methods' Computer Graphics series (a-point-on-the-screen, a-ball-in-orbit, turning-a-cube) in JavaScript; each page says it does not need those, so they are related, not needs. Hex colours relate to the number area's hexadecimal (everything-is-ones-and-zeros), but both CSS pages explain the pairs themselves. footer-at-the-bottom uses display: flex before Flexbox is taught; it is a step in page-width-and-centring (auto margins), not in Flexbox. JavaScript appears only as a first taste (canvas, full stack) and is not a topic of its own. Effort is roughly level: small early topics of one or two short pages, heavier ones (3D in CSS, canvas, normal flow) deep in."
+}

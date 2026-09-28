@@ -1,0 +1,1128 @@
+{
+ "area": "number",
+ "districts": [
+  {
+   "id": "fractions",
+   "name": "Fractions",
+   "blurb": "Equal slices of one whole: naming them, comparing them, and adding, taking away, multiplying and dividing them."
+  },
+  {
+   "id": "powers",
+   "name": "Powers",
+   "blurb": "A number multiplied by itself again and again, the short way to write it, and the rules that make a long line of powers short."
+  },
+  {
+   "id": "roots-and-logarithms",
+   "name": "Roots and logarithms",
+   "blurb": "Undoing a power: a root asks which number was multiplied, and a logarithm asks how many times."
+  },
+  {
+   "id": "number-basics",
+   "name": "Number basics",
+   "blurb": "Where numbers sit on a line, the families they belong to, and the order for the steps in a sum."
+  },
+  {
+   "id": "computer-numbers",
+   "name": "Numbers in a computer",
+   "blurb": "How a computer keeps every number as ones and zeros, why hexadecimal is a short way to write them, and why some decimals are never exact."
+  },
+  {
+   "id": "sets-and-logic",
+   "name": "Sets and logic",
+   "blurb": "Collections with no repeats and the ways to combine them, and rules of true and false checked in every case."
+  },
+  {
+   "id": "lines-grids-graphs",
+   "name": "Lines, grids and graphs",
+   "blurb": "Numbers as pictures: a point on a grid, a pattern drawn as dots, and a scale where each step multiplies."
+  },
+  {
+   "id": "first-equations",
+   "name": "First equations",
+   "blurb": "A letter for a number you do not know yet, and a balance that finds it."
+  }
+ ],
+ "topics": [
+  {
+   "id": "fractions-as-parts",
+   "name": "What a fraction is",
+   "district": "fractions",
+   "plain": "A fraction is some of the equal slices of one whole. The bottom number says how many slices the whole is cut into. The top number says how many of them you have.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "one-whole-many-slices",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One short page (about 1,050 words), the first mathematics in The Zen of Slashes and Surds. A beginner arriving here needs a small step, and every other fraction topic, the dividing rule for powers and the number line all need it."
+  },
+  {
+   "id": "equivalent-fractions",
+   "name": "Equivalent fractions",
+   "district": "fractions",
+   "plain": "Different fractions can be the same amount, like one half and two quarters. Multiplying or dividing the top and the bottom by the same number keeps the amount the same. Dividing them makes the fraction simpler.",
+   "needs": [
+    "fractions-as-parts"
+   ],
+   "steps": [
+    {
+     "tutorial": "same-amount-different-names",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One short page (about 1,030 words). Comparing and adding both need it on its own, so it is a topic and not a step inside either."
+  },
+  {
+   "id": "comparing-fractions",
+   "name": "Comparing fractions",
+   "district": "fractions",
+   "plain": "Finding which of two fractions is bigger. You can look at the size of the slices, count the slices, see where each one sits between 0, one half and 1, or give both the same bottom number.",
+   "needs": [
+    "equivalent-fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "which-is-bigger",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,370 words). Nothing later needs it, but it is a skill a learner names and a short check can confirm, and near the start one page is a whole topic. It could become a step in equivalent fractions if the map wants fewer towns here."
+  },
+  {
+   "id": "adding-fractions",
+   "name": "Adding and subtracting fractions",
+   "district": "fractions",
+   "plain": "Putting fractions together and taking one away from another. When the slices are the same size, you count them. When they are not, you first cut both into slices of one size.",
+   "needs": [
+    "equivalent-fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "adding-slices",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "taking-slices-away",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "Two short pages, about 2,550 words, so under two sittings. Nothing later needs taking away without adding, and they are always taught together, so one topic."
+  },
+  {
+   "id": "multiplying-fractions",
+   "name": "Multiplying fractions",
+   "district": "fractions",
+   "plain": "A fraction of a fraction, like half of a half. Multiply the tops, then multiply the bottoms. Multiplying by a fraction smaller than 1 makes a number smaller.",
+   "needs": [
+    "fractions-as-parts"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-fraction-of-a-fraction",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "does-multiplying-make-it-bigger",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,580 words) and a short closer look on the idea that multiplying always makes a number bigger. Dividing needs it, and adding does not, so it stands apart from adding."
+  },
+  {
+   "id": "dividing-fractions",
+   "name": "Dividing fractions",
+   "district": "fractions",
+   "plain": "Dividing asks how many of one thing fit into another. To divide by a fraction, turn it over and multiply. A fraction and its turned-over partner make 1.",
+   "needs": [
+    "multiplying-fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-many-fit",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,160 words). Fractions with letters need the partner idea from here on its own, so it is a topic, not a step in multiplying."
+  },
+  {
+   "id": "algebraic-fractions",
+   "name": "Fractions with letters in them",
+   "district": "fractions",
+   "plain": "The same moves with fractions when a shape or a letter stands for a number: adding with the same and with different bottoms, and a fraction times its partner.",
+   "needs": [
+    "adding-fractions",
+    "dividing-fractions"
+   ],
+   "steps": [
+    {
+     "tutorial": "fractions-with-holes",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.7"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,110 words), but it comes after the other fraction topics, which the learner now carries as single moves. It points forward to rearranging formulae in the algebra area, which may need it."
+  },
+  {
+   "id": "what-a-power-is",
+   "name": "What a power is",
+   "district": "powers",
+   "plain": "A power is a number multiplied by itself again and again. The small raised number says how many times: 2 to the power 3 is 2 × 2 × 2, which is 8.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "the-long-way",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "powers-and-how-many-times",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "powers-in-python",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "The Zen page is short (about 900 words) and the Dewey Track teaches it in one section, so about one sitting. Every power rule, roots, logarithms and binary need it. The closer look on ** and ^ (a programming page) belongs here too."
+  },
+  {
+   "id": "multiplying-powers",
+   "name": "Multiplying powers",
+   "district": "powers",
+   "plain": "When you multiply two powers of the same number, you add the small raised numbers: 2³ × 2⁴ = 2⁷. Write both the long way and count, and you can see why.",
+   "needs": [
+    "what-a-power-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "joining-two-stacks",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doubling-and-halving",
+     "section": "doublings-add-up",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "powers-and-their-rules",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "One Zen page (about 1,170 words), plus one section each on the Dewey Track and in the integrated course. It is split from dividing because the rule for the logarithm of a product, multiplying in scientific notation and halfway powers need the adding rule without the subtracting one."
+  },
+  {
+   "id": "dividing-powers",
+   "name": "Dividing powers and the zero power",
+   "district": "powers",
+   "plain": "When you divide two powers of the same number, you take away the small raised numbers, because pairs on the top and the bottom cancel. When everything cancels, the answer is 1, so any number to the power 0 is 1.",
+   "needs": [
+    "what-a-power-is",
+    "fractions-as-parts"
+   ],
+   "steps": [
+    {
+     "tutorial": "sharing-out",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "when-everything-cancels",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "powers-and-their-rules",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "Two short pages, about 2,100 words. The zero power is a step here, not a topic: nothing needs it on its own, and it is the dividing rule when everything cancels. It needs the pizza page's idea that a number over itself is 1."
+  },
+  {
+   "id": "negative-powers",
+   "name": "Negative powers",
+   "district": "powers",
+   "plain": "A negative power means one over the power: 2 to the power −3 is 1/8. It comes from dividing when the bottom has more. The minus sign does not make the number negative.",
+   "needs": [
+    "dividing-powers"
+   ],
+   "steps": [
+    {
+     "tutorial": "more-on-the-bottom",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "powers-and-their-rules",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "One page (about 1,600 words). Scientific notation for small numbers needs it on its own, so it is a topic and not a step in dividing."
+  },
+  {
+   "id": "power-of-a-power",
+   "name": "A power of a power",
+   "district": "powers",
+   "plain": "A power raised to another power: (2²)³ means three boxes of 2 × 2. Multiply the small raised numbers, so (2²)³ = 2⁶.",
+   "needs": [
+    "multiplying-powers"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-power-of-a-power",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "powers-and-their-rules",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "One short page (about 1,070 words). Fractional powers need it without negative powers, so it stands apart from them, and from multiplying, which other topics need without it."
+  },
+  {
+   "id": "scientific-notation",
+   "name": "Scientific notation",
+   "district": "powers",
+   "plain": "A short way to write very big and very small numbers: a number from 1 to 10 times a power of ten, like 2.59 × 10¹⁰. Python writes the same number as 2.59e10.",
+   "needs": [
+    "multiplying-powers",
+    "negative-powers"
+   ],
+   "steps": [
+    {
+     "tutorial": "powers-of-ten",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-a-computer-stores-a-number",
+     "section": "reading-e-16",
+     "role": "applies"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,790 words), the view from the top of the powers strand, but it names and teaches a new idea, so it is a topic. Small numbers need negative powers and multiplying them needs the adding rule. Log scales need it."
+  },
+  {
+   "id": "square-roots",
+   "name": "Square roots and cube roots",
+   "district": "roots-and-logarithms",
+   "plain": "A square root undoes a square: it is the side of a square with that area. The square root of 49 is 7, because 7 × 7 = 49. A cube root undoes a cube in the same way.",
+   "needs": [
+    "what-a-power-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-side-of-a-square",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,570 words). Surds and fractional powers both need it, and it needs only what a power is."
+  },
+  {
+   "id": "surds",
+   "name": "Surds: roots that never end",
+   "district": "roots-and-logarithms",
+   "plain": "Most square roots, like the square root of 2, are not whole numbers or fractions, and their decimals never end. A root left written as a root is called a surd. Some surds can be made simpler.",
+   "needs": [
+    "square-roots"
+   ],
+   "steps": [
+    {
+     "tutorial": "sides-that-never-end",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,580 words). It is where the idea of a number that is not a fraction first becomes real, so it is its own topic and not a step in square roots."
+  },
+  {
+   "id": "fractional-powers",
+   "name": "Fractional powers",
+   "district": "roots-and-logarithms",
+   "plain": "A power can be a fraction. Two half powers make one whole power, so 9 to the power one half is the square root of 9. In 8 to the power two thirds, the bottom of the fraction takes a root and the top takes a power.",
+   "needs": [
+    "square-roots",
+    "power-of-a-power"
+   ],
+   "steps": [
+    {
+     "tutorial": "halfway-steps",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "stretching-the-halfway-steps",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "powers-and-their-rules",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1a"
+   ],
+   "size": "Two pages, about 3,000 words, near the top of what a learner here meets, and the learner carries the power rules as chunks by now. Nothing needs the half power without the top and bottom of the fraction, so the two pages are one topic."
+  },
+  {
+   "id": "logarithms",
+   "name": "Logarithms: counting the multiplying",
+   "district": "roots-and-logarithms",
+   "plain": "A logarithm answers the question \"how many times did we multiply?\". The logarithm base 10 of 1000 is 3, because three steps of ×10 go from 1 to 1000. It also tells you about how many digits a number has.",
+   "needs": [
+    "what-a-power-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "how-many-hops",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "powers-and-how-many-times",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "logarithms-the-inverse-of-powers",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "how-many-bits-is-enough",
+     "role": "applies"
+    },
+    {
+     "tutorial": "finding-things-fast",
+     "section": "how-many-halvings",
+     "role": "applies"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1b"
+   ],
+   "size": "One Zen page (about 1,160 words) and one section in each of the other two courses. It needs only what a power is, not the power rules, so it can come early. Binary search's speed is where the Dewey Track puts it to work."
+  },
+  {
+   "id": "log-rules",
+   "name": "Rules of logarithms",
+   "district": "roots-and-logarithms",
+   "plain": "When numbers multiply, their logarithms add: log(a × b) = log a + log b. A slide rule multiplies two numbers by adding two lengths, using this rule.",
+   "needs": [
+    "logarithms",
+    "multiplying-powers"
+   ],
+   "steps": [
+    {
+     "tutorial": "hops-that-add",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "the-rules-for-logarithms",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "doubling-and-halving",
+     "section": "doublings-add-up",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-1.1b"
+   ],
+   "size": "One Zen page (about 1,550 words) and a section each elsewhere. Split from logarithms because log scales and counting digits need logarithms without these rules."
+  },
+  {
+   "id": "exponential-growth",
+   "name": "Doubling and exponential growth",
+   "district": "roots-and-logarithms",
+   "plain": "Something that doubles, or grows by the same factor at every step, grows much faster than people expect. A logarithm tells you how many steps it takes to reach a size. Halving works the same way, backwards.",
+   "needs": [
+    "logarithms"
+   ],
+   "steps": [
+    {
+     "tutorial": "doubling-and-halving",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One long Dewey Track page (about 3,340 words, shared with the two rule topics for one section), deep enough in that a learner carries powers and logarithms as chunks. The old list never named it; algorithm growth and binary search in the programming area may need it."
+  },
+  {
+   "id": "number-line",
+   "name": "The number line and negative numbers",
+   "district": "number-basics",
+   "plain": "One long line holds whole numbers, fractions and negative numbers in order, and further right is bigger. Moving right adds and moving left takes away. A number below zero is negative.",
+   "needs": [
+    "fractions-as-parts"
+   ],
+   "steps": [
+    {
+     "tutorial": "the-number-line",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [
+    "MIT-2.1b"
+   ],
+   "size": "One page (about 1,550 words). Coordinates and the families of numbers both need it, so it is a topic. The Zen module puts it with graphs; it sits here because a learner looks for negative numbers under number."
+  },
+  {
+   "id": "number-families",
+   "name": "Families of numbers",
+   "district": "number-basics",
+   "plain": "Numbers come in families, each inside the next: the counting numbers, the integers, the fractions (rational numbers) and every point on the line (real numbers). Each new family answers a question the one before could not, like 3 − 5 or 7 ÷ 2.",
+   "needs": [
+    "number-line"
+   ],
+   "steps": [
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "families-of-numbers",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "two-kinds-of-number-in-python",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "making-decisions",
+     "section": "classifying-numbers-a-mathematical-application",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-and-their-families",
+     "section": "the-number-domains",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1",
+    "MIT-2.1"
+   ],
+   "replaces": [
+    "MIT-2.1a",
+    "MIT-2.1b",
+    "MIT-2.1c",
+    "MIT-2.1d",
+    "MIT-2.1e",
+    "MIT-2.1f",
+    "MIT-2.1g"
+   ],
+   "size": "Sections of three pages, about one sitting in any course. The old list made seven topics here, one for each family. Every page teaches them together, as one table, and nothing needs one family without the others, so one topic. No page teaches computable numbers, and the complex numbers are taught by the algebra area's pages."
+  },
+  {
+   "id": "order-of-operations",
+   "name": "Order of operations",
+   "district": "number-basics",
+   "plain": "The agreed order for the steps in a line of arithmetic: brackets first, then powers, then multiplying and dividing, then adding and taking away. A fraction line works like a bracket.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "first-steps",
+     "section": "a-few-more-things-python-can-do",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "which-comes-first",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-hidden-bracket",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [
+    "PDP-LO4"
+   ],
+   "replaces": [],
+   "size": "Only sections of two pages teach it, so it is small, but it comes at the very start, and every formula later written in code needs it. The closer look on v - u / a addresses exactly this idea."
+  },
+  {
+   "id": "binary-numbers",
+   "name": "Place value and binary",
+   "district": "computer-numbers",
+   "plain": "Each column of a number is worth a power of the base: ones, tens and hundreds in base 10. Binary is base 2. It uses only 0 and 1, and its columns are worth 1, 2, 4, 8 and so on. This is how a computer counts.",
+   "needs": [
+    "what-a-power-is"
+   ],
+   "steps": [
+    {
+     "tutorial": "numbers-a-computer-can-hold",
+     "section": "taking-a-number-apart",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "counting-with-two-digits",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "from-a-number-to-its-bits",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "how-many-bits-is-enough",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "adding-in-binary",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.4"
+   ],
+   "replaces": [
+    "MIT-1.4"
+   ],
+   "size": "About a sitting and a half: half of a long Dewey page and one section of another. Split from hexadecimal because XOR and parity, and floats, need binary without hex. The page writes binary columns as powers of 2, so it needs what a power is (as the pair decision MIT-1.1 before MIT-1.4 said)."
+  },
+  {
+   "id": "hexadecimal",
+   "name": "Hexadecimal",
+   "district": "computer-numbers",
+   "plain": "Base 16, with the digits 0 to 9 and then A to F. One hex digit is exactly four bits, so hex is a short way to write binary. A screen colour like #FF8800 is three bytes written in hex.",
+   "needs": [
+    "binary-numbers"
+   ],
+   "steps": [
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "hexadecimal-binary-written-short",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "tools-for-your-toolkit",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "a-digit-drawn-in-pixels",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "how-ff8800-makes-orange",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.4"
+   ],
+   "replaces": [
+    "MIT-1.4"
+   ],
+   "size": "The second half of one page, about one sitting. XOR and parity, and floats, need binary without hex, so hex is a topic of its own. The web area's colour pages (variables-and-colour) use hex colours and may link here. No page teaches arithmetic in hex, which MIT-1.4 names."
+  },
+  {
+   "id": "floating-point",
+   "name": "Floats and rounding errors",
+   "district": "computer-numbers",
+   "plain": "A computer keeps a decimal as the nearest binary fraction it can hold, in about 16 digits. So 0.1 + 0.2 gives 0.30000000000000004. Compare such numbers as \"close enough\", not \"exactly equal\".",
+   "needs": [
+    "binary-numbers"
+   ],
+   "steps": [
+    {
+     "tutorial": "everything-is-ones-and-zeros",
+     "section": "why-01-02-is-not-03",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-a-computer-stores-a-number",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.4"
+   ],
+   "replaces": [],
+   "size": "One section and one context page (about 1,670 words). The context page teaches an idea other topics need (testing a function that returns a float, numerical methods, every float surprise on the site), so it is the main teaching page of a topic of its own rather than a context step."
+  },
+  {
+   "id": "xor-and-parity",
+   "name": "XOR and parity bits",
+   "district": "computer-numbers",
+   "plain": "XOR gives 1 when two bits are different. Used on whole numbers, it flips chosen bits. A parity bit records whether a message has an odd or even number of 1s, so one flipped bit can be caught.",
+   "needs": [
+    "truth-tables",
+    "binary-numbers"
+   ],
+   "steps": [
+    {
+     "tutorial": "bits-that-flip",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.4",
+    "MIT-2.4"
+   ],
+   "replaces": [],
+   "size": "One long page (about 2,530 words) that joins logic to bits. It teaches bitwise XOR, masks and parity, which the truth-table pages do not, so it is a topic and not a step there."
+  },
+  {
+   "id": "sets-and-set-operations",
+   "name": "Sets and set operations",
+   "district": "sets-and-logic",
+   "plain": "A set is a collection with no order and no repeats. You can ask whether something is in it, and combine two sets: everything in either (union), everything in both (intersection), or everything in one but not the other (difference).",
+   "needs": [
+    "old:MIT-6.3a"
+   ],
+   "steps": [
+    {
+     "tutorial": "collections-without-repeats",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "sets-as-sorted-lists",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "sets-in-databases",
+     "section": null,
+     "role": "context"
+    }
+   ],
+   "outcomes": [
+    "MIT-2.1",
+    "MIT-2.2"
+   ],
+   "replaces": [
+    "MIT-2.2"
+   ],
+   "size": "Each course teaches it on one page (3,190 words on the Dewey Track, 1,680 in the integrated course), so a learner meets one to two sittings; the word count here adds two parallel pages. Set language and the operations are always taught together and nothing needs one without the other, so one topic. The complement, the Cartesian product and the power set are steps. Both pages build sets in Python from lists."
+  },
+  {
+   "id": "venn-diagrams",
+   "name": "Venn diagrams",
+   "district": "sets-and-logic",
+   "plain": "Drawing sets as overlapping circles inside a box, so each region can be pointed at. With two or three circles you can count what is in either, in both, or in exactly two, without counting anything twice.",
+   "needs": [
+    "sets-and-set-operations"
+   ],
+   "steps": [
+    {
+     "tutorial": "circles-that-overlap",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "venn-diagrams",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-2.3"
+   ],
+   "replaces": [
+    "MIT-2.3"
+   ],
+   "size": "Two parallel pages (3,480 words on the Dewey Track, 1,350 in the integrated course), so one to two and a half sittings for a learner. Counting with overlaps (inclusion-exclusion) is taught on the picture on both pages, so it is a step, not a topic; probability's \"or\" rule in the chance area uses it."
+  },
+  {
+   "id": "truth-tables",
+   "name": "Truth tables",
+   "district": "sets-and-logic",
+   "plain": "A table of what a rule gives for every possible input of true and false. It defines and, or, not and exclusive or (XOR). With n inputs there are 2ⁿ rows.",
+   "needs": [
+    "old:PDP-LO6a"
+   ],
+   "steps": [
+    {
+     "tutorial": "true-false-and-every-case",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "logic-and-truth",
+     "section": "every-possible-case",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "logic-and-truth",
+     "section": "exclusive-or",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-2.4"
+   ],
+   "replaces": [
+    "MIT-2.4"
+   ],
+   "size": "One long Dewey page (about 2,790 words) or two sections of the integrated course's logic page. It needs conditions in an if statement first, as the pair decision PDP-LO6 before MIT-2.4 says: learners meet true and false there, and the table names what they already do."
+  },
+  {
+   "id": "de-morgans-laws",
+   "name": "De Morgan's laws",
+   "district": "sets-and-logic",
+   "plain": "Two rules for turning a \"not\" inside out. Not (A and B) is the same as (not A) or (not B), and not (A or B) is (not A) and (not B). They make a tangled condition easy to read, and they work on sets too.",
+   "needs": [
+    "truth-tables"
+   ],
+   "steps": [
+    {
+     "tutorial": "untangling-a-condition",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "logic-and-truth",
+     "section": "de-morgans-laws",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "logic-and-truth",
+     "section": "where-you-have-already-used-this",
+     "role": "teaches"
+    },
+    {
+     "tutorial": "logic-and-truth",
+     "section": "the-same-shapes-on-sets",
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-2.5"
+   ],
+   "replaces": [
+    "MIT-2.5"
+   ],
+   "size": "One long Dewey page (about 2,760 words) or the second half of the integrated course's logic page. It needs truth tables to check each law in every case. The section on sets uses set operations, but the laws themselves do not need them."
+  },
+  {
+   "id": "coordinates",
+   "name": "Coordinates",
+   "district": "lines-grids-graphs",
+   "plain": "Two number lines at right angles make a grid. Two numbers, first across and then up, give one place on it, like the point (3, 2). Negative numbers reach below and to the left.",
+   "needs": [
+    "number-line"
+   ],
+   "steps": [
+    {
+     "tutorial": "two-lines-at-right-angles",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One page (about 1,380 words). Every graph on the site needs it. The algebra area's drawing-a-rule introduces coordinates only in passing, on its way to graphs of functions, so this may become the site's one coordinates topic."
+  },
+  {
+   "id": "patterns-as-graphs",
+   "name": "Patterns as graphs: lines and curves",
+   "district": "lines-grids-graphs",
+   "plain": "Drawing a list of numbers as dots on a grid. A pattern that adds the same amount at each step makes a straight line. A pattern that multiplies makes a curve that gets steeper and steeper.",
+   "needs": [
+    "coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-pattern-as-dots",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One page (about 1,560 words). It is the first time adding and multiplying patterns (arithmetic and geometric sequences) are seen side by side, which the old list never named. Graphs of functions in the algebra area may need it."
+  },
+  {
+   "id": "log-scales",
+   "name": "Log scales",
+   "district": "lines-grids-graphs",
+   "plain": "On a log scale, equal gaps mean equal multiplying, not equal adding. One picture can then show things that differ by millions, from a virus to the planets.",
+   "needs": [
+    "logarithms",
+    "scientific-notation"
+   ],
+   "steps": [
+    {
+     "tutorial": "drawing-across-scales",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.1"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,900 words), the view from the top of the Zen graphs strand, but it teaches a new idea (the logarithmic scale), so it is a topic. Its Kepler section uses fractional powers as a stretch, not a need."
+  },
+  {
+   "id": "unknown-numbers",
+   "name": "Unknowns: a letter for a number",
+   "district": "first-equations",
+   "plain": "A box, a shape or a letter can stand for a number we do not know yet. An equation says two sides are equal, like x + 3 = 7. Solving it means finding the number.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "a-box-with-something-in-it",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "MIT-1.5"
+   ],
+   "replaces": [],
+   "size": "One page (about 1,370 words) at the very start of algebra. Expressions in the algebra area need a letter for a number without the balance method, so it is split from solving."
+  },
+  {
+   "id": "solving-by-balancing",
+   "name": "Solving equations by balancing",
+   "district": "first-equations",
+   "plain": "An equation is like a balance. Doing the same thing to both sides keeps it level. Undo each step, in the opposite order, until the unknown is alone.",
+   "needs": [
+    "unknown-numbers"
+   ],
+   "steps": [
+    {
+     "tutorial": "keeping-it-level",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "One page (about 1,640 words). Solving linear equations and rearranging formulae in the algebra area need it."
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "before-we-start",
+   "kind": "orientation",
+   "at": [
+    "fractions-as-parts",
+    "what-a-power-is"
+   ],
+   "note": "How The Zen of Slashes and Surds works: nothing to memorise, a guess first, the calm check. Its one guess is about folding paper, which the first powers page returns to."
+  },
+  {
+   "tutorial": "narrowing-it-down",
+   "kind": "review",
+   "at": [
+    "multiplying-fractions",
+    "dividing-fractions"
+   ],
+   "note": "The view from the top of the fractions strand: the Drake equation as a chain of fractions, then 'one in 60 billion' as a turned-over fraction. It teaches nothing new; one section borrows a negative power of ten ahead of time."
+  },
+  {
+   "tutorial": "everything-at-once",
+   "kind": "review",
+   "at": [
+    "multiplying-powers",
+    "dividing-powers",
+    "negative-powers",
+    "power-of-a-power"
+   ],
+   "note": "The mixed page at the end of the power rules: every rule in one line, and going back to the long way when a rule is forgotten. Nothing needs it on its own, so it is not a topic; see the question on it."
+  },
+  {
+   "tutorial": "surds-and-logs-in-the-wild",
+   "kind": "review",
+   "at": [
+    "surds",
+    "logarithms"
+   ],
+   "note": "The view from the top of the roots-and-logarithms strand: why A4 paper keeps its shape (its sides are in the ratio of the square root of 2) and how many digits the largest known prime has."
+  }
+ ],
+ "elsewhere": [
+  {
+   "tutorial": "numbers-a-computer-can-hold",
+   "section": "the-row-and-column-of-a-pixel",
+   "suggest": "programming",
+   "why": "Partial handoff: this section teaches // and % on whole numbers in Python, which belongs with the programming area's arithmetic in Python (first-steps, dividing-in-python). The rest of the page is placed here."
+  },
+  {
+   "tutorial": "numbers-a-computer-can-hold",
+   "section": "two-kinds-of-number-in-python",
+   "suggest": "programming",
+   "why": "Partial handoff: int and float as data types. It is placed here in number-families (Python's versions of the families), but the programming area's data types topic should list it too."
+  },
+  {
+   "tutorial": "numbers-a-computer-can-hold",
+   "section": "taking-a-number-apart",
+   "suggest": "programming",
+   "why": "Partial handoff: besides place value (placed here in binary-numbers), this is where the Dewey Track first teaches a function with return, a docstring and assert. The programming area's functions and testing topics should list it too."
+  },
+  {
+   "tutorial": "numbers-and-their-families",
+   "section": "formulas-as-functions",
+   "suggest": "algebra-geometry",
+   "why": "Partial handoff: area and volume formulas written as functions, and what doubling a length does to an area and a volume (MIT-1.2, MIT-1.3). It belongs with the area-and-volume topic. The rest of the page is placed here."
+  }
+ ],
+ "outcomes_culled": [],
+ "questions": [
+  {
+   "q": "The Zen module's last two series (coordinates, patterns as graphs and log scales; unknowns and the balance) came to this search area only because the whole course did. They are proposed here as two districts. Should they move to the algebra and graphs region, and merge with that area's topics on graphs and equations?",
+   "options": [
+    "Move both districts to the algebra and graphs region, keeping these topics as its gentle first towns",
+    "Keep 'Lines, grids and graphs' in number (as the Zen module does) and move only 'First equations'",
+    "Keep both here"
+   ],
+   "lean": "Move both. No algebra page teaches coordinates as its main idea (drawing-a-rule only uses them), so 'coordinates' should become the site's one coordinates topic; unknowns and balancing become the first steps before rules-with-letters-in-them and solving-for-x. Log scales could stay with logarithms."
+  },
+  {
+   "q": "decisions.yaml records Josh's pair answer that truth tables come before Venn diagrams (MIT-2.4 before MIT-2.3). The Dewey Venn page reminds the reader of XOR ('exactly one') and of 2ⁿ rows, but the integrated course teaches Venn diagrams before truth tables, and that page stands alone. Keep it as a need?",
+   "options": [
+    "venn-diagrams needs truth-tables",
+    "No need (as proposed)"
+   ],
+   "lean": "No need. The Dewey references are reminders a learner can do without, and the integrated course shows the diagrams work first; the unified structure should not close that door."
+  },
+  {
+   "q": "Two 'views from the top' teach nothing new (narrowing-it-down, the Drake equation; surds-and-logs-in-the-wild, A4 paper and the largest prime) and are proposed as review landmarks. The other two (powers-of-ten, drawing-across-scales) teach scientific notation and log scales, so they are topics. Is 'review' right for the first two?",
+   "options": [
+    "Review landmarks (as proposed)",
+    "'applies' steps in the topics they use",
+    "Project landmarks"
+   ],
+   "lean": "Review landmarks: they are rewards at the end of a strand and draw on several topics at once, which is what a landmark is for."
+  },
+  {
+   "q": "everything-at-once (all the power rules in one line) is proposed as a review landmark because nothing needs it on its own. It is also the skill exam papers test as 'the laws of indices'. Should it be a topic instead?",
+   "options": [
+    "Review landmark (as proposed)",
+    "A topic 'All the rules of powers together', needing negative powers and a power of a power"
+   ],
+   "lean": "Landmark. A topic here would make fractional powers and the logarithm rules look as if they need negative powers, which they do not."
+  },
+  {
+   "q": "No page teaches decimals as such, percentages, or ratio, though MIT-1.1 asks for operations in Q and R and the Zen module promises 'what school was supposed to' cover. Add planned topics for them?",
+   "options": [
+    "Add planned topics (decimals, percentages, ratio) with no pages yet",
+    "Leave them off the map until pages exist"
+   ],
+   "lean": "Leave them off until pages exist, but record the gap; the chance and data area uses fractions and decimals and may show where a page is most needed."
+  }
+ ],
+ "notes": "How this was built. Bottom-up first: every page in inventory order, section by section where sections teach different things (numbers-a-computer-can-hold, numbers-and-their-families, everything-is-ones-and-zeros and logic-and-truth split across topics). Then top-down against the Zen outline (planning/outlines/zen-of-slashes-and-surds.md), the three course descriptions and the MIT-1.1, 1.4 and 2.1 to 2.5 descriptors. Gaps fixed that way: order of operations (taught in two course openings, needed by all formulas in code), floats and rounding errors (a context page others rely on), exponential growth (the Dewey doubling page), and place value (folded into binary, since the binary page re-teaches it).\n\nHidden topics (no old equivalent): every fraction topic, the separate power rules, scientific notation, square roots, surds, fractional powers, the rules of logarithms, exponential growth, the number line, order of operations, hexadecimal as its own topic, floats and rounding errors, XOR and parity bits, coordinates, patterns as graphs, log scales, unknowns and solving by balancing.\n\nOld topics. MIT-2.1a to 2.1g (seven number families) collapse into number-families. No page teaches computable numbers (MIT-2.1e); complex numbers (MIT-2.1g) are taught by the algebra area's complex-roots and when-there-is-no-real-answer, so the integrator should also list MIT-2.1g in that topic's replaces. MIT-1.1a (Powers) is split over five power topics and fractional powers; MIT-1.1b over logarithms and log-rules; MIT-1.4 over binary and hex.\n\nOther areas' pages used here as second placements (their own agents place them too): first-steps#a-few-more-things-python-can-do and the-hidden-bracket (order of operations), making-decisions#classifying-numbers-a-mathematical-application (number families), powers-in-python (closer look for powers), finding-things-fast#how-many-halvings (applies logarithms). elsewhere entries that carry a 'section' are partial handoffs; the rest of those pages is placed here.\n\nThe effort table overstates sets-and-set-operations and venn-diagrams: each lists two parallel pages from different courses, and a learner reads one. Validator warnings about a page split into many sections are about sections, not separate pages.\n\nLikely ext needs from other areas onto these topics: logarithms (binary search, algorithm growth), floating-point (testing float results, numerical methods, dividing-in-python), hexadecimal (the web area's colour pages may link to it), sets-and-set-operations (events as sets in probability; SQL), venn-diagrams (probability's 'or' rule: what-are-the-chances takes inclusion-exclusion from the Venn page), truth-tables (conditions), fractions-as-parts and the fraction operations (probability as fractions), coordinates (every graph), order-of-operations (evaluating expressions), algebraic-fractions (running-a-formula-backwards#fractions-with-letters-in-them), square-roots (distance and Pythagoras), unknown-numbers and solving-by-balancing (rules-with-letters-in-them, solving-for-x, rearranging formulae). sets-in-databases is a context step here; it is the only page on SQL UNION, INTERSECT and EXCEPT, so the databases area may want it as context on its JOIN topic.\n\next needs used here: old:MIT-6.3a (lists, for both set pages) and old:PDP-LO6a (if statements before truth tables, Josh's pair decision)."
+}
