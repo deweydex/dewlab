@@ -272,9 +272,10 @@ code. `build.py` renders a ```` ```solution ```` fence as a closed
 `tutorial_tools.compare()`, which evaluates each input against copies of the
 page namespace, the solution's copy having run the solution first; the page
 fills the table and marks rows that differ, without a verdict. Before
-writing a page, `check_solutions()` runs its cells and every solution in a
-separate Python, through that same `compare()`, and stops the build if a
-solution raises. Nobody can type in either, so a cell whose code calls
+writing any page, `check_solutions()` runs each page's cells and every
+solution in a separate Python, through that same `compare()`, and stops the
+build if a solution raises; `check_every_solution()` runs several pages'
+checks at once, one per core, and reports the first failure in page order. Nobody can type in either, so a cell whose code calls
 `input()` can carry a ```` ```typed ```` fence: the lines `input()` reads
 there, in order.
 

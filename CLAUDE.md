@@ -10,6 +10,7 @@ file is only what you need before touching anything.
 pip install -r requirements-build.txt   # first time only
 python3 build.py --clean                # writes site/ from scratch
 python3 -m pytest                       # unit + browser tests
+python3 -m pytest --ignore=tests/e2e -n auto   # unit tests on every core (pytest-xdist)
 ```
 
 `site/` is gitignored and rebuilt every time. Never edit it. If you change
@@ -37,6 +38,7 @@ It is short; if you read one part, read `#voice`.
 | Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md` |
 | Looking for a video to link from a page | `planning/video-library/README.md` |
 | Wondering why something works the way it does | `DECISIONS_LOG.md` |
+| Wondering which rules a page must follow and which are advice | `docs/HOW_DEWLAB_THINKS.md` |
 | Anything else | `README.md` |
 
 `CONTRIBUTING.md` has the rule that matters most when you touch code: a

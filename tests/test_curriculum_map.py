@@ -218,6 +218,11 @@ class TestBackReferences:
 
 
 class TestTheRealMap:
+    # Advisory: the map is a planning document, and it counts italic words
+    # in the tutorials' prose, so a sentence added to any page makes it
+    # stale. A stale map misleads nobody reading the site (DECISIONS_LOG
+    # 7.291). CI reports it without failing the pull request.
+    @pytest.mark.advisory
     def test_it_is_committed_current(self):
         # The same guard CI runs, against the real committed file.
         assert cm.MAP.read_text() == cm.render()
@@ -236,6 +241,9 @@ class TestTheRealMap:
             outline = cm.ROOT / "planning" / "outlines" / f"{proposal['outline']}.md"
             assert outline.is_file(), f"{proposal['id']} points at a missing {outline.name}"
 
+    # Advisory: a tutorial author who teaches an outcome somebody once
+    # proposed has done nothing wrong; the planning file wants tidying.
+    @pytest.mark.advisory
     def test_a_proposal_never_claims_something_already_taught(self):
         # A proposal left in place after its tutorial ships makes the plan
         # look bigger than it is, and throws off the next unplanned-gaps survey.
@@ -283,6 +291,8 @@ class TestTheRealMap:
         for code in outcomes:
             assert f"`{code}`" in all_unplanned
 
+    # Advisory: housekeeping for planning/outlines/, which no page reads.
+    @pytest.mark.advisory
     def test_the_outlines_index_lists_every_outline(self):
         folder = cm.ROOT / "planning" / "outlines"
         index = (folder / "README.md").read_text()
@@ -301,16 +311,21 @@ class TestTheTopicGlossary:
         path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
         return yaml.safe_load(path.read_text())["topics"]
 
-    def test_topics_and_outcomes_correspond(self):
+    # Advisory: a complete topic list is the plan, not something the site
+    # needs to build. An outcome no topic claims is simply not on the map yet.
+    @pytest.mark.advisory
+    def test_every_outcome_has_a_topic(self):
         # Several topics may legitimately claim one outcome (a descriptor can
-        # bundle ideas met weeks apart); only an unclaimed outcome is an error.
-        # The reverse must also hold: no topic invents one that isn't real.
+        # bundle ideas met weeks apart); only an unclaimed outcome is reported.
         outcomes, _ = cm.load_outcomes()
         topics = self.topics()
         served = {o for t in topics.values() for o in cm.outcomes_of(t)}
         missing = sorted(set(outcomes) - served)
         assert not missing, f"no topic claims {missing}"
 
+    def test_no_topic_invents_an_outcome(self):
+        outcomes, _ = cm.load_outcomes()
+        topics = self.topics()
         for code, topic in topics.items():
             claimed = cm.outcomes_of(topic)
             if code.startswith("PRE-"):
@@ -322,7 +337,7 @@ class TestTheTopicGlossary:
                     f"{code} claims {one}, which is in no module descriptor"
                 )
 
-    def test_groundwork_is_marked_as_groundwork_and_says_as_much(self):
+    def test_a_groundwork_code_never_collides_with_an_outcome(self):
         # Not everything a student needs is a numbered outcome (e.g. naming
         # kinds of triangle); such topics carry a PRE- code instead of one.
         outcomes, _ = cm.load_outcomes()
@@ -330,6 +345,11 @@ class TestTheTopicGlossary:
         assert not (groundwork & set(outcomes)), (
             "a PRE- code collides with a real outcome"
         )
+
+    # Advisory: how fully a groundwork topic is written up is editorial.
+    @pytest.mark.advisory
+    def test_groundwork_is_written_up_like_a_topic(self):
+        groundwork = {c for c in self.topics() if c.startswith("PRE-")}
         assert groundwork, "no groundwork topic left; the PRE- convention is dead"
         for code in groundwork:
             topic = self.topics()[code]
@@ -362,9 +382,16 @@ class TestTheTopicGlossary:
         for code in topics:
             walk(code, [])
 
-    def test_every_topic_says_what_it_is_and_where_it_is_used(self):
+    def test_every_topic_has_a_name_and_a_description(self):
+        # The topic tree shows both, and the build reads both.
         for code, topic in self.topics().items():
             assert topic.get("name"), f"{code} has no name"
+            assert topic.get("plain"), f"{code} has no plain description"
+
+    # Advisory: the length and shape of a description are editorial.
+    @pytest.mark.advisory
+    def test_every_topic_says_what_it_is_and_where_it_is_used(self):
+        for code, topic in self.topics().items():
             assert len(topic.get("plain", "").split()) >= 12, (
                 f"{code}'s description is too short to be worth reading"
             )
@@ -397,6 +424,9 @@ class TestWhatTheTutorialsSayAboutTheCourse:
             assert len(ids) == len(set(ids)), f"repeated node: {sorted(ids)}"
             assert not re.search(r"^  (T\d+) --> \1$", block, re.MULTILINE)
 
+    # Advisory: an editorial preference about tutorial prose. A page that
+    # names an assessment still builds and still teaches.
+    @pytest.mark.advisory
     def test_no_tutorial_mentions_a_skills_demo(self):
         # Prose used to name assessments directly ("ready for Skills Demo 1"),
         # tying tutorials to one institution's schedule — the part most likely to change.

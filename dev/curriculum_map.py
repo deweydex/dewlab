@@ -1,7 +1,7 @@
 """Build the curriculum map from the tutorials and the module descriptors.
 
     python3 dev/curriculum_map.py            # rewrite planning/CURRICULUM_MAP.md
-    python3 dev/curriculum_map.py --check    # fail if it is out of date
+    python3 dev/curriculum_map.py --check    # exit 1 if it is out of date, 2 if it cannot be made
 
 Two files decide what the map says, and neither is the map:
 
@@ -926,9 +926,12 @@ def main() -> int:
     """The command-line entry point. In its normal mode, generates the
     map and writes it to `planning/CURRICULUM_MAP.md`. In `--check` mode
     (what CI actually runs), it generates the map in memory and compares
-    it against what's currently committed — failing loudly if they don't
-    match, which is what keeps the committed file from silently drifting
-    out of sync with the tutorials it's supposed to describe.
+    it against what's currently committed, and exits 1 if they don't
+    match. A map that cannot be made at all (a `covers:` code or section
+    that does not exist) exits 2 instead, in either mode. CI fails a pull
+    request on the 2 and only reports the 1 (DECISIONS_LOG 7.291): the
+    map counts italic words in the tutorials' prose, so any new sentence
+    makes it stale, and a stale planning document breaks no page.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -940,7 +943,7 @@ def main() -> int:
         text = render()
     except MapError as exc:
         print(f"curriculum map failed — {exc}", file=sys.stderr)
-        return 1
+        return 2
 
     if args.check:
         current = MAP.read_text() if MAP.is_file() else ""

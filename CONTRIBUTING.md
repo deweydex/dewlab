@@ -46,7 +46,12 @@ python3 -m pytest                      # everything
 python3 -m pytest --ignore=tests/e2e   # the fast ones, no browser
 ```
 
-The unit tests need nothing but Python. The end-to-end tests drive a real
+The unit tests need nothing but Python. Most of them build a small site of
+their own, so there are a lot of short ones; with `pytest-xdist` installed
+(`pip install pytest-xdist`), `python3 -m pytest --ignore=tests/e2e -n auto`
+runs them on every core, as CI does, in a little over half the time.
+
+The end-to-end tests drive a real
 browser against a real Python runtime, so they need a local copy of that runtime
 first — `python3 dev/fetch_pyodide.py`, about 30 MB. Without it they skip with a
 message rather than failing.
@@ -65,9 +70,16 @@ one goes.
 
 Three workflows run on every push.
 
-`tests` runs the unit suite, builds the site, and fails if
-`planning/CURRICULUM_MAP.md` is out of date relative to the curriculum data and
-the tutorials' own `covers:` frontmatter.
+`tests` runs the unit suite, builds the site, fails if the curriculum map
+cannot be made (a `covers:` code or section that does not exist), and fails if
+one of the generated files for the topic tools is out of date. Its
+`house-style` job runs the checks that look after the project rather than any
+page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
+current, and the links inside the documents about the project. It reports what
+it finds as a warning on the pull request and never fails it
+(`DECISIONS_LOG.md` 7.291). To see those checks locally, run
+`python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check` and
+`python3 dev/check_doc_links.py`.
 
 `standalone-bundle-is-current` rebuilds the vendored CodeMirror/KaTeX bundle
 from `vendor-src/` and fails on any difference. The bundle is committed on

@@ -8,6 +8,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dev"))
 
 import check_doc_links as cdl  # noqa: E402
@@ -77,5 +79,9 @@ def test_history_told_without_a_citation_passes(tmp_path):
                               f"{SECTION}4), and ARCHITECTURE.md {SECTION}2\n") == []
 
 
+# Advisory, like the CI step that runs the whole checker: a stale path or
+# anchor in a document about the project misleads the next contributor, and
+# is worth fixing, but no page a reader opens depends on it (7.291).
+@pytest.mark.advisory
 def test_the_repository_is_clean():
     assert cdl.citation_problems() == []
