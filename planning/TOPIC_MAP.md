@@ -1,15 +1,17 @@
 # The topic map
 
 The topic tree (*tree.html*, drawn from `planning/curriculum/topics.yaml`) is
-to be replaced by a map with levels: subjects like countries, districts inside
-them, topics as towns, and a topic's own pages as its streets. This document
+to be replaced by a map with levels: continents of subjects that share many
+roads, subjects like countries on them, districts inside those, topics as
+towns, and a topic's own pages as its streets. This document
 says what the new map holds, how it was found, what Josh has to decide, and
 how it gets built. The working folder is `planning/topic-map/`; its
 `design.md` has the full technical and interaction design, and
 `graph-final.json` the proposed map itself.
 
 Status, 28 September 2026: **proposed, with Josh's answers to its twelve
-questions applied** (see [Josh's decisions](#joshs-decisions)). Nothing the
+questions applied** (see [Josh's decisions](#joshs-decisions)), and laid out
+as continents (see [How the land is laid out](#how-the-land-is-laid-out)). Nothing the
 build reads has changed, except that the library loans quiz moved in Database
 Methods (decision 11). The prototype, built from `graph-final.json`, is the dewlab
 Atlas (a private claude.ai page; ask for the link).
@@ -39,32 +41,126 @@ data under it had drifted:
 |---|---|---|
 | Topics | 142, one per outcome or part of one | 189, found from what the pages teach |
 | Pages placed | 193 of 274 (by `covers:` claims) | all 274 |
-| Grouping | 6 columns in `strands.yaml`, unused by the tree | 11 regions, 41 districts |
+| Grouping | 6 columns in `strands.yaml`, unused by the tree | 12 regions and 41 districts, on three continents, a starting island and two small islands |
 | Ideas never named before | — | 60 topics with no old equivalent |
 | Not ideas | mixed in as topics | 32 landmarks (projects, orientation, review); 9 outcomes culled to landmarks or teacher-only metadata |
 | Planned, no page yet | 1 | 7, one for every gap |
 
-The regions and their districts (topics in brackets):
+The continents, their regions and the regions' districts (topics in
+brackets; a district's count includes any of its towns on the plains):
 
-- **Number:** Number basics (5); Fractions (7); Powers (6); Roots and logarithms (7)
-- **Logic and binary:** Numbers in a computer (4); Sets and logic (4)
-- **Algebra and graphs:** Letters and expressions (3); Solving equations (5); Quadratics (4); Functions and their graphs (4); Grids and straight lines (4); Calculus (5)
-- **Shape and space:** Measuring shapes (4); Triangles and trigonometry (5); Matrices and 3D pictures (6)
-- **Chance and data:** Counting and chance (4); Chances that combine (4); Data, charts and averages (5); Simulations and models (5)
-- **Machine learning:** Machines that write (3); Machines that learn (3)
-- **Programming:** Starting with Python (4); Decisions and loops (4); Writing functions (4); Lists, grids and dictionaries (3); Algorithms (5); Objects and classes (5)
-- **Making software:** Finding and fixing mistakes (3); Programs for people (4)
-- **Databases:** Tables and queries (4); Linked tables (5); Data in and out (4)
-- **Building web pages:** HTML: the parts of a page (7); CSS: how a page looks (6); Layout and screen sizes (7); Movement and interaction (6)
-- **Websites and browsers:** Your tools: an editor and GitHub (5); Publishing and fixing a site (4); How a browser works (5); Pages everyone can use (4); Building a whole site (3)
+- **The Island of First Steps** (where to start): the Tower of Unknowing; the
+  Prerequisite Plains, where the 12 towns that need nothing first stand,
+  whatever their country; and
+  - **Your tools:** Your tools: an editor and GitHub (5)
+- **The Old Country** (mathematics):
+  - **Number:** Number basics (5); Fractions (7); Powers (6); Roots and logarithms (7)
+  - **Algebra and graphs:** Letters and expressions (3); Solving equations (5); Quadratics (4); Functions and their graphs (4); Grids and straight lines (4); Calculus (5)
+  - **Shape and space:** Measuring shapes (4); Triangles and trigonometry (5); Matrices and 3D pictures (6)
+- **The New World** (programming and data):
+  - **Programming:** Starting with Python (4); Decisions and loops (4); Writing functions (4); Lists, grids and dictionaries (3); Algorithms (5); Objects and classes (5)
+  - **Making software:** Finding and fixing mistakes (3); Programs for people (4)
+  - **Chance and data:** Counting and chance (4); Chances that combine (4); Data, charts and averages (5); Simulations and models (5)
+  - **Machine learning:** Machines that write (3); Machines that learn (3)
+- **The Wide Web** (the web and databases):
+  - **Building web pages:** HTML: the parts of a page (7); CSS: how a page looks (6); Layout and screen sizes (7); Movement and interaction (6)
+  - **Websites and browsers:** Publishing and fixing a site (4); How a browser works (5); Pages everyone can use (4); Building a whole site (3)
+  - **Databases:** Tables and queries (4); Linked tables (5); Data in and out (4)
+- **The Isles of Yes and No**, two small islands:
+  - **Logic and binary:** Numbers in a computer (4); Sets and logic (4)
 
-The levels on screen follow the data: region names from far out, district
-names at middle zoom, every town closer in, and a selected town's pages as
-streets at the closest. A page that is not an idea is a landmark beside the
+The levels on screen follow the data: continent names from far out, then
+region names, district names at middle zoom, every town closer in, and a
+selected town's pages as streets at the closest. A page that is not an idea is a landmark beside the
 towns it draws on; a "closer look" page is a side street of the topic whose
 misconception it tackles; a context page is a side street of its owner's
 topic, unless it teaches an idea other topics need, in which case it is a
 town (the cascade, how Git keeps history, how a browser fetches a page).
+
+<a id="how-the-land-is-laid-out"></a>
+### How the land is laid out
+
+**Which countries share a continent comes from the roads between them.**
+`planning/topic-map/continents.py` counts the needs between every pair of
+regions and tries every way of splitting the regions into groups, ranking the
+splits by modularity: how much more often a need stays inside its group than
+it would by chance. Three groups come out on their own, with no number of
+continents asked for:
+
+| Continent | Regions | Topics | What ties it |
+|---|---|---|---|
+| The Old Country | Number, Algebra and graphs, Shape and space | 65 | Shape needs algebra 8 times, algebra needs number 5 times. |
+| The New World | Programming, Making software, Chance and data, Machine learning | 56 | Making software needs programming 11 times, chance and data 7, machine learning 4. |
+| The Wide Web | Building web pages, Websites and browsers, Databases | 55 | Websites need web pages 17 times; nothing on it needs anything on the other continents. |
+
+The best split (modularity 0.553) puts Logic and binary with the New World;
+the next best (0.550) puts it with the Old Country. It sits between the two,
+needing number once and programming twice, so it is neither: it became the
+Isles of Yes and No, two small islands in the sea between them, one for each of
+its districts. Maths and programming are the only two continents with roads
+between them (11, most of them shape and algebra needing Python). The Wide
+Web has none: it joins the rest of Comath only through the starting island.
+
+**The starting island is the one continent placed by hand.** It holds the
+tower, the Prerequisite Plains and the Tool Market, a twelfth country made
+from the district "Your tools: an editor and GitHub", which used to be part of
+Websites and browsers. A country cannot cross the sea, and the editor and the
+GitHub account are the first things a web learner picks up, so the tools
+stand beside the tower. One of its towns, *How Git keeps history*, needs a
+town on the Wide Web, so one road leaves the island and comes back.
+
+**The map is drawn from the outside in** (`layout.py`). First the continents
+go round the island, each a disc of its size, a sea apart, drawn towards the
+island and towards the continents they share roads with. Then each
+continent's countries get a home on it, and each country's districts a home
+in it, turned to face what they have roads to: Python City faces the island,
+because the plains' first lines of Python lead there. Only then do the towns
+settle. Every town pushes the others away, harder across a border and hardest
+across the sea. A prerequisite pulls like a spring. Each town is drawn to the
+middle of its county and its country, and depth is a gentle pull away from the
+tower, so that usually the further a town is from the tower, the more it
+needs. Each country is split into counties (its districts) with dotted
+borders, and each continent has one family of hues, which its countries
+share. An earlier layout put every country round one island and fixed each
+town's distance from the middle by its depth, which turned a long chain of
+prerequisites into a spike.
+
+**A road between two continents crosses the sea on a bridge.** There is one
+bridge for each pair of continents with roads between them, placed where it
+keeps those roads shortest, and every road across that sea is drawn through
+it, so roads gather at a bridge as they do on a real map. Six bridges carry
+43 roads: the island to the Old Country (14), to the Wide Web (12), to the
+New World (3) and to the Isles (1), the Old Country to the New World (11),
+and the New World to the Isles (2). Two continents without a bridge of their
+own are joined by way of the island.
+
+### The map's voice
+
+The map introduces itself as **Comath, the land of maths and computing**:
+countries, towns, roads and landmarks, with the Tower of Unknowing in the
+middle where every traveller starts, and the Prerequisite Plains around it
+(the towns that need nothing first). Each region has a whimsical name with its
+real name beside it, "Python City (Programming)", and so does each continent,
+"The Old Country (Mathematics)". The tower keeps the orientation pages. The fantasy is in the framing, and it follows the style guide's rule
+that a metaphor comes after the plain statement, never instead of it
+(`PEDAGOGICAL_STYLE_GUIDE.md#plain-language`). So the page first says what the
+map is in plain words, and only then uses the land's voice. Each region has a
+plain `blurb` and, after it, one line of `lore` in `graph-final.json` ("Chance
+and data: probability, statistics, charts and simulations. *Nothing in this
+country is certain, but some things are very likely.*"). The words stay
+common ones, with no archaic ones like "realm" or "yonder", because a reader
+may be working in a second language. Town names stay plain, because decision
+1 relies on a learner finding "binary" or "testing" by name.
+
+Every name was checked against its neighbours. The Isles of Yes and No are two
+islands. The Triangle Mountains border the Valley of the Missing X and are
+drawn with small peaks, and the Forest of Learning Machines with trees. Browser
+Harbour is on the Wide Web's coast, where the bridge from the island lands.
+Python City, "the biggest city in the land", takes the island's bridge to the
+New World. The lore agrees across levels: the Counting Kingdom is the oldest
+country and stands in the Old Country; Machine learning is the youngest
+country and stands in the New World, where "nothing is more than a hundred
+years old".
 
 ## How it was found
 
@@ -103,7 +199,9 @@ options offered, stay in `graph-final.json` under `questions`, each now with
 its `answer`. Ten follow the recommendation; decisions 7 and 9 do not, and
 changed the map.
 
-1. **Regions:** eleven, as drawn.
+1. **Regions:** eleven, as drawn. (Later twelve: laying the map out as
+   continents gave the tools district a country of its own on the starting
+   island. See [How the land is laid out](#how-the-land-is-laid-out).)
 2. **Web context pages:** towns of their own.
 3. **Truth tables and Venn diagrams:** no need either way.
 4. **The derivative and expanded brackets:** no need.

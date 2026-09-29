@@ -58,10 +58,11 @@ anything.
 
 ### 1.2 What each level shows
 
-The prototype chooses its level from the raw zoom factor (`lodFor()`,
-`planning/topic-map/atlas.template.html` line 452). The same factor means very
-different things on a 360px phone and a 1400px desktop: at "whole map" the
-desktop is already near the district level and the phone is far below it. The
+The prototype chooses its level from the zoom as a multiple of the scale that
+shows the whole map (`lodFor()` in `planning/topic-map/atlas.template.html`).
+That keeps the first view at continent names on any screen, but further in,
+the same multiple means very different things on a 360px phone and a 1400px
+desktop, because the phone's whole-map scale is a third of the desktop's. The
 design keeps the prototype's thresholds but restates them in **on-screen town
 spacing**: `s` is the median nearest-neighbour distance between towns (a
 number the build ships, about 150 map units) multiplied by the current zoom.
@@ -69,9 +70,10 @@ The level is then the same wherever the reader is.
 
 | Level | When | Shows | Labels |
 |---|---|---|---|
-| 1. Regions | `s` below 36px (roughly the whole map in view) | The coast, land tinted by region, faint depth rings, towns as small dots, one aggregated bridge per pair of regions that share needs, the "start here" mark at the centre, footprints where the reader has worked, a chosen course's route. | Region names only, one each, at the clearest spot inside the region (the prototype's `clear_spot()`). |
-| 2. Districts | 36–82px | Everything above, plus district names, town dots sized by how many topics build on them, roads inside each district, drawn faint. | District names first, then the heaviest towns' names where they fit. Region names fade to a watermark. |
-| 3. Towns | 82px and up | Every town with its name where it fits, all roads inside the view (bridges dashed in the accent colour), landmarks as small diamonds. Above 165px each town also shows how many pages it holds ("3 pages"). | Town names by priority (1.3). District names at half strength. |
+| 0. Continents | `s` below 34px (the whole map in view) | The sea, with a few waves, and each continent's coast; land tinted by country, each continent in one family of hues; towns as small dots; the bridges between continents; the tower on the starting island; footprints where the reader has worked; a chosen course's route. | Continent names only. A big continent's name sits at the clearest spot on its land (the prototype's `clear_spot()`); a small one's, and the starting island's, sits in the sea beside it. Each name opens its continent. |
+| 1. Regions | 34–61px | Everything above, with region borders dashed and county borders dotted. | Region names only, one each, at the clearest spot inside the region. |
+| 2. Districts | 61–108px | Everything above, plus district names, town dots sized by how many topics build on them, roads inside each district, drawn faint. | District names first, then the heaviest towns' names where they fit. Region names fade to a watermark. |
+| 3. Towns | 108px and up | Every town with its name where it fits, all roads inside the view (bridges dashed in the accent colour), landmarks as small diamonds. Above 165px each town also shows how many pages it holds ("3 pages"). | Town names by priority (1.3). District names at half strength. |
 | 4. Streets | A town is open (selected) at level 3 or closer | The open town's steps as a short numbered street leaving the dot: teaching steps as filled stops in reading order, closer-look, context and applies steps as side streets with open stops; its landmarks named; its needs and what it leads to lit as roads in two colours. | The street's page titles always show; other labels give way to it. |
 
 Level 4 is a state, not a zoom band: opening a town zooms to at least level 3
@@ -79,9 +81,12 @@ and draws its street. The brief says steps are visible "when a town is opened",
 and a street for every town at once would bury the map in text.
 
 Roads are where the old tree became a hairball. Three rules keep them legible.
-Bridges between regions are drawn as one line per pair of regions until a town
-is opened, with a width that says how many needs cross. Inside a region, roads
-appear only from level 2, faint, and only for towns inside the view. When a
+Between continents, a road crosses the sea on a bridge: one bridge per pair of
+continents with roads between them, where it keeps those roads shortest, and
+every road across that sea is drawn through it, so roads gather at bridges as
+they do on a real map. Two continents with no bridge of their own are joined
+by way of the starting island. Inside a continent, roads appear only from
+level 2, faint, and only for towns inside the view. When a
 town is open, its own roads are drawn strongly (what it needs in the town
 colour, what needs it in the accent colour) and every other road fades
 further.
@@ -138,7 +143,7 @@ there, and the control cluster rides above the sheet.
 
 **Home state** (nothing open): the "Find a topic" field; two or three sentences
 saying what the map is; a key (a town, a town no page teaches yet, a landmark,
-a footprint, a bridge, a depth ring); *Places you could go next* when the reader
+a footprint, a road into another country, a bridge, the plains, the borders); *Places you could go next* when the reader
 has worked somewhere (4.5); the layers (courses, roads, where I have worked,
 for teachers); and the full list (1.6).
 
@@ -212,15 +217,18 @@ footprints, `--dl-panel-bg` and `--dl-shadow` for the panel. It adds a small
 set of map tokens, defined in the same three places every theme token is
 defined (the light `:root`, `:root[data-theme="dark"]`, and the
 `prefers-color-scheme: dark` block guarded by `:not([data-theme="light"])`):
-`--dl-map-sea`, `--dl-map-coast`, `--dl-map-road`, `--dl-map-ring`,
-`--dl-map-halo`, and `--dl-map-land-1` to `--dl-map-land-11`. The prototype
+`--dl-map-sea`, `--dl-map-coast`, `--dl-map-road`, `--dl-map-halo`,
+`--dl-map-plains`, `--dl-map-terrain`, and the land's saturation and lightness,
+from which each country's tint is made with its hue. The prototype
 already copied the site's palette (its navy, orange, paper and muted are the
 site's), so this is mostly renaming. High contrast
 (`data-contrast="high"`) draws land as `--dl-bg` with a solid region outline in
 `--dl-fg`, and turns the patterns on.
 
-**Colour is never the only cue.** Region names are written on the land. Tints
-are assigned round the ring so that neighbours never share a hue family. For
+**Colour is never the only cue.** Region names are written on the land. Each
+continent has one family of hues, and its countries step through that family
+in the order they sit round it, so neighbours differ and a continent still
+reads as one place from far out. For
 readers who cannot tell tints apart, each region also carries an SVG pattern
 (stripes one way, the other way, dots), assigned so that neighbouring regions
 differ, drawn as `.dl-pattern` copies that the existing rule in
@@ -268,21 +276,21 @@ so a downloaded copy loses the link with one more class in its pattern
 
 ### 1.10 What changes from the prototype
 
-The prototype proves the core idea: polar layout with angle for region and
-district and radius for depth, land from a contoured density field, HTML
-towns over an SVG, priority decluttering, fly-to search, directions and
+The prototype proves the core idea: continents found from the roads between
+regions, a layout that settles from the outside in, land from a contoured
+density field, bridges where roads cross the sea, HTML towns over an SVG, priority decluttering, fly-to search, directions and
 course routes. All of that stays. What changes, and why:
 
 | Prototype | Design | Why |
 |---|---|---|
 | Recomputes the whole layout, force pass included, every run. | Positions committed; the force pass runs only in *dev/map_layout.py*; the build places new topics locally. | Stable positions are the point of a map, and the force pass took 4.5s on a 284-topic test graph (2.5). |
-| `random.uniform()` jitter for landmarks (`planning/topic-map/layout.py` line 214). | Deterministic offsets from the landmark's slug. | Two builds of the same input must write the same page. |
-| Level from raw zoom. | Level from on-screen town spacing (1.2). | Same level on a phone and a desktop. |
+| `random.uniform()` jitter for landmarks (`planning/topic-map/layout.py`; seeded, but every landmark moves when one is added or reordered). | Deterministic offsets from the landmark's slug. | Two builds of the same input must write the same page. |
+| Level from zoom as a multiple of the whole-map scale. | Level from on-screen town spacing (1.2). | Same level on a phone and a desktop. |
 | Land, coast and roads as path strings inside the JSON. | Rendered by `build.py` as a static SVG in the page. | A picture without JavaScript, and a smaller island. |
 | 367 KB island on the test graph, 292 KB of it towns, each step repeating a full URL, title and course names. | A shared pages table; steps are `[page, anchor, role]`; URLs built in the browser. Roughly 150 KB before compression. | School networks. |
 | Its own palette, header and fonts; theme only from the media query. | The shell and the site's tokens, the reader's theme, font, contrast, patterns and motion settings. | 6.3 and 7.283. |
 | A sample learner and an `atlas:visited` key; "I have been here" toggles visited. | Footprints from the real `dewlab:progress:<slug>` records; "I already know this" is the learner's own mark, stored apart and drawn differently. | The map must not claim what it cannot see (4.4). |
-| Directions: every unvisited ancestor, sorted by depth and name (`orderForTravel()`, line 623). | Walk back from the target, stopping at topics the reader has worked on or marked known; topological order with a same-district tie-break. | Shorter, and less zigzag between regions (4.5). |
+| Directions: every unvisited ancestor, sorted by depth and name (`orderForTravel()`). | Walk back from the target, stopping at topics the reader has worked on or marked known; topological order with a same-district tie-break. | Shorter, and less zigzag between regions (4.5). |
 | `aria-live` on the whole panel; towns in DOM order for a screen reader. | One live status line; overlay hidden from assistive technology; the server-rendered list as the equivalent; a skip link; focus to the panel heading. | 1.6. |
 | Its own substring search. | `assets/search-words.js`, the one idea of matching every search box uses (7.174). | "fraction" should find "Fractions". |
 | `field_for()` compares each region with every other at every cell (line 267). | One pass keeps the top two densities per cell. | Ten regions would otherwise cost about ten times as much. |
@@ -368,7 +376,7 @@ point it at a fixture.
 | File | Holds | Written by |
 |---|---|---|
 | *map/README.md* | What the files are, the step shorthand, how to put a page on the map, how to move a town. | Hand |
-| *map/regions.yaml* | Regions in ring order, each with its districts. | Hand |
+| *map/regions.yaml* | Continents, each with its regions, and each region with its districts. | Hand |
 | *map/topics/&lt;region-id&gt;.yaml* | One file per region: that region's topics, keyed by id. | Hand, the topic editor |
 | *map/landmarks.yaml* | Landmarks, keyed by page slug. | Hand |
 | *map/culled.yaml* | Descriptor outcomes that are not ideas, with what each became. | Hand |
@@ -383,7 +391,13 @@ across files.
 *map/regions.yaml*:
 
 ```yaml
-# Regions in the order they sit round the island, clockwise from the top.
+# Continents, then regions. A continent names its regions; exactly one
+# continent is the start, where the tower and the plains are.
+continents:
+  mathematics:
+    name: Mathematics
+    fancy: The Old Country
+    regions: [number, algebra, shape-and-space]
 regions:
   number:
     name: Number
@@ -509,11 +523,19 @@ order note.
 A map is only useful if places stay where they were. So positions are data,
 committed, and the build never moves a town that has one.
 
-**The first layout** is the prototype's algorithm, moved to *dev/map_layout.py*:
-region order round the ring by least squared distance between regions that
-share needs; district order inside each region the same way; initial angles by
-the barycentre of each topic's needs; radius from depth; the force pass with
-districts as soft walls and regions as hard ones. It runs once at migration
+**The first layout** is the prototype's algorithm, moved to *dev/map_layout.py*.
+It works from the outside in. The continents go round the starting island a
+sea apart, in the order and at the distances that keep continents with many
+roads between them close (a small relaxation of one disc per continent). Each
+continent's countries get a home on it, and each country's districts a home in
+it, turned to face what they have roads to. Then every town settles from its
+district's home under a force pass: towns push apart, harder across a border
+and hardest across the sea; a need pulls like a spring; each town is drawn to
+the middle of its county and country; depth is a gentle pull away from the
+tower. Towns that need nothing first stand on the Prerequisite Plains round
+the tower. Which regions share a continent comes from the roads, not by hand:
+`planning/topic-map/continents.py` prints the matrix of needs between regions
+and the groupings with the highest modularity. It runs once at migration
 (`--all`) and writes *map/positions.json*. It runs again only when a
 restructure is deliberate, and that is worth a line in `DECISIONS_LOG.md`,
 because it moves every town a learner has learned to find.
@@ -521,23 +543,20 @@ because it moves every town a learner has learned to find.
 **A new topic** (no position) is placed by the build, deterministically, where
 the prototype would have put it, without disturbing anything else:
 
-1. The target angle is the circular mean of the angles of its needs inside its
-   own district; failing that, of all its needs; failing that, of its
-   district's positioned towns.
-2. The angle is clamped to the district's span (the angles of its positioned
-   towns, widened by a quarter, as a soft wall) and hard-clamped to the region's
-   span. The radius is the ring for its depth.
-3. Candidates step outwards from that point, alternately either side along the
-   ring and then a third of a ring in and out, and the first one at least the
-   town spacing from every other town (the prototype's wide-label metric, which
-   weights vertical distance 1.9 times) is taken.
+1. The target is the mean position of its needs inside its own district;
+   failing that, of its needs on its own continent; failing that, the middle
+   of its district's positioned towns.
+2. Candidates spiral out from that point, and the first one inside its own
+   county's land and at least the town spacing from every other town (the
+   prototype's wide-label metric, which weights vertical distance 1.6 times)
+   is taken.
 
 The build prints which towns it placed. `python3 dev/map_layout.py --keep`
 writes those positions into the file so they stop being recomputed;
 `--only <ids>` re-runs the force pass for named towns with everything else
 fixed (for a town whose depth changed after a need was added: the build notes
-a town that sits more than one ring from its depth). A brand-new district with
-no positioned towns is placed at its region's mean angle and noted; laying it
+a town much nearer the tower than the towns it needs). A brand-new district with
+no positioned towns is placed at its region's middle and noted; laying it
 out properly is a `--only` run.
 
 **By hand**, through the existing topic editor. `topic_editor/index.html`
@@ -722,8 +741,8 @@ The map is computed in `build.py`, in the order the build already works:
 ### 4.2 The page
 
 The page body holds, in order: the frame with the skip link, the static SVG
-(`aria-hidden`; sea, land per region with its pattern copy, coast, depth
-rings, roads as paths carrying `data-from`/`data-to`, empty groups for routes),
+(`aria-hidden`; sea, land per region with its pattern copy, coast, bridges,
+roads as paths carrying `data-from`/`data-to`, empty groups for routes),
 an empty overlay for towns, the control cluster, and the panel whose home
 state contains the full list. With no JavaScript the reader gets a picture and
 a complete, working list.
@@ -952,8 +971,8 @@ the committed *map/positions.json* from one `--all` run. Adds
 `place_new_topics()` and `map_geometry()` to `build.py`, with notes for placed,
 drifted and stale towns. No page yet.
 *Tests*: *tests/build/test_map_geometry.py*: the same input gives the same
-bytes; a new topic lands inside its district's span, on its depth ring, at
-least the spacing from every town, and no other town moves; every town is
+bytes; a new topic lands inside its own county, at least the spacing from
+every town, and no other town moves; every town is
 inside its region's land; paths are closed; the real map's geometry stays under
 the time budget. *tests/test_map_layout_script.py* for the dev script (a
 different name from the build test, since pytest refuses two test modules with
