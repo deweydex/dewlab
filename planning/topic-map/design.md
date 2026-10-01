@@ -70,7 +70,7 @@ The level is then the same wherever the reader is.
 
 | Level | When | Shows | Labels |
 |---|---|---|---|
-| 0. Continents | `s` below 34px (the whole map in view) | The sea, with a few waves, and each continent's coast; land tinted by country, each continent in one family of hues; towns as small dots; the bridges between continents; the tower on the starting island; footprints where the reader has worked; a chosen course's route. | Continent names only. A big continent's name sits at the clearest spot on its land (the prototype's `clear_spot()`); a small one's, and the starting island's, sits in the sea beside it. Each name opens its continent. |
+| 0. Continents | `s` below 34px (the whole map in view) | The sea, with a few waves, and each continent's coast; land tinted by country, each continent in one family of hues; towns as small dots; the bridges between continents; the tower on the starting island; footprints where the reader has worked; a chosen course's route. | Continent names only, each in the sea beside its coast, never on its land. A name's size depends on the screen, so the page chooses where it goes: of 32 places round the coast (shipped with the map), the one that covers the fewest towns, bridges, other names and controls and stays inside the view. Each name opens its continent. |
 | 1. Regions | 34–61px | Everything above, with region borders dashed and county borders dotted. | Region names only, one each, at the clearest spot inside the region. |
 | 2. Districts | 61–108px | Everything above, plus district names, town dots sized by how many topics build on them, roads inside each district, drawn faint. | District names first, then the heaviest towns' names where they fit. Region names fade to a watermark. |
 | 3. Towns | 108px and up | Every town with its name where it fits, all roads inside the view (bridges dashed in the accent colour), landmarks as small diamonds. Above 165px each town also shows how many pages it holds ("3 pages"). | Town names by priority (1.3). District names at half strength. |
@@ -134,9 +134,11 @@ prototype's `viewportBox()`), so a town never lands under either. This is how
 7.16's problem (controls stealing clicks from what sits beneath) is answered
 for a map that pans: a test asserts the open town is never under a control.
 
-**Phone**: a bottom sheet with three heights. *Peek* (about 76px) shows the open
-town's name and "How do I get here?"; *half* (52% of the frame) shows the
-panel's top; *full* (92%) shows all of it. The handle is a real button: a tap
+**Phone**: a bottom sheet with three heights. It starts at *peek*, so the first
+view is the whole map, and the map's fit leaves room for the bar. *Peek* (about
+100px) shows the open town's name and "How do I get here?"; *half* (52% of the frame) shows the
+panel's top; *full* (92%) shows all of it. The handle is a real button, at least 28px tall (the prototype's 4px bar was
+squeezed to under 1px by the sheet's flex layout, and could not be tapped): a tap
 or Enter steps through the heights, a drag snaps to the nearest. The map's
 visible area is the part above the sheet, so flying to a town centres it
 there, and the control cluster rides above the sheet.

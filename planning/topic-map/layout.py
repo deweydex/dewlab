@@ -407,7 +407,7 @@ for lm in graph.get("landmarks") or []:
 # ---------- land
 order = [r for l in lands for r in regions_on[l]]
 pts_all = list(pos.values()) + [p for _, p, _ in lm_pos]
-PAD = 300
+PAD = 380  # sea round the outer coasts, with room for the continent names
 minx, maxx = min(p[0] for p in pts_all) - PAD, max(p[0] for p in pts_all) + PAD
 miny, maxy = min(p[1] for p in pts_all) - PAD, max(p[1] for p in pts_all) + PAD
 STEP = 20
@@ -680,33 +680,26 @@ for d in dlist:
     district_label[d] = [round(cx), round(cy - 34)]
 plains_label = clear_spot(lambda j, i: plains_field[j][i] > 0.05 and clear_of_labels(minx + i * STEP, miny + j * STEP, "The Prerequisite Plains"),
                           0.0, PLAINS_R * 0.6, extra=[(0.0, 0.0), (0.0, 40.0)])
-# A continent's name sits on its own land, at the widest zoom, when nothing
-# else is written.
-cont_label = {}
-def off_coast(l, name):
-    """A spot in the sea just below the land, or above it if something is
-    in the way there, wide enough for the name."""
-    cells = [(j, i) for j in range(ny) for i in range(nx) if owner[j][i] == l]
-    cx = land_centre[l][0]
-    ci = int((cx - minx) / STEP)
-    half = int(len(name) * 30 / 2 / STEP)
-    def open_water(j):
-        return 3 <= j < ny - 3 and all(owner[jj][ii] is None for jj in range(j - 3, j + 4)
-                                       for ii in range(max(0, ci - half), min(nx, ci + half + 1)))
-    below = max(j for j, _ in cells) + 6
-    above = min(j for j, _ in cells) - 6
-    j = below if open_water(below) else above
-    return [round(cx), round(miny + j * STEP)]
+# A continent's name goes in the sea beside its coast, where it covers no
+# town. How big a name is on screen depends on the screen, so the page chooses
+# the place. Here each continent gives it 32 places to choose from: the point
+# on its coast in each direction, found by walking out from its middle to the
+# last cell of its own land.
+SHORE_RAYS = 32
+cont_shore = {}
 for l in lands:
-    c = cont_rec[l]
-    name = c.get("fancy") or c.get("name") or ""
-    if l == START or l in islands:
-        # A small land is mostly its own towns, and the starting island has
-        # the tower's mark in the middle, so their names go in the sea.
-        cont_label[l] = off_coast(l, name or region_rec[regions_on[l][0]].get("fancy", ""))
-        continue
     cx, cy = land_centre[l]
-    cont_label[l] = clear_spot(lambda j, i, l=l: owner[j][i] == l and total[j][i] > THRESH + 0.25, cx, cy, hard=160)
+    pts = []
+    for k in range(SHORE_RAYS):
+        a_ = 2 * math.pi * k / SHORE_RAYS
+        last, r_ = (cx, cy), 0.0
+        while r_ < 2.2 * R_land[l] + 400:
+            r_ += STEP / 2
+            x_, y_ = cx + r_ * math.cos(a_), cy + r_ * math.sin(a_)
+            if owner_at(x_, y_) == l:
+                last = (x_, y_)
+        pts.append([round(last[0]), round(last[1])])
+    cont_shore[l] = pts
 
 # ---------- pages, courses
 pages = {t.slug: t for t in build.load_all() if not build.VERSION_FILE_RE.match(t.path.stem)}
@@ -762,7 +755,7 @@ def cont_out(l):
     return {"id": l, "kind": c.get("kind", "continent"),
             "name": c.get("name") or borrowed.get("name", ""), "fancy": c.get("fancy") or borrowed.get("fancy", ""),
             "blurb": c.get("blurb") or borrowed.get("blurb", ""), "lore": c.get("lore") or borrowed.get("lore", ""),
-            "regions": regions_on[l], "label": cont_label[l], "hue": cont_hue[l]}
+            "regions": regions_on[l], "shore": cont_shore[l], "hue": cont_hue[l]}
 
 data = {
     "continents": [cont_out(l) for l in lands],
