@@ -293,6 +293,10 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .key i { display: block; margin: auto; }
 .num { font-variant-numeric: tabular-nums; }
 
+@media (max-width: 1100px) {
+  .continent-label { font-size: 14px; letter-spacing: .2em; max-width: 10em; }
+  .continent-label small { font-size: 10.5px; letter-spacing: .08em; }
+}
 @media (max-width: 760px) {
   #top { padding: 10px 12px; }
   .continent-label { font-size: 12.5px; letter-spacing: .16em; max-width: 9em; }
@@ -302,10 +306,14 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   #controls .layers { display: none; }
   #controls.open .layers { display: grid; }
   #panel { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-height: 52%; border-radius: 14px 14px 0 0; }
-  #panel.collapsed { max-height: 74px; }
+  #panel.collapsed { max-height: 100px; }
+  #panel.collapsed .body { overflow: hidden; }
   #panel .body { padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
-  #controls { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
-  .grab { display: block; width: 40px; height: 4px; border-radius: 2px; background: var(--rule); margin: 8px auto 0; border: 0; padding: 0; cursor: pointer; }
+  #controls { bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+  /* The bar is a tall tap target with a short line drawn on it. It must not
+     shrink: the panel is a flex column, and a 4px button squeezed to under 1px. */
+  .grab { display: block; flex: none; position: relative; width: 100%; height: 28px; background: none; border: 0; padding: 0; cursor: pointer; }
+  .grab::after { content: ""; position: absolute; left: 50%; top: 11px; width: 40px; height: 4px; border-radius: 2px; background: var(--rule); transform: translateX(-50%); }
 }
 @media (min-width: 761px) { .grab, .layers-toggle { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -573,6 +581,59 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     const b = baseK || 0.2;
     return k < b * 1.4 ? 0 : k < b * 2.5 ? 1 : k < b * 4.4 ? 2 : k < b * 8 ? 3 : 4;
   }
+  // At the widest view each continent's name goes in the sea beside its coast.
+  // How big a name is depends on the screen, so the place is chosen here: of
+  // the places round the coast, take the one that covers the fewest towns,
+  // bridges, other names and controls, and stays inside the view.
+  const bridgeDots = [];
+  for (const b of data.bridges || []) {
+    const [[x1, y1], [x2, y2]] = b.ends;
+    for (let i = 0; i <= 8; i++) bridgeDots.push([x1 + (x2 - x1) * i / 8, y1 + (y2 - y1) * i / 8]);
+  }
+  const landSize = new Map(continents.map((c) => [c.id, towns.filter((t) => t.land === c.id).length]));
+  function placeContinentNames(at) {
+    const vb = viewportBox();
+    const grow = (r, m) => [r[0] - m, r[1] - m, r[2] + m, r[3] + m];
+    const inside = (r, [x, y]) => x > r[0] && x < r[2] && y > r[1] && y < r[3];
+    const area = (a, b) => Math.max(0, Math.min(a[2], b[2]) - Math.max(a[0], b[0])) * Math.max(0, Math.min(a[3], b[3]) - Math.max(a[1], b[1]));
+    const boxOf = (id) => { const r = document.getElementById(id).getBoundingClientRect(), o = stage.getBoundingClientRect(); return [r.left - o.left, r.top - o.top, r.right - o.left, r.bottom - o.top]; };
+    const chrome = [boxOf("top"), boxOf("controls")];
+    const townDots = towns.map((t) => at(t.x, t.y));
+    const barDots = bridgeDots.map(([x, y]) => at(x, y));
+    const shores = continents.map((c) => c.shore.map(([x, y]) => at(x, y)));
+    const centres = continents.map((c) => {
+      const mine = towns.filter((t) => t.land === c.id).map((t) => at(t.x, t.y));
+      return [mine.reduce((a, q) => a + q[0], 0) / mine.length, mine.reduce((a, q) => a + q[1], 0) / mine.length];
+    });
+    const mid = [centres.reduce((a, q) => a + q[0], 0) / centres.length, centres.reduce((a, q) => a + q[1], 0) / centres.length];
+    const placed = [], out = [];
+    const order = continents.map((c, i) => i).sort((a, b) => landSize.get(continents[a].id) - landSize.get(continents[b].id));
+    for (const i of order) {
+      const node = contLabels[i].node, w = node.offsetWidth, h = node.offsetHeight;
+      const away = [centres[i][0] - mid[0], centres[i][1] - mid[1]];
+      const awayLen = Math.hypot(away[0], away[1]) || 1;
+      let best = null;
+      shores[i].forEach((s0, k) => {
+        const a = 2 * Math.PI * k / shores[i].length, dx = Math.cos(a), dy = Math.sin(a);
+        const reach = Math.min(w / 2 / Math.max(1e-6, Math.abs(dx)), h / 2 / Math.max(1e-6, Math.abs(dy)));
+        const x = s0[0] + dx * (reach + 8), y = s0[1] + dy * (reach + 8);
+        const r = [x - w / 2, y - h / 2, x + w / 2, y + h / 2], pad = grow(r, 6);
+        let cost = 4 * (1 - (dx * away[0] + dy * away[1]) / awayLen);
+        cost += 40 * townDots.filter((q) => inside(pad, q)).length;
+        cost += 25 * barDots.filter((q) => inside(pad, q)).length;
+        shores.forEach((sh, j) => { if (j !== i) cost += 30 * sh.filter((q) => inside(pad, q)).length; });
+        for (const c of chrome) cost += area(r, c) > 0 ? 60 : 0;
+        for (const q of placed) { const o = area(r, q); if (o > 0) cost += 150 + o / 40; }
+        // a name cut off by the edge or the panel is worse than one over a town
+        cost += 2 * (Math.max(0, vb.left + 6 - r[0]) + Math.max(0, r[2] - (vb.right - 6)) + Math.max(0, vb.top + 6 - r[1]) + Math.max(0, r[3] - (vb.bottom - 6)));
+        if (!best || cost < best.cost) best = { cost, x, y, r };
+      });
+      placed.push(best.r);
+      node.style.transform = `translate(${best.x}px, ${best.y}px) translate(-50%, -50%)`;
+      out.push({ node, x: best.x, y: best.y, w, h });
+    }
+    return out;
+  }
   function render() {
     world.setAttribute("transform", `translate(${view.x} ${view.y}) scale(${view.k})`);
     const lod = lodFor(view.k);
@@ -601,8 +662,8 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
     };
     const measure = (node, [x, y]) => { const [sx, sy] = at(x, y); return { node, x: sx, y: sy, w: node.offsetWidth, h: node.offsetHeight }; };
     const rl = relax(regionLabels.map(({ r, node }) => measure(node, r.label)));
-    // continent names are only measured while they show, at the widest view
-    const cl = lod === 0 ? relax(contLabels.map(({ c, node }) => measure(node, c.label))) : [];
+    // continent names are only placed while they show, at the widest view
+    const cl = lod === 0 ? placeContinentNames(at) : [];
     for (const { d, node } of districtLabels) {
       const [sx, sy] = at(d.label[0], d.label[1]);
       node.style.transform = `translate(${sx}px, ${sy}px) translate(-50%, -50%)`;
@@ -658,7 +719,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   function viewportBox() {
     const W = stage.clientWidth, H = stage.clientHeight;
     const wide = W > 760;
-    return { left: wide ? 16 : 0, top: wide ? 0 : 110, right: wide ? W - 412 : W, bottom: wide ? H : H * 0.5 };
+    // on a phone the panel opens over the lower half, or shrinks to a bar
+    const shut = panel.classList.contains("collapsed");
+    return { left: wide ? 16 : 0, top: wide ? 0 : 110, right: wide ? W - 412 : W, bottom: wide ? H : shut ? H - 160 : H * 0.5 };
   }
   function fitTo(x0, y0, x1, y1, animate, maxK) {
     const vb = viewportBox();
@@ -1086,6 +1149,9 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
   // ---------- open
   paintVisited();
   showHome();
+  // On a phone the map comes first. The panel starts as a bar at the bottom
+  // that opens with a tap.
+  if (stage.clientWidth <= 760) panel.classList.add("collapsed");
   fitAll(false);
   const hash = decodeURIComponent(location.hash.slice(1));
   if (byCode.has(hash)) select(hash, true);
