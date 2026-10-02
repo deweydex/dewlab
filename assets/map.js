@@ -81,7 +81,7 @@ function start(root, data) {
 
   // ---------- the frame
   root.innerHTML = `
-    <div class="dl-tmap-stage"><svg class="dl-tmap-svg" aria-hidden="true"><g></g></svg><div class="dl-tmap-overlay"></div></div>
+    <div class="dl-tmap-stage"><svg class="dl-tmap-svg" aria-hidden="true"><g></g></svg><svg class="dl-tmap-leaders" aria-hidden="true"></svg><div class="dl-tmap-overlay"></div></div>
     <div class="dl-tmap-top dl-tmap-card">
       <label for="dl-tmap-q" class="dl-sr-only">Find a topic</label>
       <input id="dl-tmap-q" type="search" placeholder="Find a topic, like logarithms" autocomplete="off">
@@ -108,6 +108,7 @@ function start(root, data) {
   const stage = root.querySelector(".dl-tmap-stage");
   const world = root.querySelector(".dl-tmap-svg g");
   const overlay = root.querySelector(".dl-tmap-overlay");
+  const leaders = root.querySelector(".dl-tmap-leaders");
   const panel = root.querySelector(".dl-tmap-panel");
   const pbody = root.querySelector(".dl-tmap-body");
   const search = root.querySelector("#dl-tmap-q");
@@ -268,7 +269,7 @@ function start(root, data) {
   function viewportBox() {
     const { W, H, phone } = frame();
     const shut = panel.classList.contains("is-collapsed");
-    return { left: 8, top: phone ? 64 : 8, right: phone ? W - 8 : W - 396, bottom: phone ? (shut ? H - 120 : H * 0.5) : H - 8 };
+    return { left: 8, top: phone ? 64 : 8, right: phone ? W - 8 : W - 396, bottom: phone ? (shut ? H - 108 : H * 0.5) : H - 8 };
   }
 
   // Names are as wide on screen as the type makes them, so where each goes
@@ -331,10 +332,10 @@ function start(root, data) {
         for (const q of taken) { const o = overlap(r, q); if (o > 0) cost += 150 + o / 40; }
         // a name cut off by the edge or the panel is worse than one over a town
         cost += 12 * (Math.max(0, vb.left - r[0]) + Math.max(0, r[2] - vb.right) + Math.max(0, vb.top - r[1]) + Math.max(0, r[3] - vb.bottom));
-        if (!best || cost < best.cost) best = { cost, x, y, r };
+        if (!best || cost < best.cost) best = { cost, x, y, r, anchor: [wx, wy] };
       }));
       taken.push(best.r);
-      placed.set(label, { world: [(best.x - view.x) / view.k, (best.y - view.y) / view.k] });
+      placed.set(label, { world: [(best.x - view.x) / view.k, (best.y - view.y) / view.k], anchor: best.anchor });
     }
   }
   function placeAll(lod, at) {
@@ -361,7 +362,17 @@ function start(root, data) {
     placeAll(lod, at);
     const put = (node, [wx, wy]) => { const [sx, sy] = at(wx, wy); node.style.transform = `translate(${sx}px, ${sy}px) translate(-50%, -50%)`; return [sx, sy]; };
     const names = [];
-    for (const l of contLabels) { const p = placed.get(l); if (p && lod === 0) names.push([l.node, put(l.node, p.world)]); }
+    leaders.replaceChildren();
+    for (const l of contLabels) {
+      const p = placed.get(l);
+      if (!p || lod !== 0) continue;
+      const [sx, sy] = put(l.node, p.world);
+      names.push([l.node, [sx, sy]]);
+      // A name that stands well away from its land is joined to it by a thin line.
+      const w = l.node.offsetWidth, h = l.node.offsetHeight, [ax, ay] = at(p.anchor[0], p.anchor[1]);
+      const ex = Math.max(sx - w / 2, Math.min(ax, sx + w / 2)), ey = Math.max(sy - h / 2, Math.min(ay, sy + h / 2));
+      if (Math.hypot(ax - ex, ay - ey) > 36) svgEl("line", { x1: ax, y1: ay, x2: ex, y2: ey, class: "dl-tmap-leader" }, leaders);
+    }
     for (const l of regionLabels) { const p = placed.get(l); if (p && (lod === 1 || lod === 2)) names.push([l.node, put(l.node, p.world)]); }
     for (const { d, node } of districtLabels) put(node, d.label);
     for (const { lm, b } of landmarkNodes) {

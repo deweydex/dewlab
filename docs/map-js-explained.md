@@ -46,7 +46,7 @@ continent's are round its coast, a country's are well inside its land, both from
 `layout.json`) and takes the one that covers the fewest towns, bridges, other
 names and controls, inside the view. It keeps the choice while the zoom stays
 about the same (`placeAll()`), so names do not jump about as the map is moved.
-At the country level, towns under a name are left out (`is-under-name`).
+A name that has to stand well away from its land is joined to it by a thin dotted line. At the country level, towns under a name are left out (`is-under-name`).
 
 **Town names** go down most important first, and any that would collide with one
 already down stay hidden (`render()`).

@@ -79,6 +79,8 @@
 .dl-tmap-stage.is-dragging { cursor: grabbing; }
 .dl-tmap-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .dl-tmap-overlay { position: absolute; inset: 0; pointer-events: none; }
+.dl-tmap-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.dl-tmap-leader { stroke: var(--dl-muted); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.8; }
 
 /* ---------- the land */
 .dl-tmap-coast { fill: none; stroke: var(--map-coast); stroke-width: 2.2; }
@@ -326,8 +328,8 @@
   .dl-tmap-layers { width: auto; }
   .dl-tmap-controls { bottom: calc(52% + 8px); }
   .dl-tmap-panel { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-height: 50%; border-radius: 14px 14px 0 0; border-width: 1px 0 0; }
-  .dl-tmap-panel.is-collapsed { max-height: 100px; }
-  .dl-tmap:has(.dl-tmap-panel.is-collapsed) .dl-tmap-controls { bottom: 112px; }
+  .dl-tmap-panel.is-collapsed { max-height: 92px; }
+  .dl-tmap:has(.dl-tmap-panel.is-collapsed) .dl-tmap-controls { bottom: 104px; }
   .dl-tmap-panel.is-collapsed .dl-tmap-body { overflow: hidden; }
   /* The bar is a tall tap target with a short line drawn on it. It must not
      shrink: the panel is a flex column, and a 4px button squeezed to under 1px. */
