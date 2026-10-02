@@ -12,8 +12,7 @@ beside `tree.html` (`DECISIONS_LOG.md` 7.293). Built: `map/graph.json` and
 `map/layout.json`, `dev/map_layout.py`, `write_map_page()`, the script and
 styles, a list of every topic for a reader with no script, and the build's
 refusals when the map names a page or section that does not exist. Still
-planned below, and not built: positions held still while a topic is added (2.4,
-`--keep` and `--only`); the check that every page is on a topic (PR 1); the map
+planned below, and not built: the check that every page is on a topic (PR 1); the map
 in the frame between the docks, as 1.1 describes (it is a wide frame in the page
 for now); progress from saved work (PR 4); a link to the map from every tutorial
 (PR 5); retiring `covers:` and the tree (PR 6); the teacher's coverage layer
@@ -36,7 +35,7 @@ The decisions that shape everything else, in one place:
 |---|---|---|
 | Who owns placement: the map or the tutorials? | The map. Topics list their steps; `covers:` and `touches:` retire. | 2.1 |
 | Where the map lives | A top-level *map/* folder beside `courses/`, read by the build like the course files. | 2.2 |
-| Positions | Committed in *map/positions.json*; the build places only new topics, locally, and never moves an existing one. | 2.4 |
+| Positions | Committed in `map/layout.json`, written by `dev/map_layout.py`. The build never moves a town. Running the script again may move any town, which is accepted (Josh, 2 October 2026). | 2.4 |
 | Land shapes | Contoured at build time in pure Python from the positions, about a second. | 2.5 |
 | The page | *map.html*: a static SVG and a full list rendered by `build.py`, a JSON data island, one script (*assets/map.js*). `tree.html` and `topics.html` become redirects. | 4 |
 | Progress | Read from the existing `dewlab:progress:<slug>` records. The map says where you have run code, never what you know. | 4.4 |
@@ -296,7 +295,7 @@ course routes. All of that stays. What changes, and why:
 
 | Prototype | Design | Why |
 |---|---|---|
-| Recomputes the whole layout, force pass included, every run. | Positions committed; the force pass runs only in *dev/map_layout.py*; the build places new topics locally. | Stable positions are the point of a map, and the force pass took 4.5s on a 284-topic test graph (2.5). |
+| Recomputes the whole layout, force pass included, every run. | Positions committed; the force pass runs only in `dev/map_layout.py`, never in the build. | The force pass took 4.5s on a 284-topic test graph (2.5), and a page that is built should not wait for it. |
 | `random.uniform()` jitter for landmarks (`dev/map_layout.py`; seeded, but every landmark moves when one is added or reordered). | Deterministic offsets from the landmark's slug. | Two builds of the same input must write the same page. |
 | Level from zoom as a multiple of the whole-map scale. | Level from on-screen town spacing (1.2). | Same level on a phone and a desktop. |
 | Land, coast and roads as path strings inside the JSON. | Rendered by `build.py` as a static SVG in the page. | A picture without JavaScript, and a smaller island. |
@@ -531,46 +530,32 @@ Adding fractions, Equivalent fractions" or, as a problem, "This page is on no
 topic. Add it as a step in map/topics/…". `check_course()` prints the course
 order note.
 
-### 2.4 Stable positions and automatic placement
+### 2.4 Positions
 
-A map is only useful if places stay where they were. So positions are data,
-committed, and the build never moves a town that has one.
+Positions are data, committed, and the build never moves a town. They are
+written by *dev/map_layout.py* into `map/layout.json`, and the build refuses
+when the layout and the graph disagree.
 
-**The first layout** is the prototype's algorithm, moved to *dev/map_layout.py*.
-It works from the outside in. The continents go round the starting island a
-sea apart, in the order and at the distances that keep continents with many
-roads between them close (a small relaxation of one disc per continent). Each
-continent's countries get a home on it, and each country's districts a home in
-it, turned to face what they have roads to. Then every town settles from its
-district's home under a force pass: towns push apart, harder across a border
-and hardest across the sea; a need pulls like a spring; each town is drawn to
-the middle of its county and country; depth is a gentle pull away from the
-tower. Towns that need nothing first stand on the Prerequisite Plains round
-the tower. Which regions share a continent comes from the roads, not by hand:
-`planning/topic-map/continents.py` prints the matrix of needs between regions
-and the groupings with the highest modularity. It runs once at migration
-(`--all`) and writes *map/positions.json*. It runs again only when a
-restructure is deliberate, and that is worth a line in `DECISIONS_LOG.md`,
-because it moves every town a learner has learned to find.
+**The layout** is the prototype's algorithm. It works from the outside in. The
+continents go round the starting island a sea apart, in the order and at the
+distances that keep continents with many roads between them close (a small
+relaxation of one disc per continent). Each continent's countries get a home on
+it, and each country's districts a home in it, turned to face what they have
+roads to. Then every town settles from its district's home under a force pass:
+towns push apart, harder across a border and hardest across the sea; a need
+pulls like a spring; each town is drawn to the middle of its county and
+country; depth is a gentle pull away from the tower. Towns that need nothing
+first stand on the Prerequisite Plains round the tower. Which regions share a
+continent comes from the roads, not by hand: `planning/topic-map/continents.py`
+prints the matrix of needs between regions and the groupings with the highest
+modularity.
 
-**A new topic** (no position) is placed by the build, deterministically, where
-the prototype would have put it, without disturbing anything else:
-
-1. The target is the mean position of its needs inside its own district;
-   failing that, of its needs on its own continent; failing that, the middle
-   of its district's positioned towns.
-2. Candidates spiral out from that point, and the first one inside its own
-   county's land and at least the town spacing from every other town (the
-   prototype's wide-label metric, which weights vertical distance 1.6 times)
-   is taken.
-
-The build prints which towns it placed. `python3 dev/map_layout.py --keep`
-writes those positions into the file so they stop being recomputed;
-`--only <ids>` re-runs the force pass for named towns with everything else
-fixed (for a town whose depth changed after a need was added: the build notes
-a town much nearer the tower than the towns it needs). A brand-new district with
-no positioned towns is placed at its region's middle and noted; laying it
-out properly is a `--only` run.
+**Running it again lays the whole map out again**, so towns can move, and not
+only the one that changed. This plan once held every placed town still and put
+a new one beside what it needs (`--keep` and `--only`). Josh dropped that on 2
+October 2026: the map may change, and nobody minds a town moving
+(`DECISIONS_LOG.md` 7.293). Check `git diff --stat map/layout.json` before
+committing, and say in the pull request that the map moved.
 
 **By hand**, through the existing topic editor. `topic_editor/index.html`
 already keeps positions, pins them once dragged and exports them under `pos`;
@@ -580,10 +565,7 @@ become districts grouped by region, its `requires` links become `needs`, and
 the four other link kinds (`helps`, `applied_in`, `interdependent`, `involves`)
 go, since `topics.yaml` uses none of them and the map has only needs. Export,
 then `python3 dev/apply_topic_edits.py topic-graph-edits.json`, rewrites the
-region files and *map/positions.json*.
-
-Positions are source, not a generated copy, so there is no `--check` for them
-in CI. Stale entries are noted and dropped by the next `--keep`.
+region files and the map's positions.
 
 ### 2.5 Land at build time, without numpy
 
@@ -978,9 +960,8 @@ scope. `tests/build/test_check.py` for the new line.
 paragraph goes); `docs/CHECK_YOUR_WORK.md`; `CLAUDE.md`'s table;
 `planning/topic-map/README.md`; a `DECISIONS_LOG.md` entry recording 2.1.
 
-**PR 2 — Positions and land.** Adds *dev/map_layout.py* (built, and deterministic;
-`--all`, `--keep` and `--only` are not) and the committed layout (built, as
-*map/layout.json*) from one run. Adds
+**PR 2 — Positions and land.** Adds *dev/map_layout.py* (built, and deterministic) and the committed layout
+(built, as *map/layout.json*) from one run. Adds
 `place_new_topics()` and `map_geometry()` to `build.py`, with notes for placed,
 drifted and stale towns. No page yet.
 *Tests*: *tests/build/test_map_geometry.py*: the same input gives the same
@@ -1179,10 +1160,10 @@ Showing them tells the truth about gaps, and directions stay correct about what 
 that say so.
 
 **6. Re-layout moves every town.** Learners build spatial memory; a full
-`--all` run erases it.
-*Recommendation*: one full layout at migration; afterwards only local
-placement and `--only` runs, and a `DECISIONS_LOG.md` entry for any full
-re-layout.
+layout run erases it.
+*Decision, 2 October 2026 (Josh)*: this is accepted. The map may change, so the
+script lays everything out again each time and there is no mode that holds
+towns still.
 
 **7. The pair game and the old judgements.** Retargeting the game is cheap and
 gives a way to test the new needs; the old judgements are keyed to codes that
