@@ -9,12 +9,14 @@ how it gets built. The working folder is `planning/topic-map/`; its
 `design.md` has the full technical and interaction design, and
 `graph-final.json` the proposed map itself.
 
-Status, 28 September 2026: **proposed, with Josh's answers to its twelve
-questions applied** (see [Josh's decisions](#joshs-decisions)), and laid out
-as continents (see [How the land is laid out](#how-the-land-is-laid-out)). Nothing the
-build reads has changed, except that the library loans quiz moved in Database
-Methods (decision 11). The prototype, built from `graph-final.json`, is the dewlab
-Atlas (a private claude.ai page; ask for the link).
+Status, 2 October 2026: **the map is on the site as `map.html`**, beside the
+topic tree (`DECISIONS_LOG.md` 7.293). It is drawn from `map/graph.json`, which
+began as the proposal below with Josh's answers to its twelve questions applied
+(see [Josh's decisions](#joshs-decisions)), and is laid out as continents (see
+[How the land is laid out](#how-the-land-is-laid-out)). The tree, the topic
+game and the topic editor still run from `topics.yaml`. The library loans quiz
+moved in Database Methods (decision 11). `graph-final.json` stays as the record
+of the proposal and its questions; `map/graph.json` is the one that changes now.
 
 ## Why the tree goes
 
@@ -262,6 +264,7 @@ files are deleted. `design.md` names each PR's tests and the documents it has
 to update, lists the 23 decision-log entries it supersedes or amends, and
 raises 13 further questions of its own.
 
-Before the first PR: a pass over `graph-final.json` for names and needs that
-read wrong to someone who teaches from it. The Atlas's review layer marks the 25 towns the critics
-created or reshaped, which is where to start.
+Still to do, and the first thing: a pass over `map/graph.json` for names and
+needs that read wrong to someone who teaches from it. The page is public
+without that pass. The `agreement` field in `graph-final.json` marks the 25
+towns the critics created or reshaped, which is where to start.

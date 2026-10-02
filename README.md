@@ -70,11 +70,12 @@ their own Python or a text note under any cell, and share one as a small file
 someone else can load. Those stay separate from the tutorial's own saved work,
 so a tutorial update leaves them alone.
 
-**Three ways to find something.** Tutorials are listed in teaching order on the
+**Four ways to find something.** Tutorials are listed in teaching order on the
 contents page, which also has a search box. The topic tree maps every topic in
 the course descriptors by what has to come first, and marks the ones dewlab
-does not teach yet. Browse by topic gathers everything on one subject in one
-place.
+does not teach yet. The topic map shows the same topics as towns on a map, in
+countries and on continents, with a road to each town from the ones it needs.
+Browse by topic gathers everything on one subject in one place.
 
 **A Python notebook with no tutorial attached.** The dewlab Notebook is a
 blank page for trying a few lines out, with a file manager, uploads, SQLite,

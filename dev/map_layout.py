@@ -1,28 +1,35 @@
-"""Lay out a topic-map graph (continents > regions > districts > topics > steps).
+"""Lay out the topic map (continents > regions > districts > topics) and write
+where everything goes.
 
-    python3 planning/topic-map/layout.py graph.json out.json
+    python3 dev/map_layout.py [map/graph.json [map/layout.json]]
+
+Run it when the map's shape changes (a topic, a district, a need, a continent)
+and commit the result. The build never runs it: positions are data, so a
+learner who has found a town finds it in the same place tomorrow, and the build
+only refuses when the committed layout and the graph disagree.
 
 The map is drawn from the outside in. First the continents are placed round
 the starting island, a sea apart, with continents that share many roads side
 by side. Then each continent's countries get a home on it, and each country's
 districts a home in it, turned to face the countries and continents they have
-roads to. Only then do the towns settle, under forces, from those homes.
-Land is a density field contoured with marching squares, a bridge crosses the
-sea wherever roads between two continents need one, and every page's courses
-come from courses/*.yaml.
+roads to. Only then do the towns settle, under forces. Land is a density field
+contoured with marching squares, a bridge crosses the sea wherever roads
+between two continents need one, and the page chooses where to put each name.
+The output is geometry only. Titles, sections and courses come from the
+tutorials themselves, at build time, so a link cannot go stale.
 """
-import collections, itertools, json, math, random, sys
+import collections
+import itertools
+import json
+import math
+import random
+import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO))
-import build  # noqa
-
+REPO = Path(__file__).resolve().parents[1]
 random.seed(11)
-graph = json.load(open(sys.argv[1]))
-out_path = sys.argv[2]
-INV = {r["slug"]: r for r in json.load(open(Path(__file__).parent / "generated" / "inventory.json"))}
-BASE = "https://deweydex.github.io/dewlab/"
+graph = json.load(open(sys.argv[1] if len(sys.argv) > 1 else REPO / "map" / "graph.json"))
+out_path = sys.argv[2] if len(sys.argv) > 2 else REPO / "map" / "layout.json"
 
 regions = graph["regions"]
 rid = [r["id"] for r in regions]
@@ -71,12 +78,12 @@ unit_of = {c: "@plains" if c in plains else reg_of[c] for c in codes}
 def land_of_unit(u):
     return START if u == "@plains" else cont_of[u]
 lands = [c["id"] for c in conts]
-outer = [l for l in lands if l != START]
-members = {l: [c for c in codes if land_of[c] == l] for l in lands}
-regions_on = {l: [r for r in cont_rec[l]["regions"] if any(unit_of[c] == r for c in codes)] for l in lands}
+outer = [cid for cid in lands if cid != START]
+members = {cid: [c for c in codes if land_of[c] == cid] for cid in lands}
+regions_on = {cid: [r for r in cont_rec[cid]["regions"] if any(unit_of[c] == r for c in codes)] for cid in lands}
 dlist = [d for d in districts if any(dist_of[c] == d and c not in plains for c in codes)]
 d_in = {r: [d for d in dlist if districts[d]["region"] == r] for r in rid}
-islands = {l for l in lands if cont_rec[l].get("kind") == "islands"}
+islands = {cid for cid in lands if cont_rec[cid].get("kind") == "islands"}
 
 # How strongly two places are tied: a need between them counts 1, a page
 # they share a half, and a pair the integrator named as neighbours 1. The
@@ -116,8 +123,8 @@ for pair, w in tie.items():
 TOWN = 108      # about the room one town needs, as the radius of a circle
 SEA = 330       # the narrowest sea between two continents
 PLAINS_R = 400  # the ring of plains towns round the tower
-size_of = {l: len(members[l]) for l in lands}
-R_land = {l: TOWN * math.sqrt(size_of[l]) for l in lands}
+size_of = {cid: len(members[cid]) for cid in lands}
+R_land = {cid: TOWN * math.sqrt(size_of[cid]) for cid in lands}
 R_land[START] = max(R_land[START], PLAINS_R + 150)
 
 def arrange(items, centre, rho, size, ties, ext, circle=False):
@@ -144,22 +151,22 @@ def arrange(items, centre, rho, size, ties, ext, circle=False):
     return best[1]
 
 anchor = {START: (0.0, 0.0)}
-anchor.update(arrange(outer, (0.0, 0.0), lambda l: R_land[START] + SEA + R_land[l], lambda l: R_land[l],
-                      land_tie, lambda l, h: 0))
+anchor.update(arrange(outer, (0.0, 0.0), lambda cid: R_land[START] + SEA + R_land[cid], lambda cid: R_land[cid],
+                      land_tie, lambda cid, h: 0))
 # Then the continents draw together. A continent is a disc of its size: tied
 # continents pull towards each other, all of them drift towards the island,
 # and no two discs come closer than a sea.
-P = {l: list(anchor[l]) for l in outer}
+P = {cid: list(anchor[cid]) for cid in outer}
 for it in range(900):
-    for l in outer:
-        fx, fy = -P[l][0] * 0.01, -P[l][1] * 0.01
+    for cid in outer:
+        fx, fy = -P[cid][0] * 0.01, -P[cid][1] * 0.01
         for m in outer:
-            if m != l:
-                w = land_tie[frozenset((l, m))]
-                fx += (P[m][0] - P[l][0]) * 0.0015 * w
-                fy += (P[m][1] - P[l][1]) * 0.0015 * w
-        P[l][0] += fx
-        P[l][1] += fy
+            if m != cid:
+                w = land_tie[frozenset((cid, m))]
+                fx += (P[m][0] - P[cid][0]) * 0.0015 * w
+                fy += (P[m][1] - P[cid][1]) * 0.0015 * w
+        P[cid][0] += fx
+        P[cid][1] += fy
     for _ in range(3):
         for a_, b_ in itertools.combinations(lands, 2):
             pa = P.get(a_, [0.0, 0.0])
@@ -183,39 +190,39 @@ for it in range(900):
 # Turn the whole map so that it is wider than it is tall, as a screen is.
 def extent(turn):
     xs, ys = [], []
-    for l in lands:
-        x, y = P.get(l, [0.0, 0.0])
+    for cid in lands:
+        x, y = P.get(cid, [0.0, 0.0])
         c_, s_ = math.cos(turn), math.sin(turn)
         x, y = x * c_ - y * s_, x * s_ + y * c_
-        xs += [x - R_land[l], x + R_land[l]]
-        ys += [y - R_land[l], y + R_land[l]]
+        xs += [x - R_land[cid], x + R_land[cid]]
+        ys += [y - R_land[cid], y + R_land[cid]]
     return max(xs) - min(xs), max(ys) - min(ys)
 turn = min((k * math.pi / 36 for k in range(72)), key=lambda t: abs(extent(t)[0] / extent(t)[1] - 1.5))
-for l in outer:
-    x, y = P[l]
-    anchor[l] = (x * math.cos(turn) - y * math.sin(turn), x * math.sin(turn) + y * math.cos(turn))
+for cid in outer:
+    x, y = P[cid]
+    anchor[cid] = (x * math.cos(turn) - y * math.sin(turn), x * math.sin(turn) + y * math.cos(turn))
 
 # ---------- then countries on each continent, and districts in each country
 n_unit = collections.Counter(unit_of[c] for c in codes)
 def pull_out(ties_to, here, homes_of):
     return sum(w * math.dist(here, homes_of(u)) for u, w in ties_to.items())
 home = {}
-for l in lands:
-    rs = regions_on[l]
+for cid in lands:
+    rs = regions_on[cid]
     if not rs:
         continue
-    def ext(r, h, l=l):
+    def ext(r, h, cid=cid):
         out = collections.Counter()
         for pair, w in tie.items():
             if r in pair:
                 (u,) = pair - {r} or {r}
-                if land_of_unit(u) != l:
+                if land_of_unit(u) != cid:
                     out[land_of_unit(u)] += w
         return sum(w * math.dist(h, anchor[m]) for m, w in out.items())
-    if l == START:
-        home.update(arrange(rs, anchor[l], lambda r: PLAINS_R * 0.62, lambda r: n_unit[r], tie, ext, circle=True))
+    if cid == START:
+        home.update(arrange(rs, anchor[cid], lambda r: PLAINS_R * 0.62, lambda r: n_unit[r], tie, ext, circle=True))
     else:
-        home.update(arrange(rs, anchor[l], lambda r, l=l: 0.5 * R_land[l] if len(rs) > 1 else 0, lambda r: n_unit[r], tie, ext))
+        home.update(arrange(rs, anchor[cid], lambda r, cid=cid: 0.5 * R_land[cid] if len(rs) > 1 else 0, lambda r: n_unit[r], tie, ext))
 # a plains town faces its own country, across the sea
 def unit_home(u):
     return (0.0, 0.0) if u == "@plains" else home[u]
@@ -261,10 +268,10 @@ for c in sorted(plains):
     pos[c] = [PLAINS_R * math.cos(a), PLAINS_R * math.sin(a)]
 
 tier_span = {}
-for l in lands:
-    ts = [tier[c] for c in members[l] if c not in plains]
+for cid in lands:
+    ts = [tier[c] for c in members[cid] if c not in plains]
     if ts:
-        tier_span[l] = (min(ts), max(ts))
+        tier_span[cid] = (min(ts), max(ts))
 
 # ---------- settling: the map finds a low-energy state
 # Every town pushes every other away: harder across a county or country
@@ -354,17 +361,17 @@ for it in range(ITER):
         hx, hy = home[reg_of[c]]
         fx[c] += (hx - rx) * 0.03
         fy[c] += (hy - ry) * 0.03
-        l = land_of[c]
-        if l != START and l in tier_span:
-            lo, hi = tier_span[l]
-            ax_, ay_ = anchor[l]
+        cid = land_of[c]
+        if cid != START and cid in tier_span:
+            lo, hi = tier_span[cid]
+            ax_, ay_ = anchor[cid]
             f = (tier[c] - lo) / (hi - lo) - 0.5 if hi > lo else 0.0
-            target = math.hypot(ax_, ay_) + f * R_land[l]
+            target = math.hypot(ax_, ay_) + f * R_land[cid]
             rad = math.hypot(x, y) or 0.01
             pull = (target - rad) * 0.006
             fx[c] += x / rad * pull
             fy[c] += y / rad * pull
-        if l == START:
+        if cid == START:
             rad = math.hypot(x, y) or 0.01
             if rad < 220:  # the tower keeps its own ground
                 fx[c] += x / rad * (220 - rad) * 0.3
@@ -378,9 +385,9 @@ for it in range(ITER):
         pos[c] = [pos[c][0] + mx, pos[c][1] + my]
 
 land_centre = {}
-for l in lands:
-    ms = [pos[c] for c in members[l]] or [[0.0, 0.0]]
-    land_centre[l] = (sum(q[0] for q in ms) / len(ms), sum(q[1] for q in ms) / len(ms))
+for cid in lands:
+    ms = [pos[c] for c in members[cid]] or [[0.0, 0.0]]
+    land_centre[cid] = (sum(q[0] for q in ms) / len(ms), sum(q[1] for q in ms) / len(ms))
 
 # ---------- landmarks sit beside the towns they draw on, on the continent
 # where most of those towns are
@@ -405,7 +412,7 @@ for lm in graph.get("landmarks") or []:
     lm_pos.append((lm, (cx, cy), home_land))
 
 # ---------- land
-order = [r for l in lands for r in regions_on[l]]
+order = [r for cid in lands for r in regions_on[cid]]
 pts_all = list(pos.values()) + [p for _, p, _ in lm_pos]
 PAD = 380  # sea round the outer coasts, with room for the continent names
 minx, maxx = min(p[0] for p in pts_all) - PAD, max(p[0] for p in pts_all) + PAD
@@ -421,8 +428,8 @@ anchors.append((0.0, 0.0, "plains", 1.3))
 for k in range(10):
     a_ = 2 * math.pi * k / 10
     anchors.append((190 * math.cos(a_), 190 * math.sin(a_), "plains", 1.0))
-for lm, (x, y), l in lm_pos:
-    at = [a for a in lm.get("at") or [] if a in reg_of and land_of[a] == l]
+for lm, (x, y), cid in lm_pos:
+    at = [a for a in lm.get("at") or [] if a in reg_of and land_of[a] == cid]
     if at and not lm.get("tower"):
         anchors.append((x, y, "plains" if at[0] in plains else reg_of[at[0]], 0.8))
 for c in codes:
@@ -489,7 +496,8 @@ def marching(field):
     return segs
 
 def chain(segs):
-    key = lambda q: (round(q[0], 2), round(q[1], 2))
+    def key(q):
+        return (round(q[0], 2), round(q[1], 2))
     nxt = {}
     for a_, b_ in segs:
         nxt.setdefault(key(a_), []).append(b_)
@@ -514,18 +522,11 @@ def chain(segs):
             loops.append(line)
     return loops
 
-def chaikin(pts, rounds=2):
-    for _ in range(rounds):
-        out = []
-        for k in range(len(pts) - 1):
-            (x1, y1), (x2, y2) = pts[k], pts[k + 1]
-            out += [(0.75 * x1 + 0.25 * x2, 0.75 * y1 + 0.25 * y2), (0.25 * x1 + 0.75 * x2, 0.25 * y1 + 0.75 * y2)]
-        out.append(out[0])
-        pts = out
-    return pts
-
 def to_path(loops):
-    return "".join("M" + " L".join(f"{x:.0f} {y:.0f}" for x, y in chaikin(lp[::2] + [lp[0]])) + "Z" for lp in loops)
+    """The outlines as paths, every other point of each loop. They are left
+    angular here and smoothed by the page (assets/map.js, smooth()), which is a
+    quarter the size to ship."""
+    return "".join("M" + " L".join(f"{x:.0f} {y:.0f}" for x, y in lp[::2] + [lp[0]]) + "Z" for lp in loops)
 
 fields = {r: field_for(r) for r in order}
 land = {r: to_path(chain(marching(fields[r]))) for r in order}
@@ -644,42 +645,37 @@ for p in open_sea:
         break
 
 # ---------- labels
-def clear_spot(inside, cx, cy, hard=90, extra=()):
-    best_l = None
-    obstacles = list(pos.values()) + list(extra)
+# Region names are wide and letter-spaced, and how wide one is on screen
+# depends on the screen. So each country ships a few places that are well
+# inside its land and clear of its towns, best first, and the page takes the
+# one where its name covers the fewest towns.
+def spots_for(field, members, taken):
+    found = []
     for j in range(0, ny, 2):
         for i in range(0, nx, 2):
-            if not inside(j, i):
+            if field[j][i] <= 0.15:
                 continue
             x, y = minx + i * STEP, miny + j * STEP
-            clear = min(math.hypot((x - q[0]) * 0.45, (y - q[1])) for q in obstacles)
-            score = min(clear, hard) - 0.12 * math.hypot(x - cx, y - cy)
-            if best_l is None or score > best_l[0]:
-                best_l = (score, x, y)
-    return [round(best_l[1]), round(best_l[2])] if best_l else [round(cx), round(cy)]
+            clear = min(math.hypot((x - q[0]) * 0.45, (y - q[1])) for q in pos.values())
+            found.append((clear, x, y))
+    found.sort(reverse=True)
+    out = []
+    for clear, x, y in found:
+        if all(math.hypot(x - ox, y - oy) > 110 for ox, oy in out) and all(math.hypot(x - ox, y - oy) > 60 for ox, oy in taken):
+            out.append((x, y))
+        if len(out) == 24:
+            break
+    return [[round(x), round(y)] for x, y in out]
 
-# Region names are wide and letter-spaced; at the country zoom one letter is
-# about 55 map units, so two small neighbouring regions can print one name
-# over the other. Each name keeps clear of the names already placed.
-region_label = {}
-placed_labels = []
-def clear_of_labels(x, y, name):
-    half = len(name) * 55 / 2
-    return all(abs(x - px) > half + ph or abs(y - py) > 130 for px, py, ph in placed_labels)
-for r in sorted(order, key=lambda r: -n_unit[r]):
-    mem = [pos[c] for c in codes if unit_of[c] == r]
-    cx, cy = sum(p[0] for p in mem) / len(mem), sum(p[1] for p in mem) / len(mem)
-    name = region_rec[r].get("fancy") or region_rec[r]["name"]
-    region_label[r] = clear_spot(lambda j, i, f=fields[r], n=name: f[j][i] > 0.08 and clear_of_labels(minx + i * STEP, miny + j * STEP, n),
-                                 cx, cy, extra=[(0.0, 0.0)])
-    placed_labels.append((region_label[r][0], region_label[r][1], len(name) * 55 / 2))
+region_spots = {}
+for r in order:
+    region_spots[r] = spots_for(fields[r], [c for c in codes if unit_of[c] == r], [(0.0, 0.0)])
+plains_spots = spots_for(plains_field, [c for c in plains], [(0.0, 0.0), (0.0, 40.0)])
 district_label = {}
 for d in dlist:
     mem = [pos[c] for c in codes if dist_of[c] == d and c not in plains]
     cx, cy = sum(p[0] for p in mem) / len(mem), sum(p[1] for p in mem) / len(mem)
     district_label[d] = [round(cx), round(cy - 34)]
-plains_label = clear_spot(lambda j, i: plains_field[j][i] > 0.05 and clear_of_labels(minx + i * STEP, miny + j * STEP, "The Prerequisite Plains"),
-                          0.0, PLAINS_R * 0.6, extra=[(0.0, 0.0), (0.0, 40.0)])
 # A continent's name goes in the sea beside its coast, where it covers no
 # town. How big a name is on screen depends on the screen, so the page chooses
 # the place. Here each continent gives it 32 places to choose from: the point
@@ -687,115 +683,51 @@ plains_label = clear_spot(lambda j, i: plains_field[j][i] > 0.05 and clear_of_la
 # last cell of its own land.
 SHORE_RAYS = 32
 cont_shore = {}
-for l in lands:
-    cx, cy = land_centre[l]
+for cid in lands:
+    cx, cy = land_centre[cid]
     pts = []
     for k in range(SHORE_RAYS):
         a_ = 2 * math.pi * k / SHORE_RAYS
         last, r_ = (cx, cy), 0.0
-        while r_ < 2.2 * R_land[l] + 400:
+        while r_ < 2.2 * R_land[cid] + 400:
             r_ += STEP / 2
             x_, y_ = cx + r_ * math.cos(a_), cy + r_ * math.sin(a_)
-            if owner_at(x_, y_) == l:
+            if owner_at(x_, y_) == cid:
                 last = (x_, y_)
         pts.append([round(last[0]), round(last[1])])
-    cont_shore[l] = pts
-
-# ---------- pages, courses
-pages = {t.slug: t for t in build.load_all() if not build.VERSION_FILE_RE.match(t.path.stem)}
-courses_of = collections.defaultdict(list)
-course_routes = []
-teaches_in = collections.defaultdict(list)
-for c in codes:
-    for s in topics[c].get("steps") or []:
-        if s.get("role") == "teaches":
-            teaches_in[s["tutorial"]].append(c)
-for cid, course in build.courses().items():
-    seq, count = [], 0
-    for s in course.contents:
-        for i in s.ids:
-            count += 1
-            if course.title not in courses_of[i]:
-                courses_of[i].append(course.title)
-            for c in teaches_in.get(i, []):
-                if c not in seq:
-                    seq.append(c)
-    course_routes.append({"id": cid, "title": course.title, "path": seq, "tutorials": count})
-
-def heading_text(slug, anchor_):
-    for h in INV.get(slug, {}).get("headings", []):
-        if h["anchor"] == anchor_:
-            return h["text"]
-    return None
-
-def step_out(s):
-    slug = s["tutorial"]
-    title = INV[slug]["title"] if slug in INV else slug
-    sec = s.get("section")
-    return {"slug": slug, "title": title, "section": heading_text(slug, sec) if sec else None,
-            "href": f"{BASE}tutorials/{slug}.html" + (f"#{sec}" if sec else ""),
-            "role": s.get("role"), "courses": courses_of.get(slug, [])}
+    cont_shore[cid] = pts
 
 # Colours: each continent has a family of hues and its countries share it,
 # so a continent reads as one place from far out.
 FAMILY = [42, 24, 205, 128, 285, 330, 170]
 hue = {}
 cont_hue = {}
-for k, l in enumerate(lands):
+for k, cid in enumerate(lands):
     base = FAMILY[k % len(FAMILY)]
-    cont_hue[l] = base
-    rs = regions_on[l]
-    for i, r in enumerate(sorted(rs, key=lambda r: math.atan2(home[r][1] - anchor[l][1], home[r][0] - anchor[l][0]))):
+    cont_hue[cid] = base
+    rs = regions_on[cid]
+    for i, r in enumerate(sorted(rs, key=lambda r: math.atan2(home[r][1] - anchor[cid][1], home[r][0] - anchor[cid][0]))):
         hue[r] = round((base + (i - (len(rs) - 1) / 2) * 24) % 360)
 
-def cont_out(l):
-    c = cont_rec[l]
-    rs = c.get("regions") or []
-    borrowed = region_rec[rs[0]] if len(rs) == 1 and not c.get("name") else {}
-    return {"id": l, "kind": c.get("kind", "continent"),
-            "name": c.get("name") or borrowed.get("name", ""), "fancy": c.get("fancy") or borrowed.get("fancy", ""),
-            "blurb": c.get("blurb") or borrowed.get("blurb", ""), "lore": c.get("lore") or borrowed.get("lore", ""),
-            "regions": regions_on[l], "shore": cont_shore[l], "hue": cont_hue[l]}
-
 data = {
-    "continents": [cont_out(l) for l in lands],
-    "regions": [{"id": r, "name": region_rec[r]["name"],
-                 "blurb": region_rec[r].get("blurb", ""), "lore": region_rec[r].get("lore", ""),
-                 "fancy": region_rec[r].get("fancy", ""), "terrain": region_rec[r].get("terrain", ""),
-                 "continent": cont_of[r], "hue": hue[r],
-                 "label": region_label[r], "land": land[r],
-                 "count": sum(1 for c in codes if reg_of[c] == r)} for r in order],
-    "districts": [{"id": d, "name": districts[d]["name"], "blurb": districts[d].get("blurb", ""),
-                   "land": county.get(d, ""), "shade": d_in[districts[d]["region"]].index(d),
-                   "region": districts[d]["region"], "label": district_label[d],
-                   "count": sum(1 for c in codes if dist_of[c] == d)} for d in dlist],
+    "bounds": [round(minx), round(miny), round(maxx - minx), round(maxy - miny)],
     "coast": coast,
-    "plains": {"land": plains_land, "label": plains_label},
+    "plains": {"land": plains_land, "spots": plains_spots},
     "bridges": bridges,
     "waves": [[round(x), round(y)] for x, y in waves],
-    "bounds": [round(minx), round(miny), round(maxx - minx), round(maxy - miny)],
-    "towns": [{
-        "code": c, "name": topics[c]["name"], "plain": topics[c].get("plain", ""),
-        "district": dist_of[c], "region": reg_of[c], "land": land_of[c], "needs": needs[c], "tier": tier[c],
-        "x": round(pos[c][0]), "y": round(pos[c][1]), "weight": weight[c], "plains": c in plains,
-        "state": "taught" if any(s.get("role") == "teaches" for s in topics[c].get("steps") or []) else "planned",
-        "steps": [step_out(s) for s in topics[c].get("steps") or [] if s.get("tutorial") in INV],
-        "agreement": topics[c].get("agreement", ""),
-    } for c in codes],
-    "landmarks": [{"slug": lm["tutorial"], "title": INV.get(lm["tutorial"], {}).get("title", lm["tutorial"]),
-                   "kind": lm.get("kind"), "at": [a for a in lm.get("at") or [] if a in topics],
-                   "href": f"{BASE}tutorials/{lm['tutorial']}.html",
-                   "tower": bool(lm.get("tower")),
-                   "x": round(p[0]), "y": round(p[1])} for lm, p, _ in lm_pos],
-    "courses": course_routes,
-    "questions": graph.get("questions") or [],
-    "tower": graph.get("tower") or {},
+    "continents": {cid: {"hue": cont_hue[cid], "shore": cont_shore[cid]} for cid in lands},
+    "regions": {r: {"hue": hue[r], "land": land[r], "spots": region_spots[r]} for r in order},
+    "districts": {d: {"shade": d_in[districts[d]["region"]].index(d), "land": county.get(d, ""),
+                      "label": district_label[d]} for d in dlist},
+    "towns": {c: {"x": round(pos[c][0]), "y": round(pos[c][1]), "tier": tier[c], "weight": weight[c],
+                  "land": land_of[c], "plains": c in plains} for c in codes},
+    "landmarks": {lm["tutorial"]: [round(p[0]), round(p[1])] for lm, p, _ in lm_pos},
 }
-json.dump(data, open(out_path, "w"), separators=(",", ":"))
-for l in lands:
-    ms = members[l]
-    cx, cy = land_centre[l]
+json.dump(data, open(out_path, "w"), separators=(",", ":"), sort_keys=False)
+for cid in lands:
+    ms = members[cid]
+    cx, cy = land_centre[cid]
     reach_ = max(math.dist((cx, cy), pos[c]) for c in ms)
-    print(f"{l:22} towns {len(ms):3}  anchor {tuple(round(v) for v in anchor[l])}  radius planned {R_land[l]:.0f} settled {reach_:.0f}", file=sys.stderr)
+    print(f"{cid:22} towns {len(ms):3}  anchor {tuple(round(v) for v in anchor[cid])}  radius planned {R_land[cid]:.0f} settled {reach_:.0f}", file=sys.stderr)
 print("bridges", [(b["a"], b["b"], b["count"], round(math.dist(*b["ends"]))) for b in bridges], file=sys.stderr)
 print("towns", len(codes), "districts", len(dlist), "landmarks", len(lm_pos), "depth", max(tier.values()), file=sys.stderr)

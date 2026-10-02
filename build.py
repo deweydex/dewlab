@@ -4740,7 +4740,9 @@ def render_tutorials_list(
         "into series.</strong> A series is meant to be read in order, from the "
         'top. If you are not sure where to start, the <a href="tree.html">topic '
         "tree</a> shows what the course covers and what usually comes first. "
-        '<a href="topics.html">Browse by topic</a> gathers one subject — '
+        + ('The <a href="map.html">topic map</a> shows the same topics as towns on a map. '
+           if (ROOT / "map" / "graph.json").is_file() else "")
+        + '<a href="topics.html">Browse by topic</a> gathers one subject — '
         "trigonometry, say — in one place.</li>",
         "</ul>",
         '<p class="dl-intro-tree">This project is open and still growing. '
@@ -7365,7 +7367,10 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "top row need nothing before them, so you could start any of them today. "
         "The further down a topic sits, the more you need to know first. Drag to "
         "move around, scroll to zoom, and choose any topic to see what it is, "
-        "where it comes up in computing, and where it is taught.</p>"
+        "where it comes up in computing, and where it is taught."
+        + (' The <a href="map.html">topic map</a> shows these topics as a map.'
+           if (ROOT / "map" / "graph.json").is_file() else "")
+        + "</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
         '<div class="dl-tree-controls">'
@@ -7444,6 +7449,258 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "tree.html"
+    target.write_text(page)
+    return target
+
+
+def load_map() -> tuple[dict, dict]:
+    """The map's graph (map/graph.json, edited by hand) and its committed
+    layout (map/layout.json, written by dev/map_layout.py)."""
+    graph_path, layout_path = ROOT / "map" / "graph.json", ROOT / "map" / "layout.json"
+    for path in (graph_path, layout_path):
+        if not path.is_file():
+            fail(path, "is missing. map/README.md says what the map's two files are.")
+    try:
+        return json.loads(graph_path.read_text()), json.loads(layout_path.read_text())
+    except json.JSONDecodeError as exc:
+        fail(ROOT / "map", f"is not valid JSON: {exc}")
+
+
+def toc_name(tutorial: Tutorial, anchor: str) -> str | None:
+    """The heading a section anchor belongs to, from the page's own contents."""
+    stack = list(tutorial.toc)
+    while stack:
+        entry = stack.pop()
+        if entry.get("id") == anchor:
+            return str(entry.get("name", ""))
+        stack.extend(entry.get("children") or [])
+    return None
+
+
+def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dict:
+    """What the map page draws, from the committed graph and layout and from the
+    tutorials as they are now.
+
+    Titles, sections and courses are read here rather than stored, so the map
+    cannot name a page the site does not have: a topic that points at a missing
+    tutorial or section stops the build, the same as a link in a tutorial does.
+    """
+    graph, layout = load_map()
+    graph_path = ROOT / "map" / "graph.json"
+    topics = {t["id"]: t for t in graph["topics"]}
+    districts = {d["id"]: d for d in graph["districts"]}
+    regions = {r["id"]: r for r in graph["regions"]}
+    problems: list[str] = []
+
+    def need(ok: bool, message: str) -> None:
+        if not ok:
+            problems.append(message)
+
+    for code, topic in topics.items():
+        need(topic["district"] in districts, f"topic {code}: district {topic['district']!r} is not declared")
+        for n in topic.get("needs") or []:
+            need(n in topics, f"topic {code} needs {n!r}, which is not a topic")
+        need(code in layout["towns"], f"topic {code} has no place in map/layout.json")
+        for step in topic.get("steps") or []:
+            target = registry.get(step["tutorial"])
+            need(target is not None, f"topic {code}: step names {step['tutorial']!r}, which is not a tutorial")
+            if target is not None and step.get("section"):
+                need(step["section"] in target.anchors,
+                     f"topic {code}: {step['tutorial']} has no section {step['section']!r}")
+    for code in layout["towns"]:
+        need(code in topics, f"map/layout.json places {code!r}, which is not a topic")
+    for lm in graph["landmarks"]:
+        need(lm["tutorial"] in registry, f"landmark {lm['tutorial']!r} is not a tutorial")
+        need(lm["tutorial"] in layout["landmarks"], f"landmark {lm['tutorial']} has no place in map/layout.json")
+        for a in lm.get("at") or []:
+            need(a in topics, f"landmark {lm['tutorial']} draws on {a!r}, which is not a topic")
+    for c in graph["continents"]:
+        need(c["id"] in layout["continents"], f"continent {c['id']} has no place in map/layout.json")
+    if problems:
+        shown = "\n  ".join(problems[:12])
+        more = f"\n  ...and {len(problems) - 12} more" if len(problems) > 12 else ""
+        fail(graph_path, f"does not match the tutorials or the layout:\n  {shown}{more}\n"
+                         "Fix map/graph.json, or run python3 dev/map_layout.py if a topic, district "
+                         "or continent was added.")
+
+    placed = {s["tutorial"] for t in topics.values() for s in t["steps"]} | {lm["tutorial"] for lm in graph["landmarks"]}
+    unplaced = sorted(slug for slug, t in registry.items()
+                      if slug not in placed and not t.archived and not t.is_practice)
+    if unplaced:
+        print(f"note: {len(unplaced)} tutorials are on no topic of the map yet "
+              f"(first: {', '.join(unplaced[:3])}). Add them under map/graph.json.", file=sys.stderr)
+
+    course_titles: dict[str, list[str]] = {}
+    for course in catalog.values():
+        for series in course.contents:
+            for slug in series.ids:
+                if course.title not in course_titles.setdefault(slug, []):
+                    course_titles[slug].append(course.title)
+        for slug in course.mixed:
+            if course.title not in course_titles.setdefault(slug, []):
+                course_titles[slug].append(course.title)
+
+    def step_out(step: dict) -> dict:
+        target = registry[step["tutorial"]]
+        section = step.get("section")
+        return {"slug": target.slug, "title": target.title,
+                "section": toc_name(target, section) if section else None,
+                "href": f"tutorials/{target.slug}.html" + (f"#{section}" if section else ""),
+                "role": step.get("role"), "courses": course_titles.get(target.slug, [])}
+
+    teaches: dict[str, list[str]] = {}
+    for code, topic in topics.items():
+        for step in topic["steps"]:
+            if step.get("role") == "teaches":
+                teaches.setdefault(step["tutorial"], []).append(code)
+    routes = []
+    for course in catalog.values():
+        path: list[str] = []
+        count = 0
+        for series in course.contents:
+            for slug in series.ids:
+                count += 1
+                path.extend(c for c in teaches.get(slug, []) if c not in path)
+        routes.append({"id": course.id, "title": course.title, "path": path, "tutorials": count})
+
+    land_order = [c["id"] for c in graph["continents"]]
+    region_order = [r for c in graph["continents"] for r in c["regions"]]
+    district_order = [d["id"] for r in region_order for d in graph["districts"] if d["region"] == r]
+    town_at = layout["towns"]
+    count_in: dict[str, int] = {}
+    for topic in topics.values():
+        for key in (topic["district"], districts[topic["district"]]["region"]):
+            count_in[key] = count_in.get(key, 0) + 1
+
+    def town_order(code: str) -> tuple:
+        d = districts[topics[code]["district"]]
+        return (land_order.index(town_at[code]["land"]), region_order.index(d["region"]),
+                district_order.index(d["id"]), town_at[code]["tier"], topics[code]["name"])
+
+    return {
+        "bounds": layout["bounds"], "coast": layout["coast"], "waves": layout["waves"],
+        "bridges": layout["bridges"], "tower": graph["tower"],
+        "plains": layout["plains"],
+        # a continent that is one country with no name of its own takes the country's
+        "continents": [{"id": c["id"], "kind": c.get("kind", "continent"),
+                        **{k: c.get(k) or (regions[c["regions"][0]].get(k, "") if len(c["regions"]) == 1 else "")
+                           for k in ("name", "fancy", "blurb", "lore")},
+                        "regions": c["regions"], **layout["continents"][c["id"]]}
+                       for c in graph["continents"]],
+        "regions": [{"id": r, "name": regions[r]["name"], "fancy": regions[r].get("fancy", ""),
+                     "blurb": regions[r].get("blurb", ""), "lore": regions[r].get("lore", ""),
+                     "terrain": regions[r].get("terrain", ""), "count": count_in.get(r, 0),
+                     "continent": next(c["id"] for c in graph["continents"] if r in c["regions"]),
+                     **layout["regions"][r]} for r in region_order],
+        "districts": [{"id": d, "name": districts[d]["name"], "blurb": districts[d].get("blurb", ""),
+                       "region": districts[d]["region"], "count": count_in.get(d, 0),
+                       **layout["districts"].get(d, {"shade": 0, "land": "", "label": [0, 0]})}
+                      for d in district_order],
+        "towns": [{"code": code, "name": topics[code]["name"], "plain": topics[code].get("plain", ""),
+                   "district": topics[code]["district"], "region": districts[topics[code]["district"]]["region"],
+                   "needs": topics[code].get("needs") or [],
+                   "state": "taught" if any(s.get("role") == "teaches" for s in topics[code]["steps"]) else "planned",
+                   "steps": [step_out(s) for s in topics[code]["steps"]],
+                   **town_at[code]} for code in sorted(topics, key=town_order)],
+        "landmarks": [{"slug": lm["tutorial"], "title": registry[lm["tutorial"]].title, "kind": lm.get("kind"),
+                       "at": lm.get("at") or [], "tower": bool(lm.get("tower")),
+                       "href": f"tutorials/{lm['tutorial']}.html", "x": layout["landmarks"][lm["tutorial"]][0],
+                       "y": layout["landmarks"][lm["tutorial"]][1]} for lm in graph["landmarks"]],
+        "courses": routes,
+    }
+
+
+def map_list_html(data: dict) -> str:
+    """Every topic as a nested list: continents, countries, districts, topics.
+    It is the map for a reader with no script, a screen reader or a keyboard,
+    and it names every page a topic teaches."""
+    by_district: dict[str, list[dict]] = {}
+    for town in data["towns"]:
+        by_district.setdefault(town["district"], []).append(town)
+    out = []
+    for continent in data["continents"]:
+        title = continent["fancy"] or continent["name"]
+        if continent["fancy"] and continent["name"]:
+            title = f"{continent['fancy']} ({continent['name']})"
+        out.append(f'<h3>{html.escape(title)}</h3>')
+        for region in (r for r in data["regions"] if r["continent"] == continent["id"]):
+            rtitle = f"{region['fancy']} ({region['name']})" if region["fancy"] else region["name"]
+            out.append(f'<details class="dl-tmap-list-country"><summary>{html.escape(rtitle)}</summary>')
+            for district in (d for d in data["districts"] if d["region"] == region["id"]):
+                out.append(f'<h4>{html.escape(district["name"])}</h4><ul>')
+                for town in by_district.get(district["id"], []):
+                    pages = [s for s in town["steps"] if s["role"] == "teaches"]
+                    links = "".join(
+                        f'<li><a href="{html.escape(s["href"], quote=True)}">{html.escape(s["title"])}</a></li>'
+                        for s in pages)
+                    note = "" if pages else " <em>(page still to be written)</em>"
+                    out.append(f'<li id="topic-{html.escape(town["code"])}"><strong>{html.escape(town["name"])}</strong>{note}'
+                               f'<br>{html.escape(town["plain"])}'
+                               + (f"<ul>{links}</ul>" if links else "") + "</li>")
+                out.append("</ul>")
+            out.append("</details>")
+    return "".join(out)
+
+
+def write_map_page(shell: str, registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> Path:
+    """The topic map: every topic as a town, in countries on continents, with
+    the roads between them. The picture is drawn by assets/map.js from a data
+    block in the page; the list under it is the same map without a script.
+    """
+    data = map_data(registry, catalog)
+    body = (
+        "<h1>The topic map</h1>"
+        '<p class="dl-tmap-intro">Every topic on dewlab is a town. Towns that belong '
+        "together are in the same country, and countries that share many roads are on the "
+        "same continent. Drag the map to move, scroll to zoom, and choose a town to see what it is, "
+        "what comes before it and where it is taught.</p>"
+        '<div class="dl-tmap" id="dl-tmap" hidden></div>'
+        '<noscript><p class="dl-tmap-intro">The picture needs JavaScript. The list below has every topic.</p></noscript>'
+        '<h2 id="dl-tmap-list-title">Every topic, as a list</h2>'
+        '<div class="dl-tmap-list" aria-labelledby="dl-tmap-list-title">' + map_list_html(data) + "</div>"
+    )
+    manifest = {"slug": "map", "version": 1, "assetBase": "assets/",
+                "dataBase": "data/", "cells": [], "assetVersions": {}}
+    tokens = {
+        "{{TITLE}}": "The topic map",
+        "{{VERSION}}": "1",
+        "{{SLUG}}": "map",
+        "{{MODULE}}": "",
+        "{{YEAR}}": "",
+        "{{SERIES}}": "",
+        "{{CRUMBS}}": '<span class="dl-crumbs">topic map</span>',
+        "{{ASSET_BASE}}": "assets/",
+        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
+        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
+        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{NAV_SEARCH}}": nav_search_html(),
+        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
+        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
+        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
+        "{{ROOT_BASE}}": "",
+        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
+        "{{PAGE_SCRIPT}}": (
+            f'<link rel="stylesheet" href="{versioned("assets/", "map.css")}">'
+            '<script type="application/json" id="dewlab-map">'
+            + json.dumps(data, separators=(",", ":")).replace("<", "\\u003c")
+            + "</script>\n"
+            + f'<script type="module" src="{versioned("assets/", "map.js")}"></script>'
+        ),
+        "{{CANONICAL}}": "",
+        "{{DOWNLOAD}}": "",
+        "{{BODY}}": body,
+        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
+        "{{FOOTER}}": site_footer("map", "1"),
+        "{{REPORT_DOORS}}": report_doors_panel_html("map", "1"),
+    }
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if "{{" in page:
+        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
+        raise BuildError(f"shell template has tokens the map page does not fill: {leftover}")
+    OUT.mkdir(parents=True, exist_ok=True)
+    target = OUT / "map.html"
     target.write_text(page)
     return target
 
@@ -7947,6 +8204,8 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
+        if (ROOT / "map" / "graph.json").is_file():
+            written.append(write_map_page(shell, registry, catalog))
         topics_page = write_topics_page(shell, registry, practice, context)
         if topics_page is not None:
             written.append(topics_page)

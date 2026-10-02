@@ -102,7 +102,7 @@ The pipeline, in order:
    old address `courses/redirects.yaml` lists.
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
-   page, topic tree, `editor.html` — is the same template with `{{TOKEN}}`
+   page, topic tree, topic map, `editor.html` — is the same template with `{{TOKEN}}`
    placeholders filled. A token the template doesn't fill, or a page that
    leaves one unfilled, fails the build. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
@@ -653,6 +653,7 @@ PR that touches the runtime or the editor.
 | The Notebook's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
+| The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `build.py`'s `map_data()` and `write_map_page()`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
 | The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
 | A vendored library's version | `vendor-src/package.json`, then `npm run build` there |

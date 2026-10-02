@@ -17,11 +17,13 @@ device, and a wrong answer here is information about a method, not about you.
 The tutorials are listed in the order the course teaches them. That is the
 main way in, and a series is meant to be read from the top.
 
-Two other pages help when the course order is not the one you need. The
+Three other pages help when the course order is not the one you need. The
 [topic tree](tree.html) shows what a tutorial usually expects you to know
-already. [Browse by topic](topics.html) gathers everything on one subject —
-trigonometry, say — in one place. That one is useful when you are practising
-a single topic rather than working through in order.
+already. The [topic map](map.html) shows the same topics as towns on a map.
+Towns that belong together are in one country, and a road joins each town to
+the towns it needs. [Browse by topic](topics.html) gathers everything on one
+subject — trigonometry, say — in one place. That one is useful when you are
+practising a single topic rather than working through in order.
 
 Most tutorials come with a practice page. It holds more problems on the same
 idea, each with a hint and a worked answer you can open when you want them.

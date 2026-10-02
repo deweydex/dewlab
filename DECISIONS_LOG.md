@@ -5748,3 +5748,20 @@ dewmark, the exam track, was built in `dewmark/` from 2026-08-31 (2f23c03d) and 
 
 *Cost to change: bringing dewmark back would mean another extraction the other way. Dropping the redirect loses nothing but old bookmarks.*
 
+**7.293 — The topic map is a page of the site, `map.html`, beside the topic tree.** Josh, 1 October 2026: "go ahead and merge and lets make sure we get that new map up there for all to see!"
+
+The map was planned in `planning/topic-map/` and shown in a private prototype. This puts it on the site. `build.py` writes `map.html` in the shell, with the map drawn by `assets/map.js` from a block of data in the page, and under it the same map as a nested list that needs no script. The contents page, the topic tree and the about page link to it.
+
+Three choices somebody could have made differently.
+
+- **It sits beside `tree.html`; it does not replace it.** The plan (`planning/topic-map/design.md`) replaces the tree and `topics.html` once the map's data feeds the rest of the site. Until then the tree stays, because the map does not yet know what a learner has done and the tree's data is what the topic game and editor read.
+- **The map's graph is `map/graph.json`, written by a person. The layout is `map/layout.json`, written by `dev/map_layout.py` and committed.** The build reads both and never recomputes the layout, so a learner who has found a town finds it in the same place tomorrow. It refuses when the two disagree.
+- **A page's title, its section headings and its courses are read from the tutorials at build time, not stored in the map.** A topic that names a tutorial or a section that does not exist stops the build, as a link in a tutorial does. A tutorial that is on no topic gets a note, not a failure, so adding a tutorial does not need a map edit to merge.
+
+The data is the proposal in `planning/topic-map/graph-final.json` with Josh's twelve answers applied, now moved to `map/graph.json`, which is where it changes from here. Its 25 towns that the critics created or reshaped have not been read by someone who teaches from it, and 7 towns have no page yet. The page is public with both.
+
+Not done, and planned (`design.md`): progress from the work learners have really saved, the teacher's coverage layer, links to the map from every tutorial, and retiring the tree.
+
+**A limit worth knowing.** Positions are committed, but the script settles the whole map again each time it runs, so a change to the graph can move towns a learner has found, and not only the town that changed. The plan (`design.md` 2.4) has a mode that holds old towns fixed and places a new one beside what it needs. It is not built. Until it is, run the script for a change that matters, and read `git diff --stat map/layout.json` before committing.
+
+*Cost to change: removing the page is deleting `write_map_page()`, its call and the links. Keeping towns still is the unbuilt mode above, a few hundred lines in `dev/map_layout.py`.*

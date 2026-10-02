@@ -191,6 +191,31 @@ names counted from the novels in `data/`. See `docs/WRITING_TUTORIALS.md`
 
 ---
 
+## `dev/map_layout.py`
+
+Lays out the topic map and writes `map/layout.json`: where each town stands, the
+land, the sea and the bridges. `map/README.md` says when to run it. The build
+never does, so positions stay put.
+
+It works from the outside in. First the continents. Each is a disc of the size
+of its towns, and they are drawn round the starting island a sea apart, closer
+for continents with more roads between them. Then each continent's countries
+get a home on it, and each country's districts a home in it, turned to face what
+they have roads to (`arrange()` tries every order and turn of a handful of
+items). Only then do the towns settle: every town pushes the others away, harder
+across a border and hardest across the sea, a prerequisite pulls like a spring,
+and each town is drawn to the middle of its county and its country. Depth is
+only a gentle pull away from the tower.
+
+The land is a density field, one per country, contoured with marching squares
+(`marching()`, `chain()`) and smoothed with `chaikin()`. A county is the part of
+its country nearest its own towns. A bridge is the pair of shore points, one on
+each continent, that keeps the roads between them shortest and crosses only sea.
+
+It uses a fixed random seed and sorts what it iterates, so the same graph gives
+the same layout under any `PYTHONHASHSEED`. `tests/test_map_layout_script.py`
+holds it to the committed file.
+
 ## Not yet covered here
 
 Six more scripts live in `dev/` — `check_doc_links.py`,

@@ -2,12 +2,23 @@
 
 This is the design for replacing the topic tree (`tree.html`, drawn by
 `assets/tree.js` from `planning/curriculum/topics.yaml`) with a map that has
-levels: region, district, topic, step, and landmarks beside them. It builds on
-the prototype in this folder (`planning/topic-map/atlas.template.html`,
-`planning/topic-map/layout.py`, `planning/topic-map/assemble.py`) and on the
-topic list the search run is producing to the format in
-`planning/topic-map/BRIEF.md`. It does not redo that search. Nothing in the
-repository changes until the phases in section 5 are carried out.
+levels: continent, region, district, topic, step, and landmarks beside them.
+It builds on the prototype that became `assets/map.js`, `assets/map.css` and
+`dev/map_layout.py`, and on the topic list the search run produced to the format
+in `planning/topic-map/BRIEF.md`. It does not redo that search.
+
+**Status, 2 October 2026.** The prototype is now a page of the site, `map.html`,
+beside `tree.html` (`DECISIONS_LOG.md` 7.293). Built: `map/graph.json` and
+`map/layout.json`, `dev/map_layout.py`, `write_map_page()`, the script and
+styles, a list of every topic for a reader with no script, and the build's
+refusals when the map names a page or section that does not exist. Still
+planned below, and not built: positions held still while a topic is added (2.4,
+`--keep` and `--only`); the check that every page is on a topic (PR 1); the map
+in the frame between the docks, as 1.1 describes (it is a wide frame in the page
+for now); progress from saved work (PR 4); a link to the map from every tutorial
+(PR 5); retiring `covers:` and the tree (PR 6); the teacher's coverage layer
+(PR 7); and the topic editor and pair game (PR 8). Where a section below says
+what the prototype does, it means the map as built.
 
 A convention for this document: **a path in backticks exists today**. A file
 this design proposes is written in italics, for example *map/regions.yaml*,
@@ -59,7 +70,7 @@ anything.
 ### 1.2 What each level shows
 
 The prototype chooses its level from the zoom as a multiple of the scale that
-shows the whole map (`lodFor()` in `planning/topic-map/atlas.template.html`).
+shows the whole map (`lodFor()` in `assets/map.js`).
 That keeps the first view at continent names on any screen, but further in,
 the same multiple means very different things on a 360px phone and a 1400px
 desktop, because the phone's whole-map scale is a third of the desktop's. The
@@ -286,7 +297,7 @@ course routes. All of that stays. What changes, and why:
 | Prototype | Design | Why |
 |---|---|---|
 | Recomputes the whole layout, force pass included, every run. | Positions committed; the force pass runs only in *dev/map_layout.py*; the build places new topics locally. | Stable positions are the point of a map, and the force pass took 4.5s on a 284-topic test graph (2.5). |
-| `random.uniform()` jitter for landmarks (`planning/topic-map/layout.py`; seeded, but every landmark moves when one is added or reordered). | Deterministic offsets from the landmark's slug. | Two builds of the same input must write the same page. |
+| `random.uniform()` jitter for landmarks (`dev/map_layout.py`; seeded, but every landmark moves when one is added or reordered). | Deterministic offsets from the landmark's slug. | Two builds of the same input must write the same page. |
 | Level from zoom as a multiple of the whole-map scale. | Level from on-screen town spacing (1.2). | Same level on a phone and a desktop. |
 | Land, coast and roads as path strings inside the JSON. | Rendered by `build.py` as a static SVG in the page. | A picture without JavaScript, and a smaller island. |
 | 367 KB island on the test graph, 292 KB of it towns, each step repeating a full URL, title and course names. | A shared pages table; steps are `[page, anchor, role]`; URLs built in the browser. Roughly 150 KB before compression. | School networks. |
@@ -967,9 +978,9 @@ scope. `tests/build/test_check.py` for the new line.
 paragraph goes); `docs/CHECK_YOUR_WORK.md`; `CLAUDE.md`'s table;
 `planning/topic-map/README.md`; a `DECISIONS_LOG.md` entry recording 2.1.
 
-**PR 2 — Positions and land.** Adds *dev/map_layout.py* (from
-`planning/topic-map/layout.py`, deterministic, `--all`, `--keep`, `--only`) and
-the committed *map/positions.json* from one `--all` run. Adds
+**PR 2 — Positions and land.** Adds *dev/map_layout.py* (built, and deterministic;
+`--all`, `--keep` and `--only` are not) and the committed layout (built, as
+*map/layout.json*) from one run. Adds
 `place_new_topics()` and `map_geometry()` to `build.py`, with notes for placed,
 drifted and stale towns. No page yet.
 *Tests*: *tests/build/test_map_geometry.py*: the same input gives the same
