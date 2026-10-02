@@ -78,7 +78,7 @@ PATH_SUFFIXES = {".md", ".py", ".js", ".css", ".html", ".yaml", ".yml",
 GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/", "planning/topic-map/generated/")
 
-GENERATED_PAGES = {"index.html", "tree.html", "topics.html", "about.html",
+GENERATED_PAGES = {"index.html", "tree.html", "map.html", "topics.html", "about.html",
                    "editor.html", "all-notes.html", "search-index.json",
                    "reference-index.json", "routes.json"}
 

@@ -1,0 +1,268 @@
+{
+ "continents": [
+  {
+   "id": "start",
+   "kind": "start",
+   "name": "Where to start",
+   "fancy": "The Starting Island",
+   "blurb": "Where a traveller begins.",
+   "lore": "Every road begins here.",
+   "regions": [
+    "r-tools"
+   ]
+  },
+  {
+   "id": "c-one",
+   "name": "Asking",
+   "fancy": "The First Land",
+   "blurb": "Asking, guessing and comparing.",
+   "lore": "A quiet land.",
+   "regions": [
+    "r-one"
+   ]
+  },
+  {
+   "id": "c-two",
+   "name": "Data",
+   "fancy": "The Second Land",
+   "blurb": "Loading data and rendering it.",
+   "lore": "A busy land.",
+   "regions": [
+    "r-two"
+   ]
+  }
+ ],
+ "regions": [
+  {
+   "id": "r-tools",
+   "name": "Tools",
+   "blurb": "What you work with.",
+   "lore": "Sharp tools.",
+   "fancy": "The Tool Shed"
+  },
+  {
+   "id": "r-one",
+   "name": "Asking",
+   "blurb": "Asking and checking.",
+   "lore": "Many questions.",
+   "fancy": "Question Valley"
+  },
+  {
+   "id": "r-two",
+   "name": "Data",
+   "blurb": "Data and pictures.",
+   "lore": "Many numbers.",
+   "fancy": "Data Hills",
+   "terrain": "mountains"
+  }
+ ],
+ "neighbours": [
+  [
+   "r-one",
+   "r-two"
+  ]
+ ],
+ "districts": [
+  {
+   "id": "d-tools",
+   "region": "r-tools",
+   "name": "Getting set up",
+   "blurb": "First things."
+  },
+  {
+   "id": "d-one",
+   "region": "r-one",
+   "name": "Asking and guessing",
+   "blurb": "Asking."
+  },
+  {
+   "id": "d-two",
+   "region": "r-one",
+   "name": "Checking answers",
+   "blurb": "Checking."
+  },
+  {
+   "id": "d-three",
+   "region": "r-two",
+   "name": "Loading data",
+   "blurb": "Loading."
+  },
+  {
+   "id": "d-four",
+   "region": "r-two",
+   "name": "Showing data",
+   "blurb": "Showing."
+  }
+ ],
+ "topics": [
+  {
+   "id": "t-third",
+   "name": "A third page",
+   "district": "d-tools",
+   "plain": "A page of its own.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "third-page",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-project",
+   "name": "Choosing a project",
+   "district": "d-tools",
+   "plain": "Not written yet.",
+   "needs": [
+    "t-third"
+   ],
+   "steps": [],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-asking",
+   "name": "Asking with input",
+   "district": "d-one",
+   "plain": "Ask the reader something.",
+   "needs": [],
+   "steps": [
+    {
+     "tutorial": "asking",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-predict",
+   "name": "Guessing before running",
+   "district": "d-one",
+   "plain": "Guess first.",
+   "needs": [
+    "t-asking"
+   ],
+   "steps": [
+    {
+     "tutorial": "predicting",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-compare",
+   "name": "Comparing with a solution",
+   "district": "d-two",
+   "plain": "Compare your answer.",
+   "needs": [
+    "t-predict"
+   ],
+   "steps": [
+    {
+     "tutorial": "comparing",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-challenge",
+     "section": null,
+     "role": "closer-look"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-data",
+   "name": "Loading data",
+   "district": "d-three",
+   "plain": "Read a file.",
+   "needs": [
+    "t-compare",
+    "t-third"
+   ],
+   "steps": [
+    {
+     "tutorial": "loading-data",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-world",
+   "name": "Choosing a world",
+   "district": "d-three",
+   "plain": "Pick a setting.",
+   "needs": [
+    "t-data"
+   ],
+   "steps": [
+    {
+     "tutorial": "choosing-a-world",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  },
+  {
+   "id": "t-tour",
+   "name": "A tour of rendering",
+   "district": "d-four",
+   "plain": "See how pages are drawn.",
+   "needs": [
+    "t-world",
+    "t-third"
+   ],
+   "steps": [
+    {
+     "tutorial": "rendering-tour",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [],
+   "replaces": [],
+   "size": "fixture"
+  }
+ ],
+ "landmarks": [
+  {
+   "tutorial": "choosing-a-project",
+   "kind": "project",
+   "at": [
+    "t-tour"
+   ],
+   "note": "fixture"
+  }
+ ],
+ "outcomes_culled": [],
+ "tower": {
+  "name": "The Tower of Unknowing",
+  "plain": "Every traveller starts here.",
+  "lore": "Many leave. Few return.",
+  "plains": {
+   "name": "The Prerequisite Plains",
+   "plain": "Towns that need nothing first."
+  }
+ }
+}
