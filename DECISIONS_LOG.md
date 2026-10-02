@@ -5762,6 +5762,6 @@ The data is the proposal in `planning/topic-map/graph-final.json` with Josh's tw
 
 Not done, and planned (`design.md`): progress from the work learners have really saved, the teacher's coverage layer, links to the map from every tutorial, and retiring the tree.
 
-**A limit worth knowing.** Positions are committed, but the script settles the whole map again each time it runs, so a change to the graph can move towns a learner has found, and not only the town that changed. The plan (`design.md` 2.4) has a mode that holds old towns fixed and places a new one beside what it needs. It is not built. Until it is, run the script for a change that matters, and read `git diff --stat map/layout.json` before committing.
+**Towns may move, and that is accepted.** Positions are committed, but the script settles the whole map again each time it runs, so a change to the graph can move towns a learner has found, and not only the town that changed. The plan (`design.md` 2.4) had a mode that held old towns fixed and placed a new one beside what it needs. Josh dropped it on 2 October 2026: "we can definitely reshuffle towns … we don't mind if the map changes". So the script has no such mode. Read `git diff --stat map/layout.json` before committing a new layout, and say in the pull request that the map moved.
 
-*Cost to change: removing the page is deleting `write_map_page()`, its call and the links. Keeping towns still is the unbuilt mode above, a few hundred lines in `dev/map_layout.py`.*
+*Cost to change: removing the page is deleting `write_map_page()`, its call and the links. If towns ever need to stay still, the dropped mode is a few hundred lines in `dev/map_layout.py`: hold every town already in `map/layout.json` and place only the new ones.*

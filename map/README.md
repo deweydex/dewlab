@@ -23,10 +23,10 @@ The build stops, and names the problem, when:
 The last one means the map changed and the layout did not. Run
 `python3 dev/map_layout.py` and commit `layout.json`. It takes about ten
 seconds and gives the same layout for the same graph. A change to the graph
-settles the whole map again, so it can move towns that did not change. Check
-`git diff --stat map/layout.json` before committing. Keeping old towns still
-while a new one is placed is planned (`planning/topic-map/design.md`, 2.4) and
-not built.
+settles the whole map again, so it can move towns that did not change. That is
+accepted: the map may change (`DECISIONS_LOG.md` 7.293). Check
+`git diff --stat map/layout.json` before committing, and say in the pull
+request that the map moved.
 
 ## Changing the map
 
