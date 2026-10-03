@@ -5,98 +5,28 @@ description: Generate or update a dewlab tutorial's <slug>.glossary.yaml — the
 
 # Writing one tutorial's glossary
 
-A glossary file says what **this specific tutorial** introduces — not what
-it covers overall (`covers:` in its frontmatter already names broad
-curriculum outcomes), not everything a reader now knows (that is the
-*cumulative* reference build.py assembles from every glossary file in a
-series, in the order its course file lists them) — only the terms, functions, operators, and
-formulas that show up here for the first time in this tutorial's series.
+A glossary file lists what this tutorial introduces for the first time in its series: terms, functions, operators, formulas. It is not `covers:` (curriculum outcomes), and it is not everything the reader now knows; build.py assembles that cumulative reference from the series' glossary files in course-file order. The design and its reasons are in `planning/REFERENCE_PANEL.md`.
 
-Read `planning/REFERENCE_PANEL.md` first if you have not already; it has the
-full design and the reasoning behind every rule below. This file is the
-step-by-step for running that design on one tutorial.
+## Before you start
 
-## What you need before you start
+1. Read the tutorial, `tutorials/<id>/<id>.md`, not a `v<version>.md` release file. There is one glossary per tutorial however many releases it has.
+2. Read its course file, `courses/<course>.yaml`, for the series order, and gather the union of every earlier member's `<slug>.glossary.yaml`. Run in series order and carry the list forward; redoing one tutorial mid-series, gather it fresh.
+3. If the frontmatter sets `practice_for:` or `practice_across:`, **stop**: a practice page gets no glossary file, and build.py resolves its reference from the tutorials it names. A `context_for:` page gets a file only for terms it defines that its tutorials do not, checked against that union.
 
-1. **The tutorial itself** — `tutorials/<id>/<id>.md` (read the
-   `.md` file directly under the tutorial's own name, not a
-   `v<version>.md` release file — coverage does not change release to release the way
-   prose might, so there is one glossary per tutorial regardless of how
-   many releases it has).
-2. **Its course file**, `courses/<course>.yaml`, whose series lists the
-   tutorials in reading order, to find what comes immediately before it.
-3. **The cumulative glossary of everything before it in that series** — the
-   union of every earlier member's own `<slug>.glossary.yaml`. If you are
-   running this tutorial-by-tutorial in series order (the normal case),
-   you will already have built this up from the runs before it. If asked
-   to redo one tutorial in the middle of a series, gather every earlier
-   member's glossary file fresh rather than trusting a stale list.
-4. If the tutorial's `frontmatter` sets `practice_for:` or
-   `practice_across:` — **stop**. A practice page gets no glossary file of
-   its own; its reference is the union of the tutorial(s) it names, which
-   build.py resolves automatically. Do not write one. A **context page**
-   (`context_for:`) is different: its reference is that same union, plus
-   its own glossary file for the terms it defines that its tutorials do
-   not. Write one for those terms only, checked against the union rather
-   than a series position.
+## Find candidates
 
-## Finding candidates
+You need both sources.
 
-Two sources, and you need both — neither alone is reliable.
+- **Emphasis.** Authors mark a term's first use as `*term*` (`docs/WRITING_TUTORIALS.md#marking-a-term`). `dev/curriculum_map.py` extracts these (`terms_of()`, `EMPHASIS_RE`, `STRESS_WORDS`); import it or run it and read its vocabulary section, rather than finding them by eye. A `*term*{.term}` is a later use and is not introduced here.
+- **Your own read of the cells and prose**, for functions, operators, keywords and named formulas the reader is now expected to use but nobody emphasised. A tutorial that teaches `len()` counts; one that uses it in passing does not.
 
-**Emphasis, mechanically.** `docs/WRITING_TUTORIALS.md#marking-a-term` asks
-authors to mark a term's first meaningful use in single-asterisk emphasis:
-`*transformation matrix*`. `dev/curriculum_map.py`'s `EMPHASIS_RE`/
-`terms_of()`/`prose_of()` already extract these correctly — code fences,
-inline code, and the standing subtitle are already stripped, and a fixed
-`STRESS_WORDS` list already filters out ordinary emphasis ("*not* the
-same") that is not a term. Run that extraction (import it, or run
-`python3 dev/curriculum_map.py` and read its vocabulary section) to get
-this tutorial's own emphasised terms as your starting list. Do not
-re-implement this extraction by eye — it exists, it is tested, use it.
-An italic followed by `{.term}` (`*matrix*{.term}`) is a later use an
-author marked so that it shows its definition on hover; the extraction
-leaves it out, and so should you: it is not a term this tutorial
-introduces.
+## Decide what is new
 
-**Your own read, for what emphasis misses.** A function or operator
-introduced mainly through a code cell rarely gets written as `*@*` in
-prose. Read the tutorial's cells and any surrounding prose for a function,
-operator, keyword, or named formula the reader is now expected to reach
-for, whether or not the author happened to emphasise it. This is where
-judgment matters: using `len()` in passing, inside an example about
-something else, is not the same as a tutorial that actually teaches what
-`len()` does.
+- Already in the cumulative glossary, a stress word, an ordinary word, or a bibliography title: drop it.
+- Emphasised here, but `term_findings()` shows an earlier use: decide whether this tutorial re-teaches it (keep it, note why) or the emphasis is a mistake. Report a mistake to whoever asked; do not edit the tutorial's prose as a side effect.
+- Used here only as a black box and explained by a later tutorial: leave it out. A reference that shows a reader something they have not been taught is worse than none. When unsure, leave it for the later tutorial.
 
-## Deciding what is genuinely new
-
-For each candidate from either source:
-
-- **Already in the cumulative glossary you were handed?** Drop it. It was
-  introduced earlier in this series; this tutorial using it again is not a
-  second introduction.
-- **Emphasised here, but `dev/curriculum_map.py`'s `term_findings()` shows
-  it used in an earlier tutorial in this series?** That is the "used
-  before it was introduced" case the map already flags — read both
-  places and decide whether this tutorial is re-teaching it (keep it, note
-  why) or whether the emphasis here is a mistake in the tutorial itself
-  worth a separate note to whoever asked you to run this (do not silently
-  "fix" the tutorial's prose as a side effect of writing a glossary).
-- **A stress word, an ordinary English word doing ordinary work, a
-  bibliography title?** Not a term. `curriculum_map.py`'s own
-  `STRESS_WORDS`/`BIBLIOGRAPHY_RE` already filter the mechanical pass; use
-  the same judgment for anything your own read turned up that emphasis
-  did not.
-- **Something a *later* tutorial in this series actually explains, used
-  here only as a black box (a function called but not taught)?** Leave it
-  out. This is the one mistake that matters most — a reference that
-  shows a reader something they have not been taught yet is worse than no
-  reference at all (`planning/REFERENCE_PANEL.md` §1). When genuinely
-  unsure whether a term belongs to this tutorial or a later one, leave it
-  for the later one; it costs nothing to pick it up there, and showing it
-  early cannot be undone by a reader who already saw it.
-
-## Writing the entries
+## Write the entries
 
 `tutorials/<id>/<id>.glossary.yaml`:
 
@@ -114,48 +44,15 @@ entries:
     example: "rotated = M @ point"
 ```
 
-- `term` — as a reader would look it up. Lowercase unless it is a symbol or
-  an actual identifier (`@`, `len()`, not `Len()`).
-- `kind` — one of `concept | function | operator | formula | keyword`.
-  Pick the one a reader would expect it filed under; when two apply, pick
-  the more concrete one (a named formula is `formula`, not `concept`, even
-  though it is also a concept).
-- `definition` — one to three sentences, dewlab's own voice
-  (`PEDAGOGICAL_STYLE_GUIDE.md#voice`, **including its plain-language
-  rules, `#plain-language`**). This is a reference entry, not the tutorial's own
-  explanation restated — shorter, and written to jog a reader's memory of
-  something they already met, not to teach it fresh.
-
-  Four of those rules do most of the work, and a glossary is where they
-  get broken most often. Check each definition against them before you
-  write the file.
-
-  **Write a sentence, not a noun phrase.** *A grid of numbers arranged in
-  rows and columns.* has no verb in it, and a reader who is unsure of
-  themselves has to supply the missing "a matrix is" before they can
-  start. *A matrix is a grid of numbers arranged in rows and columns.*
-  does the work for them. The one exception is a `function` or `operator`
-  entry, where the house form drops the subject and leads with the verb —
-  *Displays whatever is inside its parentheses.* That is a sentence with
-  an implied subject, not a fragment. Lead with the verb for functions and
-  operators; give everything else a real subject.
-
-  **One idea per sentence, about twenty words.** Three short sentences
-  beat one sentence carrying three clauses across two em dashes. If a
-  definition needs a contrast, a consequence and an example, that is three
-  sentences.
-
-  **Say what a thing is before you say what it is not.** A reader meeting
-  the term for the first time has nothing to hang the contrast on yet.
-
-  **Do not let a metaphor carry the definition.** A metaphor can follow a
-  plain statement; it cannot stand in for one.
-- `example` — optional. Include it when a short code fragment says more
-  than another sentence would (an operator, a function's call shape); skip
-  it for a pure concept.
-- `python` — for an entry that names something in Python: the exact
-  object, as a dotted name or a list of them, owner included, since the
-  term alone rarely says which type a method belongs to.
+- `term`: as a reader would look it up. Lowercase unless a symbol or identifier (`@`, `len()`).
+- `kind`: one of `concept | function | operator | formula | keyword`. When two apply, take the more concrete (a named formula is `formula`).
+- `definition`: one to three sentences in the style guide's voice, with its plain-language rules (`PEDAGOGICAL_STYLE_GUIDE.md#plain-language`). It jogs the memory of something already met; it is not the tutorial's explanation again. The rules a glossary breaks most:
+  - Write a sentence, not a noun phrase: *A matrix is a grid of numbers.* The exception is `function` and `operator` entries, which lead with the verb: *Displays whatever is inside its parentheses.*
+  - One idea per sentence, about twenty words.
+  - Say what a thing is before what it is not.
+  - A metaphor may follow a plain statement. It never replaces one.
+- `example`: optional. Use it when a short fragment says more than another sentence (an operator, a call shape). Skip it for a pure concept.
+- `python`: for anything that names a Python object, the exact dotted name or a list of them, owner included:
 
   ```yaml
   - term: "append()"
@@ -168,30 +65,8 @@ entries:
     python: tutorial_tools.show
   ```
 
-  Give one to every Python function, method, keyword and built-in
-  exception, including third-party ones (`pandas.DataFrame.to_csv`,
-  `matplotlib.pyplot.hist`). Leave it off anything that is not Python (a
-  CSS function, a SQL keyword), off an operator (`+` is not a name), and
-  off a special method such as `__str__`, whose entry is about defining
-  it rather than calling it.
+  Give one to every Python function, method, keyword and built-in exception, third-party ones included. Omit it for non-Python things (CSS, SQL), operators, and special methods such as `__str__`.
 
-  Then run `python3.13 dev/glossary_python.py`. It checks each name exists
-  in Python and that the entry's `example` calls it the way Python's own
-  signature allows, and it writes the signatures the reference shows under
-  the definition (built-ins, the standard library and `tutorial_tools`
-  only). Do not write a signature into the definition yourself: the
-  reference already shows Python's.
-- A tutorial that introduces nothing new gets `entries: []`, not a missing
-  file — a missing file and an empty list mean the same thing to build.py,
-  but an explicit empty list says this tutorial was actually checked,
-  which matters if you are running this over the whole curriculum and
-  want to know what has and has not been done yet.
+Then run `python3.13 dev/glossary_python.py`. It checks that each name exists and that the `example` fits the real signature, and it writes the signatures the reference shows. Do not write signatures yourself. CI runs it with `--check` on 3.13, so another Python version fails there.
 
-## When you are done with one tutorial
-
-Add its own entries to the cumulative list before moving to the next
-tutorial in series order — the next run needs the updated cumulative list,
-not the one you started with. If you were asked to run this across a whole
-series or module, work in the course file's order for exactly this reason; doing
-them out of order means re-gathering the cumulative list by hand each time
-rather than carrying it forward.
+A tutorial that introduces nothing gets `entries: []`, not a missing file. The empty list records that it was checked.
