@@ -5,130 +5,46 @@ description: Work an issue opened through dewlab's own report doors (the footer'
 
 # Triaging a student report
 
-An issue from the report doors (DECISIONS_LOG.md Phase 8) has a fixed shape:
-`page` and `version` always filled in, `kind` one of the issue template's
-three options, `cell`/`code`/`output`/`browser` filled in only if it came
-from a cell's own report icon rather than the page footer, and whatever the
-student actually typed under "What happened." This is the procedure for
-turning that into either a merged fix, a redirected report, or a clear
-reason nothing changes yet — never a silently closed issue.
+An issue from the report doors (DECISIONS_LOG.md Phase 8) has a fixed shape: `page` and `version` always filled in; `kind` one of the issue template's three options; `cell`, `code`, `output` and `browser` only when it came from a cell's report icon; and whatever the student typed under "What happened." Every report ends as a fix, a redirect, or a stated reason nothing changes yet. Never close one silently.
 
-## First: read before acting
+## Read first
 
-1. **The issue itself, in full**, including which fields are empty. An
-   empty `cell` field with a filled `code` field never happens from the
-   real doors — if you see it, the report was filed by hand rather than
-   through a door, and the checklist below still applies, just without a
-   cell to reproduce against.
-2. **The page it names, at the version it names** — `tutorials/<id>/<id>.md`
-   for the current release, or `v<version>.md` beside it for an older one.
-   A report against a frozen version is still real, but a fix belongs on
-   the current release unless the report is specifically about the
-   archiving itself.
-3. **Open issues carrying the same page** (search issues for the page
-   string). Two open issues naming the same page and the same cell are
-   very likely the same thing — say so on the newer one and close it as a
-   duplicate of the older, rather than fixing the same thing twice.
+1. The issue in full, noting which fields are empty. A filled `code` with an empty `cell` means it was filed by hand, so there is no cell to reproduce against.
+2. The page at the version named: `tutorials/<id>/<id>.md` for the current release, `v<version>.md` beside it for an older one. A report against a frozen version is real, but the fix goes on the current release unless the report is about the archiving.
+3. Open issues naming the same page. The same page and cell is very likely the same problem: say so on the newer issue and point it at the older one.
 
-## Deciding the kind — the student's guess is a starting point, not a verdict
+## Decide the kind
 
-The three doors sort by what the student *thought* they had. Re-sort
-before doing anything else:
+The student's choice of door is a guess. Re-sort before acting.
 
-- **"A question, an idea, or something else" reaching you as an issue**
-  (it should have gone to Discussions, but a hand-filed report or an old
-  link can still land here) — answer briefly if the answer is short, or
-  say you're moving it, then convert the issue to a discussion. This is
-  not fixing code; do not open a PR for it.
-- **"It gives an error"** — reproduce first (below). Half the time this
-  is a real bug in the shipped cell; the rest is a mistake in the
-  student's own edit, which `code` makes obvious immediately, or a gap in
-  what the tutorial explained, which is a `WRITING_TUTORIALS.md`-level fix
-  to the prose around the cell rather than to the cell itself.
-- **"The page is wrong, or I could not follow it"** — a factual mistake
-  (wrong answer, a broken link, a stale reference) or a plain-language
-  problem. These need different tools: a factual fix is usually one line;
-  a "could not follow it" report means running the checks in
-  `PEDAGOGICAL_STYLE_GUIDE.md#plain-language` over the passage before
-  touching it, not guessing at a rewrite.
+- **A question, an idea, or something else.** It belongs in Discussions. Answer briefly if the answer is short, or say you are moving it, then convert it. No PR.
+- **It gives an error.** Reproduce first (below).
+- **The page is wrong, or I could not follow it.** A factual mistake is usually one line. For "could not follow", run the checks in `PEDAGOGICAL_STYLE_GUIDE.md#plain-language` over the passage before touching it.
 
-## Reproducing an error report
+## Reproduce an error
 
-With `code` and `output` present, you very often do not need Pyodide at
-all: read the traceback in `output` (it is the exact text
-`tutorial_tools.py`'s `show_error()` wrote, trimmed to the student's own
-line the same way it always is) and compare `code` against the cell's
-starter code in the tutorial's markdown. Three outcomes:
+With `code` and `output` present you rarely need Pyodide. `output` is the traceback `_format_exception()` produced and `render_error()` showed, trimmed to the student's own line. Compare `code` with the cell's starter code in the tutorial's markdown:
 
-1. **The starter code itself is broken** — a real bug. Fix it in the
-   tutorial's markdown, keeping the cell's `id` exactly as it was (cell
-   ids are a contract — `CLAUDE.md`). Run `python3 build.py` and open the
-   built page to confirm the fixed cell actually runs clean.
-2. **The student's edit introduced the error, and the tutorial gave them
-   no reason to expect otherwise** — this is a prose gap, not a code bug.
-   The fix is a sentence warning about the mistake shape, or a hint
-   (`hint:` in the cell's header), not a change to the starter code.
-3. **The student's edit introduced the error, and the tutorial already
-   covers it** (a hint exists, or `first-steps.md`'s "When a cell does not
-   do what you expect" already names this exact mistake) — nothing to
-   fix. Say so on the issue, closing it once you have, rather than
-   leaving it open with no comment.
+1. **The starter code is broken.** Fix it in the markdown, keeping the cell's `id` exactly as it was. Run `python3 build.py` and open the built page to confirm the cell runs clean.
+2. **The student's edit caused it, and the tutorial gave no warning.** This is a prose gap. Add a sentence about the mistake or a `hint:` in the cell header. Leave the starter code alone.
+3. **The student's edit caused it, and the tutorial already covers it** (a hint exists, or a note in `_ERROR_HINTS` in `tutorial_tools.py` names this mistake). Nothing to fix. Say so on the issue.
 
-If you cannot tell which of the three without actually running it, build
-and open the page locally rather than guessing from the text alone.
+If you cannot tell which without running it, build and open the page locally rather than guessing from the text.
 
-## Fixing it
+## Fix it
 
-- One pull request per issue, mentioning the issue number, same as any
-  other change to this repository (`docs/REPORTING_A_PROBLEM.md`'s own
-  "If you want to fix it yourself" section describes the same convention
-  from a contributor's side).
-- `docs/WRITING_TUTORIALS.md` and `PEDAGOGICAL_STYLE_GUIDE.md` govern the
-  fix exactly as they would any other tutorial edit — a report does not
-  relax either.
-- Never rename a cell's `id`, even if the new name would read better.
-- Never touch `site/` — it is rebuilt, not edited.
-- A prose fix gets the nine plain-language checks run over it before the
-  PR opens, not after a reviewer asks.
+One pull request per issue, naming the issue number. `docs/WRITING_TUTORIALS.md` and the style guide apply in full; a report relaxes neither. Run the plain-language checks on any prose fix before the PR opens. Never rename a cell `id`.
 
-## What escalates instead of getting fixed on the spot
+## Escalate instead
 
-**A mathematics or curriculum question** — whether an explanation is
-*correct*, not just whether it is clear — is confirmed by Josh, not
-decided by an agent working through the inbox. Say what you think the
-issue is and propose a fix, but do not merge a change to what a tutorial
-claims is mathematically true without that confirmation.
+- **A mathematics or curriculum question**, meaning whether an explanation is correct and not just clear, is confirmed by Josh. Say what you think is wrong and propose the fix, but do not merge a change to what a tutorial claims is true.
+- **Anything beyond the page the report named**: a pattern across tutorials, a runtime change, a change to `build.py`. Comment what you found and open separate, scoped work instead of widening this PR.
+- **Closing.** Nothing closes until a person has seen it, unless you are that person and are looking right now. A merged fix is not a closed issue.
 
-**Anything that touches more than the one page the report named** — a
-pattern across several tutorials, a runtime change, a change to
-`build.py` itself — is bigger than this issue. Comment what you found and
-open a separate, properly scoped piece of work rather than quietly
-expanding this PR to cover it.
+## A `pattern` issue
 
-**Nothing closes without a person having seen it.** A fix merged is not
-the same as an issue closed — leave it open (or note it explicitly)
-until whoever is running triage has actually looked, unless you are that
-person and are looking right now.
-
-## Working a `pattern` issue
-
-A `pattern` issue (opened by the weekly job — see the workflow in
-`.github/workflows/`) gathers several reports rather than describing one
-directly. Read every issue it links before deciding anything: the job can
-only count, so the read is where the actual diagnosis happens — whether
-a later fix already addressed some of the gathered reports (check
-timestamps against the fix's merge date), whether they share a root cause
-or are coincidentally on the same page, and whether the right response is
-a wording fix, a design change to the tutorial, or a runtime change. Say
-which, on the pattern issue itself, before doing the work — this is
-exactly the kind of decision that benefits from being visible rather than
-inferred from a diff later.
+The weekly job (`.github/workflows/report-patterns.yml`) opens one to gather several reports. It can only count, so the diagnosis is yours. Read every issue it links and decide whether a later fix already covered some of them (compare timestamps with the fix's merge date), whether they share a root cause, and whether the response is a wording fix, a tutorial redesign, or a runtime change. Say which on the pattern issue before doing the work.
 
 ## Two things never to do
 
-Never mark a report resolved because it looks like a duplicate of
-something already fixed — confirm the fix actually covers the reported
-case first; a similar-looking report can be a new edge the earlier fix
-missed. Never disable or narrow the report doors themselves
-(`planning/feedback.yaml`) as a way of handling a flood of reports — that
-is a decision for Josh, not a triage step.
+Do not mark a report resolved as a duplicate of something already fixed until you have confirmed the fix covers the reported case; a similar report can be a new edge. Do not disable or narrow the report doors (`planning/feedback.yaml`) to handle a flood of reports. That decision is Josh's.
