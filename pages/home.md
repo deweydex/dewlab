@@ -45,6 +45,9 @@ Already know the topic you want? Search for it directly.
 
 [[search-box]]
 
+Not sure what to search for? [Explore the topic map](map.html). Every topic
+is a town, and the roads show what to learn first.
+
 Or choose one of the courses below and start there.
 
 Not sure which course is yours? [Studying here](studying.html) compares

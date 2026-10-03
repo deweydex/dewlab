@@ -217,11 +217,14 @@ On a phone, every panel and the tree collapse into one launcher — a dot at
 the bottom of the screen — that opens the same choices as a menu.
 
 The contents page lists everything in teaching order and has a search box.
-Two other pages organise things differently. The **topic tree** shows every
-topic dewlab teaches and what each one needs before it; you can drag to move
-around it, scroll to zoom, and choose any topic to read what it is and where
-it turns up. Topics that are not taught here yet are drawn with a dashed
-outline, so you can see where it has gaps. **Browse by topic** gathers
+Three other pages organise things differently. The **topic map** shows every
+topic dewlab teaches as a town. Towns that belong together are in one country,
+and a road joins each town to the towns it needs first. You can drag to move
+around it, scroll to zoom, and choose any town to read what it is and where
+it is taught. A town for a topic that no page teaches yet says so. The
+**topic tree** shows the same topics as a list that reads downwards; topics
+that are not taught here yet are drawn with a dashed outline, so you can see
+where it has gaps. **Browse by topic** gathers
 everything on one subject in one place, which is the better page when you
 already know what you want to practise.
 
@@ -239,7 +242,7 @@ This happens to everyone, and it is not a sign you are doing something wrong.
 A few real places can help.
 
 You can look up any unfamiliar word in the Reference panel. You can check the
-topic tree to see what this page expects you to know already. If you have not
+topic map to see what this page expects you to know already. If you have not
 met something yet, going back to that page first usually helps. You can also
 search the contents page for another tutorial on the same idea, explained in a
 different way. Or you can ask your teacher to look at it with you.

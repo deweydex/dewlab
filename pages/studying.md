@@ -29,12 +29,22 @@ functions, and later pages use them.
 The two courses cover the same ground, so a class takes one of them, not
 both. Your teacher decides which.
 
+**The Zen of Slashes and Surds** is for anyone who was told they are not a
+maths person. It covers fractions, powers, roots and logarithms, and how to
+see numbers as pictures. Each step is small, a picture comes before every
+rule, and nothing is for memorising. You need no programming for most of it.
+
 **Programming and Design Principles** is the programming half of the
 integrated course on its own, for a class taking only that module.
 
 **Computational Methods** uses Python on bigger problems: matrices and the
 pictures they move, text generation, simulations, algorithms, and finding
 what is wrong with a program. It starts with the Python you need.
+
+**Machine Learning** is a short course about programs that write text and
+recognise pictures. You build a chain that writes like a book, and a model
+that learns to read digits from its mistakes. It needs the Python from the
+first series of Computational Methods.
 
 **Fundamentals of Object Oriented Programming** is for when you can write a
 function and want to build larger programs out of classes of your own.
@@ -63,8 +73,8 @@ there on purpose, for the same reason.
    question about what you can see.
 2. **I'm not sure yet**, where a page asks for a guess. It opens the first
    hint, and you can still run the cell and see.
-3. An earlier page. The topic tree shows what a page expects you to have
-   met already.
+3. An earlier page. The [topic map](map.html) shows what a page expects you
+   to have met already: a road joins each town to the towns it needs first.
 4. The **Reference** panel, for a word or a function you do not remember.
 5. A classmate, or your tutor. Show them the cell and what it printed.
 
@@ -77,3 +87,10 @@ mark against you.
 
 If you would like the page bigger, translated, or read aloud,
 [Reading helpers](reading-helpers.html) shows how.
+
+## Finding your way
+
+The [topic map](map.html) shows every topic as a town. Towns that belong
+together are in one country. Choose a town to see what it is, what comes
+before it, and which pages teach it. You can also search for a topic by name
+from any page.
