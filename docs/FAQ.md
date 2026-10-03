@@ -19,7 +19,7 @@ how they differ.
 ## Do I need to know Python, or maths, already?
 
 No. Tutorials start from nothing and build up. If a tutorial expects
-something from an earlier one, the topic tree shows what, and you can go back
+something from an earlier one, the topic map shows what, and you can go back
 and read that page first.
 
 ## Is dewlab free? Do I need to make an account?
@@ -58,7 +58,7 @@ the current version first if you want to keep it.
 ## Can I skip ahead, or go back to something earlier?
 
 Yes. A series is written to be read in order, and that is the easiest way
-through it. Nothing stops you from jumping ahead or going back. The topic tree
+through it. Nothing stops you from jumping ahead or going back. The topic map
 shows what a tutorial usually expects first, if you want to check before
 skipping.
 
@@ -111,7 +111,7 @@ page, a PDF, or a Jupyter notebook. `FOR_STUDENTS.md` says more, under "Taking a
 
 Yes, both. Nobody in a classroom is at exactly the same point, and a
 tutorial cannot know which one you are on any given day. If it feels too
-hard, the topic tree and the Reference panel are the two real places to
+hard, the topic map and the Reference panel are the two real places to
 check what it is assuming. You can also go back to an earlier page, or ask
 your teacher to look at it with you. If it feels too easy, the practice
 page usually has a harder problem near the end of the set.

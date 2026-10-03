@@ -4738,10 +4738,13 @@ def render_tutorials_list(
         "single file and keep it.</li>",
         "<li><strong>The list below is grouped into modules, and each module "
         "into series.</strong> A series is meant to be read in order, from the "
-        'top. If you are not sure where to start, the <a href="tree.html">topic '
-        "tree</a> shows what the course covers and what usually comes first. "
-        + ('The <a href="map.html">topic map</a> shows the same topics as towns on a map. '
-           if (ROOT / "map" / "graph.json").is_file() else "")
+        'top. If you are not sure where to start, '
+        + ('the <a href="map.html">topic map</a> shows what the courses cover and what '
+           'usually comes first, as towns on a map. The <a href="tree.html">topic tree</a> '
+           "shows the same topics as a list that reads downwards. "
+           if (ROOT / "map" / "graph.json").is_file() else
+           'the <a href="tree.html">topic tree</a> shows what the course covers and what '
+           "usually comes first. ")
         + '<a href="topics.html">Browse by topic</a> gathers one subject — '
         "trigonometry, say — in one place.</li>",
         "</ul>",
