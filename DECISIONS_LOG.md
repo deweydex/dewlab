@@ -5765,3 +5765,18 @@ Not done, and planned (`design.md`): progress from the work learners have really
 **Towns may move, and that is accepted.** Positions are committed, but the script settles the whole map again each time it runs, so a change to the graph can move towns a learner has found, and not only the town that changed. The plan (`design.md` 2.4) had a mode that held old towns fixed and placed a new one beside what it needs. Josh dropped it on 2 October 2026: "we can definitely reshuffle towns … we don't mind if the map changes". So the script has no such mode. Read `git diff --stat map/layout.json` before committing a new layout, and say in the pull request that the map moved.
 
 *Cost to change: removing the page is deleting `write_map_page()`, its call and the links. If towns ever need to stay still, the dropped mode is a few hundred lines in `dev/map_layout.py`: hold every town already in `map/layout.json` and place only the new ones.*
+
+**7.294 — The editor's helpers can be switched off one by one, and the hover help can wait longer.** Josh, 4 October 2026: "The tool tip features are a real pain when it comes to working with students… I still would like them to be present but can we make a setting that adjusts the delay or allows us to turn them off?… it would be great to have individual switches in settings to turn these off."
+
+Settings → Appearance → Code gains four rows beside Line numbers: help when you point at a name (off, 0.3 s, 1 s, 2 s), help while you type a function, name suggestions while you type, and closing brackets and quotes. All four stay on by default, with the hover delay at CodeMirror's own 0.3 s, so a page behaves as before until someone changes it.
+
+Two choices somebody could have made differently.
+
+- **Two tooltips, two switches.** The hover doc and the signature help are different things to a class. The first waits for the pointer. The second appears while a student types `(`, and it is the one that interrupts. Each has its own row, and only the hover doc has a delay, because signature help has no pointer to wait for.
+- **The switches live with the other editor settings, not in the Python panel.** The Python panel shows what the running interpreter holds. Line numbers, indent and line height already sit in Settings, and the new rows ride the same `data-texture` machinery and apply to open editors at once. The choice is per browser, like the others, so a teacher sets it on the classroom machine.
+
+Closing brackets removes `closeBracketsKeymap` with `closeBrackets()`. Left in, Backspace between a typed `()` would still delete the pair.
+
+Not done: dewmini's editors do not read these settings.
+
+*Cost to change: four keys in `TEXTURE_DEFAULTS`, four rows in `assets/shell.html`, `editorAssists()`, and the compartments in `createCodeEditor()`. Removing them leaves every page as it was.*
