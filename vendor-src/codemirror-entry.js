@@ -121,7 +121,11 @@ function jediCompletionSource(getJediCompletions) {
   };
 }
 
-function pythonDocTooltip(getDoc) {
+/* How long the pointer rests on a name before its doc appears, unless the
+ * Settings panel says otherwise. CodeMirror's own default. */
+const DEFAULT_HOVER_DELAY_MS = 300;
+
+function pythonDocTooltip(getDoc, hoverDelay = DEFAULT_HOVER_DELAY_MS) {
   if (!getDoc) return [];
   return hoverTooltip(async (view, pos) => {
     const { from, text, number } = view.state.doc.lineAt(pos);
@@ -146,7 +150,7 @@ function pythonDocTooltip(getDoc) {
         return { dom };
       },
     };
-  }).extension;
+  }, { hoverTime: hoverDelay }).extension;
 }
 
 const setSignatureTooltip = StateEffect.define();
@@ -301,22 +305,56 @@ function pythonSignatureHelp(getSignature) {
 }
 
 const OTHER_LANGUAGES = {
-  html: () => [html(), autocompletion()],
-  css: () => [css(), autocompletion()],
-  javascript: () => [javascript(), autocompletion()],
-  sql: () => [sql(), autocompletion()],
+  html: () => html(),
+  css: () => css(),
+  javascript: () => javascript(),
+  sql: () => sql(),
 };
+
+/* The four helpers a reader can switch off in Settings, each in its own
+ * compartment so a change reaches editors that are already on the page
+ * without touching what has been typed in them. Everything is on, with the
+ * hover delay at CodeMirror's own default, until told otherwise. */
+const DEFAULT_ASSISTS = {
+  suggestions: true, closeBrackets: true, signatureHelp: true,
+  hoverDelay: DEFAULT_HOVER_DELAY_MS, // 0 turns hover docs off
+};
+
+/* The extensions for one setting of the four, as a function so that
+ * setEditorAssists() can rebuild them for an editor already mounted.
+ * Hover docs and signature help are Python's only: the other languages
+ * have no interpreter to ask. closeBracketsKeymap goes in with
+ * closeBrackets(), because Backspace between a typed "()" would otherwise
+ * still delete the pair after auto-closing was switched off. */
+function assistsFor({ isPython, completeNames, getJediCompletions, getDoc, getSignature }) {
+  return (assists) => ({
+    suggestions: !assists.suggestions ? []
+      : isPython ? pythonCompletion(completeNames, getJediCompletions) : autocompletion(),
+    closeBrackets: assists.closeBrackets
+      ? [closeBrackets(), keymap.of(closeBracketsKeymap)] : [],
+    hover: isPython && assists.hoverDelay > 0
+      ? pythonDocTooltip(getDoc, assists.hoverDelay) : [],
+    signature: isPython && assists.signatureHelp ? pythonSignatureHelp(getSignature) : [],
+  });
+}
 
 export function createCodeEditor(
   parent, doc,
   { dark = false, onChange = null, completeNames = null, getDoc = null,
     getSignature = null, getJediCompletions = null, language = "python",
-    lineNumbersVisible = true, indentWidth = 4 } = {}
+    lineNumbersVisible = true, indentWidth = 4, assists = {} } = {}
 ) {
   const themeCompartment = new Compartment();
   const lineNumbersCompartment = new Compartment();
   const indentCompartment = new Compartment();
+  const suggestionsCompartment = new Compartment();
+  const bracketsCompartment = new Compartment();
+  const hoverCompartment = new Compartment();
+  const signatureCompartment = new Compartment();
   const isPython = language === "python";
+  const buildAssists = assistsFor(
+    { isPython, completeNames, getJediCompletions, getDoc, getSignature });
+  const initial = buildAssists({ ...DEFAULT_ASSISTS, ...assists });
 
   const extensions = [
     lineNumbersCompartment.of(lineNumbersVisible ? [lineNumbers()] : []),
@@ -329,15 +367,15 @@ export function createCodeEditor(
     history(),
     indentOnInput(),
     bracketMatching(),
-    closeBrackets(),
+    bracketsCompartment.of(initial.closeBrackets),
     indentCompartment.of(indentUnit.of(" ".repeat(indentWidth))),
-    ...(isPython
-      ? [pythonCompletion(completeNames, getJediCompletions), pythonDocTooltip(getDoc),
-         pythonSignatureHelp(getSignature), python()]
-      : OTHER_LANGUAGES[language]()),
+    suggestionsCompartment.of(initial.suggestions),
+    hoverCompartment.of(initial.hover),
+    signatureCompartment.of(initial.signature),
+    isPython ? python() : OTHER_LANGUAGES[language](),
     search({ top: true }),
     highlightSelectionMatches(),
-    keymap.of([...closeBracketsKeymap, ...completionKeymap,
+    keymap.of([...completionKeymap,
                ...searchKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
     themeCompartment.of(themeOf(dark)),
     baseTheme,
@@ -359,6 +397,13 @@ export function createCodeEditor(
   view._dewlabTheme = themeCompartment;
   view._dewlabLineNumbers = lineNumbersCompartment;
   view._dewlabIndent = indentCompartment;
+  view._dewlabAssists = {
+    build: buildAssists,
+    compartments: {
+      suggestions: suggestionsCompartment, closeBrackets: bracketsCompartment,
+      hover: hoverCompartment, signature: signatureCompartment,
+    },
+  };
 
   return {
     view,
@@ -390,6 +435,20 @@ export function setIndentWidth(editor, width) {
   if (!view._dewlabIndent) return;
   view.dispatch({
     effects: view._dewlabIndent.reconfigure(indentUnit.of(" ".repeat(width))),
+  });
+}
+
+/* Switches suggestions, bracket closing, hover docs and signature help on
+ * or off in an already-mounted editor — the Settings panel's four rows
+ * under "Code". Takes the same `assists` object createCodeEditor does. */
+export function setEditorAssists(editor, assists) {
+  const view = editor.view;
+  const mounted = view._dewlabAssists;
+  if (!mounted) return;
+  const built = mounted.build({ ...DEFAULT_ASSISTS, ...assists });
+  view.dispatch({
+    effects: Object.entries(mounted.compartments)
+      .map(([name, compartment]) => compartment.reconfigure(built[name])),
   });
 }
 

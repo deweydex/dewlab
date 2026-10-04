@@ -1,6 +1,6 @@
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
-         setLineNumbers, setIndentWidth } from "./vendor/codemirror.bundle.js";
+         setLineNumbers, setIndentWidth, setEditorAssists } from "./vendor/codemirror.bundle.js";
 import { mountSitePreview } from "./site-relay.js";
 import { textMatches, tokenize, tokenHits } from "./search-words.js";
 import {
@@ -64,6 +64,14 @@ const TEXTURE_DEFAULTS = {
   // Line numbers are the CodeMirror default everywhere else this bundle is
   // used, so "on" is the default here too — a reader turns them off, not on.
   linenumbers: "on",
+  // The four helpers a teacher may want quieter in front of a class. All on
+  // by default: they help a reader working alone, and a class turns them
+  // down, not up. hoverDelay is how many milliseconds the pointer rests on a
+  // name before its doc appears, and 0 means never.
+  suggestions: "on",
+  closeBrackets: "on",
+  signatureHelp: "on",
+  hoverDelay: 300,
 };
 
 const TEXTURE_MIN_SIZE = 16;
@@ -1980,6 +1988,17 @@ function loadTexture() {
   return state;
 }
 
+/* The editor's four helpers as createCodeEditor()/setEditorAssists() take
+ * them, from whatever the reader chose in Settings. */
+function editorAssists(texture = loadTexture()) {
+  return {
+    suggestions: texture.suggestions !== "off",
+    closeBrackets: texture.closeBrackets !== "off",
+    signatureHelp: texture.signatureHelp !== "off",
+    hoverDelay: texture.hoverDelay,
+  };
+}
+
 function saveTexture(state) {
   try {
     localStorage.setItem(TEXTURE_KEY, JSON.stringify(state));
@@ -2216,6 +2235,7 @@ function buildCells(manifest) {
       getSignature: signatureHelp,
       lineNumbersVisible: loadTexture().linenumbers !== "off",
       indentWidth: loadTexture().indent,
+      assists: editorAssists(),
     });
     cell.editor = editor;
     cells.push(cell);
@@ -2610,6 +2630,7 @@ function buildSiteEditors(manifest) {
         onChange: () => { scheduleSave(); if (lang !== "js") render(); },
         lineNumbersVisible: loadTexture().linenumbers !== "off",
         indentWidth: loadTexture().indent,
+        assists: editorAssists(),
       });
       panes[lang] = { id: paneSpec.id, starter: paneSpec.code || "", editor };
     }
@@ -2791,6 +2812,7 @@ function buildAppCells(manifest) {
         onChange: () => { scheduleSave(); if (lang !== "js") renderPreview(); },
         lineNumbersVisible: loadTexture().linenumbers !== "off",
         indentWidth: loadTexture().indent,
+        assists: editorAssists(),
       });
       panes[lang] = { id: paneSpec.id, starter: paneSpec.code || "", editor };
     }
@@ -3352,6 +3374,7 @@ function mountCustomCellAfter(afterNode, id, type, code, anchor) {
       getSignature: signatureHelp,
       lineNumbersVisible: loadTexture().linenumbers !== "off",
       indentWidth: loadTexture().indent,
+      assists: editorAssists(),
     });
 
     cell = {
@@ -6562,12 +6585,14 @@ const textureState = initTexture((dark) => {
     setEditorTheme(cell.editor, dark);
     setLineNumbers(cell.editor, textureState.linenumbers !== "off");
     setIndentWidth(cell.editor, textureState.indent);
+    setEditorAssists(cell.editor, editorAssists(textureState));
   }
   for (const editor of siteEditors) {
     for (const pane of Object.values(editor.panes)) {
       setEditorTheme(pane.editor, dark);
       setLineNumbers(pane.editor, textureState.linenumbers !== "off");
       setIndentWidth(pane.editor, textureState.indent);
+      setEditorAssists(pane.editor, editorAssists(textureState));
     }
   }
   for (const block of readOnlyBlocks) setEditorTheme(block, dark);

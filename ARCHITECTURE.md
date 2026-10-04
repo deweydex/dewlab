@@ -350,6 +350,17 @@ interpreter at call time, so a page left open through a boot starts
 offering real completions and docs without being reconfigured. Python
 builtins are out of scope for `docFor`.
 
+Four of these helpers can be switched off in Settings, under Appearance
+→ Code: name suggestions, closing brackets and quotes, signature help,
+and hover docs (which also take a delay of 0.3, 1 or 2 seconds). Each
+sits in its own CodeMirror compartment in `createCodeEditor()`, so
+`setEditorAssists()` changes an editor that is already on the page.
+The choices are keys in `TEXTURE_DEFAULTS` (`suggestions`,
+`closeBrackets`, `signatureHelp`, `hoverDelay`), and
+`tutorial-runtime.js`'s `editorAssists()` turns them into the object
+both functions take. Dewmini's editors do not read them and keep
+everything on.
+
 Completion asks **Jedi** first (`getJediCompletions`, answered by
 `_dewlab_complete` in the worker or the main-thread engine). It is a
 `jedi.Interpreter` over the cell's text and `_page_globals` together, so

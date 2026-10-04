@@ -267,3 +267,80 @@ class TestJediCompletion:
         assert not [label for label in completion_labels(page) if label.startswith("_")]
         page.keyboard.type("__le")
         wait_for_label(page, "__len__")
+
+
+def choose_setting(page, key: str, value: str) -> None:
+    """Clicks the Settings button itself, so the whole path from the row to the already-mounted editor is exercised. Clicked from script, not by the mouse: the Settings panel is closed."""
+    page.evaluate(
+        f"document.querySelector('[data-texture={js_string(key)}] "
+        f"[data-value={js_string(value)}]').click()"
+    )
+
+
+class TestEditorHelperSettings:
+    """Settings > Code can quieten each helper. Every switch is applied to the editor that is already on the page."""
+
+    def test_name_suggestions_can_be_turned_off_and_on(self, page):
+        cell = cell_content(page, "plain-python")
+        choose_setting(page, "suggestions", "off")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.type("\npri")
+        page.wait_for_timeout(800)
+        assert page.locator(".cm-tooltip-autocomplete").count() == 0
+
+        choose_setting(page, "suggestions", "on")
+        page.keyboard.type("n")
+        page.wait_for_selector(".cm-tooltip-autocomplete")
+
+    def test_brackets_are_closed_only_while_the_switch_is_on(self, page):
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        choose_setting(page, "closeBrackets", "off")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.type("\n(")
+        assert cell.inner_text().split("\n")[-1].strip() == "("
+
+        choose_setting(page, "closeBrackets", "on")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.type("\n(")
+        assert cell.inner_text().split("\n")[-1].strip() == "()"
+
+    def test_signature_help_can_be_turned_off(self, page):
+        choose_setting(page, "signatureHelp", "off")
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nlen")
+        page.keyboard.type("(")
+        page.wait_for_timeout(600)
+        assert page.locator(".cm-dewlab-signature-tooltip").count() == 0
+
+        choose_setting(page, "signatureHelp", "on")
+        page.keyboard.press("Backspace")
+        page.keyboard.type("(")
+        page.wait_for_selector(".cm-dewlab-signature-tooltip")
+
+    def test_hover_help_can_be_turned_off(self, page):
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nlen([1, 2, 3])")
+        choose_setting(page, "hoverDelay", "0")
+        hover_at_text(page, "plain-python", "len")
+        page.wait_for_timeout(1000)
+        assert page.locator(".cm-dewlab-doc-tooltip").count() == 0
+
+    def test_a_longer_hover_delay_holds_the_help_back(self, page):
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nlen([1, 2, 3])")
+        choose_setting(page, "hoverDelay", "2000")
+        hover_at_text(page, "plain-python", "len")
+        page.wait_for_timeout(1000)
+        assert page.locator(".cm-dewlab-doc-tooltip").count() == 0
+        page.wait_for_selector(".cm-dewlab-doc-tooltip", timeout=5_000)
