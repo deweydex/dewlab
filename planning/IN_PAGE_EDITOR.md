@@ -394,10 +394,13 @@ can tell at a glance, and a language model can too. Two parts:
   swallowed the line below, a list that stopped being a list, emphasis left
   open, a fold that opens and never closes, a verdict word that crept in. It
   reports with the line, the reason and a suggested fix, and changes nothing.
-- **A workflow** that runs it on a pull request touching `tutorials/` and
-  posts the result as a comment, never as a failing check. Whether this uses
-  the Claude review already available to the repository or a new workflow with
-  its own secret is something I cannot see from here. Say which you prefer.
+- **No workflow yet.** The skill is run by hand, on request, against a
+  changed page. That is your choice: no secret, no cost, and the chance to tune
+  what it flags on real pages before anything posts to a pull request. If
+  teachers' PRs start merging unreviewed, a workflow that runs the skill and
+  comments (never a failing check) is the next step. Whether it should use
+  the Claude review the repository may already have, or a new workflow with its
+  own secret, can wait until then.
 
 The WYSIWYG itself catches many of these first. A heading that swallowed a
 line is visible the moment it is typed. The review is for what the author did
@@ -427,7 +430,7 @@ Each step is a pull request that stands alone.
    counts above: `<details>` folds and solutions, then hints, predict and
    inputs, then questions and world variants, then notes. Rich forms for any
    of them after that.
-5. **The review skill and workflow,** which can start any time after step 1.
+5. **The review skill,** run by hand, which can start any time after step 1. A workflow is later, if wanted.
 6. **Retire `editor.html`'s overlap.** Move series reordering, frontmatter,
    release and the link picker to wherever they should live (some may belong
    in the in-page editor, some in a small admin page that stays). Delete only
@@ -439,7 +442,7 @@ Step 1 does not depend on the editor and I would start there.
 
 ## Assumptions I made, and questions I could not settle
 
-**Assumed: saved student work is out of scope.** I took your statement to mean
+**Decided: saved student work is out of scope.** I took your statement to mean
 that nobody is relying on any cell id or tutorial id today, so the plan does
 not design around them. I did not propose deleting the id rules, because ids
 do two jobs. One is keying saved work, which you have set aside. The other is
@@ -448,11 +451,11 @@ be told apart, which stays. In the documents above I would reduce the
 saved-work warning to a plain statement of fact and put one line in the
 decisions log saying it was dropped as a priority in October 2026 and why, so
 that the day a class starts relying on a page, the reason to restore it is
-findable. If you want it removed entirely instead, that is a smaller change.
+findable. You chose this over removing the rules entirely or keeping the full warning.
 
 **Decided: the button is always there, at the foot of Settings, with a how-to fold and a link, and `#edit` also works.** See *Where the button is*.
 
-**Open: includes.** My recommendation is the cheapest option: an included
+**Decided: includes link out to GitHub.** You said you do not mind this, so the plan takes the cheapest option: an included
 file is not editable in the page, and shows a small link that opens that file in
 GitHub's own editor, with the path visible so the teacher can see it is shared.
 That covers both uses, and it keeps an edit to one page from silently changing
