@@ -122,6 +122,63 @@ easier to test and debug.
 
 ---
 
+## What is on a page
+
+Before deciding what to edit in place, I counted what the 494 tutorial pages
+contain. Counts are of uses across all pages, and of pages that have at least
+one. (Earlier release files, `v<version>.md`, are left out.)
+
+| Block | Uses | Pages |
+|---|---|---|
+| Headings, bullet and numbered lists | thousands | 384 to 494 |
+| Python cell (`python exec`) | 3,003 | 370 |
+| `<details>` fold (the hint and answer folds) | 3,388 | 360 |
+| Inline maths (`$…$`) | 11,379 | 283 |
+| Illustrative code (a Python fence that does not run) | 943 | 207 |
+| World variant (`<div class="dl-world">`) | 1,090 | 201 |
+| Solution fence | 825 | 200 |
+| Predict fence | 385 | 195 |
+| Inputs fence (the comparison table) | 638 | 179 |
+| Hint fence (staged hints) | 653 | 172 |
+| Table | 2,331 rows | 182 |
+| Question fence | 1,121 | 148 |
+| Display maths (`$$`) | 521 | 147 |
+| Note (`<aside>`) | 124 | 106 |
+| Site editor (`html`/`css`/`js` site) | 404 panes | 86 |
+| Image | 60 | 56 |
+| `{{include: …}}` | 193 | 69 |
+| Toolkit reference | 50 | 38 |
+| SQL cell | 54 | 17 |
+| Full-stack app cell | 8 panes | 2 |
+| Typed fence, project div | 1 and 5 | 1 each |
+
+Two conclusions. First, the blocks my first draft left to "later" (folds,
+hints, solutions, predictions, questions, world variants) are not
+decoration. They are on a third to a half of all pages, and a teacher fixing
+a page will meet them as often as a paragraph. They belong in the first
+version, at least as editable source text. Second, the bottom of the table
+(app cells, typed fences, projects) is on one or two pages each and can stay
+source-only for as long as that is convenient.
+
+**What an include is for.** It is not a way of including other tutorial pages.
+It pastes a file from `setup/` into the page before the markdown is read. It
+has two uses, and they are different problems:
+
+- **Shared setup code, about 120 of the 193.** A cell loads the same dataset
+  or defines the same helper (`setup/matrices/transform.py`, `setup/cube.py`)
+  and the file sits in `setup/` so that a dozen pages do not each carry a copy.
+- **Shared prose, 71 of the 193.** Almost all of them are one file,
+  `setup/zen-calm-check.md`, the "A calm check" box that appears on 69 pages.
+  Two more pages include a short note on what to do when a cell does not do
+  what you expect.
+
+Either way, the included text is not in the page's own file, and editing it
+changes every page that includes it. That is usually what the author wants
+(change the calm check once, not 69 times), but it means an in-place edit
+would reach well beyond the page the teacher is looking at.
+
+---
+
 ## What a teacher sees
 
 **Where the button is.** At the very bottom of the Settings panel, below
@@ -168,8 +225,9 @@ Escape leaves editing.
 | A new cell | A slash command inserts one. The editor generates its id from the nearest heading and a counter; the teacher never types one |
 | Maths (`$…$`) | Click shows the TeX source in a small field; the rendered maths stays on the page. Whether the vendored Crepe build includes its maths feature is part of the spike |
 | Image | Replace text and alt in place. An alt is asked for when an image is inserted |
-| Hint, solution, predict, inputs, question, note, world, challenge, `<details>` | Edited as their source text in a plain box under the block, with a preview after. Rich editing of these can follow once the first version has been used |
-| `{{include: …}}`, generated blocks (`[[search-box]]`), the glossary, the chrome | Not editable here. The outline does not appear, and a tooltip says why |
+| Hint fence, solution, predict, inputs, question, note, `<details>` fold, world variant | Hint, solution, predict, inputs and question: edited as their source text in a plain box under the block, then re-rendered. A `<details>` fold and a note: the prose inside is edited in place like any prose; the fold's open/closed state and class are not touched. A world variant: its wrapper is untouched and the blocks inside are edited as their own kind. Rich editing of the fences (a form for a question's options, say) follows once the box has been used |
+| `{{include: …}}` | Shows a small link to the included file on GitHub (see below). Not editable in the page |
+| Generated blocks (`[[search-box]]`), the glossary, the page chrome | Not editable here. The outline does not appear, and a tooltip says why |
 | A frozen `v<version>.md` page | Not editable. The button says it is a past release |
 | Generated pages (contents, tree, map, all-notes) | The button does not appear |
 
@@ -365,8 +423,10 @@ Each step is a pull request that stands alone.
    teacher's guide it links to, the `#edit` address, the swap, the outline,
    save to a draft PR. `ARCHITECTURE.md` and
    `WRITING_TUTORIALS.md` updated in the same pull request.
-4. **The other blocks,** one kind at a time, in the order teachers ask for
-   them: hints and solutions, then predict and question, then notes and folds.
+4. **The other blocks,** as source-text boxes first, in the order of the
+   counts above: `<details>` folds and solutions, then hints, predict and
+   inputs, then questions and world variants, then notes. Rich forms for any
+   of them after that.
 5. **The review skill and workflow,** which can start any time after step 1.
 6. **Retire `editor.html`'s overlap.** Move series reordering, frontmatter,
    release and the link picker to wherever they should live (some may belong
@@ -392,9 +452,13 @@ findable. If you want it removed entirely instead, that is a smaller change.
 
 **Decided: the button is always there, at the foot of Settings, with a how-to fold and a link, and `#edit` also works.** See *Where the button is*.
 
-**Open: a page that includes another file.** The include's text is not in the
-page's own source. First version says not editable here. Is that acceptable for
-the setup cells that teachers will most want to change?
+**Open: includes.** My recommendation is the cheapest option: an included
+file is not editable in the page, and shows a small link that opens that file in
+GitHub's own editor, with the path visible so the teacher can see it is shared.
+That covers both uses, and it keeps an edit to one page from silently changing
+69 of them. The cost is that a teacher changing a setup cell leaves the page
+for that one block. Editing the included file in place, with a warning that
+N pages use it, is possible later and needs the save to write two files.
 
 **Open: one pull request per save, or per session.** I have assumed one branch
 per session. A teacher fixing three typos on three pages probably expects
