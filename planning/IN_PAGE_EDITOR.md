@@ -124,19 +124,33 @@ easier to test and debug.
 
 ## What a teacher sees
 
-**Where the button is.** Settings already has three tabs (Appearance,
-Behavior, Imports & Exports). Edit goes in Behavior, as a section. Once
-editing, Settings shows what is pending (three blocks changed), a **Discard**
-button and an **Open pull request** button. That keeps all the new chrome in
-the panel the page already has and leaves the page itself alone, which is the
-requirement.
+**Where the button is.** At the very bottom of the Settings panel, below
+everything else, a small **Edit this page** button. It is visible to
+everyone and meant to be seen by few: nobody scrolls that far unless they are
+looking for it, and a student who finds it loses nothing. Settings has three
+tabs (Appearance, Behavior, Imports & Exports), so it sits at the foot of
+whichever tab is open, or in a short footer row the panel already has room
+for; the choice is a layout detail for the build. Once editing, the same
+spot shows what is pending (three blocks changed), a **Discard** button and an
+**Open pull request** button. All the new chrome stays in the panel the page
+already has and the page itself is left alone, which is the requirement.
 
-**Who sees it.** My suggestion: the section appears only when a token is
-stored in that browser or the address ends in `#edit`. A first-time teacher
-goes to any page, adds `#edit`, pastes a token once, and from then on the
-section is there. Students never see a control they cannot use. The
-alternative, showing it to everyone, is simpler and costs a line of confusing
-text in every student's Settings. This is your call.
+**How a teacher finds out how to use it.** Next to the button is a collapsed
+**How editing works** fold, in the style the Settings panel already uses for
+its other details, and a link to a page in the repository that says the
+same at more length. Both cover: what the button does, that it opens a draft
+pull request and never changes the live site by itself, what a GitHub token
+is and the exact permissions it needs (contents and pull requests, write,
+this repository only), how to get one, and that adding `#edit` to any page's
+address switches editing on directly. That link target is a new document,
+written for a teacher who has never used GitHub, and is part of the first
+version, not a follow-up. The `#edit` address and the button do the same
+thing; the address exists so a teacher can bookmark or send it.
+
+Because students can see the button, its label and the fold's wording count
+as student-facing and follow `PEDAGOGICAL_STYLE_GUIDE.md#voice`. Pressing it
+without a token shows the token prompt and the same explanation, never an
+error.
 
 **What editing looks like.** Pressing Edit does not rebuild the page. Click
 into any block and that block becomes live: caret, normal typing, the same
@@ -347,8 +361,9 @@ Each step is a pull request that stands alone.
    a throwaway page that swaps one prose block and one cell and splices them
    back. Measure Crepe's normalisation across the corpus. At the end of this
    step we know whether B works, and what it costs, before building the UI.
-3. **Edit mode on prose and cells.** The Settings section, the swap,
-   the outline, save to a draft PR. `ARCHITECTURE.md` and
+3. **Edit mode on prose and cells.** The button, the how-to fold and the
+   teacher's guide it links to, the `#edit` address, the swap, the outline,
+   save to a draft PR. `ARCHITECTURE.md` and
    `WRITING_TUTORIALS.md` updated in the same pull request.
 4. **The other blocks,** one kind at a time, in the order teachers ask for
    them: hints and solutions, then predict and question, then notes and folds.
@@ -375,7 +390,7 @@ decisions log saying it was dropped as a priority in October 2026 and why, so
 that the day a class starts relying on a page, the reason to restore it is
 findable. If you want it removed entirely instead, that is a smaller change.
 
-**Assumed: the button shows only with a token or `#edit`.** See *Who sees it*.
+**Decided: the button is always there, at the foot of Settings, with a how-to fold and a link, and `#edit` also works.** See *Where the button is*.
 
 **Open: a page that includes another file.** The include's text is not in the
 page's own source. First version says not editable here. Is that acceptable for
