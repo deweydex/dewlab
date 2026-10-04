@@ -463,16 +463,16 @@ That covers both uses, and it keeps an edit to one page from silently changing
 for that one block. Editing the included file in place, with a warning that
 N pages use it, is possible later and needs the save to write two files.
 
-**Open: one pull request per save, or per session.** I have assumed one branch
-per session. A teacher fixing three typos on three pages probably expects
-one PR for the lot, which a session gives them, but it means keeping the
-branch name somewhere between page loads, which means `localStorage`.
+**Decided: one pull request per editing session.** One branch and one draft
+PR, each save adding a commit, so three typo fixes on three pages arrive as one
+review. The cost is keeping the branch name between page loads, in
+`localStorage`; a stale branch from an earlier session needs a sensible
+message when a teacher returns to it.
 
-**Open: the hand-written pages** (`pages/*.md`: home, about, features). They
-use cards and generated markers and a markdown-in-HTML convention. I have
-listed them as editable and expect the first version to treat the card
-and marker blocks as source-text blocks.
+**Decided: the hand-written pages are editable, prose only.** On `pages/*.md`
+(home, about, features) paragraphs, headings and lists edit in place. Cards
+and generated markers open as source text, like a hint does.
 
-**Open: phones.** Typing into a block on a phone with the settings panel as
-the only chrome may be awkward. I would test it on one real device early
-instead of designing for it now.
+**Decided: phones get one real-device test in the spike, not a design.** Typing
+into a block with the settings panel as the only chrome may be awkward, and the
+spike will say how awkward before any effort goes into it.
