@@ -352,7 +352,8 @@ builtins are out of scope for `docFor`.
 
 Four of these helpers can be switched off in Settings, under Appearance
 → Code: name suggestions, closing brackets and quotes, signature help,
-and hover docs (which also take a delay of 0.3, 1 or 2 seconds). Each
+and hover docs (which also take a delay of 0.3, 1, 2 or 4 seconds,
+2 seconds unless changed). Each
 sits in its own CodeMirror compartment in `createCodeEditor()`, so
 `setEditorAssists()` changes an editor that is already on the page.
 The choices are keys in `TEXTURE_DEFAULTS` (`suggestions`,
