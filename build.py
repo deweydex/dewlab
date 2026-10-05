@@ -266,11 +266,12 @@ ESCAPED_DOLLAR = "\x00dldollar\x00"
 # which ones to look inside — see mark_markdown_wrappers(). Scoped to these
 # known tag/class pairs rather than to any element a page happens to write.
 MARKDOWN_WRAPPER_RE = re.compile(
-    r'<details class="(?:dl-hint|dl-answer|dl-why)">'
+    r'^ {0,3}<details\b(?![^>\n]*\bmarkdown=)[^>\n]*>'
     r'|<(?:div|ul) class="(?:dl-hero|dl-audience|dl-attribution|dl-feature-list)">'
     r'|<aside class="dl-note" id="[^"]+">'
     r'|<div class="dl-world" data-world="[a-z0-9-]+">'
-    r'|<div class="dl-project" data-project="[a-z0-9-]+">'
+    r'|<div class="dl-project" data-project="[a-z0-9-]+">',
+    re.MULTILINE,
 )
 # A closer's challenge (#316): the language of each starter fence, and where
 # each kind opens, relative to the site root, with its button's words.
@@ -1983,6 +1984,25 @@ def place_projects(body_html: str, projects: dict[str, dict], path: Path) -> str
     return PROJECT_DIV_RE.sub(anchor, body_html)
 
 
+def check_fences_closed(body: str, path: Path) -> None:
+    """Stops the build when a ``` fence is opened and never closed.
+
+    `FENCE_RE` only matches a fence that closes, so an unclosed one is left
+    in the text and markdown reads everything after it as code: the rest of
+    the page becomes one grey block, with no error to say why. A line that
+    starts with ``` and sits outside every matched fence is that opener.
+    This needs no judgement about what the author meant, which is why it
+    refuses while the style rules around it do not (DECISIONS_LOG 7.295).
+    """
+    matched = [m.span() for m in FENCE_RE.finditer(body)]
+    for opener in re.finditer(r"^ *```", body, re.MULTILINE):
+        if not any(start <= opener.start() < end for start, end in matched):
+            line = body.count("\n", 0, opener.start()) + 1
+            fail(path, f"the code fence on line {line} of the page text is opened and "
+                       f"never closed, so everything after it would show as code — "
+                       f"close it with a line holding only ```")
+
+
 def extract_blocks(
     body: str, path: Path, spans: list[WorldSpan] | None = None,
 ) -> tuple[str, list[Cell], list[CodeBlock], list[StagedHint], list[SiteEditor], list[Question],
@@ -2007,6 +2027,7 @@ def extract_blocks(
     All six leave the source before the markdown converter runs, so
     nothing inside any of them can be reinterpreted as markup.
     """
+    check_fences_closed(body, path)
     cells: list[Cell] = []
     blocks: list[CodeBlock] = []
     hints: list[StagedHint] = []
@@ -2693,6 +2714,12 @@ def mark_markdown_wrappers(body: str) -> str:
     strips the attribute from the output. Adding it here rather than
     asking authors to write it keeps the source plain, and keeps which
     elements get parsed a decision this file makes.
+
+    Any `<details>` that starts a line is marked, whatever its class or
+    attributes, so a fold written without one of the three project classes
+    still has its markdown converted rather than shown as literal asterisks
+    and backticks. Only a tag at the start of a line counts, so a sentence
+    that mentions `<details>` in backticks is left alone.
 
     A `<ul class="dl-feature-list">` needs no special case: `md_in_html`
     already knows a `<ul>` holds `<li>` children, so a markdown bullet
@@ -4877,20 +4904,20 @@ def check_alt_text(tutorial: Tutorial) -> None:
 
 
 def check_folds(tutorial: Tutorial) -> None:
-    """Every `<details>` names a fold this project styles.
+    """Say so when a `<details>` names none of the project's fold styles.
 
-    Cheap, and it catches the one mistake this markup invites: writing a bare
-    `<details><summary>` because that is what HTML documents show. The class is
-    where the styling and the marker come from, so a fold without one is
-    invisible as a fold — it renders as a browser default triangle that does not
-    look like part of the page.
+    A note, not a refusal (DECISIONS_LOG 7.295). A fold with no class still
+    works: its markdown is converted (`mark_markdown_wrappers()`) and a reader
+    can open it. What it lacks is the project's look and marker, so it shows
+    as the browser's default triangle. That is worth telling the author, and
+    nothing a reader's page depends on, so it does not stop the build.
     """
     for tag in DETAILS_RE.findall(tutorial.body_html):
         if not any(name in tag for name in FOLD_CLASSES):
-            fail(tutorial.path,
-                 f"a fold names no style: {tag} — use "
-                 f'class="dl-hint" for steps, class="dl-answer" for an answer, or '
-                 f'class="dl-why" for why a page chose as it did')
+            print(f"note: {tutorial.path.relative_to(ROOT)}: a fold names no style: "
+                  f'{tag} — class="dl-hint" (steps), class="dl-answer" (an answer) or '
+                  f'class="dl-why" (why a page chose as it did) gives it the '
+                  f"project's look", file=sys.stderr)
 
 
 # The build runs every solution before a reader can see it (#312), in a

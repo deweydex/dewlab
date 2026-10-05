@@ -743,9 +743,10 @@ class TestNotesAndDatasets:
 
 
 class TestFolds:
-    """A `<details>` must name a fold class; an earlier style-guide draft
-    showed a bare one, which renders as a plain browser triangle with none
-    of this project's styling."""
+    """A `<details>` should name a fold class, and the build says so when it
+    does not (DECISIONS_LOG 7.295). A bare one still builds: its markdown is
+    converted and it opens, but it shows as a plain browser triangle with
+    none of this project's styling."""
 
     def test_an_answer_fold_and_a_hint_fold_are_fine(self, repo):
         write(repo, '<details class="dl-answer"><summary>answer</summary>\n\n'
@@ -757,13 +758,27 @@ class TestFolds:
         assert "dl-hint" in built(repo)
 
     @pytest.mark.parametrize("markdown", [
-        "<details><summary>Check solution</summary>\n\nHere.\n\n</details>\n",
-        '<details class="solution"><summary>answer</summary>\n\nHere.\n\n</details>\n',
+        "<details><summary>Check solution</summary>\n\nHere, **bold**.\n\n</details>\n",
+        '<details class="solution"><summary>answer</summary>\n\nHere, **bold**.\n\n</details>\n',
     ], ids=["no_class", "wrong_class"])
-    def test_a_fold_naming_no_recognised_style_stops_the_build(self, repo, markdown):
+    def test_a_fold_naming_no_recognised_style_builds_and_says_so(self, repo, markdown, capsys):
         write(repo, markdown)
-        with pytest.raises(b.BuildError, match="names no style"):
-            b.build()
+        b.build()
+        assert "a fold names no style" in capsys.readouterr().err
+        # Its markdown is converted, not shown as literal asterisks.
+        assert "<strong>bold</strong>" in built(repo)
+
+    def test_a_recognised_fold_gets_no_note(self, repo, capsys):
+        write(repo, '<details class="dl-hint"><summary>stuck?</summary>\n\n'
+                    "Try it.\n\n</details>\n")
+        b.build()
+        assert "names no style" not in capsys.readouterr().err
+
+    def test_a_sentence_that_mentions_details_in_backticks_is_left_alone(self, repo):
+        write(repo, "Write `<details>` to make a fold.\n")
+        b.build()
+        assert "<code>&lt;details&gt;</code>" in built(repo)
+        assert 'markdown="1"' not in built(repo)
 
     def test_the_stylesheet_defines_both(self):
         """A fold whose class has no rule is as invisible as one with no class."""
@@ -794,6 +809,32 @@ class TestFolds:
         # never went through the top-level extract_math() call the flag
         # used to be computed from.
         assert manifest(page)["math"] is True
+
+
+class TestFencesMustClose:
+    """An unclosed ``` fence turns the rest of the page into one code block
+    with no error to say why, so the build refuses it and names the line
+    (DECISIONS_LOG 7.295). This is the one house habit about fences that
+    breaks a page for a reader."""
+
+    def test_an_unclosed_fence_stops_the_build_and_names_its_line(self, repo):
+        write(repo, "# A page\n\nSome prose.\n\n```python\nprint(1)\n\nMore prose.\n")
+        with pytest.raises(b.BuildError, match=r"line 5 .* never closed"):
+            b.build()
+
+    def test_an_unclosed_fence_after_a_closed_one_is_still_found(self, repo):
+        write(repo, "```python\nprint(1)\n```\n\nProse.\n\n```python\nprint(2)\n")
+        with pytest.raises(b.BuildError, match=r"line 7 .* never closed"):
+            b.build()
+
+    def test_closed_fences_of_every_kind_build(self, repo):
+        write(repo, "```python\nprint(1)\n```\n\n```text\nplain\n```\n\n"
+                    "```python exec\nid: one\nprint(2)\n```\n")
+        b.build()
+
+    def test_a_backtick_span_in_prose_is_not_a_fence(self, repo):
+        write(repo, "Write ``` on its own line to start a fence, or `code` inline.\n")
+        b.build()
 
 
 class TestTwoReleasesOnOneDay:

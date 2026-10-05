@@ -1097,7 +1097,7 @@ more of the course is behind you", followed by the other tutorials it draws
 on — so a reader can see at a glance whether it's for them yet.
 *Cost to change: about thirty lines of build.py and four tests.*
 
-**7.52 — Two folds, and a build check that a fold names one of them.**
+**7.52 — Two folds, and a build check that a fold names one of them.** *(The check became a note, not a refusal, in 7.295.)*
 Per Josh's request for hint dropdowns with steps and a follow-up reflection:
 `dl-hint` holds numbered steps and closes with a **Think about** and a **Try
 this next**; `dl-answer` holds the answer. The hint comes first, in a warmer
@@ -5780,3 +5780,16 @@ Closing brackets removes `closeBracketsKeymap` with `closeBrackets()`. Left in, 
 Not done: dewmini's editors do not read these settings.
 
 *Cost to change: four keys in `TEXTURE_DEFAULTS`, four rows in `assets/shell.html`, `editorAssists()`, and the compartments in `createCodeEditor()`. Removing them leaves every page as it was.*
+
+**7.295 — A bare fold builds with a note, and an unclosed fence stops the build.** Josh, 4 and 5 October 2026, planning an editor that works on the page itself (`planning/IN_PAGE_EDITOR.md`): tests and checks should block a merge only when something would break for a reader, and a teacher's good page should not be stopped by a house habit. Ten minutes with the real build on twenty-four plausible edits showed two refusals in the wrong place.
+
+- **A `<details>` with no recognised class used to stop the build (7.52).** It was guarding more than a look: Python-Markdown treats a raw HTML block as opaque, so a bare fold's `**bold**` and backticks reached the page as literal characters. `mark_markdown_wrappers()` now marks every `<details>` that starts a line, whatever its class, so the markdown converts; `check_folds()` prints a note instead of failing. A sentence that mentions `<details>` in backticks is left alone, because only a tag at the start of a line counts.
+- **An unclosed ``` fence used to build.** `FENCE_RE` matches only a fence that closes, so the opener stayed in the text and the rest of the page became one grey code block, with nothing to say why. `check_fences_closed()` in `extract_blocks()` now refuses and names the line. It needs no judgement about intent, which is the line between it and the rules the style guide leaves to a reader. The old editor's `problems()` already warned about this; the build now agrees.
+
+Checked on the real site: all 627 built tutorial pages are byte-identical to the build before this change, and no page prints the new note or trips the new refusal.
+
+Also corrected: the documents said an `<img>` without `alt` fails the build. That is true of a raw tag only; a markdown image is written with `alt=""`, which counts as decoration, so `![](p.png)` builds.
+
+Not done: a markdown image with an empty description is still allowed. The in-page editor should ask for the words when an image goes in, which is cheaper than a refusal.
+
+*Cost to change: `check_folds()` back to `fail()`, the `<details>` alternative in `MARKDOWN_WRAPPER_RE` back to the three classes, and the `check_fences_closed()` call in `extract_blocks()`. The tests in `TestFolds` and `TestFencesMustClose` say what each does.*
