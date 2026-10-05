@@ -5781,6 +5781,12 @@ Not done: dewmini's editors do not read these settings.
 
 *Cost to change: four keys in `TEXTURE_DEFAULTS`, four rows in `assets/shell.html`, `editorAssists()`, and the compartments in `createCodeEditor()`. Removing them leaves every page as it was.*
 
+**7.294, addendum — the hover help starts at two seconds.** Josh, 5 October 2026: "can we make the tooltips come after a longer delay?", then "lets have the default be 2 seconds".
+
+The first version kept CodeMirror's 0.3 s as the default, so a page behaved as before. That does not help in a classroom. The setting is kept in each browser (`TEXTURE_KEY`), so a teacher who changes it on one machine has changed nothing on the students' machines. `TEXTURE_DEFAULTS.hoverDelay` is now 2000 (it was first set to 1000), and the row gains a 4 s choice (off, 0.3 s, 1 s, 2 s, 4 s). A browser that already saved a texture without `hoverDelay` gets the new default; one that saved its own choice keeps it. Dewmini's editors keep 0.3 s.
+
+*Cost to change: one number in `TEXTURE_DEFAULTS` and one button in `assets/shell.html`.*
+
 **7.295 — A bare fold builds with a note, and an unclosed fence stops the build.** Josh, 4 and 5 October 2026, planning an editor that works on the page itself (`planning/IN_PAGE_EDITOR.md`): tests and checks should block a merge only when something would break for a reader, and a teacher's good page should not be stopped by a house habit. Ten minutes with the real build on twenty-four plausible edits showed two refusals in the wrong place.
 
 - **A `<details>` with no recognised class used to stop the build (7.52).** It was guarding more than a look: Python-Markdown treats a raw HTML block as opaque, so a bare fold's `**bold**` and backticks reached the page as literal characters. `mark_markdown_wrappers()` now marks every `<details>` that starts a line, whatever its class, so the markdown converts; `check_folds()` prints a note instead of failing. A sentence that mentions `<details>` in backticks is left alone, because only a tag at the start of a line counts.
