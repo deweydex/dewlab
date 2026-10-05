@@ -5781,8 +5781,8 @@ Not done: dewmini's editors do not read these settings.
 
 *Cost to change: four keys in `TEXTURE_DEFAULTS`, four rows in `assets/shell.html`, `editorAssists()`, and the compartments in `createCodeEditor()`. Removing them leaves every page as it was.*
 
-**7.294, addendum — the hover help starts at one second.** Josh, 5 October 2026: "can we make the tooltips come after a longer delay?"
+**7.294, addendum — the hover help starts at two seconds.** Josh, 5 October 2026: "can we make the tooltips come after a longer delay?", then "lets have the default be 2 seconds".
 
-The first version kept CodeMirror's 0.3 s as the default, so a page behaved as before. That does not help in a classroom. The setting is kept in each browser (`TEXTURE_KEY`), so a teacher who changes it on one machine has changed nothing on the students' machines. `TEXTURE_DEFAULTS.hoverDelay` is now 1000, and the row gains a 4 s choice (off, 0.3 s, 1 s, 2 s, 4 s). A browser that already saved a texture without `hoverDelay` gets the new default; one that saved its own choice keeps it. Dewmini's editors keep 0.3 s.
+The first version kept CodeMirror's 0.3 s as the default, so a page behaved as before. That does not help in a classroom. The setting is kept in each browser (`TEXTURE_KEY`), so a teacher who changes it on one machine has changed nothing on the students' machines. `TEXTURE_DEFAULTS.hoverDelay` is now 2000 (it was first set to 1000), and the row gains a 4 s choice (off, 0.3 s, 1 s, 2 s, 4 s). A browser that already saved a texture without `hoverDelay` gets the new default; one that saved its own choice keeps it. Dewmini's editors keep 0.3 s.
 
 *Cost to change: one number in `TEXTURE_DEFAULTS` and one button in `assets/shell.html`.*

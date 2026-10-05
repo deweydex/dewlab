@@ -66,14 +66,14 @@ const TEXTURE_DEFAULTS = {
   linenumbers: "on",
   // The four helpers a teacher may want quieter in front of a class. All on
   // by default. hoverDelay is how many milliseconds the pointer rests on a
-  // name before its doc appears, and 0 means never. It starts at a full
-  // second, not CodeMirror's 300: this choice is kept per browser, so a
+  // name before its doc appears, and 0 means never. It starts at two
+  // seconds, not CodeMirror's 300: this choice is kept per browser, so a
   // teacher cannot set it for a room of students' machines, and a doc that
   // appears whenever the pointer crosses the code gets in a beginner's way.
   suggestions: "on",
   closeBrackets: "on",
   signatureHelp: "on",
-  hoverDelay: 1000,
+  hoverDelay: 2000,
 };
 
 const TEXTURE_MIN_SIZE = 16;
