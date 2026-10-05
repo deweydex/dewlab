@@ -344,3 +344,14 @@ class TestEditorHelperSettings:
         page.wait_for_timeout(1000)
         assert page.locator(".cm-dewlab-doc-tooltip").count() == 0
         page.wait_for_selector(".cm-dewlab-doc-tooltip", timeout=5_000)
+
+    def test_hover_help_waits_a_full_second_unless_changed(self, page):
+        """The default is one second, not CodeMirror's 0.3: the setting is per browser, so a teacher cannot set it for a room of students' machines."""
+        cell = cell_content(page, "plain-python")
+        cell.click()
+        page.keyboard.press("Control+End")
+        page.keyboard.insert_text("\nlen([1, 2, 3])")
+        hover_at_text(page, "plain-python", "len")
+        page.wait_for_timeout(600)
+        assert page.locator(".cm-dewlab-doc-tooltip").count() == 0
+        page.wait_for_selector(".cm-dewlab-doc-tooltip", timeout=5_000)
