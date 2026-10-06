@@ -1770,13 +1770,13 @@ def open_cell_type_settings(page):
     page.wait_for_selector("#dl-settings-cell-types")
 
 
-def test_web_and_sql_default_off_javascript_defaults_on(page, dewmini_url):
-    """A reader turns on what they mean to use, rather than finding every
-    cell type dewmini knows about crowded onto every seam."""
+def test_web_defaults_off_sql_and_javascript_default_on(page, dewmini_url):
+    """Web is the one extra a reader turns on when they mean to use it;
+    SQL and JavaScript are offered from the first visit."""
     fresh_page(page, dewmini_url)
     buttons = page.locator(".dm-insert-btn").all_inner_texts()
     assert "Web" not in buttons
-    assert "SQL" not in buttons
+    assert "SQL" in buttons
     assert "JS" in buttons
 
 

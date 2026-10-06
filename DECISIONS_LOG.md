@@ -5799,3 +5799,9 @@ Also corrected: the documents said an `<img>` without `alt` fails the build. Tha
 Not done: a markdown image with an empty description is still allowed. The in-page editor should ask for the words when an image goes in, which is cheaper than a refusal.
 
 *Cost to change: `check_folds()` back to `fail()`, the `<details>` alternative in `MARKDOWN_WRAPPER_RE` back to the three classes, and the `check_fences_closed()` call in `extract_blocks()`. The tests in `TestFolds` and `TestFencesMustClose` say what each does.*
+
+**7.296 — SQL cells are offered on every seam from the first visit.** Josh, 6 October 2026: "can you turn on SQL cells in the dewmini (notebook) ide? I think now its just python and text?"
+
+7.122 shipped SQL behind a Settings → Cell types toggle that started off, so a fresh browser showed only Python, Text and JS on the seam. SQL is the reason several tutorials point readers at dewmini, and a toggle nobody knows to look for hides it. `CELL_TYPE_TOGGLES` now has `defaultOn: true` for SQL. Web stays off. The toggle is kept per browser, so a reader who already switched SQL off keeps it off, and one who never touched it sees the new default.
+
+*Cost to change: one flag in `CELL_TYPE_TOGGLES` and the default-state test in `tests/e2e/test_dewmini_workbench.py`.*
