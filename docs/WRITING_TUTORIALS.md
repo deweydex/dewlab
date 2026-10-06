@@ -1218,8 +1218,11 @@ video. A reference to a file that is not in the folder stops the build, for the
 same reason a dead `tutorial:` link does — the alternative is a page that looks
 finished to everyone except the student who opens it.
 
-Every `<img>` needs an `alt` attribute or the build stops. An explicit `alt=""`
-is accepted, and is how you mark an image as decorative.
+A raw `<img>` tag needs an `alt` attribute or the build stops. An explicit
+`alt=""` is accepted, and is how you mark an image as decorative. A markdown
+image, `![](file.png)`, is written with `alt=""` when you leave the text out, so
+it builds. Put the words in the brackets when the picture shows something a
+reader who cannot see it would miss.
 
 ---
 
@@ -1299,9 +1302,10 @@ can get stuck:
 Two folds, opened in order, so a stuck student gets a route rather than an
 answer. The reflection and the follow-on question at the end matter as much as
 the steps: a hint that ends at the answer teaches the answer, and one that ends
-in a related question teaches the method. The build fails if a `<details>`
-appears without one of these classes (or `dl-why`, below), so a fold cannot be
-added without the styling that makes it work.
+in a related question teaches the method. A `<details>` with none of these
+classes (or `dl-why`, below) still builds and its markdown is converted, and the
+build prints a note, because without a class the fold shows as the browser's
+plain triangle and none of the site's styling.
 
 Write toward a few tools per section rather than a cell per problem — one
 `python exec` cell holding the helpers a section needs, rather than sixty

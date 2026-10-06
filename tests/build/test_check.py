@@ -114,6 +114,21 @@ def test_a_good_tree_has_no_problems_only_notes_and_a_whole_site_check_never_off
     assert code == 0
 
 
+def test_a_fence_that_never_closes_is_a_problem_and_a_closed_one_is_not(site) -> None:
+    """The build refuses an unclosed fence (DECISIONS_LOG 7.295), so check.py
+    names it first, with the line. A page whose fences all close is clean,
+    and so is a backtick span that merely contains three backticks."""
+    root, check = site
+    tutorial(root, "open", body="Prose.\n\n```python\nprint(1)\n")
+    code, out = run_check(check, "tutorials/open")
+    assert code != 0
+    assert "opened and never closed" in out and "line 11" in out
+
+    tutorial(root, "shut", body="```python\nprint(1)\n```\n\nWrite ``` to open a fence.\n")
+    code, out = run_check(check, "tutorials/shut")
+    assert "never closed" not in out
+
+
 def test_every_problem_in_one_tutorial_is_named_and_so_is_an_unknown_path(site) -> None:
     """One tutorial carrying every mistake check.py calls a Problem, a
     course listing an id with no folder, and a path that is neither."""

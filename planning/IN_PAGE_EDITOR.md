@@ -412,12 +412,15 @@ not notice.
 
 Each step is a pull request that stands alone.
 
-1. **Audit and the test principle.** Read every build refusal and every test
-   that touches real tutorials. Sort each into blocking or advisory against the
-   rule above. Move the advisory ones (the `test_courses.py` topic-group check
-   is the first I know of). Rewrite the relevant parts of `tests-explained.md`
-   and `HOW_DEWLAB_THINKS.md`. This is independent of everything below and
-   removes the friction you described before editors multiply it.
+1. **Audit and the test principle. Done (DECISIONS_LOG 7.295).** Most of the
+   sorting had been done in 7.291. Running twenty-four plausible teacher edits
+   through the real build found two refusals in the wrong place. A bare
+   `<details>` now builds, with its markdown converted, and the build says
+   so in a note. An unclosed code fence, which silently turned the rest of a
+   page into code, is now refused by the build and by `check.py`. The block and
+   advisory lists in `HOW_DEWLAB_THINKS.md` and `tests-explained.md` were
+   rewritten around one rule, and the claim that an `<img>` without `alt` always
+   fails was corrected.
 2. **The spike.** The source map in `build.py` and its round-trip test. Then
    a throwaway page that swaps one prose block and one cell and splices them
    back. Measure Crepe's normalisation across the corpus. At the end of this
@@ -436,7 +439,7 @@ Each step is a pull request that stands alone.
    in the in-page editor, some in a small admin page that stays). Delete only
    what has a replacement.
 
-Step 1 does not depend on the editor and I would start there.
+The next step is 2.
 
 ---
 

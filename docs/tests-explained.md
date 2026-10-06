@@ -159,6 +159,15 @@ marked `@pytest.mark.advisory`. A plain `python3 -m pytest` leaves them out,
 `python3 -m pytest -m advisory` runs only them, and CI's `house-style` job
 runs them and reports a failure as a warning (`DECISIONS_LOG.md` 7.291).
 
+Put as one rule: a check blocks a merge only if its failure means a page does
+not load, a cell cannot run, a link or asset points at nothing, a number the
+page states is wrong, or the interface shows an error or a broken layout.
+Anything that depends on what the author meant is a note for the author or a
+review by a reader, never a test. The same rule applies to the build's own
+refusals: `check_folds()` is a note, and `check_fences_closed()` refuses,
+because an unclosed fence breaks the page whatever the author meant
+(`DECISIONS_LOG.md` 7.295).
+
 Where one test checked both kinds of thing, it was split, so the half a page
 depends on still blocks: a topic has a name and a description, because the
 build reads both, while how long the description is was left to the advisory

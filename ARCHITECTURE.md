@@ -79,9 +79,15 @@ The pipeline, in order:
 
 4. **Resolve cross-tutorial links and validate structure.** A
    `tutorial:slug#anchor` link becomes a real relative href or the build
-   fails. `<img>` without `alt` fails the same way, as does a `<details>`
-   fold without `dl-hint`/`dl-answer`. `problems()` in `editor.js` (§3) runs
-   the same checks client-side, before a commit rather than after CI.
+   fails. A raw `<img>` tag without `alt` fails the same way (a markdown
+   `![](file.png)` is written with `alt=""`, which counts as decorative), and so
+   does a ``` fence that is opened and never closed, which would otherwise turn
+   the rest of the page into one code block (`check_fences_closed()`). A
+   `<details>` fold without `dl-hint`, `dl-answer` or `dl-why` gets a note on
+   stderr and builds, its markdown converted like any fold's
+   (`check_folds()`, DECISIONS_LOG 7.295). `problems()` in `editor.js` (§3)
+   runs the structural checks client-side, before a commit rather than after
+   CI.
 
 5. **Assemble navigation.** `series_of()`, `versions_of()`, `practice_pairs()`,
    `mixed_practice()`, `context_pages()`, `archived_of()` read
