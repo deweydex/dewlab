@@ -34,7 +34,7 @@ const CELL_TYPES = { PYTHON: "python", TEXT: "text", WEB: "web", SQL: "sql", JAV
 
 const CELL_TYPE_TOGGLES = [
   { type: CELL_TYPES.WEB, dm: "celltype-web", key: "dewmini:celltype-web", defaultOn: false },
-  { type: CELL_TYPES.SQL, dm: "celltype-sql", key: "dewmini:celltype-sql", defaultOn: false },
+  { type: CELL_TYPES.SQL, dm: "celltype-sql", key: "dewmini:celltype-sql", defaultOn: true },
   { type: CELL_TYPES.JAVASCRIPT, dm: "celltype-javascript", key: "dewmini:celltype-javascript", defaultOn: true },
 ];
 
@@ -1154,8 +1154,8 @@ function createInsertDivider(index) {
   actions.append(addPy, addTxt);
 
   // Web, SQL and JavaScript only offer themselves here once their own
-  // Settings → "Cell types" toggle is on (CELL_TYPE_TOGGLES) — Web and
-  // SQL start off, JavaScript starts on.
+  // Settings → "Cell types" toggle is on (CELL_TYPE_TOGGLES) — Web
+  // Web starts off, SQL and JavaScript start on.
   if (enabledCellTypes.has(CELL_TYPES.WEB)) {
     const addWeb = document.createElement("button");
     addWeb.type = "button";

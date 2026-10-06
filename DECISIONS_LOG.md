@@ -5786,3 +5786,9 @@ Not done: dewmini's editors do not read these settings.
 The first version kept CodeMirror's 0.3 s as the default, so a page behaved as before. That does not help in a classroom. The setting is kept in each browser (`TEXTURE_KEY`), so a teacher who changes it on one machine has changed nothing on the students' machines. `TEXTURE_DEFAULTS.hoverDelay` is now 2000 (it was first set to 1000), and the row gains a 4 s choice (off, 0.3 s, 1 s, 2 s, 4 s). A browser that already saved a texture without `hoverDelay` gets the new default; one that saved its own choice keeps it. Dewmini's editors keep 0.3 s.
 
 *Cost to change: one number in `TEXTURE_DEFAULTS` and one button in `assets/shell.html`.*
+
+**7.295 — SQL cells are offered on every seam from the first visit.** Josh, 6 October 2026: "can you turn on SQL cells in the dewmini (notebook) ide? I think now its just python and text?"
+
+7.122 shipped SQL behind a Settings → Cell types toggle that started off, so a fresh browser showed only Python, Text and JS on the seam. SQL is the reason several tutorials point readers at dewmini, and a toggle nobody knows to look for hides it. `CELL_TYPE_TOGGLES` now has `defaultOn: true` for SQL. Web stays off. The toggle is kept per browser, so a reader who already switched SQL off keeps it off, and one who never touched it sees the new default.
+
+*Cost to change: one flag in `CELL_TYPE_TOGGLES` and the default-state test in `tests/e2e/test_dewmini_workbench.py`.*
