@@ -46,6 +46,9 @@ ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 VERSION_RE = re.compile(r"^\d{4}\.\d{2}\.\d{2}\.\d+$")
 FENCE_RE = re.compile(r"^```(\w+)[ \t]+exec[^\n]*\n(.*?)^```", re.M | re.S)
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)|<img[^>]+src=\"([^\"]+)\"")
+# The build's own fence pattern (build.py FENCE_RE): one that closes. A line
+# starting ``` outside every one of these is a fence that never closed.
+CLOSED_FENCE_RE = re.compile(r"^ *```[^\n]*\n.*?^ *```[ \t]*$", re.M | re.S)
 CODE_RE = re.compile(r"```.*?```|`[^`\n]*`", re.S)  # fences and code spans: examples, not images
 OLD_FIELDS = ("module", "module_title", "series", "slug")
 
@@ -177,6 +180,15 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         report.problem(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. Where a tutorial sits is written in `courses/`, not here.")
     if not any(k in fields for k in OLD_FIELDS) and all(fields.get(k) for k in ("title", "year", "version")):
         report.ok("The frontmatter has title, year and version, and nothing about placement.")
+
+    # a fence that opens and never closes turns the rest of the page into code
+    closed = [m.span() for m in CLOSED_FENCE_RE.finditer(body)]
+    for opener in re.finditer(r"^ *```", body, re.M):
+        if not any(start <= opener.start() < end for start, end in closed):
+            line = text.count("\n", 0, text.rfind(body)) + body.count("\n", 0, opener.start()) + 1
+            report.problem(f"`{ident}.md`: the code fence on line {line} is opened and never closed, "
+                           "so everything after it would show as code. Close it with a line holding only ```.")
+            break
 
     # cells
     ids: list[str] = []

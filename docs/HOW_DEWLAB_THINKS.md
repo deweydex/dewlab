@@ -243,14 +243,21 @@ fail, when a page would break for somebody. In practice that means:
   image, a dataset, an include.
 - **Every solution runs.** For the reason in
   [Code on the page](#code-on-the-page).
-- **Every image says what it shows.** An `alt` on every picture, so a reader
-  with a screen reader is not left out; `alt=""` marks one as decoration.
+- **Every image says what it shows.** An `alt` on every `<img>` tag, so a
+  reader with a screen reader is not left out; `alt=""` marks one as
+  decoration, and a markdown image gets that by default.
 
-A few of the build's refusals sit closer to house convention than to
-breakage — a `<details>` fold has to name one of the three styles the site
-draws (`DECISIONS_LOG.md` 7.52), for instance. They are there because the
-mistake is easy to make and the fix takes a second. If one of them stops you
-writing the page you want, that is worth raising.
+The test for putting something on this list is whether a reader's page breaks
+without it: it does not load, a cell cannot run, a link or file points at
+nothing, a number the page states is wrong, or the interface shows an error or
+a broken layout. Anything that depends on what the author meant belongs in
+the next two tiers.
+
+A fold with none of the three styles the site draws (`DECISIONS_LOG.md` 7.52)
+used to be on this list and is not any more: it still opens and its markdown
+still converts, it just looks like the browser's own triangle, so the build
+says so and carries on (7.295). If another refusal stops you writing the page
+you want, and the page would still work, that is worth raising.
 
 **What is reported and never blocks.** Some checks look after the project's
 own planning rather than any page: the curriculum map in
