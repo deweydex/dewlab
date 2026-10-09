@@ -37,15 +37,15 @@ type: number
 What will it print?
 ```
 
-It prints 3. `while True` would go round for ever, because `True` never
+It prints 3. `while True` would repeat forever, because `True` never
 becomes `False`. `break` leaves the loop at once, from wherever it is, and
 the program continues after the loop.
 
 Every program on this site so far has lived in cells: run one, look at the
 answer, change something, run it again. A program somebody else can use is
 different. It runs from its first line to its last, asks the person using
-it what to do, keeps going until they tell it to stop, and copes when they
-type something unexpected. This page makes that step, and then shows how a
+it what to do, keeps going until they tell it to stop, and handles
+something unexpected that they type. This page makes that step, and then shows how a
 team builds such a program in three releases. The team project, two pages
 on, assumes all of it.
 
@@ -79,8 +79,8 @@ while True:
 print("Goodbye.")
 ```
 
-The program keeps asking until you choose 9. While it waits, the cell's
-**Run** button is **Stop**: press it to leave without choosing 9. This is
+The program keeps asking until you choose `9`. While it waits, the cell's
+**Run** button becomes **Stop**: press it to leave without choosing 9. This is
 the same program you would run on your own computer, and there it waits
 for you in the same way.
 
@@ -144,7 +144,7 @@ OTTER
 
 ## Asking until the answer makes sense
 
-A person will type anything: `seven` where a number was wanted, 30 where
+A person will type anything: `seven` where a number was wanted, `30` where
 the most is 25, nothing at all. A program has to decide what to do with
 it, and the kindest answer is usually to say what it wanted, and ask
 again. `.isdigit()` is `True` when a string is all digits, so `int()` can
@@ -207,8 +207,8 @@ def first_valid(answers, low, high):
     return None
 ---
 `"-3"` and `"7.5"` are not all digits, so neither counts: `.isdigit()`
-says no to a minus sign and to a point. Is that right for a shift? Yes.
-For a temperature, it would not be. Keeping the deciding in its own
+says no to a minus sign and to a point. That suits a shift. For a
+temperature, a minus sign would have to count. Keeping the deciding in its own
 function is what lets a test check it with no person typing.
 ```
 
@@ -401,7 +401,7 @@ Each release was something a person could play on the day it came out.
 ## Templates for a team
 
 Copy these into a shared document, or into a file beside your code, and
-complete them. Each is short on purpose.
+write your own words in the gaps. Each is short on purpose.
 
 **An interface agreement**, written before anybody writes code, for each
 place where one person's code calls another's:
@@ -449,9 +449,9 @@ when told to, a question asked again until the answer makes sense, or a
 program that starts at `main()`? What would you try, to make it clearer to
 yourself?
 
-A challenge: build Release 1 of a game of your own, in any world you
-like, on the same shape: a loop, a way to quit, and an answer checked with
-care.
+A challenge: can you build Release 1 of a game of your own, in any world
+you like? Use the same shape: a loop, a way to quit, and an answer checked
+with care.
 
 ```python challenge
 def main():

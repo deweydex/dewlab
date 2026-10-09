@@ -2,7 +2,7 @@
 title: "How programming languages came to be — Practice"
 practice_for: how-we-got-here
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -10,7 +10,7 @@ worlds:
 
 # How programming languages came to be — Practice
 
-Problems on *binary*{.term}, *hexadecimal*{.term} and *ASCII*{.term}, on the history and the
+Problems on *binary*{.term} and *hexadecimal*{.term}, on the history and the
 *paradigms*{.term}, and three from earlier pages. Try the conversions by hand
 before you use the cell to check them. The aim is that you can read the
 notation yourself, without Python reading it for you.
@@ -36,13 +36,13 @@ def from_binary(text):
         total = total * 2 + int(digit)
     return total
 
-print(to_binary(72), from_binary("01001000"), hex(72), chr(72))
+print(to_binary(72), from_binary("01001000"), hex(72))
 ```
 
 ## 1. Binary to base 10
 
-Change these binary numbers to *base 10*{.term} by hand, then check: `1101`,
-`10000`, `11111`, `10101010`.
+Can you change these binary numbers to *base 10*{.term} by hand? Then check
+with `from_binary`: `1101`, `10000`, `11111`, `10101010`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -54,7 +54,8 @@ to 256.
 
 ## 2. Base 10 to binary
 
-Change these to binary by hand, then check: 6, 12, 100, 255.
+Can you change these to binary by hand? Then check with `to_binary`: 6, 12,
+100, 255.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -66,7 +67,8 @@ way you do when you multiply by ten in base 10.
 
 ## 3. Base 10 to hex
 
-Change these to hexadecimal: 15, 16, 255, 256, 4095.
+Can you change these to hexadecimal by hand? Then check with `hex()`: 15,
+16, 255, 256, 4095.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -77,8 +79,8 @@ twelve.
 
 ## 4. Hex to binary, straight
 
-Change `FF`, `A0` and `7E` from hex to binary, without using
-base 10.
+Can you change `FF`, `A0` and `7E` from hex to binary, without using
+base 10?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -88,9 +90,11 @@ digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
 
 </details>
 
-## 5. Two letters
+## 5. Two bytes
 
-Decode `01001000 01001001` as ASCII.
+<div class="dl-world" data-world="secret-messages">
+
+Can you decode `01001000 01001001` as ASCII?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -98,7 +102,38 @@ The codes are 72 and 73, which are H and I. The message is `HI`.
 
 </details>
 
-## 6. A colour
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Two rows of a sprite are `00011000` and `00100100`, one bit for each
+pixel. Can you draw them with `#` for 1 and `.` for 0?
+
+<details class="dl-answer"><summary>answer</summary>
+
+They are `...##...` and `..#..#..`.
+
+</details>
+
+</div>
+
+## 6. Hex in use
+
+<div class="dl-world" data-world="secret-messages">
+
+The bytes `48 45 4C 50` are in hex, and each one is an ASCII code. Can you
+find the word they spell?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The codes are 72, 69, 76 and 80, which are H, E, L and P. The word is
+`HELP`.
+
+</details>
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
 
 The web colour `#FF7F50` is two hex digits each for red, green and blue.
 What are the three in base 10?
@@ -108,6 +143,8 @@ What are the three in base 10?
 They are 255, 127 and 80. This colour is called coral.
 
 </details>
+
+</div>
 
 ## 7. Reading hex without int
 
@@ -189,8 +226,8 @@ follow them yet.
 
 ## 11. In order
 
-Put these in order, and say what each one made easier: high-level
-languages, *machine code*{.term}, *assembly language*{.term}.
+Can you put these in order, and say what each one made easier? They are
+high-level languages, *machine code*{.term} and *assembly language*{.term}.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -255,7 +292,7 @@ adding and totalling are things it does. (d) *Functional*{.term}: a function,
 
 ## 15. Back to a loop
 
-Rewrite `doubled = [n * 2 for n in numbers]` in the *procedural*{.term} style.
+Can you rewrite `doubled = [n * 2 for n in numbers]` in the *procedural*{.term} style?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -285,7 +322,9 @@ is harder to read than one that keeps to one.
 
 </details>
 
-## 17. The first two bytes
+## 17. Bytes in a file
+
+<div class="dl-world" data-world="secret-messages">
 
 A file's first two bytes are `50 4B` in hex. What are they as characters,
 and what might they tell you about the file?
@@ -299,6 +338,24 @@ start with a few fixed bytes like these, a *magic number*, and software
 often reads them to decide what a file is, without trusting its name.
 
 </details>
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A game stores a small sprite as three bytes, one for each row of eight
+pixels: `3C 42 81` in hex. Can you draw it with `#` and `.`, without using
+base 10?
+
+<details class="dl-answer"><summary>answer</summary>
+
+The rows are `..####..`, `.#....#.` and `#......#`. Each hex digit becomes
+four bits: 3 is 0011, C is 1100, 4 is 0100, 2 is 0010, 8 is 1000 and 1 is
+0001. The sprite is an arch.
+
+</details>
+
+</div>
 
 ## 18. The other way
 
@@ -319,6 +376,11 @@ guess: yes
 to_hex_message("HI")
 to_hex_message("CODE")
 to_hex_message("")
+```
+
+```hint
+`ord(character)` gives a character's code, and `hex()` writes that code in
+hex. Add each result to a list, and give the list back.
 ```
 
 ```solution

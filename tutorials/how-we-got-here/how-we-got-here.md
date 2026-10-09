@@ -48,8 +48,8 @@ written before there was a machine to run it, at the on-and-off patterns
 the first computers read, and at the languages that made those patterns
 bearable. Almost every part of programming that looks like a strange
 choice was a decision somebody made for a reason, and the reasons still
-hold. At each step in the story, a message is left in the notation of its
-time. To read it, you write the code that translates it.
+hold. At each step in the story, you meet the notation of its time. To
+read it, you write the code that translates it.
 
 ## Before there were computers
 
@@ -129,8 +129,8 @@ without thinking, with ten in place of two.
 
 ### Your turn
 
-Try these by hand first, and write your working as *comments*{.term}. Then check
-each one with the functions above.
+Can you do these by hand first, and write your working as *comments*{.term}?
+Then check each one with `from_binary` and `to_binary`, the functions above.
 
 1. What is binary `11001` in base 10?
 2. How do you write 100 in binary?
@@ -158,7 +158,7 @@ An operator from the 1940s has left a message, written in *ASCII*: a code
 that gives each character a number. (The message is made up. ASCII came
 later, in 1963.) Each group of eight binary digits is one letter's code:
 `01001000` is 72, and 72 is `H`, which `chr(72)` gives. Can you write
-`decode_binary(groups)`?
+`decode_binary(groups)`, and then call it on `message_1945`?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -284,10 +284,10 @@ print(to_binary(int("48", 16)))
 
 `hex()` writes a number in hex, with `0x` in front. `0x48` is a number
 written in hex, and `int("48", 16)` reads hex from a string. The last line
-prints `1001000`. The message above had `01001000`. The zero in front was
-never part of the number, the way nobody writes 72 as 072. `48` in hex,
-72, `1001000` and `01001000` are one number written four ways, and all of
-them are H.
+prints `1001000`. Earlier we gave `from_binary` the string `01001000`. The
+zero in front was never part of the number, the way nobody writes 72 as
+072. `48` in hex, 72, `1001000` and `01001000` are one number written
+four ways.
 
 ### Your turn
 
@@ -324,8 +324,8 @@ four times shorter to write.
 ```
 
 Then there is the vault. Each entry is a pair, the base it is written in
-and the code. You have written both halves already. Can you put them into one
-function, with an `if` to choose between them?
+and the code. You have written both halves already. Can you put them into
+one function, `crack_the_vault(pairs)`, with an `if` to choose between them?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -408,9 +408,9 @@ draw_hex(invader)
 ```
 
 ```hint
-`to_binary(int(row, 16))` gives the binary digits, without the zeros in
-front. `"0" * (8 - len(bits)) + bits` puts them back. Then draw each bit,
-as you did with binary.
+`to_binary(int(row, 16))` gives the binary digits, but `"18"` gives
+`11000`, with no zeros in front. How many digits are missing, and how can
+you add them? Then draw each bit, as you did with binary.
 ```
 
 ```solution
@@ -553,7 +553,7 @@ The procedural version says *how*, step by step. The comprehension says
 another function, as `sorted()` was handed a `key=`. And the
 object-oriented version makes a new kind of thing, a `NumberList`, that
 carries its values and knows how to double them. `self` is the particular
-list being asked. None of them is right and the others wrong. They are
+list being asked. None of them is the one way to do it. They are
 habits of thought, and which suits depends on the problem, and on who will
 read the code. The object-oriented course builds classes properly.
 
