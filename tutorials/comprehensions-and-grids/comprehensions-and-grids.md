@@ -1,7 +1,7 @@
 ---
 title: "Comprehensions, grids and aliasing"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -46,7 +46,7 @@ What will the last line print?
 
 It prints `True`. `==` compares what two lists hold, *element*{.term} by element,
 and both hold `[1, 4, 9, 16, 25]`. The one-line version is a
-*comprehension*, and this page starts with it. Then a whole picture goes
+*comprehension*, and this page starts with it. Then a whole grid goes
 into a list of lists. Then we meet the thing about lists most likely to
 surprise you: two names for one list.
 
@@ -81,13 +81,13 @@ words = ["MEET", "ME", "AT", "NOON"]
 print([len(word) for word in words])
 print([word[0] for word in words])
 
-row = [30, 90, 250, 120]
-print([255 - value for value in row])
+levels = [30, 90, 250, 120]
+print([255 - level for level in levels])
 ```
 
 The first list holds each word's length, and the second each word's first
-letter. The third turns a row of pixels into its negative: black becomes
-white, and white becomes black.
+letter. The third subtracts each number from 255, so the smallest number
+becomes the largest, and the largest the smallest.
 
 ### Keeping only some values
 
@@ -96,15 +96,15 @@ comprehension, the `if` goes at the end. Which values will each line keep?
 
 ```python exec
 id: comprehensions-a-loop-that-builds-a-list-2
-row = [30, 90, 250, 120, 250, 60]
-print([value for value in row if value >= 128])
+levels = [30, 90, 250, 120, 250, 60]
+print([level for level in levels if level >= 128])
 
 message = "MEET AT NOON"
 print([letter for letter in message if letter != " "])
 ```
 
 An `if` at the end of a comprehension is a *filter*. It keeps only the
-values that pass a test. Here the tests are `value >= 128` and
+values that pass a test. Here the tests are `level >= 128` and
 `letter != " "`.
 
 ### Inside sum(), max() and join()
@@ -116,11 +116,11 @@ different about them?
 
 ```python exec
 id: comprehensions-a-loop-that-builds-a-list-3
-row = [30, 90, 250, 120, 250, 60]
-print(sum([value for value in row if value >= 128]))
-print(sum(value for value in row if value >= 128))
-print(sum(1 for value in row if value >= 128))
-print(max(row))
+levels = [30, 90, 250, 120, 250, 60]
+print(sum([level for level in levels if level >= 128]))
+print(sum(level for level in levels if level >= 128))
+print(sum(1 for level in levels if level >= 128))
+print(max(levels))
 
 words = ["MEET", "ME", "AT", "NOON"]
 print(" ".join(words))
@@ -133,7 +133,7 @@ can drop its square brackets. It is then a *generator expression*. It makes
 its values one at a time, and passes each one to the function, without building a
 list first.
 
-The third line counts. It adds 1 for each pixel of 128 or more, so it
+The third line counts. It adds 1 for each number of 128 or more, so it
 prints 2. In the last two lines, `" "` puts a space between the words, and
 `""` puts nothing between the first letters.
 
@@ -206,21 +206,21 @@ brightness no screen has.
 
 ## A grid is a list of lists
 
-A list can hold other lists. A picture, a board or a table is a grid, and a
+A list can hold other lists. A board, a calendar or a table is a grid, and a
 list of lists keeps a grid with one inner list for each row. To read one
 value, we give two *indexes*{.term}. Before you run the cell, what will
-`picture[1][3]` be?
+`grid[1][3]` be?
 
 ```python exec
 id: a-grid-is-a-list-of-lists-1
-picture = [
+grid = [
     [0, 0, 1, 0, 0],
     [0, 0, 1, 1, 0],
     [1, 1, 1, 1, 1],
     [0, 0, 1, 1, 0],
     [0, 0, 1, 0, 0],
 ]
-print(picture[1][3])
+print(grid[1][3])
 ```
 
 ```predict
@@ -232,25 +232,25 @@ What will it print?
   - Across 3 and down 1, the way a graph gives x before y.
 ```
 
-It prints 1. `picture[1]` is a whole row, `[0, 0, 1, 1, 0]`, and `[3]`
+It prints 1. `grid[1]` is a whole row, `[0, 0, 1, 1, 0]`, and `[3]`
 picks one element from that row. So a grid's index is the row first, then
 the column: down, then across. A graph gives x first, across, so the two
 orders are easy to confuse. Swap the two numbers and run it again.
 
-To draw the grid, a loop visits each row, and a loop inside it visits
+To print the grid, a loop visits each row, and a loop inside it visits
 each value in that row, as the *nested loops*{.term} did in
 [Repeating steps with loops](tutorial:repeating-yourself):
 
 ```python exec
 id: a-grid-is-a-list-of-lists-2
-picture = [
+grid = [
     [0, 0, 1, 0, 0],
     [0, 0, 1, 1, 0],
     [1, 1, 1, 1, 1],
     [0, 0, 1, 1, 0],
     [0, 0, 1, 0, 0],
 ]
-for row in picture:
+for row in grid:
     line = ""
     for value in row:
         if value == 1:
@@ -340,12 +340,56 @@ signalling with torches: the number raised on the left gave the row, and
 the number on the right gave the column.
 ```
 
+A shift cipher works on numbers, not letters. Can you set `numbers` to the
+same square with each letter replaced by its place in the alphabet, counting
+`"A"` as 0? There is no J in the square, so `"K"` is 10.
+
+```python exec
+id: your-turn-2b--secret-messages
+square = [
+    ["A", "B", "C", "D", "E"],
+    ["F", "G", "H", "I", "K"],
+    ["L", "M", "N", "O", "P"],
+    ["Q", "R", "S", "T", "U"],
+    ["V", "W", "X", "Y", "Z"],
+]
+numbers = []
+
+print(numbers)
+```
+
+```inputs
+numbers
+```
+
+```hint
+`ord(letter) - ord("A")` is a letter's place in the alphabet. Can you build
+one row of numbers that way first, and then put a comprehension round it
+for every row?
+```
+
+```solution
+square = [
+    ["A", "B", "C", "D", "E"],
+    ["F", "G", "H", "I", "K"],
+    ["L", "M", "N", "O", "P"],
+    ["Q", "R", "S", "T", "U"],
+    ["V", "W", "X", "Y", "Z"],
+]
+numbers = [[ord(letter) - ord("A") for letter in row] for row in square]
+print(numbers)
+---
+The inner comprehension makes one row of numbers, and the outer one does it
+for every row. `square` itself is unchanged: the comprehension built a new
+grid.
+```
+
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you set `negative` to the same picture with every 1 turned into 0, and
-every 0 into 1? A comprehension inside a comprehension can do it.
+Can you set `negative` to the same picture with every `1` turned into `0`, and
+every `0` into `1`? A comprehension inside a comprehension can do it.
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -379,6 +423,41 @@ print(negative)
 ---
 The inner comprehension makes one row, and the outer one does it for every
 row. `picture` itself is unchanged: the comprehension built a new grid.
+```
+
+Now a grid of blank pixels, and a list of the pixels to light. Can you set
+each of those pixels to `1`, to draw a small arrow? Each pair is the row,
+then the column.
+
+```python exec
+id: your-turn-2b--pixel-art
+picture = [[0] * 5 for _ in range(3)]
+lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
+
+for row in picture:
+    print(row)
+```
+
+```inputs
+picture
+```
+
+```hint
+`for row, column in lit:` takes each pair apart. Which pixel is at that row
+and column of `picture`, and what should it become?
+```
+
+```solution
+picture = [[0] * 5 for _ in range(3)]
+lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
+for row, column in lit:
+    picture[row][column] = 1
+
+for row in picture:
+    print(row)
+---
+`picture[row][column] = 1` changes one value in the grid. The grid was built
+with a comprehension, so each row is its own list and only that row changes.
 ```
 
 </div>
@@ -438,17 +517,17 @@ happens when the function changes a list in place?
 
 ```python exec
 id: two-names-for-one-list-3
-def brighten(pixels):
-    for index in range(len(pixels)):
-        pixels[index] = pixels[index] + 10
+def add_ten(numbers):
+    for index in range(len(numbers)):
+        numbers[index] = numbers[index] + 10
 
 row = [10, 20, 30]
-brighten(row)
+add_ten(row)
 print(row)
 ```
 
 It prints `[20, 30, 40]`. The function changed the caller's list. It did
-not give `pixels` a new value with `=`. It changed the list that `pixels`
+not give `numbers` a new value with `=`. It changed the list that `numbers`
 names, which is the same list `row` names. So there are two different
 actions. Giving a name a new value stays inside the function. Changing a
 list in place is seen by every name for that list.
@@ -640,7 +719,8 @@ $$\vec{a} \cdot \vec{b} = \sum_{i=0}^{n-1} a_i \times b_i$$
 
 So $[1, 2, 3] \cdot [4, 5, 6] = 1 \times 4 + 2 \times 5 + 3 \times 6 = 32$.
 A dot product appears whenever some parts count for more than others, as
-in a weighted average, a check digit, or how bright a colour looks.
+in a weighted average or a shopping bill, where each price counts as many
+times as the quantity bought.
 
 ### Your turn
 
@@ -753,6 +833,8 @@ you, weeks from now, in a *program*{.term} much longer than these. When is it
 useful that a function can change the list it was given? When does it
 cause trouble?
 
+<div class="dl-world" data-world="secret-messages">
+
 A challenge: write a message in rows of four letters, then read it down
 the columns. That is a *transposition cipher*, and the same move turns a
 grid on its side. Can you build the columns from the rows, and read the
@@ -768,10 +850,33 @@ for row in rows:
 # Build the columns: column 0 is the first letter of every row.
 ```
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: turn a picture on its side, so that its rows become its
+columns. That is called a *transpose*, and it is the same move as reading a
+grid down instead of across. Can you build the columns from the rows? Can
+you turn the result back into the original?
+
+```python challenge
+# Turn the picture on its side: rows become columns.
+picture = [
+    [1, 0, 0, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0],
+]
+for row in picture:
+    print(row)
+# Build the columns: column 0 is the first value of every row.
+```
+
+</div>
+
 The next page,
 [Looking things up by name](tutorial:looking-things-up-by-name), keeps
-values under names of their own choosing, and uses one to hold a cipher's
-key.
+values under names of their own choosing, so that we can look one up by its
+name.
 
 ## Where to read more
 
