@@ -10,7 +10,7 @@ worlds:
 
 # Algorithms, pseudocode and your first Python — Practice
 
-Problems on the operators, `print()`, *algorithms*{.term} and *pseudocode*{.term}. Most are
+These are problems on the operators, `print()`, *algorithms*{.term} and *pseudocode*{.term}. Most are
 short. Try each one before you open anything under it. Say what you think
 first, then run it.
 
@@ -117,7 +117,7 @@ worth knowing before you move code from one language to another.
 
 ## 5. Powers
 
-Say what each of these gives, then try them in the cell: `2 ** 10`,
+Can you say what each of these gives, before you try them in the cell? `2 ** 10`,
 `10 ** 2`, `2 ** 0.5` and `2 ** -1`.
 
 ```python exec
@@ -145,9 +145,9 @@ print(2 ** 3 ** 2)
 Will it print 64 or 512?
 
 - 64
-  - This works out `2 ** 3` first, then squares it.
+  - This calculates `2 ** 3` first, then squares it.
 - 512
-  - This works out `3 ** 2` first, then raises 2 to that.
+  - This calculates `3 ** 2` first, then raises 2 to that.
 ```
 
 <details class="dl-answer"><summary>why</summary>
@@ -170,7 +170,7 @@ print("5 + 3")
 What will it print?
 
 - 8
-  - Python works out a sum when it sees one without quotes.
+  - Python calculates a sum when it sees one without quotes.
 - 5 + 3
   - Inside quotes, the plus sign is just a character in the text.
 ```
@@ -183,7 +183,7 @@ happens to contain a plus sign.
 
 </details>
 
-## 8. Let Python work it out
+## 8. Let Python do the sum
 
 Can you write one `print()` that displays `The answer is 42`, with Python
 calculating the 42 from `6 * 7` rather than you typing it?

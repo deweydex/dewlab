@@ -2,7 +2,7 @@
 title: "Making decisions with if, elif and else — Practice"
 practice_for: making-decisions
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -93,23 +93,23 @@ look like. Most other languages need the first form.
 
 ```python exec
 id: three-ifs-instead-of-elif-1
-brightness = 150
-if brightness >= 64:
-    print("-")
-if brightness >= 128:
-    print("+")
-if brightness >= 192:
-    print("#")
+temperature = 20
+if temperature >= 5:
+    print("cool")
+if temperature >= 15:
+    print("warm")
+if temperature >= 25:
+    print("hot")
 ```
 
-How many lines will it print for a brightness of 150? And for 200?
+How many lines will it print for a temperature of 20? And for 30?
 
 <details class="dl-answer"><summary>why</summary>
 
-Two lines for 150, `-` and `+`, and three for 200. Separate `if`
+Two lines for 20, `cool` and `warm`, and three for 30. Separate `if`
 statements are separate questions, and Python asks each one in turn.
-`elif` means "otherwise, ask this", so only one path runs. A pixel should
-get one character, so it needs `elif`, with the biggest threshold first.
+`elif` means "otherwise, ask this", so only one path runs. A day should
+get one word, so it needs `elif`, with the biggest threshold first.
 
 </details>
 
@@ -140,7 +140,7 @@ else:
 print(sign)
 ---
 There are three cases, and zero has to be one of them. With
-`if n >= 0: sign = "positive"`, zero gets the wrong name, and zero is
+`if n >= 0: sign = "positive"`, zero gets the name `"positive"`, and zero is
 exactly the value a tester tries first.
 ```
 
@@ -205,8 +205,8 @@ for p in [True, False]:
         print(p, q, "   and:", p and q, "   or:", p or q)
 ```
 
-Say what each of these gives: `True and False`, `True or False`,
-`not True`, `not (5 > 3)`, `(5 > 3) and (2 > 4)`, `(5 > 3) or (2 > 4)`.
+Can you say what each of these gives: `True and False`, `True or False`,
+`not True`, `not (5 > 3)`, `(5 > 3) and (2 > 4)`, `(5 > 3) or (2 > 4)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -295,14 +295,13 @@ year = 1900
 is_leap = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 print(is_leap)
 ---
-Python does not need the brackets, because it works out `and` before `or`.
+Python does not need the brackets, because it does `and` before `or`.
 They are there for the reader. Try 2024, 2000, 2023 and 1600 too.
 ```
 
 ## 11. Two opposites
 
-Write `not (a > b)` in a simpler way. Then write `not (a and b)` in a
-simpler way.
+Can you write `not (a > b)` in a simpler way? And `not (a and b)`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -471,6 +470,11 @@ print(pixel)
 
 ```inputs
 pixel
+```
+
+```hint
+Which number decides between `"#"` and `"."`? Can you find it from `red`,
+`green` and `blue` first?
 ```
 
 ```solution

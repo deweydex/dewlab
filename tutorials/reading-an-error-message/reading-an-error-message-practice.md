@@ -2,7 +2,7 @@
 title: "Reading an error message — Practice"
 practice_for: reading-an-error-message
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 ---
 
 # Reading an error message — Practice
@@ -235,32 +235,32 @@ close enough to look believable, which is why nobody notices it.
 
 ## 10. Exactly on the line
 
-A pixel is drawn as `#` when its brightness is 128 or more. Run the cell
-with `brightness` set to 127, then 128, then 129.
+A gate opens when the weight on it is 128 or more. Run the cell with
+`weight` set to 127, then 128, then 129.
 
 ```python exec
 id: when-nothing-looks-wrong-practice-2
-brightness = 128
-if brightness > 128:
-    pixel = "#"
+weight = 128
+if weight > 128:
+    opened = True
 else:
-    pixel = "."
-print(pixel)
+    opened = False
+print(opened)
 ```
 
 ```inputs
-pixel
+opened
 ```
 
 ```solution
-brightness = 128
-if brightness >= 128:
-    pixel = "#"
+weight = 128
+if weight >= 128:
+    opened = True
 else:
-    pixel = "."
-print(pixel)
+    opened = False
+print(opened)
 ---
-With `>`, a brightness of exactly 128 was drawn as `.`. Logical errors
+With `>`, a weight of exactly 128 did not open the gate. Logical errors
 live at boundaries, so try the boundary itself, one below it and one above
 it.
 ```
@@ -286,11 +286,11 @@ This program has two mistakes. Can you fix them? Run it after each fix.
 
 ```python exec
 id: fixing-early-1
-brightness = 200
-if brightness >= 128
-    print("#")
+weight = 200
+if weight >= 128
+    print("open")
 else:
-print(".")
+print("shut")
 ```
 
 ```hint
@@ -299,13 +299,13 @@ message? Which line does it name now?
 ```
 
 ```solution
-brightness = 200
-if brightness >= 128:
-    print("#")
+weight = 200
+if weight >= 128:
+    print("open")
 else:
-    print(".")
+    print("shut")
 ---
-The `if` line needs a colon, and `print(".")` needs to be indented under
+The `if` line needs a colon, and `print("shut")` needs to be indented under
 `else:`. Python told you about the first mistake only: it stops at the
 first thing it cannot read. So a new message after a fix does not mean the
 fix failed. It can mean Python got further.

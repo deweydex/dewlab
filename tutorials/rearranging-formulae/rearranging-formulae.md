@@ -572,6 +572,47 @@ a `ZeroDivisionError`.
 
 </div>
 
+<div class="dl-world" data-world="music">
+
+A band plays a main set, and then an encore. The encore's *share* of
+the whole concert is $p = \frac{e}{s + e}$, where $s$ is the minutes in
+the main set and $e$ is the minutes in the encore. The main set is 90
+minutes, and the band wants the encore to be 0.2 of the concert. How
+long must the encore be? Can you make $e$ the subject, and write
+`encore_length(set_minutes, share)`?
+
+```python exec
+id: appears-twice-1--music
+def encore_length(set_minutes, share):
+    """The encore minutes that make this share of the whole concert."""
+```
+
+```hint
+Multiply both sides by $s + e$ first. Where is $e$ now? Gather both
+copies on one side, then take $e$ out as a common factor.
+```
+
+```inputs
+guess: yes
+encore_length(90, 0.2)
+encore_length(90, 0.5)
+encore_length(90, 0)
+```
+
+```solution
+def encore_length(set_minutes, share):
+    """The encore minutes that make this share of the whole concert."""
+    return share * set_minutes / (1 - share)
+---
+$p(s + e) = e$, so $ps = e - pe = e(1 - p)$, and
+$e = \frac{ps}{1 - p}$. The encore must be 22.5 minutes. At a share of
+0.5, the encore is as long as the main set. A share of 1 would need an
+encore that never ends: the bottom is zero, and Python raises a
+`ZeroDivisionError`.
+```
+
+</div>
+
 <div class="dl-world" data-world="fantasy-maps">
 
 A messenger walks to the next town at 4 km/h and rides back on a horse

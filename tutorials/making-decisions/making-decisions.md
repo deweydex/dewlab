@@ -1,7 +1,7 @@
 ---
 title: "Making decisions with if, elif and else"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -23,10 +23,9 @@ covers:
 
 # Making decisions with if, elif and else
 
-A Caesar shift moves letters, and leaves a space or a question mark where
-it is. So before a *program*{.term} changes a character, it has to ask what kind of
-character it is. Python can answer questions like that with `True` or
-`False`. What do you think this cell prints?
+A *program*{.term} often has to ask a question before it acts. Python can
+answer a question like that with `True` or `False`. What do you think this
+cell prints?
 
 ```python exec
 id: which-comes-first-1
@@ -40,7 +39,7 @@ What will the last line print?
 - True
   - Every character has a number, and capitals come first.
 - False
-  - Z is the last letter of the alphabet, so nothing comes after it.
+  - `Z` is the last letter of the alphabet, so nothing comes after it.
 ```
 
 It prints `True` both times. Python compares characters by their numbers,
@@ -103,22 +102,22 @@ An *if statement* is code that runs only when a condition is `True`.
 
 ```python exec
 id: if-statements-choosing-a-path-1
-character = "?"
+weather = "sun"
 
-if character == " ":
-    print("A space: leave it where it is.")
+if weather == "rain":
+    print("Take an umbrella.")
 
-print("On to the next character.")
+print("On to the next day.")
 ```
 
 The first line has three parts: the keyword `if`, a condition,
-`character == " "`, and a colon. The indented line under it is the *body*
+`weather == "rain"`, and a colon. The indented line under it is the *body*
 of the if statement, and it runs only when the condition is `True`. The
 last line is not indented, so it is back in the normal flow, and it runs
 every time.
 
-Here the character is `?`, so only the last line runs. Change `"?"` to
-`" "`, a space, and run it again.
+Here the weather is `"sun"`, so only the last line runs. Can you change
+`"sun"` to `"rain"` and run it again?
 
 Python uses indentation to know which lines belong inside the if
 statement, so in Python indentation is required. We use four spaces for
@@ -127,34 +126,33 @@ each level. The editor adds them for you when you press Tab.
 ## If-else: two paths
 
 Often we want one thing when a condition is `True`, and something else when
-it is `False`. An *if-else* statement does this. Here a pixel's brightness,
-from 0 for black to 255 for white, decides whether it is drawn as `#` or as
-`.`.
+it is `False`. An *if-else* statement does this. Here a test score of 50 or
+more is a `"pass"`, and anything lower is a `"fail"`.
 
 ```python exec
 id: if-else-two-paths-1
-brightness = 128
+score = 50
 
-if brightness >= 128:
-    pixel = "#"
+if score >= 50:
+    result = "pass"
 else:
-    pixel = "."
+    result = "fail"
 
-print(pixel)
+print(result)
 ```
 
 ```predict
 What will it print?
 
-- #
+- pass
   - `>=` is true when the two sides are equal, too.
-- .
-  - 128 is not more than 128.
+- fail
+  - 50 is not more than 50.
 ```
 
-It prints `#`. `>=` means "greater than *or equal to*", so 128 counts. The
+It prints `pass`. `>=` means "greater than *or equal to*", so 50 counts. The
 `else` part catches every case the `if` condition does not, so between them
-the two paths cover every possible brightness.
+the two paths cover every possible score.
 
 ### Your turn
 
@@ -234,41 +232,41 @@ programs. Try `x = 7` too.
 
 Sometimes there are more than two cases. The keyword `elif`, short for
 "else if", adds another condition, so a program can have as many paths as
-it needs. Here, a brightness picks one of four characters, from dark to
-light.
+it needs. Here, a temperature picks one of four words, from hot to
+cold.
 
 ```python exec
 id: elif-multiple-paths-1
-brightness = 200
+temperature = 20
 
-if brightness >= 192:
-    pixel = "#"
-elif brightness >= 128:
-    pixel = "+"
-elif brightness >= 64:
-    pixel = "-"
+if temperature >= 25:
+    description = "hot"
+elif temperature >= 15:
+    description = "warm"
+elif temperature >= 5:
+    description = "cool"
 else:
-    pixel = "."
+    description = "cold"
 
-print(pixel)
+print(description)
 ```
 
 Python checks each condition in turn, from the top. It runs the body of the
 first one that is `True`, and skips the rest.
 
-So does the order matter? Suppose we checked `brightness >= 64` first. What
-would 200 become then?
+So does the order matter? Suppose we checked `temperature >= 5` first. What
+would 20 become then?
 
 <details class="dl-answer"><summary>What happens</summary>
 
-It would become `-`. 200 is more than 64, and that condition now comes
-first, so Python never reaches the check for `#`. So the order matters. With
+It would become `"cool"`. 20 is more than 5, and that condition now comes
+first, so Python never reaches the check for `"warm"`. So the order matters. With
 `>=`, the biggest threshold goes first.
 
 </details>
 
-Try a few brightnesses in the cell, and then the boundaries: 64, 128 and
-192. Does each one give the character you expect? Mistakes often hide at a
+Can you try a few temperatures in the cell, and then the boundaries: 5, 15
+and 25? Does each one give the word you expect? Mistakes often hide at a
 boundary, so a boundary is always worth trying.
 
 ### Your turn
@@ -358,31 +356,31 @@ Sometimes one comparison is not enough. A *Boolean operator* combines
 `True` and `False` values, or reverses one. Python has three: `and`,
 `or` and `not`.
 
-`and` is `True` only when *both* sides are `True`. A capital letter is one
-that is `"A"` or after, and `"Z"` or before:
+`and` is `True` only when *both* sides are `True`. A person of working age
+is 18 or more, and 65 or less:
 
 ```python exec
 id: boolean-operators-combining-conditions-1
-character = "Q"
-print(character >= "A" and character <= "Z")
+age = 30
+print(age >= 18 and age <= 65)
 ```
 
-`or` is `True` when *at least one* side is `True`. A word ends at a space
-or a full stop:
+`or` is `True` when *at least one* side is `True`. A weekend day is a
+Saturday or a Sunday:
 
 ```python exec
 id: boolean-operators-combining-conditions-2
-character = "."
-print(character == " " or character == ".")
+day = "Sat"
+print(day == "Sat" or day == "Sun")
 ```
 
 `not` turns `True` into `False`, and `False` into `True`:
 
 ```python exec
 id: boolean-operators-combining-conditions-3
-see_through = False
-if not see_through:
-    print("draw this pixel")
+raining = False
+if not raining:
+    print("leave the umbrella at home")
 ```
 
 | Operator | True when… |
@@ -391,7 +389,7 @@ if not see_through:
 | `a or b` | at least one of `a` and `b` is true |
 | `not a` | `a` is false |
 
-What changes if `character` is `"q"` in the first cell, or `"!"` in the
+What changes if `age` is `70` in the first cell, or `day` is `"Mon"` in the
 second? Can you say before you run it?
 
 When one line uses more than one of these, Python does them in a fixed
@@ -531,12 +529,13 @@ print("Real (R): " + str(is_real))
 
 ### Your turn
 
-1. Change `value` to each of these in turn: 7, -3, 0.5, 0, 3.14159. How
-   does the answer change each time?
-2. In the cell below, plan a new version as *pseudocode*{.term}. It should use
-   `if`, `elif` and `else`.
-3. Write it so that it prints one clear summary, such as "7 is a natural
-   number (and therefore also an integer, rational, and real)."
+1. In the cell above, can you change `value` to each of these in turn: `7`,
+   `-3`, `0.5`, `0` and `3.14159`? How does the answer change each time?
+2. Can you write a new version below that uses `if`, `elif` and `else`, and
+   prints one clear summary, such as "7 is a natural number (and therefore
+   also an integer, rational, and real)."?
+3. Plan it first as *pseudocode*{.term}: the steps in plain words, written as
+   comments.
 
 **Pseudocode first, then the code:**
 
@@ -553,9 +552,11 @@ value = 7
 
 ## Looking back
 
-The order of the `elif` conditions decided which character 200 became. When
+The order of the `elif` conditions decided which word 20 became. When
 does the order of the conditions *not* matter? Think of a set of conditions
 where it makes no difference which comes first.
+
+<div class="dl-world" data-world="secret-messages">
 
 A challenge: can you make a Caesar shift that moves a capital letter three
 places along, and leaves anything else, a space or a question mark, as it
@@ -569,6 +570,22 @@ position = ord(character) - ord("A")
 moved = (position + shift) % 26
 print(chr(moved + ord("A")))
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: can you make a pixel 64 brighter, but never brighter than 255,
+the top of the scale? Try it with brightnesses of `100`, `200` and `250`.
+
+```python challenge
+# Make a pixel 64 brighter. Never go above 255.
+brightness = 200
+brighter = brightness + 64
+print(brighter)
+```
+
+</div>
 
 Sequence, one line after another, and *selection*, choosing a path, are
 two of the three building blocks of every program. The third, repetition,

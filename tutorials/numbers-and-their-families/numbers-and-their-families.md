@@ -440,6 +440,45 @@ is very close. For the Earth, $1^{3/2} = 1$: one year, as it must be.
 
 </div>
 
+<div class="dl-world" data-world="fantasy-maps">
+
+The kingdom's map is cut into square tiles. At zoom 0, the whole
+kingdom is one tile. Each zoom level cuts every tile into four, two
+across and two down. So at zoom $z$ there are $2^z$ tiles across and
+$2^z$ tiles down, which is $(2^z)^2$ tiles in all.
+
+Does the power-of-a-power rule agree that this is $4^z$? Can you find
+the tiles across and the tiles in all at zoom 6, and check the total
+against `4 ** zoom`?
+
+```python exec
+id: powers-in-your-world-1--fantasy-maps
+zoom = 6
+```
+
+```hint
+The tiles across at zoom $z$ is $2^z$. The map is that many tiles
+across and that many down. What do you do to $2^z$ to get the total?
+```
+
+```inputs
+across
+total
+total == 4 ** zoom
+```
+
+```solution
+across = 2 ** zoom
+total = across ** 2
+print(across, total, 4 ** zoom)
+---
+At zoom 6 there are 64 tiles across and 4096 in all, and `4 ** zoom` is
+4096 too. The rule says $(2^z)^2 = 2^{2z}$, and $2^{2z} = (2^2)^z = 4^z$.
+Each zoom level multiplies the number of tiles by 4.
+```
+
+</div>
+
 ## Logarithms: the inverse of powers
 
 A *logarithm* is a power read backwards. It answers the question: "what
@@ -594,6 +633,47 @@ The whistle is about 14.2 semitones above the A. That is between two
 piano keys, a little above the B an octave and a tone up. Human hearing
 covers $\log_2 1000 \approx 9.97$, so about ten octaves. A piano's 88
 keys cover a little over seven.
+```
+
+</div>
+
+<div class="dl-world" data-world="rockets">
+
+Distances in space differ by huge factors. The Moon is about 384,400 km
+from the Earth. At its closest, Mars is about 54,600,000 km away, and
+Neptune about 4,305,000,000 km. A *power of ten* is one step of a
+factor of 10. How many powers of ten farther is Mars than the Moon? And
+Neptune than Mars?
+
+```python exec
+id: logarithms-in-your-world-1--rockets
+import math
+
+moon = 384_400
+mars = 54_600_000
+neptune = 4_305_000_000
+```
+
+```hint
+Ten steps of a factor of 10 make a factor of $10^{10}$. So the number
+of steps between two distances is the power of 10 that turns the
+smaller into the larger. Which logarithm is that?
+```
+
+```inputs
+mars_steps
+neptune_steps
+```
+
+```solution
+mars_steps = math.log10(mars / moon)
+neptune_steps = math.log10(neptune / mars)
+print(mars_steps, neptune_steps)
+---
+Mars is about 2.15 powers of ten farther than the Moon, a factor of
+about 142. Neptune is about 1.90 farther than Mars, a factor of about
+79. Together they are about 4.05 powers of ten, so Neptune is more
+than ten thousand times as far as the Moon.
 ```
 
 </div>

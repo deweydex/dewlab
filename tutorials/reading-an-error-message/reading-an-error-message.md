@@ -1,7 +1,7 @@
 ---
 title: "Reading an error message"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -25,7 +25,7 @@ it, and read everything that comes back.
 
 ```python exec
 id: a-first-error-1
-shift = 3
+count = 3
 message = "HELLO"
 print(mesage)
 ```
@@ -224,16 +224,16 @@ print(count)
 
 ```python exec
 id: runtime-your-turn-3
-secret = "OTTER"
-print(secert)
+animal = "OTTER"
+print(anmal)
 # I think it raises:
 ```
 
 ```python exec
 id: runtime-your-turn-4
-pixels = 640 * 480
+area = 640 * 480
 columns = 0
-print("Rows:", pixels / columns)
+print("Rows:", area / columns)
 # I think it raises:
 ```
 
@@ -338,8 +338,7 @@ print("You earned", pay)
 ## When nothing looks wrong
 
 Every error so far has shown a message. What about this one? It finds the
-middle of a line on a screen, between the pixel at 100 and the pixel at
-300.
+middle of a line, between the mark at 100 and the mark at 300.
 
 ```python exec
 id: when-nothing-looks-wrong-1
@@ -402,7 +401,7 @@ position = ord(letter) - ord("A")
 moved = (position + shift) % 26
 print(chr(moved + ord("A")))
 ---
-`%` happens before `+`, the same as `*` and `/`, so the line worked out
+`%` happens before `+`, the same as `*` and `/`, so the line calculated
 `3 % 26`, which is 3, and never went back round after Z. The brackets
 make the remainder apply to the whole sum.
 ```
@@ -460,13 +459,13 @@ lets it finish with an answer nobody meant.
 # One syntax error, one runtime error and one logical error.
 width = 64
 height = 48
-pixels = width * height
-print("Pixels:" pixels)
-bytes_needed = pixels * 3
-print("Kilobytes:", bytes_needed / 1024)
+area = width * height
+print("Area:" area)
+weight = area * 3
+print("Kilograms:", weight / 1000)
 average_side = width + height / 2
 print("Average side:", average_side)
-print("Colours:", colours)
+print("Tins:", tins)
 ```
 
 An error message is the most exact and most patient help you will get

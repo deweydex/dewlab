@@ -394,7 +394,7 @@ whole 26.
 
 <div class="dl-world" data-world="pixel-art">
 
-A photo negative turns each brightness `b`, from 0 to 255, into `255 - b`.
+A photo negative turns each brightness, from 0 to 255, into `255 - brightness`.
 Can you write `invert(brightness)`? Then what is `invert(invert(200))`?
 
 ```python exec
@@ -484,11 +484,12 @@ print(count)
 and `has_factor(1)` finds nothing. But 1 is not a prime.
 ```
 
-## 16. Distance on a screen
+## 16. Distance on a map
 
-Two pixels are at `(x1, y1)` and `(x2, y2)`. You can find the distance between them
-with Pythagoras again. It is the square root of the difference across, squared, plus
-the difference down, squared. Can you write `distance(x1, y1, x2, y2)`?
+Two places on a flat map are at `(x1, y1)` and `(x2, y2)`. You can find the
+distance between them with Pythagoras again. It is the square root of the
+difference across, squared, plus the difference down, squared. Can you write
+`distance(x1, y1, x2, y2)`?
 
 ```python exec
 id: distance-on-a-screen-1
@@ -500,7 +501,7 @@ def distance(x1, y1, x2, y2):
 guess: yes
 distance(0, 0, 3, 4)
 distance(1, 1, 4, 5)
-distance(2, 3, 2, 3)      # the same pixel
+distance(2, 3, 2, 3)      # the same place
 ```
 
 ```solution
@@ -635,19 +636,19 @@ is not more than 1.
 
 ## 21. From earlier: the biggest first
 
-From *Making decisions with if, elif and else*. Why does this give `"-"`
-for a brightness of 200?
+From *Making decisions with if, elif and else*. Why does this give `"pass"`
+for a score of 95?
 
 ```python
-if brightness >= 64:
-    pixel = "-"
-elif brightness >= 192:
-    pixel = "#"
+if score >= 60:
+    result = "pass"
+elif score >= 90:
+    result = "distinction"
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-Python runs the first path whose condition is `True`. 200 is 64 or more,
+Python runs the first path whose condition is `True`. 95 is 60 or more,
 so the first path catches it, and the second is never asked. With `>=`,
 the biggest threshold goes first.
 

@@ -59,6 +59,13 @@ boxes of Python you can change and run. The result appears underneath. The
 Python runs inside this browser tab, on the computer in front of you, and
 nobody else can see what you type. You do not need to install anything.
 
+Under the title is a box called "Choose a world". This page offers two
+worlds: Secret messages (codes and hidden messages) and Pixel art (pictures
+made of small squares). The explanations are the same for everyone. Only the
+tasks follow your choice. You can change it at any time. Your work in each
+world is saved separately, so when you change back, your earlier work is
+still there.
+
 The next cell has a few more lines. A line that starts with `#` is a
 *comment*: a note for the people who read the code. Python ignores
 everything on a line after the `#`.
@@ -79,7 +86,7 @@ What will the last line show?
 - 25.0
   - Division in Python always gives a number with a decimal point.
 - 100 / 4
-  - Without quotes, Python works the sum out instead of showing it.
+  - Without quotes, Python calculates the sum instead of showing it.
 ```
 
 The numbers have no quotes around them. Python works with numbers
@@ -168,7 +175,8 @@ Seven goes into 100 fourteen times, which uses up 98, so 2 is left over.
 
 A spy sends a message by tapping a key: one tap for A, two for B, three for
 C, and so on, up to 26 taps for Z. How many taps does the word CAB take?
-And HELLO, where H is the 8th letter, E the 5th, L the 12th and O the 15th?
+Then, how many does HELLO take, where H is the 8th letter, E the 5th, L the
+12th and O the 15th?
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -186,7 +194,7 @@ print(3 + 1 + 2)
 print(8 + 5 + 12 + 12 + 15)
 ---
 CAB takes 6 taps, and HELLO takes 52. Writing each letter's number in the
-sum, rather than the total you worked out, shows where the answer came
+sum, rather than the total you found, shows where the answer came
 from.
 ```
 
@@ -196,7 +204,8 @@ from.
 
 A screen draws a picture out of small squares called pixels. An old games
 console had a screen 320 pixels wide and 240 tall. How many pixels is that?
-A phone photo is 4000 by 3000 pixels. How many times more is that?
+Then, a phone photo is 4000 by 3000 pixels. How many times more pixels is
+that?
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -205,7 +214,7 @@ id: your-turn-1--pixel-art
 ```
 
 ```hint
-A picture 320 wide and 240 tall is 240 rows of 320. How do you work out
+A picture 320 wide and 240 tall is 240 rows of 320. Which operator finds
 240 lots of 320?
 ```
 
@@ -214,7 +223,7 @@ print(320 * 240)
 print(4000 * 3000 / (320 * 240))
 ---
 The old screen has 76,800 pixels, and the photo has 12 million, about 156
-times more. The brackets make Python work out the old screen's pixels
+times more. The brackets make Python calculate the old screen's pixels
 first, before it divides.
 ```
 
@@ -259,11 +268,11 @@ Before we write Python, it helps to plan the steps in plain English.
 with a little code-like structure. No computer runs it. Write pseudocode
 first. It is one of the most useful habits you can build.
 
-Here is a plan for finding the middle of a screen 320 pixels wide and 240
-tall:
+Here is a plan for finding the middle of a wall 320 centimetres wide and 240
+centimetres tall:
 
 ```
-GET the width and the height of the screen
+GET the width and the height of the wall
 DIVIDE the width by 2, to find the middle across
 DIVIDE the height by 2, to find the middle down
 DISPLAY both
@@ -276,7 +285,7 @@ how names like these work.
 
 ```python exec
 id: pseudocode-planning-before-coding-1
-# Find the middle of a screen
+# Find the middle of a wall
 width = 320
 height = 240
 print(width // 2, height // 2)
@@ -301,7 +310,7 @@ as comments, one line of plain English for each step, each starting with
 
 Spies used to send messages in blocks of five letters, so nobody listening
 could count the words. A message has 47 letters. How many full blocks of
-five does it make, and how many letters are left over for the last one?
+five does it make? Then, how many letters are left over for the last one?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -330,8 +339,8 @@ Nine full blocks, and two letters left over for a short last block.
 <div class="dl-world" data-world="pixel-art">
 
 A row of a picture is 50 pixels wide. You want to fill it with tiles 8
-pixels wide. How many whole tiles fit, and how many pixels are left over at
-the end?
+pixels wide. How many whole tiles fit? Then, how many pixels are left over
+at the end?
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -359,9 +368,9 @@ Six whole tiles, and two pixels left over at the end.
 
 ## Looking back
 
-`/` and `//` both divide. When would you want each one? Think of a
-question on this page where only one of them gives an answer that makes
-sense.
+`/` and `//` both divide. When would you want each one? Can you think of
+a question on this page where only one of them gives an answer that makes
+sense?
 
 A challenge: a clock shows 22:00. What time will it show 5 hours later? And
 40 hours later? Can you make Python go back to 0 after 23, the way a clock

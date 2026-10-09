@@ -68,9 +68,9 @@ languages need a spare *variable*{.term}: `spare = a`, then `a = b`, then
 
 ## Bubble sort: let things rise
 
-*Bubble sort* walks through the list comparing each pair of neighbours,
-and swaps any pair that is in the wrong order. After one full pass, the
-largest element has bubbled up to the end. Then it goes again.
+*Bubble sort* compares each pair of neighbours, from the start of the list
+to the end, and swaps any pair that is in the wrong order. After one full
+pass, the largest element has bubbled up to the end. Then it repeats.
 
 In this list, 90 is already at the end. 64, the next largest, starts at the
 front. Where will it be after one pass?
@@ -304,7 +304,7 @@ print(sorted(words, key=last_letter))
 function is passed without brackets, as `generate_sequence` was given a
 rule in [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 `sorted()` calls it on each element. Words with the same length keep the
-order they came in, so OWL stays before BAT.
+order they came in, so `"OWL"` stays before `"BAT"`.
 
 A list also has a `.sort()` method, which sorts that list in place. What
 will this print?
@@ -458,10 +458,10 @@ proportion to $n^2$, written $O(n^2)$.
 | 1,000,000 | 500,000,000,000 | a long wait |
 
 Faster sorts exist. Merge sort takes about $n \log n$ steps, and Python's
-own `sorted()` is built on the same idea. Add a counter to your insertion
-sort and your selection sort, and run all three on the same lists: random,
-already sorted, and reversed. Does each one always make the same number of
-comparisons, or does it depend on the list?
+own `sorted()` is built on the same idea. Can you add a counter to your
+insertion sort and your selection sort, and run all three on the same
+lists: random, already sorted, and reversed? Does each one always make the
+same number of comparisons, or does it depend on the list?
 
 ```python exec
 id: comparing-our-sorts-2
