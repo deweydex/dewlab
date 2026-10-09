@@ -2,7 +2,7 @@
 title: "Repeating steps with loops — Practice"
 practice_for: repeating-yourself
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -311,12 +311,40 @@ is sometimes 1,048,576 bytes, not a million.
 
 ## 13. A triangle, and a triangle the other way
 
-Can you print a triangle five rows tall: one `#` on the first row, and five
-on the last? Then the same triangle aligned on the right, so the right
-edge is straight?
+<div class="dl-world" data-world="secret-messages">
+
+Puzzle-setters pad a coded message with a dummy letter, often `X`. Can you
+print a triangle of `X` five rows tall: one on the first row, and five on
+the last? Then the same triangle aligned on the right, so the right edge is
+straight?
 
 ```python exec
-id: a-triangle-1
+id: a-triangle-1--secret-messages
+
+```
+
+```solution
+for row in range(1, 6):
+    print("X" * row)
+for row in range(1, 6):
+    print(" " * (5 - row) + "X" * row)
+---
+No inner loop is needed, because `*` repeats a string. For the second
+triangle the spaces are the whole trick. How do you know it is `5 - row`,
+not `5 - row - 1`? Try the first and last rows, not the middle ones:
+off-by-one slips live at the edges.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Can you draw a triangle of lit pixels, `#`, five rows tall: one on the first
+row, and five on the last? Then the same triangle aligned on the right, so
+the right edge is straight?
+
+```python exec
+id: a-triangle-1--pixel-art
 
 ```
 
@@ -331,6 +359,8 @@ triangle the spaces are the whole trick. How do you know it is `5 - row`,
 not `5 - row - 1`? Try the first and last rows, not the middle ones:
 off-by-one slips live at the edges.
 ```
+
+</div>
 
 ## 14. Three or seven
 
@@ -578,13 +608,16 @@ ones, and `%` gives what is left.
 
 </details>
 
-## 20. From earlier: one letter back
+## 20. From earlier: one step back
 
-From *Variables, data types and text*. A Caesar shift of 10 turned a letter
-into K. Which letter was it?
+From *Variables, data types and text*.
+
+<div class="dl-world" data-world="secret-messages">
+
+A Caesar shift of 10 turned a letter into K. Which letter was it?
 
 ```python exec
-id: from-earlier-one-letter-back-1
+id: from-earlier-one-letter-back-1--secret-messages
 letter = "K"
 shift = 10
 
@@ -600,6 +633,32 @@ print(chr(moved + ord("A")))
 A. Moving back is the same shift with a minus, and `% 26` brings a number
 below 0 back round to the end of the alphabet.
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A brush added 100 to a pixel's red, and the value went back round to 0 after
+255, with `% 256`. The red is now 20. What was it before?
+
+```python exec
+id: from-earlier-one-letter-back-1--pixel-art
+red_now = 20
+brush = 100
+
+```
+
+```solution
+red_now = 20
+brush = 100
+print((red_now - brush) % 256)
+---
+176. Moving back is the same step with a minus, and `% 256` brings a number
+below 0 back round to the top of the scale. Check it forwards: 176 + 100 is
+276, and `276 % 256` is 20.
+```
+
+</div>
 
 ## 21. From earlier: the order of the questions
 

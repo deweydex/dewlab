@@ -1,7 +1,7 @@
 ---
 title: "Repeating steps with loops"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -20,13 +20,15 @@ covers:
 
 # Repeating steps with loops
 
+<div class="dl-world" data-world="secret-messages">
+
 On [Variables, data types and text](tutorial:storing-and-computing), moving
 a whole word three places along meant writing the same line once for every
 letter. Here is a *loop*{.term} that does it for every letter, however long the
 word. What will it print?
 
 ```python exec
-id: a-loop-that-codes-1
+id: a-loop-that-codes-1--secret-messages
 word = "CAT"
 coded = ""
 for letter in word:
@@ -45,6 +47,42 @@ It prints `FDW`: C moved to F, A to D, and T to W. The indented lines ran
 three times, once for each letter of `CAT`, and each time round `letter`
 held the next one. Change the word to your own name, in capitals, and run
 it again. The loop does not care how long it is.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+On [Variables, data types and text](tutorial:storing-and-computing), working
+on a picture meant writing the same line once for every pixel. Here is a
+*loop*{.term} that turns a whole row of pixels into its negative, whatever
+the width of the row. Every `#` becomes `.`, and every `.` becomes `#`. What
+will it print?
+
+```python exec
+id: a-loop-that-codes-1--pixel-art
+row = "##..#."
+negative = ""
+for pixel in row:
+    if pixel == "#":
+        negative = negative + "."
+    else:
+        negative = negative + "#"
+print(negative)
+```
+
+```predict
+type: text
+
+What will it print?
+```
+
+It prints `..##.#`: the two lit pixels at the start went dark, and the dark
+ones lit up. The indented lines ran six times, once for each pixel of the
+row, and each time round `pixel` held the next one. Change the row to one of
+your own, using only `#` and `.`, and run it again. The loop does not care
+how wide it is.
+
+</div>
 
 Our *programs*{.term} can run lines in order, and make decisions. This page adds
 the third thing every program is built from: repetition.
@@ -112,8 +150,8 @@ print(total)
 
 It adds 1 + 2 + 3 + 4. It starts a total at zero, then adds to it again and
 again. This is the *accumulator pattern*, one of the most common shapes in
-programming. `coded` in the first cell on this page was an accumulator too,
-of letters instead of numbers.
+programming. The text built up in the first cell on this page was an
+accumulator too, of characters instead of numbers.
 
 ### Your turn
 
@@ -198,7 +236,7 @@ this because nobody knew the number of steps in advance: the loop found it.
 
 When we know how many times to repeat, or have items to use one at a time,
 a *for loop* is simpler. It runs its body once for each item
-in a sequence: each letter of a string, as in the first cell, or each number
+in a sequence: each character of a string, as in the first cell, or each number
 `range()` gives.
 
 ```python exec
@@ -424,11 +462,34 @@ id: your-turn-5
 ## Nested loops
 
 A loop can hold another loop. These are *nested loops*. For each single
-time round the outer loop, the inner loop runs all the way through. What do
-you think this one draws?
+time round the outer loop, the inner loop runs all the way through.
+
+<div class="dl-world" data-world="secret-messages">
+
+What do you think this one prints?
 
 ```python exec
-id: nested-loops-1
+id: nested-loops-1--secret-messages
+for row in range(4):
+    for column in range(5):
+        print(chr(ord("A") + row * 5 + column), end=" ")
+    print()   # end the row
+```
+
+It prints a grid of letters, four rows of five, from A to T. The outer loop
+runs 4 times, and for each of those the inner loop runs 5 times, so the
+`print` inside runs 20 times, once for every letter of the grid.
+`row * 5 + column` gives each place its own number, from 0 to 19, and
+`chr` turns that number into a letter.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+What do you think this one draws?
+
+```python exec
+id: nested-loops-1--pixel-art
 for row in range(4):
     for column in range(8):
         if (row + column) % 2 == 0:
@@ -441,6 +502,8 @@ for row in range(4):
 It draws a checkerboard, four rows of eight. The outer loop runs 4 times, and for
 each of those the inner loop runs 8 times, so the `if` runs 32 times, once
 for every square of the grid. `(row + column) % 2` shifts each row along by one.
+
+</div>
 
 If the outer loop runs $n$ times, and the inner loop runs $n$ times for
 each, the total is $n \times n$, or $n^2$. Counting the steps an *algorithm*{.term}
