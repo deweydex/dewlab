@@ -75,7 +75,7 @@ and the first says what it means more directly.
 
 ## 4. One to a hundred
 
-Can you add up the numbers from 1 to 100 with a loop?
+Can you add up the numbers from 1 to 100 with a loop, in `total`?
 
 ```python exec
 id: one-to-a-hundred-1
@@ -101,7 +101,8 @@ like that exists, it is a free test of your loop.
 
 ## 5. Two sigmas
 
-Can you calculate $\sum_{i=1}^{10} i^2$, and then $\sum_{i=1}^{10} \frac{1}{i}$?
+Can you calculate $\sum_{i=1}^{10} i^2$ in `squares`, and then
+$\sum_{i=1}^{10} \frac{1}{i}$ in `fractions`?
 
 ```python exec
 id: two-sigmas-1
@@ -141,8 +142,8 @@ adds up `i ** 2` for each `i` in the range.
 
 ## 6. Ten factorial
 
-Can you calculate 10! with a loop? Why does the accumulator start at 1, and
-not at 0?
+Can you calculate 10! with a loop, in `product`? Why does the accumulator
+start at 1, and not at 0?
 
 ```python exec
 id: ten-factorial-1
@@ -168,8 +169,9 @@ nothing: 0 for a sum, 1 for a product.
 
 ## 7. A sum that never settles
 
-What is the sum $1 + \frac{1}{2} + \frac{1}{3} + \dots$ after 1,000 terms?
-After 10,000? Does it settle at some value?
+The cell adds $1 + \frac{1}{2} + \frac{1}{3} + \dots$ for 1,000 terms.
+What does the sum come to? Can you change the cell to add 10,000 terms? Does
+the sum settle at some value?
 
 ```python exec
 id: a-sum-that-never-settles-1
@@ -192,7 +194,7 @@ returns to this.
 ## 8. The largest
 
 Can you find the largest number in `[3, 17, 4, 22, 8]` with a loop, without
-`max()`? The square brackets make a *list*, which
+`max()`, in `largest`? The square brackets make a *list*, which
 [Lists and looping over them](tutorial:lists-and-sequences) meets
 properly. For now, `for n in numbers:` takes each number in turn, and
 `numbers[0]` is the first one.
@@ -242,6 +244,8 @@ first.
 
 ## 10. Halving
 
+This loop halves `x` until it drops below 1, and counts the halvings.
+
 ```python exec
 id: halving-1
 x = 100
@@ -271,7 +275,7 @@ When should you use `while`, and when `for`?
 
 <details class="dl-answer"><summary>one good answer</summary>
 
-`for` is for a known count: every letter of a message, or every number in
+`for` is for a known count: every item in a list, or every number in
 a range. `while` is for a condition: until the guess matches, or until the
 answer stops changing. Each is awkward in the other's job. A `while`
 loop counting to ten needs its own counter, and a `for` loop that has to
@@ -281,7 +285,7 @@ stop early needs a way to leave the loop.
 
 ## 12. Past a million
 
-Can you find the smallest power of 2 above 1,000,000?
+Can you find the smallest power of 2 above 1,000,000, in `power`?
 
 ```python exec
 id: past-a-million-1
@@ -330,7 +334,8 @@ off-by-one slips live at the edges.
 
 ## 14. Three or seven
 
-How many numbers from 1 to 100 can be divided by 3 *or* by 7?
+How many numbers from 1 to 100 can be divided by 3 *or* by 7? Can you
+count them in `count`?
 
 ```python exec
 id: three-or-seven-1
@@ -442,7 +447,7 @@ the other way.
 ## 16. Five hundred primes
 
 A prime is a whole number above 1 that only 1 and itself divide. Can you
-add up the first 500 primes?
+add up the first 500 primes, in `total`?
 
 ```python exec
 id: five-hundred-primes-1
@@ -489,7 +494,7 @@ enough to finish.
 ## 17. Adding the digits
 
 Can you add up the digits of 9,876,543, without turning the number into
-text?
+text, in `total`?
 
 ```python exec
 id: adding-the-digits-1
@@ -523,7 +528,8 @@ through the digits of any number.
 
 The Collatz rule says: if a number is even, halve it. If it is odd,
 multiply it by three and add one. Starting from 27, how many steps does it
-take to reach 1, and how high does it climb on the way?
+take to reach 1, and how high does it climb on the way? Can you find them in
+`steps` and `highest`?
 
 ```python exec
 id: up-and-down-to-one-1
@@ -598,21 +604,21 @@ below 0 back round to the end of the alphabet.
 ## 21. From earlier: the order of the questions
 
 From *Making decisions with if, elif and else*. This gives every
-brightness from 64 up the same character. Why?
+temperature from 10 up the same word. Why?
 
 ```python
-if brightness >= 64:
-    pixel = "-"
-elif brightness >= 128:
-    pixel = "+"
-elif brightness >= 192:
-    pixel = "#"
+if temperature >= 10:
+    weather = "mild"
+elif temperature >= 20:
+    weather = "warm"
+elif temperature >= 30:
+    weather = "hot"
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
 Python runs the first path whose condition is `True`, and skips the rest.
-Every brightness of 128 or 192 is also 64 or more, so the first path
+Every temperature of 20 or 30 is also 10 or more, so the first path
 catches them all. With `>=`, the biggest threshold goes first.
 
 </details>

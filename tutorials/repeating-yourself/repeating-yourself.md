@@ -52,9 +52,8 @@ the third thing every program is built from: repetition.
 ## While loops: repeat until done
 
 A *while loop* runs its body again and again, for as long as a condition
-stays `True`. It is for "keep going until…". Here a square pattern keeps
-doubling in size, until the next doubling would no longer fit on a canvas
-64 pixels wide.
+stays `True`. It is for "keep going until…". Here a length called `side`
+keeps doubling, until the next doubling would go past 64.
 
 ```python exec
 id: while-loops-repeat-until-done-1
@@ -82,9 +81,11 @@ A while loop needs three things:
    `side = side * 2`
 
 What happens without the third one? The condition never becomes `False`,
-so the loop never stops. It is worth seeing once. While a cell is running,
-its **Run** button changes to **Stop**. Press it to stop the loop. (If you
-do not see a Stop button, reloading the page stops it too.)
+so the loop never stops. It is worth seeing once. Can you try it? In the
+first cell of this section, delete the line `side = side * 2` and run the
+cell. While a cell is running, its **Run** button changes to **Stop**. Press
+it to stop the loop. (If you do not see a Stop button, reloading the page
+stops it too.)
 
 ### Trace it by hand
 
@@ -119,9 +120,10 @@ of letters instead of numbers.
 <div class="dl-world" data-world="secret-messages">
 
 In English, E is the most common letter. So in a message moved along by a
-Caesar shift, the most common letter is probably E, moved. Suppose the most
-common letter in a coded message is Q. Can you try shifts 0, 1, 2 and so on,
-until moving Q back by the shift gives E? Which shift is it?
+Caesar shift, the most common letter is probably the moved E. Suppose the
+most common letter in a coded message is Q. Can you use a loop to try
+`shift` as 0, 1, 2 and so on, until moving Q back by `shift` gives E? Which
+shift is it?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -157,7 +159,8 @@ count the letters.
 <div class="dl-world" data-world="pixel-art">
 
 A pattern starts 3 pixels wide, and each step makes it 5 pixels wider. How
-many steps until it is at least 64 pixels wide?
+many steps until it is at least 64 pixels wide? The cell starts with
+`width` and `steps`.
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -173,8 +176,8 @@ width
 ```
 
 ```hint
-Keep going while the width is less than 64. Inside the loop, two things
-change: the width, and the count of steps.
+Keep going while `width` is less than 64. Inside the loop, two things
+change: `width` and `steps`.
 ```
 
 ```solution
@@ -437,7 +440,7 @@ for row in range(4):
 
 It draws a checkerboard, four rows of eight. The outer loop runs 4 times, and for
 each of those the inner loop runs 8 times, so the `if` runs 32 times, once
-for every pixel. `(row + column) % 2` shifts each row along by one.
+for every square of the grid. `(row + column) % 2` shifts each row along by one.
 
 If the outer loop runs $n$ times, and the inner loop runs $n$ times for
 each, the total is $n \times n$, or $n^2$. Counting the steps an *algorithm*{.term}
@@ -533,7 +536,7 @@ so the loop could have asked `i % 21 == 0`, and found the same four.
 <div class="dl-world" data-world="secret-messages">
 
 Code-breakers count letters. How many E's are in this message? Can you
-count them with a loop?
+count them with a loop, in `count`?
 
 ```python exec
 id: your-turn-7--secret-messages
@@ -576,7 +579,7 @@ somebody else.
 
 A row of a picture is written as text: `#` for a lit pixel and `.` for a
 dark one. How many pixels are lit in this row? Can you count them with a
-loop?
+loop, in `count`?
 
 ```python exec
 id: your-turn-7--pixel-art
@@ -598,6 +601,8 @@ for pixel in row:
     if pixel == "#":
         count = count + 1
 print(count)
+---
+Six lit pixels.
 ```
 
 ```solution
@@ -618,6 +623,8 @@ Sigma writes down a loop, and a loop with an accumulator calculates a sum.
 Which parts of $\sum_{i=1}^{5} i$ does a mathematician not write, that
 a program has to write?
 
+<div class="dl-world" data-world="secret-messages">
+
 A challenge: this message was moved along by a Caesar shift, but nobody
 told you by how much. Can you try all 26 shifts, and print what each one
 gives? One of them reads as English.
@@ -633,9 +640,29 @@ for shift in range(26):
     print(shift, decoded)
 ```
 
-The first cell on this page did one word with one loop. Next,
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: can you draw a picture 8 pixels wide and 8 tall, with a line
+of `#` along the diagonal from one corner to the opposite corner? Then can
+you add the other diagonal, to make an X?
+
+```python challenge
+# Draw the diagonal. Which pixels are on it?
+size = 8
+for row in range(size):
+    for column in range(size):
+        # Print "#" for a pixel on the diagonal and "." for the others.
+        print(".", end="")
+    print()
+```
+
+</div>
+
+The loops on this page repeat steps. Next,
 [Writing your own functions](tutorial:writing-your-own-functions) gives a
-loop like that a name, so you can use it again without writing it out.
+loop a name, so you can use it again without writing it out.
 
 ## Where to read more
 

@@ -1,7 +1,7 @@
 ---
 title: "Variables, data types and text"
 year: "2026-2027"
-version: 2026.09.27.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -48,7 +48,7 @@ value the name holds. And `+` with two pieces of text joins them end to end.
 In [Algorithms, pseudocode and your first Python](tutorial:first-steps),
 each result was gone as soon as it was shown. With names, a value stays, so
 we can build on it. This page is about names, the different kinds of value
-Python keeps, and text. Python can split text into its characters, one at a
+Python keeps, and text. Python can also take text apart, one character at a
 time.
 
 ## Variables: giving names to things
@@ -75,25 +75,26 @@ It prints 6. In maths, $c = c + 1$ can never be true. In Python it is an
 instruction, and Python runs it once. First it calculates the right-hand
 side, `count + 1`, which is 6. Then it gives that value the name `count`. The old 5 is gone.
 
-A variable's name should say what it holds. `shift` is a good name for the
-number of places a secret code moves each letter. `s` is a poor one.
-Somebody reading the code, and that could be you in a few months, would
-not know what `s` means. Python has a few rules for names:
+A variable's name should say what it holds. `price` is a good name for what
+one thing costs. `p` tells us much less. Somebody reading the code, and that
+could be you in a few months, would not know what `p` means. Python has a
+few rules for names:
 
 - A name starts with a letter or an underscore (`_`).
 - After that, it can contain letters, numbers and underscores.
-- Capital letters matter: `Shift` and `shift` are two different variables.
+- Capital letters matter: `Price` and `price` are two different variables.
 
 Python programmers write names in *snake_case*: lowercase words joined by
-underscores, like `secret_word`.
+underscores, like `first_name`.
 
 ### Your turn
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you make a variable for a secret word of your own, one for the number
-of letters in it, and one for whether you would let anybody see it: `True`
-or `False`? Then print each one with a label that says what it is.
+Can you make three variables? First, a secret word of your own. Then the
+number of letters in it. Then `True` or `False`, for whether you would let
+anybody see it. When you have them, print each one with a label that says
+what it is.
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -118,9 +119,10 @@ output.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you make variables for a picture's width and height in pixels, and one
-for whether it is in colour: `True` or `False`? Then print how many pixels
-it has, with a label that says what the number is.
+Can you make three variables? First, the width of a picture in pixels. Then
+its height. Then `True` or `False`, for whether it is in colour. When you
+have them, print how many pixels the picture has, and whether it is in
+colour, each with a label that says what it is.
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -242,9 +244,9 @@ print(ord("B"))
 print(chr(67))
 ```
 
-`A` is 65, `B` is 66, and so on up to `Z`, which is 90. The capital letters
-are numbered in order, one after another. So, to move a letter along the
-alphabet, we can move its number. The next section does this.
+`"A"` is 65, `"B"` is 66, and so on up to `"Z"`, which is 90. The capital
+letters are numbered in order, one after another. So, to move a letter along
+the alphabet, we can add to its number. The next section does this.
 
 ## Type conversion
 
@@ -286,10 +288,23 @@ because `int()` cannot read `ten` as a number.
 
 ## Putting it together: a small program
 
-Now we can move a letter along the alphabet. This is the main step in
-the oldest secret code there is. Julius Caesar is said to have written to his
-generals with every letter moved three places along: A became D, B became E.
-It is called a *Caesar shift*.
+Now we can move a letter along the alphabet, and go back round to A after Z.
+
+<div class="dl-world" data-world="secret-messages">
+
+This is the main step in the oldest secret code there is. Julius Caesar is
+said to have written to his generals with every letter moved three places
+along: A became D, B became E. It is called a *Caesar shift*.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Letters are numbers, so moving one along the alphabet is arithmetic. The
+same trick, a number that goes back round to 0, helps wherever a count has
+to wrap. A clock does it, and so do the brightness steps of a screen.
+
+</div>
 
 Here is the plan, as *pseudocode*{.term}:
 
@@ -325,9 +340,11 @@ What will X become?
   - That is three places back, not three places on.
 ```
 
-X moves on to Y, then Z, then round to A. The `% 26` is the same remainder
-that made a clock go back to 0 after 23. There are 26 letters, so position 26
-is position 0 again. Delete it from the cell, and see what X becomes then.
+X moves on to Y, then Z, then round to A. The `% 26` is the remainder
+from [Algorithms, pseudocode and your first Python](tutorial:first-steps), the
+one that sends a clock back to 0 after 23. There are 26 letters, so position
+26 is position 0 again. Can you delete `% 26` from the cell? What does X
+become then?
 
 <details class="dl-answer"><summary>What each line does</summary>
 
@@ -346,8 +363,9 @@ is position 0 again. Delete it from the cell, and see what X becomes then.
 <div class="dl-world" data-world="secret-messages">
 
 A letter was moved three places along, and it became D. What was it before?
-Can you change the program to move a letter backwards, and find out? Then
-try A: which letter moves three places along to become A?
+Can you change `shift` so the program moves backwards, and find out? Then
+change `letter` to `"A"` and run it again. Which letter, moved three places
+along, becomes A?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -364,7 +382,7 @@ new_letter
 ```
 
 ```hint
-Moving backwards three places is a shift of −3. Does `% 26` still bring
+Moving backwards three places is a `shift` of `-3`. Does `% 26` still bring
 the number back into 0 to 25?
 ```
 
@@ -377,7 +395,8 @@ new_letter = chr(moved + ord("A"))
 print(new_letter)
 ---
 D came from A. Decoding is the same program with the shift the other way.
-Try A too: −3 takes it below 0, and `% 26` brings it back round to X.
+For `"A"`, `-3` takes the position below 0, and `% 26` brings it back round
+to X.
 ```
 
 </div>
@@ -434,14 +453,14 @@ shift = 3
 print(f"{letter} moved {shift} places is {new_letter}")
 ```
 
-Some results have more decimal places than anybody wants to read. A screen
-1920 pixels wide and 1080 tall has a shape we can find by dividing:
+Some results have more decimal places than anybody wants to read. A poster
+100 cm wide and 70 cm tall has a shape we can find by dividing:
 
 ```python exec
 id: putting-values-into-text-2
-ratio = 1920 / 1080
-print(f"The screen is {ratio} times as wide as it is tall")
-print(f"The screen is {ratio:.2f} times as wide as it is tall")
+ratio = 100 / 70
+print(f"The poster is {ratio} times as wide as it is tall")
+print(f"The poster is {ratio:.2f} times as wide as it is tall")
 ```
 
 `:.2f` after the name, inside the curly brackets, means "show this number
@@ -455,9 +474,9 @@ decimal place.
 
 A message has 47 letters, and 12 of them are E. What share of the letters
 is E, as a percentage? Can you print it with an f-string, to 1 decimal
-place, like `E is 25.5% of the letters`? (Code-breakers count letters like
+place, like `E is 8.3% of the letters`? (Code-breakers count letters like
 this. In English, E is the most common letter, so the most common letter
-in a Caesar-shifted message is probably E, moved.)
+in a Caesar-shifted message is probably a moved E.)
 
 ```python exec
 id: putting-values-into-text-3--secret-messages
@@ -505,13 +524,13 @@ name: `{pixels / 1000000:.2f}` divides first, then shows 2 decimal places.
 
 ## Looking back
 
-Python stopped at `"40" + 2`, but not at `"40" + "2"`. Why does Python need
-`str()` before it will join a number to a piece of text, when a person
-reading the line would know what was meant?
+Python joins `"40" + "2"` into `402`, but it stops with an error at
+`"40" + 2`. Why does Python need `str()` before it will join a number to a
+piece of text, when a person reading the line would know what was meant?
 
-A challenge: can you move a whole word, like `CAT`, three places along,
-with what this page has? What makes it tedious? What would you want Python
-to do for you, if you had a word of a hundred letters?
+A challenge: can you move a whole word, like `CAT`, three places along the
+alphabet, with what this page has? What makes it tedious? What would you
+want Python to do for you, if you had a word of a hundred letters?
 
 ```python challenge
 # Move each letter of CAT three places along the alphabet.
@@ -536,9 +555,22 @@ to Python.* <https://docs.python.org/3/tutorial/introduction.html>. This is the
 official reference for `int`, `float`, `str` and `bool`, with the exact
 rules Python follows for each.
 
+<div class="dl-world" data-world="secret-messages">
+
 Singh, S. (1999). *The Code Book.* Fourth Estate. This book tells the history of secret
 codes, from Caesar's shift to the machines of the Second World War, and how
 each one was broken.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Technology Connections. *The Weird World in RGB.*
+<https://www.youtube.com/watch?v=uYbdx4I7STg>. This video shows how a screen
+mixes red, green and blue light into every colour, the three numbers we put
+into `rgb(...)` on this page. About twenty minutes.
+
+</div>
 
 CrashCourse (2017). *Representing Numbers and Letters with Binary: Crash
 Course Computer Science #4.*

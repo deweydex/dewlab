@@ -71,7 +71,7 @@ it was a single instruction, and Python ran it once.
 ## 3. Swap them
 
 Can you swap the values of `a` and `b`, so that `a` gets what `b`
-had, and `b` with what `a` had?
+had, and `b` gets what `a` had?
 
 ```python exec
 id: swap-them-1
@@ -107,7 +107,7 @@ b = "right"
 a, b = b, a
 print(a, b)
 ---
-Python can swap two names in one line. It works out both values on the
+Python can swap two names in one line. It finds both values on the
 right before it gives either name a new one.
 ```
 
@@ -129,8 +129,8 @@ print(z)
 ```python
 width = 64
 height = 48
-pixels = width * height
-print(pixels)
+area = width * height
+print(area)
 ```
 
 The arithmetic is the same, and now the code says what it is about.
@@ -139,8 +139,8 @@ The arithmetic is the same, and now the code says what it is about.
 
 ## 5. What type is it
 
-Say the type of each of these, then check with `type()` in the *cell*{.term}:
-`42`, `42.0`, `"42"`, `True`, `4 / 2`, `4 // 2`, `"4" + "2"`.
+Can you say the type of each of these? Then check with `type()` in the
+*cell*{.term}: `42`, `42.0`, `"42"`, `True`, `4 / 2`, `4 // 2`, `"4" + "2"`.
 
 ```python exec
 id: what-type-is-it-1
@@ -265,8 +265,8 @@ moment it arrives.
 <div class="dl-world" data-world="secret-messages">
 
 A code called ROT13 moves every letter 13 places along. Can you use the
-Caesar shift from the tutorial to find what N becomes? Then move the
-answer 13 places again. What do you notice?
+Caesar shift from the tutorial to find what `"N"` becomes? Then use that
+answer as `letter`, and move it 13 places again. What do you notice?
 
 ```python exec
 id: thirteen-places-along-1--secret-messages
@@ -297,9 +297,9 @@ used it online to hide the end of a joke or a spoiler.
 <div class="dl-world" data-world="pixel-art">
 
 A pixel's red is 200, and a brush adds 100 to it. A colour stops at 255,
-so the brush should stop there. Can you find what `%` would
-do to 300, going round like a clock with 256 steps? And why would a brush
-not want that?
+so the brush should stop there. What would `%` do to the new value, going
+round like a clock with 256 steps? Can you find it with `brighter % 256`?
+Then, why would a brush not want that?
 
 ```python exec
 id: thirteen-places-along-1--pixel-art
