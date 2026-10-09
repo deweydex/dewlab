@@ -1,7 +1,7 @@
 ---
 title: "Designing and testing good functions"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -428,20 +428,19 @@ disappear when it finishes.
 
 ```python exec
 id: variable-scope-revisited-1
-def with_border(width):
-    edge = "#" * width
-    middle = "#" + "." * (width - 2) + "#"
-    return edge + "\n" + middle + "\n" + edge
+def underlined(title):
+    line = "=" * len(title)
+    return title + "\n" + line
 
-print(with_border(6))
+print(underlined("Monthly report"))
 
 # What happens if this line runs? Delete the # at its start to find out.
-# print(edge)
+# print(line)
 ```
 
-It gives a `NameError`, because `edge` exists only inside `with_border`.
+It gives a `NameError`, because `line` exists only inside `underlined`.
 That is a help, not a nuisance. Many functions can each have a variable
-called `total` or `edge`, and none of them clashes with another.
+called `total` or `line`, and none of them clashes with another.
 Information goes in only through *parameters*{.term}, and leaves only through
 `return`.
 

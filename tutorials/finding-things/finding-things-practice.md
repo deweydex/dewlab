@@ -14,18 +14,18 @@ Problems on searching, and three from earlier pages. Several ask you to
 count comparisons without writing code. Try those on paper first. Try each
 problem before you open anything under it.
 
-## 1. Why −1
+## 1. Why -1
 
-Why does `linear_search` return −1 when the target is not there, and
-not 0?
+Why does `linear_search` return `-1` when the target is not there, and
+not `0`?
 
 <details class="dl-answer"><summary>answer</summary>
 
-0 is a real index: the first *element*{.term}. A search that returned 0 for "not
-there" would look the same as one that found the target first. −1 is never
+`0` is a real index: the first *element*{.term}. A search that returned `0` for "not
+there" would look the same as one that found the target first. `-1` is never
 an index that a search finds, so it can only mean "not there". In Python
 it is a real index too, the last element, so a caller who forgets to check
-for −1 gets a wrong answer and no error.
+for `-1` gets a wrong answer and no error.
 
 </details>
 
@@ -47,7 +47,7 @@ look at everything before it can say no.
 ## 3. The last one
 
 Can you write `last_index(items, target)`, which gives the *index*{.term} of the
-*last* place the target appears, or −1?
+*last* place the target appears, or `-1` if it is not there?
 
 ```python exec
 id: the-last-one-1
@@ -133,7 +133,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-It returns −1, with no error. The middle is 9, and 3 is smaller, so
+It returns `-1`, with no error. The middle is 9, and 3 is smaller, so
 binary search stops looking in the right half, where 3 is. On a list that
 is not sorted, binary search gives wrong answers without complaint.
 Nothing in the code checks the order. The code that calls it must do
@@ -218,7 +218,7 @@ that is the place. Python has this in its standard library, as
 
 ## 9. Every place
 
-Can you set `places` to every index where 4 appears?
+Can you set `places` to every index where `4` appears in `numbers`?
 
 ```python exec
 id: every-place-1
@@ -256,7 +256,7 @@ not, so this one is linear whichever way it is written.
 
 <div class="dl-world" data-world="secret-messages">
 
-In a sorted word list, where do the words starting with M begin? The
+In the sorted list `words`, where do the words starting with M begin? The
 place where `"M"` would go is the answer, because `"M"` comes before every
 word that starts with M. Can you set `start` to it, with `where_it_goes`
 from problem 8?
@@ -302,8 +302,8 @@ with, both are the same place, and the range is empty.
 
 <div class="dl-world" data-world="pixel-art">
 
-These are a picture's brightnesses, sorted. Where do the bright pixels,
-128 or more, begin? Can you set `start` to that index, with
+The list `brightnesses` holds a picture's brightnesses, sorted. Where do
+the bright pixels, 128 or more, begin? Can you set `start` to that index, with
 `where_it_goes` from problem 8?
 
 ```python exec

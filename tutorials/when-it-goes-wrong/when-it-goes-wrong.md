@@ -1,7 +1,7 @@
 ---
 title: "Finding bugs in bigger programs"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -19,35 +19,35 @@ covers:
 
 # Finding bugs in bigger programs
 
-This function is meant to count how often each letter appears. It runs
-with no error. What does it print?
+This function is meant to count how often each item appears in a list. It
+runs with no error. What does it print?
 
 ```python exec
 id: a-count-that-forgets-1
-def count_letters(text):
-    for letter in text:
+def count_items(items):
+    for item in items:
         counts = {}
-        counts[letter] = counts.get(letter, 0) + 1
+        counts[item] = counts.get(item, 0) + 1
     return counts
 
-print(count_letters("BANANA"))
+print(count_items(["fig", "plum", "fig", "fig", "plum", "pear"]))
 ```
 
 ```predict
 What will it print?
 
-- {'B': 1, 'A': 3, 'N': 2}
-  - Each letter is counted as the loop goes. There is
+- {'fig': 3, 'plum': 2, 'pear': 1}
+  - Each item is counted as the loop goes. There is
     [a closer look at this](tutorial:a-total-that-starts-again).
-- {'A': 1}
-  - `counts = {}` runs every time round, so each letter starts again.
+- {'pear': 1}
+  - `counts = {}` runs every time round, so each item starts again.
 - An error
   - `counts` is made inside the loop, so `return` cannot see it.
 ```
 
-It prints `{'A': 1}`. `counts = {}` is inside the *loop*{.term}, so every time
+It prints `{'pear': 1}`. `counts = {}` is inside the *loop*{.term}, so every time
 round, the *dictionary*{.term} is deleted and started again, and only the last
-letter survives. One line is indented one step too far, and nothing
+item survives. One line is indented one step too far, and nothing
 complains.
 
 [Reading an error message](tutorial:reading-an-error-message) met the three
@@ -76,45 +76,45 @@ the *comment*{.term}. Then run it, and read the last line.
 
 ```python exec
 id: errors-from-lists-and-dictionaries-1
-letters = ["A", "B", "C"]
-print(letters[len(letters)])
+names = ["Ana", "Ben", "Cian"]
+print(names[len(names)])
 # I think it raises:
 ```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-2
-key = {"A": "Q", "B": "W"}
-print(key["a"])
+ages = {"Ana": 31, "Ben": 27}
+print(ages["ana"])
 # I think it raises:
 ```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-3
-row = [0, 255]
-row.add(128)
+basket = ["fig", "plum"]
+basket.add("pear")
 # I think it raises:
 ```
 
 ```python exec
 id: errors-from-lists-and-dictionaries-4
-row = [30, 90, 250]
+scores = [30, 90, 250]
 max = 0
-for value in row:
+for value in scores:
     if value > max:
         max = value
-print(max(row))
+print(max(scores))
 # I think it raises:
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-It raises an `IndexError`. Three letters have positions 0, 1 and 2, and
-`len(letters)` is 3. The last position is always one less than the length.
+It raises an `IndexError`. Three names have positions 0, 1 and 2, and
+`len(names)` is 3. The last position is always one less than the length.
 This slip is common enough to have a name, an *off-by-one error*.
 
-It raises a `KeyError: 'a'`, because the dictionary has a capital A. The message shows the
-key you asked for, so compare it, letter by letter, with the keys there
-are.
+It raises a `KeyError: 'ana'`, because the dictionary has `"Ana"`, with a
+capital A. The message shows the key you asked for, so compare it, letter
+by letter, with the keys there are.
 
 It raises an `AttributeError`: `'list' object has no attribute 'add'`. A list grows
 with `append`.
@@ -133,19 +133,19 @@ Python shows the whole chain, one step for each call.
 
 ```python exec
 id: reading-a-traceback-1
-def shift_letter(letter, shift):
-    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))
+def add_tax(price, rate):
+    return price * (1 + rate)
 
 
-def encode(message, shift):
-    coded = ""
-    for letter in message:
-        coded = coded + shift_letter(letter, shift)
-    return coded
+def basket_total(prices, rate):
+    total = 0
+    for price in prices:
+        total = total + add_tax(price, rate)
+    return total
 
 
-print(encode("MEET", 3))
-print(encode("MEET", "3"))
+print(basket_total([10, 20], 0.5))
+print(basket_total([10, 20], "0.5"))
 ```
 
 The first call works. The second prints several lines of traceback, and
@@ -155,12 +155,12 @@ they come in a deliberate order.
 steps run from the outermost call down to the innermost, so the place the
 error happened is nearest the bottom. Your program started at the top,
 and it broke at the bottom. `in <module>` is the main part
-of the program, and `in encode` and `in shift_letter` mean a line inside
+of the program, and `in basket_total` and `in add_tax` mean a line inside
 that function.
 
-The error is in `shift_letter`, on the arithmetic. But is `shift_letter`
-wrong? It adds a shift to a number, which is right. The mistake is the
-shift it was given, `"3"`, which is a string. It came from the line at
+The error is in `add_tax`, on the arithmetic. But is the fault in
+`add_tax`? It adds a rate to 1, which works for a number. The problem is
+the rate it was given, `"0.5"`, which is a string. It came from the line at
 the top. In a real program, it would come from `input()`, which always gives a
 string. The bottom says *what* happened, and the lines above say *how* it
 came to happen.
@@ -170,14 +170,14 @@ came to happen.
 <div class="dl-tb-body">
 <div class="dl-tb-row"><code>Traceback (most recent call last):</code></div>
 <div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 13, in &lt;module&gt;</code></div>
-<div class="dl-tb-row dl-tb-cause"><code>    print(encode("MEET", "3"))</code><span class="dl-tb-note">the line that is responsible</span></div>
-<div class="dl-tb-row dl-tb-cause"><code>          ~~~~~~^^^^^^^^^^^^^</code></div>
-<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 8, in encode</code></div>
-<div class="dl-tb-row"><code>    coded = coded + shift_letter(letter, shift)</code></div>
-<div class="dl-tb-row"><code>                    ~~~~~~~~~~~~^^^^^^^^^^^^^^^</code></div>
-<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 2, in shift_letter</code></div>
-<div class="dl-tb-row dl-tb-failed"><code>    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))</code><span class="dl-tb-note">the line that failed</span></div>
-<div class="dl-tb-row dl-tb-failed"><code>                ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~</code></div>
+<div class="dl-tb-row dl-tb-cause"><code>    print(basket_total([10, 20], "0.5"))</code><span class="dl-tb-note">the line that is responsible</span></div>
+<div class="dl-tb-row dl-tb-cause"><code>          ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 8, in basket_total</code></div>
+<div class="dl-tb-row"><code>    total = total + add_tax(price, rate)</code></div>
+<div class="dl-tb-row"><code>                    ~~~~~~~^^^^^^^^^^^^^</code></div>
+<div class="dl-tb-row"><code>  File "&lt;cell reading-a-traceback-1&gt;", line 2, in add_tax</code></div>
+<div class="dl-tb-row dl-tb-failed"><code>    return price * (1 + rate)</code><span class="dl-tb-note">the line that failed</span></div>
+<div class="dl-tb-row dl-tb-failed"><code>                    ~~^~~~~~</code></div>
 <div class="dl-tb-row dl-tb-error"><code>TypeError: unsupported operand type(s) for +: 'int' and 'str'</code></div>
 </div>
 <p class="dl-tb-edge">The program broke here, at the bottom. Read that last line first.</p>
@@ -190,20 +190,20 @@ responsible? Write both in the comments at the end.
 
 ```python exec
 id: tracebacks-through-several-functions-1
-def row_brightness(row):
-    return sum(row) / len(row)
+def average(marks):
+    return sum(marks) / len(marks)
 
 
-def brightest_row(picture):
+def best_group(groups):
     best = 0
-    for index in range(len(picture)):
-        if row_brightness(picture[index]) > row_brightness(picture[best]):
+    for index in range(len(groups)):
+        if average(groups[index]) > average(groups[best]):
             best = index
     return best
 
 
-print(brightest_row([[10, 20], [200, 250], [90, 90]]))
-print(brightest_row([[10, 20], [], [90, 90]]))
+print(best_group([[10, 20], [80, 90], [60, 60]]))
+print(best_group([[10, 20], [], [60, 60]]))
 
 # The line that failed:
 # The line that is responsible:
@@ -211,12 +211,12 @@ print(brightest_row([[10, 20], [], [90, 90]]))
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line that failed is `return sum(row) / len(row)`, in `row_brightness`,
+The line that failed is `return sum(marks) / len(marks)`, in `average`,
 with a `ZeroDivisionError`. The line responsible is the last `print`,
-because its picture has an empty row. Should `row_brightness` refuse an
-empty row with a clear `ValueError`, as
+because its groups include an empty list. Should `average` refuse an
+empty list with a clear `ValueError`, as
 [Designing and testing good functions](tutorial:building-reusable-tools)
-did for `mean`? Or should the picture never have had one? That is a
+did for `mean`? Or should the groups never have had one? That is a
 question about the whole program, not one line.
 
 </details>
@@ -275,21 +275,21 @@ now lost, and nothing said so. `sorted(numbers)` would have left it alone.
 
 The third kind changes a list while a loop uses it. `.remove(value)`
 takes the first *element*{.term} equal to `value` out of a list. This is meant to
-take every 0 out of a row.
+take every 0 out of a list.
 
 ```python exec
 id: the-dangerous-kind-3
-row = [0, 0, 255, 0]
-for value in row:
+scores = [0, 0, 7, 0]
+for value in scores:
     if value == 0:
-        row.remove(value)
-print(row)
+        scores.remove(value)
+print(scores)
 ```
 
-It prints `[255, 0]`. One 0 survives. Each removal moves the rest of the
+It prints `[7, 0]`. One 0 survives. Each removal moves the rest of the
 list one place left, under the loop, so the loop skips the element that
 moved into the gap. A new list is safer:
-`[value for value in row if value != 0]`.
+`[value for value in scores if value != 0]`.
 
 **This is why we check answers we already know.** Each of these gives a
 believable answer. Only an answer you can check for yourself, on a case
@@ -301,7 +301,7 @@ chosen to catch it, shows that it is wrong.
 
 This function is meant to reverse a key, so that a code letter looks up
 its plain letter. It runs, and it is wrong. Can you find the bug, and fix
-it? Add a test that would have caught it.
+it? Then add a test that would have caught it.
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -343,8 +343,8 @@ one pair, and a pair where the two letters differ.
 <div class="dl-world" data-world="pixel-art">
 
 This function is meant to count the lit pixels in a row. It runs, and it
-is wrong. Can you find the bug, and fix it? Add a test that would have
-caught it.
+is wrong. Can you find the bug, and fix it? Then add a test that would
+have caught it.
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -394,7 +394,7 @@ where do we start? Two habits help more than any others.
 
 **The first habit: print the values in the middle.** This is meant to give
 the average length of the words in a sentence. The words in
-`"MEET ME AT NOON"` have 4, 2, 2 and 4 letters, so the average is 3. What
+`"play is at noon"` have 4, 2, 2 and 4 letters, so the average is 3. What
 does it print?
 
 ```python exec
@@ -406,7 +406,7 @@ def average_word_length(sentence):
     words = len(sentence.split())
     return letters / words
 
-print(average_word_length("MEET ME AT NOON"))
+print(average_word_length("play is at noon"))
 ```
 
 It prints 3.75. Somewhere a number is wrong, but which? Make the program
@@ -423,7 +423,7 @@ def average_word_length(sentence):
     print("letters:", letters, "words:", words)
     return letters / words
 
-print(average_word_length("MEET ME AT NOON"))
+print(average_word_length("play is at noon"))
 ```
 
 `words` is 4, which is right. `letters` is 15, and there are only 12
@@ -437,86 +437,87 @@ each go wrong in only one, and a failing test points straight at it.
 
 ### Your turn
 
-This program draws a picture from brightnesses, with three functions. It
-runs, and draws the wrong thing. The first row should be `.-#`, and the
-second `#+.`.
+This program turns marks into grades, with three functions. It runs, and
+prints the wrong thing. The first group of marks should print `DCA`, and
+the second `ABD`.
 
-1. Test `shade` on its own, with 200, 130, 100 and 0.
-2. Test `draw_row` on its own, with `[0, 100, 200]`.
-3. Which function has the bug? Fix it.
+1. Can you test `grade` on its own, with 90, 65, 50 and 5?
+2. Can you test `grades_for` on its own, with `[10, 50, 90]`?
+3. Which function has the bug? Can you fix it?
 
 ```python exec
 id: your-turn-2
-def shade(value):
-    if value >= 192:
-        return "#"
-    elif value >= 128:
-        return "+"
-    elif value >= 64:
-        return "-"
-    return "."
+def grade(mark):
+    if mark >= 80:
+        return "A"
+    elif mark >= 60:
+        return "B"
+    elif mark >= 40:
+        return "C"
+    return "D"
 
 
-def draw_row(row):
+def grades_for(marks):
     line = ""
-    for value in row:
-        line = line + shade(value)
+    for mark in marks:
+        line = line + grade(mark)
         return line
 
 
-def draw(picture):
-    for row in picture:
-        print(draw_row(row))
+def report(groups):
+    for marks in groups:
+        print(grades_for(marks))
 
 
-draw([[0, 100, 200], [255, 130, 10]])
+report([[10, 50, 90], [95, 65, 5]])
 ```
 
 ```inputs
 guess: yes
-shade(130)
-draw_row([0, 100, 200])
-draw_row([])
+grade(65)
+grades_for([10, 50, 90])
+grades_for([])
 ```
 
 ```python exec
 id: your-turn-2-tests
 tests: your-turn-2
-assert shade(200) == "#"
+assert grade(90) == "A"
 ```
 
 ```hint
-`shade` is right for all four values. What does `draw_row` give back, and
-after how many pixels? Look at how far its `return` is indented.
+`grade` gives the grade you expect for all four marks. What does
+`grades_for` give back, and after how many marks? Look at how far its
+`return` is indented.
 ```
 
 ```solution
-def shade(value):
-    if value >= 192:
-        return "#"
-    elif value >= 128:
-        return "+"
-    elif value >= 64:
-        return "-"
-    return "."
+def grade(mark):
+    if mark >= 80:
+        return "A"
+    elif mark >= 60:
+        return "B"
+    elif mark >= 40:
+        return "C"
+    return "D"
 
 
-def draw_row(row):
+def grades_for(marks):
     line = ""
-    for value in row:
-        line = line + shade(value)
+    for mark in marks:
+        line = line + grade(mark)
     return line
 
 
-def draw(picture):
-    for row in picture:
-        print(draw_row(row))
+def report(groups):
+    for marks in groups:
+        print(grades_for(marks))
 
 
-draw([[0, 100, 200], [255, 130, 10]])
+report([[10, 50, 90], [95, 65, 5]])
 ---
-The `return` was inside the loop, so `draw_row` gave back its line after
-one pixel. With an empty row, the loop never ran, so the buggy version
+The `return` was inside the loop, so `grades_for` gave back its line after
+one mark. With an empty list, the loop never ran, so the buggy version
 gave back `None`. Moved out one step, the `return` runs once the loop has
 finished.
 ```
@@ -532,23 +533,23 @@ what it is meant to do. Can you find all three, and write a test that
 catches each one?
 
 ```python challenge
-# busiest gives back the first row with the most "#" in it.
-def lit_count(row):
+# top_group gives back the first group with the most passes (marks of 40 or more).
+def pass_count(marks):
     count = 0
-    for index in range(len(row) - 1):
-        if row[index] == "#":
+    for index in range(len(marks) - 1):
+        if marks[index] >= 40:
             count = count + 1
     return count
 
-def busiest(picture):
-    best = picture[0]
-    for row in picture:
-        if lit_count(row) >= lit_count(best):
-            best = row
+def top_group(groups):
+    best = groups[0]
+    for marks in groups:
+        if pass_count(marks) >= pass_count(best):
+            best = marks
         return best
 
-picture = ["#..#", "####", "##..", "...."]
-print(busiest(picture))
+groups = [[50, 20, 70, 10], [90, 80, 60, 40], [55, 45, 30, 20], [55, 45, 60, 70]]
+print(top_group(groups))
 ```
 
 The next page, [How programming languages came to be](tutorial:how-we-got-here),

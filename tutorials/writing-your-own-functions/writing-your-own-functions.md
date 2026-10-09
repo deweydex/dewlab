@@ -1,7 +1,7 @@
 ---
 title: "Writing your own functions"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -23,41 +23,40 @@ covers:
 
 # Writing your own functions
 
-Here is a small *program*{.term} with a secret in it. What will appear under the
-cell when you run it?
+Here is a small *program*{.term}. What will appear under the cell when you
+run it?
 
 ```python exec
 id: defining-a-function-1
-def secret():
-    print("The password is OTTER")
+def welcome():
+    print("Welcome to the lab")
 ```
 
 ```predict
 What will appear under the cell?
 
-- The password is OTTER
+- Welcome to the lab
   - The `print` line is right there in the cell.
 - Nothing
   - `def` gives the steps a name. It does not run them.
-- secret
+- welcome
   - This is what you would see if Python printed the name.
 ```
 
-Nothing appears. `def` teaches Python a new name, `secret`, and what the
+Nothing appears. `def` teaches Python a new name, `welcome`, and what the
 name means. It does not run the lines under it. They run only when we
 *call* the *function*{.term}, with its name and a pair of brackets:
 
 ```python exec
 id: defining-a-function-2
-secret()
-secret()
+welcome()
+welcome()
 ```
 
 We have used functions Python gives us from the start: `print()`, `int()`,
 `len()`, `range()`. Each has a name, takes something inside its brackets,
 and does one job. On this page we write our own, so that a piece of code
-we need again, like the Caesar shift, gets a name we can call as often as
-we like.
+we need again gets a name we can call as often as we like.
 
 ## Defining a function
 
@@ -112,7 +111,7 @@ What will the last line print?
 ```
 
 Python matches arguments to parameters by their position: the first
-argument goes into the first parameter. It does not know that "Rex" sounds
+argument goes into the first parameter. It does not know that `"Rex"` sounds
 like a name, so the last line prints `dog is a Rex.`
 
 ### Your turn
@@ -246,7 +245,7 @@ encode("", 5)             # an empty message
 ```
 
 ```hint
-Start with an empty accumulator, `coded = ""`. Go through the message one
+Start with an empty accumulator, `coded = ""`. Loop over the message, one
 character at a time. A capital gets the shift; anything else is added as it
 is. What does the function return at the end?
 ```
@@ -299,7 +298,7 @@ def checker(x, y):
     return "."
 ---
 It returns the pixel rather than printing it, so another function can use
-it to build a whole picture. That is the next section.
+it to build a whole picture. We do that in a later section.
 ```
 
 </div>
@@ -396,8 +395,8 @@ last line can use it.
 In mathematics, a function is a rule that gives *exactly one output* for
 each input. $f(x) = x^2$ takes 3 and gives 9, and takes −3 and also gives
 9. The same input always gives the same output. `square` is a rule like
-that, written in code, and so is `encode`. The same message and shift
-always give the same code.
+that, written in code, and so is `larger`. The same two numbers always
+give the same result.
 
 Not every Python function works this way. Some depend on things outside the
 function. What do you think this cell prints? The two calls have the same
@@ -481,8 +480,9 @@ the function.
 <div class="dl-world" data-world="pixel-art">
 
 When we mirror a picture left to right, column 0 goes to the last
-column, and the last goes to column 0. For a picture `width` pixels wide, can you write
-`mirror(x, width)`, which returns the column that `x` moves to?
+column, and the last goes to column 0. For a picture `width` pixels wide,
+can you write `mirror(x, width)`, which returns the column that `x` moves
+to?
 
 ```python exec
 id: your-turn-5--pixel-art
@@ -718,6 +718,8 @@ Which is easier to test: a function that prints its answer, or one that
 returns it? Think of the comparison tables on this page. Could they have
 shown your answer if the function had only printed it?
 
+<div class="dl-world" data-world="secret-messages">
+
 A challenge: `try_every_shift` prints 26 lines, and you find the English
 one by eye. Can you make the computer pick? Here is one way. English text has
 many E's, so the shift whose decoding has the most E's is probably the right one.
@@ -738,6 +740,32 @@ best_shift = 0
 # Try every shift, count the E's, and keep the best.
 print(best_shift, encode(message, -best_shift))
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: `draw_checkerboard` always draws the same pattern. Can you
+draw a picture with a border instead, with `#` on the edge and `.` inside?
+Here is a starting point: it has a `pixel_at` function that you can change.
+
+```python challenge
+# Draw a border: "#" on the edge of the picture, "." inside.
+def pixel_at(x, y, width, height):
+    return "."
+
+def draw_picture(width, height):
+    picture = ""
+    for y in range(height):
+        for x in range(width):
+            picture = picture + pixel_at(x, y, width, height)
+        picture = picture + "\n"
+    return picture
+
+print(draw_picture(8, 5))
+```
+
+</div>
 
 From now on, when we solve a problem, we often put the solution inside a
 function, so we can use it again. Building large programs out of small,

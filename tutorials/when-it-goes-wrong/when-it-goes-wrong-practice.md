@@ -2,7 +2,7 @@
 title: "Finding bugs in bigger programs — Practice"
 practice_for: when-it-goes-wrong
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -45,23 +45,23 @@ list, and fails like one: five letters have positions 0 to 4.
 ```python exec
 id: a-count-that-starts-from-nothing-1
 counts = {}
-counts["E"] = counts["E"] + 1
+counts["fig"] = counts["fig"] + 1
 print(counts)
 ```
 
 ```predict
 What will it do?
 
-- Print {'E': 1}
+- Print {'fig': 1}
   - A new count starts at 0, and 0 + 1 is 1.
 - Stop with a KeyError
-  - Python reads `counts["E"]` before there is one.
+  - Python reads `counts["fig"]` before there is one.
 ```
 
 <details class="dl-answer"><summary>why</summary>
 
-It raises a `KeyError: 'E'`. The right-hand side runs first, and it asks for a *key*{.term}
-that is not there yet. `counts.get("E", 0) + 1` starts it at 0.
+It raises a `KeyError: 'fig'`. The right-hand side runs first, and it asks for a *key*{.term}
+that is not there yet. `counts.get("fig", 0) + 1` starts it at 0.
 
 </details>
 
@@ -91,28 +91,28 @@ responsible?
 
 ```python exec
 id: two-things-to-find-1
-def colour_of(character, palette):
-    return palette[character]
+def price_of(item, prices):
+    return prices[item]
 
 
-def row_colours(row, palette):
-    colours = []
-    for character in row:
-        colours.append(colour_of(character, palette))
-    return colours
+def basket_prices(basket, prices):
+    found = []
+    for item in basket:
+        found.append(price_of(item, prices))
+    return found
 
 
-palette = {"#": "black", ".": "white"}
-print(row_colours("#.#", palette))
-print(row_colours("#x#", palette))
+prices = {"fig": 2, "plum": 3}
+print(basket_prices(["fig", "plum", "fig"], prices))
+print(basket_prices(["fig", "pear"], prices))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`return palette[character]` failed, with `KeyError: 'x'`. The line
-responsible is the last one, whose row has an `x` the palette does not
-know. Or the palette is responsible, for not knowing it. Which one to
-change depends on whether `x` was meant to be there.
+`return prices[item]` failed, with `KeyError: 'pear'`. The line
+responsible is the last one, whose basket has a `"pear"` that `prices` does not
+know. Or `prices` is responsible, for not knowing it. Which one to
+change depends on whether `"pear"` was meant to be there.
 
 </details>
 
@@ -123,7 +123,7 @@ that failed?
 
 <details class="dl-answer"><summary>answer</summary>
 
-The line that failed is often correct, and the cause is earlier in the
+The line that failed is often not where the mistake began. The cause is earlier in the
 *program*{.term}. A value is made in one place and used in another. The chain shows
 how the bad value travelled, call by call, so you can trace it to where
 it came from.
@@ -132,31 +132,31 @@ it came from.
 
 ## 6. The same name twice
 
-This is meant to print each row's number, and its row of four `#`.
+This is meant to print each group's number, and its total after four rounds.
 
 ```python exec
 id: the-same-name-twice-1
 for i in range(3):
-    line = ""
+    total = 0
     for i in range(4):
-        line = line + "#"
-    print(i, line)
+        total = total + 1
+    print(i, total)
 ```
 
 ```predict
 What will the first line print?
 
-- 0 ####
-  - The outer loop is on its first row, row 0.
-- 3 ####
+- 0 4
+  - The outer loop is on its first group, group 0.
+- 3 4
   - The inner loop used `i` too, and left it at 3.
 ```
 
 <details class="dl-answer"><summary>why</summary>
 
-It prints `3 ####`, three times. Both loops use the name `i`, so the inner loop
+It prints `3 4`, three times. Both loops use the name `i`, so the inner loop
 overwrites the outer one's, and when the `print` runs, `i` is the inner
-loop's last value. Give each loop its own name: `row` and `column`, say.
+loop's last value. Give each loop its own name: `group` and `round_number`, say.
 
 </details>
 
@@ -165,7 +165,8 @@ loop's last value. Give each loop its own name: `row` and `column`, say.
 <div class="dl-world" data-world="secret-messages">
 
 This is meant to count the Es in a word. It runs, and gives 0 for every
-word. Can you find the bug, fix it, and add a *test*{.term} that catches it?
+word. Can you find the bug and fix it? Then add a *test*{.term} that
+catches it.
 
 ```python exec
 id: counting-in-the-wrong-thing-1--secret-messages
@@ -214,8 +215,8 @@ is why a test on `"SKY"` passes the bug.
 <div class="dl-world" data-world="pixel-art">
 
 This is meant to return one column of a picture, top to bottom. It
-works on some pictures. Can you find the bug, fix it, and add a *test*{.term} that
-catches it?
+works on some pictures. Can you find the bug and fix it? Then add a *test*{.term}
+that catches it.
 
 ```python exec
 id: counting-in-the-wrong-thing-1--pixel-art
@@ -264,7 +265,8 @@ which is lucky: that at least says something is wrong.
 ## 8. Where it stops being right
 
 This is meant to count the words longer than four letters. It gives 0.
-Add a labelled `print` inside the *loop*{.term}, and find where it goes wrong.
+Can you add a labelled `print` inside the *loop*{.term}, and find where it
+goes wrong?
 
 ```python exec
 id: where-it-stops-being-right-1
@@ -275,50 +277,48 @@ def long_words(sentence):
             count = count + 1
     return count
 
-print(long_words("MEET ME BY THE BRIDGE TONIGHT"))
+print(long_words("we walked to the harbour"))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`print("word:", word)` inside the loop shows `M`, then `E`, then `E`. A
+`print("word:", word)` inside the loop shows `w`, then `e`, then a space. A
 loop over a string uses its characters, not its words. Every
 "word" has length 1. `for word in sentence.split():` gives the words, and
-the answer 2: BRIDGE and TONIGHT.
+the answer 2: "walked" and "harbour".
 
 </details>
 
 ## 9. Test the pieces
 
-This is meant to decode a message by moving each letter back. It gives
-nonsense. Test each piece on its own, with a letter whose answer you know,
-and find the one with the *bug*{.term}.
+This is meant to turn temperatures in Celsius into Fahrenheit. It gives
+nonsense. Can you test each piece on its own, with a value whose answer you
+know, and find the one with the *bug*{.term}?
 
 ```python exec
 id: test-the-pieces-1
-def shift_back(letter, shift):
-    return chr((ord(letter) - ord("A") + shift) % 26 + ord("A"))
+def to_fahrenheit(celsius):
+    return celsius * 5 / 9 + 32
 
 
-def decode(message, shift):
-    plain = ""
-    for character in message:
-        if character.isupper():
-            plain = plain + shift_back(character, shift)
-        else:
-            plain = plain + character
-    return plain
+def convert_all(temperatures):
+    results = []
+    for celsius in temperatures:
+        results.append(to_fahrenheit(celsius))
+    return results
 
 
-print(decode("PHHW PH", 3))
+print(convert_all([0, 100]))
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-`shift_back("D", 3)` should give A, three letters back, and it gives G.
-The `+ shift` moves forward. With `- shift`, it gives A, and the message
-decodes to MEET ME. `decode` was right from the start. A test of `decode`
-would have pointed at the bug too. A test of the smallest piece says
-exactly which line.
+`to_fahrenheit(100)` should give 212, the boiling point of water, and it
+gives about 87.6. The `5 / 9` is the wrong way up. With `9 / 5`, it
+gives 212.0. `to_fahrenheit(0)` gives 32 either way, so a test on 0 alone
+would pass the bug. `convert_all` was fine from the start. A test of
+`convert_all` would have pointed at the bug too. A test of the smallest
+piece says exactly which line.
 
 </details>
 

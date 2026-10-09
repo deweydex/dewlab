@@ -2,7 +2,7 @@
 title: "Designing and testing good functions — Practice"
 practice_for: building-reusable-tools
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -118,8 +118,8 @@ change the order of the caller's list. `[4, 1, 3, 2]` gives 2.5.
 
 ## 5. What breaks them
 
-Give an input that breaks each of these: `mean`, `median` from problem 4,
-and Python's own `max`.
+Can you find an input that breaks each of these: `mean`, `median` from
+problem 4, and Python's own `max`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -273,7 +273,7 @@ assert is_palindrome("NOON")
 ```
 
 ```hint
-First build a string of the letters only, all in capitals. Then compare
+First build a copy of the text with no spaces, all in capitals. Then compare
 it with itself backwards: a loop can build the backwards copy, or
 `[::-1]` can.
 ```
@@ -496,8 +496,8 @@ From *Dictionaries: looking things up by name*.
 
 ```python exec
 id: from-earlier-a-key-that-is-not-there-1
-counts = {"E": 9}
-print(counts.get("Z"))
+counts = {"apples": 9}
+print(counts.get("pears"))
 ```
 
 ```predict
@@ -508,12 +508,12 @@ What will it print?
 - None
   - `.get()` with no default gives None.
 - An error
-  - Z is not a key.
+  - "pears" is not a key.
 ```
 
 <details class="dl-answer"><summary>why</summary>
 
 The answer is `None`. `.get()` never raises a `KeyError`. With no
-default, it returns `None`. `counts.get("Z", 0)` gives 0.
+default, it returns `None`. `counts.get("pears", 0)` gives 0.
 
 </details>

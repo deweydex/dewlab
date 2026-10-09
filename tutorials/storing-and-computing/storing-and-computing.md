@@ -1,7 +1,7 @@
 ---
 title: "Variables, data types and text"
 year: "2026-2027"
-version: 2026.09.27.1
+version: 2026.10.09.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -48,7 +48,7 @@ value the name holds. And `+` with two pieces of text joins them end to end.
 In [Algorithms, pseudocode and your first Python](tutorial:first-steps),
 each result was gone as soon as it was shown. With names, a value stays, so
 we can build on it. This page is about names, the different kinds of value
-Python keeps, and text. Python can split text into its characters, one at a
+Python keeps, and text. Python can also take text apart, one character at a
 time.
 
 ## Variables: giving names to things
@@ -75,25 +75,26 @@ It prints 6. In maths, $c = c + 1$ can never be true. In Python it is an
 instruction, and Python runs it once. First it calculates the right-hand
 side, `count + 1`, which is 6. Then it gives that value the name `count`. The old 5 is gone.
 
-A variable's name should say what it holds. `shift` is a good name for the
-number of places a secret code moves each letter. `s` is a poor one.
-Somebody reading the code, and that could be you in a few months, would
-not know what `s` means. Python has a few rules for names:
+A variable's name should say what it holds. `price` is a good name for what
+one thing costs. `p` tells us much less. Somebody reading the code, and that
+could be you in a few months, would not know what `p` means. Python has a
+few rules for names:
 
 - A name starts with a letter or an underscore (`_`).
 - After that, it can contain letters, numbers and underscores.
-- Capital letters matter: `Shift` and `shift` are two different variables.
+- Capital letters matter: `Price` and `price` are two different variables.
 
 Python programmers write names in *snake_case*: lowercase words joined by
-underscores, like `secret_word`.
+underscores, like `first_name`.
 
 ### Your turn
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you make a variable for a secret word of your own, one for the number
-of letters in it, and one for whether you would let anybody see it: `True`
-or `False`? Then print each one with a label that says what it is.
+Can you make three variables? First, a secret word of your own. Then the
+number of letters in it. Then `True` or `False`, for whether you would let
+anybody see it. When you have them, print each one with a label that says
+what it is.
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -118,9 +119,10 @@ output.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you make variables for a picture's width and height in pixels, and one
-for whether it is in colour: `True` or `False`? Then print how many pixels
-it has, with a label that says what the number is.
+Can you make three variables? First, the width of a picture in pixels. Then
+its height. Then `True` or `False`, for whether it is in colour. When you
+have them, print how many pixels the picture has, and whether it is in
+colour, each with a label that says what it is.
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -242,9 +244,23 @@ print(ord("B"))
 print(chr(67))
 ```
 
-`A` is 65, `B` is 66, and so on up to `Z`, which is 90. The capital letters
-are numbered in order, one after another. So, to move a letter along the
-alphabet, we can move its number. The next section does this.
+`"A"` is 65, `"B"` is 66, and so on up to `"Z"`, which is 90. The capital
+letters are numbered in order, one after another.
+
+<div class="dl-world" data-world="secret-messages">
+
+So, to move a letter along the alphabet, we can add to its number. The next
+section does this.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Text is stored as numbers, and so is the brightness of a pixel. We can add
+to a number, whatever it stands for. The next section does this with a
+pixel's brightness.
+
+</div>
 
 ## Type conversion
 
@@ -286,12 +302,31 @@ because `int()` cannot read `ten` as a number.
 
 ## Putting it together: a small program
 
-Now we can move a letter along the alphabet. This is the main step in
-the oldest secret code there is. Julius Caesar is said to have written to his
-generals with every letter moved three places along: A became D, B became E.
-It is called a *Caesar shift*.
+Now we can put the ideas on this page together in one small program. A value
+is stored, changed with arithmetic, and sent back round to the start with
+`%` when it passes the end.
+
+<div class="dl-world" data-world="secret-messages">
+
+The program moves a letter along the alphabet, and goes back round to A
+after Z. This is the main step in the oldest secret code there is. Julius
+Caesar is said to have written to his generals with every letter moved three
+places along: A became D, B became E. It is called a *Caesar shift*.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+The program makes a pixel brighter. A pixel's brightness is a whole number
+from 0 to 255, so there are 256 steps. A pixel at 255 is as bright as it can
+be. If we add to it anyway, the number can go back round to 0, the way a
+clock goes from 23 back to 0.
+
+</div>
 
 Here is the plan, as *pseudocode*{.term}:
+
+<div class="dl-world" data-world="secret-messages">
 
 ```
 STORE the letter, and how far to move it
@@ -301,10 +336,27 @@ TURN the number back into a letter
 DISPLAY it
 ```
 
-And here it is in Python. What will X become?
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```
+STORE the brightness of a pixel, and how much to add
+ADD the amount to the brightness
+GO BACK ROUND after 255 with % 256
+DISPLAY the new brightness
+```
+
+</div>
+
+And here it is in Python.
+
+<div class="dl-world" data-world="secret-messages">
+
+What will X become?
 
 ```python exec
-id: now-the-implementation-1
+id: now-the-implementation-1--secret-messages
 letter = "X"
 shift = 3
 position = ord(letter) - ord("A")      # A is 0, B is 1, ... X is 23
@@ -325,9 +377,11 @@ What will X become?
   - That is three places back, not three places on.
 ```
 
-X moves on to Y, then Z, then round to A. The `% 26` is the same remainder
-that made a clock go back to 0 after 23. There are 26 letters, so position 26
-is position 0 again. Delete it from the cell, and see what X becomes then.
+X moves on to Y, then Z, then round to A. The `% 26` is the remainder
+from [Algorithms, pseudocode and your first Python](tutorial:first-steps), the
+one that sends a clock back to 0 after 23. There are 26 letters, so position
+26 is position 0 again. Can you delete `% 26` from the cell? What does X
+become then?
 
 <details class="dl-answer"><summary>What each line does</summary>
 
@@ -341,13 +395,58 @@ is position 0 again. Delete it from the cell, and see what X becomes then.
 
 </details>
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+What will the new brightness be?
+
+```python exec
+id: now-the-implementation-1--pixel-art
+brightness = 250                         # 0 is black, 255 is the brightest
+step = 10
+new_brightness = (brightness + step) % 256   # go back round after 255
+print(new_brightness)
+```
+
+```predict
+What will the new brightness be?
+
+- 4
+  - 250 plus 10 is 260, which is past 255. Going back round to 0 leaves 4.
+- 260
+  - This is the sum, without going back round. No pixel has a brightness of
+    260.
+- 240
+  - That is 10 less, not 10 more.
+```
+
+250 plus 10 is 260. The `% 256` is the remainder from [Algorithms,
+pseudocode and your first Python](tutorial:first-steps), the one that sends
+a clock back to 0 after 23. There are 256 brightness steps, so step 256 is
+step 0 again, and 260 is step 4. Can you delete `% 256` from the cell? What
+does the brightness become then?
+
+<details class="dl-answer"><summary>What each line does</summary>
+
+- `brightness = 250` and `step = 10` store the pixel's brightness, and how
+  much to add to it.
+- `new_brightness = (brightness + step) % 256` adds the step, which makes
+  260, and keeps the remainder after dividing by 256, which is 4.
+- `print(new_brightness)` shows the result.
+
+</details>
+
+</div>
+
 ### Your turn
 
 <div class="dl-world" data-world="secret-messages">
 
 A letter was moved three places along, and it became D. What was it before?
-Can you change the program to move a letter backwards, and find out? Then
-try A: which letter moves three places along to become A?
+Can you change `shift` so the program moves backwards, and find out? Then
+change `letter` to `"A"` and run it again. Which letter, moved three places
+along, becomes A?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -364,7 +463,7 @@ new_letter
 ```
 
 ```hint
-Moving backwards three places is a shift of −3. Does `% 26` still bring
+Moving backwards three places is a `shift` of `-3`. Does `% 26` still bring
 the number back into 0 to 25?
 ```
 
@@ -377,44 +476,46 @@ new_letter = chr(moved + ord("A"))
 print(new_letter)
 ---
 D came from A. Decoding is the same program with the shift the other way.
-Try A too: −3 takes it below 0, and `% 26` brings it back round to X.
+For `"A"`, `-3` takes the position below 0, and `% 26` brings it back round
+to X.
 ```
 
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-A web page writes a colour as text: `rgb(30, 144, 255)`, with its red,
-green and blue from 0 to 255. Here the three are in variables. Can you
-build that text, under the name `colour`, from the three numbers?
+A pixel was made 60 steps brighter, and now has a brightness of 20. What was
+it before? Can you change `step` so the program makes the pixel darker, and
+find out? Then change `brightness` to `0` and run it again. Which brightness,
+made 60 steps brighter, becomes 0?
 
 ```python exec
 id: your-turn-4--pixel-art
-red = 30
-green = 144
-blue = 255
-colour = ""
-print(colour)
+brightness = 20
+step = 60
+new_brightness = (brightness + step) % 256
+print(new_brightness)
 ```
 
 ```inputs
-colour
+new_brightness
 ```
 
 ```hint
-`+` joins strings, but `red` is a number. Which function turns a number
-into text?
+Making a pixel darker by 60 is a `step` of `-60`. Does `% 256` still bring
+the number back into 0 to 255?
 ```
 
 ```solution
-red = 30
-green = 144
-blue = 255
-colour = "rgb(" + str(red) + ", " + str(green) + ", " + str(blue) + ")"
-print(colour)
+brightness = 20
+step = -60
+new_brightness = (brightness + step) % 256
+print(new_brightness)
 ---
-`str()` turns each number into text, and `+` joins the pieces. The next
-section shows a shorter way to write lines like this one.
+The pixel was at 216 before. Making it darker is the same program with the
+step the other way. For `20`, `-60` takes the brightness below 0, and
+`% 256` brings it back round to 216. With `brightness = 0`, the same step
+gives 196.
 ```
 
 </div>
@@ -426,22 +527,38 @@ or a `str()`. An *f-string* is a shorter way. It is a string with the letter `f`
 straight before the opening quote. Inside it, Python replaces each name in
 curly brackets with that name's value, turned into text for you.
 
+<div class="dl-world" data-world="secret-messages">
+
 ```python exec
-id: putting-values-into-text-1
+id: putting-values-into-text-1--secret-messages
 letter = "X"
 new_letter = "A"
 shift = 3
 print(f"{letter} moved {shift} places is {new_letter}")
 ```
 
-Some results have more decimal places than anybody wants to read. A screen
-1920 pixels wide and 1080 tall has a shape we can find by dividing:
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```python exec
+id: putting-values-into-text-1--pixel-art
+brightness = 250
+new_brightness = 4
+step = 10
+print(f"{brightness} made {step} steps brighter is {new_brightness}")
+```
+
+</div>
+
+Some results have more decimal places than anybody wants to read. A poster
+100 cm wide and 70 cm tall has a shape we can find by dividing:
 
 ```python exec
 id: putting-values-into-text-2
-ratio = 1920 / 1080
-print(f"The screen is {ratio} times as wide as it is tall")
-print(f"The screen is {ratio:.2f} times as wide as it is tall")
+ratio = 100 / 70
+print(f"The poster is {ratio} times as wide as it is tall")
+print(f"The poster is {ratio:.2f} times as wide as it is tall")
 ```
 
 `:.2f` after the name, inside the curly brackets, means "show this number
@@ -455,9 +572,9 @@ decimal place.
 
 A message has 47 letters, and 12 of them are E. What share of the letters
 is E, as a percentage? Can you print it with an f-string, to 1 decimal
-place, like `E is 25.5% of the letters`? (Code-breakers count letters like
+place, like `E is 8.3% of the letters`? (Code-breakers count letters like
 this. In English, E is the most common letter, so the most common letter
-in a Caesar-shifted message is probably E, moved.)
+in a Caesar-shifted message is probably a moved E.)
 
 ```python exec
 id: putting-values-into-text-3--secret-messages
@@ -505,13 +622,15 @@ name: `{pixels / 1000000:.2f}` divides first, then shows 2 decimal places.
 
 ## Looking back
 
-Python stopped at `"40" + 2`, but not at `"40" + "2"`. Why does Python need
-`str()` before it will join a number to a piece of text, when a person
-reading the line would know what was meant?
+Python joins `"40" + "2"` into `402`, but it stops with an error at
+`"40" + 2`. Why does Python need `str()` before it will join a number to a
+piece of text, when a person reading the line would know what was meant?
 
-A challenge: can you move a whole word, like `CAT`, three places along,
-with what this page has? What makes it tedious? What would you want Python
-to do for you, if you had a word of a hundred letters?
+<div class="dl-world" data-world="secret-messages">
+
+A challenge: can you move a whole word, like `CAT`, three places along the
+alphabet, with what this page has? What makes it tedious? What would you
+want Python to do for you, if you had a word of a hundred letters?
 
 ```python challenge
 # Move each letter of CAT three places along the alphabet.
@@ -525,6 +644,29 @@ print(chr((ord(word[0]) - ord("A") + shift) % 26 + ord("A")))
 not 1. [Repeating steps with loops](tutorial:repeating-yourself) does the
 tedious part for you.
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: can you make a whole row of three pixels, with brightness
+`200`, `90` and `250`, 60 steps brighter, with what this page has? What
+makes it tedious? What would you want Python to do for you, if you had a row
+of a thousand pixels?
+
+```python challenge
+# Make each pixel of the row 60 steps brighter, going back round after 255.
+row = [200, 90, 250]
+step = 60
+print((row[0] + step) % 256)
+```
+
+`row[0]` is the first pixel of the row, and
+[Lists and looping over them](tutorial:lists-and-sequences) explains why it is 0,
+not 1. [Repeating steps with loops](tutorial:repeating-yourself) does the
+tedious part for you.
+
+</div>
+
 ## Where to read more
 
 Computerphile (2014). *Floating Point Numbers.*
@@ -536,9 +678,22 @@ to Python.* <https://docs.python.org/3/tutorial/introduction.html>. This is the
 official reference for `int`, `float`, `str` and `bool`, with the exact
 rules Python follows for each.
 
+<div class="dl-world" data-world="secret-messages">
+
 Singh, S. (1999). *The Code Book.* Fourth Estate. This book tells the history of secret
 codes, from Caesar's shift to the machines of the Second World War, and how
 each one was broken.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Technology Connections. *The Weird World in RGB.*
+<https://www.youtube.com/watch?v=uYbdx4I7STg>. This video shows how a screen
+mixes red, green and blue light into every colour, the three numbers we put
+into `rgb(...)` on this page. About twenty minutes.
+
+</div>
 
 CrashCourse (2017). *Representing Numbers and Letters with Binary: Crash
 Course Computer Science #4.*

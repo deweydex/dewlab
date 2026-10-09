@@ -65,8 +65,8 @@ RETURN -1, because the target is not there
 ### Your turn
 
 Can you turn the *pseudocode*{.term} into `linear_search(items, target)`, which
-returns the *index*{.term} where it finds the target, or -1 if the target is not in
-the list?
+returns the *index*{.term} where it finds the target, or `-1` if the target is not
+in the list?
 
 ```python exec
 id: your-turn-1
@@ -206,7 +206,8 @@ range leaves it out. With `high = mid`, the range could stop shrinking.
 A codebreaker tries every shift on a coded word, and checks each decoding
 against a list of English words, kept in alphabetical order. Strings
 compare alphabetically, so binary search works on the list as it does on
-numbers. Can you set `found` to the shifts whose decoding is in `words`?
+numbers. Can you set `found` to the shifts whose decoding is in `words`, using the
+`binary_search` you wrote above?
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -233,7 +234,7 @@ found
 ```hint
 Try every shift from 0 to 25. For each one, decode the word, and ask
 `binary_search(words, ...)` whether it is there. It is there when the
-answer is not -1.
+answer is not `-1`.
 ```
 
 ```solution
@@ -281,7 +282,7 @@ A picture 100 pixels wide and 100 tall has 10,000 pixels. Number them
 along each row, so the pixel at `row` and `column` is number
 `row * 100 + column`. This picture is a diagonal line, and `lit` is the
 sorted list of its lit pixels. Can you set `answers` to `True` or `False`
-for each point, with binary search?
+for each point, using the `binary_search` you wrote above?
 
 ```python exec
 id: your-turn-3--pixel-art
@@ -298,7 +299,7 @@ answers
 
 ```hint
 For each point, work out its number, `row * 100 + column`. Is that number
-in `lit`? It is when `binary_search` does not give back -1.
+in `lit`? It is when `binary_search` does not give back `-1`.
 ```
 
 ```solution

@@ -18,7 +18,7 @@ covers:
 
 # Lists and looping over them
 
-Here is a message, kept as a list of words. What will the cell print?
+Here is a sentence, kept as a list of words. What will the cell print?
 
 ```python exec
 id: a-list-of-words-1
@@ -39,7 +39,7 @@ What will it print?
 
 It prints `ME`. The list keeps four words under one name, in order, and
 Python counts their positions from 0. Most *programs*{.term} work with many values,
-not one: every letter of a message, every pixel in a row. Here we keep them
+not one: every word of a sentence, every price in a shop. Here we keep them
 in a list, choose the ones we want, and do something with each of them in
 turn.
 
@@ -148,7 +148,7 @@ What will it print?
 - MOON
   - A string is indexed like a list, so it changes like one.
 - NOON
-  - Python leaves the string as it was, and carries on.
+  - Python leaves the string as it was, and continues.
 - An error
   - A string cannot be changed once it is made.
 ```
@@ -162,10 +162,10 @@ changed. To get MOON, build a new string from pieces of the old one:
 
 <div class="dl-world" data-world="secret-messages">
 
-A spy's message is kept as a list of words. The meeting place has moved.
-Can you change `"BRIDGE"` to `"STATION"`, and add `"TONIGHT"` at the end?
-Then print the first word, the last word, and a slice that takes `BY`,
-`THE` and `STATION`.
+A spy's message is kept as a list of words called `message`. The meeting
+place has moved. Can you change `"BRIDGE"` to `"STATION"`, and then add
+`"TONIGHT"` at the end? After that, can you print the first word, the last
+word, and a slice that takes `"BY"`, `"THE"` and `"STATION"`?
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -179,8 +179,8 @@ message
 ```
 
 ```hint
-Which index is `"BRIDGE"` at? And which cut comes just before `BY`, and
-which just after `STATION`?
+Which index is `"BRIDGE"` at? And which cut comes just before `"BY"`, and
+which just after `"STATION"`?
 ```
 
 ```solution
@@ -200,10 +200,10 @@ nobody has to count it.
 
 <div class="dl-world" data-world="pixel-art">
 
-A row of a picture is kept as a list of brightnesses, from 0 for black to
-255 for white. Can you print the three pixels in the middle of the row?
-Then make the first pixel white, add a black pixel at the end, and print
-the row.
+A row of a picture is kept as a list called `row`, of brightnesses from 0
+for black to 255 for white. Can you print the three pixels in the middle of
+the row? Then can you make the first pixel white, add a black pixel at the
+end, and print the row?
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -267,8 +267,9 @@ round.
 <div class="dl-world" data-world="secret-messages">
 
 Can you build `shifted`, the alphabet moved three places along, so that it
-starts `D`, `E`, `F` and ends `A`, `B`, `C`? Kept beside the plain
-alphabet, it turns a message into code one letter at a time.
+starts `"D"`, `"E"`, `"F"` and ends `"A"`, `"B"`, `"C"`? The cell sets
+`shift` to 3 for you. Kept beside the plain alphabet, `shifted` turns a
+message into code one letter at a time.
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -303,7 +304,7 @@ shift of 13: that table undoes itself, because 13 and 13 make 26.
 <div class="dl-world" data-world="pixel-art">
 
 Can you build `fade`, a row of 11 pixels that goes from black towards
-white in equal steps: 0, 25, 50, and so on, up to 250?
+white in equal steps: `0`, `25`, `50`, and so on, up to `250`?
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -393,7 +394,7 @@ such as the next one, at `index + 1`.
 <div class="dl-world" data-world="secret-messages">
 
 Where does the letter E appear in this message? Can you build `places`, a
-list of the index of every E?
+list of the index of every `"E"` in `message`?
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -497,8 +498,7 @@ print(total)
 <div class="dl-world" data-world="pixel-art">
 
 What is the average brightness of this row? Can you set `average` with a
-loop, without `sum()`? Is the row closer to `#` or to `.`, if `#` is 128
-or more?
+loop, without `sum()`? Then, is the average 128 or more?
 
 ```python exec
 id: your-turn-4--pixel-art
@@ -520,8 +520,8 @@ for value in row:
 average = total / len(row)
 print(average)
 ---
-The total is 800, and the average about 133.3, so the row as a whole is
-`#`. Dividing by `len(row)`, and not by 6, keeps the code right when the
+The total is 800, and the average about 133.3, so it is above 128 and the
+row is fairly bright. Dividing by `len(row)`, and not by 6, keeps the code right when the
 row changes length.
 ```
 
@@ -534,10 +534,14 @@ A slice stops before its second number, and so does `range()`. So
 gives every index of it. What would go wrong if one of them stopped *at*
 its second number instead?
 
-A challenge: a rail-fence cipher writes a message's letters in a zig-zag
-across two rails, then reads the top rail and then the bottom. The letters
-at even indexes go on the top rail, and the rest on the bottom. Can you
-code a message this way with a loop? Can you decode it again?
+Here is a challenge, with a different version for each world.
+
+<div class="dl-world" data-world="secret-messages">
+
+A rail-fence cipher writes a message's letters in a zig-zag across two
+rails, then reads the top rail and then the bottom. The letters at even
+indexes go on the top rail, and the rest on the bottom. Can you encode a
+message this way with a loop? Can you decode it again?
 
 ```python challenge
 # A rail-fence cipher: even indexes on the top rail, odd on the bottom.
@@ -548,9 +552,28 @@ bottom = []
 # Can you get the message back from the coded one?
 ```
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A row of pixels can be split into two rows: the pixels at even indexes in
+one, and the rest in the other. Can you split a row this way with a loop?
+Can you weave the two rows back into the original?
+
+```python challenge
+# Split a row: even indexes into one list, odd indexes into the other.
+row = [0, 40, 80, 120, 160, 200, 240, 255]
+even_pixels = []
+odd_pixels = []
+# Fill the two lists with a loop, then weave them back into one row.
+# Can you get the original row back?
+```
+
+</div>
+
 The next page,
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids),
-writes these loops on one line, keeps a whole picture in a list of lists,
+writes these loops on one line, keeps a whole grid in a list of lists,
 and shows what happens when two names share one list.
 
 ## Where to read more

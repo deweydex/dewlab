@@ -79,7 +79,7 @@ it does. A plan is not a release, and neither is most of a program.
 **Most teams make Release 1 too big.** It should feel almost too
 small to show anyone. Here is a Release 1 of a text adventure: two rooms,
 one way between them, and a way to quit. Run it, and type `north`, then
-`east`, then `south`, then `quit`.
+`east` (the library has no exit that way), then `south`, then `quit`.
 
 ```python exec
 id: three-releases-not-one-deadline-1

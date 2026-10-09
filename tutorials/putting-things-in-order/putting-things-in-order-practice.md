@@ -2,7 +2,7 @@
 title: "Sorting a list: bubble, insertion and selection sort — Practice"
 practice_for: putting-things-in-order
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -18,8 +18,8 @@ you usually cannot.
 
 ## 1. One pass
 
-Trace one full pass of *bubble sort*{.term} over `[5, 1, 4, 2, 8]`. What is the
-list after the pass? The cell prints the list after each *swap*{.term}, to check
+Can you trace one full pass of *bubble sort*{.term} over `[5, 1, 4, 2, 8]`? What
+is the list after the pass? The cell prints the list after each *swap*{.term}, to check
 your trace.
 
 ```python exec
@@ -53,8 +53,8 @@ is sorted. Problem 6 fixes that.
 
 ## 3. Insertion, traced
 
-Trace *insertion sort*{.term} over `[3, 1, 4, 1, 5]`. Write down the list after
-each *element*{.term} is placed.
+Can you trace *insertion sort*{.term} over `[3, 1, 4, 1, 5]`, and write down the
+list after each *element*{.term} is placed?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -69,7 +69,7 @@ sorted twice, by two different things, as in problem 12.
 
 ## 4. Selection, traced
 
-Trace *selection sort*{.term} over `[64, 25, 12, 22, 11]`.
+Can you trace *selection sort*{.term} over `[64, 25, 12, 22, 11]`?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -142,9 +142,20 @@ bubble_counted([5, 1, 4, 2, 8])
 ```
 
 ```hint
-A variable that records whether something has happened is a *flag*. Set
-`swapped = False` at the start of each pass, and `True` when a swap
-happens. After the pass, if nothing was swapped, `break` leaves the loop.
+After a pass that swaps nothing, is there anything left for the next pass
+to do? How could the function remember whether the pass it just made
+swapped anything?
+```
+
+```hint
+after: 12 errors
+title: some steps
+A variable that records whether something has happened is a *flag*.
+
+1. Set `swapped = False` at the start of each pass.
+2. Set `swapped = True` when a swap happens.
+3. After the pass, if `swapped` is still `False`, use `break` to leave the
+   loop.
 ```
 
 ```solution
@@ -202,9 +213,8 @@ much with a difference that large.
 
 ## 9. Selection sort from nothing
 
-Can you write `selection_sort(items)` without looking at the tutorial, so
-that it
-returns a new sorted list and leaves `items` as it was?
+Can you write `selection_sort(items)` without looking at the tutorial? It
+should return a new sorted list, and leave `items` as it was.
 
 ```python exec
 id: selection-sort-from-nothing-1
@@ -246,8 +256,7 @@ It is a guard. It stops the loop before it goes past the front of the
 list. Python checks an `and` from left to right, and stops as soon as one
 side is `False`. With the sides swapped, when `j` reaches −1, Python reads
 `items[-1]`, the last element, before the guard is checked. In Python the
-answer is still correct, because the guard then fails. But the code
-has read something it never meant to, and in many other languages that is
+loop still stops, because the guard then fails. But the code has read something it never meant to, and in many other languages that is
 a crash.
 
 </details>
@@ -318,8 +327,8 @@ sort by their first value, and use the second only to break a tie.
 
 A codebreaker tries every shift, and sorts the decodings so the most
 English-looking is first. A rough score counts how many of its letters are
-E, T, A, O, I or N. Can you write `score(text)`, and set `best` to the decoding
-with the highest score?
+E, T, A, O, I or N. Can you write `score(text)` to give that count? Then can
+you set `best` to the decoding with the highest score?
 
 ```python exec
 id: the-best-first-1--secret-messages
@@ -389,8 +398,8 @@ top few.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you write `lit(row)`, which counts the `#` in a row, and set
-`busiest_first` to the rows of this picture sorted from most lit to
+Can you write `lit(row)`, which counts the `#` in a row? Then can you set
+`busiest_first` to the rows of this picture, sorted from most lit to
 least?
 
 ```python exec
@@ -462,8 +471,8 @@ print(binary_search(numbers, 72, 0, len(numbers) - 1))
 It needs two things. The first is a case that returns without calling
 itself again. Here, that is an empty range, `low > high`, or the target
 found. The second is a call that always moves closer to that case. Here,
-each call has a smaller range. Leave either out, and the function calls itself until Python stops it with a
-`RecursionError`.
+each call has a smaller range. Leave either out, and the function calls
+itself until Python stops it with a `RecursionError`.
 
 </details>
 
@@ -496,18 +505,20 @@ after it moves one place along, and that grows with n.
 
 </details>
 
-## 17. Correct, and slower
+## 17. Same answers, different speed
 
-Two students submit sorts that both give the right answers. One makes 45
-comparisons on ten items, and the other 90. Is the second one wrong?
+Two students submit sorts that give the same sorted lists. One makes 45
+comparisons on ten items, and the other 90. When does that difference
+matter?
 
 <details class="dl-answer"><summary>answer</summary>
 
-No. It gives the right answers, and it is slower. Those are two different
-things. Is ten items the real size? Then the difference is millionths of a
-second, and code that is easy to read matters more. If the real input is
-ten million items, the difference matters a lot. First make it right, then measure it, then
-make it faster where the measurement says it matters.
+It depends on the size. Both sorts give the same answers, and one is
+slower. Those are two different things. Is ten items the real size? Then
+the difference is millionths of a second, and code that is easy to read
+matters more. If the real input is ten million items, the difference
+matters a lot. First make it work, then measure it, then make it faster
+where the measurement says it matters.
 
 </details>
 
@@ -536,8 +547,7 @@ What will it print?
 <details class="dl-answer"><summary>why</summary>
 
 It can need 7. Each look halves what is left, 64, 32, 16, 8, 4, 2, 1, and
-then there is nothing left. That makes seven looks. Six halvings of 64 leave one item, which
-still has to be looked at.
+then there is nothing left. That makes seven looks. Six halvings of 64 leave one item, which still has to be looked at.
 
 </details>
 
@@ -547,26 +557,26 @@ From *Dictionaries: looking things up by name*.
 
 ```python exec
 id: from-earlier-a-loop-over-a-dictionary-1
-key = {"A": "Q", "B": "W"}
-for x in key:
-    print(x)
+stock = {"apple": 3, "pear": 5}
+for fruit in stock:
+    print(fruit)
 ```
 
 ```predict
 What will the last line print?
 
-- B
+- pear
   - A loop over a dictionary gives its keys.
-- W
+- 5
   - A loop over a dictionary gives its values.
-- B W
+- pear 5
   - A loop over a dictionary gives each pair.
 ```
 
 <details class="dl-answer"><summary>why</summary>
 
-The answer is `B`. A loop over a *dictionary*{.term} gives its *keys*{.term}, in the order they were
-added. `key.items()` gives the pairs.
+The answer is `pear`. A loop over a *dictionary*{.term} gives its *keys*{.term}, in the order they were
+added. `stock.items()` gives the pairs.
 
 </details>
 

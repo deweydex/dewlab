@@ -400,6 +400,49 @@ three, because no current flows when there is no voltage.
 
 </div>
 
+<div class="dl-world" data-world="music">
+
+A drummer counts beats. At 120 beats a minute, that is 2 beats every
+second. Here are three drummers, with $t$ the seconds since the music
+started and $b$ the beats counted so far:
+
+- a: 120 beats a minute, $b = 2t$
+- b: the same tempo, with a count-in of 4 beats already counted,
+  $b = 2t + 4$
+- c: a slower piece, 90 beats a minute, with the same 4-beat count-in,
+  $b = 1.5t + 4$
+
+Which of these lines are parallel? Write your guess as a comment, then
+plot all three with `plot_line`.
+
+```python exec
+id: lines-in-your-world-1--music
+fig, ax = plt.subplots()
+ax.grid(alpha=0.3)
+```
+
+```solution
+def plot_line(m, c, ax):
+    xs = [-5, 5]
+    ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + {c}")
+    ax.legend()
+
+
+fig, ax = plt.subplots()
+ax.grid(alpha=0.3)
+plot_line(2, 0, ax)
+plot_line(2, 4, ax)
+plot_line(1.5, 4, ax)
+---
+`plot_line` is your function from earlier on the page. a and b are parallel, because both have slope 2: the same tempo
+adds beats at the same rate. The count-in moves b up by 4 beats. c
+starts where b does, at 4 beats, but its line is less steep, because a
+slower tempo adds beats more gently. `plot_line` draws from $-5$ to 5,
+and the left half, before the music starts, has no meaning for a drummer.
+```
+
+</div>
+
 <div class="dl-world" data-world="fantasy-maps">
 
 The kingdom's map has a grid, with each square 1 km wide. Three roads

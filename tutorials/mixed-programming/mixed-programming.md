@@ -65,7 +65,7 @@ The question hides a decision: is zero even, or a category of its own? It
 is even, since it divides by 2 with nothing left over. Counting it twice,
 as here, keeps "even" meaning even, and makes the three counts add up to
 more than the length. Counting it only as zero does the opposite. Either
-is fair, once the docstring says which.
+works, once the docstring says which.
 ```
 
 ## 2. Above the average
@@ -102,8 +102,9 @@ compared with it. An empty list gives `[]` rather than an error, because
 
 ## 3. The second largest
 
-Can you write `second_largest(numbers)`? Decide first what `[5, 5, 3]`
-should give: 5 or 3.
+Can you write `second_largest(numbers)`? First, what should
+`second_largest([5, 5, 3])` give, 5 or 3? Decide that, then write the
+function to match.
 
 ```python exec
 id: the-second-largest-1
@@ -137,8 +138,8 @@ def second_largest(numbers):
     return different[1]
 ---
 This reads "second largest" as the second-largest *different* value, so
-`[5, 5, 3]` gives 3. Reading it the other way gives 5. Both are fair, and
-they disagree, so the docstring has to say which.
+`[5, 5, 3]` gives 3. Reading it the other way gives 5. Both readings are possible, and
+they give different answers, so the docstring has to say which.
 ```
 
 ```solution
@@ -191,7 +192,7 @@ by `n % 3 == 0`, and gives `Fizz`.
 ## 5. Threes and fives
 
 How many whole numbers below 1,000 can be divided by 3 or by 5? Can you
-set `count` and `total`?
+set `count` to that number, and `total` to what all of them add up to?
 
 ```python exec
 id: threes-and-fives-1
@@ -254,8 +255,8 @@ def to_pay(total, loyalty):
     return round(total, 2)
 ---
 Three decisions the question did not make. Is €50 "over 50"? Taken as no.
-Does the €5 come off before or after the 10%? After, which costs the
-customer more. Can the price go below zero? No. Real specifications are
+Does the €5 come off before or after the 10%? After, so the
+customer pays less. Can the price go below zero? No. Real specifications are
 like this, and a docstring is what turns a guess into a decision somebody
 can correct.
 ```
@@ -297,15 +298,16 @@ def longest_word(sentence):
             best = letters
     return best
 ---
-BRIDGE. A loop, a decision inside it, a string built up, and a best so
+The first case gives `"BRIDGE"`. The function has a loop, a decision inside it, a string built up, and a best so
 far: four pages in one function. A "word" that is only punctuation cleans
 to nothing, so it never wins.
 ```
 
 ## 8. The three commonest words
 
-Can you set `top` to the three most common words in this sentence, most
-common first?
+Can you set `top` to the three most common words in `sentence`, most
+common first? When words tie, the one that comes first in the sentence
+goes first.
 
 ```python exec
 id: the-three-commonest-words-1
@@ -336,9 +338,10 @@ def how_often(word):
 top = sorted(counts, key=how_often, reverse=True)[:3]
 print(top)
 ---
-`['the', 'cat', 'sat']`. cat, sat and on are all used twice. The sort is
-stable, so they stay in the order they were first counted, and on misses
-out. A different tie rule would give a different third word.
+`['the', 'cat', 'sat']`. The words "cat", "sat" and "on" are all used
+twice. The sort is stable, so they stay in the order they were first
+counted, and "on" is left out. A different tie rule would give a
+different third word.
 ```
 
 ## 9. Anagrams
@@ -402,7 +405,8 @@ save far more than that.
 ## 11. A pair that adds up
 
 Can you write `pair_summing_to(numbers, target)`, which returns two
-numbers from the list that add up to `target`, or `None`?
+numbers from the list, as a list, that add up to `target`, or `None` if
+there are none?
 
 ```python exec
 id: a-pair-that-adds-up-1
@@ -470,7 +474,7 @@ by_surname = sorted(names, key=surname)
 print(by_surname)
 ---
 Hopper, Jones, Lovelace, Turing. Taking the last word is a guess about
-names: it is wrong for Sparck Jones, whose surname is two words, for names
+names: it does not suit Sparck Jones, whose surname is two words, for names
 written family name first, and for anybody with one name. It works for
 most of this list. "Surname" is not something every name in the world has.
 ```
@@ -494,9 +498,9 @@ merge([2, 2], [2])
 ```
 
 ```hint
-Keep an index into each list. Each time round, take the smaller of the two
-front elements, and move that list's index on. When one list runs out,
-the rest of the other goes on the end.
+Keep an index into each list. On each pass of the loop, take the smaller
+of the two front elements, and add 1 to that list's index. When one list
+has no elements left, add the rest of the other list at the end.
 ```
 
 ```solution
@@ -521,7 +525,7 @@ order they came in.
 
 ## 14. Where the None came from
 
-This program stops. Which line failed, and which line is responsible?
+This program stops. Which line failed? And which line is the cause?
 
 ```python exec
 id: where-the-none-came-from-1
@@ -578,8 +582,8 @@ and two names for one list.
 
 ## 16. Any base
 
-Can you write `to_base(n, base)`, which writes a whole number in any base
-from 2 to 16, with the digits `0123456789ABCDEF`?
+Can you write `to_base(n, base)`, which returns the whole number `n` as
+text in any `base` from 2 to 16, using the digits `0123456789ABCDEF`?
 
 ```python exec
 id: any-base-1
@@ -597,7 +601,8 @@ to_base(0, 2)
 ```
 
 ```hint
-It is `to_binary` with `base` in place of 2. `n % base` is the last digit,
+It is the `to_binary` function from *How programming languages came to
+be*, with `base` in place of 2. `n % base` is the last digit,
 and `digits[n % base]` writes it.
 ```
 
@@ -618,9 +623,11 @@ between: the base is a parameter, not a new program.
 
 ## 17. A week of steps
 
-Can you write `report(steps)`, which returns a dictionary with the day
-of the most steps and of the fewest, counting from day 1, how many days
-were above the average, and the longest run of days above it in a row?
+Can you write `report(steps)`, which returns a dictionary with four
+keys? `"most"` is the day with the most steps, counting from day 1.
+`"fewest"` is the day with the fewest. `"above average"` is how many days
+were above the average. `"longest run"` is the longest run of days above
+the average in a row.
 
 ```python exec
 id: a-week-of-steps-1
@@ -674,8 +681,9 @@ anything.
 
 ## 18. Sorted, and the same things
 
-Can you write `is_sorted(items)`, and `same_items(a, b)`, which says
-whether two lists hold the same elements in any order?
+Can you write `is_sorted(items)`, which says whether a list is in order?
+Then can you write `same_items(a, b)`, which says whether two lists hold
+the same elements in any order?
 
 ```python exec
 id: sorted-and-the-same-things-1

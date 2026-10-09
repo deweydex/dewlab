@@ -426,7 +426,7 @@ hides it without a word.
 ## 11. Different lengths
 
 Can you write `dot_product(a, b)` so that it does something on purpose when
-the two lists have different lengths? Decide what, and say why.
+the two lists have different lengths? What will it do, and why?
 
 ```python exec
 id: different-lengths-1
@@ -469,8 +469,8 @@ wrong. An error says so where the mistake happened.
 
 ## 12. Triangles make squares
 
-Add each triangular number to the one after it: 1 + 3, 3 + 6, 6 + 10,
-10 + 15. What do you get?
+What do you get when you add each triangular number to the one after it:
+1 + 3, 3 + 6, 6 + 10, 10 + 15?
 
 ```python exec
 id: triangles-make-squares-1

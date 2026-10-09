@@ -51,7 +51,8 @@ until it stops being a surprise.
 
 ## 2. Slices
 
-With `xs = [10, 20, 30, 40, 50]`, what does each *slice*{.term} give?
+With `xs = [10, 20, 30, 40, 50]`, what does each *slice*{.term} give? Try
+them in the cell under the list.
 
 - (a) `xs[1:3]`
 - (b) `xs[:2]`
@@ -190,7 +191,7 @@ while len(fibs) < 15:
 print(fibs)
 ---
 The `while` loop says what it is waiting for: fifteen terms. Negative
-indexes do the rest: "the last two" needs no sums with the length.
+indexes find the last two terms, so no sum with the length is needed.
 ```
 
 ## 7. The golden ratio
@@ -209,9 +210,8 @@ for index in range(1, len(fibs)):
 
 They get closer to 1.6180339887…, the *golden ratio*, which is exactly
 (1 + √5)/2. The answers go above it, then below it, then above again, and
-each time they come closer. That is a limit, reached from a very different
-direction than [Limits: getting closer without arriving](tutorial:approaching-a-limit)
-takes.
+each time they come closer. That is a limit, found in a very different way from the one in
+[Limits: getting closer without arriving](tutorial:approaching-a-limit).
 
 The loop goes by index because each step needs two elements: this one, and
 the one before it.
@@ -346,7 +346,7 @@ most
 ```
 
 ```hint
-`numbers.count(n)` says how many times `n` appears. Keep the best number
+`numbers.count(number)` says how many times `number` appears. Keep the best number
 so far, and how many times it appears.
 ```
 
@@ -399,8 +399,8 @@ when `number` is not in the list yet.
 <div class="dl-world" data-world="secret-messages">
 
 Doubled letters are a clue when breaking a code. In English, EE, LL, SS and
-OO are common. Can you build `doubles`, the *index*{.term} of every letter that is
-the same as the one after it?
+OO are common. Can you build `doubles`, a list of the *index*{.term} of every
+letter that is the same as the one after it?
 
 ```python exec
 id: next-door-1--secret-messages
@@ -436,8 +436,8 @@ stops one early, so `index + 1` never runs off the end.
 <div class="dl-world" data-world="pixel-art">
 
 An *edge* in a picture is where dark meets light. Can you build `edges`,
-the *index*{.term} of every pixel below 128 whose right-hand neighbour is 128 or
-more?
+a list of the *index*{.term} of every pixel below 128 whose right-hand
+neighbour is 128 or more?
 
 ```python exec
 id: next-door-1--pixel-art
@@ -536,7 +536,7 @@ print(result)
 What will the last line print?
 
 - 8
-  - `result` holds what `double` worked out.
+  - `result` holds what `double` calculated.
 - None
   - `double` prints its answer, and gives nothing back.
 - An error
