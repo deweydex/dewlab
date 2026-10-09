@@ -349,9 +349,11 @@ DISPLAY the new brightness
 
 </div>
 
+And here it is in Python.
+
 <div class="dl-world" data-world="secret-messages">
 
-And here it is in Python. What will X become?
+What will X become?
 
 ```python exec
 id: now-the-implementation-1--secret-messages
@@ -397,7 +399,7 @@ become then?
 
 <div class="dl-world" data-world="pixel-art">
 
-And here it is in Python. What will the new brightness be?
+What will the new brightness be?
 
 ```python exec
 id: now-the-implementation-1--pixel-art
