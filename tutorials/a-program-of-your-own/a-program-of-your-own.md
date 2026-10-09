@@ -34,7 +34,7 @@ print(encode(secret, -3))
 ```
 
 It codes a message, and then decodes it again, by shifting back the other
-way. It is fourteen lines long, and it uses nothing from after
+way. It is twelve lines long, and it uses nothing from after
 [Writing your own functions](tutorial:writing-your-own-functions). That is
 enough to count as a program. Something goes in, something is done to it,
 and something useful comes out.
@@ -74,8 +74,8 @@ a small quiz or game, or a program that answers a question you have. Two questio
 whether it is the right size:
 
 - Can you say, in one sentence, what its first version will do?
-- Does that first version need only what you have met, or can look up in
-  an afternoon?
+- Does that first version need only what you have met, or what you can
+  look up in an afternoon?
 
 Some ideas go wrong in the same ways, whoever tries them: anything that
 needs a login, or somebody else's service, or a library you have not used

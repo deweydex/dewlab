@@ -1,7 +1,7 @@
 ---
 title: "Dictionaries: looking things up by name"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -12,31 +12,30 @@ covers:
 
 # Dictionaries: looking things up by name
 
-Two spies share a key: a table that says which letter stands for which.
-Here are its first five letters, as a dictionary. What will the cell
-print?
+Here is a small phrasebook, kept as a dictionary. Each Irish word is
+joined to its English word. What will the cell print?
 
 ```python exec
 id: a-shared-key-1
-key = {"A": "Q", "B": "W", "C": "E", "D": "R", "E": "T"}
-print(key["C"] + key["A"] + key["B"])
+phrasebook = {"madra": "dog", "capall": "horse", "bó": "cow", "uan": "lamb"}
+print(phrasebook["madra"], phrasebook["bó"], phrasebook["capall"])
 ```
 
 ```predict
 What will it print?
 
-- EQW
-  - Each letter is looked up, and its code letter comes back.
-- CAB
-  - The three letters are joined as they are.
+- dog cow horse
+  - Each Irish word is looked up, and its English word comes back.
+- madra bó capall
+  - The three words are printed as they are.
 - An error
   - A dictionary is looked up by position, like a list.
 ```
 
-It prints `EQW`, which is CAB in code. A *list*{.term} finds a value by its position. A
-dictionary finds a value by a name we choose, here a letter. Most of this
-page is about that one change, and what it makes easy: a cipher's key, a
-picture's palette, and counting how often each thing appears.
+It prints `dog cow horse`. A *list*{.term} finds a value by its position. A
+dictionary finds a value by a name we choose, here an Irish word. Most of
+this page is about that one change, and what it makes easy: a phrasebook,
+a price list, and counting how often each thing appears.
 
 ## Making a dictionary
 
@@ -50,14 +49,14 @@ write a dictionary like this:
 
 ```python exec
 id: making-a-dictionary-1
-palette = {"#": "black", ".": "white", "r": "red"}
-print(palette)
-print(palette["r"])
-print(len(palette))
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print(sizes)
+print(sizes["M"])
+print(len(sizes))
 ```
 
 To look up a value, write the dictionary's name, then the key in square
-brackets: `palette["r"]`. The brackets are the ones a list uses for an
+brackets: `sizes["M"]`. The brackets are the ones a list uses for an
 *index*{.term}, with a key inside them where a list would have a position. `len()`
 counts the pairs. Python shows the strings with single quotes when it
 prints a dictionary. Single and double quotes mean the same thing.
@@ -133,11 +132,11 @@ same shape. How many pairs will the palette have at the end?
 
 ```python exec
 id: adding-and-changing-values-1
-palette = {"#": "black", ".": "white", "r": "red"}
-palette["g"] = "green"
-palette["r"] = "dark red"
-print(palette)
-print(len(palette))
+sizes = {"S": "small", "M": "medium", "L": "large"}
+sizes["XL"] = "extra large"
+sizes["M"] = "middle"
+print(sizes)
+print(len(sizes))
 ```
 
 ```predict
@@ -146,7 +145,7 @@ type: number
 How many pairs will it have at the end?
 ```
 
-Four. `"g"` was not a key yet, so Python added a new pair. `"r"` was a key
+Four. `"XL"` was not a key yet, so Python added a new pair. `"M"` was a key
 already, so Python replaced its value. The two lines look the same. The
 only difference is whether the key is already there. A dictionary keeps
 its pairs in the order they were added, so a new pair goes at the end.
@@ -213,9 +212,9 @@ only a shift.
 <div class="dl-world" data-world="pixel-art">
 
 Can you build `shades`, a dictionary from a level, 0 to 4, to a
-brightness? Level 0 is 0, level 4 is 255, and the others are in between,
-each 255 / 4 more than the last, rounded to a whole number. Then add a
-level 5, which is also 255.
+brightness? Level 0 has brightness 0, and level 4 has 255. Each level in
+between is 255 / 4 brighter than the one before, rounded to a whole
+number. Then add a level 5, which is also 255.
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -254,32 +253,32 @@ is meant to stop. Read the last line of what it prints.
 
 ```python exec
 id: checking-whether-a-key-is-there-1
-key = {"A": "Q", "B": "W", "C": "E"}
-print(key["Z"])
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print(sizes["XL"])
 ```
 
 A `KeyError` means that Python looked for a key and did not find it. The
-last line names the key it looked for, here `'Z'`. Often the key is there,
-spelled another way. `"a"` and `"A"` are two different keys.
+last line names the key it looked for, here `'XL'`. Often the key is there,
+spelled another way. `"m"` and `"M"` are two different keys.
 
 We can ask before we look. `in` checks whether a key is in a dictionary,
 and gives `True` or `False`. What will the last line print?
 
 ```python exec
 id: checking-whether-a-key-is-there-2
-key = {"A": "Q", "B": "W", "C": "E"}
-print("A" in key)
-print("Z" in key)
-print("Q" in key)
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print("S" in sizes)
+print("XL" in sizes)
+print("small" in sizes)
 ```
 
 ```predict
 What will the last line print?
 
 - True
-  - Q is in the dictionary: it is A's code letter.
+  - small is in the dictionary: it is S's value.
 - False
-  - `in` checks the keys, and Q is a value.
+  - `in` checks the keys, and small is a value.
 ```
 
 It prints `False`. `in` checks the keys of a dictionary, and does not look
@@ -288,32 +287,33 @@ anything up:
 
 ```python exec
 id: checking-whether-a-key-is-there-3
-key = {"A": "Q", "B": "W", "C": "E"}
-letter = "Z"
-if letter in key:
-    print(key[letter])
+sizes = {"S": "small", "M": "medium", "L": "large"}
+size = "XL"
+if size in sizes:
+    print(sizes[size])
 else:
-    print(letter, "is not in the key")
+    print(size, "is not a size we sell")
 ```
 
 ### Looking up with a default
 
-`.get()` does that check and the lookup in one. `key.get(letter, default)`
-returns the letter's value if it is a key. If it is not, it returns
+`.get()` does that check and the lookup in one. `sizes.get(size, default)`
+returns the size's value if it is a key. If it is not, it returns
 the *default*, the value we choose to get when nothing else is there.
 
 ```python exec
 id: looking-up-with-a-default-1
-key = {"A": "Q", "B": "W", "C": "E"}
-print(key.get("A", "?"))
-print(key.get("Z", "?"))
-print(key.get("Z"))
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print(sizes.get("S", "?"))
+print(sizes.get("XL", "?"))
+print(sizes.get("XL"))
 ```
 
 With no default, `.get()` returns `None`, Python's value for "nothing".
 Which should you use? It depends on what a missing key means. If it is a
-mistake, `key["Z"]` says so at once, with a `KeyError`. If it is normal,
-such as a space in a message, `.get()` with a sensible default continues.
+mistake, `sizes["XL"]` says so at once, with a `KeyError`. If it is normal,
+such as a size we do not stock, `.get()` with a sensible default lets the
+program continue.
 
 ## Looping over a dictionary
 
@@ -324,11 +324,11 @@ A `for` loop can loop over a dictionary. Each time round, it gives a key.
 
 ```python exec
 id: looping-over-a-dictionary-1
-palette = {"#": "black", ".": "white", "r": "red"}
-for character in palette:
-    print(character)
-for character, colour in palette.items():
-    print(character, "is", colour)
+sizes = {"S": "small", "M": "medium", "L": "large"}
+for size in sizes:
+    print(size)
+for size, name in sizes.items():
+    print(size, "is", name)
 ```
 
 ### Your turn
@@ -336,8 +336,9 @@ for character, colour in palette.items():
 <div class="dl-world" data-world="secret-messages">
 
 A key codes a message. To decode it, we need the key reversed. Each code
-letter is a key, and the plain letter is its value. Can you
-build `decode_key` from `key` with a loop, and use it to set `plain`?
+letter is a key, and the plain letter is its value. Can you build
+`decode_key` from `key` with a loop? Then use it to set `plain` to the
+decoded `message`.
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -501,8 +502,7 @@ def count_letters(text):
     return counts
 ---
 `count_letters("BANANA")` gives `{'B': 1, 'A': 3, 'N': 2}`. An empty text
-gives an empty dictionary, `{}`, which is the right answer: no letters,
-no counts.
+gives an empty dictionary, `{}`: no letters, so no counts.
 ```
 
 <div class="dl-world" data-world="secret-messages">
@@ -530,7 +530,7 @@ most
 
 ```hint
 Go through `counts.items()`, and keep the letter with the biggest count so
-far, the way you kept the brightest pixel.
+far.
 ```
 
 ```solution
@@ -616,13 +616,13 @@ by side.
 | We find a value by | its position: `row[0]` | its key: `key["A"]` |
 | We write it with | square brackets, `[ ]` | curly brackets, `{ }` |
 | It is a good choice when | order matters, or the values have no names | each value has a name we look it up by |
-| An example | the pixels in a row | a cipher's key |
+| An example | the scores in a game, in order | a phone's contacts |
 | A missing item gives | `IndexError` | `KeyError` |
 
 One question decides most cases. Will you look values up by a name? If so,
 use a dictionary. If you care about the order, or you only use the values
 one by one, use a list. And the two work together. A dictionary's value
-can be a list, as the palette of colours was.
+can be a list too.
 
 For each of these, would you use a list or a dictionary? Write your
 answer, and your reason, as a *comment*{.term} in the cell.
@@ -664,12 +664,14 @@ goes with this name?". Think of a program you use every day: a phone's
 contacts, a shopping app, a game. Where do you think it keeps values under
 names, and where in order?
 
+<div class="dl-world" data-world="secret-messages">
+
 A challenge: crack a Caesar shift with no key at all. Count the letters in
 the coded message, guess that the most common one is a coded E, find
 the shift, and decode it. What if the guess is wrong? Try T next, then A.
 
 ```python challenge
-# Crack this Caesar shift: count, guess E, work out the shift, decode.
+# Crack this Caesar shift: count, guess E, find the shift, decode.
 message = "WKLV LV D PHVVDJH IURP WKH IURQW OLQH"
 counts = {}
 for character in message:
@@ -677,6 +679,32 @@ for character in message:
         counts[character] = counts.get(character, 0) + 1
 print(counts)
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A challenge: draw a bar chart of a picture's colours. Count the characters
+in the picture, and print each colour's name with one `*` for every pixel
+of it. What should it print for a character that is not in the palette?
+
+```python challenge
+# Count the characters, then print each colour's name and a row of stars.
+palette = {"#": "black", ".": "white", "r": "red"}
+picture = [
+    "..rr..",
+    ".rrrr.",
+    "rr##rr",
+    ".rrrr.",
+]
+counts = {}
+for row in picture:
+    for character in row:
+        counts[character] = counts.get(character, 0) + 1
+print(counts)
+```
+
+</div>
 
 The next page, [A program of your own](tutorial:a-program-of-your-own), is
 a chance to build something with everything so far: a cipher tool, a

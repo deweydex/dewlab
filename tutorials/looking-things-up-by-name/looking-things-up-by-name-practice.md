@@ -2,7 +2,7 @@
 title: "Dictionaries: looking things up by name — Practice"
 practice_for: looking-things-up-by-name
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.09.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -15,25 +15,26 @@ before you open anything under it, and run the cells to test your guesses.
 
 ## 1. Five lookups
 
-With `key = {"A": "Q", "B": "W", "C": "E"}`, what does each of these give?
-Try them in the cell.
+With `sizes = {"S": "small", "M": "medium", "L": "large"}`, what does each
+of these give? Try them in the cell.
 
-- (a) `key["B"]`
-- (b) `len(key)`
-- (c) `"W" in key`
-- (d) `key.get("D", "?")`
-- (e) `key["D"]`
+- (a) `sizes["M"]`
+- (b) `len(sizes)`
+- (c) `"medium" in sizes`
+- (d) `sizes.get("XL", "?")`
+- (e) `sizes["XL"]`
 
 ```python exec
 id: five-lookups-1
-key = {"A": "Q", "B": "W", "C": "E"}
-print(key["B"])
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print(sizes["M"])
 ```
 
 <details class="dl-answer"><summary>answer</summary>
 
-(a) `'W'`. (b) 3, the number of pairs. (c) `False`, because `in` checks the keys,
-and W is a value. (d) `'?'`, the default. (e) A `KeyError: 'D'`.
+(a) `'medium'`. (b) 3, the number of pairs. (c) `False`, because `in` checks
+the keys, and medium is a value. (d) `'?'`, the default. (e) A
+`KeyError: 'XL'`.
 
 </details>
 
@@ -68,14 +69,14 @@ no warning, so a repeated key can lose a value without you noticing.
 
 ```python exec
 id: the-first-pair-1
-key = {"A": "Q", "B": "W", "C": "E"}
-print(key[0])
+sizes = {"S": "small", "M": "medium", "L": "large"}
+print(sizes[0])
 ```
 
 ```predict
 What will it print?
 
-- Q
+- small
   - `[0]` is the first pair's value, as in a list.
 - An error
   - A dictionary has no positions, only keys.
@@ -120,11 +121,11 @@ at 1 with no error. `counts["T"] + 1` would have stopped with a
 
 ## 5. How many in all
 
-Can you set `total` to the number of pixels counted in `counts`?
+Can you set `total` to the number of pieces of fruit counted in `counts`?
 
 ```python exec
 id: how-many-in-all-1
-counts = {"r": 14, ".": 8, "#": 2}
+counts = {"apples": 14, "pears": 8, "plums": 2}
 total = 0
 
 print(total)
@@ -136,16 +137,16 @@ total
 
 ```solution
 title: with what you've met so far
-counts = {"r": 14, ".": 8, "#": 2}
+counts = {"apples": 14, "pears": 8, "plums": 2}
 total = 0
-for character, count in counts.items():
+for fruit, count in counts.items():
     total = total + count
 print(total)
 ```
 
 ```solution
 title: a shorter way you'll meet later
-counts = {"r": 14, ".": 8, "#": 2}
+counts = {"apples": 14, "pears": 8, "plums": 2}
 total = sum(counts.values())
 print(total)
 ---
@@ -254,39 +255,39 @@ up.
 
 ## 9. Two lists into one dictionary
 
-A key has been kept as two lists, in matching order. Can you set `key` to
-one dictionary, with each plain letter as a *key*{.term} and its code letter as the
-*value*{.term}?
+A phrasebook has been kept as two lists, in matching order. Can you set
+`phrasebook` to one dictionary, with each Irish word as a *key*{.term} and its
+English word as the *value*{.term}?
 
 ```python exec
 id: two-lists-into-one-1
-plain = ["A", "B", "C", "D"]
-code = ["X", "M", "Q", "L"]
-key = {}
+irish = ["madra", "capall", "bó", "uan"]
+english = ["dog", "horse", "cow", "lamb"]
+phrasebook = {}
 
-print(key)
+print(phrasebook)
 ```
 
 ```inputs
-key
+phrasebook
 ```
 
 ```solution
 title: with what you've met so far
-plain = ["A", "B", "C", "D"]
-code = ["X", "M", "Q", "L"]
-key = {}
-for index in range(len(plain)):
-    key[plain[index]] = code[index]
-print(key)
+irish = ["madra", "capall", "bó", "uan"]
+english = ["dog", "horse", "cow", "lamb"]
+phrasebook = {}
+for index in range(len(irish)):
+    phrasebook[irish[index]] = english[index]
+print(phrasebook)
 ```
 
 ```solution
 title: a shorter way you'll meet later
-plain = ["A", "B", "C", "D"]
-code = ["X", "M", "Q", "L"]
-key = dict(zip(plain, code))
-print(key)
+irish = ["madra", "capall", "bó", "uan"]
+english = ["dog", "horse", "cow", "lamb"]
+phrasebook = dict(zip(irish, english))
+print(phrasebook)
 ---
 Two lists in matching order are easy to break: sort one, and the pairs no
 longer match. One dictionary keeps each pair together.
@@ -294,17 +295,17 @@ longer match. One dictionary keeps each pair together.
 
 ## 10. List or dictionary
 
-For each of these, would you use a list or a dictionary? Say why.
+For each of these, would you use a list or a dictionary, and why?
 
 1. The moves in a game of chess, in the order they were played.
-2. The colour of each character in a pixel-art palette.
+2. The phone number of each person in your contacts.
 3. How many times each word appears in a book.
 4. The high scores on a game's leaderboard, best first.
 
 <details class="dl-answer"><summary>one way to answer</summary>
 
 1. A list, because the order matters. 2. A dictionary, because you look a
-colour up by its character. 3. A dictionary. Each word is a key, and its
+number up by the person's name. 3. A dictionary. Each word is a key, and its
 count the value. 4. A list, because the order matters, though each entry might
 be a small dictionary holding a name and a score.
 
@@ -391,8 +392,8 @@ def brightness(row, shades):
     return values
 ---
 `brightness("# x", shades)` gives `[255, 0, 0]`: a space and an x are
-both unknown, so both are black. Is that right? For a space, probably.
-For an x, it might hide a mistake in the picture.
+both unknown, so both are black. Is black a good choice? For a space,
+probably. For an x, it might hide a mistake in the picture.
 ```
 
 </div>
@@ -403,26 +404,26 @@ From *Comprehensions, grids and aliasing*.
 
 ```python exec
 id: from-earlier-two-names-1
-key = {"A": "Q"}
-spare = key
-spare["B"] = "W"
-print(key)
+sizes = {"S": "small"}
+spare = sizes
+spare["M"] = "medium"
+print(sizes)
 ```
 
 ```predict
 What will it print?
 
-- {'A': 'Q'}
+- {'S': 'small'}
   - Only `spare` was changed.
-- {'A': 'Q', 'B': 'W'}
-  - `key` and `spare` are two names for one dictionary.
+- {'S': 'small', 'M': 'medium'}
+  - `sizes` and `spare` are two names for one dictionary.
 ```
 
 <details class="dl-answer"><summary>why</summary>
 
-`{'A': 'Q', 'B': 'W'}`. A dictionary is *mutable*{.term}, like a list, so the same
-thing happens. `spare = key` gives one dictionary a second name. For a
-separate copy, write `spare = dict(key)`.
+`{'S': 'small', 'M': 'medium'}`. A dictionary is *mutable*{.term}, like a
+list, so the same thing happens. `spare = sizes` gives one dictionary a
+second name. For a separate copy, write `spare = dict(sizes)`.
 
 </details>
 
