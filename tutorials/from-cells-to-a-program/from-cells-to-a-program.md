@@ -1,7 +1,10 @@
 ---
 title: "From cells to a program"
 year: "2026-2027"
-version: 2026.09.27.1
+version: 2026.10.09.2
+worlds:
+  secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
+  pixel-art: Pictures made of small squares, the way a screen draws them.
 covers:
   a-loop-that-waits-for-quit:
     covers: [PDP-LO6]
@@ -48,6 +51,12 @@ it what to do, keeps going until they tell it to stop, and handles
 something unexpected that they type. This page makes that step, and then shows how a
 team builds such a program in three releases. The team project, two pages
 on, assumes all of it.
+
+Under the title is a box called "Choose a world". This page offers two
+worlds: Secret messages (codes and hidden messages) and Pixel art
+(pictures made of small squares). The explanations are the same for
+everyone. Only the example program, a small game, follows your choice. You
+can change it at any time, and your work in each world is saved separately.
 
 ## A loop that waits for quit
 
@@ -144,16 +153,19 @@ OTTER
 
 ## Asking until the answer makes sense
 
-A person will type anything: `seven` where a number was wanted, `30` where
-the most is 25, nothing at all. A program has to decide what to do with
+A person will type anything: `seven` where a number was wanted, a number
+that is too big, nothing at all. A program has to decide what to do with
 it, and the kindest answer is usually to say what it wanted, and ask
 again. `.isdigit()` is `True` when a string is all digits, so `int()` can
 read it.
 
-Run this cell, and type `seven` first, then `30`, then `7`.
+<div class="dl-world" data-world="secret-messages">
+
+Run this cell, and type `seven` first, then `30`, then `7`. The cell asks
+for the shift of a code, a whole number from 1 to 25.
 
 ```python exec
-id: asking-until-the-answer-makes-sense-1
+id: asking-until-the-answer-makes-sense-1--secret-messages
 def ask_shift():
     """Keep asking until the answer is a whole number from 1 to 25."""
     while True:
@@ -171,6 +183,34 @@ runs when `text.isdigit()` is `True`, so `int("seven")` never runs. This
 is the short-circuit from
 [Making decisions with if, elif and else](tutorial:making-decisions).
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Run this cell, and type `seven` first, then `6`, then `3`. The cell asks
+for the number of rows of a picture to show, a whole number from 1 to 5.
+
+```python exec
+id: asking-until-the-answer-makes-sense-1--pixel-art
+def ask_rows():
+    """Keep asking until the answer is a whole number from 1 to 5."""
+    while True:
+        text = input("Rows to show, 1 to 5: ")
+        if text.isdigit() and 1 <= int(text) <= 5:
+            return int(text)
+        print("Please type a whole number from 1 to 5.")
+
+print("Rows:", ask_rows())
+```
+
+`return` inside the loop ends the function, and the loop with it, as
+soon as the answer makes sense. The `and` matters too. `int(text)` only
+runs when `text.isdigit()` is `True`, so `int("seven")` never runs. This
+is the short-circuit from
+[Making decisions with if, elif and else](tutorial:making-decisions).
+
+</div>
+
 ### Your turn
 
 You can test the code that decides without any typing at all, if it is in
@@ -178,8 +218,10 @@ its own function. Can you write `first_valid(answers, low, high)`, which
 returns the first answer in the list that is a whole number from `low`
 to `high`, as a number, or `None` if there is none?
 
+<div class="dl-world" data-world="secret-messages">
+
 ```python exec
-id: your-turn-2
+id: your-turn-2--secret-messages
 def first_valid(answers, low, high):
     return None
 ```
@@ -193,8 +235,8 @@ first_valid([], 1, 25)
 ```
 
 ```python exec
-id: your-turn-2-tests
-tests: your-turn-2
+id: your-turn-2-tests--secret-messages
+tests: your-turn-2--secret-messages
 assert first_valid(["25"], 1, 25) == 25
 ```
 
@@ -212,6 +254,46 @@ temperature, a minus sign would have to count. Keeping the deciding in its own
 function is what lets a test check it with no person typing.
 ```
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```python exec
+id: your-turn-2--pixel-art
+def first_valid(answers, low, high):
+    return None
+```
+
+```inputs
+guess: yes
+first_valid(["big", "9", "3"], 1, 5)
+first_valid(["0", "1"], 1, 5)
+first_valid(["-3", "2.5"], 1, 5)
+first_valid([], 1, 5)
+```
+
+```python exec
+id: your-turn-2-tests--pixel-art
+tests: your-turn-2--pixel-art
+assert first_valid(["5"], 1, 5) == 5
+```
+
+```solution
+def first_valid(answers, low, high):
+    """The first answer that is a whole number from low to high, or None."""
+    for text in answers:
+        if text.isdigit() and low <= int(text) <= high:
+            return int(text)
+    return None
+---
+`"-3"` and `"2.5"` are not all digits, so neither counts: `.isdigit()`
+says no to a minus sign and to a point. That suits a number of rows. For a
+temperature, a minus sign would have to count. Keeping the deciding in its own
+function is what lets a test check it with no person typing.
+```
+
+</div>
+
 ## One place to start: main()
 
 A program in cells starts wherever you press Run. A program in a file
@@ -220,8 +302,10 @@ one is a `main()` function that holds the top level, the steps a person
 would describe, with every detail in a function of its own. The last lines
 call it.
 
+<div class="dl-world" data-world="secret-messages">
+
 ```python exec
-id: one-place-to-start-main-1
+id: one-place-to-start-main-1--secret-messages
 def encode(message, shift):
     """Give back message with each capital moved shift places along."""
     coded = ""
@@ -256,8 +340,51 @@ def main():
 main()
 ```
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```python exec
+id: one-place-to-start-main-1--pixel-art
+SPRITES = {
+    "HEART": [".#.#.", "#####", "#####", ".###.", "..#.."],
+    "TREE": ["..#..", ".###.", "#####", "..#..", "..#.."],
+    "FLAG": ["####.", "#####", "#....", "#....", "#...."],
+}
+
+def top_part(rows, count):
+    """Give back the first count rows of a picture, as one block of text."""
+    return "\n".join(rows[:count])
+
+def ask_rows():
+    """Keep asking until the answer is a whole number from 1 to 5."""
+    while True:
+        text = input("Rows to show, 1 to 5: ")
+        if text.isdigit() and 1 <= int(text) <= 5:
+            return int(text)
+        print("Please type a whole number from 1 to 5.")
+
+def main():
+    """Show the top of a sprite until the person chooses to quit."""
+    while True:
+        choice = input("1: show a sprite   9: quit   Choose: ")
+        if choice == "9":
+            break
+        if choice == "1":
+            name = input("Sprite (HEART, TREE or FLAG): ").upper()
+            if name in SPRITES:
+                print(top_part(SPRITES[name], ask_rows()))
+            else:
+                print("There is no sprite", name)
+    print("Goodbye.")
+
+main()
+```
+
+</div>
+
 When you read `main()`, you see what the program does, in a few lines,
-without any of the arithmetic. In a file, the last line is usually written a
+without any of the detail. In a file, the last line is usually written a
 little differently:
 
 ```python
@@ -279,7 +406,7 @@ computer:
 1. Install Python from <https://www.python.org/downloads/>, or install
    Thonny, <https://thonny.org>, which comes with Python and a simple
    editor, and suits a first program well.
-2. Copy your program into a file ending in `.py`, such as `codebreaker.py`.
+2. Copy your program into a file ending in `.py`, such as `game.py`.
 3. Run it: Thonny's Run button, or `python codebreaker.py` in a terminal.
    `input()` waits for you there, as it did on this page.
 
@@ -295,15 +422,18 @@ needs that.
 ## Three releases of a small game
 
 Here is a small game built the way a team would build it: three releases,
-each one something a person could use. The game is *Codebreaker*: the
-computer codes a word with a secret shift, and the player tries to read
-it.
+each one something a person could use.
+
+<div class="dl-world" data-world="secret-messages">
+
+The game is *Codebreaker*: the computer codes a word with a secret shift,
+and the player tries to read it.
 
 **Release 1: the smallest thing that is a game.** It has one round and
 one word, written into the code. It asks once, and says whether the answer is right.
 
 ```python exec
-id: three-releases-of-a-small-game-1
+id: three-releases-of-a-small-game-1--secret-messages
 import random
 
 def encode(message, shift):
@@ -336,7 +466,7 @@ score, and answers checked with care. A guess is compared in capitals, so
 `otter` counts.
 
 ```python exec
-id: three-releases-of-a-small-game-2
+id: three-releases-of-a-small-game-2--secret-messages
 import random
 
 def encode(message, shift):
@@ -396,6 +526,109 @@ flashy. It adds what makes Release 2 safe to give to somebody else:
 - a word chosen at random from a longer list, with `random.choice(words)`;
 - a change log, saying what each release changed.
 
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+The game is *Name the sprite*: the computer shows the top rows of a small
+picture, a *sprite*, drawn with `#` for a filled square and `.` for an
+empty one, and the player tries to name it.
+
+**Release 1: the smallest thing that is a game.** It has one round and
+one sprite, written into the code. It asks once, and says whether the answer is right.
+
+```python exec
+id: three-releases-of-a-small-game-1--pixel-art
+import random
+
+def top_part(rows, count):
+    return "\n".join(rows[:count])
+
+sprite = [".#.#.", "#####", "#####", ".###.", "..#.."]
+name = "HEART"
+rows_shown = random.randint(2, 4)
+print("Name this sprite:")
+print(top_part(sprite, rows_shown))
+guess = input("Your answer: ").upper()
+if guess == name:
+    print("Yes!")
+else:
+    print("No: it was", name)
+```
+
+It is almost too small to show anyone, on purpose. It proves that the
+three pieces work together: the code that draws, the code that asks,
+and the code that checks. Anything built later is
+built on something that works.
+
+**Release 2: the game, done properly.** It has a menu, several rounds, a
+score, and answers checked with care. A guess is compared in capitals, so
+`heart` counts.
+
+```python exec
+id: three-releases-of-a-small-game-2--pixel-art
+import random
+
+SPRITES = {
+    "HEART": [".#.#.", "#####", "#####", ".###.", "..#.."],
+    "TREE": ["..#..", ".###.", "#####", "..#..", "..#.."],
+    "FLAG": ["####.", "#####", "#....", "#....", "#...."],
+}
+
+def top_part(rows, count):
+    return "\n".join(rows[:count])
+
+def play_round(name):
+    """Play one round with the sprite called name. Give back True if the player named it."""
+    rows_shown = random.randint(2, 4)
+    print("Name this sprite:")
+    print(top_part(SPRITES[name], rows_shown))
+    guess = input("Your answer: ").upper()
+    if guess == name:
+        print("Yes!")
+        return True
+    print("No: it was", name)
+    return False
+
+def main():
+    names = ["HEART", "TREE", "FLAG"]
+    rounds = 0
+    score = 0
+    while True:
+        choice = input("1: play   2: score   9: quit   Choose: ")
+        if choice == "9":
+            break
+        elif choice == "1":
+            name = names[rounds % len(names)]
+            rounds = rounds + 1
+            if play_round(name):
+                score = score + 1
+        elif choice == "2":
+            print("You have named", score, "of", rounds)
+        else:
+            print("There is no choice", choice)
+    print("Goodbye.")
+
+main()
+```
+
+`names[rounds % len(names)]` takes the sprites in turn, and goes back to
+the first after the last. This uses the remainder again, like the hours
+on a clock.
+
+**Release 3: finished, tidied, and tested.** Release 3 adds nothing
+flashy. It adds what makes Release 2 safe to give to somebody else:
+
+- a docstring on every function, saying what goes in and what comes out;
+- tests for the parts that can be tested without typing, such as
+  `assert top_part(["#.", ".#", "##"], 2) == "#.\n.#"` and
+  `assert top_part(["#."], 3) == "#."`;
+- a sprite chosen at random from a longer list, with
+  `random.choice(names)`;
+- a change log, saying what each release changed.
+
+</div>
+
 Each release was something a person could play on the day it came out.
 
 ## Templates for a team
@@ -406,6 +639,8 @@ write your own words in the gaps. Each is short on purpose.
 **An interface agreement**, written before anybody writes code, for each
 place where one person's code calls another's:
 
+<div class="dl-world" data-world="secret-messages">
+
 ```
 Function:     play_round(word)
 Written by:   ...
@@ -414,6 +649,21 @@ Takes:        word, a string in capitals
 Gives back:   True if the player read it, False if not
 Prints:       the coded word, and whether the answer was right
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```
+Function:     play_round(name)
+Written by:   ...
+Called by:    main(), written by ...
+Takes:        name, a string in capitals, a key of SPRITES
+Gives back:   True if the player named the sprite, False if not
+Prints:       the top rows of the sprite, and whether the answer was right
+```
+
+</div>
 
 **A team charter**, agreed in the first meeting:
 
@@ -435,12 +685,27 @@ What we do when somebody is stuck: say so on the same day.
 
 **A change log**, one entry for each release:
 
+<div class="dl-world" data-world="secret-messages">
+
 ```
 Release 2, 14 November
 - Added a menu, several rounds and a score.
 - Guesses in small letters now count.
 - Known problem: the same three words, in the same order.
 ```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+```
+Release 2, 14 November
+- Added a menu, several rounds and a score.
+- Guesses in small letters now count.
+- Known problem: the same three sprites, in the same order.
+```
+
+</div>
 
 ## Looking back
 
