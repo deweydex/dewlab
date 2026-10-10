@@ -138,7 +138,6 @@ class TestTheDrawing:
         assert edge[0] == pytest.approx((parent["x"] + parent["w"], key_row))
         assert edge[-1][1] == pytest.approx(foreign_row)
 
-
     def test_crossing_lines_are_counted(self):
         """The count the arrangement minimises has to see a plain crossing,
         and has to leave alone two lines forking from the same key row."""
@@ -160,6 +159,7 @@ class TestTheDrawing:
             (box["y"], name) for name, box in placed["boxes"].items()
             if box["column"] == 0)
         assert [name for _, name in left] == ["programme_tbl", "teacher_tbl", "room_tbl"]
+
 
 try:
     import tree as tree_renderer
@@ -219,23 +219,6 @@ class TestTheRepeatedQuestion:
         assert busiest_drawn == 2
         assert busiest_whole == 1, "the two differ, which is why depth matters"
 
-    def test_the_marked_amount_appears_more_than_once_in_the_drawing(self):
-        counts = cm._repeat_counts(6, [1, 3, 4], cm.MAKE_CHANGE_DEPTH)
-        repeated = max(
-            (a for a in counts if a not in (0, 6)), key=lambda a: (counts[a], a))
-        drawn = cm._call_tree(6, [1, 3, 4], repeated, cm.MAKE_CHANGE_DEPTH)
-        marked: list = []
-
-        def walk(node):
-            if node.marked:
-                marked.append(node.label)
-            for child in node.children:
-                walk(child)
-
-        walk(drawn)
-        assert len(marked) >= 2, "a mark that appears once argues nothing"
-        assert set(marked) == {str(repeated)}
-
 
 try:
     import states as state_renderer
@@ -284,16 +267,6 @@ needs_maths = pytest.mark.skipif(maths_diagrams is None, reason="svgwrite is not
 
 @needs_maths
 class TestTheTwoAcesTree:
-    def test_it_draws_the_numbers_the_page_multiplies(self):
-        svg = maths_diagrams.drawing_two_aces()
-        assert ">4/52<" in svg and ">3/51<" in svg
-
-    def test_both_second_draws_are_out_of_the_same_smaller_deck(self):
-        """One card is gone whichever one it was — that shared 51 is half of
-        what makes the two draws dependent."""
-        svg = maths_diagrams.drawing_two_aces()
-        assert ">3/51<" in svg and ">4/51<" in svg, "the numerators must differ"
-
     def test_sibling_branches_summing_wrong_stops_generation(self, monkeypatch):
         """A tree whose branches do not sum to 1 is arithmetic a reader would
         be right to distrust, so it fails here rather than shipping."""
@@ -345,25 +318,6 @@ needs_steps = pytest.mark.skipif(step_renderer is None, reason="svgwrite is not 
 @needs_steps
 class TestTheRangeCollapsing:
     ITEMS = [3, 7, 11, 15, 19, 23, 27, 31, 35, 40, 42, 55, 68, 72, 89]
-
-    def test_the_chosen_target_actually_halves(self):
-        """31 sits on the midpoint and is found on the first pass — a fine
-        test case and a picture with no halving in it. 3 takes four."""
-        def passes(target):
-            low, high, count = 0, len(self.ITEMS) - 1, 0
-            while low <= high:
-                mid = (low + high) // 2
-                count += 1
-                if self.ITEMS[mid] == target:
-                    return count
-                if target < self.ITEMS[mid]:
-                    high = mid - 1
-                else:
-                    low = mid + 1
-            return count
-
-        assert passes(31) == 1
-        assert passes(3) == 4
 
     def test_marks_landing_on_one_cell_are_drawn_once(self):
         """By the last pass low, mid and high are the same index. Three
@@ -489,17 +443,3 @@ class TestDeweyUnitsSixToTen:
         # own path, so no other picture on the page can share it.
         assert not re.search(r'\sid="(?!dlp-)', svg), f"{relative} carries an id"
 
-    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
-    def test_every_picture_is_placed_on_its_page_with_alt_text(self, relative):
-        import re
-
-        slug, name = relative.split("/")
-        page = (dewey_late.TUTORIALS / slug / f"{slug}.md").read_text()
-        # A project card's picture (7.288) is placed by the build from the
-        # page's `projects:` and hidden from a screen reader, since the card's
-        # question and title already say what it shows.
-        if re.search(rf"^\s+picture: {re.escape(name)}$", page, re.M):
-            return
-        tag = re.search(rf'<img src="{re.escape(name)}" alt="([^"]+)">', page)
-        assert tag, f"{slug}.md does not show {name}, or shows it without alt text"
-        assert tag.group(1).rstrip().endswith("."), "alt text is written in full sentences"

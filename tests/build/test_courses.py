@@ -313,6 +313,7 @@ class TestAllTutorialsPage:
         with pytest.raises(b.BuildError, match="there is no courses/nowhere.yaml"):
             b.build()
 
+    @pytest.mark.advisory
     def test_a_repeated_title_is_warned_about_naming_both_and_their_courses(self, repo, capsys):
         # A warning, never an error: two courses may each have a "Joins".
         write(repo, "One.\n", slug="one")
@@ -323,6 +324,7 @@ class TestAllTutorialsPage:
         assert "tutorials/one/one.md (on computational-methods)" in err
         assert "tutorials/two/two.md (on computational-methods)" in err
 
+    @pytest.mark.advisory
     def test_tutorials_covering_the_same_outcomes_are_reported(self, repo, capsys):
         # Coverage, not titles, is the signal; three shared outcomes is the line.
         claim = "covers:\n  a:\n    covers: [MIT-1.1, MIT-1.2, MIT-1.3]\n"

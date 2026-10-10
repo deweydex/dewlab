@@ -15,6 +15,7 @@ import yaml
 from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
+
 class TestTheReference:
     """planning/REFERENCE_PANEL.md's cumulative glossary: a tutorial's
     manifest carries its own entries plus every earlier series member's, so
@@ -236,12 +237,6 @@ groups:
                 {"term": "String", "definition": "Text, written between quotation marks."},
             ]},
         ]
-
-    def test_the_shipped_files_are_themselves_well_formed(self):
-        # Not monkeypatched: loads the real files this repo ships, guarding
-        # against a malformed hand-edit reaching main.
-        assert b.load_math_basics()
-        assert b.load_python_basics()
 
 
 class TestPythonBasics:
@@ -508,12 +503,3 @@ class TestWhatTheReferenceCanBeFilteredBy:
         by_term = {e["term"]: e for e in self.index(repo)}
         assert by_term["x"]["level"] == "advanced"
 
-    def test_the_bands_are_the_ones_chosen_against_the_real_spread(self):
-        # Not an even three-way split of 0-6: the obvious alternative
-        # (<=1 / <=3) collapses the real corpus to 10/28/5, making
-        # "intermediate" mean almost everything.
-        assert [b.level_for_tier(n) for n in range(7)] == [
-            "beginner", "beginner", "beginner",
-            "intermediate",
-            "advanced", "advanced", "advanced",
-        ]

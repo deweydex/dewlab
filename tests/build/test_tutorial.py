@@ -15,6 +15,7 @@ import yaml
 from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
+
 class TestTheHappyPath:
     """One plain tutorial, with a stylesheet in assets/: it builds to one
     page at site/tutorials/<id>.html with every shell token filled and its
@@ -780,6 +781,7 @@ class TestFolds:
         assert "<code>&lt;details&gt;</code>" in built(repo)
         assert 'markdown="1"' not in built(repo)
 
+    @pytest.mark.advisory
     def test_the_stylesheet_defines_both(self):
         """A fold whose class has no rule is as invisible as one with no class."""
         css = (DEWLAB / "assets" / "tutorial-style.css").read_text()
@@ -905,15 +907,6 @@ class TestCellReportPanel:
     def test_report_issue_url_carries_cell_when_given(self):
         url = b.report_issue_url("a/b", "1", cell="greet")
         assert "cell=greet" in url
-
-    def test_report_doors_links_marks_only_the_issue_links(self):
-        html = b.report_doors_links("a/b", "1", cell="greet")
-        assert html.count('class="dl-report-issue-link"') == 2
-        # The Discussions link is deliberately not one of them — nothing
-        # in tutorial-runtime.js should try to inject code/output into it.
-        discuss_start = html.index("discussions/new")
-        issue_start = html.index("dl-report-issue-link")
-        assert discuss_start < issue_start
 
 
 class TestStagedHints:

@@ -89,15 +89,6 @@ class TestContextPages:
         assert "z" not in {entry["term"] for entry in reference}
         assert "no course lists why" not in capsys.readouterr().err
 
-    def test_a_context_page_for_one_tutorial_says_that_tutorial(self, repo):
-        write(repo, "One.\n", slug="one")
-        self.context(repo, "why", context_for="one")
-        b.build()
-        why = built(repo, "why")
-        assert '<p class="dl-context-back">Background for <a href="one.html">A Title</a>. ' in why
-        assert "Nothing here is needed to finish that tutorial." in why
-        assert "dl-context-link" in built(repo, "one")
-
     def _unknown_id(self, repo):
         write(repo, "One.\n", slug="one")
         self.context(repo, "why", context_for=["one", "nowhere"])

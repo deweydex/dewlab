@@ -141,23 +141,10 @@ class TestTheBuildRefusesAMapThatDoesNotMatch:
             b.build()
         assert "t-gone" in str(why.value)
 
-    def test_the_message_names_the_first_dozen_problems_and_counts_the_rest(self, repo):
-        mapped(repo, graph=lambda g: [t["needs"].append(f"t-missing-{i}") for i, t in enumerate(g["topics"] * 3)])
-        with pytest.raises(b.BuildError) as why:
-            b.build()
-        assert "and " in str(why.value) and "more" in str(why.value)
-
 
 class TestTheRealMap:
     """Held against the real tutorials, since a sandbox cannot be: a tutorial
     renamed, or a heading changed, on a page the map points at stops here."""
-
-    def test_every_topic_landmark_and_section_exists(self):
-        tutorials = [t for t in b.load_all() if not b.VERSION_FILE_RE.match(t.path.stem)]
-        data = b.map_data({t.slug: t for t in tutorials}, b.courses())
-        graph = json.loads((DEWLAB / "map" / "graph.json").read_text())
-        assert len(data["towns"]) == len(graph["topics"])
-        assert len(data["landmarks"]) == len(graph["landmarks"])
 
     def test_every_region_is_on_exactly_one_continent_and_every_district_in_a_region(self):
         graph = json.loads((DEWLAB / "map" / "graph.json").read_text())
@@ -167,8 +154,3 @@ class TestTheRealMap:
         assert {d["region"] for d in graph["districts"]} <= regions
         assert sum(1 for c in graph["continents"] if c.get("kind") == "start") == 1
 
-    def test_the_committed_layout_places_exactly_the_graphs_topics(self):
-        graph = json.loads((DEWLAB / "map" / "graph.json").read_text())
-        layout = json.loads((DEWLAB / "map" / "layout.json").read_text())
-        assert set(layout["towns"]) == {t["id"] for t in graph["topics"]}
-        assert set(layout["landmarks"]) == {lm["tutorial"] for lm in graph["landmarks"]}

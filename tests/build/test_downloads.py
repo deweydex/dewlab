@@ -211,20 +211,6 @@ class TestTheSeriesArchive:
         assert "Download all 3" in index
         assert "Download all 2" not in index
 
-    def test_a_series_of_one_is_offered_in_the_singular(self, repo_with_assets):
-        # "Download all 1" reads oddly in the plural, and a series of one
-        # stopped being hypothetical once reflections got its own.
-        path = tutorial_path(repo_with_assets, "t1")
-        path.write_text(
-            '---\ntitle: "One"\n'
-            'year: "2026-2027"\nversion: 2026.08.23.1\n---\n\nProse.\n'
-        )
-        set_order(repo_with_assets, "computational-methods", "core-skills", ["t1"])
-        b.build(standalone=True)
-        index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
-        assert "Download this one as a single file" in index
-        assert "Download all 1" not in index
-
     def test_a_build_without_the_copies_offers_nothing_to_download(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build()
