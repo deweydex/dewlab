@@ -332,14 +332,10 @@ double_and_print(5)
 ```
 
 ```predict
-How many lines will the cell show under it?
+type: text
 
-- One line
-  - Only one of the two functions has a `print` in it.
-- Two lines
-  - Each function calculates 10, so each may show it.
-- No lines
-  - Perhaps a function does its work without showing anything.
+What will the cell show under it? Write each line you expect, or write
+"nothing".
 ```
 
 Only one line appears. `double_and_return(5)` did calculate 10, and it
@@ -581,15 +577,28 @@ too.
 <div class="dl-world" data-world="secret-messages">
 
 A code-breaker who does not know the shift can try all 26. Can you write
-`try_every_shift(message)`, which prints each shift beside the message
-decoded with it, using your `decode`? Try it on `"WKLV LV D VHFUHW"`.
+`try_every_shift(message)`, which returns one piece of text with 26 lines?
+Each line is a shift, a space, and the message decoded with that shift,
+using your `decode`. `"\n"` in a string starts a new line. Try it on
+`"WKLV LV D VHFUHW"`.
 
 ```python exec
 id: your-turn-7--secret-messages
 def try_every_shift(message):
     ...
 
-try_every_shift("WKLV LV D VHFUHW")
+print(try_every_shift("WKLV LV D VHFUHW"))
+```
+
+```inputs
+try_every_shift("AB")
+try_every_shift("")     # an empty message
+```
+
+```hint
+An accumulator, `attempts = ""`. One loop over the shifts 0 to 25. For each
+shift, add the shift, a space, `decode(message, shift)` and `"\n"`. The
+shift is a number, so `str(shift)` turns it into text.
 ```
 
 ```solution
@@ -607,13 +616,16 @@ def decode(message, shift):
     return encode(message, -shift)
 
 def try_every_shift(message):
+    attempts = ""
     for shift in range(26):
-        print(shift, decode(message, shift))
+        attempts = attempts + str(shift) + " " + decode(message, shift) + "\n"
+    return attempts
 
-try_every_shift("WKLV LV D VHFUHW")
+print(try_every_shift("WKLV LV D VHFUHW"))
 ---
 One line of the 26 reads as English: shift 3, `THIS IS A SECRET`. The
-function is three lines because `decode` and `encode` do the rest.
+function returns the lines instead of printing them, so a caller can print
+them, search them, or pick one. `decode` and `encode` do the rest.
 ```
 
 </div>
@@ -754,7 +766,7 @@ shown your answer if the function had only printed it?
 
 <div class="dl-world" data-world="secret-messages">
 
-A challenge: `try_every_shift` prints 26 lines, and you find the English
+A challenge: `try_every_shift` gives 26 lines, and you find the English
 one by eye. Can you make the computer pick? Here is one way. English text has
 many E's, so the shift whose decoding has the most E's is probably the right one.
 

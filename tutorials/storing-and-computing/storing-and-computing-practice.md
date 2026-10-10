@@ -2,7 +2,7 @@
 title: "Variables, data types and text — Practice"
 practice_for: storing-and-computing
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -264,9 +264,10 @@ moment it arrives.
 
 <div class="dl-world" data-world="secret-messages">
 
-A code called ROT13 moves every letter 13 places along. Can you use the
-Caesar shift from the tutorial to find what `"N"` becomes? Then use that
-answer as `letter`, and move it 13 places again. What do you notice?
+A code called ROT13 moves every letter 13 places along. The cell holds
+`letter` and `shift`. Can you use the Caesar shift from the tutorial to find
+what `"N"` becomes? Then use that answer as `letter`, and move it 13 places
+again. What do you notice?
 
 ```python exec
 id: thirteen-places-along-1--secret-messages
@@ -296,31 +297,33 @@ used it online to hide the end of a joke or a spoiler.
 
 <div class="dl-world" data-world="pixel-art">
 
-A pixel's red is 200, and a brush adds 100 to it. A colour stops at 255,
-so the brush should stop there. What would `%` do to the new value, going
-round like a clock with 256 steps? Can you find it with `brighter % 256`?
-Then, why would a brush not want that?
+A pixel has a brightness of 200. The cell holds `brightness` and `step`. Can
+you use the brightness program from the tutorial to find what the brightness
+becomes when it is made 128 steps brighter? Then use that answer as
+`brightness`, and make it 128 steps brighter again. What do you notice?
 
 ```python exec
-id: thirteen-places-along-1--pixel-art
-red = 200
-brighter = red + 100
+id: going-round-1--pixel-art
+brightness = 200
+step = 128
 
 ```
 
 ```inputs
-brighter % 256
+new_brightness
 ```
 
 ```solution
-red = 200
-brighter = red + 100
-print(brighter % 256)
+brightness = 200
+step = 128
+new_brightness = (brightness + step) % 256
+print(new_brightness)
 ---
-`300 % 256` is 44: going round after 255 turns a bright red almost black.
-The remainder is right for a clock or an alphabet, which really do go
-round. A colour does not. [Making decisions with if, elif and
-else](tutorial:making-decisions) shows how to stop at 255 instead.
+200 becomes 72, and 72 made 128 steps brighter becomes 200 again. There are
+256 steps, so two moves of 128 go all the way round, and the pixel is back
+where it began. A real paint program would stop at 255 instead of going
+round. [Making decisions with if, elif and
+else](tutorial:making-decisions) shows how.
 ```
 
 </div>
@@ -375,8 +378,9 @@ with. A third is not exact in decimal for the same reason.
 
 ## 14. Hours and minutes
 
-Can you change a number of minutes into hours and minutes, with clear
-names, and print it with an *f-string*{.term}?
+Can you change a number of minutes into hours and minutes, and print it
+with an *f-string*{.term}? Please keep the whole hours in `hours` and the
+minutes left over in `minutes`.
 
 ```python exec
 id: hours-and-minutes-1
@@ -501,3 +505,149 @@ Inside the curly brackets, a small calculation works as well as a name.
 The `:.2f` matters when the total is a whole number of euro: 500 cents
 prints as `€5.00`, not `€5.0`.
 ```
+
+## 20. From earlier: boxes and what is left
+
+From [Algorithms, pseudocode and your first Python](tutorial:first-steps).
+A shop packs eggs in boxes of 6, and it has 83 eggs. How many full boxes can
+it fill, and how many eggs are left over? The cell holds `eggs` and
+`box_size`. Can you keep the answers in `boxes` and `left_over`, and print
+one line with an f-string, like `4 boxes and 3 left over`?
+
+```python exec
+id: boxes-and-what-is-left-1
+eggs = 83
+box_size = 6
+
+```
+
+```inputs
+boxes
+left_over
+```
+
+```hint
+Which operator counts how many whole 6s fit into 83, and which one gives
+what is left over?
+```
+
+```solution
+eggs = 83
+box_size = 6
+boxes = eggs // box_size
+left_over = eggs % box_size
+print(f"{boxes} boxes and {left_over} left over")
+---
+13 boxes and 5 left over. `//` counts the whole boxes and `%` gives the
+rest. The f-string puts both numbers into one line, with no `str()`.
+```
+
+## 21. From earlier: the average that came out wrong
+
+From [Algorithms, pseudocode and your first Python](tutorial:first-steps).
+Somebody wants the average of two scores, 70 and 90. Their program prints
+`115.0`, and the average is 80. Can you change one line so it prints `80.0`?
+
+```python exec
+id: the-average-that-came-out-wrong-1
+score_one = 70
+score_two = 90
+average = score_one + score_two / 2
+print(average)
+```
+
+```inputs
+average
+```
+
+```hint
+Which part does Python calculate first in `score_one + score_two / 2`? Which
+part did you want it to calculate first?
+```
+
+```solution
+score_one = 70
+score_two = 90
+average = (score_one + score_two) / 2
+print(average)
+---
+Python divides before it adds, so the first version found `90 / 2`, which is
+45.0, and added 70 to it. The brackets make the addition happen first. The
+answer is `80.0`, not `80`, because `/` always gives a float.
+```
+
+## 22. From earlier: counting every option
+
+From [Powers: a closer look at `**` and `^`](tutorial:powers-in-python).
+
+<div class="dl-world" data-world="secret-messages">
+
+A friend wants to count every four-letter code that can be made from the 26
+letters of the alphabet. They wrote this, and it prints `30`. Can you change
+one line so it counts every code?
+
+```python exec
+id: counting-every-option-1--secret-messages
+choices = 26
+length = 4
+codes = choices ^ length
+print(codes)
+```
+
+```inputs
+codes
+```
+
+```hint
+What does `^` do in Python? Can you find out with small numbers, like
+`2 ^ 3`?
+```
+
+```solution
+choices = 26
+length = 4
+codes = choices ** length
+print(codes)
+---
+There are 456976 codes: 26 choices for each of 4 places, so
+26 × 26 × 26 × 26. Python accepted `^` without an error, but it does a job
+from logic, not a power.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A friend wants to count every colour a pixel can show, when its red, green
+and blue values each have 256 steps. They wrote this, and it prints `259`.
+Can you change one line so it counts every colour?
+
+```python exec
+id: counting-every-option-1--pixel-art
+steps = 256
+channels = 3
+colours = steps ^ channels
+print(colours)
+```
+
+```inputs
+colours
+```
+
+```hint
+What does `^` do in Python? Can you find out with small numbers, like
+`2 ^ 3`?
+```
+
+```solution
+steps = 256
+channels = 3
+colours = steps ** channels
+print(colours)
+---
+There are 16777216 colours: 256 steps for each of 3 values, so
+256 × 256 × 256. Python accepted `^` without an error, but it does a job
+from logic, not a power.
+```
+
+</div>
