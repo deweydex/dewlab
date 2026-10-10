@@ -128,7 +128,7 @@ at any time.
 
 Choose something with a first version you could finish in an evening. And
 choose something with *room to grow*: a next step, and a step after that,
-each one small. Here are three starting points. The first follows the world
+each one small. Here are two starting points. The first follows the world
 you chose.
 
 <div class="dl-world" data-world="secret-messages">
@@ -141,11 +141,6 @@ Caesar shift, like the program above. It has room to grow:
 - cracking a shift with no key, by counting letters;
 - a keyword cipher, where each letter has its own shift, taken from a
   word the two spies share.
-
-**A pixel-art maker.** If you would like pictures instead, the first
-version draws one picture from a list of strings, with `#` and `.`. It can
-grow with a mirror, a palette of more characters, and pictures made by a
-rule.
 
 </div>
 
@@ -160,10 +155,6 @@ strings, with `#` and `.`, like the program above. It has room to grow:
 - a function that makes a picture twice as big, each pixel becoming a
   2 × 2 square;
 - a picture made by a rule, such as a checkerboard, a border or a circle.
-
-**A cipher tool.** If you would like codes instead, the first version codes
-and decodes one message with a Caesar shift. It can grow with a key of your
-own, cracking a shift by counting letters, and a keyword cipher.
 
 </div>
 
@@ -190,12 +181,30 @@ program needs, and for each one, write what goes in and what comes out.
 <div class="dl-world" data-world="secret-messages">
 
 `encode` above takes a message and a shift, and returns the coded message.
+Its plan, one step per line, could be:
+
+```
+1. Start with an empty coded message.
+2. Take the message one character at a time.
+3. If the character is a capital letter, move it along the alphabet by the
+   shift. If not, keep it as it is.
+4. Add it to the coded message, and give the coded message back.
+```
 
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-`mirror` above takes a picture, and returns the mirrored picture.
+`mirror` above takes a picture, and returns the mirrored picture. Its plan,
+one step per line, could be:
+
+```
+1. Start with an empty list of mirrored rows.
+2. Take the picture one row at a time.
+3. Build the flipped row by taking its pixels one at a time and putting
+   each one at the front.
+4. Add the flipped row to the list, and give the list back.
+```
 
 </div>
 
