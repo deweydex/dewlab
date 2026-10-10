@@ -136,8 +136,6 @@ class TestContextPages:
         "names a practice page": (_names_a_practice_page, "which is a page of problems"),
         "names another context page": (_names_another_context_page, "itself a context page"),
         "names itself": (_names_itself, "naming why, which is itself"),
-        "names an id twice": (_names_an_id_twice, "more than once"),
-        "declares covers": (_declares_covers, "is a context page and declares `covers:`"),
         "is listed in a course": (_listed_in_a_course, "which is a context page"),
         "also sets practice_for": (_also_sets_practice_for, "one page cannot be both"),
         "also sets practice_across": (_also_sets_practice_across, "one page cannot be both"),
@@ -149,3 +147,21 @@ class TestContextPages:
         setup(self, repo)
         with pytest.raises(b.BuildError, match=match):
             b.build()
+
+    NOTES = {
+        "names an id twice": (_names_an_id_twice, "more than once. Each is listed once"),
+        "declares covers": (_declares_covers, "is a context page and declares `covers:`"),
+    }
+
+    @pytest.mark.parametrize("case", sorted(NOTES))
+    def test_an_unusual_context_page_builds_and_says_so(self, repo, capsys, case):
+        setup, match = self.NOTES[case]
+        setup(self, repo)
+        b.build()
+        assert match in capsys.readouterr().err
+
+    def test_a_tutorial_named_twice_links_its_context_page_once(self, repo, capsys):
+        self._names_an_id_twice(repo)
+        b.build()
+        assert built(repo, "one").count('<div class="dl-context-link">') == 1
+

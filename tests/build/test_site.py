@@ -22,6 +22,28 @@ from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 CONTENTS_RUNG = r'<details class="dl-crumb-level dl-crumb-level-4">.*?</details>'
 
 
+class TestShellTokens:
+    """The shell template's `{{NAME}}` tokens are the build's. What an author
+    writes is theirs, and `{{` is ordinary text in a Python f-string and in
+    any tutorial that shows a template."""
+
+    def test_double_braces_in_an_authors_words_and_code_build(self, repo):
+        write(repo, 'A template names its gaps like {{ name }}.\n\n'
+                    '```python exec\nid: braces-1\nname = "x"\n'
+                    'print(f"{{literal}} {name}")\n```\n')
+        b.build()
+        page = built(repo)
+        assert "{{ name }}" in page
+        assert "{{literal}}" in manifest(page)["cells"][0]["code"]
+
+    def test_a_token_in_the_shell_that_the_build_has_no_value_for_stops_the_build(self, repo):
+        shell = repo / "assets" / "shell.html"
+        shell.write_text(shell.read_text().replace("</body>", "{{NOT_FILLED}}</body>"))
+        write(repo, "Some prose.\n")
+        with pytest.raises(b.BuildError, match=r"NOT_FILLED"):
+            b.build()
+
+
 def contents_rung(repo) -> str:
     """The page's own sections, as the innermost rung of the where-you-are
     tree — contents_items_html()'s output, or "" when the page has none."""

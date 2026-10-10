@@ -165,13 +165,9 @@ class TestPagesOfProblems:
 
     ERRORS = {
         "two pages claim one tutorial": (_two_pages_claim_one_tutorial, "has one page of problems"),
-        "a practice page declares covers": (_covers_declared_on_a_practice_page, "declares `covers:`"),
-        "a mixed set names one tutorial": (_mixed_naming_one_tutorial, "practice_for is for"),
         "mixed: names a page that is not a mixed set": (_mixed_naming_a_non_mixed_page, "lists one under `mixed:`, and it is not a mixed problem set"),
         "a mixed set names a slug that does not exist": (_mixed_naming_a_nonexistent_slug, "there is no folder tutorials/nowhere/"),
-        "a mixed set names a page of problems": (_mixed_naming_a_practice_page, "itself a page of problems"),
         "a mixed set names itself": (_mixed_naming_itself, "which is itself"),
-        "a repeated slug in practice_across": (_repeated_slug_in_practice_across, "more than once"),
         "a page sets both practice_for and practice_across": (_both_practice_for_and_practice_across, "cannot do both"),
     }
 
@@ -181,3 +177,18 @@ class TestPagesOfProblems:
         setup(self, repo)
         with pytest.raises(b.BuildError, match=match):
             b.build()
+
+    NOTES = {
+        "a practice page declares covers": (_covers_declared_on_a_practice_page, "counts its outcomes a second time"),
+        "a mixed set names one tutorial": (_mixed_naming_one_tutorial, "`practice_for` says that more plainly"),
+        "a mixed set names a page of problems": (_mixed_naming_a_practice_page, "itself a page of problems"),
+        "a repeated slug in practice_across": (_repeated_slug_in_practice_across, "more than once. Each is listed once"),
+    }
+
+    @pytest.mark.parametrize("case", sorted(NOTES))
+    def test_an_unusual_page_of_problems_builds_and_says_so(self, repo, capsys, case):
+        setup, match = self.NOTES[case]
+        setup(self, repo)
+        b.build()
+        assert match in capsys.readouterr().err
+

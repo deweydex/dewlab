@@ -722,12 +722,13 @@ projects:
     make: a finder for your own rule or numbers
     maths: flat or steep, whichever your question needs
     data: a rule or a list of numbers you choose
-    own: true                        # the wide card under the grid; last
+    own: true                        # the wide card under the grid
 ```
 
 The `question` leads the card, so write it as the thing a curious reader
 would want to know. Each project is a wrapper in the page, in the same
-order, opening with its own `##` heading:
+order, opening with its own `##` heading (`maths` and `data` may be left
+out; the table leaves those cells blank):
 
 ````markdown
 <div class="dl-project" data-project="best-line">
@@ -757,12 +758,17 @@ The project of your own has a brief and an empty cell, and no solution to
 compare with.
 
 **What the build refuses:** a project id that is not a key like
-`best-line`, a project missing one of the five fields, a picture not in the
-tutorial's folder, more than one project marked `own`, an `own` project
-that is not last, a project with no wrapper, a wrapper for a project the
-frontmatter does not list, wrappers in a different order, a wrapper inside
-another or with no `</div>`, a wrapper that does not open with a `##`
-heading, and an opening tag that shares its line with other text.
+`best-line`, a project missing its `title`, `question` or `make`, a picture
+not in the tutorial's folder, a project with no wrapper, a wrapper for a
+project the frontmatter does not list, a wrapper inside another or with no
+`</div>`, and an opening tag that shares its line with other text.
+
+**What it only notes** (the page builds, because a reader still gets a page
+that works): wrappers in a different order from `projects:`, which leaves
+the cards in one order and the sections in another; and a wrapper that does
+not open with a `##` heading, which leaves that project with no control to
+close it once opened. Any number of projects may be marked `own`, in any
+position.
 
 ---
 
@@ -1240,9 +1246,10 @@ version: 2026.08.24.1
 
 A practice page's title is its tutorial's, with " — Practice" added
 (`DECISIONS_LOG.md` 7.213). A practice page is never listed in a course file:
-it follows its tutorial onto every course that lists it. It declares no
-`covers:` either. It sets problems on what its tutorial taught, and counting
-it would report the same outcome as taught twice.
+it follows its tutorial onto every course that lists it. It should declare
+no `covers:` either. It sets problems on what its tutorial taught, and
+counting it would report the same outcome as taught twice; if it does, the
+page builds and the build says so.
 
 The contents page links a tutorial to its own practice page, and the tutorial
 links forward to it too, so practice is always one click from the material it is
@@ -1377,13 +1384,16 @@ of its tutorials, after the Practice button, with a small "context" tag.
 
 - an id in `context_for:` with no tutorial behind it;
 - naming a practice page or another context page — name the tutorial;
-- naming itself, or naming one id twice;
+- naming itself;
 - setting `practice_for:` or `practice_across:` as well — a page is
   background or problems, not both;
-- declaring `covers:` — nothing on a context page is needed to finish a
-  tutorial, so it is never where an outcome is taught;
 - a course file listing it. It follows its tutorial onto every course, the
   same as a practice page.
+
+**What it only notes**, and builds: naming one id twice (it is listed
+once), and declaring `covers:`. Nothing on a context page is needed to
+finish a tutorial, so it is not where an outcome is taught, and a `covers:`
+there makes the curriculum map count it as one.
 
 ---
 
