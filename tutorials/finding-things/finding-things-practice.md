@@ -12,7 +12,8 @@ worlds:
 
 Problems on searching, and three from earlier pages. Several ask you to
 count comparisons without writing code. Try those on paper first. Try each
-problem before you open anything under it.
+problem before you open anything under it. Problem 10 follows the world you
+chose on the page.
 
 ## 1. Why -1
 
@@ -259,7 +260,8 @@ not, so this one is linear whichever way it is written.
 In the sorted list `words`, where do the words starting with M begin? The
 place where `"M"` would go is the answer, because `"M"` comes before every
 word that starts with M. Can you set `start` to it, with `where_it_goes`
-from problem 8?
+from problem 8? If you have not written it, the solution to problem 8 has one
+you can paste into the cell.
 
 ```python exec
 id: the-first-one-past-a-line-1--secret-messages
@@ -304,7 +306,8 @@ with, both are the same place, and the range is empty.
 
 The list `brightnesses` holds a picture's brightnesses, sorted. Where do
 the bright pixels, 128 or more, begin? Can you set `start` to that index, with
-`where_it_goes` from problem 8?
+`where_it_goes` from problem 8? If you have not written it, the solution to
+problem 8 has one you can paste into the cell.
 
 ```python exec
 id: the-first-one-past-a-line-1--pixel-art

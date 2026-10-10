@@ -2,7 +2,7 @@
 title: "Repeating steps with loops — Practice"
 practice_for: repeating-yourself
 year: "2026-2027"
-version: 2026.10.09.2
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -30,8 +30,8 @@ type: text
 What will it print?
 ```
 
-Then say what these give, and try them: `range(5)`, `range(1, 5)`,
-`range(0, 10, 3)`, `range(5, 0, -1)`.
+Can you say what these give before you try them? `range(5)`,
+`range(1, 5)`, `range(0, 10, 3)`, `range(5, 0, -1)`.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -340,8 +340,8 @@ off-by-one slips live at the edges.
 <div class="dl-world" data-world="pixel-art">
 
 Can you draw a triangle of lit pixels, `#`, five rows tall: one on the first
-row, and five on the last? Then the same triangle aligned on the right, so
-the right edge is straight?
+row, and five on the last? Then the same triangle aligned on the right, with
+dark pixels, `.`, in front, so the right edge is straight?
 
 ```python exec
 id: a-triangle-1--pixel-art
@@ -352,10 +352,10 @@ id: a-triangle-1--pixel-art
 for row in range(1, 6):
     print("#" * row)
 for row in range(1, 6):
-    print(" " * (5 - row) + "#" * row)
+    print("." * (5 - row) + "#" * row)
 ---
 No inner loop is needed, because `*` repeats a string. For the second
-triangle the spaces are the whole trick. How do you know it is `5 - row`,
+triangle the dark pixels, `.`, in front are the whole trick. How do you know it is `5 - row`,
 not `5 - row - 1`? Try the first and last rows, not the middle ones:
 off-by-one slips live at the edges.
 ```
@@ -631,18 +631,18 @@ moved = (position - shift) % 26
 print(chr(moved + ord("A")))
 ---
 A. Moving back is the same shift with a minus, and `% 26` brings a number
-below 0 back round to the end of the alphabet.
+below 0 back to the end of the alphabet.
 ```
 
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-A brush added 100 to a pixel's red, and the value went back round to 0 after
-255, with `% 256`. The red is now 20. What was it before?
+A brush added 100 to a pixel's red value. The value wraps around to 0 after
+255, using `% 256`. The red is now 20. What was it before?
 
 ```python exec
-id: from-earlier-one-letter-back-1--pixel-art
+id: from-earlier-one-step-back-1--pixel-art
 red_now = 20
 brush = 100
 
@@ -654,7 +654,7 @@ brush = 100
 print((red_now - brush) % 256)
 ---
 176. Moving back is the same step with a minus, and `% 256` brings a number
-below 0 back round to the top of the scale. Check it forwards: 176 + 100 is
+below 0 back to the top of the scale. Check it forwards: 176 + 100 is
 276, and `276 % 256` is 20.
 ```
 

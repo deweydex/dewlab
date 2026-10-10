@@ -1,7 +1,7 @@
 ---
 title: "Writing your own functions"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -220,15 +220,15 @@ last line and returns `b`, which is 5.
 
 ### Your turn
 
-From here on, a task's cases come with a column for your own guess. Before
-you compare your function with a solution, write what you think each call
-gives.
+From here on, the cases of many tasks come with a column for your own
+guess. Before you compare your function with a solution, write what you
+think each call gives.
 
 <div class="dl-world" data-world="secret-messages">
 
 Can you write `encode(message, shift)`, which returns the message with
-every capital letter moved `shift` places along, and anything else, a
-space or a full stop, left as it is?
+every capital letter moved `shift` places along, and anything else, such as
+a space or a full stop, left as it is?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -245,9 +245,16 @@ encode("", 5)             # an empty message
 ```
 
 ```hint
+What does `encode("HELLO", 3)` have to give back? Which part of that do you
+already know how to build, one letter at a time?
+```
+
+```hint
+after: 12 errors
+title: some steps
 Start with an empty accumulator, `coded = ""`. Loop over the message, one
 character at a time. A capital gets the shift; anything else is added as it
-is. What does the function return at the end?
+is. The function returns `coded` at the end.
 ```
 
 ```solution
@@ -370,6 +377,21 @@ total = add_postage(20) * 2
 print(total)
 ```
 
+```predict
+type: choice
+
+What will the cell do?
+
+- It prints 48
+  - Postage of 4 makes 24, and doubling 24 gives 48.
+- It prints 24, then 48
+  - The function shows its own 24, and then the last line shows the doubled total.
+- It prints 24, then stops with an error
+  - The function shows its 24 itself. After that, `total` needs a value from the call.
+- It stops with an error before it prints anything
+  - Python may find the problem before the function shows anything.
+```
+
 ```inputs
 total
 ```
@@ -451,8 +473,8 @@ decode("URYYB", 13)
 ```
 
 ```hint
-Moving back 3 places is moving forward −3 places. What does
-`encode(message, -shift)` do?
+Moving back 3 places is the same as moving forward by how many? What does
+`encode` do when you give it a negative shift?
 ```
 
 ```solution
@@ -482,7 +504,8 @@ the function.
 When we mirror a picture left to right, column 0 goes to the last
 column, and the last goes to column 0. For a picture `width` pixels wide,
 can you write `mirror(x, width)`, which returns the column that `x` moves
-to?
+to? The third case below mirrors a column twice. What do you expect it to
+give?
 
 ```python exec
 id: your-turn-5--pixel-art

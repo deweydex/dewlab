@@ -1,7 +1,7 @@
 ---
 title: "How programming languages came to be"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -95,20 +95,21 @@ each digit. The machines after it moved to binary, because two states are
 simpler to build and more reliable.)
 
 `bin()` writes a number in binary, and these two functions do the
-conversions by hand. Before you run it, what will `to_binary(72)` print?
+conversions by hand. Before you run it, write down a guess: what will
+`to_binary(72)` print?
 
 ```python exec
 id: the-only-language-the-machine-understands-1
 print(bin(42))
 
-def to_binary(n):
-    """Give back n, a whole number, as a string of binary digits."""
-    if n == 0:
+def to_binary(number):
+    """Give back number, a whole number, as a string of binary digits."""
+    if number == 0:
         return "0"
     text = ""
-    while n > 0:
-        text = str(n % 2) + text
-        n = n // 2
+    while number > 0:
+        text = str(number % 2) + text
+        number = number // 2
     return text
 
 def from_binary(text):
@@ -122,7 +123,7 @@ print(to_binary(72))
 print(from_binary("01001000"))
 ```
 
-`to_binary` finds the last digit first, `n % 2`, so it puts each new digit
+`to_binary` finds the last digit first, `number % 2`, so it puts each new digit
 at the front. `from_binary` goes the other way. At each digit, it doubles
 the total so far and adds the new digit. You do the same in base 10
 without thinking, with ten in place of two.
@@ -152,13 +153,16 @@ id: your-turn-1
 
 </details>
 
+Next, a task about what a pattern of binary digits can stand for.
+
 <div class="dl-world" data-world="secret-messages">
 
 An operator from the 1940s has left a message, written in *ASCII*: a code
 that gives each character a number. (The message is made up. ASCII came
 later, in 1963.) Each group of eight binary digits is one letter's code:
 `01001000` is 72, and 72 is `H`, which `chr(72)` gives. Can you write
-`decode_binary(groups)`, and then call it on `message_1945`?
+`decode_binary(groups)`, which gives back the message as a string, and then
+call it on `message_1945`?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -176,6 +180,7 @@ decode_binary([])
 ```
 
 ```hint
+after: 3 runs
 For each group: `from_binary` turns it into a number, and `chr()` turns
 the number into a character. Add each character to a string.
 ```
@@ -205,7 +210,7 @@ same space, and the message can be cut into letters without a separator.
 
 Early games kept their pictures as rows of binary digits, one bit for each
 pixel: 1 lit, 0 dark. Can you write `draw_binary(rows)`, which returns
-the picture as rows of `#` and `.`?
+the picture as a list of rows of `#` and `.`?
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -226,6 +231,7 @@ draw_binary([])
 ```
 
 ```hint
+after: 3 runs
 For each row, build a line: `#` for each `"1"`, and `.` for each `"0"`.
 Append each line to a list, and give the list back.
 ```
@@ -310,6 +316,12 @@ decode_hex(memory_dump_1958)
 decode_hex(["48", "49"])
 ```
 
+```hint
+after: 3 runs
+What number does `int("43", 16)` give? Which function turns a number into
+its character, as in the last task?
+```
+
 ```solution
 memory_dump_1958 = ["43", "4F", "44", "45"]
 
@@ -323,9 +335,10 @@ CODE. Two hex digits a letter, where binary took eight: the same bytes,
 four times shorter to write.
 ```
 
-Then there is the vault. Each entry is a pair, the base it is written in
-and the code. You have written both halves already. Can you put them into
-one function, `crack_the_vault(pairs)`, with an `if` to choose between them?
+Here is a vault of codes, written in two bases. Each entry is a pair: the
+base it is written in, and the code. You have written both halves already.
+Can you put them into one function, `crack_the_vault(pairs)`, which gives
+back the message as a string, with an `if` to choose between them?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -348,6 +361,7 @@ crack_the_vault([["bin", "01001000"], ["hex", "49"]])
 ```
 
 ```hint
+after: 3 runs
 `for base, code in pairs:` takes each pair apart. If the base is `"bin"`,
 use `from_binary`; if it is `"hex"`, use `int(code, 16)`. Then `chr()`.
 ```
@@ -387,7 +401,7 @@ two binary entries are 32, the code for a space.
 
 Games kept their sprites in hex, two hex digits for each row of eight
 pixels. Can you write `draw_hex(rows)`, which returns the picture as
-rows of `#` and `.`? Each row has to become eight binary digits, zeros in
+a list of rows of `#` and `.`? Each row has to become eight binary digits, zeros in
 front included.
 
 ```python exec
@@ -408,6 +422,7 @@ draw_hex(invader)
 ```
 
 ```hint
+after: 3 runs
 `to_binary(int(row, 16))` gives the binary digits, but `"18"` gives
 `11000`, with no zeros in front. How many digits are missing, and how can
 you add them? Then draw each bit, as you did with binary.
@@ -416,13 +431,13 @@ you add them? Then draw each bit, as you did with binary.
 ```solution
 invader = ["18", "3C", "7E", "DB", "FF", "24", "5A", "A5"]
 
-def to_binary(n):
-    if n == 0:
+def to_binary(number):
+    if number == 0:
         return "0"
     text = ""
-    while n > 0:
-        text = str(n % 2) + text
-        n = n // 2
+    while number > 0:
+        text = str(number % 2) + text
+        number = number // 2
     return text
 
 def draw_hex(rows):
@@ -448,7 +463,7 @@ An invader, eight bytes. Without the zeros in front, `"18"` would be
 
 Web pages still write colours in hex: `#1E90FF` is two hex digits each
 for red, green and blue. Can you write `rgb(colour)`, which returns the
-three as numbers?
+three as a list of numbers?
 
 ```python exec
 id: your-turn-4--pixel-art
@@ -464,6 +479,7 @@ rgb("#000000")
 ```
 
 ```hint
+after: 3 runs
 `colour[1:3]` is the red pair. Which slices are the green and the blue?
 ```
 
@@ -521,16 +537,16 @@ numbers = [1, 2, 3, 4, 5]
 
 # Procedural: step-by-step instructions that change something as they go.
 doubled = []
-for n in numbers:
-    doubled.append(n * 2)
+for number in numbers:
+    doubled.append(number * 2)
 print("Procedural:     ", doubled)
 
 # Declarative: say what the answer is, not how to build it.
-print("Comprehension:  ", [n * 2 for n in numbers])
+print("Comprehension:  ", [number * 2 for number in numbers])
 
 # Functional: functions are values, and one can be handed to another.
-def double(n):
-    return n * 2
+def double(number):
+    return number * 2
 
 def apply_to_all(rule, values):
     return [rule(value) for value in values]
