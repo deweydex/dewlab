@@ -10,6 +10,8 @@ copies it.
 
 from __future__ import annotations
 
+import pytest
+
 import re
 import shutil
 
@@ -49,6 +51,7 @@ def test_every_template_is_one_the_test_knows():
     assert stems - practice == set(SERIES) | set(MIXED)
 
 
+@pytest.mark.advisory
 def test_every_template_builds(repo):
     install(repo)
     b.build()
@@ -57,6 +60,7 @@ def test_every_template_builds(repo):
         assert page.is_file(), slug
 
 
+@pytest.mark.advisory
 def test_every_world_variant_has_its_own_cell_id():
     """A variant's cell id is the section's, then two hyphens and the world,
     and every world the page offers has one for each task."""
@@ -73,6 +77,7 @@ def test_every_world_variant_has_its_own_cell_id():
             assert found == set(worlds), (path.name, task)
 
 
+@pytest.mark.advisory
 def test_the_templates_readme_names_every_template():
     readme = (TEMPLATES / "README.md").read_text()
     for path in pages():

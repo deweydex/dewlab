@@ -22,6 +22,28 @@ from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 CONTENTS_RUNG = r'<details class="dl-crumb-level dl-crumb-level-4">.*?</details>'
 
 
+class TestShellTokens:
+    """The shell template's `{{NAME}}` tokens are the build's. What an author
+    writes is theirs, and `{{` is ordinary text in a Python f-string and in
+    any tutorial that shows a template."""
+
+    def test_double_braces_in_an_authors_words_and_code_build(self, repo):
+        write(repo, 'A template names its gaps like {{ name }}.\n\n'
+                    '```python exec\nid: braces-1\nname = "x"\n'
+                    'print(f"{{literal}} {name}")\n```\n')
+        b.build()
+        page = built(repo)
+        assert "{{ name }}" in page
+        assert "{{literal}}" in manifest(page)["cells"][0]["code"]
+
+    def test_a_token_in_the_shell_that_the_build_has_no_value_for_stops_the_build(self, repo):
+        shell = repo / "assets" / "shell.html"
+        shell.write_text(shell.read_text().replace("</body>", "{{NOT_FILLED}}</body>"))
+        write(repo, "Some prose.\n")
+        with pytest.raises(b.BuildError, match=r"NOT_FILLED"):
+            b.build()
+
+
 def contents_rung(repo) -> str:
     """The page's own sections, as the innermost rung of the where-you-are
     tree — contents_items_html()'s output, or "" when the page has none."""
@@ -71,21 +93,6 @@ class TestOnePlainTutorial:
         assert (repo / "site" / "index.html").is_file()
         # It needs no Python runtime.
         assert manifest(index)["cells"] == []
-        # It ends with the short attribution. Whitespace-normalized:
-        # pages/home.md's own line wrapping is real markdown source, not a
-        # single-line string, and the markdown converter keeps a paragraph's
-        # own internal line breaks rather than collapsing them.
-        match = re.search(r'<div class="dl-attribution">\s*(<p>.*?</p>)\s*</div>', index, re.DOTALL)
-        assert match, "no dl-attribution paragraph found"
-        assert " ".join(match.group(1).split()) == (
-            "<p>This site is being actively developed by "
-            '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
-            "(Dublin College Dundrum), with contributions from "
-            '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
-            "(Dublin College Blackrock). To find out more, read "
-            '<a href="about.html">About this project</a> or visit '
-            '<a href="https://github.com/deweydex/dewlab">the project on GitHub</a>.</p>'
-        )
         # Its search box has no hint line, but every other one does: the
         # sentence above the front page's box already says what a search
         # matches; the all-tutorials page has no such sentence.
@@ -93,29 +100,19 @@ class TestOnePlainTutorial:
         assert "dl-search-hint" not in front and "aria-describedby" not in front
         listing = (repo / "site" / "all-tutorials.html").read_text()
         assert 'id="dl-search-hint"' in listing and 'aria-describedby="dl-search-hint"' in listing
-        # The tile for the features page sits under the opening.
-        hero = index[index.index('<div class="dl-hero">'):index.index('<div class="dl-audience">')]
-        assert 'href="features.html"' in hero
-        assert index.index("What do you want to learn?") < index.index('href="computational-methods.html"')
         # The course cards come from the course files: there is nothing
         # hand-written left to disagree with a course page.
-        cards = index[index.index("What do you want to learn?"):]
+        cards = index
         assert cards.index('href="computational-methods.html"') < cards.index('href="web-authoring.html"')
         assert "<h3>Web Authoring" in cards and "Pages, styled." in cards
         assert "5N1355 · QQI Level 5" in cards
         assert 'data-status="live">Live</span>' in cards
         assert 'href="all-tutorials.html"' in index
-        assert 'href="features.html"' in index
-        assert "dewstack" not in index
 
         # ---- The features page is written at the site root.
         features = repo / "site" / "features.html"
         assert features.is_file()
         features_page = features.read_text()
-        assert "What dewlab can do" in features_page
-        assert "Work without a tutorial" in features_page
-        assert 'href="compose/notebook.html"' in features_page
-        assert 'href="compose/workspace.html"' in features_page
         assert manifest(features_page)["cells"] == []
 
         # ---- The about page is written at the site root, from

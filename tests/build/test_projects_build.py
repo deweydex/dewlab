@@ -72,15 +72,53 @@ class TestRefusals:
         (ALL, "projects:\n  sums:\n    title: Sums\n", "has no `question:`"),
         (project("sums") + project("squares"), PROJECTS, "own with no project div"),
         (ALL + project("extra"), PROJECTS, "'extra', which is not in"),
-        (project("squares") + project("sums") + project("own"), PROJECTS, "not in the order"),
-        (project("sums", heading="No heading here.") + project("squares") + project("own"),
-         PROJECTS, "opens with a `## ` heading"),
         ('<div class="dl-project" data-project="sums">\n\n## Sums\n\n' + project("squares")
          + "</div>\n\n" + project("own"), PROJECTS, "starts inside"),
-        (ALL, PROJECTS.replace("  squares:\n", "  squares:\n    own: true\n"), "only one project"),
         (ALL, "projects:\n  sums:\n" + fields("Sums", picture="missing.svg"), "not in the tutorial's folder"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, projects, match):
         page(repo, "# A page\n\n" + body, projects)
         with pytest.raises(b.BuildError, match=re.escape(match)):
             b.build()
+
+
+class TestShapeThatOnlyGetsANote:
+    """How a page lays its projects out is the author's. These build, and the
+    ones that cost the reader something say so."""
+
+    def test_divs_in_a_different_order_from_projects_build_and_say_so(self, repo, capsys):
+        page(repo, "# A page\n\n" + project("squares") + project("sums") + project("own"))
+        b.build()
+        assert "not in the order `projects:` lists them" in capsys.readouterr().err
+        html = built(repo)
+        assert html.index('id="project-squares"') < html.index('id="project-sums"')
+        assert html.index('data-project="sums"') < html.index('data-project="squares"')
+
+    def test_a_project_without_a_heading_builds_and_says_what_the_reader_loses(self, repo, capsys):
+        page(repo, "# A page\n\n" + project("sums", heading="No heading here.")
+             + project("squares") + project("own"))
+        b.build()
+        err = capsys.readouterr().err
+        assert "project 'sums' does not open with a `## ` heading" in err
+        assert "project 'squares'" not in err
+        assert "No heading here." in built(repo)
+
+    def test_two_own_projects_both_get_the_wide_card(self, repo):
+        page(repo, "# A page\n\n" + ALL,
+             PROJECTS.replace("  squares:\n", "  squares:\n    own: true\n"))
+        b.build()
+        assert built(repo).count('class="dl-project-card dl-project-card-own"') == 2
+
+    def test_the_own_project_may_come_anywhere_in_the_list(self, repo):
+        first = "projects:\n  own:\n" + fields("Your own", own="true") + "  sums:\n" + fields("Sums")
+        page(repo, "# A page\n\n" + project("own") + project("sums"), first)
+        b.build()
+        html = built(repo)
+        assert html.count('class="dl-project-card dl-project-card-own"') == 1
+        assert html.count('class="dl-project-card"') == 1
+
+    def test_a_project_with_no_maths_or_data_leaves_those_cells_blank(self, repo):
+        lean = "projects:\n  sums:\n    title: Sums\n    question: Why sums?\n    make: a sum\n"
+        page(repo, "# A page\n\n" + project("sums"), lean)
+        b.build()
+        assert "<td>Why sums?</td><td>a sum</td><td></td><td></td>" in built(repo)

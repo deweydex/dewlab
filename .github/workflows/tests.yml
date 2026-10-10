@@ -28,7 +28,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest pytest-xdist numpy pandas matplotlib
+          python -m pip install pytest pytest-xdist numpy pandas matplotlib svgwrite
           python -m pip install -r requirements-build.txt
 
       # Everything under tests/ except the browser suite, rather than a list of
@@ -93,7 +93,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest
+          python -m pip install pytest svgwrite
           python -m pip install -r requirements-build.txt
 
       - name: Report the advisory tests

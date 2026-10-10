@@ -166,17 +166,16 @@ class TestNavigation:
             pytest.param("series", "series: python-fundamentals\n", id="series"),
         ],
     )
-    def test_a_moved_frontmatter_field_stops_the_build_and_says_to_delete_it(self, repo, field, line):
-        # Half-migrated is worse than either state: the field would be
-        # ignored in silence, and it is exactly the field somebody would edit
-        # — a mistake a contributor copying an old tutorial will make. The
-        # build refuses rather than ignores, since an ignored field is a
-        # field someone will keep writing.
+    def test_a_moved_frontmatter_field_builds_and_says_to_delete_it(self, repo, capsys, field, line):
+        # The field is ignored, and it is exactly the field somebody would
+        # keep editing, so the build says so each time instead of staying
+        # quiet. It does not stop the page: nothing a reader sees depends on it.
         series(repo, count=1)
         path = tutorial_path(repo, "t1")
         path.write_text(path.read_text().replace("version: 2026.08.23.1", line + "version: 2026.08.23.1"))
-        with pytest.raises(b.BuildError, match=rf"{field} no longer belongs in frontmatter.*Delete the line"):
-            b.build()
+        b.build()
+        assert re.search(rf"{field} no longer belongs in frontmatter.*The build ignores it; delete the line",
+                         capsys.readouterr().err)
 
 
 class TestAllTutorialsPage:
@@ -313,6 +312,7 @@ class TestAllTutorialsPage:
         with pytest.raises(b.BuildError, match="there is no courses/nowhere.yaml"):
             b.build()
 
+    @pytest.mark.advisory
     def test_a_repeated_title_is_warned_about_naming_both_and_their_courses(self, repo, capsys):
         # A warning, never an error: two courses may each have a "Joins".
         write(repo, "One.\n", slug="one")
@@ -323,6 +323,7 @@ class TestAllTutorialsPage:
         assert "tutorials/one/one.md (on computational-methods)" in err
         assert "tutorials/two/two.md (on computational-methods)" in err
 
+    @pytest.mark.advisory
     def test_tutorials_covering_the_same_outcomes_are_reported(self, repo, capsys):
         # Coverage, not titles, is the signal; three shared outcomes is the line.
         claim = "covers:\n  a:\n    covers: [MIT-1.1, MIT-1.2, MIT-1.3]\n"

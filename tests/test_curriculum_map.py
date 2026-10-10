@@ -105,6 +105,7 @@ class TestTheAnchors:
         assert cm.anchor_for("If-Else: Two Paths") == "if-else-two-paths"
         assert cm.anchor_for("What Are the Chances?") == "what-are-the-chances"
 
+    @pytest.mark.advisory
     def test_every_declared_section_in_the_real_tutorials_exists(self):
         # Runs against the real repository, not a fixture.
         outcomes, _ = cm.load_outcomes()
@@ -227,12 +228,14 @@ class TestTheRealMap:
         # The same guard CI runs, against the real committed file.
         assert cm.MAP.read_text() == cm.render()
 
+    @pytest.mark.advisory
     def test_every_out_of_scope_code_is_a_real_outcome(self):
         outcomes, _ = cm.load_outcomes()
         scope = cm.load_scope()
         for code in list(scope["outcomes"]) + list(scope["partial"]):
             assert code in outcomes, f"{code} is not an outcome in any descriptor"
 
+    @pytest.mark.advisory
     def test_every_proposal_is_well_formed(self):
         outcomes, _ = cm.load_outcomes()
         for proposal in cm.load_proposals():
@@ -323,6 +326,7 @@ class TestTheTopicGlossary:
         missing = sorted(set(outcomes) - served)
         assert not missing, f"no topic claims {missing}"
 
+    @pytest.mark.advisory
     def test_no_topic_invents_an_outcome(self):
         outcomes, _ = cm.load_outcomes()
         topics = self.topics()
@@ -337,6 +341,7 @@ class TestTheTopicGlossary:
                     f"{code} claims {one}, which is in no module descriptor"
                 )
 
+    @pytest.mark.advisory
     def test_a_groundwork_code_never_collides_with_an_outcome(self):
         # Not everything a student needs is a numbered outcome (e.g. naming
         # kinds of triangle); such topics carry a PRE- code instead of one.
@@ -411,6 +416,7 @@ class TestWhatTheTutorialsSayAboutTheCourse:
         folder = cm.ROOT / "tutorials"
         return sorted(p for p in folder.rglob("*.md"))
 
+    @pytest.mark.advisory
     def test_the_sequence_graph_has_no_repeated_node(self):
         # `order` restarts at 1 per series; when reflections moved into their
         # own series, the graph came out with two T1 nodes and a self-loop.

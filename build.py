@@ -680,10 +680,7 @@ class Tutorial:
         it points at several tutorials and none of them points back. A tutorial
         has one companion page of problems; a mixed set is not it.
         """
-        value = self.meta.get("practice_across") or []
-        if isinstance(value, str):
-            value = [value]
-        return tuple(str(s) for s in value)
+        return tuple(dict.fromkeys(listed_ids(self.meta.get("practice_across"))))
 
     @property
     def is_practice(self) -> bool:
@@ -700,10 +697,7 @@ class Tutorial:
         shape — off the reading order, no coverage, hanging off the
         tutorial(s) it names, which link to it in turn (DECISIONS_LOG 7.208).
         """
-        value = self.meta.get("context_for") or []
-        if isinstance(value, str):
-            value = [value]
-        return tuple(str(s) for s in value)
+        return tuple(dict.fromkeys(listed_ids(self.meta.get("context_for"))))
 
     @property
     def is_context(self) -> bool:
@@ -777,6 +771,49 @@ def fail(path: Path, message: str) -> None:
     raise BuildError(f"{path.relative_to(ROOT)}: {message}")
 
 
+def listed_ids(value) -> list[str]:
+    """The ids a frontmatter field names, from one id or a list, as written:
+    a repeat is still in it, so the caller can say so."""
+    if not value:
+        return []
+    if isinstance(value, str):
+        value = [value]
+    return [str(item) for item in value]
+
+
+def note(path: Path, message: str) -> None:
+    """Tells the author something the build is carrying on in spite of.
+
+    For a rule about how a page is shaped, as opposed to one whose breaking
+    would leave a reader with a page that does not work. The page builds
+    and the note goes to stderr in the same "file: what" shape `fail()`
+    uses (DECISIONS_LOG 7.295, 7.297).
+    """
+    print(f"note: {path.relative_to(ROOT)}: {message}", file=sys.stderr)
+
+
+SHELL_TOKEN_RE = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
+
+
+def fill_shell(shell: str, tokens: dict[str, str], subject: str) -> str:
+    """The shell template with each token's value put in, in `tokens` order
+    (a value may carry a token that a later entry fills).
+
+    Refuses when the shell holds a token this page has no value for, which
+    is a mistake in the build and would show up as raw `{{NAME}}` on the
+    page. It looks at the shell and not at the finished page: a title, a
+    sentence or a cell the author wrote may well contain `{{`, in a Python
+    f-string or an example of a template, and that is theirs to write.
+    """
+    unfilled = sorted(set(SHELL_TOKEN_RE.findall(shell)) - set(tokens))
+    if unfilled:
+        raise BuildError(f"shell template has tokens {subject} does not fill: {unfilled}")
+    page = shell
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    return page
+
+
 def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
     """Splits one tutorial's raw file into its frontmatter (the YAML
     block between the two `---` lines, holding title/slug/module/version
@@ -804,8 +841,8 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
     for field_name, where_now in MOVED_FRONTMATTER.items():
         if field_name in meta:
-            fail(path, f"{field_name} no longer belongs in frontmatter — "
-                       f"{where_now}. Delete the line.")
+            note(path, f"{field_name} no longer belongs in frontmatter — "
+                       f"{where_now}. The build ignores it; delete the line.")
     status = meta.get("status", "live")
     if status not in STATUSES:
         fail(path, f"status {status!r} is not one of {', '.join(STATUSES)}")
@@ -1818,7 +1855,11 @@ def world_spans(body: str, path: Path, worlds: dict[str, str]) -> list[WorldSpan
     return spans
 
 
-PROJECT_FIELDS = ("title", "question", "make", "maths", "data")
+# A card cannot be drawn without these. `maths` and `data` only fill two
+# cells of the comparison table, and a project that has none of either (a
+# project that is all writing, say) leaves them blank.
+PROJECT_REQUIRED = ("title", "question", "make")
+PROJECT_FIELDS = PROJECT_REQUIRED + ("maths", "data")
 
 
 def page_projects(meta: dict, path: Path) -> dict[str, dict]:
@@ -1826,7 +1867,9 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     frontmatter (7.288): each id, in order, with its title, the curious
     question its card leads with, what the reader makes, the maths and the
     data it uses, and an optional picture. `own: true` marks the project of
-    the reader's own, which gets the wide card under the grid."""
+    the reader's own, which gets the wide card under the grid; any number of
+    projects may say so and they may come in any position. `maths` and `data`
+    may be left out."""
     projects = meta.get("projects")
     if projects is None:
         return {}
@@ -1841,19 +1884,14 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
         if not isinstance(fields, dict):
             fail(path, f"project {key!r} in `projects:` needs its fields: "
                        + ", ".join(PROJECT_FIELDS))
-        for name in PROJECT_FIELDS:
+        for name in PROJECT_REQUIRED:
             if not isinstance(fields.get(name), str) or not fields[name].strip():
                 fail(path, f"project {key!r} in `projects:` has no `{name}:`")
         picture = fields.get("picture")
         if picture is not None and not (path.parent / str(picture)).is_file():
             fail(path, f"project {key!r}'s picture {picture!r} is not in the tutorial's folder")
-        found[key] = {**{name: fields[name].strip() for name in PROJECT_FIELDS},
+        found[key] = {**{name: str(fields.get(name) or "").strip() for name in PROJECT_FIELDS},
                       "picture": picture, "own": bool(fields.get("own"))}
-    own = [key for key, fields in found.items() if fields["own"]]
-    if len(own) > 1:
-        fail(path, f"only one project can be the reader's own; {', '.join(own)} all say `own: true`")
-    if own and own[0] != list(found)[-1]:
-        fail(path, f"the reader's own project, {own[0]!r}, comes last in `projects:`")
     return found
 
 
@@ -1861,9 +1899,10 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
     """Where each `<div class="dl-project" data-project="…">` starts and
     ends in a page's source, the way world_spans() finds a variant: fences
     blanked first, nested `<div>`s counted. Every project in `projects:`
-    has exactly one, in the same order, and each opens with its `##`
-    heading, which the page turns into the project's open-and-close
-    control."""
+    has exactly one. Each should open with its `##` heading, which the page
+    turns into the project's open-and-close control, and appear in the order
+    `projects:` lists them; a page that does neither still builds, with a
+    note saying what the reader loses."""
     masked = FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), body)
     spans: dict[str, tuple[int, int]] = {}
     open_span: tuple[int, str] | None = None
@@ -1895,12 +1934,14 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
     if missing:
         fail(path, f"`projects:` lists {', '.join(missing)} with no project div in the page")
     if list(spans) != list(projects):
-        fail(path, "the project divs are not in the order `projects:` lists them")
+        note(path, "the project divs are not in the order `projects:` lists them; "
+                   "the cards and the table follow `projects:`, the sections follow the page")
     for project, (start, end) in spans.items():
         inside = body[start:end].split("\n", 1)[1].lstrip("\n")
         if not inside.startswith("## "):
-            fail(path, f"project {project!r} opens with a `## ` heading, the title a "
-                       "reader opens it by")
+            note(path, f"project {project!r} does not open with a `## ` heading, so it has "
+                       "no control to open and close it. A reader can open it from its card "
+                       "but cannot close it again")
     return spans
 
 
@@ -3393,9 +3434,10 @@ def practice_pairs(
     takes the tutorial's placements, so its tree and its course are the
     tutorial's own.
 
-    A practice page also declares no coverage. It sets problems on what its
+    A practice page should declare no coverage. It sets problems on what its
     tutorial taught, and counting it would report the same outcome as taught
-    twice — see `docs/WRITING_TUTORIALS.md`, "Practice pages".
+    twice — see `docs/WRITING_TUTORIALS.md`, "Practice pages". One that does
+    builds, with a note, since only the curriculum map's counts are affected.
     """
     pairs: dict[str, Tutorial] = {}
     for page in tutorials:
@@ -3407,10 +3449,9 @@ def practice_pairs(
         if not target:
             continue
         if page.meta.get("covers"):
-            fail(page.path, "is a practice page and declares `covers:`. It sets "
-                            "problems on what its tutorial taught; saying so "
-                            "twice would report one outcome as covered by two "
-                            "pages.")
+            note(page.path, "is a practice page and declares `covers:`, so the curriculum "
+                            "map counts its outcomes a second time. It sets problems on "
+                            "what its tutorial taught; delete `covers:` unless you mean that.")
         if target == page.slug:
             fail(page.path, f"has practice_for: {target}, which is itself.")
         owner = registry.get(target)
@@ -3443,10 +3484,9 @@ def mixed_practice(
     """Problem sets that draw on several tutorials, per course, in title order.
 
     Checked the same way as `practice_for`: every id it names has to exist and
-    be a tutorial rather than another page of problems. A set naming one
-    tutorial is an error rather than an eccentricity — that is what
-    `practice_for` is, and having two ways to say it would mean a tutorial
-    could quietly acquire a second companion page.
+    not be the page itself or a context page. A set naming one tutorial, or
+    naming a page of problems, is unusual and builds with a note. A repeated
+    id is listed once.
 
     Which course lists a set is the course file's business, under `mixed:`
     (place_tutorials() reads that). A set no course file mentions goes with
@@ -3459,17 +3499,18 @@ def mixed_practice(
         if not across:
             continue
         if page.meta.get("covers"):
-            fail(page.path, "is a practice page and declares `covers:`. It sets "
-                            "problems on what its tutorials taught; saying so "
-                            "twice would report one outcome as covered by two "
-                            "pages.")
+            note(page.path, "is a practice page and declares `covers:`, so the curriculum "
+                            "map counts its outcomes a second time. It sets problems on "
+                            "what its tutorials taught; delete `covers:` unless you mean that.")
+        listed = listed_ids(page.meta.get("practice_across"))
+        if len(set(listed)) != len(listed):
+            repeated = sorted({s for s in listed if listed.count(s) > 1})
+            note(page.path, f"names {', '.join(repeated)} in practice_across more than "
+                            "once. Each is listed once.")
         if len(across) < 2:
-            fail(page.path, "has practice_across naming one tutorial. That is "
-                            "what practice_for is for.")
-        if len(set(across)) != len(across):
-            repeated = sorted({s for s in across if across.count(s) > 1})
-            fail(page.path, f"names {', '.join(repeated)} in practice_across "
-                            "more than once.")
+            note(page.path, "has practice_across naming one tutorial. `practice_for` says "
+                            "that more plainly; a tutorial with a page of its own problems "
+                            "will link both.")
         for slug in across:
             if slug == page.slug:
                 fail(page.path, f"has practice_across naming {slug}, which is "
@@ -3479,8 +3520,9 @@ def mixed_practice(
                 fail(page.path, f"has practice_across naming {slug}, and there "
                                 f"is no folder tutorials/{slug}/.")
             if owner.is_practice:
-                fail(page.path, f"has practice_across naming {slug}, which is "
-                                "itself a page of problems.")
+                note(page.path, f"has practice_across naming {slug}, which is itself a "
+                                "page of problems. It builds, and the set sits with the "
+                                "first tutorial it names.")
             if owner.is_context:
                 fail(page.path, f"has practice_across naming {slug}, which is "
                                 "a context page, not a tutorial.")
@@ -3505,9 +3547,10 @@ def context_pages(
     A context page names the tutorial(s) it gives background for with
     `context_for:`, one id or a list. Checked the way `practice_for` and
     `practice_across` are: every id exists, is a tutorial rather than
-    another companion page, is not the page itself, and is named once. It
-    declares no coverage — nothing on it is needed to finish a tutorial, so
-    it cannot be where an outcome is taught — and it is not also a page of
+    another companion page, and is not the page itself; one named twice is
+    listed once, with a note. It should declare no coverage — nothing on it
+    is needed to finish a tutorial, so it cannot be where an outcome is
+    taught; one that does builds, with a note — and it is not also a page of
     problems, since a reader has to be able to tell optional reading from
     work. It sits wherever its first tutorial sits, the same as a practice
     page.
@@ -3525,13 +3568,14 @@ def context_pages(
                             "page is background reading and a practice page is "
                             "problems; one page cannot be both.")
         if page.meta.get("covers"):
-            fail(page.path, "is a context page and declares `covers:`. Nothing "
-                            "on it is needed to finish a tutorial, so it cannot "
-                            "be where an outcome is taught.")
-        if len(set(named)) != len(named):
-            repeated = sorted({s for s in named if named.count(s) > 1})
-            fail(page.path, f"names {', '.join(repeated)} in context_for more "
-                            "than once.")
+            note(page.path, "is a context page and declares `covers:`, so the curriculum "
+                            "map counts it as teaching an outcome. Nothing on it is needed "
+                            "to finish a tutorial; delete `covers:` unless you mean that.")
+        listed = listed_ids(page.meta.get("context_for"))
+        if len(set(listed)) != len(listed):
+            repeated = sorted({s for s in listed if listed.count(s) > 1})
+            note(page.path, f"names {', '.join(repeated)} in context_for more than once. "
+                            "Each is listed once.")
         for slug in named:
             if slug == page.slug:
                 fail(page.path, f"has context_for naming {slug}, which is itself.")
@@ -6283,12 +6327,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{FOOTER}}": site_footer(tutorial.slug, tutorial.meta["version"]),
         "{{REPORT_DOORS}}": report_doors_panel_html(tutorial.slug, tutorial.meta["version"]),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens build.py does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "build.py")
 
     tutorial.out_path.parent.mkdir(parents=True, exist_ok=True)
     tutorial.out_path.write_text(page)
@@ -6981,12 +7020,7 @@ def write_page(shell: str, name: str) -> Path:
         "{{FOOTER}}": site_footer(stem, "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html(stem, "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the {name} page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, f"the {name} page")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / f"{stem}.html"
     target.write_text(page)
@@ -7040,13 +7074,7 @@ def write_all_tutorials_page(
         "{{FOOTER}}": site_footer("all-tutorials", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("all-tutorials", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(
-            f"shell template has tokens the all-tutorials page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the all-tutorials page")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "all-tutorials.html"
     target.write_text(page)
@@ -7118,13 +7146,7 @@ def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
         "{{FOOTER}}": site_footer("all-notes", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("all-notes", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(
-            f"shell template has tokens the my-notes page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the my-notes page")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "all-notes.html"
     target.write_text(page)
@@ -7235,12 +7257,7 @@ def write_course_page(
         "{{FOOTER}}": site_footer(course.id, "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html(course.id, "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the course page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the course page")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / f"{course.id}.html"
     target.write_text(page)
@@ -7508,12 +7525,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "{{FOOTER}}": site_footer("tree", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("tree", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the tree page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the tree page")
 
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "tree.html"
@@ -7761,12 +7773,7 @@ def write_map_page(shell: str, registry: dict[str, Tutorial], catalog: dict[str,
         "{{FOOTER}}": site_footer("map", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("map", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the map page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the map page")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "map.html"
     target.write_text(page)
@@ -7870,12 +7877,7 @@ def write_topics_page(
         "{{FOOTER}}": site_footer("topics", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("topics", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the topics page does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the topics page")
 
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "topics.html"
@@ -8107,12 +8109,7 @@ def write_editor_page(shell: str) -> Path:
         "{{FOOTER}}": site_footer("editor", "1"),
         "{{REPORT_DOORS}}": report_doors_panel_html("editor", "1"),
     }
-    page = shell
-    for token, value in tokens.items():
-        page = page.replace(token, value)
-    if "{{" in page:
-        leftover = sorted({p.split("}}")[0] + "}}" for p in page.split("{{")[1:]})
-        raise BuildError(f"shell template has tokens the editor does not fill: {leftover}")
+    page = fill_shell(shell, tokens, "the editor")
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "editor.html"
     target.write_text(page)

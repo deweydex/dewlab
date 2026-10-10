@@ -27,13 +27,17 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
-ABOUT_PAGE = (DEWLAB / "pages" / "about.md").read_text()
-HOME_PAGE = (DEWLAB / "pages" / "home.md").read_text()
-FEATURES_PAGE = (DEWLAB / "pages" / "features.md").read_text()
-# Every other page under pages/, copied as it is: the build writes each one
-# SITE_PAGES lists, and fails on one without its file.
-OTHER_PAGES = {path.name: path.read_text() for path in (DEWLAB / "pages").glob("*.md")
-               if path.stem not in ("about", "home", "features")}
+
+# The site's own pages, as stubs. Every test builds a whole site, and the
+# build refuses one with a page missing, but nothing here is about what the
+# real About or Home page says; copying them in made every build test depend
+# on the owner's prose. A new entry in `SITE_PAGES` gets a stub by itself.
+# The home page carries the two generated blocks it is meant to hold.
+STUB_PAGES = {
+    name: f'---\ntitle: "{name}"\n---\n\nA stub page.\n'
+    + ("\n[[search-box]]\n\n[[course-cards]]\n" if name == "home" else "")
+    for name in b.SITE_PAGES
+}
 
 COURSE = "computational-methods"
 SERIES = "python-fundamentals"
@@ -70,11 +74,8 @@ def repo(tmp_path, monkeypatch):
     for name in ("tutorials", "courses", "setup", "data", "assets", "pages"):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
-    (tmp_path / "pages" / "about.md").write_text(ABOUT_PAGE)
-    (tmp_path / "pages" / "home.md").write_text(HOME_PAGE)
-    (tmp_path / "pages" / "features.md").write_text(FEATURES_PAGE)
-    for name, text in OTHER_PAGES.items():
-        (tmp_path / "pages" / name).write_text(text)
+    for name, text in STUB_PAGES.items():
+        (tmp_path / "pages" / f"{name}.md").write_text(text)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")

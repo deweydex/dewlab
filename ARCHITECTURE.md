@@ -109,8 +109,10 @@ The pipeline, in order:
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
    page, topic tree, topic map, `editor.html` — is the same template with `{{TOKEN}}`
-   placeholders filled. A token the template doesn't fill, or a page that
-   leaves one unfilled, fails the build. `write_editor_page()` assembles
+   placeholders filled by `fill_shell()`. A token in the template that
+   `build.py` has no value for fails the build. A `{{` in an author's own
+   words, such as an f-string in a cell or an example template in a
+   sentence, is theirs and is left alone. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
    src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
    page with no curriculum data of its own — About, the home page, and the

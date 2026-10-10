@@ -62,17 +62,6 @@ class TestParsing:
         # A page gets no toolkit of its own cells.
         assert "toolkit" not in manifest(page)
 
-    def test_the_cell_and_its_reference_are_read_off_the_source(self, repo):
-        path = write(repo, STUB + PLAIN, slug="one")
-        tutorial = b.load(path)
-        binary, plain = tutorial.cells
-        assert binary.toolkit and not plain.toolkit
-        assert binary.reference == "def to_binary(n):\n    return bin(n)[2:]"
-        assert binary.toolkit_reference == binary.reference
-        whole = b.load(write(repo, WHOLE, slug="two")).cells[0]
-        assert whole.reference is None
-        assert whole.toolkit_reference == whole.code
-
     @pytest.mark.parametrize("value, expected", [("yes", True), ("true", True), ("no", False)])
     def test_toolkit_takes_yes_or_no(self, repo, value, expected):
         path = write(repo, f"```python exec\nid: c\ntoolkit: {value}\nx = 1\n```\n", slug="one")

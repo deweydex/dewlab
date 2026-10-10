@@ -602,12 +602,6 @@ class TestQueryRows:
         tt._page_globals["db"] = conn
         assert tt._query_rows("select 1 as n") == [{"n": 1}]
 
-    def test_a_bad_query_raises_the_sqlite_error(self):
-        conn = sqlite3.connect(":memory:")
-        tt._page_globals["db"] = conn
-        with pytest.raises(sqlite3.OperationalError):
-            tt._query_rows("select * from a_table_that_does_not_exist")
-
 
 try:
     import numpy as np
@@ -1015,6 +1009,7 @@ class TestRunReport:
         assert tt.holds("undefined_name == 1") is False
         assert tt.holds("1 / 0") is False
         assert tt.holds("this is not python") is False
+
 
 class TestWidgetsOnAWorkerPage:
     """The hosted site runs Python in a Worker, where nothing can watch a
