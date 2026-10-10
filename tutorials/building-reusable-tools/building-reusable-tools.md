@@ -1,7 +1,7 @@
 ---
 title: "Designing and testing good functions"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -154,19 +154,18 @@ keeps only the last. It does not catch c. Its mean is a whole number, so
 such as `[1, 2]`, catches c. So `[10, 20, 30]` and `[1, 2]` together leave
 only a.
 
-The tests have not caught the version that passes everything. That does
-not prove it is right.
-Each test is a question, and a good set asks different questions: a
-middle case, an edge, a case where two ways of being wrong would give
-different answers.
+Version a passes both lists, and no list we have tried catches it. That
+does not prove it is the one without a mistake. Each test is a question,
+and a good set asks different questions: a middle case, an edge, a case
+where two ways of being wrong would give different answers.
 
 </details>
 
 ## Functions calling functions
 
 Small, tested functions can be built into bigger ones. The *standard
-deviation* measures how spread out numbers are round their mean. For every
-value in a list:
+deviation* measures how spread out numbers are around their mean. To find
+it for a list of numbers:
 
 1. Find the mean.
 2. For each value, take its difference from the mean, and square it.
@@ -367,54 +366,61 @@ down anywhere? It could be.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you write `average_brightness(row)`, which returns the mean
-brightness of a row of pixels, and raises a `ValueError` for a row with no
-pixels? Then write your own tests for it.
+A row of pixels is a list of brightness numbers, from 0 for dark up to 255
+for bright. Can you write `most_common_brightness(row)`, which returns the
+brightness that appears most often in `row`, and raises a `ValueError` when
+`row` has no pixels at all? Then write your own tests for it.
 
 ```python exec
 id: your-turn-2--pixel-art
-def average_brightness(row):
-    """Give back the mean brightness of a row of pixels.
+def most_common_brightness(row):
+    """Give back the brightness that appears most often in row.
 
-    Raises ValueError if the row is empty.
+    Raises ValueError if row has no pixels.
     """
     return 0
 ```
 
 ```inputs
 guess: yes
-average_brightness([0, 255])
-average_brightness([90])
-average_brightness([])
+most_common_brightness([0, 255, 255, 40])
+most_common_brightness([90])
+most_common_brightness([])
 ```
 
 ```python exec
 id: your-turn-2-tests--pixel-art
 tests: your-turn-2--pixel-art
-assert average_brightness([100, 200]) == 150
+assert most_common_brightness([5, 9, 9]) == 9
 ```
 
 ```hint
-Check for the empty row first, and raise. After that, the row has at
-least one pixel, and dividing by its length is safe.
+Count the brightness values into a dictionary, as
+[Dictionaries: looking things up by name](tutorial:looking-things-up-by-name)
+did. If the dictionary is still empty after the loop, there were none:
+raise. If not, keep the value with the biggest count.
 ```
 
 ```solution
-def average_brightness(row):
-    """Give back the mean brightness of a row of pixels.
+def most_common_brightness(row):
+    """Give back the brightness that appears most often in row.
 
-    Raises ValueError if the row is empty.
+    Raises ValueError if row has no pixels.
     """
-    if len(row) == 0:
-        raise ValueError("average_brightness() needs at least one pixel")
-    total = 0
-    for value in row:
-        total = total + value
-    return total / len(row)
+    counts = {}
+    for brightness in row:
+        counts[brightness] = counts.get(brightness, 0) + 1
+    if len(counts) == 0:
+        raise ValueError("most_common_brightness() needs at least one pixel")
+    best = None
+    for brightness, count in counts.items():
+        if count > counts.get(best, 0):
+            best = brightness
+    return best
 ---
-`[0, 255]` gives 127.5, which is not a whole brightness. Should it round?
-The docstring says "the mean", so it does not. A caller who wants a pixel
-value can round it.
+The docstring says what happens at the edge, so a caller knows to expect
+it. What does it give for `[10, 20, 10, 20]`, where two values tie? Is that
+written down anywhere? It could be.
 ```
 
 </div>

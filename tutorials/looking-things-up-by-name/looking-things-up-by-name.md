@@ -1,7 +1,7 @@
 ---
 title: "Dictionaries: looking things up by name"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -16,7 +16,7 @@ Here is a small phrasebook, kept as a dictionary. Each Irish word is
 joined to its English word. What will the cell print?
 
 ```python exec
-id: a-shared-key-1
+id: a-phrasebook-1
 phrasebook = {"madra": "dog", "capall": "horse", "bó": "cow", "uan": "lamb"}
 print(phrasebook["madra"], phrasebook["bó"], phrasebook["capall"])
 ```
@@ -35,7 +35,11 @@ What will it print?
 It prints `dog cow horse`. A *list*{.term} finds a value by its position. A
 dictionary finds a value by a name we choose, here an Irish word. Most of
 this page is about that one change, and what it makes easy: a phrasebook,
-a price list, and counting how often each thing appears.
+a price list, and counting how often each thing appears. You will make
+dictionaries, look things up in them, and use them to count.
+
+Under the title is a box called "Choose a world". The explanations on this
+page are the same in both worlds. Only the tasks follow your choice.
 
 ## Making a dictionary
 
@@ -69,7 +73,8 @@ can share a value. A value can be any type, a list included.
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you set `coded` to the word BEAD, in the code of this key?
+This key joins each plain letter to its code letter. Can you set `coded` to
+the word BEAD, written in the code this key gives?
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -80,6 +85,11 @@ print(coded)
 
 ```inputs
 coded
+```
+
+```hint
+`key["B"]` gives the code letter for B. How can you join four code letters
+into one word?
 ```
 
 ```solution
@@ -128,7 +138,7 @@ its second number. Two lookups in a row: first by key, then by index.
 ## Adding and changing values
 
 A dictionary is *mutable*{.term}, like a list. The two middle lines here have the
-same shape. How many pairs will the palette have at the end?
+same shape. How many pairs will the dictionary have at the end?
 
 ```python exec
 id: adding-and-changing-values-1
@@ -156,13 +166,13 @@ A value can be used to calculate its own new value, the way
 
 ```python exec
 id: adding-and-changing-values-2
-counts = {"E": 4, "T": 2}
-counts["E"] = counts["E"] + 1
-print(counts)
+orders = {"tea": 4, "coffee": 2}
+orders["tea"] = orders["tea"] + 1
+print(orders)
 ```
 
 Python calculates the right-hand side first. It reads 4, and adds 1. Then
-it stores 5 back under `"E"`. We use this further down to count things.
+it stores 5 back under `"tea"`. We use this further down to count things.
 
 ### Your turn
 
@@ -170,7 +180,8 @@ it stores 5 back under `"E"`. We use this further down to count things.
 
 Can you build `key`, a dictionary for the whole Caesar shift of 3, with a
 loop? Each capital letter is a key, and the letter three places along is
-its value. Then set `coded` to HELLO in that code, with a second loop.
+its value. Then, with a second loop, set `coded` to the word HELLO in that
+code.
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -211,10 +222,11 @@ only a shift.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you build `shades`, a dictionary from a level, 0 to 4, to a
-brightness? Level 0 has brightness 0, and level 4 has 255. Each level in
-between is 255 / 4 brighter than the one before, rounded to a whole
-number. Then add a level 5, which is also 255.
+A screen draws a shade of grey as a brightness from 0 to 255. Can you build
+`shades`, a dictionary from a level, 0 to 4, to a brightness, with a loop?
+Level 0 has brightness 0, and level 4 has 255. Each level in between is
+255 / 4 brighter than the one before, rounded to a whole number. Then add a
+level 5, which is also 255.
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -335,10 +347,10 @@ for size, name in sizes.items():
 
 <div class="dl-world" data-world="secret-messages">
 
-A key codes a message. To decode it, we need the key reversed. Each code
+A key codes a message. To decode it, we need the key reversed: each code
 letter is a key, and the plain letter is its value. Can you build
-`decode_key` from `key` with a loop? Then use it to set `plain` to the
-decoded `message`.
+`decode_key` from `key` with a loop? Then, with a second loop, set `plain`
+to the decoded `message`.
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -372,7 +384,7 @@ for code in message:
     plain = plain + decode_key[code]
 print(plain)
 ---
-CADE, a name. Turning a key round like this works only because no two
+CADE, a name. Reversing a key like this works only because no two
 letters share a code letter. If two did, the second would overwrite the
 first, and the message could not be read back.
 ```
@@ -381,44 +393,47 @@ first, and the message could not be read back.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you set `drawn` to this picture with each character replaced by its
-colour's name? Use `.get()`, so that a character missing from the palette
-shows as `"?"`.
+A palette joins each character in a picture to a colour's name. To write
+a picture from colour names, we need the palette reversed: each colour's
+name is a key, and its character is the value. Can you build `symbol_for`
+from `palette` with a loop? Then, with a second loop, set `row` to the
+characters for the colours in `colours`.
 
 ```python exec
-id: your-turn-3--pixel-art
+id: reverse-a-palette--pixel-art
 palette = {"#": "black", ".": "white", "r": "red"}
-picture = ["#r#", ".x."]
-drawn = []
+symbol_for = {}
 
-print(drawn)
+colours = ["red", "black", "red", "white"]
+row = ""
+print(row)
 ```
 
 ```inputs
-drawn
+symbol_for
+row
 ```
 
 ```hint
-Build one row of names at a time. For each character in the row, look its
-colour up with `palette.get(character, "?")`. When the row is done, append
-it to `drawn`.
+`for character, name in palette.items():` gives each pair. In
+`symbol_for`, which of the two is the key, and which the value?
 ```
 
 ```solution
 palette = {"#": "black", ".": "white", "r": "red"}
-picture = ["#r#", ".x."]
-drawn = []
-for row in picture:
-    names = []
-    for character in row:
-        names.append(palette.get(character, "?"))
-    drawn.append(names)
-print(drawn)
+symbol_for = {}
+for character, name in palette.items():
+    symbol_for[name] = character
+
+colours = ["red", "black", "red", "white"]
+row = ""
+for name in colours:
+    row = row + symbol_for[name]
+print(row)
 ---
-The second row has an `x`, which the palette does not have. With
-`palette[character]`, the picture would stop with a `KeyError` halfway
-through. With `.get()`, it shows `?` and carries on. Which is better
-depends on whether an unknown character is a mistake.
+`r#r.`. Reversing a palette like this works only because no two characters
+share a colour. If two did, the second would overwrite the first, and a
+colour name could not be turned back into one character.
 ```
 
 </div>
@@ -488,7 +503,7 @@ count_letters("")
 ```
 
 ```hint
-The loop from the cell above counts everything. `.isupper()`, from
+The loop we just wrote counts every character. `.isupper()`, from
 [Making decisions with if, elif and else](tutorial:making-decisions), can
 decide which characters to count.
 ```
@@ -529,7 +544,7 @@ most
 ```
 
 ```hint
-Go through `counts.items()`, and keep the letter with the biggest count so
+Loop over `counts.items()`, and keep the letter with the biggest count so
 far.
 ```
 
@@ -555,11 +570,12 @@ English.
 
 <div class="dl-world" data-world="pixel-art">
 
-Which colour does this picture use most? Can you count every character in
-it, and set `most` to the most common one?
+Which character does this picture use most? The cell has counted every
+character already. Can you set `most` to the character with the biggest
+count?
 
 ```python exec
-id: your-turn-5--pixel-art
+id: most-used-character--pixel-art
 picture = [
     "..rr..",
     ".rrrr.",
@@ -567,6 +583,9 @@ picture = [
     ".rrrr.",
 ]
 counts = {}
+for row in picture:
+    for character in row:
+        counts[character] = counts.get(character, 0) + 1
 
 most = ""
 print(most, counts.get(most))
@@ -577,9 +596,8 @@ most
 ```
 
 ```hint
-Two loops: one over the rows, and one over the characters in each row.
-Then go through `counts.items()`, and keep the character with the biggest
-count so far.
+Loop over `counts.items()`, and keep the character with the biggest count
+so far.
 ```
 
 ```solution
@@ -707,8 +725,7 @@ print(counts)
 </div>
 
 The next page, [A program of your own](tutorial:a-program-of-your-own), is
-a chance to build something with everything so far: a cipher tool, a
-pixel-art maker, or an idea of your own.
+a chance to build something with everything so far.
 
 ## Where to read more
 
@@ -720,10 +737,22 @@ Python Software Foundation. *The Python Tutorial*, section 5.5,
 This is the official reference for dictionaries, including the methods this page
 does not cover.
 
+<div class="dl-world" data-world="secret-messages">
+
 Singh, S. (1999). *The Code Book: The Secret History of Codes and
 Codebreaking*. Fourth Estate. Chapter 1 tells how Arab scholars in the
 ninth century cracked substitution ciphers by counting letters, which is
 the challenge above, done by hand.
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Wikipedia. *Indexed color*. <https://en.wikipedia.org/wiki/Indexed_color>.
+It describes the palette method used in the tasks above: a picture stores a
+short number for each pixel, and a table of the real colours.
+
+</div>
 
 SimonDev (2021). *Hash Tables, Associative Arrays, and Dictionaries.*
 <https://www.youtube.com/watch?v=S5NY1fqisSY>. This video shows how a

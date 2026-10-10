@@ -1,7 +1,7 @@
 ---
 title: "Sorting a list: bubble, insertion and selection sort"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -237,9 +237,9 @@ for the lowest, put it first, and then search the rest.
 
 ### Your turn
 
-This selection sort is broken. It sorts some lists and not others, so a
-test that happens to pass says nothing. Can you find a list it gets wrong,
-and then fix it?
+This selection sort is broken. It sorts some lists and not others, so one
+list that comes out sorted does not show that it works. Can you find a list
+it gets wrong, and then fix it?
 
 ```python exec
 id: your-turn-3
@@ -337,9 +337,11 @@ change the list you were given, or return a new one.
 
 <div class="dl-world" data-world="secret-messages">
 
-Here are the letter counts of a coded message. Can you set `by_count` to
-its letters, most common first? In English, the most common letters are E,
-then T. What do the first two tell you?
+The dictionary `counts` holds how many times each letter appears in a
+coded message. Can you set `by_count` to its letters, most common first?
+`how_often` gives the count for one letter. Then look at the first two. In
+English, the most common letters are E, then T. What do your first two tell
+you?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -381,9 +383,12 @@ than one.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you set `darkest_first` to these colours sorted by how bright they
-look, darkest first? `brightness` weighs red, green and blue the way an
-eye does.
+Each colour in `colours` is a list of three amounts, red, green and blue,
+from 0 to 255. `brightness` turns one colour into a single number, by
+weighing the three the way an eye does. A bigger number looks brighter.
+Can you set `brightest_first` to the colours sorted by that number,
+largest first? Then look at the order. Does it match how you would sort
+them by eye?
 
 ```python exec
 id: your-turn-4--pixel-art
@@ -392,17 +397,17 @@ colours = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [128, 128, 128]
 def brightness(colour):
     return 0.299 * colour[0] + 0.587 * colour[1] + 0.114 * colour[2]
 
-darkest_first = []
-print(darkest_first)
+brightest_first = []
+print(brightest_first)
 ```
 
 ```inputs
-darkest_first
+brightest_first
 ```
 
 ```hint
-Which function should `sorted()` call on each colour, to know which comes
-first?
+`sorted(colours)` compares the lists as they are. Which `key=` makes it
+compare the brightness of each colour, and what puts the largest first?
 ```
 
 ```solution
@@ -411,11 +416,11 @@ colours = [[255, 0, 0], [0, 255, 0], [0, 0, 255], [255, 255, 0], [128, 128, 128]
 def brightness(colour):
     return 0.299 * colour[0] + 0.587 * colour[1] + 0.114 * colour[2]
 
-darkest_first = sorted(colours, key=brightness)
-print(darkest_first)
+brightest_first = sorted(colours, key=brightness, reverse=True)
+print(brightest_first)
 ---
-Blue, red, grey, green, yellow. Pure blue looks darker than pure red, and
-pure green brighter than mid-grey. Without `key=`, `sorted()` would
+Yellow, green, grey, red, blue. Pure green looks brighter than mid-grey,
+and pure blue looks darker than pure red. Without `key=`, `sorted()` would
 compare the lists element by element, red first, which is not how an eye
 sees them.
 ```
