@@ -246,6 +246,7 @@ class TestStateDiagram:
                                     fmt=lambda p: f"{p:g}")
         assert svg.count(">0<") == 0
 
+    @pytest.mark.advisory
     def test_the_matrix_is_read_from_the_tutorial_not_restated(self):
         matrix = cm._matrix_from_cell("where-chains-lead", "a-weather-machine-1", "P")
         assert matrix == self.WEATHER
@@ -294,6 +295,7 @@ class TestRowTimesColumn:
         svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=0, column=0)
         assert "1×5 + 2×1 = 7" in svg
 
+    @pytest.mark.advisory
     def test_it_draws_the_matrices_the_tutorial_defines(self):
         left, right = cm._matrices_from_cell(
             "multiplying-grids", "multiplying-two-grids-3", ("A", "B"))
@@ -326,6 +328,7 @@ class TestTheRangeCollapsing:
         assert ">low mid high<" in svg
         assert svg.count(">low<") == 3, "one per pass that has them apart"
 
+    @pytest.mark.advisory
     def test_the_list_comes_from_the_tutorial(self):
         items, target = cm._search_case()
         assert items == self.ITEMS
@@ -338,6 +341,7 @@ class TestTheMergeWalk:
     A = [1, 3, 4, 5]
     B = [1, 2, 5, 7, 8]
 
+    @pytest.mark.advisory
     def test_the_sets_come_from_the_tutorial(self):
         left, right = maths_diagrams._sets_from_cell()
         assert left == self.A and right == self.B
@@ -378,6 +382,7 @@ needs_dewey_early = pytest.mark.skipif(dewey_early is None, reason="svgwrite is 
 
 
 @needs_dewey_early
+@pytest.mark.advisory
 class TestDeweyUnitsOneToFive:
     """The Dewey Track's Unit 1 to 5 pictures read their numbers from the
     pages' own cells, so a cell edited without a regeneration leaves a
@@ -417,6 +422,7 @@ needs_dewey_late = pytest.mark.skipif(dewey_late is None, reason="svgwrite is no
 
 
 @needs_dewey_late
+@pytest.mark.advisory
 class TestDeweyUnitsSixToTen:
     """The same two checks for the Unit 6 to 10 pictures, which run the
     pages' own cells (a search, a sort, a recursion's printed trace) and

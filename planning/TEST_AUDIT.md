@@ -187,11 +187,17 @@ Recorded as DECISIONS_LOG 7.297. In order of safety:
    code: a page naming itself, and a context page naming a practice or
    context page. `context_pages()` runs before `practice_pairs()`, so the page
    a context page copies its placement from may not be placed yet.
-5. **`svgwrite` is installed in CI's unit job**, so `test_erd_graphics.py`
-   runs there.
+5. **`svgwrite` is installed in CI's unit and house-style jobs**, so
+   `test_erd_graphics.py` runs there. Its 57 generator-logic tests block; the
+   118 that read the committed pictures and the tutorials' cells are advisory.
+   (They were first left blocking, which put 118 content-tied tests in the
+   gate; the content-removal run caught it.)
 
 Checked: all unit tests pass; `build.py --clean` writes 1,257 pages; `check.py`
-reports no problems; no real page prints a new note.
+reports no problems; no real page prints a new note. Re-running the
+content-removal experiment on the result: 30 of 722 blocking unit tests fail
+without content (4%), where 413 could not be collected and 40 more failed
+before.
 
 **Not changed** (the owner's call, or too large for one pass): the verdict-word
 checks; a tutorial listed under two series; data files without a provenance
