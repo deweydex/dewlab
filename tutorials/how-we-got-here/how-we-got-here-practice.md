@@ -2,7 +2,7 @@
 title: "How programming languages came to be — Practice"
 practice_for: how-we-got-here
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -21,13 +21,13 @@ Run this cell first. It builds the tutorial's two tools.
 
 ```python exec
 id: tools-1
-def to_binary(n):
-    if n == 0:
+def to_binary(number):
+    if number == 0:
         return "0"
     text = ""
-    while n > 0:
-        text = str(n % 2) + text
-        n = n // 2
+    while number > 0:
+        text = str(number % 2) + text
+        number = number // 2
     return text
 
 def from_binary(text):
@@ -86,7 +86,7 @@ base 10?
 
 They are `11111111`, `10100000` and `01111110`. Each hex digit becomes four binary
 digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
-1110. No base 10 is needed. That is the main reason hex exists.
+1110, so no base 10 is needed. That is the main reason hex exists.
 
 </details>
 
@@ -167,6 +167,7 @@ read_hex("100")
 ```
 
 ```hint
+after: 3 runs
 It is `from_binary` with 16 in place of 2. At each digit, multiply the
 total so far by 16, and add the digit's value.
 ```
@@ -261,7 +262,7 @@ deal.
 ## 13. The overnight batch
 
 A bank processes the day's payments overnight, in one large batch. Which
-language from the table would you expect to find doing that job? Why?
+language from the table on the tutorial page would you expect to find doing that job? Why?
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -292,14 +293,14 @@ adding and totalling are things it does. (d) *Functional*{.term}: a function,
 
 ## 15. Back to a loop
 
-Can you rewrite `doubled = [n * 2 for n in numbers]` in the *procedural*{.term} style?
+Can you rewrite `doubled = [number * 2 for number in numbers]` in the *procedural*{.term} style?
 
 <details class="dl-answer"><summary>answer</summary>
 
 ```python
 doubled = []
-for n in numbers:
-    doubled.append(n * 2)
+for number in numbers:
+    doubled.append(number * 2)
 ```
 
 The loop uses three lines in place of one, to do the same thing. Which is
@@ -351,7 +352,7 @@ base 10?
 
 The rows are `..####..`, `.#....#.` and `#......#`. Each hex digit becomes
 four bits: 3 is 0011, C is 1100, 4 is 0100, 2 is 0010, 8 is 1000 and 1 is
-0001. The sprite is an arch.
+0001, and the sprite is an arch.
 
 </details>
 
@@ -361,9 +362,9 @@ four bits: 3 is 0011, C is 1100, 4 is 0100, 2 is 0010, 8 is 1000 and 1 is
 
 <div class="dl-world" data-world="secret-messages">
 
-Can you write `to_hex_message(text)`, which returns each character's
-ASCII code as two hex digits, the way the 1958 memory dump was written?
-`hex(n)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
+Can you write `to_hex_message(text)`, which returns a list with each
+character's ASCII code as two hex digits, the way the 1958 memory dump was written?
+`hex(number)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
 
 ```python exec
 id: the-other-way-1--secret-messages
@@ -379,6 +380,7 @@ to_hex_message("")
 ```
 
 ```hint
+after: 3 runs
 `ord(character)` gives a character's code, and `hex()` writes that code in
 hex. Add each result to a list, and give the list back.
 ```
@@ -400,7 +402,7 @@ the codes are 65 to 90, so two hex digits are always enough.
 
 Can you write `row_to_hex(row)`, which turns a row of eight pixels, `#`
 and `.`, into the two hex digits a game would store it as?
-`hex(n)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
+`hex(number)[2:]` is the hex without its `0x`, and `.upper()` makes it capitals.
 
 ```python exec
 id: the-other-way-1--pixel-art
@@ -416,6 +418,7 @@ row_to_hex("........")
 ```
 
 ```hint
+after: 3 runs
 First turn the row into binary digits, 1 for `#` and 0 for `.`. Then
 `from_binary` gives the number, and `hex()` writes it.
 ```

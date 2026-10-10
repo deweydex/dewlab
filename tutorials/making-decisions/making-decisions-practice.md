@@ -2,7 +2,7 @@
 title: "Making decisions with if, elif and else — Practice"
 practice_for: making-decisions
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -14,6 +14,11 @@ Before you write an `if`, find which values its condition is `True`
 for. When a decision goes a way you did not expect, look first at the
 condition, not the lines under it. Try each problem before you
 open anything under it.
+
+Many problems say "set" a name, such as `between`. Its cell prints that name
+and gives it no value, so the lines you write go between the line that
+sets the starting values and the `print`. Problem 15 follows the world you
+chose.
 
 ## 1. Capitals and small letters
 
@@ -90,6 +95,8 @@ look like. Most other languages need the first form.
 ```
 
 ## 4. Three ifs instead of elif
+
+The tutorial picked a word for a temperature with one `if` and some `elif`s. Here the same three tests are three separate `if` statements.
 
 ```python exec
 id: three-ifs-instead-of-elif-1
@@ -455,12 +462,14 @@ different starting letter.
 
 <div class="dl-world" data-world="pixel-art">
 
-A colour pixel has a red, a green and a blue, each from 0 to 255. Its
-brightness is roughly the average of the three. Can you set `pixel` to
-`"#"` when the brightness is 128 or more, and to `"."` otherwise?
+The tutorial's challenge changed a pixel's brightness. Now the brightness
+comes from colour. A colour pixel has a red, a green and a blue, each from 0
+to 255, and its brightness is roughly the average of the three. Can you set
+`pixel` to `"#"` when the brightness is 170 or more, to `"+"` when it is 85
+to 169, and to `"."` when it is lower?
 
 ```python exec
-id: one-more-path-1--pixel-art
+id: one-more-path-2--pixel-art
 red = 200
 green = 40
 blue = 90
@@ -473,8 +482,8 @@ pixel
 ```
 
 ```hint
-Which number decides between `"#"` and `"."`? Can you find it from `red`,
-`green` and `blue` first?
+Which number decides between the three symbols? Can you find it from `red`,
+`green` and `blue` first? Then there are three paths: `if`, `elif`, `else`.
 ```
 
 ```solution
@@ -482,15 +491,17 @@ red = 200
 green = 40
 blue = 90
 brightness = (red + green + blue) / 3
-if brightness >= 128:
+if brightness >= 170:
     pixel = "#"
+elif brightness >= 85:
+    pixel = "+"
 else:
     pixel = "."
 print(pixel)
 ---
-The brightness is 110, so it is `.`. An eye sees green as brighter than
+The brightness is 110, so it is `+`. An eye sees green as brighter than
 red or blue, so real programs weigh the three differently. The plain
-average is a fair start.
+average is a place to start.
 ```
 
 </div>

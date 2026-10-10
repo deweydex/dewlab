@@ -2,7 +2,7 @@
 title: "Sine and cosine waves: amplitude, period and shift — Practice"
 practice_for: sine-and-cosine-waves
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 datasets: [daylight, dublin-tides]
 worlds:
   sea-and-sky: The tide at Dublin Port through a whole month, measured.
@@ -341,8 +341,10 @@ Noise-cancelling headphones work this way. They make the opposite wave.
 The tide rises and falls twice a day, but its *range*, from low to high,
 changes too. The cell finds the range on each day of March 2026 at
 Dublin Port. The numbers come from the copy of the file saved on
-{{snapshot: dublin-tides}}. Can you draw the ranges, and find how many
-days apart the biggest ranges are?
+{{snapshot: dublin-tides}}. First, can you draw the ranges? Then can you
+write `peak_days(ranges)`, which gives back the day numbers (1 for 1
+March) of the days with a bigger range than the day before and the day
+after? How many days apart are the biggest two?
 
 ```python exec
 id: your-world-1--sea-and-sky
@@ -355,27 +357,44 @@ for day in range(31):
     ranges.append(max(one_day) - min(one_day))
 
 print([round(r, 2) for r in ranges])
+# Your code here.
 ```
 
-<details class="dl-answer"><summary>answer</summary>
+```hint
+Compare each day with the one before it and the one after it. The first
+and last days have only one neighbour, so start with the days in between:
+`range(1, len(ranges) - 1)`.
+```
 
-Here is one answer. Yours may be different and work too.
+```inputs
+peak_days([1, 3, 2])
+peak_days([1, 2, 3])
+peak_days([2, 1, 2, 1])
+peak_days(ranges)
+```
 
-```python
+```solution
+def peak_days(ranges):
+    days = []
+    for i in range(1, len(ranges) - 1):
+        if ranges[i] > ranges[i - 1] and ranges[i] > ranges[i + 1]:
+            days.append(i + 1)
+    return days
+
+
 fig, ax = plt.subplots(figsize=(8, 3.5))
-ax.plot(range(31), ranges, "o-")
-ax.set_xlabel("day of March (0 = 1 March)")
+ax.plot(range(1, 32), ranges, "o-")
+ax.set_xlabel("day of March")
+print(peak_days(ranges))
+---
+The days are 5 and 20 March, 15 days apart, and the range on each is
+about 3.9 m. The smallest range, about 1.4 m, is on 13 March, between
+them. The range is a slow wave, with a period of about 15 days. It comes
+from two waves added together, as in "Two waves at once" on the tutorial
+page: one wave from the Moon and one from the Sun. When they are in
+step, the tides are biggest. These are *spring tides*, and they usually
+come a day or two after a full Moon or a new Moon.
 ```
-
-The biggest ranges are about 3.9 m, on 5 March and 20 March, 15 days
-apart. The smallest, about 1.4 m, is on 13 March, between them. The
-range is a slow wave, with a period of about 15 days. It comes from two
-waves added together, as in "Two waves at once" on the tutorial page:
-one wave from the Moon and one from the Sun. When they are in step, the
-tides are biggest. These are *spring tides*, and they usually come a day
-or two after a full Moon or a new Moon.
-
-</details>
 
 </div>
 

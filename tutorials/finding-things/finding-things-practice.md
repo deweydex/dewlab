@@ -2,7 +2,7 @@
 title: "Searching a list: linear and binary search — Practice"
 practice_for: finding-things
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -12,7 +12,8 @@ worlds:
 
 Problems on searching, and three from earlier pages. Several ask you to
 count comparisons without writing code. Try those on paper first. Try each
-problem before you open anything under it.
+problem before you open anything under it. Problems 10, 11 and 12 follow the
+world you chose on the page.
 
 ## 1. Why -1
 
@@ -259,7 +260,8 @@ not, so this one is linear whichever way it is written.
 In the sorted list `words`, where do the words starting with M begin? The
 place where `"M"` would go is the answer, because `"M"` comes before every
 word that starts with M. Can you set `start` to it, with `where_it_goes`
-from problem 8?
+from problem 8? If you have not written it, the solution to problem 8 has one
+you can paste into the cell.
 
 ```python exec
 id: the-first-one-past-a-line-1--secret-messages
@@ -304,7 +306,8 @@ with, both are the same place, and the range is empty.
 
 The list `brightnesses` holds a picture's brightnesses, sorted. Where do
 the bright pixels, 128 or more, begin? Can you set `start` to that index, with
-`where_it_goes` from problem 8?
+`where_it_goes` from problem 8? If you have not written it, the solution to
+problem 8 has one you can paste into the cell.
 
 ```python exec
 id: the-first-one-past-a-line-1--pixel-art
@@ -341,7 +344,212 @@ at them one by one.
 
 </div>
 
-## 11. From earlier: the last three
+## 11. What is missing
+
+Our `binary_search` gives `-1` for an item that is not there. Can you use
+that to find the items that are missing? The problem comes in the world you
+chose. If you have not written `binary_search`, problem 5 has one in its
+cell that you can copy. Can you set `missing` to a list of the items that
+`binary_search` does not find?
+
+<div class="dl-world" data-world="secret-messages">
+
+The sorted list `words` holds the words a codebreaker knows. The list
+`message` is a decoded message, one word per item. Which of its words are
+not in `words`, in the order they appear in `message`?
+
+```python exec
+id: what-is-missing-1--secret-messages
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+message = ["MEET", "ME", "AT", "THE", "OTTER", "BRIDGE", "NOON"]
+missing = []
+
+print(missing)
+```
+
+```inputs
+missing
+```
+
+```hint
+Loop over `message`. For each word, ask `binary_search(words, word)`. What
+does it give back when the word is not in `words`, and what do you do with
+the word then?
+```
+
+```solution
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return mid
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return -1
+
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+message = ["MEET", "ME", "AT", "THE", "OTTER", "BRIDGE", "NOON"]
+missing = []
+for word in message:
+    if binary_search(words, word) == -1:
+        missing.append(word)
+print(missing)
+---
+`['ME', 'AT']`. Seven words are searched, and each search takes at most 5
+looks.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+The sorted list `lit` holds the numbers of a picture's lit pixels. The list
+`wanted` holds seven pixel numbers. Which of them are not lit, in the order
+they appear in `wanted`?
+
+```python exec
+id: what-is-missing-1--pixel-art
+lit = [row * 100 + row for row in range(100)]
+wanted = [0, 101, 150, 202, 303, 404, 500]
+missing = []
+
+print(missing)
+```
+
+```inputs
+missing
+```
+
+```hint
+Loop over `wanted`. For each number, ask `binary_search(lit, number)`. What
+does it give back when the number is not in `lit`, and what do you do with
+the number then?
+```
+
+```solution
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return mid
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return -1
+
+lit = [row * 100 + row for row in range(100)]
+wanted = [0, 101, 150, 202, 303, 404, 500]
+missing = []
+for number in wanted:
+    if binary_search(lit, number) == -1:
+        missing.append(number)
+print(missing)
+---
+`[150, 500]`. Seven numbers are searched, and each search takes at most 7
+looks.
+```
+
+</div>
+
+## 12. Searching with a limit
+
+A search does not have to ask whether an item is equal to the target. It
+can ask whether an item passes a limit. The list is in no order, so linear
+search is the one to use. The problem comes in the world you chose. Can you
+write the function, which gives back the *index* of the first item that
+passes the limit, or `-1` if none does?
+
+<div class="dl-world" data-world="secret-messages">
+
+Write `first_after(letters, limit)`. It gives back the index of the first
+letter in `letters` that comes after `limit` in the alphabet. Strings
+compare alphabetically, so `"X" > "M"` is `True`.
+
+```python exec
+id: searching-with-a-limit-1--secret-messages
+def first_after(letters, limit):
+    return -1
+```
+
+```inputs
+guess: yes
+first_after("DHCAKXBE", "M")
+first_after("DHCAKXBE", "Z")      # no letter comes after Z
+first_after("DHCAKXBE", "A")      # the first letter already does
+first_after("", "M")              # an empty message
+```
+
+```hint
+`for index in range(len(letters)):` visits every index. Which comparison
+asks whether `letters[index]` comes after `limit`? Where does `return -1`
+go?
+```
+
+```solution
+def first_after(letters, limit):
+    for index in range(len(letters)):
+        if letters[index] > limit:
+            return index
+    return -1
+---
+`first_after("DHCAKXBE", "M")` gives 5, because D, H, C, A and K all come
+before M, and X does not. It is the same loop as `linear_search`, with
+`>` where `==` was.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+Write `first_brighter(values, limit)`. It gives back the index of the first
+brightness in `values` that is above `limit`. A brightness is a number from
+0 to 255.
+
+```python exec
+id: searching-with-a-limit-1--pixel-art
+def first_brighter(values, limit):
+    return -1
+```
+
+```inputs
+guess: yes
+first_brighter([12, 90, 45, 30, 127, 200, 60, 255], 127)
+first_brighter([12, 90, 45, 30, 127, 200, 60, 255], 255)   # nothing is brighter than 255
+first_brighter([12, 90, 45, 30, 127, 200, 60, 255], 0)     # the first one already is
+first_brighter([], 127)                                    # an empty row
+```
+
+```hint
+`for index in range(len(values)):` visits every index. Which comparison
+asks whether `values[index]` is above `limit`? Where does `return -1` go?
+```
+
+```solution
+def first_brighter(values, limit):
+    for index in range(len(values)):
+        if values[index] > limit:
+            return index
+    return -1
+---
+`first_brighter([12, 90, 45, 30, 127, 200, 60, 255], 127)` gives 5, because
+200 is the first brightness above 127. It is the same loop as
+`linear_search`, with `>` where `==` was.
+```
+
+</div>
+
+## 13. From earlier: the last three
 
 From *Lists and looping over them*.
 
@@ -370,7 +578,7 @@ second number runs to the end.
 
 </details>
 
-## 12. From earlier: counting with a generator
+## 14. From earlier: counting with a generator
 
 From *Comprehensions, grids and aliasing*.
 
@@ -392,7 +600,7 @@ The answer is 4. The generator gives a 1 for each S, and `sum()` adds them up.
 
 </details>
 
-## 13. From earlier: a count that starts itself
+## 15. From earlier: a count that starts itself
 
 From *Dictionaries: looking things up by name*.
 

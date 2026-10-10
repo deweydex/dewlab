@@ -2,7 +2,7 @@
 title: "Distance and Pythagoras: how far apart two points are — Practice"
 practice_for: distance-and-pythagoras
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   sea-and-sky: Two lighthouses and a ship between them. The numbers are made up.
   sound: Two microphones and a clap.
@@ -255,16 +255,40 @@ avoids both problems.
 
 Two lighthouses stand at $(0, 0)$ and $(10, 0)$ on a chart, in
 kilometres. A ship's radar says it is 6 km from the first and 8 km from
-the second. Where could the ship be? Try it on paper first, then check
-your answer with `distance`.
+the second. Where could the ship be? Try it on paper first. Then can you
+write `radar_readings(ship)`, which gives back the two distances for a
+ship at any point, so you can check your answer?
 
 ```python exec
 id: your-world-1--sea-and-sky
 first, second = (0, 0), (10, 0)
-# Your check here.
+# Your code here.
 ```
 
-<details class="dl-hint"><summary>hint</summary>
+```hint
+The `distance` function from the tools cell takes two points. The ship is
+one point, and each lighthouse is the other.
+```
+
+```inputs
+radar_readings((3.6, 4.8))
+radar_readings((3.6, -4.8))
+radar_readings((5, 0))
+```
+
+```solution
+def radar_readings(ship):
+    return distance(ship, first), distance(ship, second)
+
+
+print(radar_readings((3.6, 4.8)))
+---
+A ship at $(3.6, 4.8)$ is 6 km from the first lighthouse and 8 km from the
+second, and so is a ship at $(3.6, -4.8)$. A ship at $(5, 0)$, halfway
+between them, is 5 km from each.
+```
+
+<details class="dl-hint"><summary>hint for the paper work</summary>
 
 Call the ship $(x, y)$. Then $x^2 + y^2 = 36$ and
 $(x - 10)^2 + y^2 = 64$. What happens if you subtract one equation from

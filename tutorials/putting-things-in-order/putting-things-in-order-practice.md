@@ -325,10 +325,12 @@ sort by their first value, and use the second only to break a tie.
 
 <div class="dl-world" data-world="secret-messages">
 
-A codebreaker tries every shift, and sorts the decodings so the most
-English-looking is first. A rough score counts how many of its letters are
-E, T, A, O, I or N. Can you write `score(text)` to give that count? Then can
-you set `best` to the decoding with the highest score?
+A codebreaker tries every shift, and puts the decodings in order, so that
+the one that looks most like English comes first. A rough score for a
+decoding is how many of its letters are E, T, A, O, I or N. The cell
+already holds `decode`, and the loop that makes `decodings`, the 26 ways to
+decode `message`. Can you write `score(text)`, which gives that count? Then
+can you set `best` to the decoding with the highest score?
 
 ```python exec
 id: the-best-first-1--secret-messages
@@ -398,8 +400,9 @@ top few.
 
 <div class="dl-world" data-world="pixel-art">
 
+In `picture`, each row is a string of pixels: `#` is lit and `.` is dark.
 Can you write `lit(row)`, which counts the `#` in a row? Then can you set
-`busiest_first` to the rows of this picture, sorted from most lit to
+`busiest_first` to the rows of the picture, sorted from most lit to
 least?
 
 ```python exec

@@ -3062,7 +3062,8 @@ def render_world_chooser(worlds: dict[str, str]) -> str:
         '<fieldset class="dl-world-chooser" hidden>'
         "<legend>Choose a world for this page</legend>"
         f'<div class="dl-world-choices">{choices}</div>'
-        '<p class="dl-world-note">The tasks follow your choice. You can change it '
+        '<p class="dl-world-note">A world is the setting for the examples and the '
+        "tasks. The lesson is the same in each one. You can change your choice "
         "at any time, and your work in each world is saved separately.</p>"
         "</fieldset>"
     )
@@ -8167,8 +8168,10 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             default=registry.get(tutorial.slug),
             family=families.get(tutorial.slug),
             practice=practice.get(tutorial.slug),
-            also=[page for pages in mixed.values() for page in pages
-                  if tutorial.slug in page.practice_across],
+            # A mixed set that several courses list is one page, so it is
+            # one link, however many courses name it.
+            also=list({page.slug: page for pages in mixed.values() for page in pages
+                       if tutorial.slug in page.practice_across}.values()),
             context=context.get(tutorial.slug),
             registry=registry,
             glossary=cumulative_glossary(tutorial, registry, groups),

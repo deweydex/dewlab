@@ -1,7 +1,7 @@
 ---
 title: "Reading an error message"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -26,7 +26,7 @@ it, and read everything that comes back.
 ```python exec
 id: a-first-error-1
 count = 3
-message = "HELLO"
+message = "Hello"
 print(mesage)
 ```
 
@@ -205,8 +205,8 @@ the one you typed. It is right more often than not.
 
 Each cell below raises one of the errors in the table. Before you run each
 one, write which error you think it will raise in the comment at its end.
-Then run it. Where it raised a different one, what did you expect the
-values to be?
+Then run it. If it raised a different error, can you say what you expected
+the values to be?
 
 ```python exec
 id: runtime-your-turn-1
@@ -231,9 +231,9 @@ print(anmal)
 
 ```python exec
 id: runtime-your-turn-4
-area = 640 * 480
-columns = 0
-print("Rows:", area / columns)
+distance = 480
+hours = 0
+print("Speed:", distance / hours)
 # I think it raises:
 ```
 
@@ -375,7 +375,8 @@ to give. Can you find where, with an answer you already know?
 <div class="dl-world" data-world="secret-messages">
 
 It is meant to move the letter X three places along, which should give A:
-X, Y, Z, then round to A. What does it give?
+X, Y, Z, then back to A. What does it give? Then can you find the line that
+causes it, and fix that line so it prints `A`?
 
 ```python exec
 id: when-nothing-looks-wrong-2--secret-messages
@@ -402,45 +403,46 @@ moved = (position + shift) % 26
 print(chr(moved + ord("A")))
 ---
 `%` happens before `+`, the same as `*` and `/`, so the line calculated
-`3 % 26`, which is 3, and never went back round after Z. The brackets
-make the remainder apply to the whole sum.
+`3 % 26`, which is 3, and added it to 23. The sum was 26, and the program
+printed `[`, the character after Z, because nothing sent the count back to
+0. The brackets make the remainder apply to the whole sum.
 ```
 
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-It is meant to find a pixel's brightness, the average of its red, green
-and blue. For red 90, green 120 and blue 210, the average is 140. What does
-it give?
+It is meant to make a pixel 10 brighter. The scale goes from 0 to 255 and
+then starts again at 0, so a pixel at 250 should go 251, 252, 253, 254, 255,
+0, 1, 2, 3, 4. What does it give? Then can you find the line that causes it,
+and fix that line so it prints `4`?
 
 ```python exec
 id: when-nothing-looks-wrong-2--pixel-art
-red = 90
-green = 120
-blue = 210
-brightness = red + green + blue / 3
-print(brightness)
+brightness = 250
+step = 10
+new_brightness = brightness + step % 256
+print(new_brightness)
 ```
 
 ```inputs
-brightness
+new_brightness
 ```
 
 ```hint
-Try the numbers yourself: 90 + 120 + 210 is 420, and 420 divided by 3 is
-140. Which part of the line did Python divide?
+Which happens first, `+` or `%`? What is `10 % 256`?
 ```
 
 ```solution
-red = 90
-green = 120
-blue = 210
-brightness = (red + green + blue) / 3
-print(brightness)
+brightness = 250
+step = 10
+new_brightness = (brightness + step) % 256
+print(new_brightness)
 ---
-Only `blue` was divided, so the program said 280, which is not even a
-possible brightness. The brackets make Python add first.
+`%` happens before `+`, the same as `*` and `/`, so the line calculated
+`10 % 256`, which is 10, and added it to 250. The sum was 260, which is not
+a possible brightness, because nothing sent the count back to 0. The
+brackets make the remainder apply to the whole sum.
 ```
 
 </div>
@@ -457,16 +459,26 @@ lets it finish with an answer nobody meant.
 
 ```python challenge
 # One syntax error, one runtime error and one logical error.
-width = 64
-height = 48
-area = width * height
+width = 6
+length = 4
+area = width * length
 print("Area:" area)
-weight = area * 3
-print("Kilograms:", weight / 1000)
-average_side = width + height / 2
+paint = area * 2
+print("Litres of paint:", paint)
+average_side = width + length / 2
 print("Average side:", average_side)
 print("Tins:", tins)
 ```
+
+<details class="dl-answer"><summary>the three</summary>
+
+The syntax error is `print("Area:" area)`, which needs a comma after
+`"Area:"`. Python stops there before it runs any line. The logical error is
+`width + length / 2`: it divides only `length`, so it gives 8 where the
+average of 6 and 4 is 5. The runtime error is `print("Tins:", tins)`,
+because nothing called `tins` exists.
+
+</details>
 
 An error message is the most exact and most patient help you will get
 all day. It gives an exact place, an exact kind, and often the fix.

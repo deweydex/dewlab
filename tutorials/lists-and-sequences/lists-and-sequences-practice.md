@@ -2,7 +2,7 @@
 title: "Lists and looping over them — Practice"
 practice_for: lists-and-sequences
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -44,8 +44,7 @@ cell.
 (e) 5.
 
 A list of 5 *elements*{.term} has indexes 0 to 4, so the last one is always
-`len(xs) - 1`. There is no index 5. Say it out loud a few times,
-until it stops being a surprise.
+`len(xs) - 1`. There is no index 5, so asking for it is an error.
 
 </details>
 
@@ -145,8 +144,8 @@ squares
 
 ```solution
 squares = []
-for n in range(1, 11):
-    squares.append(n ** 2)
+for number in range(1, 11):
+    squares.append(number ** 2)
 print(squares)
 ---
 `[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]`. `range(1, 11)` starts at 1, and

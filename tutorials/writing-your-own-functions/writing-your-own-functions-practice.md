@@ -385,7 +385,7 @@ def reverse(message):
         backwards = letter + backwards
     return backwards
 ---
-Turning a message round twice puts it back as it was, so `reverse` is its
+Reversing a message twice puts it back as it was, so `reverse` is its
 own inverse. ROT13, a Caesar shift of 13, is another: 13 and 13 make the
 whole 26.
 ```
@@ -492,7 +492,7 @@ difference across, squared, plus the difference down, squared. Can you write
 `distance(x1, y1, x2, y2)`?
 
 ```python exec
-id: distance-on-a-screen-1
+id: distance-on-a-map-1
 def distance(x1, y1, x2, y2):
     ...
 ```

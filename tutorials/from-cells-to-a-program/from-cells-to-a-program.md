@@ -162,7 +162,8 @@ read it.
 <div class="dl-world" data-world="secret-messages">
 
 Run this cell, and type `seven` first, then `30`, then `7`. The cell asks
-for the shift of a code, a whole number from 1 to 25.
+for the shift of a code: how many places each letter moves along the
+alphabet, a whole number from 1 to 25.
 
 ```python exec
 id: asking-until-the-answer-makes-sense-1--secret-messages
@@ -188,7 +189,8 @@ is the short-circuit from
 <div class="dl-world" data-world="pixel-art">
 
 Run this cell, and type `seven` first, then `6`, then `3`. The cell asks
-for the number of rows of a picture to show, a whole number from 1 to 5.
+how many rows of a small picture to show, a whole number from 1 to 5. The
+picture itself comes in the next section.
 
 ```python exec
 id: asking-until-the-answer-makes-sense-1--pixel-art
@@ -304,6 +306,12 @@ call it.
 
 <div class="dl-world" data-world="secret-messages">
 
+This program codes messages. `encode(message, shift)` moves each capital
+letter `shift` places along the alphabet, and leaves everything else as it
+is. `ask_shift()` is the function from the last section. `main()` holds the
+steps. Run it, choose `1`, type `otter`, and give a shift of `3`. The coded
+message is `RWWHU`. Then choose `9` to quit.
+
 ```python exec
 id: one-place-to-start-main-1--secret-messages
 def encode(message, shift):
@@ -343,6 +351,14 @@ main()
 </div>
 
 <div class="dl-world" data-world="pixel-art">
+
+This program shows the top of a *sprite*: a small picture drawn with
+`#` for a filled square and `.` for an empty one. `SPRITES` holds three of
+them, each a list of five rows. `top_part(rows, count)` joins the first
+`count` rows into one block of text, with a line break between the rows.
+`ask_rows()` is the function from the last section, and `main()` holds the
+steps. Run it, choose `1`, type `heart`, and ask for `3` rows. Then choose
+`9` to quit.
 
 ```python exec
 id: one-place-to-start-main-1--pixel-art
@@ -407,7 +423,7 @@ computer:
    Thonny, <https://thonny.org>, which comes with Python and a simple
    editor, and suits a first program well.
 2. Copy your program into a file ending in `.py`, such as `game.py`.
-3. Run it: Thonny's Run button, or `python codebreaker.py` in a terminal.
+3. Run it: Thonny's Run button, or `python game.py` in a terminal.
    `input()` waits for you there, as it did on this page.
 
 Without installing anything, the [Notebook](../compose/notebook.html) runs
@@ -530,9 +546,8 @@ flashy. It adds what makes Release 2 safe to give to somebody else:
 
 <div class="dl-world" data-world="pixel-art">
 
-The game is *Name the sprite*: the computer shows the top rows of a small
-picture, a *sprite*, drawn with `#` for a filled square and `.` for an
-empty one, and the player tries to name it.
+The game is *Name the sprite*: the computer shows the top rows of a
+sprite, and the player tries to name it.
 
 **Release 1: the smallest thing that is a game.** It has one round and
 one sprite, written into the code. It asks once, and says whether the answer is right.
