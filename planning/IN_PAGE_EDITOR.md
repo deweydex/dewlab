@@ -223,7 +223,7 @@ Escape leaves editing.
 | Paragraphs, headings, lists, links, emphasis, inline code, tables | In place, Crepe styled as the page |
 | Code cell (`python exec` and the other kinds) | In place, using the CodeMirror editor the cell already has. Saving writes the fence back with its header lines (`id:`, `hint:`, `toolkit:`) untouched |
 | A new cell | A slash command inserts one. The editor generates its id from the nearest heading and a counter; the teacher never types one |
-| Maths (`$…$`) | Click shows the TeX source in a small field; the rendered maths stays on the page. Whether the vendored Crepe build includes its maths feature is part of the spike |
+| Maths (`$…$`) | The block shows its maths as TeX while the cursor is in it, and renders it again when the cursor leaves (decided after the spike). Rendering it in place is later work |
 | Image | Replace text and alt in place. An alt is asked for when an image is inserted |
 | Hint fence, solution, predict, inputs, question, note, `<details>` fold, world variant | Hint, solution, predict, inputs and question: edited as their source text in a plain box under the block, then re-rendered. A `<details>` fold and a note: the prose inside is edited in place like any prose; the fold's open/closed state and class are not touched. A world variant: its wrapper is untouched and the blocks inside are edited as their own kind. Rich editing of the fences (a form for a question's options, say) follows once the box has been used |
 | `{{include: …}}` | Shows a small link to the included file on GitHub (see below). Not editable in the page |
@@ -427,10 +427,19 @@ Each step is a pull request that stands alone.
    prose blocks unchanged, 23 render differently). A block swaps for an editor
    with no visible change for headings and most paragraphs; maths, tables and a
    few conventions of ours still need work. Not done: a real phone.
-3. **Edit mode on prose and cells.** The button, the how-to fold and the
-   teacher's guide it links to, the `#edit` address, the swap, the outline,
-   save to a draft PR. `ARCHITECTURE.md` and
-   `WRITING_TUTORIALS.md` updated in the same pull request.
+3. **Edit mode, in slices.** Decisions made after the spike: maths shows as TeX
+   while its block is edited; the `{.term}` mark is taught to the editor;
+   phones get "needs a larger screen" for now (see the spike report).
+   - **3a. The way in.** The button at the foot of Settings, the how-to fold
+     and the teacher's guide it links to, the `#edit` address, the token prompt,
+     the width check. The editor itself loads only when Edit is pressed, and a
+     downloaded page carries none of it.
+   - **3b. Headings and paragraphs.** The editor bundle, the swap, the outline
+     on the block being edited, the splice, and one draft PR per session.
+   - **3c. Bullet lists, then ordered lists and quotes,** with the maths and
+     `{.term}` handling. Tables and the other blocks follow in step 4.
+   `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
+   changes what they describe.
 4. **The other blocks,** as source-text boxes first, in the order of the
    counts above: `<details>` folds and solutions, then hints, predict and
    inputs, then questions and world variants, then notes. Rich forms for any
