@@ -640,6 +640,49 @@
     </p>
   </section>
   </div>
+
+  <!--dl-edit:start-->
+  <!-- Editing a page where it stands (assets/inpage-edit.js). Hidden until the
+       page's manifest says it can be edited; the module that does the editing
+       is not loaded until the button is pressed. It sits at the foot of the
+       panel on purpose: few readers go that far, and a teacher who looks for
+       it finds it. Left out of downloaded copies. -->
+  <div class="dl-settings-foot" id="dl-settings-edit" hidden>
+    <h3>Edit this page</h3>
+    <details class="dl-panel-details" id="dl-edit-how">
+      <summary>How editing works</summary>
+      <p class="dl-panel-note">
+        Teachers and course authors can fix or improve this page where it
+        stands. Press <strong>Edit this page</strong>, then click a heading or
+        a paragraph and type. When you have finished, press
+        <strong>Open pull request</strong>. That sends your changes to GitHub
+        as a proposal, which is what a pull request is. The live site does not
+        change until someone approves it.
+      </p>
+      <p class="dl-panel-note">
+        To edit you need a GitHub token. It is a long password that lets this
+        page propose changes to this one repository, and nothing else. It
+        cannot publish a change. The guide says how to make one. You can also
+        start editing by adding <code>#edit</code> to the end of any page's
+        address.
+      </p>
+      <p class="dl-panel-note">
+        <a href="https://github.com/deweydex/dewlab/blob/main/docs/EDITING_A_PAGE.md"
+           target="_blank" rel="noopener">Read the guide to editing a page</a>
+      </p>
+    </details>
+    <div id="dl-edit-gate" hidden></div>
+    <div class="dl-progress-actions">
+      <button type="button" class="dl-btn" id="dl-edit-toggle">Edit this page</button>
+      <button type="button" class="dl-btn dl-progress-clear" id="dl-edit-forget" hidden>Forget my token</button>
+    </div>
+    <div class="dl-progress-actions" id="dl-edit-actions" hidden>
+      <button type="button" class="dl-btn" id="dl-edit-save" disabled>Open pull request</button>
+      <button type="button" class="dl-btn dl-progress-clear" id="dl-edit-discard" disabled>Discard my changes</button>
+    </div>
+    <p class="dl-panel-note" id="dl-edit-status" role="status"></p>
+  </div>
+  <!--dl-edit:end-->
 </div>
 
 <!-- A report door of its own — see the corner-dock comment above for why
@@ -741,6 +784,32 @@
 <!-- Cell source and page metadata, JSON-encoded so Python code containing
      any HTML-significant character survives the round trip untouched. -->
 <script type="application/json" id="dewlab-manifest">{{MANIFEST_JSON}}</script>
+<!--dl-edit:start-->
+<script type="module">
+/* "Edit this page": show the button where the page can be edited, and load the
+   editor only when it is pressed, or when the address ends in #edit. */
+const manifest = JSON.parse(document.getElementById("dewlab-manifest").textContent);
+if (manifest.edit) {
+  document.getElementById("dl-settings-edit").hidden = false;
+  const start = async () => {
+    const editor = await import(manifest.edit.module);
+    await editor.toggle(manifest);
+  };
+  document.getElementById("dl-edit-toggle").addEventListener("click", start);
+  /* The token lives in this browser only; on a shared computer it should be
+     easy to remove. */
+  const forget = document.getElementById("dl-edit-forget");
+  const hasToken = () => { try { return !!localStorage.getItem("dewlab:editor:token"); } catch (e) { return false; } };
+  forget.hidden = !hasToken();
+  forget.addEventListener("click", () => {
+    try { localStorage.removeItem("dewlab:editor:token"); } catch (e) { /* blocked storage */ }
+    forget.hidden = true;
+    document.getElementById("dl-edit-status").textContent = "Your token is forgotten. This page will ask for one next time.";
+  });
+  if (location.hash === "#edit") start();
+}
+</script>
+<!--dl-edit:end-->
 <script type="module" src="{{RUNTIME_URL}}"></script>
 <script type="module" src="{{SEARCH_JS_URL}}"></script>
 {{PAGE_SCRIPT}}

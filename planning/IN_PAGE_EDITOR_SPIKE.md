@@ -153,17 +153,16 @@ selection handles are all untested. You will need to try it on a real device.
   JavaScript, and the measurement above is the test for them: round-trip the
   corpus, count what differs.
 
-## Decisions for you
+## Decisions (made)
 
-1. **Maths while a block is being edited.** Rendering it in place needs
-   Crepe's LaTeX feature, which in turn needs CodeMirror and brings its own
-   styling to fix. The cheaper first version shows a block's maths as its TeX
-   (`$x^2$`) while the cursor is in that block, and renders it again when the
-   cursor leaves. That block changes height while edited and nothing else does.
-   Which do you want first?
-2. **`{.term}` marks.** Either teach the editor the mark (it renders as an
-   italic with the page's term styling and round-trips as `*word*{.term}`), or
-   leave braces visible in edited text for now. 139 pages use them.
-3. **Phones.** Does the first version need to work on one, or can it say "this
-   needs a larger screen" below some width? The answer changes the size of
-   step 3.
+Josh, 10 October 2026, each taking the option the report recommended:
+
+1. **Maths while a block is being edited: show the TeX.** A block's maths shows
+   as its source (`$x^2$`) while the cursor is in that block and renders again
+   when the cursor leaves. That block changes height while edited and nothing
+   else on the page does. Rendering maths in place is left for later.
+2. **`{.term}` marks: teach the editor the mark.** It shows as an italic with
+   the page's term styling and saves back as `*word*{.term}`.
+3. **Phones: larger screens only, for the first version.** Below a set width the
+   Edit button says the editor needs a larger screen. A real phone is still
+   untried.
