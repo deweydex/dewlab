@@ -429,11 +429,11 @@ for row in picture:
     print(row)
 ---
 `picture[row][column] = 1` changes one value in the grid, and only in that
-row, because the comprehension made each row separately. The last section
-of this page shows what happens when it does not.
+row, because the comprehension made each row separately. The next section
+shows what happens when it does not.
 ```
 
-Now, can you set `negative` to a picture with every `1` turned into `0`, and
+Now, can you set `negative` to this picture with every `1` turned into `0`, and
 every `0` into `1`? A comprehension inside a comprehension can do it.
 
 ```python exec
