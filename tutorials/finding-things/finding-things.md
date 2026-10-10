@@ -1,7 +1,7 @@
 ---
 title: "Searching a list: linear and binary search"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -109,6 +109,102 @@ might need a million. In the worst case, the work grows at the same rate
 as the size of the list. This is written *O(n)*, said "order n". It means
 the time grows in proportion to n, the number of items. Twice as many items means up to
 twice as many comparisons.
+
+### Your turn
+
+Linear search does one comparison for each item it looks at. Can you count
+them? The next task gives you a list of 24 items and a target. It comes in
+the world you chose, and the idea is the same in both. Can you set `looks`
+to the number of items linear search looks at, up to and including the first
+one that matches the target?
+
+<div class="dl-world" data-world="secret-messages">
+
+The list is a coded message, read one letter at a time, from the left. It
+is in no order, so a codebreaker has to check the letters in turn. The
+target is `"Q"`. Use a `while` loop to move `position` along the message
+until `coded[position]` is the target.
+
+```python exec
+id: counting-linear-looks--secret-messages
+coded = "WKH NHB LV XQGHU WKH PDW"
+target = "Q"
+position = 0
+looks = 1
+
+print(looks)
+```
+
+```inputs
+looks
+```
+
+```hint
+`looks` starts at 1, because the first letter is always checked. While
+`coded[position]` is not the target, what two numbers change before the next
+look?
+```
+
+```solution
+coded = "WKH NHB LV XQGHU WKH PDW"
+target = "Q"
+position = 0
+looks = 1
+while coded[position] != target:
+    position = position + 1
+    looks = looks + 1
+print(looks)
+---
+13: the `"Q"` is at position 12, and the 13th look finds it. A space counts
+as a letter here, so there are 24 places in all. A `"Q"` that was not
+there would cost all 24 looks, which is the worst case.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+The list is a row of 24 pixels, read one pixel at a time, from the left.
+Each number is a brightness, and the row is in no order. The target is
+`255`, a fully lit pixel. Use a `while` loop to move `position` along the row
+until `row[position]` is the target.
+
+```python exec
+id: counting-linear-looks--pixel-art
+row = [0, 10, 0, 0, 30, 0, 0, 0, 0, 20, 0, 0, 255, 0, 0, 0, 40, 0, 255, 0, 0, 10, 0, 0]
+target = 255
+position = 0
+looks = 1
+
+print(looks)
+```
+
+```inputs
+looks
+```
+
+```hint
+`looks` starts at 1, because the first pixel is always checked. While
+`row[position]` is not the target, what two numbers change before the next
+look?
+```
+
+```solution
+row = [0, 10, 0, 0, 30, 0, 0, 0, 0, 20, 0, 0, 255, 0, 0, 0, 40, 0, 255, 0, 0, 10, 0, 0]
+target = 255
+position = 0
+looks = 1
+while row[position] != target:
+    position = position + 1
+    looks = looks + 1
+print(looks)
+---
+13: the first `255` is at position 12, and the 13th look finds it. The
+second `255`, at position 18, is never reached. A target that was not
+there would cost all 24 looks, which is the worst case.
+```
+
+</div>
 
 ## Binary search: the power of sorted data
 
@@ -380,6 +476,159 @@ gets bigger.
 There is a cost. The data must be sorted first, and sorting takes time. So
 binary search is worth it when the same data is searched many times, which
 happens very often.
+
+### Your turn
+
+The table promises at most about 20 looks for a million items. Does a real
+list keep the promise? The cell has `count_looks(items, target)`, which does
+what `binary_search` does, and gives back the number of looks it made. It
+comes in the world you chose. Can you set `most` to the largest number of
+looks it needs, over every item in the list as the target?
+
+<div class="dl-world" data-world="secret-messages">
+
+The list is `words`, the 20 English words in alphabetical order that a
+codebreaker checks each decoding against. Make each word the target in turn,
+and keep the largest count.
+
+```python exec
+id: counting-binary-looks--secret-messages
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+
+def count_looks(items, target):
+    looks = 0
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        looks = looks + 1
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return looks
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return looks
+
+most = 0
+
+print(most)
+```
+
+```inputs
+most
+```
+
+```hint
+Loop over `words`, with `for word in words:`. For each word, ask
+`count_looks(words, word)`. When is the count larger than `most`, and what
+should `most` become then?
+```
+
+```solution
+words = ["AND", "ARE", "BIRD", "BRIDGE", "CODE", "DOOR", "EAST", "FROM",
+         "HELLO", "HOUSE", "KEY", "LETTER", "MEET", "NIGHT", "NOON",
+         "OTTER", "SPY", "THE", "TREE", "WEST"]
+
+def count_looks(items, target):
+    looks = 0
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        looks = looks + 1
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return looks
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return looks
+
+most = 0
+for word in words:
+    looks = count_looks(words, word)
+    if looks > most:
+        most = looks
+print(most)
+---
+5. Four halvings take 20 words down to 1, and one more look checks it.
+Linear search could need all 20 for one word.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+The list is `lit`, the 100 numbers of a diagonal line's lit pixels, in
+order. Make each number the target in turn, and keep the largest count.
+
+```python exec
+id: counting-binary-looks--pixel-art
+lit = [row * 100 + row for row in range(100)]
+
+def count_looks(items, target):
+    looks = 0
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        looks = looks + 1
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return looks
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return looks
+
+most = 0
+
+print(most)
+```
+
+```inputs
+most
+```
+
+```hint
+Loop over `lit`, with `for number in lit:`. For each number, ask
+`count_looks(lit, number)`. When is the count larger than `most`, and what
+should `most` become then?
+```
+
+```solution
+lit = [row * 100 + row for row in range(100)]
+
+def count_looks(items, target):
+    looks = 0
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        looks = looks + 1
+        mid = (low + high) // 2
+        if items[mid] == target:
+            return looks
+        elif target < items[mid]:
+            high = mid - 1
+        else:
+            low = mid + 1
+    return looks
+
+most = 0
+for number in lit:
+    looks = count_looks(lit, number)
+    if looks > most:
+        most = looks
+print(most)
+---
+7. Six halvings take 100 pixels down to 1, and one more look checks it.
+Linear search could need all 100 for one number.
+```
+
+</div>
 
 ## Divide and conquer
 

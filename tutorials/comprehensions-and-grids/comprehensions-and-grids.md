@@ -1,7 +1,7 @@
 ---
 title: "Comprehensions, grids and aliasing"
 year: "2026-2027"
-version: 2026.10.10.1
+version: 2026.10.10.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -200,6 +200,75 @@ print(brighter)
 ---
 `[80, 140, 255, 170, 255, 110]`. Without `min()`, 250 would become 300, a
 brightness no screen has.
+```
+
+</div>
+
+### Your turn again
+
+<div class="dl-world" data-world="secret-messages">
+
+A radio operator sends a message as numbers, with `"A"` as 1 and `"Z"` as
+26. Static has made some numbers too big. Can you set `capped` to the list
+with every number above 26 brought down to 26? `min(a, b)` gives the
+smaller of two values.
+
+```python exec
+id: your-turn-1b--secret-messages
+codes = [8, 5, 30, 16, 41, 26]
+capped = []
+print(capped)
+```
+
+```inputs
+capped
+```
+
+```hint
+For one number, the new value is the smaller of the number and 26. Can you
+put that at the front of a comprehension?
+```
+
+```solution
+codes = [8, 5, 30, 16, 41, 26]
+capped = [min(code, 26) for code in codes]
+print(capped)
+---
+`[8, 5, 26, 16, 26, 26]`. Without `min()`, 30 and 41 would be letters
+that the alphabet does not have.
+```
+
+</div>
+
+<div class="dl-world" data-world="pixel-art">
+
+A row of brightnesses can be drawn as text: `"#"` for a bright pixel, from
+128 up, and `"."` for a dark one. Can you set `drawn` to the row as one
+string, with `join()` and a generator expression?
+
+```python exec
+id: your-turn-1b--pixel-art
+row = [0, 80, 160, 255, 160, 80, 0]
+drawn = ""
+print(drawn)
+```
+
+```inputs
+drawn
+```
+
+```hint
+For one pixel, the character is `"#"` if `value >= 128`, and `"."` if not.
+What goes before `.join`, if nothing should come between the characters?
+```
+
+```solution
+row = [0, 80, 160, 255, 160, 80, 0]
+drawn = "".join("#" if value >= 128 else "." for value in row)
+print(drawn)
+---
+`..###..`. Three pixels are 128 or more, so three are drawn as `#`. Try a
+longer row, and see what shape it makes.
 ```
 
 </div>
