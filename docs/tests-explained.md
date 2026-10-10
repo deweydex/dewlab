@@ -57,6 +57,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_links.py` | Cross-page link resolution and validation |
 | `test_old_addresses.py` | Legacy-URL redirect stub generation |
 | `test_check.py` | `check.py`'s own Problems, cross-checked against real `BuildError`s |
+| `test_source_map.py` | The source map (`source_map.py`): how markdown is cut into blocks, that each range is the block it labels, that the map changes nothing about a page, and that splicing one range changes one block. One test builds every real tutorial with and without the map |
 
 **`tests/e2e/` — grouped by what's actually being exercised, not always one file per feature:**
 

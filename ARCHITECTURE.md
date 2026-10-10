@@ -150,6 +150,21 @@ The pipeline, in order:
    contract between `build.py` and `tutorial-runtime.js` — read once at
    `readManifest()` and trusted from then on.
 
+   **The source map** (`source_map.py`, `python3 build.py --source-map`,
+   off by default while the in-page editor is a spike,
+   `planning/IN_PAGE_EDITOR.md`). Python-Markdown records no positions, so
+   `source_map.blocks()` cuts a page's markdown into top-level blocks from
+   outside it, `mark()` puts a comment with the block's byte range in front of
+   each, and `attach()` turns each comment into `data-md="START:END"` on the
+   element it became. Offsets are into the file as committed, so an editor can
+   splice new text over one range and leave every other byte alone. A cell and
+   its hint, solution and inputs fences are one block; so are the panes of one
+   site editor and the world variants of one task. `load()` builds each page
+   twice and keeps the map only if the page reads the same without it, so a
+   page the tokenizer misreads loses its map and is otherwise untouched. A
+   note, a toolkit reference and a prediction placed away from its cell have no
+   element of their own. Downloads carry no map.
+
 8. **Stamp the footer.** `site_footer()` builds the copyright line and,
    unless `feedback_enabled()` says otherwise, the "three doors" reporting
    disclosure. `report_doors_html(page, version)` renders three plain links,

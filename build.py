@@ -48,6 +48,8 @@ from typing import Callable
 import markdown
 import yaml
 
+import source_map
+
 
 class _NoDuplicateKeysLoader(yaml.SafeLoader):
     """A YAML loader that refuses a mapping with the same key twice.
@@ -5640,7 +5642,35 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
         shutil.copy2(asset, target / asset.name)
 
 
+# When true, every page carries `data-md="START:END"` on each top-level block,
+# the byte range of the markdown file that produced it (source_map.py). Off by
+# default while the in-page editor is a spike (planning/IN_PAGE_EDITOR.md);
+# `python3 build.py --source-map` turns it on.
+SOURCE_MAP = False
+
+
 def load(path: Path) -> Tutorial:
+    """`load_page()`, with the source map when it is on and safe.
+
+    Safe means the page reads exactly as it would without the map: the mapped
+    page, stripped of its `data-md` attributes, is the unmapped page. The
+    tokenizer in source_map.py reads markdown from outside Python-Markdown, so
+    a page whose markup it misreads would otherwise render differently. Such a
+    page gets no map and a note, and is otherwise untouched.
+    """
+    if not SOURCE_MAP:
+        return load_page(path, mapped=False)
+    mapped = load_page(path, mapped=True)
+    plain = load_page(path, mapped=False)
+    if (source_map.strip(mapped.body_html) == plain.body_html
+            and mapped.notes == plain.notes and mapped.toc == plain.toc):
+        return mapped
+    print(f"note: {path.relative_to(ROOT)}: the source map would change how the page "
+          f"reads, so it has none", file=sys.stderr)
+    return plain
+
+
+def load_page(path: Path, mapped: bool) -> Tutorial:
     """Turns one tutorial's source file into a fully-parsed `Tutorial`
     object — this is the one function that runs the whole parsing
     pipeline described at the top of this file, in order: split off the
@@ -5649,7 +5679,10 @@ def load(path: Path) -> Tutorial:
     blocks back in, then pull out pedagogical notes. Every tutorial page
     build.py builds starts here.
     """
-    meta, body = split_frontmatter(path.read_text(), path)
+    text = path.read_text()
+    meta, body = split_frontmatter(text, path)
+    if mapped:
+        body = source_map.mark(body, len(text) - len(body))
     body = expand_prose_includes(body, path)
     body = expand_snapshot_dates(body, meta, path)
     worlds = page_worlds(meta, path)
@@ -5669,6 +5702,8 @@ def load(path: Path) -> Tutorial:
     body_html = place_worlds(body_html, spans, worlds, path)
     body_html = place_projects(body_html, projects, path)
     body_html, notes = extract_notes(body_html, path)
+    if mapped:
+        body_html = source_map.attach(body_html)
     if any(cell.predict for cell in cells):
         body_html += SURPRISES_HTML
     anchors = (
@@ -6321,6 +6356,8 @@ def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
 
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
+    # A copy to keep has nothing to edit, so it carries none of the source map.
+    page = source_map.ATTR_RE.sub("", page)
     # The same prefixes build.py wrote into the page's own references: `up`
     # for anything under assets/, `root` for the site root itself.
     root = "../" * tutorial.depth
@@ -8332,7 +8369,14 @@ def main() -> int:
         action="store_true",
         help="skip the downloadable single-file copies, which are the slow part",
     )
+    parser.add_argument(
+        "--source-map",
+        action="store_true",
+        help="mark each block of a page with the markdown range it came from (editor spike)",
+    )
     args = parser.parse_args()
+    global SOURCE_MAP
+    SOURCE_MAP = args.source_map
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:

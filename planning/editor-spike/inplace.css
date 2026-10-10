@@ -1,0 +1,6 @@
+.dl-spike-edit .ProseMirror { outline: none; white-space: pre-wrap; word-wrap: break-word; }
+.dl-spike-edit .milkdown { position: relative; }
+.dl-spike-edit .milkdown > :not(.ProseMirror):not([data-show="true"]) { display: none; }
+.dl-spike-edit .ProseMirror > p:last-child:has(> br.ProseMirror-trailingBreak:only-child):not(:first-child) { display: none; }
+/* a tight list item's text sits in a <p>; the page's tight lists have none */
+.dl-spike-edit li[data-spread="false"] > p { margin: 0; }
