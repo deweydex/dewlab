@@ -316,8 +316,8 @@ A function that prints a value and a function that returns a value can
 look the same when we run them. They are not the same, and nearly
 everyone confuses them at first.
 
-Here are two functions. How many lines do you think this cell prints:
-one, or two? Run it to check.
+Here are two functions. Each one doubles a number, and the cell calls
+both with 5.
 
 ```python exec
 id: return-or-print-1
@@ -329,6 +329,17 @@ def double_and_print(n):
 
 double_and_return(5)
 double_and_print(5)
+```
+
+```predict
+How many lines will the cell show under it?
+
+- One line
+  - Only one of the two functions has a `print` in it.
+- Two lines
+  - Each function calculates 10, so each may show it.
+- No lines
+  - Perhaps a function does its work without showing anything.
 ```
 
 Only one line appears. `double_and_return(5)` did calculate 10, and it
