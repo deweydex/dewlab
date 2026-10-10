@@ -171,4 +171,30 @@ a starting point for a person, not a replacement for one.
 
 ## What changed
 
-*Filled in as the changes land.*
+Recorded as DECISIONS_LOG 7.297. In order of safety:
+
+1. **`tests/build/` builds on stub pages.** The `repo` fixture no longer copies
+   the real About, Home, Features and other pages. The one test that asserted
+   on their copy keeps its structural checks.
+2. **18 tests retired and 12 marked advisory**, all in unit files, each named
+   in the ledger. The three verdict-word checks and two others were held back.
+3. **The `{{` guard (section 4) is fixed**, with a test that fails on the old
+   code and one that shows a real unfilled shell token still stops the build.
+4. **13 refusals about page shape became notes** (projects, `covers:` on
+   practice and context pages, `practice_across` oddities, repeated ids, moved
+   frontmatter fields), with `check.py` and its parity test changed to match.
+   Two the audit also ruled "note" were kept as refusals after reading the
+   code: a page naming itself, and a context page naming a practice or
+   context page. `context_pages()` runs before `practice_pairs()`, so the page
+   a context page copies its placement from may not be placed yet.
+5. **`svgwrite` is installed in CI's unit job**, so `test_erd_graphics.py`
+   runs there.
+
+Checked: all unit tests pass; `build.py --clean` writes 1,257 pages; `check.py`
+reports no problems; no real page prints a new note.
+
+**Not changed** (the owner's call, or too large for one pass): the verdict-word
+checks; a tutorial listed under two series; data files without a provenance
+yaml; path filtering in CI; running the 85 important local-only browser tests
+in CI; the 47 re-home rulings; and the roughly 20 tests whose fixtures still
+read the real `planning/curriculum/` and `data/`.

@@ -5805,3 +5805,26 @@ Not done: a markdown image with an empty description is still allowed. The in-pa
 7.122 shipped SQL behind a Settings → Cell types toggle that started off, so a fresh browser showed only Python, Text and JS on the seam. SQL is the reason several tutorials point readers at dewmini, and a toggle nobody knows to look for hides it. `CELL_TYPE_TOGGLES` now has `defaultOn: true` for SQL. Web stays off. The toggle is kept per browser, so a reader who already switched SQL off keeps it off, and one who never touched it sees the new default.
 
 *Cost to change: one flag in `CELL_TYPE_TOGGLES` and the default-state test in `tests/e2e/test_dewmini_workbench.py`.*
+
+**7.297 — The tests and the build's refusals were audited against "would a reader's page break?", and what failed that question was relaxed.** Josh, 9 and 10 October 2026: "if we were to remove all of the content files, that shouldn't significantly change the number of tests that we need to run", and "I don't look at a test and say, why the hell was this there?" Every test (1,143 functions in 79 files) and every place `build.py` and `check.py` stop an author (293) was read and ruled on. `planning/TEST_AUDIT.md` has the findings and `planning/TEST_AUDIT_LEDGER.md` lists every ruling that was not "keep", with its reason.
+
+Emptying `tutorials/`, `pages/`, `courses/`, `planning/` and `map/` in a copy and running the unit tests showed what reading each test had missed. All 413 tests in `tests/build/` could not be collected, because `helpers.py` read the real `pages/about.md` and copied every real page into each synthetic site. With stub pages in their place, 40 of the 719 tests that ran failed.
+
+- **`tests/build/` builds on stub pages (`STUB_PAGES`, made from `SITE_PAGES`).** The one test that asserted on the real home and features copy keeps its structural checks and drops the rest.
+- **Eighteen tests retired, twelve marked `advisory`.** The retired ones grep source or CSS for strings, pin one example's numbers copied from a page, repeat another test, or assert on markup that was removed. The advisory ones guard planning files the build never reads. The ledger names each.
+- **A `{{` in an author's own words no longer stops the build.** The guard after filling the shell template scanned the finished page, so a Python f-string such as `f"{{x}}"` in a cell, or a sentence showing a template, failed with "shell template has tokens build.py does not fill". `fill_shell()` now checks the shell's own token names and fills in the same order as before.
+- **Thirteen refusals about page shape became notes, through a new `note()`**: a project's own card being last or the only one, project divs in a different order, a project with no `##` heading (the reader can open it from its card but not close it), a project with no `maths:` or `data:`; `covers:` on a practice, mixed or context page (the curriculum map counts it twice); `practice_across` naming one tutorial or a page of problems; an id repeated in `practice_across` or `context_for` (listed once); and the frontmatter fields that moved to `courses/`. `check.py` agrees on the ones it mirrors, and `test_check.py` now has the other half of its parity promise, that what check only notes the build accepts.
+- **`svgwrite` joins the unit job**, so the 175 tests in `test_erd_graphics.py` run in CI. They skipped there before.
+
+Kept as refusals although the audit ruled otherwise, on reading the code: a page that names itself in `practice_across` or `context_for`, and a context page that names a practice or context page. A page takes its placement from the first page it names, and `context_pages()` runs before `practice_pairs()`, so in those cases the source may not be placed yet and the page would sit on no course.
+
+Checked on the real site: `build.py --clean` writes 1,257 pages with exit 0, `check.py` reports no problems, and no real page prints any of the new notes.
+
+Not done, and why:
+- **The verdict-word checks** (`test_no_word_in_the_markup_judges` and two like it) are held for Josh. The audit ruled them retire; they scan the site's own interface strings for "wrong" and "pass", and "no verdicts" is a core principle.
+- **A tutorial listed under two series, and a data file with no provenance yaml**, stay refusals until Josh says. The first may affect the where-you-are tree; the second is policy.
+- **The 85 browser tests that guard saved work, ids and imported text but never run in CI** are listed in the ledger as "wire up". Adding them is a change to the workflow and its cost, which is Josh's to weigh. So is path filtering, so a change to a planning document does not run the whole suite.
+- **The 47 "re-home" rulings**, including the page-specific number checks in `test_handwritten_classes.py`, which want one declared mechanism and not a test per page.
+- **The fixtures still read the real `planning/curriculum/` and `data/`** in about 20 tests (17 in `tests/build/`), because the build's module-level paths are not redirected into the temporary site.
+
+*Cost to change: each converted refusal is one `note()` back to `fail()` plus its test in the same file, and `check.py` where it mirrors it. `fill_shell()` back to the old scan is nine call sites. The stub pages are `STUB_PAGES` in `tests/build/helpers.py`.*
