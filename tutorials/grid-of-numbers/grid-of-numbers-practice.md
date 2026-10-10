@@ -2,7 +2,7 @@
 title: "Matrices: adding, scaling and transposing a grid of numbers — Practice"
 practice_for: grid-of-numbers
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   pixel-art: Pictures made of small squares, the way a screen draws them.
   photos: Photographs, and the filters that change them.
@@ -220,7 +220,7 @@ answers: $\frac{850 + 920 + 970}{2860} = \frac{2740}{2860} \approx
 
 ## Your world
 
-**11.** A new operation from the three you have.
+**11.** New operations from the three you have.
 
 <div class="dl-world" data-world="pixel-art">
 
@@ -266,6 +266,46 @@ turn of 90°, and the order decides which way it turns. The page after
 next looks at this closely.
 
 </details>
+
+Now a second operation. A *negative* swaps light and dark: 9 becomes 0,
+and 0 becomes 9. Can you write `negative(picture)` with `add` and
+`scale`, and no loop of your own? Then try it on the F.
+
+```python exec
+id: grid-world-negative--pixel-art
+def negative(picture):
+    """A new picture: every value v becomes 9 - v."""
+    ...
+
+
+show(negative(flag))
+```
+
+```inputs
+negative([[0, 9, 4]])
+negative(flag)[0]
+negative(negative(flag)) == flag
+```
+
+```hint
+9 - v is the same as 9 plus minus v. Which picture, the same size as
+`picture`, is all 9s? Then add minus `picture` to it.
+```
+
+```solution
+def negative(picture):
+    """A new picture: every value v becomes 9 - v."""
+    nines = [[9] * len(picture[0]) for row in picture]
+    return add(nines, scale(-1, picture))
+
+
+show(negative(flag))
+---
+The picture of nines has to be the same shape as the one it is added to,
+so the solution builds one to fit. The F comes out dark on a light
+background. Making the negative of a negative gives back the first
+picture.
+```
 
 </div>
 
