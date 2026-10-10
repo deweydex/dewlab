@@ -1,7 +1,7 @@
 ---
 title: "Making decisions with if, elif and else"
 year: "2026-2027"
-version: 2026.10.10.1
+version: 2026.10.10.2
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -161,14 +161,15 @@ the two paths cover every possible score.
 
 <div class="dl-world" data-world="secret-messages">
 
-A Caesar shift keeps a space as it is, and moves anything else. Can you set
-`action` to `"keep"` when `character` is a space, and to `"shift"`
-otherwise? The cell sets `character` and prints `action`, so the lines you
-write go between them. With a space, it should print `keep`.
+A puzzle-setter hides a message by shifting every third letter, the ones
+at positions 0, 3, 6 and so on, and leaving the rest. Can you set `action` to
+`"shift"` when the position `index` is one of those, and to `"keep"`
+otherwise? The cell sets `index` and prints `action`, so the lines you write
+go between them. With position 6, it should print `shift`.
 
 ```python exec
-id: your-turn-2--secret-messages
-character = " "
+id: your-turn-2-every-third--secret-messages
+index = 6
 
 print(action)
 ```
@@ -178,20 +179,20 @@ action
 ```
 
 ```hint
-Which two paths are there? The condition for the first is
-`character == " "`.
+A position is one of those when its remainder after dividing by 3 is 0.
+Which operator gives the remainder?
 ```
 
 ```solution
-character = " "
-if character == " ":
-    action = "keep"
-else:
+index = 6
+if index % 3 == 0:
     action = "shift"
+else:
+    action = "keep"
 print(action)
 ---
-Try a letter too, and a question mark: at the moment, the question mark
-would be shifted. The next section gives a program more than two paths.
+`index % 3 == 0` is true for 0, 3, 6 and every third position after them.
+Try `index = 7` too.
 ```
 
 </div>
