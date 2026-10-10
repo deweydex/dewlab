@@ -430,14 +430,16 @@ Each step is a pull request that stands alone.
 3. **Edit mode, in slices.** Decisions made after the spike: maths shows as TeX
    while its block is edited; the `{.term}` mark is taught to the editor;
    phones get "needs a larger screen" for now (see the spike report).
-   - **3a. The way in.** The button at the foot of Settings, the how-to fold
-     and the teacher's guide it links to, the `#edit` address, the token prompt,
-     the width check. The editor itself loads only when Edit is pressed, and a
-     downloaded page carries none of it.
-   - **3b. Headings and paragraphs.** The editor bundle, the swap, the outline
-     on the block being edited, the splice, and one draft PR per session.
-   - **3c. Bullet lists, then ordered lists and quotes,** with the maths and
-     `{.term}` handling. Tables and the other blocks follow in step 4.
+   - **3a. The way in. Done** (DECISIONS_LOG 7.296). The button at the foot of
+     Settings, the how-to fold and the guide (`docs/EDITING_A_PAGE.md`), `#edit`,
+     the token prompt and "Forget my token", the width check. The editor loads
+     only when Edit is pressed, and a download carries none of it.
+   - **3b. Headings and paragraphs. Done.** The in-place editor bundle, the
+     swap, the outline, the splice, one draft PR per session with later saves
+     added as commits. Blocks that need more open as their markdown in a box.
+   - **3c. Next:** bullet lists, then ordered lists and quotes, with maths
+     (the TeX shows while the block is edited) and the `{.term}` mark. Tables and
+     the other blocks follow in step 4.
    `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
    changes what they describe.
 4. **The other blocks,** as source-text boxes first, in the order of the

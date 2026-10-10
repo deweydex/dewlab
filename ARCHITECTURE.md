@@ -7,8 +7,8 @@ choices were made; this document maps what the pieces are and how they fit
 together.
 
 There is no backend: nothing here is a server you deploy, a database you
-migrate, or an API you version. Three separate programs, none aware of the
-others:
+migrate, or an API you version. Four separate programs, none aware of the
+others (the fourth reads what the first writes into a page):
 
 1. **`build.py`** — runs once per push, turns `tutorials/` markdown into the
    static HTML in `site/`, which GitHub Pages serves as files.
@@ -20,8 +20,12 @@ others:
    *author's* browser tab. Reads and writes tutorial markdown through
    GitHub's own API, using a token the author supplies, and opens a pull
    request. A client of GitHub, not of anything dewlab hosts.
+4. **`assets/inpage-edit.js`** — loaded into an ordinary built page only when
+   an author presses **Edit this page** in Settings (§3). Edits the page where
+   it stands and opens a pull request through the same GitHub client. A
+   student's page load never fetches it.
 
-None of the three needs the others running.
+None of the four needs the others running.
 
 ---
 
@@ -150,9 +154,10 @@ The pipeline, in order:
    contract between `build.py` and `tutorial-runtime.js` — read once at
    `readManifest()` and trusted from then on.
 
-   **The source map** (`source_map.py`, `python3 build.py --source-map`,
-   off by default while the in-page editor is a spike,
-   `planning/IN_PAGE_EDITOR.md`). Python-Markdown records no positions, so
+   **The source map** (`source_map.py`; `planning/IN_PAGE_EDITOR.md`). A
+   build from the command line turns it on and `--no-source-map` leaves it out;
+   `build()` and `load()` called from code leave it off, so tests get the plain
+   page. Python-Markdown records no positions, so
    `source_map.blocks()` cuts a page's markdown into top-level blocks from
    outside it, `mark()` puts a comment with the block's byte range in front of
    each, and `attach()` turns each comment into `data-md="START:END"` on the
@@ -163,7 +168,10 @@ The pipeline, in order:
    twice and keeps the map only if the page reads the same without it, so a
    page the tokenizer misreads loses its map and is otherwise untouched. A
    note, a toolkit reference and a prediction placed away from its cell have no
-   element of their own. Downloads carry no map.
+   element of their own. A mapped page's manifest carries `edit`: the file's
+   path, the git blob sha it was built from, and the URLs of the editor
+   modules, which is what "Edit this page" reads. Downloads carry no map and
+   none of the editing markup (`standalone_html()`).
 
 8. **Stamp the footer.** `site_footer()` builds the copyright line and,
    unless `feedback_enabled()` says otherwise, the "three doors" reporting
@@ -494,6 +502,45 @@ expects, mapped to the matching `--dl-*` token — importing only the
 structural stylesheet, with none of Crepe's skins, otherwise leaves those
 undefined.
 
+**Editing a page where it stands** (`assets/inpage-edit.js`; the plan is
+`planning/IN_PAGE_EDITOR.md`, what was measured first is
+`planning/IN_PAGE_EDITOR_SPIKE.md`). The control is a section at the foot of the
+Settings panel in `assets/shell.html`, hidden until the page's manifest has an
+`edit` entry, with a small inline module that shows it and imports the editor
+only when its button is pressed or the address ends in `#edit`. It is inline
+in the shell, between `<!--dl-edit:start-->` and `<!--dl-edit:end-->`, so it
+needs no token in each of the shell's eight fills and `standalone_html()` can
+remove it from a download. `assets/tutorial-runtime.js` is not involved, so
+changing the editor never means rebuilding the standalone bundle.
+
+`begin()` checks the screen is wide enough (`MIN_WIDTH`), takes the token from
+`localStorage` or asks for one, and fetches the page's source by blob sha
+(`githubClient().blob()`), so the block ranges in `data-md` always point into
+the bytes they were made from. `classify()` says, from a block's element and
+its markdown, whether it edits in place (`rich`: Crepe, for a heading or a
+plain paragraph), as its markdown in a text box (`source`: maths, `{.term}`
+marks, raw HTML, images, lists, quotes, tables, folds), or not at all
+(`locked`: cells, includes, and pieces of the page built from other parts).
+Opening a block swaps it for an editor of the same size in the same place;
+leaving it keeps what was typed. `save()` splices every changed block over its
+own range of the original (`splice()`) and commits that, so the file is always
+the original plus all the session's edits and every other byte is untouched.
+The first save makes a branch and a draft pull request (`commit()`); later
+saves add commits to it (`commitMore()`). It refuses to save over a file whose
+blob on `main` is no longer the one the page was built from.
+
+`createInPlaceEditor()` in `vendor-src/milkdown-entry.js` is Crepe with every
+feature that draws its own markup turned off, and **without Crepe's
+stylesheet**: the page's own styles reach the editor's paragraphs and
+headings, which is why nothing moves. `tutorial-style.css` (the `.dl-inplace`
+rules) hides what Crepe mounts beside its text, gives the wrapper the block's
+margins (an editable element keeps its margins inside itself) and takes the
+virtual cursor out of the flow. Both are found by measuring, not by reading
+Crepe's docs: the numbers are in the spike report.
+
+`assets/github-client.js` is the one GitHub client, shared by this editor and
+`editor.js`.
+
 ---
 
 ## 4. The Notebook and the Workspace: working outside any tutorial
@@ -650,6 +697,11 @@ python3 -m pytest tests --ignore=tests/e2e   the fast ones, no browser
   reads or writes) and `tutorial_tools.py`'s
   rendering rules under plain CPython (`test_tutorial_tools.py`). This is
   what CI's `tests` job runs on every push and PR.
+- **`tests/e2e/test_inpage_editor.py`** — editing a page where it stands. Builds
+  a small site with the source map on and runs a real browser with service
+  workers blocked, so the real GitHub client's calls to `api.github.com` are
+  answered by a fake in the test file: nothing touches the network and the
+  token is not real. Needs no Pyodide. Runs in CI's `browser` job.
 - **`tests/e2e/test_editor.py`** — the authoring editor, driven with
   Playwright against a **fake** GitHub client injected in-page
   (`FAKE_CLIENT`, top of that file) — nothing here touches the network or
@@ -687,7 +739,10 @@ PR that touches the runtime or the editor.
 | The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
 | The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `build.py`'s `map_data()` and `write_map_page()`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
-| The authoring editor's structural checks, release logic, GitHub calls | `assets/editor.js` |
+| The authoring editor's structural checks and release logic | `assets/editor.js` |
+| Any GitHub call, from either editor | `assets/github-client.js` |
+| Editing a page where it stands: which blocks can be edited and how, saving, the Settings section | `assets/inpage-edit.js`; the section and its loader in `assets/shell.html`; `.dl-inplace` in `assets/tutorial-style.css` |
+| Which markdown range each block of a page came from | `source_map.py`; `load()` and the manifest's `edit` entry in `build.py` |
 | The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
 | A vendored library's version | `vendor-src/package.json`, then `npm run build` there |
 | Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |

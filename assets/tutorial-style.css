@@ -4965,3 +4965,30 @@ em.term, .term em { font-style: normal; }
 .dl-sound audio { display: block; width: 100%; max-width: 26rem; }
 .dl-sound figcaption { margin-top: 0.2rem; font-size: 0.85rem; color: var(--dl-muted); }
 .dl-sound-note { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--dl-orange); }
+
+/* ---- Editing a page where it stands (assets/inpage-edit.js) -------------
+ * Crepe's own stylesheet is not loaded, so a heading or paragraph being edited
+ * takes the page's styles and nothing about the page moves. What Crepe mounts
+ * besides its text (link and block popups) takes no room until it is shown. */
+.dl-settings-foot { border-top: 1px solid var(--dl-rule, var(--dl-muted)); margin-top: 1rem; padding-top: 0.6rem; }
+.dl-settings-foot [hidden] { display: none !important; }  /* the buttons' own display would win */
+.dl-edit-gate-form input { width: 100%; margin: 0.4rem 0; font: inherit; }
+.dl-inplace { position: relative; }
+.dl-inplace .milkdown { position: relative; }
+.dl-inplace .ProseMirror { outline: none; white-space: pre-wrap; word-wrap: break-word; }
+.dl-inplace .milkdown > :not(.ProseMirror):not([data-show="true"]) { display: none; }
+.dl-inplace .ProseMirror > p:last-child:has(> br.ProseMirror-trailingBreak:only-child):not(:first-child) { display: none; }
+.dl-inplace li[data-spread="false"] > p { margin: 0; }
+.dl-inplace .prosemirror-virtual-cursor { position: absolute; pointer-events: none; }
+.dl-inplace .ProseMirror > :first-child { margin-top: 0; }
+.dl-inplace .ProseMirror > :last-child { margin-bottom: 0; }
+.dl-editing .dl-editable { cursor: text; }
+.dl-editing .dl-edit-locked { cursor: not-allowed; }
+.dl-inplace:focus-within,
+.dl-inplace-source:focus { outline: 1px solid var(--dl-orange); outline-offset: 4px; }
+.dl-inplace-source {
+  display: block; width: 100%; box-sizing: border-box; resize: none; overflow: hidden;
+  font-family: var(--dl-mono); font-size: 0.9em; line-height: 1.5;
+  color: var(--dl-fg); background: var(--dl-cell-bg);
+  border: 1px solid var(--dl-muted); border-radius: 4px; padding: 0.5rem 0.6rem;
+}

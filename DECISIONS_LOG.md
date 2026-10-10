@@ -5805,3 +5805,22 @@ Not done: a markdown image with an empty description is still allowed. The in-pa
 7.122 shipped SQL behind a Settings → Cell types toggle that started off, so a fresh browser showed only Python, Text and JS on the seam. SQL is the reason several tutorials point readers at dewmini, and a toggle nobody knows to look for hides it. `CELL_TYPE_TOGGLES` now has `defaultOn: true` for SQL. Web stays off. The toggle is kept per browser, so a reader who already switched SQL off keeps it off, and one who never touched it sees the new default.
 
 *Cost to change: one flag in `CELL_TYPE_TOGGLES` and the default-state test in `tests/e2e/test_dewmini_workbench.py`.*
+
+**7.296 — "Edit this page": a teacher edits a page where it stands, and the change goes to GitHub as a draft pull request.** Josh, 4 to 10 October 2026, after the plan in `planning/IN_PAGE_EDITOR.md` and the measurements in `planning/IN_PAGE_EDITOR_SPIKE.md`: "I think it would be better for teachers to be able to edit on a given page directly... a what-you-see-is-what-you-get editor so that there is no visual change to the page when someone hits edit, except that there's a cursor."
+
+This is the first slice. A teacher opens Settings, scrolls to the bottom, presses **Edit this page** (or adds `#edit` to a page's address), pastes a GitHub token once, clicks a heading or a paragraph and types. **Open pull request** splices each changed block over its own range of the markdown file and opens one draft pull request; pressing it again adds commits to the same one. The guide for a teacher new to GitHub is `docs/EDITING_A_PAGE.md`.
+
+Choices somebody could have made differently.
+
+- **The control is at the foot of Settings, visible to everyone, with a how-to fold and a link.** Josh: "I have no problem with students seeing things... they tend not to" look. The alternative was to show it only to someone holding a token. It would have hidden the feature from the teachers it is for.
+- **The build marks every block with the range it came from, and the page's manifest names the file and blob** (`source_map.py`, `manifest.edit`). A command-line build turns this on (`--no-source-map` leaves it out); `build()` called from code leaves it off so no existing test sees a changed page. The editor fetches the page's source by blob sha, so the offsets are always true, and refuses to save over a file that has changed on `main` since the site was built. It does not try to merge.
+- **The editor is not in `tutorial-runtime.js`.** An inline module in the shell shows the button and imports `assets/inpage-edit.js` only when it is pressed, so a student's page load never fetches it, changing it never means rebuilding the standalone bundle, and a download removes the whole section (`<!--dl-edit:start-->`).
+- **One GitHub client for both editors** (`assets/github-client.js`), extended with the three reads and one commit the in-page editor needs.
+- **Crepe's stylesheet is not used.** With it, a block grew by about 130 pixels; without it the page's own styles reach the editor's elements. Three further rules (hide what Crepe mounts beside its text, give the wrapper the block's margins, take the virtual cursor out of the flow) make a paragraph or heading swap with no movement on the page. The measurements are in the spike report.
+- **Only headings and plain paragraphs edit as rich text in this slice.** Maths, `{.term}` marks, raw HTML, images, lists, quotes, tables and folds open as their markdown in a text box; cells, includes and the pieces built from other parts are locked. Josh's decisions on maths (show the TeX while editing) and `{.term}` (teach the editor the mark) are for the next slice. Phones get "needs a larger screen" below 900 pixels.
+- **Stopping with unsaved changes asks first and discards them if you agree.** The alternative, leaving them on screen, showed changes that could no longer be saved.
+
+Not done: bullet and ordered lists and quotes as rich text, maths and `{.term}` handling, cells edited with their own editor, a real phone, and the cell-id warning (cells are locked, so no id can change yet).
+
+*Cost to change: remove the `<!--dl-edit:start-->` blocks from `assets/shell.html`, the `edit` entry in `write()`, and `assets/inpage-edit.js`; `--no-source-map` already turns the map off. `assets/github-client.js` stays: `editor.js` uses it.*
+

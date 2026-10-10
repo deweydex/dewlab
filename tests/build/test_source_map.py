@@ -9,14 +9,16 @@ splicing new text over one range changes that block and nothing else.
 
 from __future__ import annotations
 
+import hashlib
 import re
+import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import pytest
 
-from helpers import DEWLAB, b, built, write
+from helpers import DEWLAB, b, built, manifest, write
 
 sys.path.insert(0, str(DEWLAB))
 import source_map as sm  # noqa: E402
@@ -144,6 +146,43 @@ class TestTheMapOnAPage:
         b.build()
         assert "data-md" not in built(repo) and "class='x'" not in built(repo)
         assert "would change how the page reads" in capsys.readouterr().err
+
+
+class TestWhatEditThisPageReads:
+    """The page's manifest says which file and blob the block ranges point into
+    (assets/inpage-edit.js fetches that blob, so the offsets are always true)."""
+
+    def test_a_mapped_page_names_its_file_and_the_git_blob_it_was_built_from(self, repo, monkeypatch):
+        monkeypatch.setattr(b, "SOURCE_MAP", True)
+        path = write(repo, "# A page\n\nText.\n")
+        b.build()
+        edit = manifest(built(repo))["edit"]
+        data = path.read_bytes()
+        assert edit["path"] == "tutorials/sample/sample.md"
+        assert edit["sha"] == hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+        assert edit["title"] == "A Title"
+        assert edit["module"].startswith("../assets/inpage-edit.js?v=")
+        assert edit["editor"].startswith("../assets/vendor/milkdown.bundle.js?v=")
+
+    def test_the_sha_is_the_one_git_itself_gives_the_file(self, repo, monkeypatch):
+        monkeypatch.setattr(b, "SOURCE_MAP", True)
+        path = write(repo, "# A page\n\nText.\n")
+        b.build()
+        git = subprocess.run(["git", "hash-object", str(path)], capture_output=True, text=True)
+        assert manifest(built(repo))["edit"]["sha"] == git.stdout.strip()
+
+    def test_a_page_built_without_the_map_has_no_edit_entry(self, repo):
+        write(repo, "# A page\n\nText.\n")
+        b.build()
+        assert "edit" not in manifest(built(repo))
+        assert "data-md=" not in built(repo)
+
+    def test_the_settings_section_is_in_the_page_and_hidden_until_the_manifest_says_so(self, repo):
+        write(repo, "# A page\n\nText.\n")
+        b.build()
+        page = built(repo)
+        assert re.search(r'<div class="dl-settings-foot" id="dl-settings-edit" hidden>', page)
+        assert "manifest.edit" in page
 
 
 class TestSplice:
