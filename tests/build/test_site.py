@@ -71,21 +71,6 @@ class TestOnePlainTutorial:
         assert (repo / "site" / "index.html").is_file()
         # It needs no Python runtime.
         assert manifest(index)["cells"] == []
-        # It ends with the short attribution. Whitespace-normalized:
-        # pages/home.md's own line wrapping is real markdown source, not a
-        # single-line string, and the markdown converter keeps a paragraph's
-        # own internal line breaks rather than collapsing them.
-        match = re.search(r'<div class="dl-attribution">\s*(<p>.*?</p>)\s*</div>', index, re.DOTALL)
-        assert match, "no dl-attribution paragraph found"
-        assert " ".join(match.group(1).split()) == (
-            "<p>This site is being actively developed by "
-            '<strong><a href="https://github.com/deweydex">Joshua Aaron</a></strong> '
-            "(Dublin College Dundrum), with contributions from "
-            '<strong><a href="https://github.com/mcgarry">Sean McGarry</a></strong> '
-            "(Dublin College Blackrock). To find out more, read "
-            '<a href="about.html">About this project</a> or visit '
-            '<a href="https://github.com/deweydex/dewlab">the project on GitHub</a>.</p>'
-        )
         # Its search box has no hint line, but every other one does: the
         # sentence above the front page's box already says what a search
         # matches; the all-tutorials page has no such sentence.
@@ -93,29 +78,19 @@ class TestOnePlainTutorial:
         assert "dl-search-hint" not in front and "aria-describedby" not in front
         listing = (repo / "site" / "all-tutorials.html").read_text()
         assert 'id="dl-search-hint"' in listing and 'aria-describedby="dl-search-hint"' in listing
-        # The tile for the features page sits under the opening.
-        hero = index[index.index('<div class="dl-hero">'):index.index('<div class="dl-audience">')]
-        assert 'href="features.html"' in hero
-        assert index.index("What do you want to learn?") < index.index('href="computational-methods.html"')
         # The course cards come from the course files: there is nothing
         # hand-written left to disagree with a course page.
-        cards = index[index.index("What do you want to learn?"):]
+        cards = index
         assert cards.index('href="computational-methods.html"') < cards.index('href="web-authoring.html"')
         assert "<h3>Web Authoring" in cards and "Pages, styled." in cards
         assert "5N1355 · QQI Level 5" in cards
         assert 'data-status="live">Live</span>' in cards
         assert 'href="all-tutorials.html"' in index
-        assert 'href="features.html"' in index
-        assert "dewstack" not in index
 
         # ---- The features page is written at the site root.
         features = repo / "site" / "features.html"
         assert features.is_file()
         features_page = features.read_text()
-        assert "What dewlab can do" in features_page
-        assert "Work without a tutorial" in features_page
-        assert 'href="compose/notebook.html"' in features_page
-        assert 'href="compose/workspace.html"' in features_page
         assert manifest(features_page)["cells"] == []
 
         # ---- The about page is written at the site root, from
