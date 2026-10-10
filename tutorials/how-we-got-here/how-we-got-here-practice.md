@@ -86,7 +86,7 @@ base 10?
 
 They are `11111111`, `10100000` and `01111110`. Each hex digit becomes four binary
 digits on its own: F is 1111, A is 1010, 0 is 0000, 7 is 0111 and E is
-1110. No base 10 is needed. That is the main reason hex exists.
+1110, so no base 10 is needed. That is the main reason hex exists.
 
 </details>
 
@@ -352,7 +352,7 @@ base 10?
 
 The rows are `..####..`, `.#....#.` and `#......#`. Each hex digit becomes
 four bits: 3 is 0011, C is 1100, 4 is 0100, 2 is 0010, 8 is 1000 and 1 is
-0001. The sprite is an arch.
+0001, and the sprite is an arch.
 
 </details>
 

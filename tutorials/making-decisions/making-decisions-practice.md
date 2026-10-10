@@ -96,6 +96,8 @@ look like. Most other languages need the first form.
 
 ## 4. Three ifs instead of elif
 
+The tutorial picked a word for a temperature with one `if` and some `elif`s. Here the same three tests are three separate `if` statements.
+
 ```python exec
 id: three-ifs-instead-of-elif-1
 temperature = 20

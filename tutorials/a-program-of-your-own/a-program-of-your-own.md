@@ -92,11 +92,11 @@ type: choice
 
 What will the last row of the second picture be?
 
-- #....
+- `#....`
   - The second picture is the mirror of a mirror. Where does each pixel end up?
-- ....#
+- `....#`
   - This is the last row of the first picture. Does the second picture mirror it again?
-- .....
+- `.....`
   - Mirroring moves pixels from one side to the other. Does it remove any?
 ```
 

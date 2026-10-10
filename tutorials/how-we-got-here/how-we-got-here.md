@@ -292,8 +292,8 @@ print(to_binary(int("48", 16)))
 written in hex, and `int("48", 16)` reads hex from a string. The last line
 prints `1001000`. Earlier we gave `from_binary` the string `01001000`. The
 zero in front was never part of the number, the way nobody writes 72 as
-072. `48` in hex, 72, `1001000` and `01001000` are one number written
-four ways.
+"072". So `48` in hex, 72, `1001000` and `01001000` are one
+number written four ways.
 
 ### Your turn
 

@@ -296,7 +296,8 @@ print("Liftoff!")
 
 A code-breaker's table shows every letter beside the letter it becomes.
 Can you print the whole alphabet, 26 lines, each with a letter and that
-letter moved three places along? `A D`, `B E`, and so on, to `Z C`.
+letter moved three places along? The first line reads `A D`, the second
+`B E`, and so on down to `Z C`.
 
 ```python exec
 id: your-turn-3--secret-messages
