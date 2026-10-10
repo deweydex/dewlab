@@ -2,7 +2,7 @@
 title: "Algorithms, pseudocode and your first Python — Practice"
 practice_for: first-steps
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -285,7 +285,9 @@ later.
 
 ## 13. From a plan to Python
 
-Can you turn this plan into Python, one line for each step?
+Can you turn this plan into Python, one line for each step? Give each value
+a name, the way `width` and `height` named the wall's measurements in the
+tutorial.
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -320,16 +322,16 @@ remainder is what makes the alphabet go round like a clock.
 
 <div class="dl-world" data-world="pixel-art">
 
-A small picture is 64 pixels wide and 48 tall. Each pixel takes three bytes
-of memory: one for red, one for green and one for blue. This plan calculates
-how much memory the picture takes.
+Number the pixels along a row from 0. In a row 800 pixels wide, the first
+pixel is 0 and the last is 799. This plan moves a dot 30 pixels to the right
+along the row, going back to the left edge after the right edge. It is the
+way a game character leaves one side of the screen and comes in at the other.
 
 ```
-SET the width to 64
-SET the height to 48
-MULTIPLY them to get the number of pixels
-MULTIPLY by 3 to get the number of bytes
-DISPLAY the bytes
+SET the position to 790
+ADD 30 to move the dot along
+FIND the remainder after dividing by 800, so it goes back round after the right edge
+DISPLAY the new position
 ```
 
 ```python exec
@@ -339,22 +341,22 @@ id: from-a-plan-to-python-1--pixel-art
 ```
 
 ```solution
-width = 64
-height = 48
-pixels = width * height
-bytes_needed = pixels * 3
-print(bytes_needed)
+position = 790
+moved = position + 30
+moved = moved % 800
+print(moved)
 ---
-3,072 pixels, and 9,216 bytes. You could write `64 * 48 * 3` on one line.
-It gives the same answer, but it hides what each number means.
+It prints 20: the dot passes pixel 799, then comes in at the left edge, at
+pixel 0, and carries on to 20. The remainder is what makes the row go round
+like a clock.
 ```
 
 </div>
 
 ## 14. Why plan at all
 
-Why write pseudocode at all, when you could write the Python straight
-away?
+Can you think of a reason to write pseudocode, when you could write the
+Python straight away?
 
 <details class="dl-answer"><summary>one good answer</summary>
 

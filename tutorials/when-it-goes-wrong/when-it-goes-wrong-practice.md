@@ -2,7 +2,7 @@
 title: "Finding bugs in bigger programs — Practice"
 practice_for: when-it-goes-wrong
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -66,6 +66,8 @@ that is not there yet. `counts.get("fig", 0) + 1` starts it at 0.
 </details>
 
 ## 3. A name that was a function
+
+What will this do? Can you say which line is the problem, and what name would fix it?
 
 ```python exec
 id: a-name-that-was-a-function-1
@@ -193,6 +195,7 @@ assert count_e("EYE") == 2
 ```
 
 ```hint
+after: 3 runs
 Add `print(letter)` inside the loop. What is `letter`, each time round?
 ```
 
@@ -242,6 +245,7 @@ assert column([[7], [8]], 0) == [7, 8]
 ```
 
 ```hint
+after: 3 runs
 A picture is `picture[row][column]`: the row first. Which index is the
 row here, and which the column?
 ```

@@ -2,7 +2,7 @@
 title: "Designing and testing good functions — Practice"
 practice_for: building-reusable-tools
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -295,46 +295,53 @@ wanted? Your tests are the place to say so.
 
 <div class="dl-world" data-world="pixel-art">
 
-A row of pixels is *symmetric* if it looks the same mirrored. Can you
-write `is_symmetric(picture)`, which gives `True` when every row of a
-picture is symmetric? Add tests of your own.
+A row of pixels is a list of brightness numbers, from 0 for dark up to 255
+for bright. A row is *symmetric* if it looks the same mirrored. Two
+brightness values that differ by less than 10 look the same. Can you write
+`is_symmetric(picture)`, which gives `True` when every row of the picture is
+symmetric? Add tests of your own.
 
 ```python exec
 id: reads-the-same-both-ways-1--pixel-art
 def is_symmetric(picture):
-    """Give back True if every row of picture reads the same both ways."""
+    """Give back True if every row of picture looks the same mirrored."""
     return False
 ```
 
 ```inputs
 guess: yes
-is_symmetric([[0, 255, 0], [255, 0, 255]])
-is_symmetric([[1, 2], [2, 2]])
+is_symmetric([[0, 255, 4], [255, 0, 255]])
+is_symmetric([[0, 200], [5, 5]])
 is_symmetric([])
 ```
 
 ```python exec
 id: reads-the-same-both-ways-1-tests--pixel-art
 tests: reads-the-same-both-ways-1--pixel-art
-assert is_symmetric([[1, 0, 1]])
+assert is_symmetric([[100, 0, 105]])
 ```
 
 ```hint
-Check the rows one at a time. `row[::-1]` is the row backwards. As soon as
-one row is not symmetric, the answer is `False`.
+Check the rows one at a time. `row[::-1]` is the row backwards, so pixel
+`i` of the row goes with pixel `i` of the backwards row. How far apart are
+the two? `abs(a - b)` gives the distance between two numbers. As soon as
+one pair is 10 or more apart, the answer is `False`.
 ```
 
 ```solution
 def is_symmetric(picture):
-    """Give back True if every row of picture reads the same both ways."""
+    """Give back True if every row of picture looks the same mirrored."""
     for row in picture:
-        if row != row[::-1]:
-            return False
+        mirrored = row[::-1]
+        for i in range(len(row)):
+            if abs(row[i] - mirrored[i]) >= 10:
+                return False
     return True
 ---
 An empty picture has no row that breaks the rule, so it gives `True`.
 That is how "every" works in mathematics too, and it is still worth a
-test, so that nobody changes it by accident.
+test, so that nobody changes it by accident. A pair that is exactly 10
+apart does not look the same, and that is worth a test too.
 ```
 
 </div>

@@ -1,7 +1,7 @@
 ---
 title: "Finding bugs in bigger programs"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -267,8 +267,8 @@ print(median(readings))
 print(readings)
 ```
 
-The median is right, but the caller's list has been sorted as a side
-effect. There are two names for one list, as in
+The median it gives back is the one we want, but the caller's list has
+been sorted as a side effect. There are two names for one list, as in
 [Comprehensions, grids and aliasing](tutorial:comprehensions-and-grids).
 If the order of `readings` mattered, the time they were taken, say, it is
 now lost, and nothing said so. `sorted(numbers)` would have left it alone.
@@ -297,6 +297,10 @@ chosen to catch it, shows that it is wrong.
 
 ### Your turn
 
+Each task has a cell with a bug in it, and a second cell for your tests. A
+test is an `assert` line. It does nothing when its two sides are equal, and
+it stops with an `AssertionError` when they are not.
+
 <div class="dl-world" data-world="secret-messages">
 
 This function is meant to reverse a key, so that a code letter looks up
@@ -316,7 +320,15 @@ def reverse_key(key):
 ```inputs
 guess: yes
 reverse_key({"A": "Q", "B": "W"})
+reverse_key({"C": "E"})
 reverse_key({})
+```
+
+```hint
+after: 3 runs
+Add `print(reverse_key({"C": "E"}))` under the function. What did you
+expect it to print, and what did it print? Which line of the loop builds
+the new pair?
 ```
 
 ```python exec
@@ -362,6 +374,13 @@ guess: yes
 lit_count("#.#")
 lit_count(".##")
 lit_count("")
+```
+
+```hint
+after: 3 runs
+Add `print(lit_count("#.#"))` under the function. How many `#` does the
+row have, and what did it print? Which positions does
+`range(1, len(row))` give you?
 ```
 
 ```python exec
@@ -426,8 +445,8 @@ def average_word_length(sentence):
 print(average_word_length("play is at noon"))
 ```
 
-`words` is 4, which is right. `letters` is 15, and there are only 12
-letters. The loop counted the three spaces too. A label on each `print`
+`words` is 4, and there are four words. `letters` is 15, and there are
+only 12 letters. The loop counted the three spaces too. A label on each `print`
 matters, because a column of bare numbers is hard to read. When the bug is
 fixed, take the extra `print` out again.
 
@@ -441,9 +460,11 @@ This program turns marks into grades, with three functions. It runs, and
 prints the wrong thing. The first group of marks should print `DCA`, and
 the second `ABD`.
 
-1. Can you test `grade` on its own, with 90, 65, 50 and 5?
+1. Can you test `grade` on its own, with `90`, `65`, `50` and `5`?
 2. Can you test `grades_for` on its own, with `[10, 50, 90]`?
 3. Which function has the bug? Can you fix it?
+
+Put your tests in the cell under the program.
 
 ```python exec
 id: your-turn-2
@@ -486,6 +507,7 @@ assert grade(90) == "A"
 ```
 
 ```hint
+after: 3 runs
 `grade` gives the grade you expect for all four marks. What does
 `grades_for` give back, and after how many marks? Look at how far its
 `return` is indented.

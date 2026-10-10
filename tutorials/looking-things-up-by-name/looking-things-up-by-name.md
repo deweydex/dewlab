@@ -47,7 +47,7 @@ A *dictionary* is a collection of pairs. Each pair joins a *key*, the name
 we look something up by, to a *value*, what is stored under that key. We
 write a dictionary like this:
 
-- curly brackets, `{` and `}`, go round the whole dictionary;
+- curly brackets, `{` and `}`, surround the whole dictionary;
 - a colon, `:`, joins each key to its value;
 - commas go between the pairs.
 
@@ -241,7 +241,8 @@ shades
 
 ```hint
 `{}` is an empty dictionary. For each level from 0 to 4, the brightness is
-`round(level * 255 / 4)`. How do you store it under that level?
+`round(level * 255 / 4)`, where `round()` makes a whole number. How do you
+store it under that level?
 ```
 
 ```solution
@@ -329,7 +330,7 @@ program continue.
 
 ## Looping over a dictionary
 
-A `for` loop can loop over a dictionary. Each time round, it gives a key.
+A `for` loop can loop over a dictionary. Each time the loop runs, it gives a key.
 `.items()` gives each pair instead, as a key and a value together, the way
 `enumerate()` gave an index and an *element*{.term} in
 [Lists and looping over them](tutorial:lists-and-sequences).

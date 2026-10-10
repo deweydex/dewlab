@@ -1,7 +1,7 @@
 ---
 title: "Lists and looping over them"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -202,8 +202,8 @@ nobody has to count it.
 
 A row of a picture is kept as a list called `row`, of brightnesses from 0
 for black to 255 for white. Can you print the three pixels in the middle of
-the row? Then can you make the first pixel white, add a black pixel at the
-end, and print the row?
+the row, and the last pixel? Then can you make the first pixel white, add a
+black pixel at the end, and print the row?
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -224,12 +224,14 @@ of the middle three?
 ```solution
 row = [0, 40, 80, 120, 160, 200, 240]
 print(row[2:5])
+print(row[-1])
 row[0] = 255
 row.append(0)
 print(row)
 ---
-The middle three are `[80, 120, 160]`. Printing them first matters: after
-`append()`, the row has eight pixels, and no three are in the middle.
+The middle three are `[80, 120, 160]`, and the last pixel is 240. Printing
+them first matters: after `append()`, the row has eight pixels, and no three
+are in the middle.
 ```
 
 </div>
@@ -284,8 +286,9 @@ shifted
 ```
 
 ```hint
-The letter at position `number` moves to position `(number + shift) % 26`.
-Which letter is at that position?
+Which letter of the plain alphabet belongs at position `number` of
+`shifted`, when everything moves `shift` places along? What should happen
+when `number + shift` goes past 25?
 ```
 
 ```solution
@@ -303,33 +306,38 @@ shift of 13: that table undoes itself, because 13 and 13 make 26.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you build `fade`, a row of 11 pixels that goes from black towards
-white in equal steps: `0`, `25`, `50`, and so on, up to `250`?
+A pixel's brightness is kept in one byte, and a byte holds only the
+values 0 to 255. One more than 255 wraps round to 0. Can you build `glow`, a
+row of 8 pixels that starts at 0 and gets 60 brighter with each pixel, with
+anything past 255 wrapping round? The cell sets `increase` to 60 for you.
 
 ```python exec
 id: your-turn-2--pixel-art
-fade = []
+increase = 60
+glow = []
 
-print(fade)
+print(glow)
 ```
 
 ```inputs
-fade
+glow
 ```
 
 ```hint
-Eleven pixels means eleven times round the loop. What is pixel number
-`step` worth, if each step adds 25?
+With no limit, pixel number `step` would be worth `step * increase`. What
+does `%` do to a number that has gone past a limit?
 ```
 
 ```solution
-fade = []
-for step in range(11):
-    fade.append(step * 25)
-print(fade)
+increase = 60
+glow = []
+for step in range(8):
+    glow.append((step * increase) % 256)
+print(glow)
 ---
-`range(0, 251, 25)` counts in steps of 25 by itself, and gives the same
-eleven numbers.
+The sixth pixel would be 300, and `% 256` takes it back round to 44. A
+byte has 256 values, so a program that adds past 255 without a limit gets
+this wrap.
 ```
 
 </div>
@@ -393,7 +401,7 @@ such as the next one, at `index + 1`.
 
 <div class="dl-world" data-world="secret-messages">
 
-Where does the letter E appear in this message? Can you build `places`, a
+Where does the letter `"E"` appear in this message? Can you build `places`, a
 list of the index of every `"E"` in `message`?
 
 ```python exec
@@ -498,12 +506,13 @@ print(total)
 <div class="dl-world" data-world="pixel-art">
 
 What is the average brightness of this row? Can you set `average` with a
-loop, without `sum()`? Then, is the average 128 or more?
+loop, without `sum()`?
 
 ```python exec
 id: your-turn-4--pixel-art
 row = [30, 90, 250, 120, 250, 60]
 total = 0
+average = 0
 
 print(average)
 ```
@@ -520,9 +529,8 @@ for value in row:
 average = total / len(row)
 print(average)
 ---
-The total is 800, and the average about 133.3, so it is above 128 and the
-row is fairly bright. Dividing by `len(row)`, and not by 6, keeps the code right when the
-row changes length.
+The total is 800, and the average about 133.3. Dividing by `len(row)`, and
+not by 6, keeps the code right when the row changes length.
 ```
 
 </div>
@@ -534,7 +542,7 @@ A slice stops before its second number, and so does `range()`. So
 gives every index of it. What would go wrong if one of them stopped *at*
 its second number instead?
 
-Here is a challenge, with a different version for each world.
+Here is a challenge.
 
 <div class="dl-world" data-world="secret-messages">
 
