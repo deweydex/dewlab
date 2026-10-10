@@ -1,7 +1,7 @@
 ---
 title: "Comprehensions, grids and aliasing"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -81,13 +81,13 @@ words = ["MEET", "ME", "AT", "NOON"]
 print([len(word) for word in words])
 print([word[0] for word in words])
 
-levels = [30, 90, 250, 120]
-print([255 - level for level in levels])
+marks = [35, 90, 85, 60]     # test marks out of 100
+print([100 - mark for mark in marks])
 ```
 
 The first list holds each word's length, and the second each word's first
-letter. The third subtracts each number from 255, so the smallest number
-becomes the largest, and the largest the smallest.
+letter. The third subtracts each mark from 100, which gives the marks
+lost: 35 becomes 65.
 
 ### Keeping only some values
 
@@ -96,15 +96,15 @@ comprehension, the `if` goes at the end. Which values will each line keep?
 
 ```python exec
 id: comprehensions-a-loop-that-builds-a-list-2
-levels = [30, 90, 250, 120, 250, 60]
-print([level for level in levels if level >= 128])
+marks = [35, 90, 85, 60, 40, 72]
+print([mark for mark in marks if mark >= 50])
 
-message = "MEET AT NOON"
-print([letter for letter in message if letter != " "])
+sentence = "MEET AT NOON"
+print([letter for letter in sentence if letter != " "])
 ```
 
 An `if` at the end of a comprehension is a *filter*. It keeps only the
-values that pass a test. Here the tests are `level >= 128` and
+values that pass a test. Here the tests are `mark >= 50` and
 `letter != " "`.
 
 ### Inside sum(), max() and join()
@@ -116,25 +116,25 @@ different about them?
 
 ```python exec
 id: comprehensions-a-loop-that-builds-a-list-3
-levels = [30, 90, 250, 120, 250, 60]
-print(sum([level for level in levels if level >= 128]))
-print(sum(level for level in levels if level >= 128))
-print(sum(1 for level in levels if level >= 128))
-print(max(levels))
+marks = [35, 90, 85, 60, 40, 72]
+print(sum([mark for mark in marks if mark >= 50]))
+print(sum(mark for mark in marks if mark >= 50))
+print(sum(1 for mark in marks if mark >= 50))
+print(max(marks))
 
 words = ["MEET", "ME", "AT", "NOON"]
 print(" ".join(words))
 print("".join(word[0] for word in words))
 ```
 
-The first two lines both print 500. The second has no square brackets.
+The first two lines both print 307. The second has no square brackets.
 When a comprehension is the only thing inside a *function*{.term}'s brackets, you
 can drop its square brackets. It is then a *generator expression*. It makes
 its values one at a time, and passes each one to the function, without building a
 list first.
 
-The third line counts. It adds 1 for each number of 128 or more, so it
-prints 2. In the last two lines, `" "` puts a space between the words, and
+The third line counts. It adds 1 for each mark of 50 or more, so it
+prints 4. In the last two lines, `" "` puts a space between the words, and
 `""` puts nothing between the first letters.
 
 ### Your turn
@@ -208,17 +208,17 @@ brightness no screen has.
 
 A list can hold other lists. A board, a calendar or a table is a grid, and a
 list of lists keeps a grid with one inner list for each row. To read one
-value, we give two *indexes*{.term}. Before you run the cell, what will
-`grid[1][3]` be?
+value, we give two *indexes*{.term}. Here is a small cinema: four rows of
+five seats, with 1 for a taken seat and 0 for an empty one. Before you run
+the cell, what will `grid[1][3]` be?
 
 ```python exec
 id: a-grid-is-a-list-of-lists-1
 grid = [
-    [0, 0, 1, 0, 0],
+    [1, 0, 0, 1, 0],
+    [0, 1, 0, 1, 1],
+    [1, 1, 0, 0, 1],
     [0, 0, 1, 1, 0],
-    [1, 1, 1, 1, 1],
-    [0, 0, 1, 1, 0],
-    [0, 0, 1, 0, 0],
 ]
 print(grid[1][3])
 ```
@@ -232,23 +232,24 @@ What will it print?
   - Across 3 and down 1, the way a graph gives x before y.
 ```
 
-It prints 1. `grid[1]` is a whole row, `[0, 0, 1, 1, 0]`, and `[3]`
+It prints 1. `grid[1]` is a whole row, `[0, 1, 0, 1, 1]`, and `[3]`
 picks one element from that row. So a grid's index is the row first, then
 the column: down, then across. A graph gives x first, across, so the two
-orders are easy to confuse. Swap the two numbers and run it again.
+orders are easy to confuse. Swap the two numbers and run it again: it
+prints 0, because that is a different seat.
 
 To print the grid, a loop visits each row, and a loop inside it visits
 each value in that row, as the *nested loops*{.term} did in
-[Repeating steps with loops](tutorial:repeating-yourself):
+[Repeating steps with loops](tutorial:repeating-yourself). Here `#` is a
+taken seat, and `.` is an empty one:
 
 ```python exec
 id: a-grid-is-a-list-of-lists-2
 grid = [
-    [0, 0, 1, 0, 0],
+    [1, 0, 0, 1, 0],
+    [0, 1, 0, 1, 1],
+    [1, 1, 0, 0, 1],
     [0, 0, 1, 1, 0],
-    [1, 1, 1, 1, 1],
-    [0, 0, 1, 1, 0],
-    [0, 0, 1, 0, 0],
 ]
 for row in grid:
     line = ""
@@ -283,6 +284,15 @@ new row of zeros three times. `times_table` has a comprehension inside a
 comprehension: the inner one builds one row, and the outer one does that
 for each `row` from 1 to 3. Counting from 0, `times_table[1][2]` is row 1,
 column 2, and that is 2 × 3, which is 6.
+
+The same shape can change every value of a grid that already exists. The
+outer loop visits each row, and the inner loop visits each value in it:
+
+```python
+bigger = [[value + 1 for value in row] for row in grid]
+```
+
+This builds a new grid, and leaves `grid` as it was.
 
 If your course continues to matrices, as Computational Methods does in
 [Matrices: adding, scaling and transposing a grid of numbers](tutorial:grid-of-numbers),
@@ -340,9 +350,9 @@ signalling with torches: the number raised on the left gave the row, and
 the number on the right gave the column.
 ```
 
-A shift cipher works on numbers, not letters. Can you set `numbers` to the
-same square with each letter replaced by its place in the alphabet, counting
-`"A"` as 0? There is no J in the square, so `"K"` is 10.
+A shift cipher does its sums on numbers, so it needs the letters as numbers
+first. Can you set `numbers` to the same square with each letter replaced by
+its place in the alphabet, counting `"A"` as 0? For example, `"K"` becomes 10.
 
 ```python exec
 id: your-turn-2b--secret-messages
@@ -363,9 +373,8 @@ numbers
 ```
 
 ```hint
-`ord(letter) - ord("A")` is a letter's place in the alphabet. Can you build
-one row of numbers that way first, and then put a comprehension round it
-for every row?
+What does `ord("K") - ord("A")` give? Can you build one row of numbers that
+way first, and then put a comprehension round it for every row?
 ```
 
 ```solution
@@ -388,7 +397,43 @@ grid.
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you set `negative` to the same picture with every `1` turned into `0`, and
+Here is a grid of blank pixels, and a list of the pixels to light. Can you
+set each of those pixels to `1`, to draw a small arrowhead? Each pair is the
+row, then the column.
+
+```python exec
+id: your-turn-2b--pixel-art
+picture = [[0] * 5 for _ in range(3)]
+lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
+
+for row in picture:
+    print(row)
+```
+
+```inputs
+picture
+```
+
+```hint
+`for row, column in lit:` takes each pair apart. Which pixel is at that row
+and column of `picture`, and what should it become?
+```
+
+```solution
+picture = [[0] * 5 for _ in range(3)]
+lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
+for row, column in lit:
+    picture[row][column] = 1
+
+for row in picture:
+    print(row)
+---
+`picture[row][column] = 1` changes one value in the grid, and only in that
+row, because the comprehension made each row separately. The next section
+shows what happens when it does not.
+```
+
+Now, can you set `negative` to this picture with every `1` turned into `0`, and
 every `0` into `1`? A comprehension inside a comprehension can do it.
 
 ```python exec
@@ -425,83 +470,48 @@ The inner comprehension makes one row, and the outer one does it for every
 row. `picture` itself is unchanged: the comprehension built a new grid.
 ```
 
-Now a grid of blank pixels, and a list of the pixels to light. Can you set
-each of those pixels to `1`, to draw a small arrow? Each pair is the row,
-then the column.
-
-```python exec
-id: your-turn-2b--pixel-art
-picture = [[0] * 5 for _ in range(3)]
-lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
-
-for row in picture:
-    print(row)
-```
-
-```inputs
-picture
-```
-
-```hint
-`for row, column in lit:` takes each pair apart. Which pixel is at that row
-and column of `picture`, and what should it become?
-```
-
-```solution
-picture = [[0] * 5 for _ in range(3)]
-lit = [[0, 2], [1, 1], [1, 2], [1, 3]]
-for row, column in lit:
-    picture[row][column] = 1
-
-for row in picture:
-    print(row)
----
-`picture[row][column] = 1` changes one value in the grid. The grid was built
-with a comprehension, so each row is its own list and only that row changes.
-```
-
 </div>
 
 ## Two names for one list
 
 A list can have more than one name. Before you run this cell, what will
-`row` hold at the end?
+`shopping` hold at the end?
 
 ```python exec
 id: two-names-for-one-list-1
-row = [0, 0, 0, 0]
-copy = row
-copy[0] = 255
-print(row)
+shopping = ["milk", "eggs", "tea"]
+copy = shopping
+copy[0] = "bread"
+print(shopping)
 ```
 
 ```predict
 What will it print?
 
-- [0, 0, 0, 0]
-  - `copy` is a copy, so changing it leaves `row` alone. There is
+- ['milk', 'eggs', 'tea']
+  - `copy` is a copy, so changing it leaves `shopping` alone. There is
     [a closer look at this](tutorial:two-names-one-list).
-- [255, 0, 0, 0]
-  - `copy` and `row` are two names for the same list.
+- ['bread', 'eggs', 'tea']
+  - `copy` and `shopping` are two names for the same list.
 - An error
   - A list cannot be given a second name.
 ```
 
-It prints `[255, 0, 0, 0]`. The line `copy = row` did not copy anything.
-It gave the same list a second name. Think of the list as a box and each
-name as a label on it: `copy = row` puts a second label on the same box,
+It prints `['bread', 'eggs', 'tea']`. The line `copy = shopping` did not
+copy anything. It gave the same list a second name. Think of the list as a box and each
+name as a label on it: `copy = shopping` puts a second label on the same box,
 so a change made through one name shows through the other. Two names for
 one value is called *aliasing*.
 
-To get a separate list, make one. `row[:]`, a *slice*{.term} from the start to the
+To get a separate list, make one. `shopping[:]`, a *slice*{.term} from the start to the
 end, is a new list with the same elements, and so is `list(row)`.
 
 ```python exec
 id: two-names-for-one-list-2
-row = [0, 0, 0, 0]
-copy = row[:]
-copy[0] = 255
-print(row)
+shopping = ["milk", "eggs", "tea"]
+copy = shopping[:]
+copy[0] = "bread"
+print(shopping)
 print(copy)
 ```
 
@@ -521,14 +531,14 @@ def add_ten(numbers):
     for index in range(len(numbers)):
         numbers[index] = numbers[index] + 10
 
-row = [10, 20, 30]
-add_ten(row)
-print(row)
+prices = [10, 20, 30]
+add_ten(prices)
+print(prices)
 ```
 
 It prints `[20, 30, 40]`. The function changed the caller's list. It did
 not give `numbers` a new value with `=`. It changed the list that `numbers`
-names, which is the same list `row` names. So there are two different
+names, which is the same list `prices` names. So there are two different
 actions. Giving a name a new value stays inside the function. Changing a
 list in place is seen by every name for that list.
 

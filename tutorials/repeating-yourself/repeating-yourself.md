@@ -59,7 +59,7 @@ the width of the row. Every `#` becomes `.`, and every `.` becomes `#`. What
 will it print?
 
 ```python exec
-id: a-loop-that-codes-1--pixel-art
+id: a-loop-that-flips-1--pixel-art
 row = "##..#."
 negative = ""
 for pixel in row:
@@ -85,7 +85,9 @@ how wide it is.
 </div>
 
 Our *programs*{.term} can run lines in order, and make decisions. This page adds
-the third thing every program is built from: repetition.
+the third thing every program is built from: repetition. We meet two kinds
+of loop: one that repeats until a condition changes, and one that goes
+through a sequence. Then we put one loop inside another.
 
 ## While loops: repeat until done
 
@@ -157,11 +159,12 @@ accumulator too, of characters instead of numbers.
 
 <div class="dl-world" data-world="secret-messages">
 
-In English, E is the most common letter. So in a message moved along by a
-Caesar shift, the most common letter is probably the moved E. Suppose the
-most common letter in a coded message is Q. Can you use a loop to try
-`shift` as 0, 1, 2 and so on, until moving Q back by `shift` gives E? Which
-shift is it?
+Moving every letter of a message the same number of places along the
+alphabet is called a *Caesar shift*. In English, E is the most common
+letter. So in a message moved along by a Caesar shift, the most common
+letter is probably the moved E. Suppose the most common letter in a coded
+message is Q. Can you use a loop to try `shift` as 0, 1, 2 and so on, until
+moving Q back by `shift` gives E? Which shift is it?
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -176,8 +179,16 @@ shift
 ```
 
 ```hint
-The condition is "moving Q back by `shift` does not give E yet". Moving
-back is the Caesar shift with `- shift` in place of `+ shift`.
+What is the loop waiting for? Can you say it in one sentence that starts
+"Keep going while…"?
+```
+
+```hint
+after: 12 errors
+title: some steps
+Moving back is the Caesar shift from the first cell with `- shift` in place
+of `+ shift`. The condition is true while that moved letter is not "E". The
+change inside the loop is `shift = shift + 1`.
 ```
 
 ```solution
@@ -285,7 +296,8 @@ print("Liftoff!")
 
 A code-breaker's table shows every letter beside the letter it becomes.
 Can you print the whole alphabet, 26 lines, each with a letter and that
-letter moved three places along? `A D`, `B E`, and so on, to `Z C`.
+letter moved three places along? The first line reads `A D`, the second
+`B E`, and so on down to `Z C`.
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -335,7 +347,7 @@ for column in range(16):
 print()
 ---
 The last `print()` ends the line. Without it, whatever the next cell prints
-would carry on from the end of this row.
+would continue on the same line as this row.
 ```
 
 </div>
@@ -426,7 +438,8 @@ multiplication.
 ### Your turn
 
 Can you calculate each of these with a loop? For each one, write
-*pseudocode*{.term} first, then the code.
+*pseudocode*{.term} first (the steps in plain words, as comments), then the
+code.
 
 1. $\sum_{i=1}^{100} i$, the sum of the first 100 *natural numbers*{.term}. (There
    is a famous story that the young Gauss found this in moments.)
@@ -501,7 +514,9 @@ for row in range(4):
 
 It draws a checkerboard, four rows of eight. The outer loop runs 4 times, and for
 each of those the inner loop runs 8 times, so the `if` runs 32 times, once
-for every square of the grid. `(row + column) % 2` shifts each row along by one.
+for every square of the grid. `(row + column) % 2` is 0 or 1. Each new row
+adds 1 to `row`, so it starts on the other one, and the squares alternate
+down the picture as well as along it.
 
 </div>
 
@@ -576,9 +591,8 @@ row 0 and row `size - 1`, because the rows are numbered from 0.
 
 ## Building up gradually: counting with conditions
 
-An `if` inside a loop lets us count, or add, only some of the values. How
-many numbers from 1 to 100 can be divided by both 3 and 7? Can you guess
-before you run it?
+An `if` inside a loop lets us count, or add, only some of the values. This
+loop counts the numbers from 1 to 100 that can be divided by both 3 and 7.
 
 ```python exec
 id: building-up-gradually-counting-with-conditions-1
@@ -589,6 +603,12 @@ for i in range(1, 101):
         print(i, end=" ")
 print()
 print("Total:", count)
+```
+
+```predict
+type: number
+
+How many numbers does it find?
 ```
 
 There are four: 21, 42, 63 and 84. A number divided by both 3 and 7 is divided by 21,

@@ -52,6 +52,10 @@ weeks we learn to program, and some maths along the way. The two are closer
 than most people expect. A formula is also a set of steps, written for a
 person instead of a computer.
 
+On this page you run a few lines of Python and change them. You learn the
+arithmetic Python can do. Then you plan a small program in plain English
+before you write it.
+
 ## How this page works
 
 Most of this page is text to read. Between the paragraphs are *cells*: small
@@ -170,6 +174,9 @@ those 7s are taken away?
 Seven goes into 100 fourteen times, which uses up 98, so 2 is left over.
 
 ### Your turn
+
+Can you use the operators above to find these answers? Show each one with
+`print()`.
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -290,6 +297,9 @@ width = 320
 height = 240
 print(width // 2, height // 2)
 ```
+
+A comma between two values inside `print()` shows both, with a space between
+them.
 
 This is the way of working we use all through these pages:
 

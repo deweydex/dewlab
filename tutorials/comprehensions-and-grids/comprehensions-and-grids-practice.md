@@ -2,7 +2,7 @@
 title: "Comprehensions, grids and aliasing — Practice"
 practice_for: comprehensions-and-grids
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -85,6 +85,8 @@ Then try the other direction. Can you write
 
 <details class="dl-answer"><summary>answer</summary>
 
+Here is one answer. Yours may be different and work too.
+
 ```python
 tens = []
 for word in words:
@@ -106,6 +108,8 @@ generator expression for each of these?
 - (c) Count the letters in all the words together.
 
 <details class="dl-answer"><summary>answer</summary>
+
+Here is one answer. Yours may be different and work too.
 
 ```python
 sum(1 for word in words if len(word) > 3)     # 2
@@ -261,7 +265,7 @@ each number from 1 to 4. Printing one row at a time shows the grid as a
 square.
 ```
 
-## 9. In the square, or out of it
+## 9. Working through a grid
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -296,7 +300,21 @@ gives the index of each, so when the letter is found, both numbers are to
 hand.
 ```
 
+```hint
+after: 12 errors
+title: some steps
+1. The outer loop picks one `letter` of `word`.
+2. A loop inside it picks each row of `square`, with its `row_number`.
+3. A loop inside that picks each `entry` of the row, with its
+   `column_number`.
+4. When `entry == letter`, the pair `[row_number, column_number]` goes into
+   `pairs`.
+
+**Think about:** what `pairs` should hold if a letter is not in the square.
+```
+
 ```solution
+title: with what you've met so far
 square = [
     ["A", "B", "C", "D", "E"],
     ["F", "G", "H", "I", "K"],
@@ -317,6 +335,28 @@ def encode(word, square):
 Three loops, one inside the next: each letter, each row, each column.
 What does it give for a J, which is not in the square? What should it
 give?
+```
+
+```solution
+title: a shorter way you'll meet later
+square = [
+    ["A", "B", "C", "D", "E"],
+    ["F", "G", "H", "I", "K"],
+    ["L", "M", "N", "O", "P"],
+    ["Q", "R", "S", "T", "U"],
+    ["V", "W", "X", "Y", "Z"],
+]
+
+def encode(word, square):
+    return [[row_number, column_number]
+            for letter in word
+            for row_number, row in enumerate(square)
+            for column_number, entry in enumerate(row)
+            if entry == letter]
+---
+A comprehension may have several `for` lines. They run in the order they are
+written, like loops inside each other, and the value at the front is the
+`append`.
 ```
 
 </div>

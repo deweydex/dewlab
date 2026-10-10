@@ -2,7 +2,7 @@
 title: "Dictionaries: looking things up by name — Practice"
 practice_for: looking-things-up-by-name
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -12,6 +12,7 @@ worlds:
 
 These problems are on dictionaries, and three more are from earlier pages. Try each problem
 before you open anything under it, and run the cells to test your guesses.
+Problem 11 follows the world you chose on the page.
 
 ## 1. Five lookups
 
@@ -156,11 +157,12 @@ print(total)
 
 ## 6. The rarest
 
-Which letter appears least often? Can you set `rarest`?
+A café kept a count of the drinks it sold in a day. Which drink sold least
+often? Can you set `rarest`?
 
 ```python exec
 id: the-rarest-1
-counts = {"H": 9, "W": 6, "K": 3, "D": 2, "P": 1, "B": 1}
+counts = {"tea": 9, "coffee": 6, "juice": 3, "milk": 2, "cocoa": 1, "soda": 1}
 rarest = ""
 
 print(rarest)
@@ -171,21 +173,21 @@ rarest
 ```
 
 ```hint
-Start with any letter as the rarest so far. Go through `counts.items()`.
+Start with any drink as the rarest so far. Loop over `counts.items()`.
 Is this count smaller than the rarest so far?
 ```
 
 ```solution
-counts = {"H": 9, "W": 6, "K": 3, "D": 2, "P": 1, "B": 1}
-rarest = "H"
-for letter, count in counts.items():
+counts = {"tea": 9, "coffee": 6, "juice": 3, "milk": 2, "cocoa": 1, "soda": 1}
+rarest = "tea"
+for drink, count in counts.items():
     if count < counts[rarest]:
-        rarest = letter
+        rarest = drink
 print(rarest)
 ---
-P. B has the same count, and `<` keeps the first one it finds. Starting
-from `"H"` works because H is a key. Starting from `""` would stop with a
-`KeyError`, the first time round.
+`cocoa`. `soda` has the same count, and `<` keeps the first one it finds.
+Starting from `"tea"` works because `"tea"` is a key. Starting from `""`
+would stop with a `KeyError` on the first comparison.
 ```
 
 ## 7. By first letter
@@ -206,7 +208,7 @@ groups
 ```
 
 ```hint
-The first time a letter turns up, its value needs to be a new list. After
+The first time a letter appears, its value needs to be a new list. After
 that, the word is appended to that list.
 ```
 
@@ -249,8 +251,8 @@ for colour in ballots:
 print(votes)
 ---
 `{'red': 3, 'blue': 2, 'green': 1}`. The loop does not need to know the
-colours before it starts. A new one gets a count the first time it turns
-up.
+colours before it starts. A new one gets a count the first time it
+appears.
 ```
 
 ## 9. Two lists into one dictionary
@@ -316,8 +318,8 @@ be a small dictionary holding a name and a score.
 <div class="dl-world" data-world="secret-messages">
 
 This key has only the letters it needs. Can you write `decode(message,
-key)`, which decodes each letter in the key, and leaves anything else, such
-as a space, as it is?
+key)`, which decodes each letter that is in the key, and leaves anything
+else, such as a space, as it is?
 
 ```python exec
 id: letting-things-through-1--secret-messages
@@ -357,9 +359,10 @@ The default in `.get()` can be the thing being looked up. Here that means
 
 <div class="dl-world" data-world="pixel-art">
 
-Can you write `brightness(row, shades)`, which turns a row of characters
-into a list of brightnesses with the `shades` dictionary, and makes any
-character it does not know 0?
+A picture's rows are strings of characters, and `shades` joins each
+character to a brightness. Can you write `brightness(row, shades)`, which
+turns a row of characters into a list of brightnesses, and makes any
+character that is not in `shades` 0?
 
 ```python exec
 id: letting-things-through-1--pixel-art

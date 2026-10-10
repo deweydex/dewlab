@@ -1,7 +1,7 @@
 ---
 title: "Making decisions with if, elif and else"
 year: "2026-2027"
-version: 2026.10.09.1
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -42,10 +42,13 @@ What will the last line print?
   - `Z` is the last letter of the alphabet, so nothing comes after it.
 ```
 
-It prints `True` both times. Python compares characters by their numbers,
-the ones `ord()` gives. `Z` is 90 and `a` is 97, so every capital comes
-before every small letter. This page is about asking questions like these,
-and choosing what to do with the answer.
+It prints `True` both times. Python compares characters by their numbers.
+`Z` is 90 and `a` is 97, so every capital comes before every small letter.
+This page is about asking questions like these, and choosing what to do
+with the answer. By the end you can write code that picks one action from
+several. Each *Your turn* in the middle of the page follows the world you
+chose, and gives you a cell that prints a name with no value yet. You write
+the lines that give it one.
 
 ## Comparisons: true or false?
 
@@ -160,7 +163,8 @@ the two paths cover every possible score.
 
 A Caesar shift keeps a space as it is, and moves anything else. Can you set
 `action` to `"keep"` when `character` is a space, and to `"shift"`
-otherwise?
+otherwise? The cell sets `character` and prints `action`, so the lines you
+write go between them. With a space, it should print `keep`.
 
 ```python exec
 id: your-turn-2--secret-messages
@@ -196,7 +200,8 @@ would be shifted. The next section gives a program more than two paths.
 
 A checkerboard stripe is dark in even columns and light in odd ones. Can
 you set `shade` to `"dark"` when the column `x` is even, and to `"light"`
-when it is odd?
+when it is odd? The cell sets `x` and prints `shade`, so the lines you write
+go between them. With column 6, it should print `dark`.
 
 ```python exec
 id: your-turn-2--pixel-art
@@ -222,8 +227,7 @@ else:
     shade = "light"
 print(shade)
 ---
-`x % 2 == 0` is the test for "even" that comes back again and again in
-programs. Try `x = 7` too.
+`x % 2 == 0` is the test for "even" that programs use again and again. Try `x = 7` too.
 ```
 
 </div>
@@ -276,7 +280,8 @@ boundary, so a boundary is always worth trying.
 `character.isupper()` is `True` for a capital letter, and
 `character.islower()` for a small one. Can you set `kind` to
 `"capital"`, `"small"`, `"space"` or `"other"`, whatever `character`
-holds?
+holds? The cell sets `character` and prints `kind`, so the lines you write
+go between them. With `"e"`, it should print `small`.
 
 ```python exec
 id: your-turn-3--secret-messages
@@ -316,7 +321,9 @@ characters a Caesar shift leaves alone.
 
 A picture is 64 pixels wide, with columns numbered 0 to 63. Can you set
 `where` to `"left"` when `x` is below 0, `"on the picture"` when it is 0 to
-63, and `"right"` when it is 64 or more?
+63, and `"right"` when it is 64 or more? The cell sets `x` and prints
+`where`, so the lines you write go between them. With 70, it should print
+`right`.
 
 ```python exec
 id: your-turn-3--pixel-art
@@ -330,8 +337,8 @@ where
 ```
 
 ```hint
-Three paths: `if`, `elif`, `else`. Try the boundaries when it runs: −1, 0,
-63 and 64.
+Three paths: `if`, `elif`, `else`. When it runs, can you try `x` at each
+boundary: `-1`, `0`, `63` and `64`?
 ```
 
 ```solution
@@ -401,7 +408,9 @@ will read a line, add brackets to make your meaning clear.
 <div class="dl-world" data-world="secret-messages">
 
 Code-breakers count vowels. Can you set `is_vowel` to `True` when
-`character` is A, E, I, O or U, and to `False` otherwise?
+`character` is A, E, I, O or U, and to `False` otherwise? The cell sets
+`character` and prints `is_vowel`, so the lines you write go between them.
+With `"O"`, it should print `True`.
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -443,8 +452,11 @@ print(is_vowel)
 
 <div class="dl-world" data-world="pixel-art">
 
-A picture is 64 pixels wide and 48 tall. Can you set `on_picture` to `True`
-when the point `(x, y)` is on it, and to `False` when it is not?
+A picture is 64 pixels wide and 48 tall, and columns and rows both start
+at 0. Can you set `on_picture` to `True` when the point `(x, y)` is on it,
+and to `False` when it is not? The cell sets `x` and `y` and prints
+`on_picture`, so the lines you write go between them. With this point, it
+should print `False`.
 
 ```python exec
 id: your-turn-4--pixel-art
@@ -531,11 +543,11 @@ print("Real (R): " + str(is_real))
 
 1. In the cell above, can you change `value` to each of these in turn: `7`,
    `-3`, `0.5`, `0` and `3.14159`? How does the answer change each time?
-2. Can you write a new version below that uses `if`, `elif` and `else`, and
-   prints one clear summary, such as "7 is a natural number (and therefore
-   also an integer, rational, and real)."?
-3. Plan it first as *pseudocode*{.term}: the steps in plain words, written as
-   comments.
+2. Can you plan a new version as *pseudocode*{.term}? That means the steps
+   in plain words, written as comments.
+3. Then can you write the code under your plan? Use `if`, `elif` and `else`,
+   and print one clear summary, such as "7 is a natural number (and
+   therefore also an integer, rational, and real)."
 
 **Pseudocode first, then the code:**
 
@@ -555,6 +567,17 @@ value = 7
 The order of the `elif` conditions decided which word 20 became. When
 does the order of the conditions *not* matter? Think of a set of conditions
 where it makes no difference which comes first.
+
+<details class="dl-answer"><summary>one good answer</summary>
+
+It makes no difference when no value can make two conditions `True` at the
+same time. Take `day == "Sat"`, `day == "Sun"` and `day == "Mon"`: a day is
+only one of them, so Python finds the same path in any order. The order
+matters when one condition covers values that a later one also covers, as
+`temperature >= 5` and `temperature >= 15` do. Here is one answer. Yours
+may be different and work too.
+
+</details>
 
 <div class="dl-world" data-world="secret-messages">
 
@@ -577,12 +600,18 @@ print(chr(moved + ord("A")))
 
 A challenge: can you make a pixel 64 brighter, but never brighter than 255,
 the top of the scale? Try it with brightnesses of `100`, `200` and `250`.
+Then can you make a pixel 100 darker, but never darker than 0? Try `30`,
+`100` and `250`.
 
 ```python challenge
 # Make a pixel 64 brighter. Never go above 255.
 brightness = 200
 brighter = brightness + 64
 print(brighter)
+
+# Then make a pixel 100 darker. Never go below 0.
+darker = brightness - 100
+print(darker)
 ```
 
 </div>

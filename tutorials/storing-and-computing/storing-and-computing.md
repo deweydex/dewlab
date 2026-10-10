@@ -1,7 +1,7 @@
 ---
 title: "Variables, data types and text"
 year: "2026-2027"
-version: 2026.10.09.2
+version: 2026.10.10.1
 worlds:
   secret-messages: Codes and hidden messages, the kind spies and puzzle-setters make.
   pixel-art: Pictures made of small squares, the way a screen draws them.
@@ -51,6 +51,10 @@ we can build on it. This page is about names, the different kinds of value
 Python keeps, and text. Python can also take text apart, one character at a
 time.
 
+The "Choose a world" box under the title works as it did on the first page.
+Your choice changes the tasks and the small program near the end. The
+explanations are the same in both worlds.
+
 ## Variables: giving names to things
 
 A *variable* is a name that refers to a value. We make one with the `=`
@@ -94,7 +98,7 @@ underscores, like `first_name`.
 Can you make three variables? First, a secret word of your own. Then the
 number of letters in it. Then `True` or `False`, for whether you would let
 anybody see it. When you have them, print each one with a label that says
-what it is.
+what it is, like `letters: 5`.
 
 ```python exec
 id: your-turn-1--secret-messages
@@ -122,7 +126,7 @@ output.
 Can you make three variables? First, the width of a picture in pixels. Then
 its height. Then `True` or `False`, for whether it is in colour. When you
 have them, print how many pixels the picture has, and whether it is in
-colour, each with a label that says what it is.
+colour, each with a label that says what it is, like `in colour: True`.
 
 ```python exec
 id: your-turn-1--pixel-art
@@ -233,6 +237,8 @@ print(message.upper())    # the same text in capitals
 print("ha" * 3)           # a string repeated
 ```
 
+Can you change the message and see what each line gives?
+
 Every character also has a number of its own. The computer stores the
 number, and shows you the character. `ord()` gives a character's number, and
 `chr()` does the opposite, from a number to its character.
@@ -245,20 +251,21 @@ print(chr(67))
 ```
 
 `"A"` is 65, `"B"` is 66, and so on up to `"Z"`, which is 90. The capital
-letters are numbered in order, one after another.
+letters are numbered in order, one after another. Can you find the number of
+`"a"`, a small letter? Is it the same as the number of `"A"`?
 
 <div class="dl-world" data-world="secret-messages">
 
-So, to move a letter along the alphabet, we can add to its number. The next
-section does this.
+So, to move a letter along the alphabet, we can add to its number. Later on
+this page, a small program does this.
 
 </div>
 
 <div class="dl-world" data-world="pixel-art">
 
-Text is stored as numbers, and so is the brightness of a pixel. We can add
-to a number, whatever it stands for. The next section does this with a
-pixel's brightness.
+Text is stored as numbers, and so is the brightness of a pixel: 0 is black,
+and 255 is the brightest. We can add to a number, whatever it stands for.
+Later on this page, a small program does this with a pixel's brightness.
 
 </div>
 
@@ -309,7 +316,7 @@ is stored, changed with arithmetic, and sent back round to the start with
 <div class="dl-world" data-world="secret-messages">
 
 The program moves a letter along the alphabet, and goes back round to A
-after Z. This is the main step in the oldest secret code there is. Julius
+after Z. This is the main step in one of the oldest secret codes. Julius
 Caesar is said to have written to his generals with every letter moved three
 places along: A became D, B became E. It is called a *Caesar shift*.
 
@@ -320,7 +327,9 @@ places along: A became D, B became E. It is called a *Caesar shift*.
 The program makes a pixel brighter. A pixel's brightness is a whole number
 from 0 to 255, so there are 256 steps. A pixel at 255 is as bright as it can
 be. If we add to it anyway, the number can go back round to 0, the way a
-clock goes from 23 back to 0.
+clock goes from 23 back to 0. A real paint program would stop at 255. Here
+we let it go round, because going round is what `%` does, and we want to
+see it happen.
 
 </div>
 
@@ -444,9 +453,9 @@ does the brightness become then?
 <div class="dl-world" data-world="secret-messages">
 
 A letter was moved three places along, and it became D. What was it before?
-Can you change `shift` so the program moves backwards, and find out? Then
-change `letter` to `"A"` and run it again. Which letter, moved three places
-along, becomes A?
+First, can you change `shift` so the program moves backwards, and find out?
+Then change `letter` to `"A"` and run it again. Which letter, moved three
+places along, becomes A?
 
 ```python exec
 id: your-turn-4--secret-messages
@@ -463,8 +472,8 @@ new_letter
 ```
 
 ```hint
-Moving backwards three places is a `shift` of `-3`. Does `% 26` still bring
-the number back into 0 to 25?
+Which `shift` would move a letter three places the other way? When the
+position goes below 0, does `% 26` still bring it back into 0 to 25?
 ```
 
 ```solution
@@ -485,9 +494,9 @@ to X.
 <div class="dl-world" data-world="pixel-art">
 
 A pixel was made 60 steps brighter, and now has a brightness of 20. What was
-it before? Can you change `step` so the program makes the pixel darker, and
-find out? Then change `brightness` to `0` and run it again. Which brightness,
-made 60 steps brighter, becomes 0?
+it before? First, can you change `step` so the program makes the pixel
+darker, and find out? Then change `brightness` to `0` and run it again. Which
+brightness, made 60 steps brighter, becomes 0?
 
 ```python exec
 id: your-turn-4--pixel-art
@@ -502,8 +511,8 @@ new_brightness
 ```
 
 ```hint
-Making a pixel darker by 60 is a `step` of `-60`. Does `% 256` still bring
-the number back into 0 to 255?
+Which `step` would make a pixel 60 steps darker? When the brightness goes
+below 0, does `% 256` still bring it back into 0 to 255?
 ```
 
 ```solution
@@ -551,6 +560,9 @@ print(f"{brightness} made {step} steps brighter is {new_brightness}")
 
 </div>
 
+Change one of the values and run the cell again. Which part of the printed
+line changes?
+
 Some results have more decimal places than anybody wants to read. A poster
 100 cm wide and 70 cm tall has a shape we can find by dividing:
 
@@ -570,23 +582,31 @@ decimal place.
 
 <div class="dl-world" data-world="secret-messages">
 
-A message has 47 letters, and 12 of them are E. What share of the letters
-is E, as a percentage? Can you print it with an f-string, to 1 decimal
-place, like `E is 8.3% of the letters`? (Code-breakers count letters like
-this. In English, E is the most common letter, so the most common letter
-in a Caesar-shifted message is probably a moved E.)
+A message has 47 letters, and 12 of them are E. The cell holds these as
+`letters` and `e_count`. What share of the letters is E, as a percentage?
+Can you print it with an f-string, to 1 decimal place, like
+`E is 8.3% of the letters`?
+
+Code-breakers count letters like this. In English, E is the most common
+letter, so the most common letter in a Caesar-shifted message is probably a
+moved E.
 
 ```python exec
 id: putting-values-into-text-3--secret-messages
 letters = 47
-es = 12
+e_count = 12
 
+```
+
+```hint
+Which two numbers do you divide to find a share? What do you multiply by to
+turn the share into a percentage?
 ```
 
 ```solution
 letters = 47
-es = 12
-share = es / letters * 100
+e_count = 12
+share = e_count / letters * 100
 print(f"E is {share:.1f}% of the letters")
 ---
 About a quarter of these letters are E, which is more than in most English
@@ -597,9 +617,10 @@ text, where E is about one letter in eight.
 
 <div class="dl-world" data-world="pixel-art">
 
-A photo is 640 pixels wide and 480 tall. Can you print one line, with an
-f-string, like `640 × 480 is 307200 pixels, 0.31 megapixels`? A megapixel
-is a million pixels.
+A photo is 640 pixels wide and 480 tall. The cell holds these as `width` and
+`height`. Can you print one line, with an f-string, like
+`800 × 600 is 480000 pixels, 0.48 megapixels`? A megapixel is a million
+pixels.
 
 ```python exec
 id: putting-values-into-text-3--pixel-art
@@ -608,14 +629,20 @@ height = 480
 
 ```
 
+```hint
+How many pixels does the photo have? What do you divide that by to count
+it in millions?
+```
+
 ```solution
 width = 640
 height = 480
 pixels = width * height
-print(f"{width} × {height} is {pixels} pixels, {pixels / 1000000:.2f} megapixels")
+megapixels = pixels / 1000000
+print(f"{width} × {height} is {pixels} pixels, {megapixels:.2f} megapixels")
 ---
-Inside the curly brackets you can write a small calculation as well as a
-name: `{pixels / 1000000:.2f}` divides first, then shows 2 decimal places.
+Inside the curly brackets you can also write a small calculation instead of
+a name: `{pixels / 1000000:.2f}` divides first, then shows 2 decimal places.
 ```
 
 </div>
@@ -690,8 +717,8 @@ each one was broken.
 
 Technology Connections. *The Weird World in RGB.*
 <https://www.youtube.com/watch?v=uYbdx4I7STg>. This video shows how a screen
-mixes red, green and blue light into every colour, the three numbers we put
-into `rgb(...)` on this page. About twenty minutes.
+mixes red, green and blue light into every colour. A pixel's colour is three
+numbers, one for each of the three. About twenty minutes.
 
 </div>
 
