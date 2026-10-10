@@ -421,10 +421,12 @@ Each step is a pull request that stands alone.
    advisory lists in `HOW_DEWLAB_THINKS.md` and `tests-explained.md` were
    rewritten around one rule, and the claim that an `<img>` without `alt` always
    fails was corrected.
-2. **The spike.** The source map in `build.py` and its round-trip test. Then
-   a throwaway page that swaps one prose block and one cell and splices them
-   back. Measure Crepe's normalisation across the corpus. At the end of this
-   step we know whether B works, and what it costs, before building the UI.
+2. **The spike. Done; see [`IN_PAGE_EDITOR_SPIKE.md`](IN_PAGE_EDITOR_SPIKE.md).**
+   The source map works and changes nothing about a page. Crepe's rewriting of
+   markdown is small once maths, lists and tables are tidied (97.8% of 17,994
+   prose blocks unchanged, 23 render differently). A block swaps for an editor
+   with no visible change for headings and most paragraphs; maths, tables and a
+   few conventions of ours still need work. Not done: a real phone.
 3. **Edit mode on prose and cells.** The button, the how-to fold and the
    teacher's guide it links to, the `#edit` address, the swap, the outline,
    save to a draft PR. `ARCHITECTURE.md` and
@@ -439,7 +441,7 @@ Each step is a pull request that stands alone.
    in the in-page editor, some in a small admin page that stays). Delete only
    what has a replacement.
 
-The next step is 2.
+The next step is 3.
 
 ---
 
