@@ -121,7 +121,10 @@ The pipeline, in order:
    and converts the body with the same `to_html()` a tutorial's own prose
    uses, and one `write_page(name)` (`SITE_PAGES` holds what differs: the
    file name, the crumb, the bottom-nav link) assembles the shell around
-   what it returns. Two things a page can
+   what it returns. Every file under `pages/` is optional: a page with no
+   file is not written and nothing links to it, and a site with no
+   `pages/home.md` gets a plain front page (`DEFAULT_HOME`: the search box and
+   the course cards), so a fork keeps the pages it wants. Two things a page can
    have that ordinary prose can't: a ` ```card ` fence (`url:`/`status:`/
    `meta:`/`wide:` header lines, then a heading and a paragraph —
    `parse_card()`/`render_card()`), the markup a module tile on the home

@@ -77,7 +77,7 @@ table of contents; this groups them into a few bigger phases:
    `write_series_zip`, `zip_directory`, `write_dewmini_bundle`. Every
    downloadable, offline copy this site produces.
 9. **Site-level pages** — `write_page` (the home page, About and the
-   features page, from `pages/`), `write_tree_page`, `write_editor_page`.
+   features page, from `pages/`, each optional), `write_tree_page`, `write_editor_page`.
 10. **`build()` and `main()`** at the very end — the actual orchestration:
     call everything above, in the right order, for every tutorial file
     found.

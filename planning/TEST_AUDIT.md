@@ -173,9 +173,12 @@ a starting point for a person, not a replacement for one.
 
 Recorded as DECISIONS_LOG 7.297. In order of safety:
 
-1. **`tests/build/` builds on stub pages.** The `repo` fixture no longer copies
-   the real About, Home, Features and other pages. The one test that asserted
-   on their copy keeps its structural checks.
+1. **Every file under `pages/` is optional, and `tests/build/` needs no pages.**
+   The build refused a site with a page missing, so the `repo` fixture copied
+   the real About, Home, Features and others. Now a missing page is not written
+   (a missing home page becomes a plain one: the search box and the course
+   cards), so a fork keeps the pages it wants and the fixture writes none. The
+   one test that asserted on their copy keeps its structural checks.
 2. **18 tests retired and 12 marked advisory**, all in unit files, each named
    in the ledger. The three verdict-word checks and two others were held back.
 3. **The `{{` guard (section 4) is fixed**, with a test that fails on the old

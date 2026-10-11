@@ -1704,6 +1704,11 @@ To change what a page says, edit the file and run `python3 build.py`; the
 page is `site/<name>.html` (`site/index.html` for the home page). Adding a
 fourth page is one file plus one line in `SITE_PAGES` in `build.py`.
 
+Every page is optional. Delete `pages/about.md` and the site has no About
+page, with nothing left linking to it. Delete `pages/home.md` and the front
+page is the search box and the course cards. A page that exists but has no
+`title:` still stops the build.
+
 ---
 
 ## The authoring editor

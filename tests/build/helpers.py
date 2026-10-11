@@ -28,17 +28,6 @@ import build as b  # noqa: E402
 
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
 
-# The site's own pages, as stubs. Every test builds a whole site, and the
-# build refuses one with a page missing, but nothing here is about what the
-# real About or Home page says; copying them in made every build test depend
-# on the owner's prose. A new entry in `SITE_PAGES` gets a stub by itself.
-# The home page carries the two generated blocks it is meant to hold.
-STUB_PAGES = {
-    name: f'---\ntitle: "{name}"\n---\n\nA stub page.\n'
-    + ("\n[[search-box]]\n\n[[course-cards]]\n" if name == "home" else "")
-    for name in b.SITE_PAGES
-}
-
 COURSE = "computational-methods"
 SERIES = "python-fundamentals"
 
@@ -74,8 +63,6 @@ def repo(tmp_path, monkeypatch):
     for name in ("tutorials", "courses", "setup", "data", "assets", "pages"):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
-    for name, text in STUB_PAGES.items():
-        (tmp_path / "pages" / f"{name}.md").write_text(text)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")

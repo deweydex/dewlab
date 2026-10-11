@@ -2948,9 +2948,12 @@ def read_page(name: str) -> tuple[dict, str]:
     — never the raw markdown.
     """
     path = PAGES / f"{name}.md"
-    if not path.is_file():
-        fail(path, "does not exist — every page under pages/ needs a file")
-    text = path.read_text()
+    if path.is_file():
+        text = path.read_text()
+    elif name == "home":
+        text = DEFAULT_HOME
+    else:
+        fail(path, "does not exist")
     if not text.startswith("---"):
         fail(path, "no YAML frontmatter — the file must open with a --- line")
     end = text.find("\n---", 3)
@@ -4820,9 +4823,9 @@ def render_tutorials_list(
         + '<a href="topics.html">Browse by topic</a> gathers one subject — '
         "trigonometry, say — in one place.</li>",
         "</ul>",
-        '<p class="dl-intro-tree">This project is open and still growing. '
-        '<a href="about.html">About this project</a> explains how to suggest a '
-        "change or report a mistake.</p>",
+        ('<p class="dl-intro-tree">This project is open and still growing. '
+         '<a href="about.html">About this project</a> explains how to suggest a '
+         "change or report a mistake.</p>") if (PAGES / "about.md").is_file() else "",
         "</div>",
     ]
 
@@ -6913,6 +6916,12 @@ def readable_size(path: Path) -> str:
 # to `<file>.html` at the site root, with the crumb the corner shows and
 # the one link the bottom nav offers. The home page is the one every other
 # page's masthead links to, so its crumb is empty and its file is index.html.
+# Every file under `pages/` is optional, so a fork can keep the pages it wants
+# and none of the others. The front page is the one a site cannot be without,
+# since it is the page at the root, so a site with no `pages/home.md` gets
+# this: the live search box and one card per course.
+DEFAULT_HOME = '---\ntitle: "Home"\n---\n\n[[search-box]]\n\n[[course-cards]]\n'
+
 SITE_PAGES: dict[str, tuple[str, str, str]] = {
     # name: (output file stem, crumb text, bottom-nav link)
     "home": ("index", "", '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>'),
@@ -6924,10 +6933,16 @@ SITE_PAGES: dict[str, tuple[str, str, str]] = {
 }
 
 
-def write_page(shell: str, name: str) -> Path:
+def write_page(shell: str, name: str) -> Path | None:
     """One of the site's own pages — the home page, About, the features
     page, Studying here or Reading helpers — from `pages/<name>.md`, read
     through `read_page()`.
+
+    Every one is optional. A page with no file is not written, and nothing
+    on the site links to it (the one link the build adds itself, from the
+    all-tutorials page to About, is left out too); returns None. The home
+    page is the exception in the other direction: with no file it is built
+    from `DEFAULT_HOME`, because the site needs a front page.
 
     A page is a hand-written markdown file with a `title` and nothing else
     in its frontmatter: no course, no version, no cells. `read_page()`
@@ -6943,6 +6958,8 @@ def write_page(shell: str, name: str) -> Path:
     in PEDAGOGICAL_STYLE_GUIDE.md#plain-language apply.
     """
     stem, crumb, nav = SITE_PAGES[name]
+    if name != "home" and not (PAGES / f"{name}.md").is_file():
+        return None
     meta, body = read_page(name)
     manifest = {"slug": stem, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
@@ -6988,6 +7005,12 @@ def write_page(shell: str, name: str) -> Path:
     target = OUT / f"{stem}.html"
     target.write_text(page)
     return target
+
+
+def write_site_pages(shell: str, names: tuple[str, ...]) -> list[Path]:
+    """The pages among `names` that this site has, written."""
+    pages = (write_page(shell, name) for name in names)
+    return [page for page in pages if page is not None]
 
 
 def write_all_tutorials_page(
@@ -8219,8 +8242,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(course_archives.values())
 
     if tutorials:
-        written.append(write_page(shell, "home"))
-        written.append(write_page(shell, "features"))
+        written.extend(write_site_pages(shell, ("home", "features")))
         written.append(write_all_tutorials_page(
             shell, groups, archives, retired, practice, mixed, course_archives,
             context,
@@ -8239,9 +8261,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         topics_page = write_topics_page(shell, registry, practice, context)
         if topics_page is not None:
             written.append(topics_page)
-        written.append(write_page(shell, "about"))
-        written.append(write_page(shell, "studying"))
-        written.append(write_page(shell, "reading-helpers"))
+        written.extend(write_site_pages(shell, ("about", "studying", "reading-helpers")))
         written.append(write_editor_page(shell))
         written.extend(write_redirects(written))
 
