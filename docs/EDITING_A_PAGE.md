@@ -57,8 +57,8 @@ then discards them.
 
 | On the page | What happens when you click it |
 |---|---|
-| A heading, or a paragraph of plain text | You edit it in place |
-| A paragraph with maths, a link written as HTML, an image, a list, a quote, a table, or a fold (a hint or an answer) | A box opens with that block's markdown, the plain-text form the file is written in. Change the words and leave the symbols around them alone |
+| A heading, a paragraph, a bullet or numbered list, or a quote | You edit it in place. Maths shows as its TeX between dollar signs (`$x^2$`): change the TeX and leave the dollar signs. A defined term (a word shown in a different style) is ordinary emphasis while you edit; it keeps its term style |
+| A table, a fold (a hint or an answer), a list inside a list, a display equation, an image, or a link written as HTML | A box opens with that block's markdown, the plain-text form the file is written in. Change the words and leave the symbols around them alone |
 | Code cells, questions, live site editors, and text shared between pages | Locked for now. The pointer shows it. They are edited in the file on GitHub |
 
 More of these will become editable. If you want to change something that is

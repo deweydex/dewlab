@@ -38,21 +38,24 @@ def serve():
 
 HTML = """<!doctype html><meta charset=utf-8><body><div id=host></div>
 <script type=module>
-import { createProseEditor } from "/assets/vendor/milkdown.bundle.js";
+import { createInPlaceEditor } from "/assets/vendor/milkdown.bundle.js";
+import { richSafe, toEditor, fromEditor } from "/assets/inpage-markdown.js";
 window.roundtrip = async (blocks) => {
   const out = [];
   for (const b of blocks) {
     const host = document.getElementById("host");
     host.replaceChildren();
     const el = document.createElement("div"); host.append(el);
-    let md = null, err = null;
+    let md = null, err = null, safe = richSafe(b);
     try {
-      const ed = createProseEditor(el, b, {});
+      if (!safe) { out.push({ md: null, err: null, safe }); continue; }
+      const st = toEditor(b);
+      const ed = createInPlaceEditor(el, st.doc);
       await ed.ready;
-      md = ed.getMarkdown();
+      md = fromEditor(ed.getMarkdown(), st, b);
       ed.destroy();
     } catch (e) { err = String(e).slice(0, 120); }
-    out.push({ md, err });
+    out.push({ md, err, safe });
   }
   return out;
 };
@@ -108,13 +111,10 @@ def run(blocks, batch=100):
 if __name__ == "__main__":
     n_pages, per = int(sys.argv[1]), int(sys.argv[2])
     blocks = collect(n_pages, per)
-    prot = [protect(b["text"]) for b in blocks]
-    res, dt, errs = run([dict(b, text=p[0]) for b, p in zip(blocks, prot)])
-    for b, p, r in zip(blocks, prot, res):
-        if r["md"] is not None:
-            r["md"] = tidy(b["text"], restore(r["md"], p[1]), b["kind"])
+    res, dt, errs = run(blocks)
     print(f"{len(blocks)} blocks in {dt:.1f}s ({dt/len(blocks)*1000:.0f} ms each); page errors: {errs[:3]}")
     json.dump([dict(b, **r) for b, r in zip(blocks, res)], open(sys.argv[3] if len(sys.argv) > 3 else "/dev/null", "w"))
+    print("rich-safe:", sum(1 for r in res if r["safe"]), "of", len(res))
     same = sum(1 for b, r in zip(blocks, res) if r["md"] is not None and r["md"].strip() == b["text"].strip())
     errc = sum(1 for r in res if r["err"])
     print(f"exactly equal (ignoring surrounding whitespace): {same}/{len(blocks)}; errors: {errc}")
