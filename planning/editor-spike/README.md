@@ -6,8 +6,10 @@ need `pip install playwright pillow` and a Chromium (`CHROMIUM=/path/to/chrome`
 if Playwright cannot find one).
 
 - `crepe_roundtrip.py N PER OUT.json` pushes up to PER prose blocks from each of
-  N tutorials through the vendored Crepe editor unchanged, with maths protected
-  and Crepe's list and table output tidied the way the editor would. `N=498
+  N tutorials through the vendored Crepe editor unchanged, using
+  `assets/inpage-markdown.js` (the code the editor itself uses) to make each
+  block safe going in and to put it back coming out. Blocks it refuses come
+  back with `md: null`. `N=498
   PER=100000` is the whole corpus (about four minutes).
 - `crepe_classify.py OUT.json` says, for each block that came back different,
   whether the finished page would differ (it renders both through `build.py`'s

@@ -18,6 +18,7 @@
  */
 
 import { githubClient, TOKEN_KEY } from "./github-client.js";
+import { richSafe, toEditor, fromEditor } from "./inpage-markdown.js";
 
 const MIN_WIDTH = 900;
 
@@ -36,19 +37,19 @@ export function splice(source, edits) {
 }
 
 /* How a block can be edited, from its element and its markdown:
- *   "rich"   a heading or paragraph the rich editor round-trips safely
- *   "source" anything else a person can reasonably change, as its markdown
- *   "locked" cells, includes and the pieces of a page built from other parts
- * Maths, `{.term}` marks, raw HTML and images are source blocks for now: the
- * rich editor does not yet know them (planning/IN_PAGE_EDITOR_SPIKE.md). */
+ *   "rich"   a heading, paragraph, list or quote the rich editor round-trips
+ *            safely (inpage-markdown.js says which; maths and `{.term}` marks
+ *            are handled there)
+ *   "source" anything else a person can reasonably change, as its markdown:
+ *            tables, folds, raw HTML, images, display maths, code
+ *   "locked" cells, includes and the pieces of a page built from other parts */
 export function classify(tag, text) {
   const t = text.trim();
   if (!t || t.startsWith("{{include") || t.startsWith("```")) return "locked";
-  if (/^h[1-6]$/.test(tag) || tag === "p") {
-    if (/[$<{\\]|!\[|^\[[^\]]+\]:/.test(t)) return "source";
-    return "rich";
+  if (/^h[1-6]$/.test(tag) || tag === "p" || ["ul", "ol", "blockquote"].includes(tag)) {
+    return richSafe(t) ? "rich" : "source";
   }
-  if (["ul", "ol", "blockquote", "table", "details", "pre"].includes(tag)) return "source";
+  if (["table", "details", "pre"].includes(tag)) return "source";
   return "locked";
 }
 
@@ -226,8 +227,11 @@ class Session {
       wrap.style.margin = getComputedStyle(node).margin;
       node.after(wrap);
       node.hidden = true;
-      const editor = this.createEditor(wrap, text);
+      const state = toEditor(text);
+      const editor = this.createEditor(wrap, state.doc);
       await editor.ready;
+      state.baseline = editor.getMarkdown();     // what it writes before any typing
+      node.dlState = state;
       node.dlWrap = wrap;
       node.dlEditor = editor;
       editor.focus();
@@ -257,10 +261,16 @@ class Session {
     if (!open) return;
     this.open = null;
     const { node, mode, key } = open;
-    const now = mode === "rich"
-      ? node.dlEditor.getMarkdown().replace(/\s+$/, "")
-      : node.dlBox.value.replace(/\s+$/, "");
     const original = node.dlRange.text;
+    let now;
+    if (mode === "rich") {
+      const written = node.dlEditor.getMarkdown();
+      /* Nothing typed: the editor writes the block a little differently from
+       * the file (an indent, a marker), which is not a change. */
+      now = written === node.dlState.baseline ? original : fromEditor(written, node.dlState, original);
+    } else {
+      now = node.dlBox.value.replace(/\s+$/, "");
+    }
 
     const was = this.edits.get(key);
     if (now === original) {

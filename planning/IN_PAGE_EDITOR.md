@@ -437,9 +437,14 @@ Each step is a pull request that stands alone.
    - **3b. Headings and paragraphs. Done.** The in-place editor bundle, the
      swap, the outline, the splice, one draft PR per session with later saves
      added as commits. Blocks that need more open as their markdown in a box.
-   - **3c. Next:** bullet lists, then ordered lists and quotes, with maths
-     (the TeX shows while the block is edited) and the `{.term}` mark. Tables and
-     the other blocks follow in step 4.
+   - **3c. Lists, quotes, maths and terms. Done** (DECISIONS_LOG 7.297).
+     `assets/inpage-markdown.js` makes a block safe going in and puts it back
+     coming out: inline maths as a code span of its TeX, `{.term}` kept by the
+     words it marks, bullets and tightness restored. Of 17,994 prose blocks,
+     15,059 (84%) now edit as rich text; 37 of those write differently but render
+     the same page, and the one that rendered differently (emphasis inside a
+     link text) is now sent to the box. The rest stay as markdown in a box. Tables and the
+     other blocks follow in step 4.
    `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
    changes what they describe.
 4. **The other blocks,** as source-text boxes first, in the order of the

@@ -31,6 +31,7 @@ PAGE = (
     "Second paragraph.\n\n"
     "A paragraph with maths, $x + 1$, in it.\n\n"
     "- one\n- two\n\n"
+    "The *square root*{.term} of $x_1$ is a number.\n\n"
     "{{include: setup/shared.md}}\n\n"
     "```python exec\nid: only\nprint(1)\n```\n"
 )
@@ -254,8 +255,8 @@ def test_a_heading_and_a_plain_paragraph_edit_in_place_and_the_rest_is_locked_or
     start(page)
     modes = page.evaluate("""[...document.querySelectorAll('main#dl-body > [data-md]')]
         .map(n => [n.tagName.toLowerCase(), n.dataset.dlEdit])""")
-    assert modes == [["h1", "rich"], ["p", "rich"], ["p", "rich"], ["p", "source"],
-                     ["ul", "source"], ["blockquote", ""], ["div", ""]]
+    assert modes == [["h1", "rich"], ["p", "rich"], ["p", "rich"], ["p", "rich"],
+                     ["ul", "rich"], ["p", "rich"], ["blockquote", ""], ["div", ""]]
 
 
 def test_typing_in_a_paragraph_changes_that_paragraph_of_the_file_and_nothing_else(editing, site):
@@ -299,18 +300,55 @@ def test_opening_a_paragraph_moves_nothing_on_the_page(editing):
     assert before == after
 
 
-def test_a_block_with_maths_edits_as_its_markdown(editing):
+def test_a_block_with_maths_shows_its_tex_and_edits_in_place(editing):
     page, fake, manifest = editing
     start(page)
     page.click("main#dl-body > p:nth-of-type(3)")
-    box = page.wait_for_selector("textarea.dl-inplace-source")
-    assert box.input_value() == "A paragraph with maths, $x + 1$, in it."
-    box.fill("A paragraph with maths, $x + 2$, in it.")
+    page.wait_for_selector(".dl-inplace .ProseMirror")
+    assert "$x + 1$" in page.inner_text(".dl-inplace .ProseMirror")
+    page.evaluate("""() => {
+        const code = document.querySelector('.dl-inplace .ProseMirror code');
+        const range = document.createRange();
+        range.selectNodeContents(code);
+        const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    }""")
+    page.keyboard.type("$x + 2$")
     leave(page)
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('1 block changed')")
     page.click("#dl-edit-save")
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
     assert fake.blobs[0] == fake.source.replace("$x + 1$", "$x + 2$")
+
+
+def test_a_term_mark_and_maths_with_an_underscore_come_back_as_they_went_in(editing):
+    page, fake, manifest = editing
+    start(page)
+    type_into(page, "main#dl-body > p:nth-of-type(4)", " Indeed.")
+    leave(page)
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("is a number.", "is a number. Indeed.")
+
+
+def test_a_list_edits_as_rich_text_and_keeps_its_bullets(editing):
+    page, fake, manifest = editing
+    start(page)
+    type_into(page, "main#dl-body > ul > li:nth-child(2)", " more")
+    leave(page)
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("- two", "- two more")
+
+
+def test_opening_a_list_moves_nothing_on_the_page(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("#dl-settings-toggle")
+    tops = "[...document.querySelectorAll('main#dl-body > [data-md]:not([hidden])')].map(n => Math.round(n.getBoundingClientRect().top + scrollY))"
+    before = page.evaluate(tops)
+    page.click("main#dl-body > ul")
+    page.wait_for_selector(".dl-inplace .ProseMirror")
+    assert page.evaluate(tops) == before
 
 
 def test_a_second_save_in_one_session_adds_a_commit_to_the_same_pull_request(editing):
@@ -432,3 +470,28 @@ def test_a_downloaded_copy_carries_no_editor(site):
         html = re.sub(r"<(style|script)\b.*?</\1>", "", copy.read_text(), flags=re.DOTALL)
         assert 'id="dl-settings-edit"' not in html and "inpage-edit" not in html
         assert "data-md=" not in html and "dl-edit:" not in html
+
+
+def test_what_the_rich_editor_may_take_and_what_goes_in_and_out(editing):
+    """inpage-markdown.js is plain functions; run them in the page's own browser."""
+    page, fake, manifest = editing
+    result = page.evaluate("""async () => {
+        const m = await import('/assets/inpage-markdown.js');
+        const out = {};
+        out.safe = ['Plain *text*.', 'With $x_1$ maths.', 'A *term*{.term} here.', '- a\\n- b', '> quote',
+                    'code `x` here'].map(m.richSafe);
+        out.unsafe = ['$$\\nx\\n$$', 'a <b>b</b>', '![a](b.png)', '| a | b |\\n|---|---|', 'x \\\\_ y', '{{include: a}}',
+                      'code `$x$` and $y$', '- a\\n  - b', '- a\\n\\n- b', '[*a*](http://x)'].map(m.richSafe);
+        const state = m.toEditor('The *root*{.term} of $x_1$.');
+        out.doc = state.doc;
+        out.back = m.fromEditor('The _root_ of `$x_1$`.', state, 'The *root*{.term} of $x_1$.');
+        out.fresh = m.fromEditor('Then $a\\\\_b$ too.', m.toEditor('Then'), 'Then');
+        out.list = m.fromEditor('* a\\n\\n* b', m.toEditor('- a\\n- b'), '- a\\n- b');
+        return out;
+    }""")
+    assert result["safe"] == [True] * 6
+    assert result["unsafe"] == [False] * 10
+    assert result["doc"] == "The *root* of `$x_1$`."
+    assert result["back"] == "The *root*{.term} of $x_1$."
+    assert result["fresh"] == "Then $a_b$ too."
+    assert result["list"] == "- a\n- b"

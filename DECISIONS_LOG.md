@@ -5824,3 +5824,16 @@ Not done: bullet and ordered lists and quotes as rich text, maths and `{.term}` 
 
 *Cost to change: remove the `<!--dl-edit:start-->` blocks from `assets/shell.html`, the `edit` entry in `write()`, and `assets/inpage-edit.js`; `--no-source-map` already turns the map off. `assets/github-client.js` stays: `editor.js` uses it.*
 
+**7.297 — "Edit this page": lists, quotes, maths and defined terms edit in place.** Josh, 11 October 2026: "Great let's take on the next tasks", on the decisions he made after the spike (show the TeX; teach the editor `{.term}`; phones wait).
+
+Bullet and numbered lists, quotes and paragraphs with inline maths or `{.term}` now edit as rich text. `assets/inpage-markdown.js` holds the rules: inline maths goes into the editor as a code span of its TeX and comes out unwrapped; `*word*{.term}` goes in as emphasis and the mark returns to any emphasis with the same words; a list comes back with its original bullet and, if it was tight, tight. Measured on the 17,994 prose blocks of all tutorials: 15,059 are accepted for rich editing, and 15,021 of those come back byte-identical.
+
+Choices somebody could have made differently.
+
+- **A block the rules cannot round-trip stays a markdown box** rather than being forced through: display maths, raw HTML, images, tables, lists inside lists, loose or multi-list blocks, lists with fenced code, a backslash or brace other than `{.term}`, code spans beside maths, and emphasis inside a link text. About 16% of blocks. The alternative was to teach the editor each; most are rare, and a box is safe.
+- **A term shows as plain emphasis while edited**, not in its term style. A mark in the editor's schema would show the style but needs a custom node in the vendored bundle.
+- **A block opened and left alone is never an edit.** Without this, a list's continuation indent or the editor's choice of marker counted as a change.
+
+Not done: tables, folds, cells with their own editor, a real phone, the non-owner token check. The last corpus run found one block that rendered differently after a round trip (emphasis inside a link text, which the editor moves outside the link); it is now refused.
+
+*Cost to change: `classify()` in `assets/inpage-edit.js` back to sending lists and quotes to `source`, and delete `assets/inpage-markdown.js`; nothing is stored.*

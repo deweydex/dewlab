@@ -517,10 +517,18 @@ changing the editor never means rebuilding the standalone bundle.
 `localStorage` or asks for one, and fetches the page's source by blob sha
 (`githubClient().blob()`), so the block ranges in `data-md` always point into
 the bytes they were made from. `classify()` says, from a block's element and
-its markdown, whether it edits in place (`rich`: Crepe, for a heading or a
-plain paragraph), as its markdown in a text box (`source`: maths, `{.term}`
-marks, raw HTML, images, lists, quotes, tables, folds), or not at all
+its markdown, whether it edits in place (`rich`: Crepe, for a heading,
+paragraph, list or quote that `richSafe()` in `assets/inpage-markdown.js`
+accepts), as its markdown in a text box (`source`: tables, folds, display
+maths, raw HTML, images, nested or loose lists, anything with a backslash or
+brace the editor would rewrite), or not at all
 (`locked`: cells, includes, and pieces of the page built from other parts).
+`inpage-markdown.js` is the whole of what the rich editor is told about our
+markdown: inline maths goes in as a code span holding its TeX (so the TeX is
+what shows and what is edited), `*word*{.term}` goes in as emphasis and gets
+its mark back by the words, and a list comes back out with the bullet it was
+written with and, if it was tight, tight. A block opened and left without
+typing is never counted as changed, whatever the editor would have written.
 Opening a block swaps it for an editor of the same size in the same place;
 leaving it keeps what was typed. `save()` splices every changed block over its
 own range of the original (`splice()`) and commits that, so the file is always
