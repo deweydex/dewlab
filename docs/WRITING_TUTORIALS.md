@@ -1706,6 +1706,13 @@ of the same markdown files described here — nothing about a tutorial's format 
 different because it went through the editor. For substantial writing, a local
 checkout and an ordinary text editor is still the more comfortable tool.
 
+For a small change to a page that already exists (a typo, a clearer sentence)
+you can edit the page where it stands: open **Settings**, press **Edit this
+page** at the bottom, click a heading or a paragraph and type, then press
+**Open pull request**. The page looks the same while you edit. What is
+editable and what is not yet is in [`EDITING_A_PAGE.md`](EDITING_A_PAGE.md),
+which is also the guide for a teacher who has never used GitHub.
+
 The editor reports a `tutorial:slug#anchor` link that does not resolve, checked
 against every other tutorial's real slugs and headings, before you commit rather
 than after. A "Link to another tutorial" toggle above the prose editor searches

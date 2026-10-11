@@ -2,9 +2,8 @@
 import { createProseEditor } from "./vendor/milkdown.bundle.js";
 import { textMatches } from "./search-words.js";
 
-const API = "https://api.github.com";
-const TOKEN_KEY = "dewlab:editor:token";
-const REPO = "deweydex/dewlab";
+import { githubClient, TOKEN_KEY, REPO } from "./github-client.js";
+export { githubClient };
 
 const FENCE = /^ *```([^\n]*)\n([\s\S]*?)^ *```[ \t]*$/gm;
 
@@ -331,80 +330,6 @@ export function renamedCells(before, after) {
     if (cell.id && !nowIds.has(cell.id)) gone.push(cell.id);
   }
   return gone;
-}
-
-export function githubClient(token) {
-  async function call(path, options = {}) {
-    const response = await fetch(API + path, {
-      ...options,
-      headers: {
-        Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${token}`,
-        ...(options.body ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {}),
-      },
-    });
-    if (!response.ok) {
-      const detail = await response.text();
-      throw new Error(`GitHub said ${response.status}: ${detail.slice(0, 300)}`);
-    }
-    return response.status === 204 ? null : response.json();
-  }
-
-  return {
-    async listTutorials() {
-      const head = await call(`/repos/${REPO}/git/ref/heads/main`);
-      const tree = await call(`/repos/${REPO}/git/trees/${head.object.sha}?recursive=1`);
-      return {
-        base: head.object.sha,
-        paths: tree.tree
-          .filter((e) => e.type === "blob"
-            && (e.path.startsWith("tutorials/") || e.path.startsWith("courses/")))
-          .map((e) => e.path),
-      };
-    },
-    async read(path) {
-      const file = await call(`/repos/${REPO}/contents/${encodeURI(path)}?ref=main`);
-      return decodeURIComponent(escape(atob(file.content.replace(/\n/g, ""))));
-    },
-    async commit({ base, branch, message, files }) {
-      const blobs = [];
-      for (const file of files) {
-        if (file.text === null) {
-          blobs.push({ path: file.path, mode: "100644", type: "blob", sha: null });
-          continue;
-        }
-        const blob = await call(`/repos/${REPO}/git/blobs`, {
-          method: "POST",
-          body: JSON.stringify({ content: file.text, encoding: "utf-8" }),
-        });
-        blobs.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
-      }
-      const tree = await call(`/repos/${REPO}/git/trees`, {
-        method: "POST",
-        body: JSON.stringify({ base_tree: base, tree: blobs }),
-      });
-      const created = await call(`/repos/${REPO}/git/commits`, {
-        method: "POST",
-        body: JSON.stringify({ message, tree: tree.sha, parents: [base] }),
-      });
-      await call(`/repos/${REPO}/git/refs`, {
-        method: "POST",
-        body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: created.sha }),
-      });
-      const pull = await call(`/repos/${REPO}/pulls`, {
-        method: "POST",
-        body: JSON.stringify({
-          title: message.split("\n")[0],
-          head: branch,
-          base: "main",
-          draft: true,
-          body: `Written from the dewlab editor.\n\n${message}`,
-        }),
-      });
-      return pull.html_url;
-    },
-  };
 }
 
 /* What each one does, in the tooltip, because four words on four buttons is

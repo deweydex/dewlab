@@ -286,10 +286,15 @@ def attach(page: str) -> str:
     return "".join(out)
 
 
+EDIT_RE = re.compile(r',\s*"edit":\s*\{[^{}]*\}')
+
+
 def strip(page: str) -> str:
     """The page without any trace of the map, for comparing with one built
-    without it."""
-    return re.sub(MARKER_RE.pattern + r"\s*", "", ATTR_RE.sub("", page))
+    without it. That includes the `edit` entry a mapped page's manifest carries,
+    which names the file and blob the ranges point into."""
+    page = EDIT_RE.sub("", ATTR_RE.sub("", page))
+    return re.sub(MARKER_RE.pattern + r"\s*", "", page)
 
 
 def splice(text: str, edits: list[tuple[int, int, str]]) -> str:

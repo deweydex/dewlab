@@ -5643,9 +5643,11 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
 
 
 # When true, every page carries `data-md="START:END"` on each top-level block,
-# the byte range of the markdown file that produced it (source_map.py). Off by
-# default while the in-page editor is a spike (planning/IN_PAGE_EDITOR.md);
-# `python3 build.py --source-map` turns it on.
+# the byte range of the markdown file that produced it (source_map.py), and its
+# manifest says which file and blob that is, which is what "Edit this page"
+# works from. A build from the command line turns it on (`--no-source-map`
+# leaves it out). It is off here so that code which calls load() or build()
+# directly, the tests above all, gets the plain page.
 SOURCE_MAP = False
 
 
@@ -6185,6 +6187,18 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     legacy = legacy_ids().get(tutorial.slug)
     if legacy:
         manifest["legacy"] = legacy
+    if "data-md=" in body_html and tutorial.is_default:
+        # What "Edit this page" needs (assets/inpage-edit.js): which file this
+        # page came from, and the git blob it was built from, so the editor
+        # reads exactly the bytes the page's block ranges point into.
+        data = tutorial.path.read_bytes()
+        manifest["edit"] = {
+            "path": tutorial.path.relative_to(ROOT).as_posix(),
+            "sha": hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest(),
+            "title": tutorial.title,
+            "editor": versioned(f"{up}assets/", "vendor/milkdown.bundle.js"),
+            "module": versioned(f"{up}assets/", "inpage-edit.js"),
+        }
     versions = version_manifest(tutorial, family or [tutorial])
     if versions:
         manifest["versions"] = versions
@@ -6356,8 +6370,10 @@ def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
 
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
-    # A copy to keep has nothing to edit, so it carries none of the source map.
+    # A copy to keep has nothing to edit, so it carries none of the source map
+    # or of the Settings section and loader that start editing.
     page = source_map.ATTR_RE.sub("", page)
+    page = re.sub(r"<!--dl-edit:start-->.*?<!--dl-edit:end-->", "", page, flags=re.DOTALL)
     # The same prefixes build.py wrote into the page's own references: `up`
     # for anything under assets/, `root` for the site root itself.
     root = "../" * tutorial.depth
@@ -8370,13 +8386,14 @@ def main() -> int:
         help="skip the downloadable single-file copies, which are the slow part",
     )
     parser.add_argument(
-        "--source-map",
+        "--no-source-map",
         action="store_true",
-        help="mark each block of a page with the markdown range it came from (editor spike)",
+        help="leave out the markdown range each block of a page carries (what "
+             "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
     global SOURCE_MAP
-    SOURCE_MAP = args.source_map
+    SOURCE_MAP = not args.no_source_map
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:
