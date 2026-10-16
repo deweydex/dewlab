@@ -5837,3 +5837,17 @@ Choices somebody could have made differently.
 Not done: tables, folds, cells with their own editor, a real phone, the non-owner token check. The last corpus run found one block that rendered differently after a round trip (emphasis inside a link text, which the editor moves outside the link); it is now refused.
 
 *Cost to change: `classify()` in `assets/inpage-edit.js` back to sending lists and quotes to `source`, and delete `assets/inpage-markdown.js`; nothing is stored.*
+
+---
+
+## The where-you-are tree's headings are links
+
+The tree's three levels above the page — all tutorials, the course, the series — were `<summary>` toggles only: they opened a list of siblings but led nowhere, so getting back to a course's page or the full contents meant leaving the tree. Each heading is now a link to its page, and the caret at its left still opens and closes the list.
+
+Choices somebody could have made differently.
+
+- **The series links to its heading on the course page** (`course.html#series-<key>`), because a series has no page of its own. A course with one series prints no series heading, so there the link is the course page itself.
+- **The caret is the only toggle target on the heading's own line.** Clicking the heading's text now navigates. The alternative, a separate link beside each heading, doubled every level's line in a column that is already narrow.
+- **`routes.json` carries each series' address** so the runtime can keep the links when a reader on a two-course page switches course (`drawCourseChrome()`).
+
+*Cost to change: `<summary><a>` back to plain text in `crumb_trail_html()` and `setRungLink()` in `assets/tutorial-runtime.js`, then rebuild `assets/vendor/`.*

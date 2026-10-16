@@ -3710,6 +3710,18 @@ def contents_items_html(tutorial: Tutorial) -> tuple[str, int]:
     return "".join(item(s) for s in sections), len(sections)
 
 
+def series_fragment(
+    course: Course,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    key: str,
+) -> str:
+    """The `#series-<key>` a link to one series should carry. The course
+    page (render_course_body()) only prints a series heading, and so only
+    has something to land on, when the course has more than one series."""
+    present = [k for k in course.keys if (course.id, k) in groups]
+    return f"#series-{html.escape(key, quote=True)}" if len(present) > 1 else ""
+
+
 def crumb_trail_html(
     tutorial: Tutorial,
     groups: dict[tuple[str, str], list[Tutorial]],
@@ -3744,6 +3756,12 @@ def crumb_trail_html(
     (`data-courses`), and the runtime redraws these two rungs for the
     course the reader is following (tutorial-runtime.js, drawCourseChrome).
     A page no course lists has only the first rung and its own.
+
+    The heading of each level above the page — all tutorials, the course,
+    the series — is a link to the page it names (the all-tutorials page, the
+    course's page, and the series' heading on the course's page), so every
+    step back is one click from anywhere. The caret beside it still opens
+    and closes the level's list.
     """
     if (tutorial.practice_for or tutorial.is_context) and registry:
         owner = registry.get(tutorial.owners[0])
@@ -3840,21 +3858,24 @@ def crumb_trail_html(
     on_courses = html.escape(" ".join(tutorial.courses), quote=True)
     levels = [
         '<details class="dl-crumb-level">'
-        "<summary>All tutorials</summary>"
+        f'<summary><a href="{up}all-tutorials.html">All tutorials</a></summary>'
         f'<div role="list">{courses_items}</div>'
         "</details>"
     ]
     if course is not None:
         levels.append(
             '<details class="dl-crumb-level dl-crumb-level-2">'
-            f"<summary>{html.escape(course.title)}</summary>"
+            f'<summary><a href="{up}{html.escape(course.id, quote=True)}.html">'
+            f"{html.escape(course.title)}</a></summary>"
             f'<div role="list">{series_items}</div>'
             "</details>"
         )
     if course is not None and tutorial.series:
+        series_href = f"{up}{html.escape(course.id, quote=True)}.html" + series_fragment(course, groups, tutorial.series)
         levels.append(
             '<details class="dl-crumb-level dl-crumb-level-3" open>'
-            f"<summary>{html.escape(course.series_title(tutorial.series))}</summary>"
+            f'<summary><a href="{series_href}">'
+            f"{html.escape(course.series_title(tutorial.series))}</a></summary>"
             f'<div role="list">{"".join(tutorial_items)}</div>'
             "</details>"
         )
@@ -4834,7 +4855,10 @@ def render_course_body(
     for key in present:
         members = groups[(course.id, key)]
         if len(present) > 1:
-            out.append(f'<h3>{html.escape(course.series_title(key))}</h3>')
+            out.append(
+                f'<h3 id="series-{html.escape(key, quote=True)}">'
+                f"{html.escape(course.series_title(key))}</h3>"
+            )
         archive = archives.get((course.id, key))
         if archive is not None:
             sequence = zip_sequence(members, practice)
@@ -7350,7 +7374,12 @@ def write_routes(
                         "url": problems.out_path.relative_to(OUT).as_posix(),
                     }
                 entries.append(entry)
-            series.append({"key": key, "title": course.series_title(key), "tutorials": entries})
+            series.append({
+                "key": key,
+                "title": course.series_title(key),
+                "url": f"{course.id}.html" + series_fragment(course, groups, key),
+                "tutorials": entries,
+            })
         routes.append({
             "id": course.id,
             "title": course.title,

@@ -103,8 +103,8 @@ class TestNavigation:
         # A series is headed by its name, not its key: until a course had
         # two series nobody saw that the heading was the key.
         index = (repo / "site" / "all-tutorials.html").read_text()
-        assert "<h3>Reflections and review</h3>" in index
-        assert "<h3>reflections-and-review</h3>" not in index
+        assert '<h3 id="series-reflections-and-review">Reflections and review</h3>' in index
+        assert ">reflections-and-review</h3>" not in index
         # And the key, not the heading, names the zip and the page's series.
         assert 'content="reflections-and-review"' in built(repo, "looking-back")
 
@@ -250,8 +250,10 @@ class TestAllTutorialsPage:
         page = built(repo)
         trail = page[page.index('<nav class="dl-crumbtrail"'):page.index("</nav>")]
         assert 'data-courses="computational-methods zz-other"' in trail
-        assert "<summary>Computational Methods</summary>" in trail
-        assert "Other Course</summary>" not in trail
+        # Each level's heading is a link to the page it names.
+        assert re.search(r'<summary><a href="(?:\.\./)*computational-methods\.html">Computational Methods</a></summary>', trail)
+        assert re.search(r'<summary><a href="(?:\.\./)*all-tutorials\.html">All tutorials</a></summary>', trail)
+        assert "Other Course</a></summary>" not in trail
         # And "also part of" now lists the other course, under the title.
         line = ('<p class="dl-also-part-of">This page is also part of '
                 '<a href="../zz-other.html">Other Course</a>.</p>')
@@ -300,8 +302,8 @@ class TestAllTutorialsPage:
         assert tiles == ["zz-later-module", "computational-methods"]
         assert self.course_headings(repo) == ["Computational Methods", "Later Module"]
         page = built(repo)
-        assert "<summary>Computational Methods</summary>" in page
-        assert "Later Module</summary>" not in page
+        assert ">Computational Methods</a></summary>" in page
+        assert "Later Module</a></summary>" not in page
 
         index.write_text("cards:\n  - nowhere\norder:\n  - computational-methods\n")
         with pytest.raises(b.BuildError, match="lists nowhere under `cards:`"):
@@ -481,7 +483,7 @@ class TestArchivedTutorials:
         trail = page[page.index('<nav class="dl-crumbtrail"'):page.index("</nav>")]
         assert "dl-crumb-level-2" not in trail and "dl-crumb-level-3" not in trail
         assert 'aria-current="page">A Title' in trail
-        assert "<summary>All tutorials</summary>" in trail
+        assert re.search(r'<summary><a href="(?:\.\./)*all-tutorials\.html">All tutorials</a></summary>', trail)
 
     def test_an_unknown_status_stops_the_build(self, repo):
         path = write(repo, "Prose.\n")

@@ -569,7 +569,9 @@ class TestPanelClearsTheCornerDocks:
         page.goto(f"{site_url}/tutorials/one.html")
         _open_panel(page, "#dl-reference-toggle")
         before = page.eval_on_selector("#dl-reference", "el => el.getBoundingClientRect().top")
-        page.click(".dl-crumb-level-2 > summary")
+        # The heading is a link now; the caret at the summary's left edge
+        # is what opens the rung.
+        page.click(".dl-crumb-level-2 > summary", position={"x": 3, "y": 6})
         page.wait_for_timeout(100)
         dock_bottom = page.eval_on_selector(
             ".dl-corner-dock-tl", "el => el.getBoundingClientRect().bottom")
@@ -755,7 +757,7 @@ class TestMobileLauncher:
         page.click("#dl-mobile-item-whereyouare")
         assert page.is_visible("#dl-whereyouare")
         assert page.is_visible("#dl-whereyouare .dl-crumbtrail")
-        page.click("#dl-whereyouare .dl-crumb-level-3 a")
+        page.click('#dl-whereyouare .dl-crumb-level-3 [role="list"] a')
         page.wait_for_url(f"{site_url}/tutorials/two.html")
         context.close()
 
