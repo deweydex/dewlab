@@ -122,12 +122,6 @@ class TestComparison:
         label = tab.locator(".dl-cell[data-cell-id='compare-total'] .dl-btn-run .dl-btn-label")
         assert label.inner_text() == "Run"
 
-    def test_no_word_on_the_table_judges(self, tab):
-        box = compare(tab, "compare-total")
-        text = box.inner_text().lower()
-        for word in ("correct", "wrong", "not yet", "right", "pass", "fail", "✓", "✗"):
-            assert word not in text, word
-
     def test_the_readers_own_tests_run_on_both_sides_first(self, tab):
         box = compare(tab, "compare-total")
         tests = box.locator("tbody.dl-compare-tests tr:not(.dl-compare-section)")

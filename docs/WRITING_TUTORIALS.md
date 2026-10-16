@@ -1754,8 +1754,10 @@ Run `python3 check.py tutorials/<id>` (or `courses/<course>.yaml`) and fix
 every line that starts with *Problem*. When it reports none, it offers to
 open the pull request for you — [`CHECK_YOUR_WORK.md`](CHECK_YOUR_WORK.md).
 
-Run `python3 build.py` and fix anything it fails on — a dead link, a missing
-`alt`, an unstyled fold, a `covers:` section that does not exist.
+Run `python3 build.py` and fix anything it fails on — a link to a page that
+does not exist, a missing `alt`. Read what it notes, too: a link or a
+`covers:` entry naming a section the page no longer has builds, and goes to
+the top of the page, but is worth tidying.
 
 Run `python3 dev/curriculum_map.py` if you touched `covers:` or
 `outcomes.yaml`, and check that the coverage gaps it reports are the ones you

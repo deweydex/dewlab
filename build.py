@@ -4340,13 +4340,19 @@ def taught_where(tutorials: list[Tutorial]) -> dict[str, dict]:
     """Outcome code to the tutorial section that teaches it.
 
     Read from each tutorial's own `covers:` frontmatter, so a topic's link
-    cannot point somewhere the tutorial does not claim.
+    cannot point somewhere the tutorial does not claim. A claim for a section
+    the page no longer has is left out, as dev/curriculum_map.py leaves it out.
     """
     where: dict[str, dict] = {}
     for tutorial in tutorials:
         if tutorial.archived or tutorial.status != "live" or not tutorial.is_default:
             continue
         for anchor, claim in (tutorial.meta.get("covers") or {}).items():
+            if anchor not in tutorial.anchors:
+                note(tutorial.path, f"declares `covers:` for {anchor!r}, which is not a section "
+                                    "of it now, so the topic tree leaves that claim out. Move it "
+                                    "to the section that teaches it, or delete it")
+                continue
             for code in claim.get("covers") or []:
                 where.setdefault(code, {
                     "title": tutorial.title,
@@ -5476,7 +5482,10 @@ def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
     to be guessed: `tutorial:first-steps` is the same tutorial from any
     course. A link to an id this build has no page for stops the build
     rather than shipping a page that looks finished to everyone except the
-    student who follows it.
+    student who follows it. A link to a section the page no longer has is a
+    note, and goes to the top of the page: the reader still arrives, and a
+    teacher who cuts a section should not have to edit every page that
+    pointed at it before theirs can go live (DECISIONS_LOG 7.299).
     """
 
     def one(match: re.Match) -> str:
@@ -5486,10 +5495,9 @@ def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
             known = ", ".join(sorted(registry)) or "none"
             fail(tutorial.path, f"link to unknown tutorial {slug!r} (built: {known})")
         if anchor and anchor not in target.anchors:
-            fail(
-                tutorial.path,
-                f"link to {slug}#{anchor} — that tutorial has no anchor {anchor!r}",
-            )
+            note(tutorial.path, f"links to {slug}#{anchor}, and that tutorial has no section "
+                                f"{anchor!r} now, so the link goes to the top of the page")
+            anchor = ""
         href = os.path.relpath(target.out_path, tutorial.out_path.parent)
         return f'href="{href}#{anchor}"' if anchor else f'href="{href}"'
 
@@ -7702,9 +7710,10 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
         for step in topic.get("steps") or []:
             target = registry.get(step["tutorial"])
             need(target is not None, f"topic {code}: step names {step['tutorial']!r}, which is not a tutorial")
-            if target is not None and step.get("section"):
-                need(step["section"] in target.anchors,
-                     f"topic {code}: {step['tutorial']} has no section {step['section']!r}")
+            if target is not None and step.get("section") and step["section"] not in target.anchors:
+                note(graph_path, f"topic {code} points at {step['tutorial']}#{step['section']}, a "
+                                 "section that page no longer has, so the map links to the top of the page")
+                del step["section"]
     for code in layout["towns"]:
         if code not in topics:
             note(ROOT / "map" / "layout.json", f"places {code!r}, which is not a topic; "

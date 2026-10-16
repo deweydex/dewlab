@@ -3,12 +3,12 @@
 `dev/glossary_python.py` is the only thing standing between a glossary
 entry and a function that was misspelled, removed, or shown with an example
 Python would reject. These tests make sure it still notices, and that the
-build carries its signatures through to the reference.
+build carries its signatures through to the reference. The real glossary is
+checked by the script itself, `--check` in CI's glossary-python job.
 """
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -20,37 +20,6 @@ sys.path.insert(0, str(ROOT))
 
 import build  # noqa: E402
 import glossary_python as gp  # noqa: E402
-
-
-def _has(module: str) -> bool:
-    try:
-        __import__(module)
-    except ImportError:
-        return False
-    return True
-
-
-needs_libraries = pytest.mark.skipif(
-    not all(_has(m) for m in ("numpy", "pandas", "matplotlib")),
-    reason="glossary entries name things in numpy, pandas and matplotlib",
-)
-
-
-@needs_libraries
-def test_every_python_name_in_the_glossary_exists_and_every_example_fits():
-    _, problems, checked = gp.survey()
-    assert checked > 50, "the glossary's Python entries were not found"
-    assert problems == []
-
-
-@needs_libraries
-def test_the_signatures_file_is_current():
-    recorded = json.loads(gp.SIGNATURES.read_text())
-    here = f"{sys.version_info.major}.{sys.version_info.minor}"
-    if recorded["python"] != here:
-        pytest.skip(f"signatures were written under Python {recorded['python']}")
-    signatures, _, _ = gp.survey()
-    assert recorded["signatures"] == signatures
 
 
 class TestResolving:

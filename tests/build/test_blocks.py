@@ -96,13 +96,6 @@ class TestRendering:
         assert '<th scope="col">Your guess</th>' in page
         assert page.count('<td class="dl-compare-guess"><input type="text"') == 2
 
-    def test_no_word_in_the_markup_judges(self, repo):
-        write(repo, CELL + SOLUTION + INPUTS)
-        b.build()
-        table = built(repo).split('<div class="dl-compare"')[1].split("</div></div>")[0]
-        for word in ("correct", "wrong", "not yet", "pass", "fail"):
-            assert word not in table.lower()
-
     def test_a_comparison_says_what_it_types_for_input(self, repo):
         write(repo, ASKING + TYPED + "```inputs\nask_shift()\n```\n")
         b.build()

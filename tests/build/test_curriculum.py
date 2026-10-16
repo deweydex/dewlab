@@ -19,19 +19,13 @@ class TestTheKnowledgeMap:
     def series(self, repo, monkeypatch, count=4, covers=True):
         strands = ["programming", "programming", "algorithms", "algebra"]
         codes = ["PDP-LO4", "PDP-LO6", "MIT-6.3", "MIT-1.6"]
-        (repo / "planning" / "curriculum").mkdir(parents=True, exist_ok=True)
-        outcomes_path = repo / "planning" / "curriculum" / "outcomes.yaml"
-        outcomes_path.write_text(
-            "outcomes:\n" + "".join(
-                f"  - code: {c}\n    title: t\n    strand: {s}\n"
-                for c, s in zip(codes, strands)
-            )
-        )
-        # OUTCOME_DATA is bound to the real project root at import time, so
-        # the `repo` fixture's own ROOT monkeypatch never touches it —
-        # without this, every test here would silently read this repo's
-        # own real outcomes.yaml instead of the fake one just written above.
-        monkeypatch.setattr(b, "OUTCOME_DATA", outcomes_path)
+        # The map is drawn on the tree page, which needs topics; its lanes
+        # come from these outcomes' strands.
+        small_curriculum(repo)
+        curriculum_file(repo, "outcomes.yaml", "outcomes:\n" + "".join(
+            f"  - code: {c}\n    title: t\n    strand: {s}\n"
+            for c, s in zip(codes, strands)
+        ))
         for n in range(1, count + 1):
             block = ""
             if covers:
@@ -110,6 +104,7 @@ class TestTheTopicTree:
         topic on it, laid out top to bottom by dependency, with the tiers
         labelled and the colours explained, nothing marked taught, and the
         contents page pointing here."""
+        small_curriculum(repo)
         write(repo, "Some prose.\n")
         b.build()
         page = self.tree(repo)
@@ -120,10 +115,7 @@ class TestTheTopicTree:
         assert "The topic tree" in page
 
         # Every topic in the glossary becomes a node.
-        topics = yaml.safe_load(
-            (DEWLAB / "planning" / "curriculum" / "topics.yaml").read_text()
-        )["topics"]
-        assert len(nodes) == len(topics)
+        assert len(nodes) == len(yaml.safe_load(SMALL_TOPICS)["topics"])
 
         # A topic carries what it is and where it is used.
         node = next(n for n in nodes if n["code"] == "MIT-1.4")
@@ -153,10 +145,18 @@ class TestTheTopicTree:
         for earlier, later in zip(bands, bands[1:]):
             assert earlier["y"] + earlier["height"] <= later["y"]
 
-        # The tree is taller than it is wide. Giving each subject its own
-        # column once produced 5854px wide against 756px tall — a horizontal
-        # tree in disguise, unusable on a phone.
-        assert data["height"] > data["width"]
+        # The tree keeps to its columns and wraps, however many subjects
+        # there are. Giving each subject its own column once produced 5854px
+        # wide against 756px tall — a horizontal tree in disguise, unusable
+        # on a phone. Six strands here, five columns.
+        assert len({n["strand"] for n in nodes}) > b.TREE_COLUMNS
+        span = b.TOPIC_W + b.ROW_GAP
+        assert data["width"] == b.TREE_PAD * 2 + b.TREE_COLUMNS * span - b.ROW_GAP
+        lines: dict[float, int] = {}
+        for node in nodes:
+            lines[node["y"]] = lines.get(node["y"], 0) + 1
+            assert node["x"] + b.TOPIC_W <= data["width"]
+        assert max(lines.values()) <= b.TREE_COLUMNS
 
         # The top row says you can start there: the stripe labels are the
         # only place the map explains itself.
@@ -190,17 +190,8 @@ class TestTheTopicTree:
         assert listed == {n["strand"] for n in nodes}
         assert "What the colours mean" in page
 
-        # A topic we ruled out says so. Read from the file rather than named
-        # here: this once named MIT-2.3 outright and broke the day
-        # Venn diagrams came back into scope — a decision changing, not the
-        # tree breaking. When nothing is ruled out at the moment there is
-        # nothing for the tree to say so about, and the loop checks nothing.
-        scope = yaml.safe_load(
-            (DEWLAB / "planning" / "curriculum" / "out-of-scope.yaml").read_text()
-        )
-        ruled_out = [entry["code"] for entry in scope["outcomes"] or []]
-        for code in ruled_out:
-            assert states[code] == "excluded", f"{code} is out of scope and the tree does not say so"
+        # A topic we ruled out says so.
+        assert states["MIT-2.3"] == "excluded"
 
         # The contents page introduces the place instead of carrying the map.
         index = (repo / "site" / "all-tutorials.html").read_text()
@@ -218,6 +209,7 @@ class TestTheTopicTree:
         # Topic codes and outcome codes used to be identical; now several
         # topics can share one outcome, so strand/coverage must follow the
         # `outcome:` field or a split topic silently looks untaught.
+        small_curriculum(repo)
         real = b.load_topics()
         split = {
             "SPLIT-A": {
@@ -245,6 +237,7 @@ class TestTheTopicTree:
         """The link comes from the tutorial's own `covers:`, so it cannot point
         somewhere the tutorial does not claim; and the tutorial map is drawn
         on the tree page, not on the contents page."""
+        small_curriculum(repo)
         path = write(repo, "## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"
@@ -264,11 +257,22 @@ class TestTheTopicTree:
         assert self.tree(repo).count('class="dl-map-node"') == 3
 
 
+    def test_a_claim_for_a_section_the_page_no_longer_has_is_left_out_and_noted(self, repo, capsys):
+        # A teacher cut the section (DECISIONS_LOG 7.299): the page builds,
+        # and the tree does not link a topic to a section that is not there.
+        small_curriculum(repo)
+        path = write(repo, "## A section\n\nProse.\n")
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  cut-section:\n    covers: [MIT-1.4]\n"
+        ))
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert node["state"] != "taught"
+        assert "cut-section" in capsys.readouterr().err
+
+
 class TestBrowseByTopicPage:
-    """Built against the sandboxed fixture set like every other test here, so
-    a mismatch against the real topic-groups.yaml is expected — see
-    TestTopicGroupsMatchRealTutorials for what actually checks that file.
-    The plain build with no matching tutorial, and so no page, is checked
+    """The plain build with no matching tutorial, and so no page, is checked
     with the rest of the plain page in TestTheTopicTree."""
 
     def page(self, repo) -> str:
@@ -276,12 +280,11 @@ class TestBrowseByTopicPage:
         return path.read_text() if path.is_file() else ""
 
     def test_a_group_appears_once_its_own_tutorial_is_in_this_build(self, repo):
-        # Any real group entry will do: an id is site-wide.
-        groups = yaml.safe_load(
-            (DEWLAB / "planning" / "curriculum" / "topic-groups.yaml").read_text()
-        )["groups"]
-        group = groups[0]
-        write(repo, "Some prose.\n", slug=group["tutorials"][0])
+        group = {"key": "a-group", "name": "A group of pages",
+                 "intro": "Pages to start with, in any order.", "tutorials": ["grouped"]}
+        curriculum_file(repo, "topic-groups.yaml", yaml.safe_dump({"groups": [group]}))
+        small_curriculum(repo)
+        write(repo, "Some prose.\n", slug="grouped")
         b.build()
         page = self.page(repo)
         assert group["name"] in page
@@ -316,16 +319,10 @@ class TestNoDuplicateKeysInCurriculumData:
         with pytest.raises(yaml.YAMLError, match="duplicate key"):
             b.load_yaml_no_duplicate_keys(text)
 
-    def test_ordinary_yaml_and_the_real_curriculum_files_load(self):
-        # Ordinary YAML with no repeats still loads.
+    def test_ordinary_yaml_still_loads(self):
+        # The real curriculum files are held to this by the build itself,
+        # which loads them with the same function.
         text = "topics:\n  T1:\n    name: One\n    needs: [A]\n"
         assert b.load_yaml_no_duplicate_keys(text) == {
             "topics": {"T1": {"name": "One", "needs": ["A"]}}
         }
-        # The real topics.yaml, outcomes.yaml and, if it exists,
-        # out-of-scope.yaml have no duplicate keys.
-        curriculum = DEWLAB / "planning" / "curriculum"
-        for name in ("topics.yaml", "outcomes.yaml", "out-of-scope.yaml"):
-            path = curriculum / name
-            if path.is_file() or name != "out-of-scope.yaml":
-                b.load_yaml_no_duplicate_keys(path.read_text())

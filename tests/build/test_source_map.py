@@ -216,6 +216,7 @@ def _check_page(path: str) -> tuple[str, str]:
     return path, ""
 
 
+@pytest.mark.advisory
 def test_every_real_page_reads_the_same_with_the_map_and_has_sound_ranges():
     """Across every tutorial in the repository, so a new kind of markup the
     tokenizer misreads is found here rather than on a teacher's page. The

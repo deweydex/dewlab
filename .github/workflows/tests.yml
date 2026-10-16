@@ -16,7 +16,50 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Which jobs a pull request needs, from the files it changes (DECISIONS_LOG
+  # 7.299). A change only to documents about the project (planning/, docs/,
+  # the top-level .md files, .claude/) runs the house-style reports and
+  # nothing else: no page reads them. A change that also touches tutorials/
+  # adds the unit tests and the glossary check, which build and read the
+  # tutorials, but not the browser tests or the bundle check: the browser
+  # files CI runs build sites of their own and never read a real tutorial,
+  # and the bundle is made from vendor-src/ and the runtime. Two parts of
+  # planning/ are read by the build, curriculum/ and feedback.yaml, and count
+  # as code. A push to main and a manual run run everything. A job skipped
+  # here reports as skipped, which a required check accepts.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.sort.outputs.code }}
+      runtime: ${{ steps.sort.outputs.runtime }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Sort the changed files
+        id: sort
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            echo "runtime=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # A pull request's checkout is its merge into the base, so the
+          # first parent is the base as it stands.
+          git diff --name-only HEAD^1 HEAD > changed.txt
+          cat changed.txt
+          documents='^(planning/|docs/|\.claude/|[^/]+\.md$)'
+          read_by_build='^planning/(curriculum/|feedback\.yaml$)'
+          # grep exits 1 when nothing matches, which is an answer here.
+          code=$(grep -vE "$documents" changed.txt; grep -E "$read_by_build" changed.txt || true)
+          runtime=$(printf '%s\n' "$code" | grep -v -e '^tutorials/' -e '^$' || true)
+          echo "code=$([ -n "$code" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "runtime=$([ -n "$runtime" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
   unit:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +89,8 @@ jobs:
 
       # The curriculum map is generated from the outcome data and the tutorials'
       # own `covers:` frontmatter. A map that cannot be made at all (a `covers:`
-      # code or section that does not exist) exits 2, and fails here. One that
+      # code that no outcome has) exits 2, and fails here; a claim for a
+      # section the page no longer has is noted and left out. One that
       # is only out of date exits 1 and passes here: the map also counts the
       # italic words in every tutorial's prose, so any new sentence can make it
       # stale, and a stale planning document breaks no page. The house-style
@@ -136,6 +180,8 @@ jobs:
   # its Pyodide version has no wheel for this Python, and only its names are
   # checked, never its signatures.
   glossary-python:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -158,6 +204,8 @@ jobs:
   # tutorials quietly behave like an older version of the tool. Rebuilding it
   # here and failing on any difference turns that into a caught mistake.
   standalone-bundle-is-current:
+    needs: changes
+    if: needs.changes.outputs.runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -196,6 +244,8 @@ jobs:
   # once and cached: the fixture site serves it, and a page with cells
   # boots it even when no test presses Run.
   browser:
+    needs: changes
+    if: needs.changes.outputs.runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

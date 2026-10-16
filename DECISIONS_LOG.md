@@ -5870,6 +5870,24 @@ Not done: the verdict-word checks (held for Josh); the 85 browser tests that gua
 
 *Cost to change: each converted refusal is one `note()` back to `fail()`, its test, and `check.py` where it mirrors it. The optional pages are `write_site_pages()` and `DEFAULT_HOME`; `TestPagesAreOptional` says what they do.*
 
+**7.299 — The verdict-word tests are retired, and CI runs what a pull request's files can affect.** Josh, 16 October 2026, choosing from the questions 7.298 left open: retire the three tests that scanned the interface's own strings for "correct", "wrong", "pass" and "fail"; leave the 85 local-only browser tests where they are; and skip jobs by the files a pull request changes, including the browser tests when only tutorials change.
+
+- **Retired**: `test_no_word_in_the_markup_judges` (`test_blocks.py`), `test_no_word_in_the_block_judges` (`test_predict_build.py`) and `test_no_word_on_the_table_judges` (`e2e/test_compare.py`). "No verdicts" stays a principle of the interface, held by review and `docs/HOW_DEWLAB_THINKS.md`, not by a word list.
+- **A `changes` job** in `tests.yml` sorts the files. Documents only (`planning/`, `docs/`, top-level `.md`, `.claude/`): house-style alone. Tutorials as well: add the unit tests and the glossary check. Anything else, or `planning/curriculum/` or `planning/feedback.yaml`, which the build reads: everything. The five browser files CI runs build their own sites and read no real tutorial, so skipping them for a tutorial-only change loses nothing they covered. A push to `main` runs everything, so a break that slips past a skipped job shows on `main` the same day.
+- **Two browser fixtures stopped copying the real `pages/`.** `test_map.py` and `test_inpage_editor.py` read them only because the build once required every page; both pass without. `test_page_smoke.py` still loads the real five, which is what it is for.
+
+Then the last of 7.298's open question, the tests that still failed with the content removed. Josh, the same day: "why changing content on a page or deleting a section should at all cause something to fail? What if an educator wants to remove a section from a page because it is too much or they don't like how it worked... this is not a testing task, its a pedagogical task." Chosen from the options put to him:
+
+- **The build tests no longer borrow the real curriculum.** The `repo` fixture points the six curriculum files into the test's own site, where they start empty. A test that needs outcomes and topics calls `small_curriculum(repo)`: six topics, three tiers, six strands, one ruled-out outcome, one groundwork topic. The topic-tree test's "taller than wide" became the rule it stood for, a fixed width of `TREE_COLUMNS` and no line longer than that, and it still fails when the layout is widened by a column. The half of the duplicate-key test that read the real files went, since the build loads them with the same function.
+- **Reported, not blocking** (`advisory`): `topic-groups.yaml` naming every real tutorial and only real ones (adding or retiring a tutorial was two edits, the second a curriculum decision a test forced); the real map's shape and its committed layout; two pictures sharing a pattern id; a hand-written `dl-` class with no rule in the stylesheet (the box shows unstyled); real pages the in-page editor's source map cannot read (that page loses editing in place and reads as before).
+- **Deleted**: the two glossary tests that ran `dev/glossary_python.py`'s own check on the real glossary, which CI's glossary-python job already runs on the right Python.
+
+- **Cutting a section from a page is a note, not a refusal.** Deleting "Families of numbers" from `numbers-a-computer-can-hold` took seven edits in seven files to get past the build, found one per ninety-second run: five other tutorials linked to it, the map pointed at it, and the page's own `covers:` named it. A reader following any of those still reaches the right page. Now a link to a missing section goes to the top of the page, the map's step drops its section, and a `covers:` claim for it is left out of the topic tree and the curriculum map; each says so in a note naming the file. A link to a page that does not exist still stops the build.
+
+With all five content folders emptied, all 727 blocking unit tests pass, against 413 that could not be collected when 7.298 began. The blocking suite runs in about ten seconds where it took fifty-seven: two of the moved tests read every real page, and every build test had loaded the full curriculum.
+
+*Cost to change: the retired tests are in git history. The filter is the `changes` job and one `needs:`/`if:` pair on each of four jobs; deleting those runs everything again. An `advisory` marker removed puts a test back in the gate; `small_curriculum()` and the `CURRICULUM_FILES` redirect are in `tests/build/helpers.py`.*
+
 ---
 
 ## Notebook notes size themselves to their text

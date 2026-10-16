@@ -11,6 +11,10 @@ question, not by convention:
 - **`tests/build/`** — does `build.py` turn source into the right static
   output? Every file here calls `b.build()` (via the shared `repo` fixture
   in `helpers.py`) and inspects what landed in `site/`. No browser, ever.
+  The fixture's site starts with no pages and no curriculum files, so no
+  test leans on the real ones by accident; a test that needs outcomes and
+  topics calls `small_curriculum(repo)`, a made-up one with one of each
+  thing the topic tree draws.
   `tests/build/test_check.py` is the one file here that isn't testing
   `build.py`'s own output — it's testing `check.py`, a standalone tool
   like the root five — but it lives here because it deliberately
@@ -37,7 +41,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_report_patterns.py` | `report_patterns.py`/`label_report.py` — pattern-matching over report-doors issues |
 | `test_pair_results.py` | `pair_results.py` — the pair-game judgement report generator |
 | `test_curriculum_map.py` | `curriculum_map.py` — the topic-tree/curriculum-map data generator |
-| `test_glossary_python.py` | `dev/glossary_python.py` — every glossary entry naming Python exists and its example fits the real signature; the signatures file is current; the build attaches signatures |
+| `test_glossary_python.py` | `dev/glossary_python.py` — how it resolves a name and checks an example, and that the build attaches signatures. The real glossary is checked by the script's own `--check`, in CI's glossary-python job |
 
 **`tests/build/` — one file per slice of `build.py`'s output:**
 
@@ -160,10 +164,15 @@ files (the curriculum map is current, the outlines index lists every outline,
 the topics claim every outcome) lives in the script that owns those files,
 `dev/curriculum_map.py --check`, and the Dewey Track's generated pictures are
 checked by their generators' `--check`. CI's `house-style` job runs those and
-reports a failure as a warning. The few tests still marked
-`@pytest.mark.advisory` (two author warnings, the page templates building, the
-links inside the project's documents) run there too; a plain
-`python3 -m pytest` leaves them out (`DECISIONS_LOG.md` 7.291, 7.298).
+reports a failure as a warning. The tests marked `@pytest.mark.advisory`
+run there too; a plain `python3 -m pytest` leaves them out
+(`DECISIONS_LOG.md` 7.291, 7.298, 7.299). They are the ones that read the
+project's own files rather than a test's: two author warnings, the page
+templates building, the links inside the project's documents,
+`topic-groups.yaml` naming every real tutorial, the real map's shape and
+committed layout, the pictures' pattern ids, a hand-written `dl-` class
+with no style, and real pages the in-page editor's source map cannot read.
+With every content folder emptied, the blocking tests all still pass.
 
 Put as one rule: a check blocks a merge only if its failure means a page does
 not load, a cell cannot run, a link or asset points at nothing, a number the

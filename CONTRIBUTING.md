@@ -70,7 +70,12 @@ a gate. A preference about how a page is shaped or worded goes in the style
 guide, or, if an author would want to hear it at build time, in a `note()`
 that lets the build carry on. A check on the project's own planning files
 belongs in the script that owns those files (`dev/curriculum_map.py --check`),
-not in the test suite. `DECISIONS_LOG.md` 7.295 and 7.298 say why.
+not in the test suite. A test that reads the project's own content (a real
+tutorial, the real curriculum or map) reports, under `advisory`; a test of the
+build makes the small example it needs. One test of the rule: with every
+content folder emptied, the blocking tests all pass. And a link to a section a
+page no longer has still reaches the page, so cutting a section is a note, not
+a refusal. `DECISIONS_LOG.md` 7.295, 7.298 and 7.299 say why.
 
 New to the suite, or not sure where a new test belongs?
 [`docs/tests-explained.md`](docs/tests-explained.md) maps what's in each
@@ -84,10 +89,10 @@ one goes.
 Three workflows run on every push.
 
 `tests` runs the unit suite, builds the site, fails if the curriculum map
-cannot be made (a `covers:` code or section that does not exist), and fails if
+cannot be made (a `covers:` code that no outcome has), and fails if
 one of the generated files for the topic tools is out of date. Its
 `house-style` job runs the checks that look after the project rather than any
-page: the few tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
+page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
 current and the planning files agree with each other, whether the Dewey Track's
 generated pictures are current, and the links inside the documents about the
 project. It reports what
@@ -96,6 +101,14 @@ it finds as a warning on the pull request and never fails it
 `python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check`,
 `python3 dev/graphics/dewey_units_1_5.py --check` (and `_6_10`) and
 `python3 dev/check_doc_links.py`.
+
+On a pull request, `tests` first sorts the changed files (`DECISIONS_LOG.md`
+7.299). One that changes only documents about the project (`planning/`,
+`docs/`, the top-level `.md` files, `.claude/`) gets the house-style job and
+nothing else. One that also changes `tutorials/` gets the unit tests and the
+glossary check as well, but not the browser job or the bundle check, since
+neither reads a tutorial. `planning/curriculum/` and `planning/feedback.yaml`
+are read by the build and count as code. A push to `main` runs everything.
 
 `standalone-bundle-is-current` rebuilds the vendored CodeMirror/KaTeX bundle
 from `vendor-src/` and fails on any difference. The bundle is committed on
