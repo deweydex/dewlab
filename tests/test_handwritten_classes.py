@@ -17,6 +17,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 REPO = Path(__file__).resolve().parent.parent
 
 # A fenced block is what a cell's own code lives in — a site editor's
@@ -43,6 +45,7 @@ def _used(root: Path = REPO) -> dict[str, list[Path]]:
     return sources
 
 
+@pytest.mark.advisory
 def test_every_hand_written_dl_class_is_styled():
     defined = _defined()
     missing = {

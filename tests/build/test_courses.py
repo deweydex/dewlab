@@ -423,6 +423,7 @@ class TestArchivedTutorials:
 
     def test_archived_tutorials_are_built_off_the_route_and_listed_under_archive(self, repo):
         # `sample` teaches an outcome; one, two and three are a live series.
+        small_curriculum(repo)
         path = write(repo, "# Sample\n\nThe body of it.\n\n## A section\n\nProse.\n")
         path.write_text(path.read_text().replace(
             "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  a-section:\n    covers: [MIT-1.4]\n"))
@@ -498,10 +499,13 @@ class TestArchivedTutorials:
             b.build()
 
 
+@pytest.mark.advisory
 class TestTopicGroupsMatchRealTutorials:
     """Checked directly against real tutorials on disk, since a sandboxed
-    build's tiny fixture set can't hold topic-groups.yaml to account —
-    write_topics_page() itself only warns on a mismatch for exactly that reason."""
+    build's tiny fixture set can't hold topic-groups.yaml to account. A
+    report, not a gate (DECISIONS_LOG 7.299): a tutorial added or retired
+    without a matching edit here is a curriculum decision still to make, and
+    write_topics_page() itself only warns."""
 
     def real_tutorial_keys(self) -> set[str]:
         # A practice page is identified by its `practice_for:` field, not a

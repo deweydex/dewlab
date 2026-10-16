@@ -87,7 +87,7 @@ Three workflows run on every push.
 cannot be made (a `covers:` code or section that does not exist), and fails if
 one of the generated files for the topic tools is out of date. Its
 `house-style` job runs the checks that look after the project rather than any
-page: the few tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
+page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
 current and the planning files agree with each other, whether the Dewey Track's
 generated pictures are current, and the links inside the documents about the
 project. It reports what

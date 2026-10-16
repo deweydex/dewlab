@@ -58,6 +58,98 @@ def outside_style_and_script(page: str) -> str:
     return re.sub(r"<script>.*?</script>", "", page, flags=re.DOTALL)
 
 
+CURRICULUM_FILES = {
+    "OUTCOME_DATA": "outcomes.yaml",
+    "TOPIC_DATA": "topics.yaml",
+    "TOPIC_GROUPS_DATA": "topic-groups.yaml",
+    "SCOPE_DATA": "out-of-scope.yaml",
+    "MATH_BASICS_DATA": "math-basics.yaml",
+    "PYTHON_BASICS_DATA": "python-basics.yaml",
+}
+
+
+def curriculum_file(repo: Path, name: str, text: str) -> Path:
+    """Write one of planning/curriculum/'s files into a test site."""
+    path = repo / "planning" / "curriculum" / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    return path
+
+
+# A made-up curriculum, small enough to read at a glance, with one of each
+# thing the topic tree draws: a chain three tiers deep (MIT-1.4 → MIT-1.6 →
+# MIT-3.6), a topic nobody teaches (MIT-3.6), a ruled-out outcome (MIT-2.3),
+# a groundwork topic with its own strand (PRE-1), and six strands, one more
+# than the tree has columns.
+SMALL_OUTCOMES = """\
+outcomes:
+  - code: MIT-1.4
+    title: Binary and hexadecimal
+    strand: number
+  - code: MIT-1.6
+    title: Expressions
+    strand: algebra
+  - code: MIT-2.3
+    title: Venn diagrams
+    strand: sets
+  - code: MIT-3.6
+    title: The derivative
+    strand: calculus
+  - code: MIT-5.9
+    title: Kinds of data
+    strand: statistics
+"""
+
+SMALL_TOPICS = """\
+topics:
+  MIT-1.4:
+    name: Binary and hexadecimal
+    outcome: MIT-1.4
+    plain: Counting with only two digits, and counting with sixteen.
+    uses: [Colours on a screen.]
+    needs: []
+  MIT-1.6:
+    name: Expressions
+    outcome: MIT-1.6
+    plain: A rule written with letters in it.
+    uses: [A formula in a spreadsheet.]
+    needs: [MIT-1.4]
+  MIT-3.6:
+    name: The derivative
+    outcome: MIT-3.6
+    plain: How fast something is changing, right now.
+    uses: [Training a model.]
+    needs: [MIT-1.6]
+  MIT-2.3:
+    name: Venn diagrams
+    outcome: MIT-2.3
+    plain: Overlapping circles for what two groups share.
+    uses: [A search with AND and OR.]
+    needs: []
+  MIT-5.9:
+    name: Kinds of data
+    outcome: MIT-5.9
+    plain: Numbers you can average, and labels you can only count.
+    uses: [A survey's results.]
+    needs: []
+  PRE-1:
+    strand: geometry
+    name: Kinds of triangle
+    plain: Telling triangles apart by their sides and angles.
+    uses: [A roof truss.]
+    needs: []
+"""
+
+SMALL_SCOPE = "outcomes:\n  - code: MIT-2.3\n    reason: Ruled out for the example.\n"
+
+
+def small_curriculum(repo: Path) -> None:
+    """Give a test site the small curriculum above."""
+    curriculum_file(repo, "outcomes.yaml", SMALL_OUTCOMES)
+    curriculum_file(repo, "topics.yaml", SMALL_TOPICS)
+    curriculum_file(repo, "out-of-scope.yaml", SMALL_SCOPE)
+
+
 @pytest.fixture()
 def repo(tmp_path, monkeypatch):
     for name in ("tutorials", "courses", "setup", "data", "assets", "pages"):
@@ -73,6 +165,11 @@ def repo(tmp_path, monkeypatch):
     monkeypatch.setattr(b, "SHELL", tmp_path / "assets" / "shell.html")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "PAGES", tmp_path / "pages")
+    # The curriculum files start empty too, so no test leans on the real
+    # outcomes and topics by accident; one that needs some writes its own
+    # with curriculum_file().
+    for name, file in CURRICULUM_FILES.items():
+        monkeypatch.setattr(b, name, tmp_path / "planning" / "curriculum" / file)
     course(tmp_path, COURSE, {}, title="Computational Methods")
     return tmp_path
 

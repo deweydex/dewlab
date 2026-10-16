@@ -142,6 +142,7 @@ class TestTheBuildRefusesAMapThatDoesNotMatch:
         assert "t-gone" not in (repo / "site" / "map.html").read_text()
 
 
+@pytest.mark.advisory
 class TestTheRealMap:
     """Held against the real tutorials, since a sandbox cannot be: a tutorial
     renamed, or a heading changed, on a page the map points at stops here."""

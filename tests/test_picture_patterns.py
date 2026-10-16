@@ -12,6 +12,8 @@ import re
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dev" / "graphics"))
 
 from palette import FILL_AMBER, FILL_BLUE, FILL_GREEN, add_patterns  # noqa: E402
@@ -83,6 +85,7 @@ def test_every_picture_script_adds_the_pattern_layer():
     assert missing == []
 
 
+@pytest.mark.advisory
 def test_no_two_pictures_share_a_pattern_id():
     # Several pictures are inlined on one page, where a shared id would let
     # one picture's pattern stand in for another's.

@@ -38,17 +38,13 @@ deleted, the number of tests worth running should barely change.
 - A recursion the relaxed rules exposed (two mixed sets naming each other)
   is fixed.
 
-With the content removed, 16 of 715 blocking tests now fail, all because
-their fixtures still read `planning/curriculum/`, the map layout, the
-glossary signatures or the committed pictures.
+With the content removed, all 727 blocking tests now pass (DECISIONS_LOG
+7.299): the build tests use a small made-up curriculum, and the checks that
+read the project's own files report instead of block.
 
-## Still open
+## Decided since
 
-Josh decided three of the four open questions (DECISIONS_LOG 7.299): the
-verdict-word tests are retired, the 85 local-only browser tests stay local,
-and CI skips jobs a pull request's files cannot affect. Left:
-
-1. **Tests that hold the real curriculum files to account**: sixteen fail
-   with the content removed, and some fail when a teacher adds or removes a
-   tutorial without editing `planning/curriculum/topic-groups.yaml`, which
-   the build itself only warns about.
+Josh settled the open questions on 16 October (DECISIONS_LOG 7.299): the
+verdict-word tests are retired; the 85 local-only browser tests stay local;
+CI skips jobs a pull request's files cannot affect; and the tests that held
+the real curriculum, map and pictures to account report instead of block.

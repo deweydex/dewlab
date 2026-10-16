@@ -57,6 +57,7 @@ class TestVersionsOfATutorial:
         version it is, and points readers and search engines at the current
         one; both manifests list both releases, relative to their own page;
         and the outcome is taught once."""
+        small_curriculum(repo)
         covers = "covers:\n  a-section:\n    covers: [MIT-1.4]\n"
         for version, body in (
             ("2026.06.02.1", "Old.\n\n" + self.CELLS),

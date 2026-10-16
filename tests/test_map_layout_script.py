@@ -12,6 +12,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 DEWLAB = Path(__file__).resolve().parent.parent
 SCRIPT = DEWLAB / "dev" / "map_layout.py"
 FIXTURE = DEWLAB / "tests" / "e2e" / "fixture" / "map"
@@ -55,6 +57,7 @@ def test_the_script_reproduces_the_committed_layout_of_the_fixture_map(tmp_path)
     assert same_map(fresh, committed) == []
 
 
+@pytest.mark.advisory
 def test_the_script_reproduces_the_committed_layout_of_the_real_map(tmp_path):
     fresh = run(DEWLAB / "map" / "graph.json", tmp_path / "layout.json")
     committed = json.loads((DEWLAB / "map" / "layout.json").read_text())
