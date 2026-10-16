@@ -5806,6 +5806,52 @@ Not done: a markdown image with an empty description is still allowed. The in-pa
 
 *Cost to change: one flag in `CELL_TYPE_TOGGLES` and the default-state test in `tests/e2e/test_dewmini_workbench.py`.*
 
+**7.296 — "Edit this page": a teacher edits a page where it stands, and the change goes to GitHub as a draft pull request.** Josh, 4 to 10 October 2026, after the plan in `planning/IN_PAGE_EDITOR.md` and the measurements in `planning/IN_PAGE_EDITOR_SPIKE.md`: "I think it would be better for teachers to be able to edit on a given page directly... a what-you-see-is-what-you-get editor so that there is no visual change to the page when someone hits edit, except that there's a cursor."
+
+This is the first slice. A teacher opens Settings, scrolls to the bottom, presses **Edit this page** (or adds `#edit` to a page's address), pastes a GitHub token once, clicks a heading or a paragraph and types. **Open pull request** splices each changed block over its own range of the markdown file and opens one draft pull request; pressing it again adds commits to the same one. The guide for a teacher new to GitHub is `docs/EDITING_A_PAGE.md`.
+
+Choices somebody could have made differently.
+
+- **The control is at the foot of Settings, visible to everyone, with a how-to fold and a link.** Josh: "I have no problem with students seeing things... they tend not to" look. The alternative was to show it only to someone holding a token. It would have hidden the feature from the teachers it is for.
+- **The build marks every block with the range it came from, and the page's manifest names the file and blob** (`source_map.py`, `manifest.edit`). A command-line build turns this on (`--no-source-map` leaves it out); `build()` called from code leaves it off so no existing test sees a changed page. The editor fetches the page's source by blob sha, so the offsets are always true, and refuses to save over a file that has changed on `main` since the site was built. It does not try to merge.
+- **The editor is not in `tutorial-runtime.js`.** An inline module in the shell shows the button and imports `assets/inpage-edit.js` only when it is pressed, so a student's page load never fetches it, changing it never means rebuilding the standalone bundle, and a download removes the whole section (`<!--dl-edit:start-->`).
+- **One GitHub client for both editors** (`assets/github-client.js`), extended with the three reads and one commit the in-page editor needs.
+- **Crepe's stylesheet is not used.** With it, a block grew by about 130 pixels; without it the page's own styles reach the editor's elements. Three further rules (hide what Crepe mounts beside its text, give the wrapper the block's margins, take the virtual cursor out of the flow) make a paragraph or heading swap with no movement on the page. The measurements are in the spike report.
+- **Only headings and plain paragraphs edit as rich text in this slice.** Maths, `{.term}` marks, raw HTML, images, lists, quotes, tables and folds open as their markdown in a text box; cells, includes and the pieces built from other parts are locked. Josh's decisions on maths (show the TeX while editing) and `{.term}` (teach the editor the mark) are for the next slice. Phones get "needs a larger screen" below 900 pixels.
+- **Stopping with unsaved changes asks first and discards them if you agree.** The alternative, leaving them on screen, showed changes that could no longer be saved.
+
+Not done: bullet and ordered lists and quotes as rich text, maths and `{.term}` handling, cells edited with their own editor, a real phone, and the cell-id warning (cells are locked, so no id can change yet).
+
+*Cost to change: remove the `<!--dl-edit:start-->` blocks from `assets/shell.html`, the `edit` entry in `write()`, and `assets/inpage-edit.js`; `--no-source-map` already turns the map off. `assets/github-client.js` stays: `editor.js` uses it.*
+
+**7.297 — "Edit this page": lists, quotes, maths and defined terms edit in place.** Josh, 11 October 2026: "Great let's take on the next tasks", on the decisions he made after the spike (show the TeX; teach the editor `{.term}`; phones wait).
+
+Bullet and numbered lists, quotes and paragraphs with inline maths or `{.term}` now edit as rich text. `assets/inpage-markdown.js` holds the rules: inline maths goes into the editor as a code span of its TeX and comes out unwrapped; `*word*{.term}` goes in as emphasis and the mark returns to any emphasis with the same words; a list comes back with its original bullet and, if it was tight, tight. Measured on the 17,994 prose blocks of all tutorials: 15,059 are accepted for rich editing, and 15,021 of those come back byte-identical.
+
+Choices somebody could have made differently.
+
+- **A block the rules cannot round-trip stays a markdown box** rather than being forced through: display maths, raw HTML, images, tables, lists inside lists, loose or multi-list blocks, lists with fenced code, a backslash or brace other than `{.term}`, code spans beside maths, and emphasis inside a link text. About 16% of blocks. The alternative was to teach the editor each; most are rare, and a box is safe.
+- **A term shows as plain emphasis while edited**, not in its term style. A mark in the editor's schema would show the style but needs a custom node in the vendored bundle.
+- **A block opened and left alone is never an edit.** Without this, a list's continuation indent or the editor's choice of marker counted as a change.
+
+Not done: tables, folds, cells with their own editor, a real phone, the non-owner token check. The last corpus run found one block that rendered differently after a round trip (emphasis inside a link text, which the editor moves outside the link); it is now refused.
+
+*Cost to change: `classify()` in `assets/inpage-edit.js` back to sending lists and quotes to `source`, and delete `assets/inpage-markdown.js`; nothing is stored.*
+
+---
+
+## The where-you-are tree's headings are links
+
+The tree's three levels above the page — all tutorials, the course, the series — were `<summary>` toggles only: they opened a list of siblings but led nowhere, so getting back to a course's page or the full contents meant leaving the tree. Each heading is now a link to its page, and the caret at its left still opens and closes the list.
+
+Choices somebody could have made differently.
+
+- **The series links to its heading on the course page** (`course.html#series-<key>`), because a series has no page of its own. A course with one series prints no series heading, so there the link is the course page itself.
+- **The caret is the only toggle target on the heading's own line.** Clicking the heading's text now navigates. The alternative, a separate link beside each heading, doubled every level's line in a column that is already narrow.
+- **`routes.json` carries each series' address** so the runtime can keep the links when a reader on a two-course page switches course (`drawCourseChrome()`).
+
+*Cost to change: `<summary><a>` back to plain text in `crumb_trail_html()` and `setRungLink()` in `assets/tutorial-runtime.js`, then rebuild `assets/vendor/`.*
+
 **7.298 — The tests and the build's refusals were audited against "would a reader's page break?", and what failed that question was relaxed.** Josh, 9 to 16 October 2026: "if we were to remove all of the content files, that shouldn't significantly change the number of tests that we need to run", and "if someone forks this project and doesn't want an about or features or studying and reading helper, they should be able to run the page with no problem." Every test and every place `build.py` and `check.py` stop an author was read and ruled on; `planning/TEST_AUDIT.md` has the one-page summary. The rule that came out of it is in `CONTRIBUTING.md`, "What a test or a refusal may stop": a page that does not load, a cell that cannot run, a link to nothing, a number the page gets wrong, saved work lost, or a broken id contract. Anything else is a note or a report.
 
 Emptying `tutorials/`, `pages/`, `courses/`, `planning/` and `map/` in a copy and running the unit tests showed what reading each test had missed: all 413 tests in `tests/build/` could not be collected, because `helpers.py` read the real `pages/about.md` and copied every real page into each synthetic site.

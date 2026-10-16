@@ -48,6 +48,8 @@ from typing import Callable
 import markdown
 import yaml
 
+import source_map
+
 
 class _NoDuplicateKeysLoader(yaml.SafeLoader):
     """A YAML loader that refuses a mapping with the same key twice.
@@ -3777,6 +3779,18 @@ def contents_items_html(tutorial: Tutorial) -> tuple[str, int]:
     return "".join(item(s) for s in sections), len(sections)
 
 
+def series_fragment(
+    course: Course,
+    groups: dict[tuple[str, str], list[Tutorial]],
+    key: str,
+) -> str:
+    """The `#series-<key>` a link to one series should carry. The course
+    page (render_course_body()) only prints a series heading, and so only
+    has something to land on, when the course has more than one series."""
+    present = [k for k in course.keys if (course.id, k) in groups]
+    return f"#series-{html.escape(key, quote=True)}" if len(present) > 1 else ""
+
+
 def crumb_trail_html(
     tutorial: Tutorial,
     groups: dict[tuple[str, str], list[Tutorial]],
@@ -3811,6 +3825,12 @@ def crumb_trail_html(
     (`data-courses`), and the runtime redraws these two rungs for the
     course the reader is following (tutorial-runtime.js, drawCourseChrome).
     A page no course lists has only the first rung and its own.
+
+    The heading of each level above the page — all tutorials, the course,
+    the series — is a link to the page it names (the all-tutorials page, the
+    course's page, and the series' heading on the course's page), so every
+    step back is one click from anywhere. The caret beside it still opens
+    and closes the level's list.
     """
     if (tutorial.practice_for or tutorial.is_context) and registry:
         owner = registry.get(tutorial.owners[0])
@@ -3907,21 +3927,24 @@ def crumb_trail_html(
     on_courses = html.escape(" ".join(tutorial.courses), quote=True)
     levels = [
         '<details class="dl-crumb-level">'
-        "<summary>All tutorials</summary>"
+        f'<summary><a href="{up}all-tutorials.html">All tutorials</a></summary>'
         f'<div role="list">{courses_items}</div>'
         "</details>"
     ]
     if course is not None:
         levels.append(
             '<details class="dl-crumb-level dl-crumb-level-2">'
-            f"<summary>{html.escape(course.title)}</summary>"
+            f'<summary><a href="{up}{html.escape(course.id, quote=True)}.html">'
+            f"{html.escape(course.title)}</a></summary>"
             f'<div role="list">{series_items}</div>'
             "</details>"
         )
     if course is not None and tutorial.series:
+        series_href = f"{up}{html.escape(course.id, quote=True)}.html" + series_fragment(course, groups, tutorial.series)
         levels.append(
             '<details class="dl-crumb-level dl-crumb-level-3" open>'
-            f"<summary>{html.escape(course.series_title(tutorial.series))}</summary>"
+            f'<summary><a href="{series_href}">'
+            f"{html.escape(course.series_title(tutorial.series))}</a></summary>"
             f'<div role="list">{"".join(tutorial_items)}</div>'
             "</details>"
         )
@@ -4917,7 +4940,10 @@ def render_course_body(
     for key in present:
         members = groups[(course.id, key)]
         if len(present) > 1:
-            out.append(f'<h3>{html.escape(course.series_title(key))}</h3>')
+            out.append(
+                f'<h3 id="series-{html.escape(key, quote=True)}">'
+                f"{html.escape(course.series_title(key))}</h3>"
+            )
         archive = archives.get((course.id, key))
         if archive is not None:
             sequence = zip_sequence(members, practice)
@@ -5731,7 +5757,37 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
         shutil.copy2(asset, target / asset.name)
 
 
+# When true, every page carries `data-md="START:END"` on each top-level block,
+# the byte range of the markdown file that produced it (source_map.py), and its
+# manifest says which file and blob that is, which is what "Edit this page"
+# works from. A build from the command line turns it on (`--no-source-map`
+# leaves it out). It is off here so that code which calls load() or build()
+# directly, the tests above all, gets the plain page.
+SOURCE_MAP = False
+
+
 def load(path: Path) -> Tutorial:
+    """`load_page()`, with the source map when it is on and safe.
+
+    Safe means the page reads exactly as it would without the map: the mapped
+    page, stripped of its `data-md` attributes, is the unmapped page. The
+    tokenizer in source_map.py reads markdown from outside Python-Markdown, so
+    a page whose markup it misreads would otherwise render differently. Such a
+    page gets no map and a note, and is otherwise untouched.
+    """
+    if not SOURCE_MAP:
+        return load_page(path, mapped=False)
+    mapped = load_page(path, mapped=True)
+    plain = load_page(path, mapped=False)
+    if (source_map.strip(mapped.body_html) == plain.body_html
+            and mapped.notes == plain.notes and mapped.toc == plain.toc):
+        return mapped
+    print(f"note: {path.relative_to(ROOT)}: the source map would change how the page "
+          f"reads, so it has none", file=sys.stderr)
+    return plain
+
+
+def load_page(path: Path, mapped: bool) -> Tutorial:
     """Turns one tutorial's source file into a fully-parsed `Tutorial`
     object — this is the one function that runs the whole parsing
     pipeline described at the top of this file, in order: split off the
@@ -5740,7 +5796,10 @@ def load(path: Path) -> Tutorial:
     blocks back in, then pull out pedagogical notes. Every tutorial page
     build.py builds starts here.
     """
-    meta, body = split_frontmatter(path.read_text(), path)
+    text = path.read_text()
+    meta, body = split_frontmatter(text, path)
+    if mapped:
+        body = source_map.mark(body, len(text) - len(body))
     body = expand_prose_includes(body, path)
     body = expand_snapshot_dates(body, meta, path)
     worlds = page_worlds(meta, path)
@@ -5760,6 +5819,8 @@ def load(path: Path) -> Tutorial:
     body_html = place_worlds(body_html, spans, worlds, path)
     body_html = place_projects(body_html, projects, path)
     body_html, notes = extract_notes(body_html, path)
+    if mapped:
+        body_html = source_map.attach(body_html)
     if any(cell.predict for cell in cells):
         body_html += SURPRISES_HTML
     anchors = (
@@ -6241,6 +6302,18 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
     legacy = legacy_ids().get(tutorial.slug)
     if legacy:
         manifest["legacy"] = legacy
+    if "data-md=" in body_html and tutorial.is_default:
+        # What "Edit this page" needs (assets/inpage-edit.js): which file this
+        # page came from, and the git blob it was built from, so the editor
+        # reads exactly the bytes the page's block ranges point into.
+        data = tutorial.path.read_bytes()
+        manifest["edit"] = {
+            "path": tutorial.path.relative_to(ROOT).as_posix(),
+            "sha": hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest(),
+            "title": tutorial.title,
+            "editor": versioned(f"{up}assets/", "vendor/milkdown.bundle.js"),
+            "module": versioned(f"{up}assets/", "inpage-edit.js"),
+        }
     versions = version_manifest(tutorial, family or [tutorial])
     if versions:
         manifest["versions"] = versions
@@ -6407,6 +6480,10 @@ def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
 
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
+    # A copy to keep has nothing to edit, so it carries none of the source map
+    # or of the Settings section and loader that start editing.
+    page = source_map.ATTR_RE.sub("", page)
+    page = re.sub(r"<!--dl-edit:start-->.*?<!--dl-edit:end-->", "", page, flags=re.DOTALL)
     # The same prefixes build.py wrote into the page's own references: `up`
     # for anything under assets/, `root` for the site root itself.
     root = "../" * tutorial.depth
@@ -7387,7 +7464,12 @@ def write_routes(
                         "url": problems.out_path.relative_to(OUT).as_posix(),
                     }
                 entries.append(entry)
-            series.append({"key": key, "title": course.series_title(key), "tutorials": entries})
+            series.append({
+                "key": key,
+                "title": course.series_title(key),
+                "url": f"{course.id}.html" + series_fragment(course, groups, key),
+                "tutorials": entries,
+            })
         routes.append({
             "id": course.id,
             "title": course.title,
@@ -8402,7 +8484,15 @@ def main() -> int:
         action="store_true",
         help="skip the downloadable single-file copies, which are the slow part",
     )
+    parser.add_argument(
+        "--no-source-map",
+        action="store_true",
+        help="leave out the markdown range each block of a page carries (what "
+             "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
+    )
     args = parser.parse_args()
+    global SOURCE_MAP
+    SOURCE_MAP = not args.no_source_map
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:

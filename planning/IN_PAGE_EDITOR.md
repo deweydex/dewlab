@@ -223,7 +223,7 @@ Escape leaves editing.
 | Paragraphs, headings, lists, links, emphasis, inline code, tables | In place, Crepe styled as the page |
 | Code cell (`python exec` and the other kinds) | In place, using the CodeMirror editor the cell already has. Saving writes the fence back with its header lines (`id:`, `hint:`, `toolkit:`) untouched |
 | A new cell | A slash command inserts one. The editor generates its id from the nearest heading and a counter; the teacher never types one |
-| Maths (`$…$`) | Click shows the TeX source in a small field; the rendered maths stays on the page. Whether the vendored Crepe build includes its maths feature is part of the spike |
+| Maths (`$…$`) | The block shows its maths as TeX while the cursor is in it, and renders it again when the cursor leaves (decided after the spike). Rendering it in place is later work |
 | Image | Replace text and alt in place. An alt is asked for when an image is inserted |
 | Hint fence, solution, predict, inputs, question, note, `<details>` fold, world variant | Hint, solution, predict, inputs and question: edited as their source text in a plain box under the block, then re-rendered. A `<details>` fold and a note: the prose inside is edited in place like any prose; the fold's open/closed state and class are not touched. A world variant: its wrapper is untouched and the blocks inside are edited as their own kind. Rich editing of the fences (a form for a question's options, say) follows once the box has been used |
 | `{{include: …}}` | Shows a small link to the included file on GitHub (see below). Not editable in the page |
@@ -421,14 +421,32 @@ Each step is a pull request that stands alone.
    advisory lists in `HOW_DEWLAB_THINKS.md` and `tests-explained.md` were
    rewritten around one rule, and the claim that an `<img>` without `alt` always
    fails was corrected.
-2. **The spike.** The source map in `build.py` and its round-trip test. Then
-   a throwaway page that swaps one prose block and one cell and splices them
-   back. Measure Crepe's normalisation across the corpus. At the end of this
-   step we know whether B works, and what it costs, before building the UI.
-3. **Edit mode on prose and cells.** The button, the how-to fold and the
-   teacher's guide it links to, the `#edit` address, the swap, the outline,
-   save to a draft PR. `ARCHITECTURE.md` and
-   `WRITING_TUTORIALS.md` updated in the same pull request.
+2. **The spike. Done; see [`IN_PAGE_EDITOR_SPIKE.md`](IN_PAGE_EDITOR_SPIKE.md).**
+   The source map works and changes nothing about a page. Crepe's rewriting of
+   markdown is small once maths, lists and tables are tidied (97.8% of 17,994
+   prose blocks unchanged, 23 render differently). A block swaps for an editor
+   with no visible change for headings and most paragraphs; maths, tables and a
+   few conventions of ours still need work. Not done: a real phone.
+3. **Edit mode, in slices.** Decisions made after the spike: maths shows as TeX
+   while its block is edited; the `{.term}` mark is taught to the editor;
+   phones get "needs a larger screen" for now (see the spike report).
+   - **3a. The way in. Done** (DECISIONS_LOG 7.296). The button at the foot of
+     Settings, the how-to fold and the guide (`docs/EDITING_A_PAGE.md`), `#edit`,
+     the token prompt and "Forget my token", the width check. The editor loads
+     only when Edit is pressed, and a download carries none of it.
+   - **3b. Headings and paragraphs. Done.** The in-place editor bundle, the
+     swap, the outline, the splice, one draft PR per session with later saves
+     added as commits. Blocks that need more open as their markdown in a box.
+   - **3c. Lists, quotes, maths and terms. Done** (DECISIONS_LOG 7.297).
+     `assets/inpage-markdown.js` makes a block safe going in and puts it back
+     coming out: inline maths as a code span of its TeX, `{.term}` kept by the
+     words it marks, bullets and tightness restored. Of 17,994 prose blocks,
+     15,059 (84%) now edit as rich text; 37 of those write differently but render
+     the same page, and the one that rendered differently (emphasis inside a
+     link text) is now sent to the box. The rest stay as markdown in a box. Tables and the
+     other blocks follow in step 4.
+   `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
+   changes what they describe.
 4. **The other blocks,** as source-text boxes first, in the order of the
    counts above: `<details>` folds and solutions, then hints, predict and
    inputs, then questions and world variants, then notes. Rich forms for any
@@ -439,7 +457,7 @@ Each step is a pull request that stands alone.
    in the in-page editor, some in a small admin page that stays). Delete only
    what has a replacement.
 
-The next step is 2.
+The next step is 3.
 
 ---
 

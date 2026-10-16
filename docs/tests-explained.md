@@ -57,6 +57,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_links.py` | Cross-page link resolution and validation |
 | `test_old_addresses.py` | Legacy-URL redirect stub generation |
 | `test_check.py` | `check.py`'s own Problems, cross-checked against real `BuildError`s |
+| `test_source_map.py` | The source map (`source_map.py`): how markdown is cut into blocks, that each range is the block it labels, that the map changes nothing about a page, and that splicing one range changes one block. One test builds every real tutorial with and without the map |
 
 **`tests/e2e/` — grouped by what's actually being exercised, not always one file per feature:**
 
@@ -89,6 +90,8 @@ substantial on its own.
 *Reference/glossary UI:* `test_reference_panel.py` — the live panel
 (open/close, search, mobile launcher). Its build-time counterpart is
 `tests/build/test_reference_index.py`.
+
+*In-page editing:* `test_inpage_editor.py` — editing a page where it stands, against a fake GitHub (real client code, service workers blocked so the browser's calls to `api.github.com` can be answered by the test). Needs no Pyodide, so it runs in CI.
 
 *Authoring tool:* `test_editor.py` — the editor's own UI. Its build-time
 counterpart, what the tutorials it writes actually build into, is

@@ -6445,6 +6445,15 @@ function courseLink(root, course) {
   return a;
 }
 
+/* A rung's heading is a link to the page it names; the caret beside it
+ * still opens and closes the list. */
+function setRungLink(summary, href, text) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.textContent = text;
+  summary.replaceChildren(a);
+}
+
 function listItem(children) {
   const item = document.createElement("div");
   item.setAttribute("role", "listitem");
@@ -6497,7 +6506,7 @@ function drawCourseChrome(manifest, courses, chosen, root) {
 
   const courseRung = document.querySelector(".dl-crumb-level-2");
   if (courseRung) {
-    courseRung.querySelector("summary").textContent = course.title;
+    setRungLink(courseRung.querySelector("summary"), `${root}${course.url}`, course.title);
     const list = courseRung.querySelector('[role="list"]');
     const chooser = list.querySelector(".dl-course-switch");
     list.replaceChildren();
@@ -6515,7 +6524,7 @@ function drawCourseChrome(manifest, courses, chosen, root) {
   const seriesRung = document.querySelector(".dl-crumb-level-3");
   const own = document.querySelector(".dl-crumb-level-4");
   if (seriesRung && own && series) {
-    seriesRung.querySelector("summary").textContent = series.title;
+    setRungLink(seriesRung.querySelector("summary"), `${root}${series.url}`, series.title);
     const list = seriesRung.querySelector('[role="list"]');
     list.replaceChildren();
     for (const entry of series.tutorials || []) {
