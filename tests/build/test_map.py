@@ -81,6 +81,18 @@ class TestThePage:
         assert step["section"] == "First part"
         assert step["href"] == "tutorials/asking.html#first-part"
 
+    def test_a_section_the_page_no_longer_has_links_to_the_page_and_says_so(self, repo, capsys):
+        # A teacher cut the section; the map should not stop their page going
+        # live (DECISIONS_LOG 7.299).
+        def pin(g):
+            next(t for t in g["topics"] if t["id"] == "t-asking")["steps"][0]["section"] = "no-such-part"
+        mapped(repo, graph=pin)
+        b.build()
+        step = next(t for t in data_of(repo)["towns"] if t["code"] == "t-asking")["steps"][0]
+        assert step["href"] == "tutorials/asking.html"
+        assert step["section"] is None
+        assert "asking#no-such-part" in capsys.readouterr().err
+
     def test_towns_come_in_reading_order_so_tab_follows_the_land(self, repo):
         mapped(repo)
         b.build()
@@ -108,14 +120,6 @@ class TestTheBuildRefusesAMapThatDoesNotMatch:
         with pytest.raises(b.BuildError) as why:
             b.build()
         assert "t-data" in str(why.value) and "loading-data" in str(why.value)
-
-    def test_a_topic_naming_a_missing_section(self, repo):
-        def pin(g):
-            next(t for t in g["topics"] if t["id"] == "t-asking")["steps"][0]["section"] = "no-such-part"
-        mapped(repo, graph=pin)
-        with pytest.raises(b.BuildError) as why:
-            b.build()
-        assert "no-such-part" in str(why.value)
 
     def test_a_landmark_naming_a_missing_tutorial(self, repo):
         mapped(repo, skip=("choosing-a-project",))

@@ -70,7 +70,12 @@ a gate. A preference about how a page is shaped or worded goes in the style
 guide, or, if an author would want to hear it at build time, in a `note()`
 that lets the build carry on. A check on the project's own planning files
 belongs in the script that owns those files (`dev/curriculum_map.py --check`),
-not in the test suite. `DECISIONS_LOG.md` 7.295 and 7.298 say why.
+not in the test suite. A test that reads the project's own content (a real
+tutorial, the real curriculum or map) reports, under `advisory`; a test of the
+build makes the small example it needs. One test of the rule: with every
+content folder emptied, the blocking tests all pass. And a link to a section a
+page no longer has still reaches the page, so cutting a section is a note, not
+a refusal. `DECISIONS_LOG.md` 7.295, 7.298 and 7.299 say why.
 
 New to the suite, or not sure where a new test belongs?
 [`docs/tests-explained.md`](docs/tests-explained.md) maps what's in each
@@ -84,7 +89,7 @@ one goes.
 Three workflows run on every push.
 
 `tests` runs the unit suite, builds the site, fails if the curriculum map
-cannot be made (a `covers:` code or section that does not exist), and fails if
+cannot be made (a `covers:` code that no outcome has), and fails if
 one of the generated files for the topic tools is out of date. Its
 `house-style` job runs the checks that look after the project rather than any
 page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is

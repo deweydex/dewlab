@@ -70,16 +70,6 @@ class TestWhatItRefusesToBuild:
                 "no module descriptor lists",
                 id="outcome-no-descriptor-lists",
             ),
-            pytest.param(
-                "covers:\n  no-such-section:\n    covers: [DEMO-1.1]\n",
-                "not a section of it",
-                id="section-tutorial-lacks",
-            ),
-            pytest.param(
-                "covers:\n  wrong:\n    covers: [DEMO-1.1]\n",
-                "a-real-section",
-                id="error-names-real-sections",
-            ),
         ],
     )
     def test_a_bad_covers_entry_stops_it(self, repo, covers, match):
@@ -87,6 +77,16 @@ class TestWhatItRefusesToBuild:
         outcomes, _ = cm.load_outcomes()
         with pytest.raises(cm.MapError, match=match):
             cm.load_tutorials(outcomes)
+
+    def test_a_claim_for_a_section_the_page_no_longer_has_is_left_out_and_noted(self, repo, capsys):
+        # A teacher cut the section (DECISIONS_LOG 7.299). The note names the
+        # sections the page has, so the claim can be moved to one of them.
+        write_tutorial(repo, "covers:\n  no-such-section:\n    covers: [DEMO-1.1]\n")
+        outcomes, _ = cm.load_outcomes()
+        tutorials = cm.load_tutorials(outcomes)
+        assert all(not t.sections for t in tutorials)
+        err = capsys.readouterr().err
+        assert "no-such-section" in err and "a-real-section" in err
 
     def test_an_outcome_listed_twice_stops_it(self, repo):
         path = repo / "planning" / "curriculum" / "outcomes.yaml"

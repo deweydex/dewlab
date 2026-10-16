@@ -89,7 +89,8 @@ jobs:
 
       # The curriculum map is generated from the outcome data and the tutorials'
       # own `covers:` frontmatter. A map that cannot be made at all (a `covers:`
-      # code or section that does not exist) exits 2, and fails here. One that
+      # code that no outcome has) exits 2, and fails here; a claim for a
+      # section the page no longer has is noted and left out. One that
       # is only out of date exits 1 and passes here: the map also counts the
       # italic words in every tutorial's prose, so any new sentence can make it
       # stale, and a stale planning document breaks no page. The house-style

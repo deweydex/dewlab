@@ -257,6 +257,20 @@ class TestTheTopicTree:
         assert self.tree(repo).count('class="dl-map-node"') == 3
 
 
+    def test_a_claim_for_a_section_the_page_no_longer_has_is_left_out_and_noted(self, repo, capsys):
+        # A teacher cut the section (DECISIONS_LOG 7.299): the page builds,
+        # and the tree does not link a topic to a section that is not there.
+        small_curriculum(repo)
+        path = write(repo, "## A section\n\nProse.\n")
+        path.write_text(path.read_text().replace(
+            "version: 2026.08.23.1\n", "version: 2026.08.23.1\ncovers:\n  cut-section:\n    covers: [MIT-1.4]\n"
+        ))
+        b.build()
+        node = next(n for n in self.data(repo)["nodes"] if n["code"] == "MIT-1.4")
+        assert node["state"] != "taught"
+        assert "cut-section" in capsys.readouterr().err
+
+
 class TestBrowseByTopicPage:
     """The plain build with no matching tutorial, and so no page, is checked
     with the rest of the plain page in TestTheTopicTree."""

@@ -253,11 +253,16 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
         sections = []
         for anchor, claim in declared.items():
             if anchor not in headings:
-                raise MapError(
-                    f"{path.relative_to(ROOT)} declares coverage for "
-                    f"{anchor!r}, which is not a section of it. "
-                    f"It has: {', '.join(sorted(headings)) or 'no sections'}"
+                # A section cut from a page is the teacher's call; the claim
+                # goes with it, and the map says so (DECISIONS_LOG 7.299).
+                print(
+                    f"note: {path.relative_to(ROOT)} declares coverage for "
+                    f"{anchor!r}, which is not a section of it, so the map "
+                    "leaves that claim out. "
+                    f"It has: {', '.join(sorted(headings)) or 'no sections'}",
+                    file=sys.stderr,
                 )
+                continue
             covers = list(claim.get("covers") or [])
             touches = list(claim.get("touches") or [])
             for code in covers + touches:

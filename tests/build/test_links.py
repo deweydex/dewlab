@@ -17,7 +17,7 @@ from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
 class TestCrossLinks:
     """One page carrying every kind of link a tutorial can hold, built once;
-    then the five ways a link or an id stops the build, one test each."""
+    then the ways a link or an id stops the build, one test each."""
 
     def test_every_kind_of_link_on_one_page_resolves_to_where_it_points(self, repo):
         write(repo,
@@ -43,12 +43,17 @@ class TestCrossLinks:
         # An ordinary link is left alone.
         assert 'href="https://example.org/page"' in built(repo)
 
-    def _unknown_slug(repo):
-        write(repo, "See [nowhere](tutorial:nowhere).\n")
-
-    def _unknown_anchor(repo):
+    def test_a_link_to_a_section_the_page_no_longer_has_goes_to_the_page_and_says_so(self, repo, capsys):
+        # A teacher cut the section; pages that pointed at it still reach the
+        # right page, and nobody else's page stops theirs (DECISIONS_LOG 7.299).
         write(repo, "See [other](tutorial:other#absent).\n", slug="sample")
         write(repo, "Other.\n", slug="other")
+        b.build()
+        assert 'href="other.html"' in built(repo, "sample")
+        assert "other#absent" in capsys.readouterr().err
+
+    def _unknown_slug(repo):
+        write(repo, "See [nowhere](tutorial:nowhere).\n")
 
     def _two_releases_share_a_version_date(repo):
         # A frozen release beside the tutorial is a *version* of it, so the
@@ -72,7 +77,6 @@ class TestCrossLinks:
 
     BROKEN_LINKS = {
         "an unknown tutorial slug": (_unknown_slug, "unknown tutorial"),
-        "an unknown anchor": (_unknown_anchor, "no anchor"),
         "two releases sharing a version date": (_two_releases_share_a_version_date, "cannot share a date"),
         "a duplicate id in a second file": (
             _a_second_file_with_an_existing_id,

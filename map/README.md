@@ -16,11 +16,14 @@ renamed page cannot leave a wrong name on the map.
 The build stops, and names the problem, when:
 
 - a topic or a landmark names a tutorial that does not exist;
-- a topic names a section that the tutorial does not have;
 - a topic needs something that is not a topic;
-- a topic is in `graph.json` but not in `layout.json`, or the other way round.
+- a topic is in `graph.json` but not in `layout.json`.
 
-The last one means the map changed and the layout did not. Run
+It notes, and builds, when a topic names a section the tutorial no longer
+has (the map links to the top of the page instead), and when `layout.json`
+places a topic `graph.json` no longer has (it is ignored).
+
+A topic with no place in the layout means the map changed and the layout did not. Run
 `python3 dev/map_layout.py` and commit `layout.json`. It takes about ten
 seconds and gives the same layout for the same graph. A change to the graph
 settles the whole map again, so it can move towns that did not change. That is
