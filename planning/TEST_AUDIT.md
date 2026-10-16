@@ -44,12 +44,11 @@ glossary signatures or the committed pictures.
 
 ## Still open
 
-1. **The verdict-word checks** (`test_no_word_in_the_markup_judges` and two
-   like it) scan the site's own interface strings, not authors' prose. Keep
-   or retire is Josh's call.
-2. **85 browser tests that guard saved work, ids and imported text run only
-   locally.** Wiring them into CI is a cost decision.
-3. **Path filtering in CI**, so a change to a planning file does not run the
-   whole suite.
-4. **The sixteen tests above** want fixtures of their own instead of the
-   real curriculum data.
+Josh decided three of the four open questions (DECISIONS_LOG 7.299): the
+verdict-word tests are retired, the 85 local-only browser tests stay local,
+and CI skips jobs a pull request's files cannot affect. Left:
+
+1. **Tests that hold the real curriculum files to account**: sixteen fail
+   with the content removed, and some fail when a teacher adds or removes a
+   tutorial without editing `planning/curriculum/topic-groups.yaml`, which
+   the build itself only warns about.

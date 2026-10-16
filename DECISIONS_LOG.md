@@ -5869,3 +5869,12 @@ Measured after the changes, with the five content directories emptied: 16 of 715
 Not done: the verdict-word checks (held for Josh); the 85 browser tests that guard saved work and ids but run only locally; path filtering in CI; the fixtures that still read the real `planning/curriculum/` and `data/`.
 
 *Cost to change: each converted refusal is one `note()` back to `fail()`, its test, and `check.py` where it mirrors it. The optional pages are `write_site_pages()` and `DEFAULT_HOME`; `TestPagesAreOptional` says what they do.*
+
+**7.299 — The verdict-word tests are retired, and CI runs what a pull request's files can affect.** Josh, 16 October 2026, choosing from the questions 7.298 left open: retire the three tests that scanned the interface's own strings for "correct", "wrong", "pass" and "fail"; leave the 85 local-only browser tests where they are; and skip jobs by the files a pull request changes, including the browser tests when only tutorials change.
+
+- **Retired**: `test_no_word_in_the_markup_judges` (`test_blocks.py`), `test_no_word_in_the_block_judges` (`test_predict_build.py`) and `test_no_word_on_the_table_judges` (`e2e/test_compare.py`). "No verdicts" stays a principle of the interface, held by review and `docs/HOW_DEWLAB_THINKS.md`, not by a word list.
+- **A `changes` job** in `tests.yml` sorts the files. Documents only (`planning/`, `docs/`, top-level `.md`, `.claude/`): house-style alone. Tutorials as well: add the unit tests and the glossary check. Anything else, or `planning/curriculum/` or `planning/feedback.yaml`, which the build reads: everything. The five browser files CI runs build their own sites and read no real tutorial, so skipping them for a tutorial-only change loses nothing they covered. A push to `main` runs everything, so a break that slips past a skipped job shows on `main` the same day.
+- **Two browser fixtures stopped copying the real `pages/`.** `test_map.py` and `test_inpage_editor.py` read them only because the build once required every page; both pass without. `test_page_smoke.py` still loads the real five, which is what it is for.
+
+*Cost to change: the retired tests are in git history. The filter is the `changes` job and one `needs:`/`if:` pair on each of four jobs; deleting those runs everything again.*
+

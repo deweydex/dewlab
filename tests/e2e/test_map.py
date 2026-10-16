@@ -57,7 +57,7 @@ def site(tmp_path_factory):
     original = {name: getattr(b, name) for name in names}
     b.ROOT, b.TUTORIALS, b.COURSES, b.OUT = root, root / "tutorials", root / "courses", root / "site"
     b.SETUP, b.DATA, b.ASSETS, b.SHELL = DEWLAB / "setup", DEWLAB / "data", DEWLAB / "assets", DEWLAB / "assets" / "shell.html"
-    b.PAGES = DEWLAB / "pages"
+    b.PAGES = root / "pages"
     b.TOPIC_DATA = DEWLAB / "planning" / "curriculum" / "topics.yaml"
     b.TOPIC_GROUPS_DATA = groups
     b.OUTCOME_DATA = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"

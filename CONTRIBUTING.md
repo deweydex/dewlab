@@ -97,6 +97,14 @@ it finds as a warning on the pull request and never fails it
 `python3 dev/graphics/dewey_units_1_5.py --check` (and `_6_10`) and
 `python3 dev/check_doc_links.py`.
 
+On a pull request, `tests` first sorts the changed files (`DECISIONS_LOG.md`
+7.299). One that changes only documents about the project (`planning/`,
+`docs/`, the top-level `.md` files, `.claude/`) gets the house-style job and
+nothing else. One that also changes `tutorials/` gets the unit tests and the
+glossary check as well, but not the browser job or the bundle check, since
+neither reads a tutorial. `planning/curriculum/` and `planning/feedback.yaml`
+are read by the build and count as code. A push to `main` runs everything.
+
 `standalone-bundle-is-current` rebuilds the vendored CodeMirror/KaTeX bundle
 from `vendor-src/` and fails on any difference. The bundle is committed on
 purpose, so that neither the build nor an author previewing locally needs a Node

@@ -92,13 +92,6 @@ class TestRendering:
         b.build()
         assert "dl-surprises" not in built(repo)
 
-    def test_no_word_in_the_block_judges(self, repo):
-        write(repo, CELL + CHOICE)
-        b.build()
-        block = built(repo).split('<div class="dl-predict"')[1].split('<div class="dl-cell"')[0]
-        for word in ("correct", "wrong", "not yet", "right answer", "incorrect"):
-            assert word not in block.lower()
-
 
 class TestSignals:
     @pytest.mark.parametrize("after, canonical", [

@@ -62,8 +62,6 @@ def site(tmp_path_factory):
     shutil.copytree(DEWLAB / "assets", root / "assets")
     shutil.copytree(DEWLAB / "planning" / "curriculum", root / "planning" / "curriculum")
     (root / "pages").mkdir()
-    for page in (DEWLAB / "pages").glob("*.md"):
-        shutil.copy(page, root / "pages" / page.name)
 
     patch = pytest.MonkeyPatch()
     for name, value in {
