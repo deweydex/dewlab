@@ -5888,3 +5888,12 @@ With all five content folders emptied, all 727 blocking unit tests pass, against
 
 *Cost to change: the retired tests are in git history. The filter is the `changes` job and one `needs:`/`if:` pair on each of four jobs; deleting those runs everything again. An `advisory` marker removed puts a test back in the gate; `small_curriculum()` and the `CURRICULUM_FILES` redirect are in `tests/build/helpers.py`.*
 
+---
+
+## Notebook notes size themselves to their text
+
+A text cell's box used a fixed height with a drag handle, so a note longer than three lines scrolled inside itself. `fitTextarea()` in `compose/dewmini.js` now sets its height to its content on every keystroke, when the note is reopened from its rendered form (a hidden box has no height to measure) and when its width changes; the drag handle is gone since there is nothing left to drag.
+
+Found alongside it: a note's header (pill, name, View, Image, Duplicate, Delete) was wider than a desktop column and ran past the cell's right edge, because header wrapping only existed below 34rem. It wraps at every width now, with the buttons held at the right edge.
+
+*Cost to change: delete `fitTextarea()` and its three call sites; restore `resize: vertical` on `.dm-textarea`.*

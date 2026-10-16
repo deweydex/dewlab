@@ -288,6 +288,11 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+  /* A note's header carries the pill, the name field and four labelled
+   * buttons (View, Image, Duplicate, Delete): more than a desktop column
+   * holds on one line, and it used to run out past the cell's edge. */
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
 }
 
 .dm-cell-pill {
@@ -338,6 +343,7 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
 
 .dm-cell-header-end {
   display: flex;
+  margin-left: auto; /* stays at the right edge when the header wraps */
   gap: 0.25rem;
   opacity: 0.4;
   transition: opacity 0.1s ease;
@@ -520,7 +526,10 @@ html[data-dl-panel-right] .dm-page .dl-crumbs {
   font-family: var(--dl-font-family);
   font-size: 0.95rem;
   line-height: var(--dm-code-line);
-  resize: vertical;
+  /* dewmini.js sizes it to its text (fitTextarea()), so there is nothing
+     to scroll and nothing to drag. */
+  resize: none;
+  overflow: hidden;
 }
 .dm-textarea:focus { outline: none; border-color: var(--dl-orange); }
 .dm-textarea::placeholder { color: var(--dl-muted); }
@@ -861,7 +870,6 @@ kbd {
   /* A cell's header carries the pill, an optional name field, and up to
    * three labelled buttons (Duplicate, Save, Delete) -- too many to fit
    * on one line on the narrowest phones without wrapping. */
-  .dm-cell-head { flex-wrap: wrap; row-gap: 0.35rem; }
   .dm-cell-header-end { flex-wrap: wrap; }
 
   .dm-panel {
