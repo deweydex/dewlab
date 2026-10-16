@@ -1599,9 +1599,20 @@ function createCellElement(cell) {
       setBtnLabel(previewBtn, editing ? "View" : "Edit");
       previewBtn.title = editing ? "Show this note rendered" : "Edit this note";
     };
+    // The box is as tall as its text, so a long note never scrolls inside
+    // itself. scrollHeight is 0 while the box is hidden, so this runs after
+    // it is shown and again whenever the width (and so the wrapping) changes.
+    const fitTextarea = () => {
+      if (textarea.hidden) return;
+      textarea.style.height = "auto";
+      // scrollHeight leaves out the border, which a border-box height includes.
+      const border = textarea.offsetHeight - textarea.clientHeight;
+      textarea.style.height = `${textarea.scrollHeight + border}px`;
+    };
     const showEditor = () => {
       textarea.hidden = false;
       renderEl.hidden = true;
+      fitTextarea();
       textarea.focus();
       syncPreviewBtn();
     };
@@ -1618,8 +1629,16 @@ function createCellElement(cell) {
       syncPreviewBtn();
     };
 
-    textarea.addEventListener("input", (e) => { cell.content = e.target.value; saveState(); });
+    textarea.addEventListener("input", (e) => { cell.content = e.target.value; fitTextarea(); saveState(); });
     textarea.addEventListener("blur", showRendered);
+    // Only a change of width re-wraps the text; reacting to height too would
+    // have the box chasing its own resize.
+    let fittedWidth = 0;
+    new ResizeObserver(() => {
+      if (textarea.clientWidth === fittedWidth) return;
+      fittedWidth = textarea.clientWidth;
+      fitTextarea();
+    }).observe(textarea);
     renderEl.addEventListener("click", showEditor);
     // mousedown, not click, is where this has to happen: a click on
     // previewBtn while the textarea is focused blurs the textarea first
