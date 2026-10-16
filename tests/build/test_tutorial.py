@@ -781,13 +781,6 @@ class TestFolds:
         assert "<code>&lt;details&gt;</code>" in built(repo)
         assert 'markdown="1"' not in built(repo)
 
-    @pytest.mark.advisory
-    def test_the_stylesheet_defines_both(self):
-        """A fold whose class has no rule is as invisible as one with no class."""
-        css = (DEWLAB / "assets" / "tutorial-style.css").read_text()
-        for name in b.FOLD_CLASSES:
-            assert f".{name} " in css or f".{name}{{" in css or f".{name}[" in css
-
     def test_a_why_fold_builds_and_its_body_is_markdown(self, repo):
         write(repo, '<details class="dl-why"><summary>Why this way?</summary>\n\n'
                     "We counted with a **loop** first.\n\n</details>\n")

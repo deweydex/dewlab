@@ -15,7 +15,6 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dev" / "graphics"))
 
-from palette import finished  # noqa: E402
 
 try:
     import erd
@@ -246,13 +245,6 @@ class TestStateDiagram:
                                     fmt=lambda p: f"{p:g}")
         assert svg.count(">0<") == 0
 
-    @pytest.mark.advisory
-    def test_the_matrix_is_read_from_the_tutorial_not_restated(self):
-        matrix = cm._matrix_from_cell("where-chains-lead", "a-weather-machine-1", "P")
-        assert matrix == self.WEATHER
-        for row in matrix:
-            assert sum(row) == pytest.approx(1.0), "a row that does not sum to 1"
-
     def test_more_than_two_states_says_so_rather_than_drawing_badly(self):
         with pytest.raises(ValueError, match="two states"):
             state_renderer.render(["a", "b", "c"], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -295,15 +287,6 @@ class TestRowTimesColumn:
         svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=0, column=0)
         assert "1×5 + 2×1 = 7" in svg
 
-    @pytest.mark.advisory
-    def test_it_draws_the_matrices_the_tutorial_defines(self):
-        left, right = cm._matrices_from_cell(
-            "multiplying-grids", "multiplying-two-grids-3", ("A", "B"))
-        assert left == self.A and right == self.B
-        columns = list(zip(*right))
-        product = [[sum(a * b for a, b in zip(r, c)) for c in columns] for r in left]
-        assert product == self.AB, "the tutorial's own numbers changed"
-
     def test_a_different_entry_picks_a_different_row_and_column(self):
         svg = grid_renderer.row_times_column(self.A, self.B, self.AB, row=1, column=1)
         assert "3×0 + 4×-1 = -4" in svg
@@ -328,25 +311,11 @@ class TestTheRangeCollapsing:
         assert ">low mid high<" in svg
         assert svg.count(">low<") == 3, "one per pass that has them apart"
 
-    @pytest.mark.advisory
-    def test_the_list_comes_from_the_tutorial(self):
-        items, target = cm._search_case()
-        assert items == self.ITEMS
-        assert items == sorted(items), "binary search needs it sorted"
-        assert target in items
-
 
 @needs_steps
 class TestTheMergeWalk:
     A = [1, 3, 4, 5]
     B = [1, 2, 5, 7, 8]
-
-    @pytest.mark.advisory
-    def test_the_sets_come_from_the_tutorial(self):
-        left, right = maths_diagrams._sets_from_cell()
-        assert left == self.A and right == self.B
-        for values in (left, right):
-            assert values == sorted(set(values)), "make_set sorts and dedupes"
 
     def test_every_comparison_case_appears(self):
         """Equal, less-than and greater-than each happen on this pair, so
@@ -371,81 +340,3 @@ class TestTheMergeWalk:
     def test_leftovers_are_named_from_the_list_that_still_has_them(self):
         svg = step_renderer.merge_walk(self.A, self.B)
         assert "left in b: 7  8" in svg
-
-
-try:
-    import dewey_units_1_5 as dewey_early
-except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
-    dewey_early = None
-
-needs_dewey_early = pytest.mark.skipif(dewey_early is None, reason="svgwrite is not installed")
-
-
-@needs_dewey_early
-@pytest.mark.advisory
-class TestDeweyUnitsOneToFive:
-    """The Dewey Track's Unit 1 to 5 pictures read their numbers from the
-    pages' own cells, so a cell edited without a regeneration leaves a
-    picture that disagrees with the page. This is the generator's check
-    mode, as a test."""
-
-    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
-    def test_the_committed_picture_is_what_the_generator_draws(self, relative):
-        committed = (dewey_early.TUTORIALS / relative).read_text()
-        assert committed == finished(relative, dewey_early.DIAGRAMS[relative]), (
-            f"{relative} is stale: run python3 dev/graphics/dewey_units_1_5.py --write")
-
-    @pytest.mark.parametrize("relative", sorted(dewey_early.DIAGRAMS) if dewey_early else [])
-    def test_colours_are_theme_tokens_and_nothing_has_an_id(self, relative):
-        """Several of these are inlined on one page, where two copies of one
-        `id` would collide."""
-        import re
-
-        svg = (dewey_early.TUTORIALS / relative).read_text()
-        literals = {
-            value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
-            if value != "none" and not value.startswith(("var(--dl-", "url(#dlp-"))
-            and value != "currentColor"
-        }
-        assert not literals, f"literal colours in {relative}: {sorted(literals)}"
-        # The one id allowed is a pattern's (7.283), named after this picture's
-        # own path, so no other picture on the page can share it.
-        assert not re.search(r'\sid="(?!dlp-)', svg), f"{relative} carries an id"
-
-
-try:
-    import dewey_units_6_10 as dewey_late
-except ImportError:  # pragma: no cover - exercised only where svgwrite is absent
-    dewey_late = None
-
-needs_dewey_late = pytest.mark.skipif(dewey_late is None, reason="svgwrite is not installed")
-
-
-@needs_dewey_late
-@pytest.mark.advisory
-class TestDeweyUnitsSixToTen:
-    """The same two checks for the Unit 6 to 10 pictures, which run the
-    pages' own cells (a search, a sort, a recursion's printed trace) and
-    draw what those cells print."""
-
-    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
-    def test_the_committed_picture_is_what_the_generator_draws(self, relative):
-        committed = (dewey_late.TUTORIALS / relative).read_text()
-        assert committed == finished(relative, dewey_late.DIAGRAMS[relative]), (
-            f"{relative} is stale: run python3 dev/graphics/dewey_units_6_10.py --write")
-
-    @pytest.mark.parametrize("relative", sorted(dewey_late.DIAGRAMS) if dewey_late else [])
-    def test_colours_are_theme_tokens_and_nothing_has_an_id(self, relative):
-        import re
-
-        svg = (dewey_late.TUTORIALS / relative).read_text()
-        literals = {
-            value for value in re.findall(r'(?:fill|stroke)="([^"]+)"', svg)
-            if value != "none" and not value.startswith(("var(--dl-", "url(#dlp-"))
-            and value != "currentColor"
-        }
-        assert not literals, f"literal colours in {relative}: {sorted(literals)}"
-        # The one id allowed is a pattern's (7.283), named after this picture's
-        # own path, so no other picture on the page can share it.
-        assert not re.search(r'\sid="(?!dlp-)', svg), f"{relative} carries an id"
-

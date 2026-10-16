@@ -3,6 +3,7 @@
 
     python3 dev/graphics/dewey_units_1_5.py          # report what would change
     python3 dev/graphics/dewey_units_1_5.py --write  # write it
+    python3 dev/graphics/dewey_units_1_5.py --check  # exit 1 if a committed picture is stale
 
 Same rule as the other generators: every number in a picture is computed
 here, and wherever a page's own cell holds the numbers, they are read out of
@@ -1515,7 +1516,10 @@ DIAGRAMS = {
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
-    written = parser.parse_args().write
+    parser.add_argument("--check", action="store_true",
+                        help="exit 1 if a committed picture is not what this draws")
+    args = parser.parse_args()
+    written = args.write
     changed = 0
     for relative, draw in sorted(DIAGRAMS.items()):
         target = TUTORIALS / relative
@@ -1532,6 +1536,8 @@ def main() -> int:
             print(f"  would write {relative}")
     if changed and not written:
         print(f"\n{changed} diagram(s) differ. Re-run with --write.")
+        if args.check:
+            return 1
     return 0
 
 

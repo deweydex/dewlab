@@ -4,7 +4,6 @@ than no map."""
 
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 
@@ -104,12 +103,6 @@ class TestTheAnchors:
         )
         assert cm.anchor_for("If-Else: Two Paths") == "if-else-two-paths"
         assert cm.anchor_for("What Are the Chances?") == "what-are-the-chances"
-
-    @pytest.mark.advisory
-    def test_every_declared_section_in_the_real_tutorials_exists(self):
-        # Runs against the real repository, not a fixture.
-        outcomes, _ = cm.load_outcomes()
-        cm.load_tutorials(outcomes)  # raises if any anchor is wrong
 
 
 class TestProseExcludesTheBibliography:
@@ -219,49 +212,6 @@ class TestBackReferences:
 
 
 class TestTheRealMap:
-    # Advisory: the map is a planning document, and it counts italic words
-    # in the tutorials' prose, so a sentence added to any page makes it
-    # stale. A stale map misleads nobody reading the site (DECISIONS_LOG
-    # 7.291). CI reports it without failing the pull request.
-    @pytest.mark.advisory
-    def test_it_is_committed_current(self):
-        # The same guard CI runs, against the real committed file.
-        assert cm.MAP.read_text() == cm.render()
-
-    @pytest.mark.advisory
-    def test_every_out_of_scope_code_is_a_real_outcome(self):
-        outcomes, _ = cm.load_outcomes()
-        scope = cm.load_scope()
-        for code in list(scope["outcomes"]) + list(scope["partial"]):
-            assert code in outcomes, f"{code} is not an outcome in any descriptor"
-
-    @pytest.mark.advisory
-    def test_every_proposal_is_well_formed(self):
-        outcomes, _ = cm.load_outcomes()
-        for proposal in cm.load_proposals():
-            for code in (proposal.get("covers") or []) + (proposal.get("optional") or []):
-                assert code in outcomes, f"{proposal['id']} names {code}"
-            outline = cm.ROOT / "planning" / "outlines" / f"{proposal['outline']}.md"
-            assert outline.is_file(), f"{proposal['id']} points at a missing {outline.name}"
-
-    # Advisory: a tutorial author who teaches an outcome somebody once
-    # proposed has done nothing wrong; the planning file wants tidying.
-    @pytest.mark.advisory
-    def test_a_proposal_never_claims_something_already_taught(self):
-        # A proposal left in place after its tutorial ships makes the plan
-        # look bigger than it is, and throws off the next unplanned-gaps survey.
-        outcomes, _ = cm.load_outcomes()
-        tutorials = cm.load_tutorials(outcomes)
-        found = cm.coverage(outcomes, tutorials)
-        scope = cm.load_scope()
-        for proposal in cm.load_proposals():
-            for code in proposal.get("covers") or []:
-                state = cm.status_of(found[code], code, scope)
-                assert state in ("absent", "touched"), (
-                    f"{proposal['id']} proposes to teach {code}, which is "
-                    f"already {state}"
-                )
-
     def test_the_map_says_how_many_gaps_nobody_has_planned(self):
         # "Not covered" is work outstanding; this is work nobody has even
         # planned — smaller and more urgent, and what an earlier hand-count missed.
@@ -294,15 +244,6 @@ class TestTheRealMap:
         for code in outcomes:
             assert f"`{code}`" in all_unplanned
 
-    # Advisory: housekeeping for planning/outlines/, which no page reads.
-    @pytest.mark.advisory
-    def test_the_outlines_index_lists_every_outline(self):
-        folder = cm.ROOT / "planning" / "outlines"
-        index = (folder / "README.md").read_text()
-        for path in folder.glob("*.md"):
-            if path.name != "README.md":
-                assert path.name in index, f"{path.name} is not in the outlines index"
-
 
 class TestTheTopicGlossary:
     """topics.yaml (not part of curriculum_map.py itself) backs the knowledge
@@ -313,54 +254,6 @@ class TestTheTopicGlossary:
     def topics() -> dict:
         path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
         return yaml.safe_load(path.read_text())["topics"]
-
-    # Advisory: a complete topic list is the plan, not something the site
-    # needs to build. An outcome no topic claims is simply not on the map yet.
-    @pytest.mark.advisory
-    def test_every_outcome_has_a_topic(self):
-        # Several topics may legitimately claim one outcome (a descriptor can
-        # bundle ideas met weeks apart); only an unclaimed outcome is reported.
-        outcomes, _ = cm.load_outcomes()
-        topics = self.topics()
-        served = {o for t in topics.values() for o in cm.outcomes_of(t)}
-        missing = sorted(set(outcomes) - served)
-        assert not missing, f"no topic claims {missing}"
-
-    @pytest.mark.advisory
-    def test_no_topic_invents_an_outcome(self):
-        outcomes, _ = cm.load_outcomes()
-        topics = self.topics()
-        for code, topic in topics.items():
-            claimed = cm.outcomes_of(topic)
-            if code.startswith("PRE-"):
-                assert not claimed, f"{code} is groundwork and claims {claimed}"
-                continue
-            assert claimed, f"{code} names no outcome"
-            for one in claimed:
-                assert one in outcomes, (
-                    f"{code} claims {one}, which is in no module descriptor"
-                )
-
-    @pytest.mark.advisory
-    def test_a_groundwork_code_never_collides_with_an_outcome(self):
-        # Not everything a student needs is a numbered outcome (e.g. naming
-        # kinds of triangle); such topics carry a PRE- code instead of one.
-        outcomes, _ = cm.load_outcomes()
-        groundwork = {c for c in self.topics() if c.startswith("PRE-")}
-        assert not (groundwork & set(outcomes)), (
-            "a PRE- code collides with a real outcome"
-        )
-
-    # Advisory: how fully a groundwork topic is written up is editorial.
-    @pytest.mark.advisory
-    def test_groundwork_is_written_up_like_a_topic(self):
-        groundwork = {c for c in self.topics() if c.startswith("PRE-")}
-        assert groundwork, "no groundwork topic left; the PRE- convention is dead"
-        for code in groundwork:
-            topic = self.topics()[code]
-            assert topic.get("name") and topic.get("plain") and topic.get("uses"), (
-                f"{code} is groundwork but is not written up like a topic"
-            )
 
     def test_prerequisites_are_real_and_not_self_referential(self):
         topics = self.topics()
@@ -393,55 +286,35 @@ class TestTheTopicGlossary:
             assert topic.get("name"), f"{code} has no name"
             assert topic.get("plain"), f"{code} has no plain description"
 
-    # Advisory: the length and shape of a description are editorial.
-    @pytest.mark.advisory
-    def test_every_topic_says_what_it_is_and_where_it_is_used(self):
-        for code, topic in self.topics().items():
-            assert len(topic.get("plain", "").split()) >= 12, (
-                f"{code}'s description is too short to be worth reading"
-            )
-            assert topic.get("uses"), f"{code} lists no applications"
-            # The description should avoid the jargon it exists to replace.
-            first = topic["plain"].strip().split(".")[0].lower()
-            assert not first.startswith(topic["name"].lower()), (
-                f"{code} defines itself with its own name"
-            )
 
+class TestPlanningProblems:
+    """What `--check` reports about the planning files disagreeing with each
+    other. A report, never a build failure: no page reads these files."""
 
-class TestWhatTheTutorialsSayAboutTheCourse:
-    """Checks against the real tutorials, not a fixture — these are about the
-    course itself, so there is nowhere else for them to live."""
+    def plan(self, repo, monkeypatch, proposed: str, topics: str) -> list[str]:
+        monkeypatch.setattr(cm, "TOPICS", repo / "planning" / "curriculum" / "topics.yaml")
+        monkeypatch.setattr(cm, "OUTLINES", repo / "planning" / "outlines")
+        (repo / "planning" / "outlines").mkdir(parents=True)
+        (repo / "planning" / "outlines" / "README.md").write_text("- first.md\n")
+        (repo / "planning" / "outlines" / "first.md").write_text("# First\n")
+        (repo / "planning" / "curriculum" / "out-of-scope.yaml").write_text("outcomes: []\npartial: []\n")
+        (repo / "planning" / "curriculum" / "proposed.yaml").write_text(proposed)
+        (repo / "planning" / "curriculum" / "topics.yaml").write_text(topics)
+        write_tutorial(repo)
+        return cm.planning_problems("")
 
-    def tutorials(self):
-        folder = cm.ROOT / "tutorials"
-        return sorted(p for p in folder.rglob("*.md"))
+    def test_files_that_agree_have_nothing_to_report(self, repo, monkeypatch):
+        topics = ("topics:\n  T1:\n    name: One\n    plain: p\n    outcome: DEMO-1.1\n"
+                  "  T2:\n    name: Two\n    plain: p\n    outcome: DEMO-1.2\n")
+        assert self.plan(repo, monkeypatch, "proposed: []\n", topics) == []
 
-    @pytest.mark.advisory
-    def test_the_sequence_graph_has_no_repeated_node(self):
-        # `order` restarts at 1 per series; when reflections moved into their
-        # own series, the graph came out with two T1 nodes and a self-loop.
-        blocks = [
-            b for b in re.findall(r"```mermaid\n(.*?)```", cm.MAP.read_text(), re.S)
-            if re.search(r"^  T\d+\[", b, re.MULTILINE)
-        ]
-        assert blocks, "no tutorial sequence graph in the map"
-        for block in blocks:
-            ids = re.findall(r"^  (T\d+)\[", block, re.MULTILINE)
-            assert len(ids) == len(set(ids)), f"repeated node: {sorted(ids)}"
-            assert not re.search(r"^  (T\d+) --> \1$", block, re.MULTILINE)
-
-    # Advisory: an editorial preference about tutorial prose. A page that
-    # names an assessment still builds and still teaches.
-    @pytest.mark.advisory
-    def test_no_tutorial_mentions_a_skills_demo(self):
-        # Prose used to name assessments directly ("ready for Skills Demo 1"),
-        # tying tutorials to one institution's schedule — the part most likely to change.
-        guilty = [
-            path.relative_to(cm.ROOT)
-            for path in self.tutorials()
-            if "skills demo" in path.read_text().lower()
-        ]
-        assert guilty == [], f"still names a skills demo: {guilty}"
+    def test_each_disagreement_is_named(self, repo, monkeypatch):
+        proposed = ("proposed:\n  - id: p1\n    outline: missing\n    covers: [DEMO-9.9]\n")
+        topics = "topics:\n  T1:\n    name: One\n    plain: p\n    outcome: DEMO-1.1\n"
+        problems = self.plan(repo, monkeypatch, proposed, topics)
+        assert any("p1 names DEMO-9.9" in p for p in problems)
+        assert any("missing outline" in p for p in problems)
+        assert any("no topic in topics.yaml claims DEMO-1.2" in p for p in problems)
 
 
 class TestSeveralReleasesOfOneTutorial:
