@@ -5869,3 +5869,13 @@ Measured after the changes, with the five content directories emptied: 16 of 715
 Not done: the verdict-word checks (held for Josh); the 85 browser tests that guard saved work and ids but run only locally; path filtering in CI; the fixtures that still read the real `planning/curriculum/` and `data/`.
 
 *Cost to change: each converted refusal is one `note()` back to `fail()`, its test, and `check.py` where it mirrors it. The optional pages are `write_site_pages()` and `DEFAULT_HOME`; `TestPagesAreOptional` says what they do.*
+
+---
+
+## Notebook notes size themselves to their text
+
+A text cell's box used a fixed height with a drag handle, so a note longer than three lines scrolled inside itself. `fitTextarea()` in `compose/dewmini.js` now sets its height to its content on every keystroke, when the note is reopened from its rendered form (a hidden box has no height to measure) and when its width changes; the drag handle is gone since there is nothing left to drag.
+
+Found alongside it: a note's header (pill, name, View, Image, Duplicate, Delete) was wider than a desktop column and ran past the cell's right edge, because header wrapping only existed below 34rem. It wraps at every width now, with the buttons held at the right edge.
+
+*Cost to change: delete `fitTextarea()` and its three call sites; restore `resize: vertical` on `.dm-textarea`.*

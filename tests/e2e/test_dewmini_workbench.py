@@ -527,6 +527,43 @@ def _quiet_text_cell(page):
     return page.locator(".dm-cell-text").last
 
 
+def test_a_text_cell_grows_to_fit_its_text_instead_of_scrolling(dewmini):
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    textarea = dewmini.locator(".dm-textarea").last
+    textarea.click()
+    short = textarea.evaluate("el => el.offsetHeight")
+    dewmini.keyboard.insert_text("\n".join(f"line {n}" for n in range(30)))
+
+    def overflow():
+        return textarea.evaluate("el => el.scrollHeight - el.clientHeight")
+
+    assert overflow() <= 1, "typing grows the box rather than scrolling it"
+    assert textarea.evaluate("el => el.offsetHeight") > short * 3
+
+    # Back to rendered and into the editor again: the hidden box had no
+    # height to measure, so it has to be sized when it is shown.
+    textarea.evaluate("el => el.blur()")
+    dewmini.locator(".dm-doc-render").last.click()
+    assert overflow() <= 1
+
+    dewmini.keyboard.press("Control+a")
+    dewmini.keyboard.press("Delete")
+    assert textarea.evaluate("el => el.offsetHeight") <= short + 1, "and shrinks again"
+
+
+def test_a_text_cells_header_buttons_stay_inside_the_cell(dewmini):
+    """The note's four labelled buttons plus the pill and name field are
+    wider than a desktop column; the header wraps rather than running past
+    the cell's right edge."""
+    dewmini.locator(".dm-insert-btn", has_text="Text").last.click()
+    cell = dewmini.locator(".dm-cell-text").last
+    cell.locator(".dm-textarea").click()
+    cell_right = cell.evaluate("el => el.getBoundingClientRect().right")
+    buttons_right = cell.locator(".dm-cell-header-end").evaluate(
+        "el => el.getBoundingClientRect().right")
+    assert buttons_right <= cell_right + 1
+
+
 def assert_head_opacity(page, cell, value: str) -> None:
     """Polls rather than sleeping a fixed 150ms then reading once: the
     0.1s CSS transition (compose/dewmini-style.css) usually finishes well
