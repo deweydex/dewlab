@@ -154,13 +154,16 @@ cancels.
 
 A test fails a pull request when what it checks would break something for a
 reader: a page that does not build, work that is lost, a number that is
-wrong. A few tests check something else: a house preference about tutorial
-prose (not naming an institution's assessments), or the tidiness of the
-project's planning files (the curriculum map is current, the outlines index
-lists every outline, a topic description is at least twelve words). Those are
-marked `@pytest.mark.advisory`. A plain `python3 -m pytest` leaves them out,
-`python3 -m pytest -m advisory` runs only them, and CI's `house-style` job
-runs them and reports a failure as a warning (`DECISIONS_LOG.md` 7.291).
+wrong. A house preference about tutorial prose is not a test at all; it is
+advice in the style guide. A check on the tidiness of the project's planning
+files (the curriculum map is current, the outlines index lists every outline,
+the topics claim every outcome) lives in the script that owns those files,
+`dev/curriculum_map.py --check`, and the Dewey Track's generated pictures are
+checked by their generators' `--check`. CI's `house-style` job runs those and
+reports a failure as a warning. The few tests still marked
+`@pytest.mark.advisory` (two author warnings, the page templates building, the
+links inside the project's documents) run there too; a plain
+`python3 -m pytest` leaves them out (`DECISIONS_LOG.md` 7.291, 7.298).
 
 Put as one rule: a check blocks a merge only if its failure means a page does
 not load, a cell cannot run, a link or asset points at nothing, a number the
@@ -173,9 +176,7 @@ because an unclosed fence breaks the page whatever the author meant
 
 Where one test checked both kinds of thing, it was split, so the half a page
 depends on still blocks: a topic has a name and a description, because the
-build reads both, while how long the description is was left to the advisory
-half. Before marking a test advisory, check that nothing reads what it
-protects.
+build reads both, while how long the description is was left to the author.
 
 ---
 

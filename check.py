@@ -50,7 +50,7 @@ IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)|<img[^>]+src=\"([^\"]+)\"")
 # starting ``` outside every one of these is a fence that never closed.
 CLOSED_FENCE_RE = re.compile(r"^ *```[^\n]*\n.*?^ *```[ \t]*$", re.M | re.S)
 CODE_RE = re.compile(r"```.*?```|`[^`\n]*`", re.S)  # fences and code spans: examples, not images
-OLD_FIELDS = ("module", "module_title", "series", "slug")
+OLD_FIELDS = ("module", "module_title", "series", "slug", "order")
 
 
 class Report:
@@ -177,7 +177,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         report.problem(f"`{ident}.md`: `version:` must look like `2026.09.14.1` (year.month.day.number).")
     old = [k for k in OLD_FIELDS if k in fields]
     if old:
-        report.problem(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. Where a tutorial sits is written in `courses/`, not here.")
+        report.note(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. The build ignores them; where a tutorial sits is written in `courses/`, not here.")
     if not any(k in fields for k in OLD_FIELDS) and all(fields.get(k) for k in ("title", "year", "version")):
         report.ok("The frontmatter has title, year and version, and nothing about placement.")
 
@@ -236,7 +236,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         else:
             report.ok(f"A context page for {', '.join(str(n) for n in named)}. It is not listed in a course; it follows those tutorials.")
         if "covers" in fields:
-            report.problem(f"`{ident}.md`: a context page must not have `covers:`. Nothing on it is needed to finish a tutorial.")
+            report.note(f"`{ident}.md`: a context page has `covers:`, so the curriculum map counts it as teaching an outcome. Nothing on it is needed to finish a tutorial; delete `covers:` unless you mean that.")
         if "practice_for" in fields or "practice_across" in fields:
             report.problem(f"`{ident}.md`: a context page cannot also be a practice page. Remove `practice_for:` or `practice_across:`.")
 
@@ -263,10 +263,10 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
             else:
                 report.ok(f"The practice page `{practice.name}` belongs to this tutorial.")
             if "covers" in pf:
-                report.problem(f"`{practice.name}`: a practice page must not have `covers:`. Its tutorial says what is taught.")
+                report.note(f"`{practice.name}`: a practice page has `covers:`, so the curriculum map counts its outcomes a second time. Its tutorial says what is taught; delete `covers:` unless you mean that.")
             old = [k for k in OLD_FIELDS if k in pf]
             if old:
-                report.problem(f"`{practice.name}`: delete these old lines: {', '.join(old)}.")
+                report.note(f"`{practice.name}`: delete these old lines: {', '.join(old)}. The build ignores them.")
     else:
         report.note(f"No practice page. To add one, create `{ident}-practice.md` in this folder with `practice_for: {ident}`.")
 
@@ -278,7 +278,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
             entries = data.get("entries") or []
             bad = [e for e in entries if not (isinstance(e, dict) and e.get("term") and e.get("definition"))]
             if bad:
-                report.problem(f"`{glossary.name}`: {len(bad)} entr{'y' if len(bad) == 1 else 'ies'} without a `term:` or a `definition:`.")
+                report.note(f"`{glossary.name}`: {len(bad)} entr{'y' if len(bad) == 1 else 'ies'} without a `term:` or a `definition:`, left out of the reference.")
             else:
                 report.ok(f"The glossary has {len(entries)} entr{'y' if len(entries) == 1 else 'ies'}.")
         except yaml.YAMLError as err:
@@ -330,15 +330,15 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
             continue
         listed = series.get("tutorials") or []
         if not listed:
-            report.problem(f"The series \"{series['title']}\" lists no tutorials.")
+            report.note(f"The series \"{series['title']}\" lists no tutorials yet, so the course page leaves it out.")
         for ident in listed:
             seen[ident] += 1
             if ident not in known:
                 report.problem(f"The series \"{series['title']}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
             elif is_practice_page(TUTORIALS / ident / f"{ident}.md"):
-                report.problem(f"`{ident}` is a practice page (it has `practice_for:`). Practice pages are not listed in courses; they follow their tutorial.")
+                report.note(f"`{ident}` is a practice page (it has `practice_for:`). It follows its tutorial, so this line is left out.")
             elif is_context_page(TUTORIALS / ident / f"{ident}.md"):
-                report.problem(f"`{ident}` is a context page (it has `context_for:`). Context pages are not listed in courses; they follow their tutorial.")
+                report.note(f"`{ident}` is a context page (it has `context_for:`). It follows its tutorial, so this line is left out.")
     for ident, n in seen.items():
         if n > 1:
             report.problem(f"`{ident}` is listed {n} times in this course. List it once.")

@@ -922,12 +922,112 @@ def render() -> str:
     return "\n".join(parts).rstrip("\n") + "\n"
 
 
+TOPICS = ROOT / "planning" / "curriculum" / "topics.yaml"
+OUTLINES = ROOT / "planning" / "outlines"
+
+
+def planning_problems(text: str) -> list[str]:
+    """Where the planning files disagree with each other, as sentences.
+
+    These were advisory tests until 7.298: they look after the project's own
+    plan (`planning/curriculum/`, `planning/outlines/`), which no page reads,
+    so they report and never block. A problem here means a file wants tidying,
+    not that anything a reader sees is wrong. `text` is the map just rendered,
+    so the sequence-graph check looks at what would be written.
+    """
+    problems: list[str] = []
+    outcomes, _ = load_outcomes()
+    scope = load_scope()
+    proposals = load_proposals()
+    tutorials = load_tutorials(outcomes)
+    found = coverage(outcomes, tutorials)
+
+    for code in list(scope["outcomes"]) + list(scope["partial"]):
+        if code not in outcomes:
+            problems.append(f"out-of-scope.yaml names {code}, which is not an outcome")
+    for proposal in proposals:
+        for code in (proposal.get("covers") or []) + (proposal.get("optional") or []):
+            if code not in outcomes:
+                problems.append(f"proposal {proposal['id']} names {code}, which is not an outcome")
+        if not (OUTLINES / f"{proposal['outline']}.md").is_file():
+            problems.append(f"proposal {proposal['id']} points at a missing outline, "
+                            f"{proposal['outline']}.md")
+        for code in proposal.get("covers") or []:
+            if code in found:
+                state = status_of(found[code], code, scope)
+                if state not in ("absent", "touched"):
+                    problems.append(f"proposal {proposal['id']} proposes to teach {code}, "
+                                    f"which is already {state}")
+    index = (OUTLINES / "README.md").read_text() if (OUTLINES / "README.md").is_file() else ""
+    for path in sorted(OUTLINES.glob("*.md")):
+        if path.name != "README.md" and path.name not in index:
+            problems.append(f"planning/outlines/README.md does not list {path.name}")
+
+    topics = (yaml.safe_load(TOPICS.read_text()) or {}).get("topics", {}) if TOPICS.is_file() else {}
+    served = {code for topic in topics.values() for code in outcomes_of(topic)}
+    for code in sorted(set(outcomes) - served):
+        problems.append(f"no topic in topics.yaml claims {code}")
+    for code, topic in topics.items():
+        claimed = outcomes_of(topic)
+        if code.startswith("PRE-"):
+            if code in outcomes:
+                problems.append(f"groundwork code {code} is also a real outcome")
+            if claimed:
+                problems.append(f"{code} is groundwork and claims {', '.join(claimed)}")
+            if not (topic.get("name") and topic.get("plain") and topic.get("uses")):
+                problems.append(f"{code} is groundwork but has no name, plain description or uses")
+            continue
+        if not claimed:
+            problems.append(f"topic {code} names no outcome")
+        for one in claimed:
+            if one not in outcomes:
+                problems.append(f"topic {code} claims {one}, which is in no module descriptor")
+
+    # The topic tree draws `needs:` as tiers, which a missing or circular
+    # prerequisite makes impossible, and shows every topic's name and plain
+    # description. The real build is what stops a site that cannot be drawn;
+    # this names the line to fix.
+    for code, topic in topics.items():
+        if not topic.get("name"):
+            problems.append(f"topic {code} has no name")
+        if not topic.get("plain"):
+            problems.append(f"topic {code} has no plain description")
+        for need in topic.get("needs") or []:
+            if need == code:
+                problems.append(f"topic {code} needs itself")
+            elif need not in topics:
+                problems.append(f"topic {code} needs {need}, which is not a topic")
+    state: dict[str, int] = {}
+
+    def walk(code: str, trail: list[str]) -> None:
+        if state.get(code) == 2 or code not in topics:
+            return
+        if state.get(code) == 1:
+            problems.append(f"the topic prerequisites form a cycle: {' -> '.join(trail + [code])}")
+            return
+        state[code] = 1
+        for need in topics[code].get("needs") or []:
+            if need != code:
+                walk(need, trail + [code])
+        state[code] = 2
+
+    for code in topics:
+        walk(code, [])
+
+    for block in re.findall(r"```mermaid\n(.*?)```", text, re.S):
+        ids = re.findall(r"^  (T\d+)\[", block, re.MULTILINE)
+        if len(ids) != len(set(ids)):
+            problems.append(f"the tutorial sequence graph repeats a node: {sorted(ids)}")
+    return problems
+
+
 def main() -> int:
     """The command-line entry point. In its normal mode, generates the
     map and writes it to `planning/CURRICULUM_MAP.md`. In `--check` mode
     (what CI actually runs), it generates the map in memory and compares
     it against what's currently committed, and exits 1 if they don't
-    match. A map that cannot be made at all (a `covers:` code or section
+    match or if the planning files disagree with each other
+    (`planning_problems()`). A map that cannot be made at all (a `covers:` code or section
     that does not exist) exits 2 instead, in either mode. CI fails a pull
     request on the 2 and only reports the 1 (DECISIONS_LOG 7.291): the
     map counts italic words in the tutorials' prose, so any new sentence
@@ -946,6 +1046,7 @@ def main() -> int:
         return 2
 
     if args.check:
+        stale = False
         current = MAP.read_text() if MAP.is_file() else ""
         if current != text:
             print(
@@ -953,9 +1054,13 @@ def main() -> int:
                 "Run: python3 dev/curriculum_map.py",
                 file=sys.stderr,
             )
-            return 1
-        print(f"{MAP.relative_to(ROOT)} is current")
-        return 0
+            stale = True
+        else:
+            print(f"{MAP.relative_to(ROOT)} is current")
+        problems = planning_problems(text)
+        for problem in problems:
+            print(f"planning: {problem}", file=sys.stderr)
+        return 1 if stale or problems else 0
 
     MAP.parent.mkdir(parents=True, exist_ok=True)
     MAP.write_text(text)

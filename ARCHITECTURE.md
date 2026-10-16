@@ -113,17 +113,24 @@ The pipeline, in order:
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
    page, topic tree, topic map, `editor.html` — is the same template with `{{TOKEN}}`
-   placeholders filled. A token the template doesn't fill, or a page that
-   leaves one unfilled, fails the build. `write_editor_page()` assembles
+   placeholders filled by `fill_shell()`. A token in the template that
+   `build.py` has no value for fails the build. A `{{` in an author's own
+   words, such as an f-string in a cell or an example template in a
+   sentence, is theirs and is left alone. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
    src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
-   page with no curriculum data of its own — About, the home page, and the
-   features page today — has its content in `pages/<name>.md`, not a string
+   page with no curriculum data of its own — the home page, About, Features,
+   Studying here and Reading helpers today — has its content in
+   `pages/<name>.md`, not a string
    in `build.py`: `read_page()` reads its minimal `title`-only frontmatter
    and converts the body with the same `to_html()` a tutorial's own prose
-   uses, and one `write_page(name)` (`SITE_PAGES` holds what differs: the
+   uses, and one `write_page(shell, name)` (`SITE_PAGES` holds what differs: the
    file name, the crumb, the bottom-nav link) assembles the shell around
-   what it returns. Two things a page can
+   what it returns. Every file under `pages/` is optional: a page with no
+   file is not written, the build's own link to it goes, a page that still
+   links to it gets a note, and a site with no
+   `pages/home.md` gets a plain front page (`DEFAULT_HOME`: the search box and
+   the course cards), so a fork keeps the pages it wants. Two things a page can
    have that ordinary prose can't: a ` ```card ` fence (`url:`/`status:`/
    `meta:`/`wide:` header lines, then a heading and a paragraph —
    `parse_card()`/`render_card()`), the markup a module tile on the home

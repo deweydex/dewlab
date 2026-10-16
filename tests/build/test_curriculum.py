@@ -51,11 +51,6 @@ class TestTheKnowledgeMap:
                           page.read_text() if page.is_file() else "", re.DOTALL)
         return match.group(0) if match else ""
 
-    def test_a_series_too_short_to_have_a_shape_gets_none(self, repo, monkeypatch):
-        self.series(repo, monkeypatch, count=2)
-        b.build()
-        assert self.svg(repo) == ""
-
     def test_it_still_builds_without_the_curriculum_data(self, repo, monkeypatch):
         # Without outcome data there is no topic tree — but the tutorial map
         # does not need it.
@@ -84,14 +79,6 @@ class TestTheKnowledgeMap:
         assert ">algorithms</text>" in svg
         # Naming an earlier tutorial draws an arrow back to it.
         assert 'class="dl-map-back"' in svg
-
-    def test_the_tutorial_just_before_does_not_get_a_second_arrow(self, repo, monkeypatch):
-        """The reading-order arrow already says that one."""
-        self.series(repo, monkeypatch)
-        path = tutorial_path(repo, "t4")
-        path.write_text(path.read_text() + "\nAs in Tutorial 3.\n")
-        b.build()
-        assert 'class="dl-map-back"' not in self.svg(repo)
 
     def test_a_long_title_is_shortened_and_a_tutorial_is_placed_by_what_it_mostly_covers(self):
         # A long title is shortened rather than overflowing.

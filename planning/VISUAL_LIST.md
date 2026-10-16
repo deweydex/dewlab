@@ -413,9 +413,9 @@ generator runs that cell or reads its values, and stops with a message if
 the page has changed underneath it. A figure never gives away an answer the
 page asks the reader to predict: the ramp's slope, the paint's area and the
 predicted bearings are left off on purpose. Charts and animations a cell
-already draws are not copied as stills. `tests/test_erd_graphics.py` checks
-that every committed SVG is what its generator draws, that it uses theme
-tokens only, and that the page gives it full alt text. DECISIONS_LOG has
+already draws are not copied as stills. Each generator's `--check` reports
+a committed SVG that is not what it draws (CI's house-style job runs it), and
+`tests/test_erd_graphics.py` checks the drawing code itself. DECISIONS_LOG has
 the entry.
 
 ### Web authoring

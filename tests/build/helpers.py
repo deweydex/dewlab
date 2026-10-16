@@ -27,13 +27,6 @@ sys.path.insert(0, str(DEWLAB))
 import build as b  # noqa: E402
 
 SHELL = (DEWLAB / "assets" / "shell.html").read_text()
-ABOUT_PAGE = (DEWLAB / "pages" / "about.md").read_text()
-HOME_PAGE = (DEWLAB / "pages" / "home.md").read_text()
-FEATURES_PAGE = (DEWLAB / "pages" / "features.md").read_text()
-# Every other page under pages/, copied as it is: the build writes each one
-# SITE_PAGES lists, and fails on one without its file.
-OTHER_PAGES = {path.name: path.read_text() for path in (DEWLAB / "pages").glob("*.md")
-               if path.stem not in ("about", "home", "features")}
 
 COURSE = "computational-methods"
 SERIES = "python-fundamentals"
@@ -70,11 +63,6 @@ def repo(tmp_path, monkeypatch):
     for name in ("tutorials", "courses", "setup", "data", "assets", "pages"):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
-    (tmp_path / "pages" / "about.md").write_text(ABOUT_PAGE)
-    (tmp_path / "pages" / "home.md").write_text(HOME_PAGE)
-    (tmp_path / "pages" / "features.md").write_text(FEATURES_PAGE)
-    for name, text in OTHER_PAGES.items():
-        (tmp_path / "pages" / name).write_text(text)
 
     monkeypatch.setattr(b, "ROOT", tmp_path)
     monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")

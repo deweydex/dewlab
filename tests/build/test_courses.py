@@ -149,12 +149,15 @@ class TestNavigation:
         assert "dl-nav-next" not in page(repo, "t1")
         assert "lists t2, which is a draft" in capsys.readouterr().err
 
-    def test_a_practice_page_listed_in_a_course_stops_the_build(self, repo):
+    def test_a_practice_page_listed_in_a_course_is_left_out_with_a_note(self, repo, capsys):
         series(repo, count=1)
         practice(repo, "t1")
         set_order(repo, COURSE, "s", ["t1", "t1-practice"])
-        with pytest.raises(b.BuildError, match="lists t1-practice, which is a page of problems"):
-            b.build()
+        b.build()
+        assert "lists t1-practice, which is a page of problems and follows its tutorial" in capsys.readouterr().err
+        # It still sits with its tutorial, which links to it.
+        assert (repo / "site" / "tutorials" / "t1-practice.html").is_file()
+        assert 'href="t1-practice.html"' in built(repo, "t1")
 
     @pytest.mark.parametrize(
         "field, line",
@@ -166,17 +169,16 @@ class TestNavigation:
             pytest.param("series", "series: python-fundamentals\n", id="series"),
         ],
     )
-    def test_a_moved_frontmatter_field_stops_the_build_and_says_to_delete_it(self, repo, field, line):
-        # Half-migrated is worse than either state: the field would be
-        # ignored in silence, and it is exactly the field somebody would edit
-        # — a mistake a contributor copying an old tutorial will make. The
-        # build refuses rather than ignores, since an ignored field is a
-        # field someone will keep writing.
+    def test_a_moved_frontmatter_field_builds_and_says_to_delete_it(self, repo, capsys, field, line):
+        # The field is ignored, and it is exactly the field somebody would
+        # keep editing, so the build says so each time instead of staying
+        # quiet. It does not stop the page: nothing a reader sees depends on it.
         series(repo, count=1)
         path = tutorial_path(repo, "t1")
         path.write_text(path.read_text().replace("version: 2026.08.23.1", line + "version: 2026.08.23.1"))
-        with pytest.raises(b.BuildError, match=rf"{field} no longer belongs in frontmatter.*Delete the line"):
-            b.build()
+        b.build()
+        assert re.search(rf"{field} no longer belongs in frontmatter.*The build ignores it; delete the line",
+                         capsys.readouterr().err)
 
 
 class TestAllTutorialsPage:
@@ -309,12 +311,14 @@ class TestAllTutorialsPage:
         with pytest.raises(b.BuildError, match="lists nowhere under `cards:`"):
             b.build()
 
-    def test_an_index_naming_a_course_with_no_file_stops_the_build(self, repo):
+    def test_an_index_naming_a_course_with_no_file_builds_and_says_so(self, repo, capsys):
         write(repo, "Prose.\n")
         (repo / "courses" / "index.yaml").write_text("order:\n  - computational-methods\n  - nowhere\n")
-        with pytest.raises(b.BuildError, match="there is no courses/nowhere.yaml"):
-            b.build()
+        b.build()
+        assert "there is no courses/nowhere.yaml, so it is left out" in capsys.readouterr().err
+        assert (repo / "site" / "computational-methods.html").is_file()
 
+    @pytest.mark.advisory
     def test_a_repeated_title_is_warned_about_naming_both_and_their_courses(self, repo, capsys):
         # A warning, never an error: two courses may each have a "Joins".
         write(repo, "One.\n", slug="one")
@@ -325,6 +329,7 @@ class TestAllTutorialsPage:
         assert "tutorials/one/one.md (on computational-methods)" in err
         assert "tutorials/two/two.md (on computational-methods)" in err
 
+    @pytest.mark.advisory
     def test_tutorials_covering_the_same_outcomes_are_reported(self, repo, capsys):
         # Coverage, not titles, is the signal; three shared outcomes is the line.
         claim = "covers:\n  a:\n    covers: [MIT-1.1, MIT-1.2, MIT-1.3]\n"

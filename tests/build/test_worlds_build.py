@@ -103,7 +103,6 @@ class TestMistakes:
         ('<div class="dl-world" data-world="planets">\n\nHi.\n', WORLDS, "no </div>"),
         (variant("planets", "One.") + variant("planets", "Two."), WORLDS, "side by side"),
         ("Hi.\n", "worlds:\n  Big Planets: nope\n", "not a key like"),
-        ("Hi.\n", "worlds:\n  planets: ''\n", "no line saying"),
         (variant("planets", "One.") + 'Two. <div class="dl-world" data-world="planets">\n\nHi.\n\n</div>\n',
          WORLDS, "a line of its own"),
     ])
@@ -116,6 +115,13 @@ class TestMistakes:
 class TestSolutionsPerWorld:
     """check_solutions() runs a page once per world, with the cells a reader
     in that world would run."""
+
+    def test_a_world_with_no_line_keeps_its_name(self, repo):
+        for value in ("''", ""):
+            page(repo, variant("planets", "One.") + variant("sea-floor", "Two."),
+                 f"worlds:\n  planets: {value}\n  sea-floor: Down where the light gives out.\n")
+            b.build()
+            assert 'data-world-choice="planets"' in built(repo) or "Planets" in built(repo)
 
     def test_a_worlds_solution_does_not_see_another_worlds_cells(self, repo):
         body = (variant("planets", "```python exec\nid: t--planets\ngiants = [1]\n```\n")

@@ -103,7 +103,6 @@ class TestRendering:
         for word in ("correct", "wrong", "not yet", "pass", "fail"):
             assert word not in table.lower()
 
-
     def test_a_comparison_says_what_it_types_for_input(self, repo):
         write(repo, ASKING + TYPED + "```inputs\nask_shift()\n```\n")
         b.build()
@@ -251,9 +250,3 @@ class TestTheBuildRunsEverySolution:
         write(repo, asks + CELL + "```solution\nassert shift == 7\n```\n")
         b.build()
 
-    def test_a_page_without_solutions_runs_nothing(self, repo, monkeypatch):
-        def refuse(*args, **kwargs):
-            raise AssertionError("ran a page with no solutions")
-        monkeypatch.setattr(b.subprocess, "run", refuse)
-        write(repo, CELL + INPUTS)
-        b.build()

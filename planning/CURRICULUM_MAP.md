@@ -599,7 +599,7 @@ graph TD
 
 ## Vocabulary
 
-The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **306 terms** are marked that way, and asking two questions of them is free.
+The tutorials mark a term being introduced by putting it in italics the first time it means something particular. **310 terms** are marked that way, and asking two questions of them is free.
 
 ### Introduced more than once
 
@@ -610,6 +610,7 @@ The same word presented as new in two places. Either it is being introduced twic
 | *astronomical units* | 32, 45 |
 | *bearing* | 50, 55 |
 | *beats* | 36, 48 |
+| *caesar shift* | 3, 8 |
 | *derivative* | 33, 52 |
 | *frequency* | 29, 48 |
 | *function* | 1, 10 |
@@ -634,7 +635,9 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *argument* | 9 | 10 |
 | *at* | 1 | 11 |
 | *average* | 7 | 51 |
+| *bar chart* | 14 | 30 |
 | *base* | 20 | 32 |
+| *beats* | 35 | 36 |
 | *before* | 1 | 20 |
 | *between* | 1 | 50 |
 | *binary* | 4 | 20 |
@@ -681,6 +684,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *selection sort* | 8 | 17 |
 | *sequence* | 5 | 12 |
 | *set* | 1 | 21 |
+| *share* | 3 | 36 |
 | *sine* | 42 | 46 |
 | *sine rule* | 45 | 50 |
 | *solution* | 10 | 39 |
@@ -694,6 +698,7 @@ A word appearing in an earlier tutorial than the one that stops to explain it. S
 | *unit circle* | 42 | 46 |
 | *value* | 3 | 14 |
 | *what* | 1 | 19 |
+| *your turn* | 1 | 5 |
 
 ## Scope questions, settled
 
