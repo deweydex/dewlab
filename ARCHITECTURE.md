@@ -115,11 +115,12 @@ The pipeline, in order:
    sentence, is theirs and is left alone. `write_editor_page()` assembles
    `editor.html` specifically, wiring on its `<script type="module"
    src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
-   page with no curriculum data of its own — About, the home page, and the
-   features page today — has its content in `pages/<name>.md`, not a string
+   page with no curriculum data of its own — the home page, About, Features,
+   Studying here and Reading helpers today — has its content in
+   `pages/<name>.md`, not a string
    in `build.py`: `read_page()` reads its minimal `title`-only frontmatter
    and converts the body with the same `to_html()` a tutorial's own prose
-   uses, and one `write_page(name)` (`SITE_PAGES` holds what differs: the
+   uses, and one `write_page(shell, name)` (`SITE_PAGES` holds what differs: the
    file name, the crumb, the bottom-nav link) assembles the shell around
    what it returns. Every file under `pages/` is optional: a page with no
    file is not written and nothing links to it, and a site with no

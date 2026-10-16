@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 import pytest
-import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "dev"))
 
@@ -211,25 +210,21 @@ class TestBackReferences:
             assert refs[key] == val
 
 
-class TestTheRealMap:
-    def test_the_map_says_how_many_gaps_nobody_has_planned(self):
+class TestTheUnplannedLine:
+    """The sentence that says how much of the plan nobody has proposed a
+    tutorial for. Against the fixture's two outcomes, not the real plan."""
+
+    def test_the_map_says_how_many_gaps_nobody_has_planned(self, repo):
         # "Not covered" is work outstanding; this is work nobody has even
         # planned — smaller and more urgent, and what an earlier hand-count missed.
+        write_tutorial(repo)
         outcomes, _ = cm.load_outcomes()
-        tutorials = cm.load_tutorials(outcomes)
-        found = cm.coverage(outcomes, tutorials)
-        scope = cm.load_scope()
-        states = {c: cm.status_of(found[c], c, scope) for c in outcomes}
-        wanted = {c for c, state in states.items() if state in ("absent", "touched")}
+        found = cm.coverage(outcomes, cm.load_tutorials(outcomes))
+        states = {c: cm.status_of(found[c], c, cm.load_scope()) for c in outcomes}
+        line = cm.unplanned_line(states, [])
+        assert "2" in line and "proposal" in line
 
-        line = cm.unplanned_line(states, cm.load_proposals())
-        if not wanted:
-            assert "Everything in both descriptors is written" in line
-            return
-        assert str(len(wanted)) in line or len(wanted) == 1
-        assert "proposal" in line
-
-    def test_unplanned_line_edge_cases(self):
+    def test_unplanned_line_edge_cases(self, repo):
         outcomes, _ = cm.load_outcomes()
 
         # Guards the zero case: "every one of the 0 outcomes still to write
@@ -243,48 +238,6 @@ class TestTheRealMap:
         all_unplanned = cm.unplanned_line(states, [{"covers": []}])
         for code in outcomes:
             assert f"`{code}`" in all_unplanned
-
-
-class TestTheTopicGlossary:
-    """topics.yaml (not part of curriculum_map.py itself) backs the knowledge
-    map's per-node glossary text; these tests keep it complete and consistent
-    with the outcome list."""
-
-    @staticmethod
-    def topics() -> dict:
-        path = cm.ROOT / "planning" / "curriculum" / "topics.yaml"
-        return yaml.safe_load(path.read_text())["topics"]
-
-    def test_prerequisites_are_real_and_not_self_referential(self):
-        topics = self.topics()
-        for code, topic in topics.items():
-            needs = topic.get("needs") or []
-            assert code not in needs, f"{code} requires itself"
-            for need in needs:
-                assert need in topics, f"{code} needs {need}, which does not exist"
-
-    def test_the_prerequisites_have_no_cycles(self):
-        """A cycle would make the tiers of a tech tree impossible to compute."""
-        topics = self.topics()
-        state: dict[str, int] = {}
-
-        def walk(code: str, trail: list[str]) -> None:
-            if state.get(code) == 2:
-                return
-            assert state.get(code) != 1, f"cycle: {' -> '.join(trail + [code])}"
-            state[code] = 1
-            for need in topics[code].get("needs") or []:
-                walk(need, trail + [code])
-            state[code] = 2
-
-        for code in topics:
-            walk(code, [])
-
-    def test_every_topic_has_a_name_and_a_description(self):
-        # The topic tree shows both, and the build reads both.
-        for code, topic in self.topics().items():
-            assert topic.get("name"), f"{code} has no name"
-            assert topic.get("plain"), f"{code} has no plain description"
 
 
 class TestPlanningProblems:
@@ -315,6 +268,16 @@ class TestPlanningProblems:
         assert any("p1 names DEMO-9.9" in p for p in problems)
         assert any("missing outline" in p for p in problems)
         assert any("no topic in topics.yaml claims DEMO-1.2" in p for p in problems)
+
+    def test_a_topic_graph_that_cannot_be_drawn_is_named(self, repo, monkeypatch):
+        topics = ("topics:\n"
+                  "  T1:\n    name: One\n    plain: p\n    outcome: DEMO-1.1\n    needs: [T2]\n"
+                  "  T2:\n    name: Two\n    plain: p\n    outcome: DEMO-1.2\n    needs: [T1, T9]\n"
+                  "  T3:\n    plain: p\n    outcome: DEMO-1.2\n")
+        problems = self.plan(repo, monkeypatch, "proposed: []\n", topics)
+        assert any("T2 needs T9" in p for p in problems)
+        assert any("cycle" in p for p in problems)
+        assert any("T3 has no name" in p for p in problems)
 
 
 class TestSeveralReleasesOfOneTutorial:

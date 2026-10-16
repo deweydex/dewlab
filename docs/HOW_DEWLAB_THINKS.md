@@ -261,13 +261,15 @@ you want, and the page would still work, that is worth raising.
 
 **What is reported and never blocks.** Some checks look after the project's
 own planning rather than any page: the curriculum map in
-`planning/CURRICULUM_MAP.md` staying current, the topic descriptions being
-long enough to be worth reading, the outlines index listing every outline,
-the links inside documents about the project. Some are house preferences
-about tutorial prose, such as not naming an institution's assessments. These
-are marked `advisory` in the test suite (`DECISIONS_LOG.md` 7.291). A pull
-request shows them as a warning, and a maintainer tidies them up. To see them
-yourself, run `python3 -m pytest -m advisory`.
+`planning/CURRICULUM_MAP.md` staying current, the planning files agreeing
+with each other, the generated pictures matching the cells they are drawn
+from, the links inside documents about the project. They live in the scripts
+that own those files (`dev/curriculum_map.py --check`, each picture
+generator's `--check`, `dev/check_doc_links.py`), not in the test suite
+(`DECISIONS_LOG.md` 7.291, 7.298). A pull request shows what they find as a
+warning, and a maintainer tidies it up. House preferences about tutorial
+prose, such as not naming an institution's assessments, are not checked: they
+are advice in the style guide.
 
 **What is not checked at all, on purpose.** Everything in the chapters before
 this one. Voice, verdict words, phrasal verbs, how many hints a cell has, how

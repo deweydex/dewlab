@@ -1,8 +1,10 @@
 """The ER diagram generator's layout rules.
 
 `svgwrite` is not a build dependency — nothing in `dev/graphics/` runs during
-a build, and CI never installs it — so these skip where it is absent rather
-than forcing it into `requirements-build.txt` for a picture.
+a build — so these skip where it is absent rather than forcing it into
+`requirements-build.txt` for a picture. CI installs it, so they run there.
+Whether the committed pictures are what the generators draw is not a test:
+each generator's `--check` reports it, in CI's house-style job.
 """
 
 from __future__ import annotations

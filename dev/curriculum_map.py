@@ -983,6 +983,37 @@ def planning_problems(text: str) -> list[str]:
             if one not in outcomes:
                 problems.append(f"topic {code} claims {one}, which is in no module descriptor")
 
+    # The topic tree draws `needs:` as tiers, which a missing or circular
+    # prerequisite makes impossible, and shows every topic's name and plain
+    # description. The real build is what stops a site that cannot be drawn;
+    # this names the line to fix.
+    for code, topic in topics.items():
+        if not topic.get("name"):
+            problems.append(f"topic {code} has no name")
+        if not topic.get("plain"):
+            problems.append(f"topic {code} has no plain description")
+        for need in topic.get("needs") or []:
+            if need == code:
+                problems.append(f"topic {code} needs itself")
+            elif need not in topics:
+                problems.append(f"topic {code} needs {need}, which is not a topic")
+    state: dict[str, int] = {}
+
+    def walk(code: str, trail: list[str]) -> None:
+        if state.get(code) == 2 or code not in topics:
+            return
+        if state.get(code) == 1:
+            problems.append(f"the topic prerequisites form a cycle: {' -> '.join(trail + [code])}")
+            return
+        state[code] = 1
+        for need in topics[code].get("needs") or []:
+            if need != code:
+                walk(need, trail + [code])
+        state[code] = 2
+
+    for code in topics:
+        walk(code, [])
+
     for block in re.findall(r"```mermaid\n(.*?)```", text, re.S):
         ids = re.findall(r"^  (T\d+)\[", block, re.MULTILINE)
         if len(ids) != len(set(ids)):
