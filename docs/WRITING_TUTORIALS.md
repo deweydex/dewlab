@@ -224,7 +224,8 @@ and previous and next.
 
 The build refuses an id it cannot find, naming the course file and the line,
 and refuses a second folder with an id that already exists, naming the
-tutorial that has it. It warns, without stopping, when two tutorials share a
+tutorial that has it. It notes, without stopping, a course named in
+`courses/index.yaml` that has no file. It warns, without stopping, when two tutorials share a
 title, and when two tutorials cover much the same outcomes — both are worth
 a look, neither is necessarily wrong.
 
@@ -547,7 +548,9 @@ option is its note: one line naming the thinking that leads to it, with a
 link to a closer-look page if there is one. An indented plain line carries
 on the option (or note) above it, so a long one can wrap. No option is
 marked right. For a number, `tolerance:` says how close
-counts as the same, for an estimate. The prose before the list, or the
+counts as the same, for an estimate. A choice with one option, or a
+`tolerance:` on anything but a number, builds; the build says so, and
+ignores the tolerance. The prose before the list, or the
 whole body for `number` and `text`, is the question.
 
 The reader also says how sure they are: *sure*, *a hunch*, or *I'm not
@@ -854,7 +857,9 @@ The options follow the same rule as a predict block's. An option is a bullet at
 the left margin. A bullet indented under it is that option's note: one line
 naming the thinking that leads to it, written for every option, the page's own
 included. An indented line that is not a bullet carries on the option or note
-above it, so a long option can wrap.
+above it, so a long option can wrap. A question with one option, or with
+no prompt, builds, and the build says so: there is nothing to choose
+between, or nothing asked.
 
 `answer:` names the page's own answer by its position in the list, starting at
 1. (`correct:`, its older spelling, still builds.) The runtime shuffles the
@@ -1175,8 +1180,11 @@ way: they teach loading from an address, and they still work offline.
 
 ### Adding a dataset
 
-Two files: `data/<name>.csv` (or `.txt`) and `data/<name>.yaml`. The
-yaml needs every one of these, or the build fails:
+Two files: `data/<name>.csv` (or `.txt`) and `data/<name>.yaml`. A data
+file with no yaml still loads, and the build notes that nothing says where
+it came from; `{{snapshot: name}}` is the one thing it refuses, since there
+is no date to print. A yaml that is there needs every one of these, or the
+build fails:
 
 | Field | What it says |
 |---|---|
@@ -1246,7 +1254,8 @@ version: 2026.08.24.1
 
 A practice page's title is its tutorial's, with " — Practice" added
 (`DECISIONS_LOG.md` 7.213). A practice page is never listed in a course file:
-it follows its tutorial onto every course that lists it. It should declare
+it follows its tutorial onto every course that lists it. If one is, the build
+leaves the line out and says so. It should declare
 no `covers:` either. It sets problems on what its tutorial taught, and
 counting it would report the same outcome as taught twice; if it does, the
 page builds and the build says so.
@@ -1386,12 +1395,11 @@ of its tutorials, after the Practice button, with a small "context" tag.
 - naming a practice page or another context page — name the tutorial;
 - naming itself;
 - setting `practice_for:` or `practice_across:` as well — a page is
-  background or problems, not both;
-- a course file listing it. It follows its tutorial onto every course, the
-  same as a practice page.
+  background or problems, not both.
 
-**What it only notes**, and builds: naming one id twice (it is listed
-once), and declaring `covers:`. Nothing on a context page is needed to
+**What it only notes**, and builds: a course file listing it (the line is
+left out; it follows its tutorial onto every course, the same as a practice
+page), naming one id twice (it is listed once), and declaring `covers:`. Nothing on a context page is needed to
 finish a tutorial, so it is not where an outcome is taught, and a `covers:`
 there makes the curriculum map count it as one.
 
