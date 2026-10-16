@@ -179,7 +179,7 @@ class TestPagesOfProblems:
             b.build()
 
     NOTES = {
-        "a practice page declares covers": (_covers_declared_on_a_practice_page, "counts its outcomes a second time"),
+        "a practice page declares covers": (_covers_declared_on_a_practice_page, "its outcomes a second time"),
         "a mixed set names one tutorial": (_mixed_naming_one_tutorial, "`practice_for` says that more plainly"),
         "a mixed set names a page of problems": (_mixed_naming_a_practice_page, "itself a page of problems"),
         "a repeated slug in practice_across": (_repeated_slug_in_practice_across, "more than once. Each is listed once"),
@@ -191,4 +191,15 @@ class TestPagesOfProblems:
         setup(self, repo)
         b.build()
         assert match in capsys.readouterr().err
+
+    def test_two_mixed_sets_that_name_each_other_build(self, repo, capsys):
+        # Each one's toolkit and reference are what the other draws on; the
+        # walk through them has to stop instead of going round for ever.
+        write(repo, "One.\n", slug="one")
+        write(repo, "Two.\n", slug="two")
+        self.practice(repo, "m-one", practice_across=["one", "m-two"])
+        self.practice(repo, "m-two", practice_across=["two", "m-one"])
+        b.build()
+        assert "itself a page of problems" in capsys.readouterr().err
+        assert (repo / "site" / "tutorials" / "m-one.html").is_file()
 

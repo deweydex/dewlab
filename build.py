@@ -1938,8 +1938,8 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
         inside = body[start:end].split("\n", 1)[1].lstrip("\n")
         if not inside.startswith("## "):
             note(path, f"project {project!r} does not open with a `## ` heading, so it has "
-                       "no control to open and close it. A reader can open it from its card "
-                       "but cannot close it again")
+                       "no control to open and close it. It shows nothing until a reader "
+                       "opens it from its card, and cannot be closed again")
     return spans
 
 
@@ -3451,8 +3451,9 @@ def practice_pairs(
             continue
         if page.meta.get("covers"):
             note(page.path, "is a practice page and declares `covers:`, so the curriculum "
-                            "map counts its outcomes a second time. It sets problems on "
-                            "what its tutorial taught; delete `covers:` unless you mean that.")
+                            "map and the topic tree count its outcomes a second time, and may "
+                            "link a topic to this page instead of its tutorial. Delete "
+                            "`covers:` unless you mean that.")
         if target == page.slug:
             fail(page.path, f"has practice_for: {target}, which is itself.")
         owner = registry.get(target)
@@ -3501,8 +3502,8 @@ def mixed_practice(
             continue
         if page.meta.get("covers"):
             note(page.path, "is a practice page and declares `covers:`, so the curriculum "
-                            "map counts its outcomes a second time. It sets problems on "
-                            "what its tutorials taught; delete `covers:` unless you mean that.")
+                            "map and the topic tree count its outcomes a second time, and may "
+                            "link a topic to this page. Delete `covers:` unless you mean that.")
         listed = listed_ids(page.meta.get("practice_across"))
         if len(set(listed)) != len(listed):
             repeated = sorted({s for s in listed if listed.count(s) > 1})
@@ -3570,8 +3571,8 @@ def context_pages(
                             "problems; one page cannot be both.")
         if page.meta.get("covers"):
             note(page.path, "is a context page and declares `covers:`, so the curriculum "
-                            "map counts it as teaching an outcome. Nothing on it is needed "
-                            "to finish a tutorial; delete `covers:` unless you mean that.")
+                            "map and the topic tree count it as teaching an outcome, and may "
+                            "link a topic to it. Delete `covers:` unless you mean that.")
         listed = listed_ids(page.meta.get("context_for"))
         if len(set(listed)) != len(listed):
             repeated = sorted({s for s in listed if listed.count(s) > 1})
@@ -4009,6 +4010,7 @@ def cumulative_glossary(
     registry: dict[str, Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
     reader_at: Tutorial | None = None,
+    _through: frozenset[str] = frozenset(),
 ) -> list[dict]:
     """Everything a reader has met by this point: this tutorial's own
     glossary, everything earlier in its own series, and everything from
@@ -4022,11 +4024,14 @@ def cumulative_glossary(
     tutorial(s) it names, each resolved the same way. A context page may
     also define terms of its own (background reading goes further than
     its tutorials did), so its own glossary follows the union; a practice
-    page teaches nothing new and has none.
+    page teaches nothing new and has none. `_through` stops the walk when
+    two mixed sets name each other, as in toolkit_for().
     """
     reader_at = reader_at or tutorial
 
     if tutorial.is_companion:
+        if tutorial.slug in _through:
+            return []
         targets = list(tutorial.owners)
         seen: set[tuple[str, str]] = set()
         found: list[dict] = []
@@ -4034,7 +4039,8 @@ def cumulative_glossary(
             target = registry.get(slug)
             if target is None:
                 continue
-            for entry in cumulative_glossary(target, registry, groups, reader_at):
+            for entry in cumulative_glossary(target, registry, groups, reader_at,
+                                             _through | {tutorial.slug}):
                 key = (entry["term"], entry["kind"])
                 if key in seen:
                     continue
@@ -4097,6 +4103,7 @@ def toolkit_for(
     tutorial: Tutorial,
     registry: dict[str, Tutorial],
     groups: dict[tuple[str, str], list[Tutorial]],
+    _through: frozenset[str] = frozenset(),
 ) -> list[dict]:
     """The toolkit a page loads before its first cell runs: every toolkit
     cell on an earlier tutorial of its course, in the order
@@ -4111,16 +4118,21 @@ def toolkit_for(
     through them by then. A mixed set naming several gets everything up to
     and including the latest of them, in course order, whatever order its
     `practice_across` lists them in: each owner's chain is a prefix of
-    the latest one's, so the union walks the course once.
+    the latest one's, so the union walks the course once. Two mixed sets
+    may name each other; `_through` is the companions already on the way
+    here, so the walk stops instead of going round.
     """
     if tutorial.is_companion:
+        if tutorial.slug in _through:
+            return []
         found: list[dict] = []
         seen: set[tuple[str, str]] = set()
         for slug in tutorial.owners:
             owner = registry.get(slug)
             if owner is None:
                 continue
-            for entry in toolkit_for(owner, registry, groups) + toolkit_entries([owner]):
+            onward = toolkit_for(owner, registry, groups, _through | {tutorial.slug})
+            for entry in onward + toolkit_entries([owner]):
                 key = (entry["tutorial"], entry["cell"])
                 if key not in seen:
                     seen.add(key)
@@ -6938,11 +6950,12 @@ def write_page(shell: str, name: str) -> Path | None:
     page, Studying here or Reading helpers — from `pages/<name>.md`, read
     through `read_page()`.
 
-    Every one is optional. A page with no file is not written, and nothing
-    on the site links to it (the one link the build adds itself, from the
-    all-tutorials page to About, is left out too); returns None. The home
-    page is the exception in the other direction: with no file it is built
-    from `DEFAULT_HOME`, because the site needs a front page.
+    Every one is optional. A page with no file is not written, and the one
+    link the build adds to one itself, from the all-tutorials page to About,
+    is left out too; returns None. A page's own links are its author's, so a
+    link or card to a page this site does not have gets a note, not a
+    refusal. The home page is the exception in the other direction: with no
+    file it is built from `DEFAULT_HOME`, because the site needs a front page.
 
     A page is a hand-written markdown file with a `title` and nothing else
     in its frontmatter: no course, no version, no cells. `read_page()`
@@ -6961,6 +6974,11 @@ def write_page(shell: str, name: str) -> Path | None:
     if name != "home" and not (PAGES / f"{name}.md").is_file():
         return None
     meta, body = read_page(name)
+    missing = {other_stem: other for other, (other_stem, _, _) in SITE_PAGES.items()
+               if other != "home" and not (PAGES / f"{other}.md").is_file()}
+    for target in sorted(set(re.findall(r'href="([\w-]+)\.html', body)) & set(missing)):
+        note(PAGES / f"{name}.md", f"links to {target}.html, and this site has no "
+                                   f"pages/{missing[target]}.md, so the link goes nowhere")
     manifest = {"slug": stem, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
     # renderMaths() (tutorial-runtime.js) checks manifest.math before it

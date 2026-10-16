@@ -50,7 +50,7 @@ IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)|<img[^>]+src=\"([^\"]+)\"")
 # starting ``` outside every one of these is a fence that never closed.
 CLOSED_FENCE_RE = re.compile(r"^ *```[^\n]*\n.*?^ *```[ \t]*$", re.M | re.S)
 CODE_RE = re.compile(r"```.*?```|`[^`\n]*`", re.S)  # fences and code spans: examples, not images
-OLD_FIELDS = ("module", "module_title", "series", "slug")
+OLD_FIELDS = ("module", "module_title", "series", "slug", "order")
 
 
 class Report:

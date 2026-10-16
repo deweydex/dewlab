@@ -264,6 +264,9 @@ NOTES = {
     "an old placement field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\n',
                                "delete these old lines from the frontmatter: module",
                                "module no longer belongs in frontmatter"),
+    "an old order field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\norder: 3\n',
+                           "delete these old lines from the frontmatter: order",
+                           "order no longer belongs in frontmatter"),
 }
 
 

@@ -502,6 +502,15 @@ class TestPagesAreOptional:
         assert 'href="about.html"' in (site / "all-tutorials.html").read_text()
         assert not (site / "features.html").exists()
 
+    def test_a_link_to_a_page_the_site_does_not_have_is_noted(self, repo, capsys):
+        (repo / "pages" / "home.md").write_text(
+            '---\ntitle: "Home"\n---\n\nSee [what it does](features.html).\n\n'
+            "```card\nurl: features.html\n### Features\nAll of them.\n```\n")
+        self.site(repo)
+        err = capsys.readouterr().err
+        assert "pages/home.md: links to features.html, and this site has no pages/features.md" in err
+        assert err.count("links to features.html") == 1
+
     def test_a_front_page_of_ones_own_replaces_the_plain_one(self, repo):
         (repo / "pages" / "home.md").write_text('---\ntitle: "Mine"\n---\n\nOur own front page.\n')
         index = (self.site(repo) / "index.html").read_text()

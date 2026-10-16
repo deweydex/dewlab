@@ -123,7 +123,8 @@ The pipeline, in order:
    uses, and one `write_page(shell, name)` (`SITE_PAGES` holds what differs: the
    file name, the crumb, the bottom-nav link) assembles the shell around
    what it returns. Every file under `pages/` is optional: a page with no
-   file is not written and nothing links to it, and a site with no
+   file is not written, the build's own link to it goes, a page that still
+   links to it gets a note, and a site with no
    `pages/home.md` gets a plain front page (`DEFAULT_HOME`: the search box and
    the course cards), so a fork keeps the pages it wants. Two things a page can
    have that ordinary prose can't: a ` ```card ` fence (`url:`/`status:`/
