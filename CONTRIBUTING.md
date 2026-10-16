@@ -59,6 +59,19 @@ message rather than failing.
 There is also [`tests/MANUAL_CHECKLIST.md`](tests/MANUAL_CHECKLIST.md) for the
 things a browser test does not cover well.
 
+### What a test or a refusal may stop
+
+A test that fails a pull request, or a `fail()` in `build.py` or a problem in
+`check.py`, has to name what breaks for a reader if it is let through: the page
+does not load, a cell cannot run, a link or file points at nothing, a number
+the page states is wrong, saved work is lost, or the interface errors. Say it
+in the test's docstring or in the refusal's message. If you cannot, it is not
+a gate. A preference about how a page is shaped or worded goes in the style
+guide, or, if an author would want to hear it at build time, in a `note()`
+that lets the build carry on. A check on the project's own planning files
+belongs in the script that owns those files (`dev/curriculum_map.py --check`),
+not in the test suite. `DECISIONS_LOG.md` 7.295 and 7.298 say why.
+
 New to the suite, or not sure where a new test belongs?
 [`docs/tests-explained.md`](docs/tests-explained.md) maps what's in each
 directory and file, and why, plus a short decision guide for where a new
@@ -74,11 +87,14 @@ Three workflows run on every push.
 cannot be made (a `covers:` code or section that does not exist), and fails if
 one of the generated files for the topic tools is out of date. Its
 `house-style` job runs the checks that look after the project rather than any
-page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
-current, and the links inside the documents about the project. It reports what
+page: the few tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
+current and the planning files agree with each other, whether the Dewey Track's
+generated pictures are current, and the links inside the documents about the
+project. It reports what
 it finds as a warning on the pull request and never fails it
 (`DECISIONS_LOG.md` 7.291). To see those checks locally, run
-`python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check` and
+`python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check`,
+`python3 dev/graphics/dewey_units_1_5.py --check` (and `_6_10`) and
 `python3 dev/check_doc_links.py`.
 
 `standalone-bundle-is-current` rebuilds the vendored CodeMirror/KaTeX bundle
