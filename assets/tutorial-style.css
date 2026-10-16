@@ -1618,6 +1618,9 @@ input.dl-stdin:focus-visible { outline: 2px solid var(--dl-orange); outline-offs
   white-space: nowrap;
 }
 .dl-crumb-level > summary::-webkit-details-marker { display: none; }
+/* The heading of a level is a link to the page it names. */
+.dl-crumb-level > summary > a { color: inherit; text-decoration: none; }
+.dl-crumb-level > summary > a:hover { color: var(--dl-orange); text-decoration: underline; }
 .dl-crumb-level > summary::before {
   content: "\25B8";
   display: inline-block;
