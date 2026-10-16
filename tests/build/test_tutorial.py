@@ -686,7 +686,6 @@ class TestNotesAndDatasets:
     @pytest.mark.parametrize("setup, match", [
         (_duplicate_note_id, "share the id"),
         (_dataset_missing_csv, "data/missing.csv"),
-        (_dataset_missing_attribution, "data/missing.yaml"),
         (_dataset_incomplete_attribution, "url, license, snapshot, trimmed, description"),
     ])
     def test_note_and_dataset_faults_fail_the_build(self, repo, setup, match):
@@ -722,12 +721,17 @@ class TestNotesAndDatasets:
         with pytest.raises(b.BuildError, match="is not a date"):
             b.build()
 
-    def test_every_data_file_needs_its_yaml_even_undeclared(self, repo):
-        # dewmini and the Notebook load files by name too.
+    def test_a_data_file_with_no_yaml_builds_and_says_where_it_came_from_is_unknown(self, repo, capsys):
+        # dewmini and the Notebook load files by name too, so every file is
+        # checked, declared or not. Without its yaml a cell can still load it;
+        # the page cannot say where it came from, and the Reference tab leaves it out.
         (repo / "data" / "stray.csv").write_text("a\n1\n")
-        write(repo, "Prose.\n", slug="one")
-        with pytest.raises(b.BuildError, match="has no data/stray.yaml"):
-            b.build()
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - stray\n")
+        b.build()
+        assert "has no data/stray.yaml" in capsys.readouterr().err
+        assert manifest(built(repo, "one")).get("datasets", []) == []
+        assert json.loads((repo / "site" / "data" / "index.json").read_text())["stray.csv"] == {}
 
     def test_the_snapshot_token_names_the_date_of_a_declared_dataset(self, repo):
         path = write(repo, "From the copy saved on {{snapshot: x}}.\n", slug="one")

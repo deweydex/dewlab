@@ -278,7 +278,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
             entries = data.get("entries") or []
             bad = [e for e in entries if not (isinstance(e, dict) and e.get("term") and e.get("definition"))]
             if bad:
-                report.problem(f"`{glossary.name}`: {len(bad)} entr{'y' if len(bad) == 1 else 'ies'} without a `term:` or a `definition:`.")
+                report.note(f"`{glossary.name}`: {len(bad)} entr{'y' if len(bad) == 1 else 'ies'} without a `term:` or a `definition:`, left out of the reference.")
             else:
                 report.ok(f"The glossary has {len(entries)} entr{'y' if len(entries) == 1 else 'ies'}.")
         except yaml.YAMLError as err:
@@ -330,15 +330,15 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
             continue
         listed = series.get("tutorials") or []
         if not listed:
-            report.problem(f"The series \"{series['title']}\" lists no tutorials.")
+            report.note(f"The series \"{series['title']}\" lists no tutorials yet, so the course page leaves it out.")
         for ident in listed:
             seen[ident] += 1
             if ident not in known:
                 report.problem(f"The series \"{series['title']}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
             elif is_practice_page(TUTORIALS / ident / f"{ident}.md"):
-                report.problem(f"`{ident}` is a practice page (it has `practice_for:`). Practice pages are not listed in courses; they follow their tutorial.")
+                report.note(f"`{ident}` is a practice page (it has `practice_for:`). It follows its tutorial, so this line is left out.")
             elif is_context_page(TUTORIALS / ident / f"{ident}.md"):
-                report.problem(f"`{ident}` is a context page (it has `context_for:`). Context pages are not listed in courses; they follow their tutorial.")
+                report.note(f"`{ident}` is a context page (it has `context_for:`). It follows its tutorial, so this line is left out.")
     for ident, n in seen.items():
         if n > 1:
             report.problem(f"`{ident}` is listed {n} times in this course. List it once.")

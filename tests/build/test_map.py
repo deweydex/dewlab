@@ -135,11 +135,11 @@ class TestTheBuildRefusesAMapThatDoesNotMatch:
             b.build()
         assert "t-tour" in str(why.value) and "dev/map_layout.py" in str(why.value)
 
-    def test_a_layout_that_places_a_topic_the_map_no_longer_has(self, repo):
+    def test_a_layout_that_places_a_topic_the_map_no_longer_has_is_noted_and_ignored(self, repo, capsys):
         mapped(repo, layout=lambda lay: lay["towns"].update({"t-gone": dict(lay["towns"]["t-tour"])}))
-        with pytest.raises(b.BuildError) as why:
-            b.build()
-        assert "t-gone" in str(why.value)
+        b.build()
+        assert "places 't-gone', which is not a topic; it is ignored" in capsys.readouterr().err
+        assert "t-gone" not in (repo / "site" / "map.html").read_text()
 
 
 class TestTheRealMap:

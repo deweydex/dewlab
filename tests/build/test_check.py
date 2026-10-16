@@ -306,11 +306,11 @@ def test_everything_check_and_the_build_both_accept_a_good_tree(repo, monkeypatc
     assert b.build()
 
 
-def test_a_context_page_is_not_a_problem_but_listing_one_in_a_course_is(site) -> None:
+def test_a_context_page_is_not_a_problem_and_listing_one_in_a_course_is_a_note(site) -> None:
     """A context page follows the tutorial it gives background for, the way
     a practice page does: check.py does not call it unlisted, and does not
-    offer it a practice page. A course that lists it is a problem, as the
-    build also says."""
+    offer it a practice page. A course that lists it gets a note, as the
+    build also prints: the line is left out."""
     root, check = site
     tutorial(root, "joins")
     tutorial(root, "why-joins", front='title: "Why Joins"\nyear: "2026-2027"\nversion: 2026.09.14.1\ncontext_for: joins\n')
@@ -327,5 +327,5 @@ def test_a_context_page_is_not_a_problem_but_listing_one_in_a_course_is(site) ->
 
     course(root, "alpha", {"SQL": ["joins", "why-joins"]})
     code, out = run_check(check, "courses/alpha.yaml")
-    assert code == 1
-    assert "`why-joins` is a context page" in out
+    assert code == 0, out
+    assert "`why-joins` is a context page" in out and "left out" in out

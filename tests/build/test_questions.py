@@ -87,6 +87,16 @@ class TestMultipleChoice:
         assert "Which prints <code>&lt;b&gt;</code>?" in page
         assert '<code>print("&lt;b&gt;")</code>' in page
 
+    def test_one_option_or_no_prompt_builds_and_says_so(self, repo, capsys):
+        write(repo, "```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- only one\n```\n")
+        b.build()
+        assert "has one option" in capsys.readouterr().err
+        write(repo, "Which is bigger?\n\n```question\nid: q\ntype: multiple-choice\ncorrect: 2\n\n- 3\n- 4\n```\n")
+        b.build()
+        assert "options but no question above them" in capsys.readouterr().err
+        assert built(repo).count('class="dl-question-option') >= 2
+
+
     @pytest.mark.parametrize(
         "body,match",
         [
@@ -94,10 +104,8 @@ class TestMultipleChoice:
              "no `answer:` line"),
             ("```question\nid: q\ntype: multiple-choice\ncorrect: 9\n\nQ?\n\n- a\n- b\n```\n",
              "does not name one of its 2 options"),
-            ("```question\nid: q\ntype: multiple-choice\ncorrect: 1\n\nQ?\n\n- only one\n```\n",
-             "fewer than two options"),
         ],
-        ids=["no-correct-line", "correct-names-nothing", "too-few-options"],
+        ids=["no-correct-line", "correct-names-nothing"],
     )
     def test_a_broken_correct_line_or_option_count_fails_the_build(self, repo, body, match):
         write(repo, body)

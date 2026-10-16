@@ -149,12 +149,15 @@ class TestNavigation:
         assert "dl-nav-next" not in page(repo, "t1")
         assert "lists t2, which is a draft" in capsys.readouterr().err
 
-    def test_a_practice_page_listed_in_a_course_stops_the_build(self, repo):
+    def test_a_practice_page_listed_in_a_course_is_left_out_with_a_note(self, repo, capsys):
         series(repo, count=1)
         practice(repo, "t1")
         set_order(repo, COURSE, "s", ["t1", "t1-practice"])
-        with pytest.raises(b.BuildError, match="lists t1-practice, which is a page of problems"):
-            b.build()
+        b.build()
+        assert "lists t1-practice, which is a page of problems and follows its tutorial" in capsys.readouterr().err
+        # It still sits with its tutorial, which links to it.
+        assert (repo / "site" / "tutorials" / "t1-practice.html").is_file()
+        assert 'href="t1-practice.html"' in built(repo, "t1")
 
     @pytest.mark.parametrize(
         "field, line",
@@ -306,11 +309,12 @@ class TestAllTutorialsPage:
         with pytest.raises(b.BuildError, match="lists nowhere under `cards:`"):
             b.build()
 
-    def test_an_index_naming_a_course_with_no_file_stops_the_build(self, repo):
+    def test_an_index_naming_a_course_with_no_file_builds_and_says_so(self, repo, capsys):
         write(repo, "Prose.\n")
         (repo / "courses" / "index.yaml").write_text("order:\n  - computational-methods\n  - nowhere\n")
-        with pytest.raises(b.BuildError, match="there is no courses/nowhere.yaml"):
-            b.build()
+        b.build()
+        assert "there is no courses/nowhere.yaml, so it is left out" in capsys.readouterr().err
+        assert (repo / "site" / "computational-methods.html").is_file()
 
     @pytest.mark.advisory
     def test_a_repeated_title_is_warned_about_naming_both_and_their_courses(self, repo, capsys):

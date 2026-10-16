@@ -172,15 +172,22 @@ class TestTheReference:
         entry = by_term["gamma"]
         assert entry["origin"]["href"] == "one.html#where-it-is-taught"
 
-    @pytest.mark.parametrize("entry,match", [
-        ({"term": "x", "kind": "vibe", "definition": "Nope."}, "not one of"),
-        ({"term": "x", "kind": "concept"}, "missing a term or a definition"),
-    ])
-    def test_a_malformed_own_glossary_entry_fails_the_build(self, repo, entry, match):
+    def test_a_glossary_entry_of_an_unknown_kind_fails_the_build(self, repo):
         write(repo, "One.\n", slug="one")
-        glossary(repo, "one", [entry])
-        with pytest.raises(b.BuildError, match=match):
+        glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."}])
+        with pytest.raises(b.BuildError, match="not one of"):
             b.build()
+
+    def test_a_glossary_entry_with_no_definition_is_left_out_with_a_note(self, repo, capsys):
+        # The reference would show "undefined" for it, and an entry with no
+        # term would stop the site-wide index being sorted.
+        write(repo, "One.\n", slug="one")
+        glossary(repo, "one", [{"term": "x", "kind": "concept"},
+                               {"term": "y", "kind": "concept", "definition": "Kept."}])
+        b.build()
+        assert "1 glossary entry is missing a term or a definition" in capsys.readouterr().err
+        terms = [e["term"] for e in manifest(built(repo, "one"))["glossary"]]
+        assert terms == ["y"]
 
 
 class TestMathBasics:
@@ -298,12 +305,14 @@ groups:
         with pytest.raises(b.BuildError, match="label"):
             getattr(b, loader)()
 
-    def test_a_group_with_no_entries_fails_the_build(
-            self, repo, monkeypatch, attr, filename, loader):
+    def test_a_group_with_no_entries_is_left_out_with_a_note(
+            self, repo, monkeypatch, attr, filename, loader, capsys):
         self._write(repo, monkeypatch, attr, filename,
-                     "groups:\n  - label: Operations\n    entries: []\n")
-        with pytest.raises(b.BuildError, match="no entries"):
-            getattr(b, loader)()
+                     "groups:\n  - label: Operations\n    entries: []\n"
+                     "  - label: Words\n    entries:\n      - term: Sum\n        definition: Adding.\n")
+        groups = getattr(b, loader)()
+        assert [g["label"] for g in groups] == ["Words"]
+        assert "'Operations' has no entries, so it is left out" in capsys.readouterr().err
 
     def test_an_entry_missing_a_definition_fails_the_build(
             self, repo, monkeypatch, attr, filename, loader):

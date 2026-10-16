@@ -779,14 +779,21 @@ def listed_ids(value) -> list[str]:
     return [str(item) for item in value]
 
 
+_NOTED: set[tuple[str, str]] = set()
+
+
 def note(path: Path, message: str) -> None:
     """Tells the author something the build is carrying on in spite of.
 
     For a rule about how a page is shaped, as opposed to one whose breaking
     would leave a reader with a page that does not work. The page builds
     and the note goes to stderr in the same "file: what" shape `fail()`
-    uses (DECISIONS_LOG 7.295, 7.297).
+    uses (DECISIONS_LOG 7.295, 7.298).
     """
+    key = (str(path), message)
+    if key in _NOTED:
+        return
+    _NOTED.add(key)
     print(f"note: {path.relative_to(ROOT)}: {message}", file=sys.stderr)
 
 
@@ -913,6 +920,9 @@ def expand_snapshot_dates(body: str, meta: dict, path: Path) -> str:
         name = match.group("name")
         if name not in declared:
             fail(path, f"{match.group(0)} names a dataset that datasets: does not list")
+        if not (DATA / f"{name}.yaml").is_file():
+            fail(path, f"{match.group(0)} names a dataset with no data/{name}.yaml, so "
+                       "there is no saved date to put here")
         return long_date(datetime.date.fromisoformat(read_dataset(name)["snapshot"]))
 
     return SNAPSHOT_RE.sub(one, body)
@@ -1037,13 +1047,13 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
                        f"{stray[0].strip()!r}")
         options = [PredictOption(text=text, note=note) for text, note in zip(texts, notes)]
         if len(options) < 2:
-            fail(path, f"the prediction for cell {cell!r} offers one option — a "
-                       "choice needs at least two")
+            note(path, f"the prediction for cell {cell!r} offers one option, so a "
+                       "reader cannot guess wrong; it builds as written")
     tolerance = None
-    if "tolerance" in header:
-        if kind != "number":
-            fail(path, f"the prediction for cell {cell!r} has a tolerance, which only "
-                       "a `type: number` prediction uses")
+    if "tolerance" in header and kind != "number":
+        note(path, f"the prediction for cell {cell!r} has a tolerance, which only a "
+                   "`type: number` prediction uses; it is ignored")
+    elif "tolerance" in header:
         try:
             tolerance = float(header["tolerance"])
         except ValueError:
@@ -1208,7 +1218,9 @@ def parse_trigger(text: str, path: Path) -> str:
                        f"unchanged runs, runs, empty results, minutes, "
                        f"unsure, guess differed")
         if count < 1:
-            fail(path, f"a hint's after: count must be at least 1, not {count}")
+            note(path, f"a hint's after: count is {count}, so the hint opens after the "
+                       "first counted run that does not reach the goal")
+            count = 0
         terms.append(f"{canonical}:{count}")
     if not terms:
         fail(path, "a hint's after: line is empty")
@@ -1606,9 +1618,11 @@ def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
         if char == "{":
             depth += 1
         elif char == "}":
-            depth -= 1
-            if depth < 0:
-                fail(path, f"question {question_id!r} has a }} with no matching {{")
+            if depth:
+                depth -= 1
+            else:
+                note(path, f"question {question_id!r} has a }} with no matching {{; "
+                           "it shows as written")
     if depth > 0:
         fail(path, f"question {question_id!r} has an unclosed {{")
 
@@ -1645,9 +1659,11 @@ def parse_question(body: str, path: Path) -> Question:
     if question_type == "multiple-choice":
         prompt, options, notes = _split_multiple_choice(text)
         if not prompt:
-            fail(path, f"question {question_id!r} has options but no question above them")
-        if len(options) < 2:
-            fail(path, f"question {question_id!r} has fewer than two options")
+            note(path, f"question {question_id!r} has options but no question above them "
+                       "in its fence; the reader sees only the options")
+        if len(options) == 1:
+            note(path, f"question {question_id!r} has one option, so a reader cannot "
+                       "choose wrong; it builds as written")
         # `answer:` names the page's own answer; `correct:`, its older
         # spelling, still reads the same.
         key = "answer" if "answer" in header else "correct"
@@ -1794,9 +1810,9 @@ def page_worlds(meta: dict, path: Path) -> dict[str, str]:
         if not isinstance(key, str) or not WORLD_KEY_RE.match(key):
             fail(path, f"world {key!r} in `worlds:` is not a key like `sea-floor`: "
                        "lower-case letters and digits, joined by hyphens")
-        if not isinstance(line, str) or not line.strip():
-            fail(path, f"world {key!r} in `worlds:` has no line saying what it is")
-    return {key: line.strip() for key, line in worlds.items()}
+    # A world with no line keeps its name in the chooser and goes without
+    # the sentence under it.
+    return {key: str(line or "").strip() for key, line in worlds.items()}
 
 
 def world_name(key: str) -> str:
@@ -3235,7 +3251,8 @@ def courses() -> dict[str, Course]:
             fail(index, "needs `order:` as a list of course ids, one per line")
         for name in order:
             if name not in found:
-                fail(index, f"lists {name}, and there is no courses/{name}.yaml")
+                note(index, f"lists {name}, and there is no courses/{name}.yaml, "
+                            "so it is left out")
     # Listed courses in the order given, then any other alphabetically, so a
     # new course file lands at the end rather than breaking the page.
     ordered = [c for c in order if c in found] + sorted(c for c in found if c not in order)
@@ -3359,15 +3376,19 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
                         continue
                     fail(course.path, f'the series "{series.title}" lists {ident}, but '
                                       f"there is no folder tutorials/{ident}/")
-                if member.is_context:
+                # A context page or a tutorial's own page of problems sits
+                # wherever its tutorial does, so listing it here adds
+                # nothing: the line is left out. A mixed set is another
+                # matter: it is placed by its course's `mixed:` list, and a
+                # series line would put it on the reading order.
+                if member.is_context or member.practice_for:
+                    kind = "a context page" if member.is_context else "a page of problems"
+                    note(course.path, f'the series "{series.title}" lists {ident}, which is '
+                                      f"{kind} and follows its tutorial, so the line is left out")
+                    continue
+                if member.practice_across:
                     fail(course.path, f'the series "{series.title}" lists {ident}, which is '
-                                      "a context page. A context page is reached from the "
-                                      "tutorial it gives background for; list the tutorial "
-                                      "instead.")
-                if member.is_practice:
-                    fail(course.path, f'the series "{series.title}" lists {ident}, which is '
-                                      "a page of problems. A practice page is reached from "
-                                      "its tutorial; list the tutorial instead.")
+                                      "a mixed problem set; list it under `mixed:` instead.")
                 member.placements.append(Placement(course.id, series.key, position))
         for ident in course.mixed:
             member = registry.get(ident)
@@ -3978,9 +3999,12 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
         if entry.get("kind") not in GLOSSARY_KINDS:
             fail(path, f'glossary entry "{entry.get("term")}" has kind '
                        f'{entry.get("kind")!r}, not one of {GLOSSARY_KINDS}.')
-        if not entry.get("term") or not entry.get("definition"):
-            fail(path, "a glossary entry is missing a term or a definition.")
-    return with_python(entries, path)
+    kept = [entry for entry in entries if entry.get("term") and entry.get("definition")]
+    if len(kept) < len(entries):
+        note(path, f"{len(entries) - len(kept)} glossary entr"
+                   f"{'y is' if len(entries) - len(kept) == 1 else 'ies are'} missing a term "
+                   "or a definition and left out of the reference")
+    return with_python(kept, path)
 
 
 def series_chain(
@@ -4169,13 +4193,15 @@ def _load_basics(path: Path, kind: str) -> list[dict]:
     if not path.is_file():
         return []
     data = read_yaml(path) or {}
-    groups = data.get("groups") or []
-    for group in groups:
+    groups = []
+    for group in data.get("groups") or []:
         if not group.get("label"):
             fail(path, f"a {kind} group is missing a label.")
         entries = group.get("entries") or []
         if not entries:
-            fail(path, f'the group {group.get("label")!r} has no entries.')
+            note(path, f'the group {group.get("label")!r} has no entries, so it is left out')
+            continue
+        groups.append(group)
         for entry in entries:
             if not entry.get("term") or not entry.get("definition"):
                 fail(path, f"a {kind} entry is missing a term or a definition.")
@@ -5315,8 +5341,11 @@ def data_index() -> dict[str, dict]:
     dataset a page fetches live.
 
     Checked in both directions, for every file and not only the declared
-    ones, since dewmini and the Notebook load them by name too: a data file
-    without its yaml, and a yaml without its data file, both fail.
+    ones, since dewmini and the Notebook load them by name too. A yaml
+    without its data file fails: it describes nothing. A data file without
+    its yaml builds with a note and an empty entry, so a cell that loads it
+    says only "Loaded <name>." and the page's Reference tab does not list it:
+    the page works, and cannot say where its numbers came from.
     """
     index: dict[str, dict] = {}
     if not DATA.is_dir():
@@ -5329,8 +5358,11 @@ def data_index() -> dict[str, dict]:
             fail(DATA / f"{name}.yaml", f"describes data/{name}.csv or "
                                         f"data/{name}.txt, and neither exists")
         if not (DATA / f"{name}.yaml").is_file():
-            fail(data_file, f"has no data/{name}.yaml giving its "
-                            f"{', '.join(DATASET_FIELDS)}")
+            note(data_file, f"has no data/{name}.yaml giving its "
+                            f"{', '.join(DATASET_FIELDS)}, so a page that uses it "
+                            "cannot say where it came from")
+            index[data_file.name] = {}
+            continue
         data = read_dataset(name)
         entry = {"snapshot": data["snapshot"]}
         if data.get("live"):
@@ -5348,7 +5380,7 @@ def write_data_index(folder: Path) -> Path:
     return target
 
 
-def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
+def dataset_attribution(tutorial: Tutorial, name: str) -> dict | None:
     """A declared dataset's own attribution, for the page's Reference tab —
     `data/<name>.yaml` beside `data/<name>.csv` (loaded with `load_csv()`)
     or `data/<name>.txt` (loaded with `load_text()`), the same
@@ -5359,8 +5391,7 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict:
         fail(tutorial.path, f"declares datasets: {name}, and neither "
                             f"{extensions} exists.")
     if not (DATA / f"{name}.yaml").is_file():
-        fail(tutorial.path, f"declares datasets: {name}, and data/{name}.yaml "
-                            f"(its {', '.join(DATASET_FIELDS)}) does not exist.")
+        return None  # data_index() has said so; the Reference tab leaves it out
     data = read_dataset(name)
     saved = long_date(datetime.date.fromisoformat(data["snapshot"]))
     return {
@@ -5393,7 +5424,8 @@ def check_datasets(tutorial: Tutorial) -> list[dict]:
                     fail(tutorial.path, f"cell {cell.id} loads {match.group('name')}, and "
                                         f"datasets: does not list {Path(file_name).stem}, "
                                         "so a downloaded copy would not carry it.")
-    return [dataset_attribution(tutorial, name) for name in tutorial.datasets]
+    found = (dataset_attribution(tutorial, name) for name in tutorial.datasets)
+    return [attribution for attribution in found if attribution is not None]
 
 
 def standalone_data(tutorial: Tutorial) -> tuple[dict, dict]:
@@ -7592,7 +7624,9 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
                 need(step["section"] in target.anchors,
                      f"topic {code}: {step['tutorial']} has no section {step['section']!r}")
     for code in layout["towns"]:
-        need(code in topics, f"map/layout.json places {code!r}, which is not a topic")
+        if code not in topics:
+            note(ROOT / "map" / "layout.json", f"places {code!r}, which is not a topic; "
+                                               "it is ignored. Re-run dev/map_layout.py to tidy it")
     for lm in graph["landmarks"]:
         need(lm["tutorial"] in registry, f"landmark {lm['tutorial']!r} is not a tutorial")
         need(lm["tutorial"] in layout["landmarks"], f"landmark {lm['tutorial']} has no place in map/layout.json")
@@ -8155,6 +8189,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     if clean and OUT.exists():
         shutil.rmtree(OUT)
 
+    _NOTED.clear()  # once per build; a test builds many sites in one process
     everything = load_all()
     tutorials = versions_of([t for t in everything if t.status != "draft"])
     # Every file in data/ traced to its source, before any page uses one.

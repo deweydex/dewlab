@@ -114,14 +114,22 @@ class TestSignals:
         assert f'data-after="{canonical}"' in built(repo)
 
 
+    def test_one_option_or_a_stray_tolerance_builds_and_says_so(self, repo, capsys):
+        write(repo, CELL + "```predict\nWhich?\n\n- only one\n```\n")
+        b.build()
+        assert "offers one option" in capsys.readouterr().err
+        write(repo, CELL + "```predict\ntolerance: 1\n\nWhich?\n\n- a\n- b\n```\n")
+        b.build()
+        assert "only a `type: number` prediction uses; it is ignored" in capsys.readouterr().err
+        assert "data-tolerance" not in built(repo)
+
+
 class TestMistakes:
     @pytest.mark.parametrize("body, match", [
         (CHOICE, "no exec cell above it"),
         (CELL + CHOICE.replace("```predict\n", "```predict\nfor: nowhere\n"), "does not have: 'nowhere'"),
         (CELL + "```predict\ntype: essay\n\nWhy?\n```\n", "type: essay"),
         (CELL + "```predict\ntype: choice\n\nWhich?\n```\n", "no options"),
-        (CELL + "```predict\nWhich?\n\n- only one\n```\n", "offers one option"),
-        (CELL + "```predict\ntolerance: 1\n\nWhich?\n\n- a\n- b\n```\n", "only a `type: number`"),
         (CELL + "```predict\ntype: number\ntolerance: lots\n\nHow many?\n```\n", "write a number"),
         (CELL + "```predict\nWhich?\n\n- a\n- b\nstray words\n```\n", "neither an option"),
         (CELL + "```predict\nWhich?\n\n- a long option\n  that wraps\n- b\n```\n", None),

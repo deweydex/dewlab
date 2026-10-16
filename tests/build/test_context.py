@@ -136,7 +136,6 @@ class TestContextPages:
         "names a practice page": (_names_a_practice_page, "which is a page of problems"),
         "names another context page": (_names_another_context_page, "itself a context page"),
         "names itself": (_names_itself, "naming why, which is itself"),
-        "is listed in a course": (_listed_in_a_course, "which is a context page"),
         "also sets practice_for": (_also_sets_practice_for, "one page cannot be both"),
         "also sets practice_across": (_also_sets_practice_across, "one page cannot be both"),
     }
@@ -149,6 +148,7 @@ class TestContextPages:
             b.build()
 
     NOTES = {
+        "is listed in a course": (_listed_in_a_course, "which is a context page and follows its tutorial"),
         "names an id twice": (_names_an_id_twice, "more than once. Each is listed once"),
         "declares covers": (_declares_covers, "is a context page and declares `covers:`"),
     }
