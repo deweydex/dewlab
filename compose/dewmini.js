@@ -81,6 +81,11 @@ let fileParseTimer = null;
 // fileEditor above, for the same reason (a CodeMirror instance holds its
 // own DOM and listeners; nothing here is meant to outlive its render).
 let siteEditors = null;
+// The notebook has no Settings row for editor help, so this is the whole
+// answer: a name's doc opens when asked for (right-click) and not whenever
+// the pointer pauses over code, where it covered the lines above it.
+const NOTEBOOK_ASSISTS = { hoverDelay: 0 };
+
 let cellsContainer, emptyEl, statusEl, tabsEl;
 let statusClearTimer = null;
 
@@ -918,6 +923,7 @@ function renderFileView() {
     getJediCompletions: engine.jediCompletions,
     getDoc: engine.hoverDoc,
     getSignature: engine.signatureHelp,
+    assists: NOTEBOOK_ASSISTS,
   });
 
   if (emptyEl) emptyEl.hidden = true;
@@ -1560,6 +1566,7 @@ function createCellElement(cell) {
       getJediCompletions: engine.jediCompletions,
       getDoc: engine.hoverDoc,
       getSignature: engine.signatureHelp,
+      assists: NOTEBOOK_ASSISTS,
     });
     // Capture phase: CodeMirror's own handler sees Enter first on bubble,
     // so intercepting these has to happen before that, not after.
