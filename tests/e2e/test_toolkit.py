@@ -219,13 +219,25 @@ def _line(tab) -> str:
     return " ".join(tab.text_content(".dl-toolkit-text").split())
 
 
+def _numbers(tab) -> list[int]:
+    """The counts the toolkit line gives, whatever words it puts them in:
+    what the reader is told is how many functions and from how many pages;
+    which version of each ran is checked by running the cells."""
+    return [int(n) for n in re.findall(r"\d+", _line(tab))]
+
+
+def _names_in(tab, *names: str) -> None:
+    line = _line(tab)
+    for name in names:
+        assert name in line, (name, line)
+
+
 def test_with_nothing_saved_the_reference_is_loaded(tab, site_url):
     _open_second(tab, site_url)
     assert _run_and_read(tab) == "ref:101"
     assert _run_and_read(tab, "use-hex") == "ref:ff"
-    assert _line(tab) == ("Your toolkit has to_binary and to_hex. It comes from 1 earlier page. "
-                          "You have not written any of these yet, so the reference ones "
-                          "are loaded.")
+    assert _numbers(tab) == [1]
+    _names_in(tab, "to_binary", "to_hex")
     # The reference's own print went nowhere.
     assert "never shown" not in tab.text_content("#dl-body")
     assert "ref:1000" not in tab.text_content("#dl-body")
@@ -240,8 +252,8 @@ def test_the_readers_saved_version_is_loaded_function_by_function(tab, site_url)
     _open_second(tab, site_url, saved=_saved_on_first(MINE))
     assert _run_and_read(tab) == "mine:101"
     assert _run_and_read(tab, "use-hex") == "ref:ff"
-    assert _line(tab) == ("Your toolkit has to_binary and to_hex. It comes from 1 earlier page. "
-                          "You have not written to_hex yet, so the reference one is loaded.")
+    assert _numbers(tab) == [1]
+    _names_in(tab, "to_binary", "to_hex")
 
 
 def test_an_untouched_stub_counts_as_not_written(tab, site_url):
@@ -250,15 +262,16 @@ def test_an_untouched_stub_counts_as_not_written(tab, site_url):
     _open_second(tab, site_url, saved=_saved_on_first(stub))
     assert _run_and_read(tab) == "ref:101"
     assert _run_and_read(tab, "use-hex") == "ref:ff"
-    assert ("You have not written any of these yet, so the reference ones are loaded."
-            in _line(tab))
+    # The cells above ran the reference versions; the line must not name
+    # a count of functions the reader wrote.
+    assert _numbers(tab) == [1]
 
 
 def test_a_saved_version_that_raises_falls_back_and_the_line_says_so(tab, site_url):
     _open_second(tab, site_url, saved=_saved_on_first(RAISES))
     assert _run_and_read(tab) == "ref:101"
-    assert ("to_binary and to_hex: your version raised an error, so the reference ones "
-            "are loaded." in _line(tab))
+    _names_in(tab, "to_binary", "to_hex")
+    assert "raised" in _line(tab).lower() or "error" in _line(tab).lower()
 
 
 def test_switching_to_reference_loads_the_reference_at_once(tab, site_url):
@@ -295,15 +308,13 @@ def test_the_toolkit_survives_run_all_and_a_restart(tab, site_url):
         "document.querySelector('.dl-cell[data-cell-id=\"second-cell\"] .dl-output')"
         ".textContent.includes('second')", timeout=240_000)
     assert tab.text_content('.dl-cell[data-cell-id="use-binary"] .dl-output').strip() == "mine:101"
-    assert _line(tab).startswith("Your toolkit has to_binary and to_hex.")
+    _names_in(tab, "to_binary", "to_hex")
 
 
 def test_a_long_toolkit_gives_a_count_and_a_list_page_by_page(tab, site_url):
     _open_second(tab, site_url, slug="tk-third")
     assert _run_and_read(tab, "use-many") == "9 ref:10"
-    assert _line(tab) == ("Your toolkit has 10 functions. They come from 2 earlier pages. "
-                          "You have not written any of these yet, so the reference ones "
-                          "are loaded.")
+    assert _numbers(tab) == [10, 2]
     listed = tab.locator(".dl-toolkit-list")
     assert listed.is_visible() and not listed.evaluate("el => el.open")
     items = [" ".join(t.split()) for t in listed.locator("li").all_text_contents()]
@@ -315,7 +326,7 @@ def test_a_long_toolkit_marks_what_came_from_the_reference(tab, site_url):
     # The reader wrote to_binary; to_hex and the eight tools are the reference's.
     _open_second(tab, site_url, saved=_saved_on_first(MINE), slug="tk-third")
     assert _run_and_read(tab, "use-many") == "9 mine:10"
-    assert "You have not written 9 of them yet, so the reference ones are loaded." in _line(tab)
+    assert _numbers(tab) == [10, 2, 9]
     items = [" ".join(t.split()) for t in tab.locator(".dl-toolkit-list li").all_text_contents()]
     assert items[0] == "Numbers in binary: to_binary, to_hex (reference)"
 

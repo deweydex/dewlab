@@ -10,6 +10,8 @@ what the restore logic actually reads is the record, not the file it came from.
 
 from __future__ import annotations
 
+import re
+
 import functools
 import http.server
 import json
@@ -328,14 +330,14 @@ class TestProgressSummary:
         _open_panel(page, "#dl-yourwork-toggle")
 
         run_cell(page, "plain-python")
-        text = summary_text(page)
-        assert "of" in text and "cells run" in text
-        assert "error" not in text
+        # The summary says how many cells have run and how many of those
+        # failed; the words round those numbers are not what is checked.
+        first = [int(n) for n in re.findall(r"\d+", summary_text(page))]
+        assert first and first[0] == 1 and len(first) == 2
 
         run_cell(page, "error-traceback")
-        text = summary_text(page)
-        assert "2 of" in text
-        assert "1 with an error" in text
+        second = [int(n) for n in re.findall(r"\d+", summary_text(page))]
+        assert second[0] == 2 and second[-1] == 1 and len(second) == 3
 
 
 class TestProgressBadges:

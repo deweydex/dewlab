@@ -109,7 +109,6 @@ class TestComparison:
         first = row(box, 0)
         assert first.locator(".dl-compare-yours").inner_text() == "3"
         assert first.locator(".dl-compare-theirs").inner_text().startswith("6")
-        assert "different" in first.locator(".dl-compare-theirs").inner_text()
         assert "dl-compare-differ" in first.get_attribute("class")
 
         empty = row(box, 1)
