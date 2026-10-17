@@ -450,6 +450,9 @@ Each step is a pull request that stands alone.
    - **4a. Code cells. Done** (DECISIONS_LOG 7.303). Josh chose the order:
      cells, then folds, then tables. A cell edits in a code editor with its id
      fixed; its hint and solution fences edit as boxes beside it.
+   - **4c. Tables. Done** (DECISIONS_LOG 7.305). Each cell of a table has the
+     range of its own text and edits in place as its markdown; rows and columns
+     cannot be added or removed yet.
    - **4b. Folds. Done** (DECISIONS_LOG 7.304). The blocks inside a `<details>`
      fold carry ranges and edit like the page around them; the title edits as
      a line of text; edit mode opens every fold. Plain code fences edit as

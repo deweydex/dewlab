@@ -19,6 +19,7 @@
 
 import { githubClient, TOKEN_KEY } from "./github-client.js";
 import { richSafe, toEditor, fromEditor } from "./inpage-markdown.js";
+import { parseTable, cellText } from "./inpage-table.js";
 import { isCellBlock, parseCellBlock, buildCellBlock, problem } from "./inpage-cell.js";
 
 const MIN_WIDTH = 900;
@@ -177,6 +178,7 @@ class Session {
       for (const node of parent.children) {
         if (!node.hasAttribute("data-md")) continue;
         found.push(node);
+        if (node.tagName === "TABLE") found.push(...this.tableCells(node));
         if (node.tagName === "DETAILS" && node.querySelector("[data-md]")) {
           const [start] = node.getAttribute("data-md").split(":").map(Number);
           const title = foldTitle(this.source.slice(start, Number(node.getAttribute("data-md").split(":")[1])));
@@ -215,13 +217,34 @@ class Session {
     this.report();
   }
 
+  /* Give each cell of a table the range of its own text, if the table's
+   * markdown and the page's table agree on its shape. Otherwise none, and the
+   * table stays one markdown box. */
+  tableCells(table) {
+    const [start, end] = table.getAttribute("data-md").split(":").map(Number);
+    const parsed = parseTable(this.source.slice(start, end));
+    const rows = [...table.querySelectorAll("tr")];
+    if (!parsed || parsed.length !== rows.length
+        || parsed.some((cells, i) => cells.length !== rows[i].children.length)) return [];
+    const out = [];
+    parsed.forEach((cells, i) => cells.forEach((range, j) => {
+      const cell = rows[i].children[j];
+      cell.setAttribute("data-md", `${start + range.start}:${start + range.end}`);
+      out.push(cell);
+    }));
+    table.dlGrid = true;
+    return out;
+  }
+
   arm(node) {
     const [start, end] = node.getAttribute("data-md").split(":").map(Number);
     const text = this.source.slice(start, end);
     const tag = node.tagName.toLowerCase();
     /* A fold with blocks inside is edited through them and its title. */
     const mode = tag === "summary" ? "summary"
+      : tag === "td" || tag === "th" ? "tablecell"
       : tag === "details" && node.querySelector("[data-md]") ? "fold"
+      : tag === "table" && node.dlGrid ? "fold"
       : classify(tag, text);
     node.dataset.dlEdit = mode === "locked" || mode === "fold" ? "" : mode;
     if (mode === "locked") node.classList.add("dl-edit-locked");
@@ -272,6 +295,11 @@ class Session {
       this.open = { node, wrap: node.dlBox, mode: "source", before: text, key };
       return;
     }
+    if (node.dlLine) {
+      node.focus();
+      this.open = { node, wrap: node, mode: "tablecell", before: text, key };
+      return;
+    }
     if (node.dlInput) {
       node.dlInput.focus();
       this.open = { node, wrap: node.dlInput, mode: "summary", before: text, key };
@@ -283,7 +311,22 @@ class Session {
       return;
     }
 
-    if (mode === "summary") {
+    if (mode === "tablecell") {
+      node.dlHtml = node.innerHTML;
+      node.textContent = text;                   // the cell's markdown, as in the file
+      node.contentEditable = "plaintext-only";
+      if (node.contentEditable !== "plaintext-only") node.contentEditable = "true";
+      node.dlLine = true;
+      node.addEventListener("keydown", node.dlKeys = (event) => { if (event.key === "Enter") { event.preventDefault(); node.blur(); } });
+      node.addEventListener("blur", node.dlBlur = () => this.closeBlock());
+      node.focus();
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      range.collapse(false);
+      getSelection().removeAllRanges();
+      getSelection().addRange(range);
+      this.open = { node, wrap: node, mode, before: text, key };
+    } else if (mode === "summary") {
       node.dlHtml = node.innerHTML;
       const input = el("input", { class: "dl-inplace-summary", type: "text", value: text,
                                   "aria-label": "Title of this fold" });
@@ -398,7 +441,9 @@ class Session {
     const { node, mode, key } = open;
     const original = node.dlRange.text;
     let now;
-    if (mode === "summary") {
+    if (mode === "tablecell") {
+      now = cellText(node.textContent);
+    } else if (mode === "summary") {
       now = node.dlInput.value.replace(/\s+/g, " ").trim();
       if (/[<\n]/.test(now)) {
         this.say("A fold's title is a single line of plain text. Edit the file on GitHub for more.");
@@ -434,7 +479,7 @@ class Session {
       if (!was || was.text !== now) this.changes += 1;
       this.edits.set(key, { start: node.dlRange.start, end: node.dlRange.end, text: now });
       if (mode === "rich") node.dlEditor.setEditable(false);
-      (node.dlWrap || node.dlBox || node.dlInput || node.dlCell.panel).dataset.edited = "";
+      (node.dlWrap || node.dlBox || node.dlInput || (node.dlLine && node) || node.dlCell.panel).dataset.edited = "";
     }
     this.report();
     return true;
@@ -446,6 +491,14 @@ class Session {
     if (node.dlWrap) { node.dlWrap.remove(); node.dlWrap = null; }
     if (node.dlBox) { node.dlBox.remove(); node.dlBox = null; }
     if (node.dlInput) { node.innerHTML = node.dlHtml; node.dlInput = null; }
+    if (node.dlLine) {
+      node.removeEventListener("keydown", node.dlKeys);
+      node.removeEventListener("blur", node.dlBlur);
+      node.removeAttribute("contenteditable");
+      node.innerHTML = node.dlHtml;
+      node.dlLine = false;
+      delete node.dataset.edited;
+    }
     if (node.dlCell) { node.dlCell.destroy(); node.dlCell.panel.remove(); node.dlCell = null; }
     node.hidden = false;
   }
@@ -478,6 +531,14 @@ class Session {
     for (const node of this.blocks) {
       node.classList.remove("dl-editable", "dl-edit-locked");
       delete node.dataset.dlEdit;
+      if (node.dlLine) {                                 // a saved cell keeps what was typed
+        node.removeEventListener("keydown", node.dlKeys);
+        node.removeEventListener("blur", node.dlBlur);
+        node.removeAttribute("contenteditable");
+        node.removeAttribute("data-md");
+      } else if (node.tagName === "TD" || node.tagName === "TH") {
+        node.removeAttribute("data-md");
+      }
       if (node.tagName === "SUMMARY") {
         if (node.dlInput) node.textContent = node.dlInput.value;   // keep a saved title, drop the box
         node.removeAttribute("data-md");
