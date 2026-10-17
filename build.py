@@ -3581,22 +3581,24 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
 
 def practice_pairs(
     tutorials: list[Tutorial], registry: dict[str, Tutorial]
-) -> dict[str, Tutorial]:
-    """Each tutorial's page of problems, by the id of the tutorial it belongs to.
+) -> dict[str, list[Tutorial]]:
+    """Each tutorial's pages of problems, by the id of the tutorial they belong to.
 
     A practice page names its tutorial with `practice_for:`. Both directions are
     checked here rather than being discovered by a reader following a link that
-    goes nowhere: the tutorial has to exist, and no two practice pages may
-    claim the same one. The page then sits wherever its tutorial sits — it
-    takes the tutorial's placements, so its tree and its course are the
-    tutorial's own.
+    goes nowhere: the tutorial has to exist. A tutorial may have several
+    practice pages (a set per topic, or an easier and a harder set); they are
+    listed in the order of their ids, numbers read as numbers, so
+    `first-steps-practice-2` comes before `first-steps-practice-10`. Each page
+    then sits wherever its tutorial sits — it takes the tutorial's placements,
+    so its tree and its course are the tutorial's own.
 
     A practice page should declare no coverage. It sets problems on what its
     tutorial taught, and counting it would report the same outcome as taught
     twice — see `docs/WRITING_TUTORIALS.md`, "Practice pages". One that does
     builds, with a note, since only the curriculum map's counts are affected.
     """
-    pairs: dict[str, Tutorial] = {}
+    pairs: dict[str, list[Tutorial]] = {}
     for page in tutorials:
         target = page.practice_for
         if target and page.practice_across:
@@ -3628,11 +3630,10 @@ def practice_pairs(
         page.placements = list(owner.placements)
         if not page.is_default:
             continue
-        if target in pairs:
-            fail(page.path, f"has practice_for: {target}, and so does "
-                            f"{pairs[target].path.relative_to(ROOT)}. A tutorial "
-                            "has one page of problems.")
-        pairs[target] = page
+        pairs.setdefault(target, []).append(page)
+    for pages in pairs.values():
+        pages.sort(key=lambda p: [int(t) if t.isdigit() else t
+                                  for t in re.split(r"(\d+)", p.slug)])
     return pairs
 
 
@@ -3929,7 +3930,7 @@ def crumb_trail_html(
     groups: dict[tuple[str, str], list[Tutorial]],
     members: list[Tutorial],
     up: str,
-    practice: Tutorial | None = None,
+    practice: list[Tutorial] | None = None,
     registry: dict[str, Tutorial] | None = None,
     also: list[Tutorial] | None = None,
     context: list[Tutorial] | None = None,
@@ -4009,7 +4010,7 @@ def crumb_trail_html(
     extra = [
         f'<div role="listitem" class="dl-crumb-practice">'
         f'<a href="{link_between(tutorial, problems)}">{html.escape(problems.title)}</a></div>'
-        for problems in ([practice] if practice is not None else []) + list(also or [])
+        for problems in list(practice or []) + list(also or [])
     ] + [
         f'<div role="listitem" class="dl-crumb-context">'
         f'<a href="{link_between(tutorial, page)}">{html.escape(page.title)}</a>'
@@ -4976,7 +4977,7 @@ def nav_search_html() -> str:
 
 def companion_buttons_html(
     member: Tutorial,
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     context: dict[str, list[Tutorial]] | None = None,
 ) -> str:
     """The buttons after a tutorial's line on a contents list: its practice
@@ -4984,10 +4985,11 @@ def companion_buttons_html(
     tag since its title names its subject rather than its kind. Paths are
     relative to the site root, where every contents page lives."""
     extra = ""
-    also = practice.get(member.slug)
-    if also is not None:
+    pages = practice.get(member.slug, [])
+    for number, also in enumerate(pages, 1):
         where = also.out_path.relative_to(OUT).as_posix()
-        extra += f' <a class="dl-contents-practice" href="{where}">Practice</a>'
+        label = "Practice" if len(pages) == 1 else f"Practice {number}"
+        extra += f' <a class="dl-contents-practice" href="{where}">{label}</a>'
     for page in (context or {}).get(member.slug, []):
         where = page.out_path.relative_to(OUT).as_posix()
         extra += (f' <a class="dl-contents-context" href="{where}">'
@@ -4999,7 +5001,7 @@ def render_tutorials_list(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[str, Tutorial] | None = None,
+    practice: dict[str, list[Tutorial]] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
     course_archives: dict[str, Path] | None = None,
     context: dict[str, list[Tutorial]] | None = None,
@@ -5084,7 +5086,7 @@ def render_course_body(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path],
     retired: dict[str, list[Tutorial]],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     mixed: dict[str, list[Tutorial]],
     course_archives: dict[str, Path],
     heading: bool = True,
@@ -6239,7 +6241,7 @@ def canonical_link(tutorial: Tutorial, default: Tutorial | None) -> str:
     return f'<link rel="canonical" href="{html.escape(here, quote=True)}">'
 
 
-def practice_link(tutorial: Tutorial, practice: Tutorial | None,
+def practice_link(tutorial: Tutorial, practice: list[Tutorial] | None,
                   registry: dict[str, Tutorial] | None = None,
                   also: list[Tutorial] | None = None) -> str:
     """The link between a tutorial and its problems, in both directions.
@@ -6281,13 +6283,16 @@ def practice_link(tutorial: Tutorial, practice: Tutorial | None,
             "is on this page behind a fold.</p>"
         )
     also = also or []
-    if practice is None and not also:
+    practice = practice or []
+    if not practice and not also:
         return ""
     parts = ['<div class="dl-practice-link">']
-    if practice is not None:
-        where = os.path.relpath(practice.out_path, tutorial.out_path.parent)
+    for page in practice:
+        where = os.path.relpath(page.out_path, tutorial.out_path.parent)
+        link = ("Practice problems for this tutorial" if len(practice) == 1
+                else html.escape(page.title))
         parts.append(
-            f'<p><a href="{where}">Practice problems for this tutorial</a> — '
+            f'<p><a href="{where}">{link}</a> — '
             "worth doing when you have finished reading, with the answers beside "
             "the questions, and steps to follow where a question is hard.</p>"
         )
@@ -6506,7 +6511,7 @@ def also_part_of(tutorial: Tutorial, body_html: str, up: str) -> str:
 
 def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           default: Tutorial | None = None, family: list[Tutorial] | None = None,
-          practice: Tutorial | None = None,
+          practice: list[Tutorial] | None = None,
           registry: dict[str, Tutorial] | None = None,
           also: list[Tutorial] | None = None,
           context: list[Tutorial] | None = None,
@@ -6872,7 +6877,7 @@ def series_slug(course: str, series: str) -> str:
 
 
 def zip_sequence(
-    members: list[Tutorial], practice: dict[str, Tutorial]
+    members: list[Tutorial], practice: dict[str, list[Tutorial]]
 ) -> list[Tutorial]:
     """Reading order, with each tutorial's own practice page right after it.
 
@@ -6885,9 +6890,7 @@ def zip_sequence(
     sequence: list[Tutorial] = []
     for tutorial in members:
         sequence.append(tutorial)
-        page = practice.get(tutorial.slug)
-        if page is not None:
-            sequence.append(page)
+        sequence.extend(practice.get(tutorial.slug, []))
     return sequence
 
 
@@ -6982,7 +6985,7 @@ def write_series_zip(
     course: str,
     series: str,
     members: list[Tutorial],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     series_title: str,
 ) -> Path:
     """Every downloadable copy in one series, gathered into one archive,
@@ -7011,7 +7014,7 @@ def write_course_zip(
     course: str,
     title: str,
     series_in_order: list[tuple[str, str, list[Tutorial]]],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     mixed_pages: list[Tutorial],
 ) -> Path:
     """Every series in a course, and its mixed problem sets, in one archive —
@@ -7405,7 +7408,7 @@ def write_all_tutorials_page(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path] | None = None,
     retired: dict[str, list[Tutorial]] | None = None,
-    practice: dict[str, Tutorial] | None = None,
+    practice: dict[str, list[Tutorial]] | None = None,
     mixed: dict[str, list[Tutorial]] | None = None,
     course_archives: dict[str, Path] | None = None,
     context: dict[str, list[Tutorial]] | None = None,
@@ -7576,7 +7579,7 @@ def write_course_page(
     groups: dict[tuple[str, str], list[Tutorial]],
     archives: dict[tuple[str, str], Path],
     retired: dict[str, list[Tutorial]],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     mixed: dict[str, list[Tutorial]],
     course_archives: dict[str, Path],
     context: dict[str, list[Tutorial]] | None = None,
@@ -7700,7 +7703,7 @@ def write_redirects(pages: list[Path]) -> list[Path]:
 
 def write_routes(
     groups: dict[tuple[str, str], list[Tutorial]],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     mixed: dict[str, list[Tutorial]],
 ) -> Path:
     """`assets/routes.json`: every course's contents, by id, with each
@@ -7723,13 +7726,13 @@ def write_routes(
                     "title": member.title,
                     "url": member.out_path.relative_to(OUT).as_posix(),
                 }
-                problems = practice.get(member.slug)
-                if problems is not None:
-                    entry["practice"] = {
-                        "id": problems.slug,
-                        "title": problems.title,
-                        "url": problems.out_path.relative_to(OUT).as_posix(),
-                    }
+                problems = practice.get(member.slug, [])
+                if problems:
+                    entry["practices"] = [{
+                        "id": page.slug,
+                        "title": page.title,
+                        "url": page.out_path.relative_to(OUT).as_posix(),
+                    } for page in problems]
                 entries.append(entry)
             series.append({
                 "key": key,
@@ -8170,7 +8173,7 @@ def write_map_page(shell: str, registry: dict[str, Tutorial], catalog: dict[str,
 def write_topics_page(
     shell: str,
     registry: dict[str, Tutorial],
-    practice: dict[str, Tutorial],
+    practice: dict[str, list[Tutorial]],
     context: dict[str, list[Tutorial]] | None = None,
 ) -> Path | None:
     """"Browse by topic" — the topic tree's sibling, and a genuinely

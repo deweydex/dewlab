@@ -51,6 +51,19 @@ class TestTheCourseChooser:
         assert tab.locator(".dl-nav-bottom .dl-nav-prev").count() == 0
         assert tab.locator(".dl-nav-bottom .dl-nav-next").count() == 0
 
+    def test_a_second_page_of_problems_is_found_on_its_tutorials_course(self, tab, base_url):
+        # routes.json lists a tutorial's practice pages as a list; the page
+        # of problems must be recognised from any place in it, not only the
+        # first, or its tree is drawn without the tutorial it follows.
+        tab.goto(f"{base_url}/tutorials/third-page-practice-2.html")
+        tab.wait_for_selector(".dl-course-switch select", state="attached")
+        tab.evaluate("document.querySelector('.dl-crumb-level-2').open = true")
+        tab.select_option(".dl-course-switch select", "fixtures-second")
+        tab.wait_for_function(
+            "document.querySelector('.dl-crumb-level-3 > summary').textContent.trim() === 'Also'")
+        tab.evaluate("document.querySelector('.dl-crumb-level-3').open = true")
+        assert tab.locator('.dl-crumb-level-3 a[href$="third-page.html"]').count() == 1
+
     def test_choosing_a_course_on_the_tree_redraws_it_and_is_remembered(self, tab, base_url):
         tab.goto(f"{base_url}/tutorials/third-page.html")
         tab.wait_for_selector(".dl-course-switch select", state="attached")

@@ -6498,7 +6498,7 @@ function drawCourseChrome(manifest, courses, chosen, root) {
   for (const candidate of course.series || []) {
     for (const entry of candidate.tutorials || []) {
       if (entry.id === ident) { series = candidate; owner = entry; }
-      else if (entry.practice && entry.practice.id === ident) {
+      else if ((entry.practices || []).some((p) => p.id === ident)) {
         series = candidate; owner = entry; isPractice = true;
       }
     }

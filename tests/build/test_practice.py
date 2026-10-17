@@ -54,6 +54,29 @@ class TestPagesOfProblems:
         set_order(repo, "computational-methods", "python-fundamentals", listed)
         return path
 
+    def test_a_tutorial_may_have_several_pages_of_problems_in_the_order_of_their_ids(self, repo):
+        write(repo, "One.\n", slug="one")
+        first = practice(repo, "one")  # helpers.practice: tutorials/one/one-practice.md
+        for name in ("one-practice-10", "one-practice-2"):
+            (first.parent / f"{name}.md").write_text(first.read_text().replace(
+                "title: ", f"title: {name} ", 1))
+        b.build()
+        site = repo / "site" / "tutorials"
+        text = (site / "one.html").read_text()
+        # One link each, the numbered ones as numbers: 2 before 10.
+        links = [text.index(f"one-practice{n}.html") for n in ("", "-2", "-10")]
+        assert links == sorted(links)
+        # Each page points back at its tutorial and the contents list
+        # offers all three.
+        for name in ("one-practice", "one-practice-2", "one-practice-10"):
+            assert "dl-practice-back" in (site / f"{name}.html").read_text()
+        contents = (repo / "site" / "computational-methods.html").read_text()
+        for number in (1, 2, 3):
+            assert f">Practice {number}</a>" in contents
+        routes = json.loads((repo / "site" / "assets" / "routes.json").read_text())["courses"]
+        [entry] = routes[0]["series"][0]["tutorials"]
+        assert [p["id"] for p in entry["practices"]] == ["one-practice", "one-practice-2", "one-practice-10"]
+
     def test_a_mixed_set_draws_on_two_of_three_tutorials_and_sits_off_their_reading_order(self, repo):
         write(repo, "One.\n", slug="one")
         write(repo, "Two.\n", slug="two")
@@ -126,11 +149,6 @@ class TestPagesOfProblems:
         assert "Mixed problems" in other and 'href="tutorials/mixed.html"' in other
         assert 'href="tutorials/mixed.html"' not in (repo / "site" / "computational-methods.html").read_text()
 
-    def _two_pages_claim_one_tutorial(self, repo):
-        write(repo, "One.\n", slug="one")
-        self.practice(repo, "one-practice", practice_for="one")
-        self.practice(repo, "more-practice", practice_for="one")
-
     def _covers_declared_on_a_practice_page(self, repo):
         write(repo, "One.\n", slug="one")
         path = self.practice(repo, "one-practice", practice_for="one")
@@ -168,7 +186,6 @@ class TestPagesOfProblems:
                       practice_across=["one", "two"])
 
     ERRORS = {
-        "two pages claim one tutorial": (_two_pages_claim_one_tutorial, "has one page of problems"),
         "a mixed set names a slug that does not exist": (_mixed_naming_a_nonexistent_slug, "there is no folder tutorials/nowhere/"),
         "a mixed set names itself": (_mixed_naming_itself, "which is itself"),
         "a page sets both practice_for and practice_across": (_both_practice_for_and_practice_across, "cannot do both"),
