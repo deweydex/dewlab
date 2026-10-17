@@ -135,7 +135,7 @@ SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 PAGES = ROOT / "pages"
 
-REQUIRED_FRONTMATTER = ("title", "year", "version")
+REQUIRED_FRONTMATTER = ("title", "version")
 
 STATUSES = ("draft", "beta", "live", "archived")
 
@@ -3312,7 +3312,9 @@ def courses() -> dict[str, Course]:
         data = yaml.safe_load(index.read_text()) or {}
         order = data.get("order") or []
         if not isinstance(order, list) or not all(isinstance(c, str) for c in order):
-            fail(index, "needs `order:` as a list of course ids, one per line")
+            note(index, "needs `order:` as a list of course ids, one per line, so the "
+                        "courses are in alphabetical order")
+            order = []
         for name in order:
             if name not in found:
                 note(index, f"lists {name}, and there is no courses/{name}.yaml, "
@@ -3333,10 +3335,15 @@ def read_course(path: Path) -> Course:
         fail(path, "a course file is a mapping: title, code, status, card, description, contents")
     title = data.get("title")
     if not isinstance(title, str) or not title.strip():
-        fail(path, "needs a `title:` line — what the course is called on the site")
+        title = path.stem
+        note(path, f"has no `title:` line, so the course is called {title!r} on the site")
     status = str(data.get("status", "live"))
     if status not in COURSE_STATUSES:
-        fail(path, f"status {status!r} is not one of {', '.join(COURSE_STATUSES)}")
+        # Status only picks the badge on the course's tile, so a value this
+        # build does not know is no badge, not a stopped build.
+        note(path, f"status {status!r} is not one of {', '.join(COURSE_STATUSES)}, "
+                   "so the course has no badge")
+        status = "live"
     contents = data.get("contents")
     if contents is None:
         contents = []
@@ -6569,7 +6576,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{VERSION}}": html.escape(str(tutorial.meta["version"]), quote=True),
         "{{SLUG}}": html.escape(tutorial.slug, quote=True),
         "{{MODULE}}": html.escape(tutorial.course, quote=True),
-        "{{YEAR}}": html.escape(str(tutorial.meta["year"]), quote=True),
+        "{{YEAR}}": html.escape(str(tutorial.meta.get("year") or ""), quote=True),
         "{{SERIES}}": html.escape(tutorial.series, quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
@@ -6584,7 +6591,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             crumb_trail_html(tutorial, groups, members, up, practice, registry, also,
                              context)
             if groups is not None
-            else html.escape(f"{course_title(tutorial.course) or 'dewlab'} · {tutorial.meta['year']}")
+            else html.escape(" · ".join(filter(None, [course_title(tutorial.course) or "dewlab",
+                                                     str(tutorial.meta.get("year") or "")])))
         ),
         "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
@@ -7471,10 +7479,14 @@ def course_card_order() -> list[Course]:
     if index.is_file():
         first = (yaml.safe_load(index.read_text()) or {}).get("cards") or []
         if not isinstance(first, list) or not all(isinstance(c, str) for c in first):
-            fail(index, "needs `cards:` as a list of course ids, one per line")
+            note(index, "needs `cards:` as a list of course ids, one per line, so the "
+                        "tiles follow `order:`")
+            first = []
         for name in first:
             if name not in found:
-                fail(index, f"lists {name} under `cards:`, and there is no courses/{name}.yaml")
+                note(index, f"lists {name} under `cards:`, and there is no "
+                            f"courses/{name}.yaml, so it is left out")
+        first = [name for name in dict.fromkeys(first) if name in found]
     return [found[c] for c in first] + [c for name, c in found.items() if name not in first]
 
 
@@ -7615,8 +7627,11 @@ def write_redirects(pages: list[Path]) -> list[Path]:
         if target.resolve() not in current:
             fail(path, f"sends {old} to {new}, and this build wrote no page at {new}")
         if source.resolve() in current:
-            fail(path, f"sends {old} somewhere, but the build writes a page at {old}. "
-                       "Delete the line.")
+            # The page that lives there now is the better answer, and nothing
+            # a bookmark reaches is lost.
+            note(path, f"sends {old} somewhere, but the build writes a page at {old}, so "
+                       "the line is skipped. Delete it")
+            continue
         href = os.path.relpath(target, source.parent).replace(os.sep, "/")
         source.parent.mkdir(parents=True, exist_ok=True)
         source.write_text(REDIRECT_PAGE.format(href=html.escape(href, quote=True)))

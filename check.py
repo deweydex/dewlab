@@ -170,7 +170,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         return
     assert fields is not None
     report.checked.append(("practice" if "practice_for" in fields else "tutorial", ident, str(fields.get("title") or ident)))
-    for key in ("title", "year", "version"):
+    for key in ("title", "version"):
         if not fields.get(key):
             report.problem(f"`{ident}.md`: the frontmatter needs `{key}:`.")
     if fields.get("version") and not VERSION_RE.match(str(fields["version"])):
@@ -178,8 +178,8 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     old = [k for k in OLD_FIELDS if k in fields]
     if old:
         report.note(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. The build ignores them; where a tutorial sits is written in `courses/`, not here.")
-    if not any(k in fields for k in OLD_FIELDS) and all(fields.get(k) for k in ("title", "year", "version")):
-        report.ok("The frontmatter has title, year and version, and nothing about placement.")
+    if not any(k in fields for k in OLD_FIELDS) and all(fields.get(k) for k in ("title", "version")):
+        report.ok("The frontmatter has title and version, and nothing about placement.")
 
     # a fence that opens and never closes turns the rest of the page into code
     closed = [m.span() for m in CLOSED_FENCE_RE.finditer(body)]

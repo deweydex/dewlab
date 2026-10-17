@@ -307,9 +307,11 @@ class TestAllTutorialsPage:
         assert ">Computational Methods</a></summary>" in page
         assert "Later Module</a></summary>" not in page
 
-        index.write_text("cards:\n  - nowhere\norder:\n  - computational-methods\n")
-        with pytest.raises(b.BuildError, match="lists nowhere under `cards:`"):
-            b.build()
+        # A card for a course with no file is left out and said, not a stopped
+        # build (DECISIONS_LOG 7.300).
+        index.write_text("cards:\n  - nowhere\n  - computational-methods\norder:\n  - computational-methods\n")
+        b.build()
+        assert len(b.course_card_order()) == len(b.courses())
 
     def test_an_index_naming_a_course_with_no_file_builds_and_says_so(self, repo, capsys):
         write(repo, "Prose.\n")

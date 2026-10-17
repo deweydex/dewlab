@@ -156,3 +156,53 @@ class TestADatasetThatDoesNotSayWhereItCameFrom:
         # Not in the page's reference, and the data index carries it with no date.
         assert "datasets" not in manifest(built(repo, "one"))
         assert json.loads((repo / "site" / "data" / "index.json").read_text())["sparse.csv"] == {}
+
+
+class TestACourseIndexAndCourseFileTheEducatorLeftRough:
+    """courses/ is the educator's, and its small slips change a tile or an
+    order, never whether the site builds."""
+
+    def index(self, repo, text):
+        (repo / "courses" / "index.yaml").write_text(text)
+
+    def test_cards_that_is_not_a_list_leaves_the_tiles_in_order(self, repo, capsys):
+        write(repo, "Prose.\n")
+        self.index(repo, "cards: computational-methods\n")
+        b.build()
+        assert "needs `cards:` as a list" in capsys.readouterr().err
+        assert [course.id for course in b.course_card_order()] == list(b.courses())
+
+    def test_order_that_is_not_a_list_leaves_the_courses_alphabetical(self, repo, capsys):
+        write(repo, "Prose.\n")
+        self.index(repo, "order: computational-methods\n")
+        b.build()
+        assert "needs `order:` as a list" in capsys.readouterr().err
+
+    def test_a_card_named_twice_is_one_tile(self, repo):
+        write(repo, "Prose.\n")
+        self.index(repo, "cards:\n  - computational-methods\n  - computational-methods\n")
+        b.build()
+        assert [course.id for course in b.course_card_order()].count("computational-methods") == 1
+
+    def test_a_course_with_no_title_is_called_by_its_file_name(self, repo, capsys):
+        write(repo, "Prose.\n")
+        (repo / "courses" / "untitled.yaml").write_text("contents: []\n")
+        b.build()
+        assert "has no `title:` line, so the course is called 'untitled'" in capsys.readouterr().err
+        assert "untitled" in (repo / "site" / "index.html").read_text()
+
+    def test_a_course_status_this_build_does_not_know_has_no_badge(self, repo, capsys):
+        write(repo, "Prose.\n")
+        (repo / "courses" / "odd.yaml").write_text("title: Odd\nstatus: lvie\ncontents: []\n")
+        b.build()
+        assert "status 'lvie' is not one of" in capsys.readouterr().err
+        assert b.courses()["odd"].status == "live"
+
+
+def test_a_tutorial_with_no_year_builds_without_one(repo):
+    # Year is a label for the educator's own use; nothing a reader meets
+    # depends on it.
+    path = write(repo, "Prose.\n")
+    path.write_text(path.read_text().replace('year: "2026-2027"\n', ""))
+    b.build()
+    assert 'name="tutorial-year" content=""' in built(repo)
