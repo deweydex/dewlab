@@ -156,7 +156,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     ident = folder.name
     report.note(f"— {folder.relative_to(ROOT)} —")
     if not ID_RE.match(ident):
-        report.problem(f"The folder name `{ident}` is not a valid id. Use small letters, digits and hyphens, like `first-steps`.")
+        report.note(f"The folder name `{ident}` is not a tidy id. Small letters, digits and hyphens, like `first-steps`, make an address that is easy to type and share. Once readers have saved work under it, the name cannot change.")
     main = folder / f"{ident}.md"
     if not main.is_file():
         report.problem(f"There is no `{ident}.md` inside the folder. The main file must have the same name as the folder.")
@@ -170,15 +170,16 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         return
     assert fields is not None
     report.checked.append(("practice" if "practice_for" in fields else "tutorial", ident, str(fields.get("title") or ident)))
-    for key in ("title", "version"):
-        if not fields.get(key):
-            report.problem(f"`{ident}.md`: the frontmatter needs `{key}:`.")
+    if not fields.get("title"):
+        report.note(f"`{ident}.md`: the frontmatter has no `title:`, so the page is called after its folder. Add one.")
+    if not fields.get("version"):
+        report.problem(f"`{ident}.md`: the frontmatter needs `version:`.")
     if fields.get("version") and not VERSION_RE.match(str(fields["version"])):
         report.problem(f"`{ident}.md`: `version:` must look like `2026.09.14.1` (year.month.day.number).")
     old = [k for k in OLD_FIELDS if k in fields]
     if old:
         report.note(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. The build ignores them; where a tutorial sits is written in `courses/`, not here.")
-    if not any(k in fields for k in OLD_FIELDS) and all(fields.get(k) for k in ("title", "version")):
+    if not any(k in fields for k in OLD_FIELDS) and fields.get("title") and fields.get("version"):
         report.ok("The frontmatter has title and version, and nothing about placement.")
 
     # a fence that opens and never closes turns the rest of the page into code
@@ -226,18 +227,19 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     # names the way a practice page does, so it is neither listed in a
     # course nor given a practice page of its own
     context_for = fields.get("context_for")
+    if context_for is not None and not context_for:
+        report.note(f"`{ident}.md`: `context_for:` is empty, so this is an ordinary tutorial. Name the tutorial it gives background for, or delete the line.")
+        context_for = None
     if context_for is not None:
         named = [context_for] if isinstance(context_for, str) else list(context_for or [])
         missing = [str(n) for n in named if not (TUTORIALS / str(n)).is_dir()]
-        if not named:
-            report.problem(f"`{ident}.md`: `context_for:` is empty. Name the tutorial this page gives background for.")
-        elif missing:
+        if missing:
             report.problem(f"`{ident}.md`: `context_for:` names {', '.join(missing)}, and there is no such tutorial.")
         else:
             report.ok(f"A context page for {', '.join(str(n) for n in named)}. It is not listed in a course; it follows those tutorials.")
         if "covers" in fields:
             report.note(f"`{ident}.md`: a context page has `covers:`, so the curriculum map counts it as teaching an outcome. Nothing on it is needed to finish a tutorial; delete `covers:` unless you mean that.")
-        if "practice_for" in fields or "practice_across" in fields:
+        if fields.get("practice_for") or fields.get("practice_across"):
             report.problem(f"`{ident}.md`: a context page cannot also be a practice page. Remove `practice_for:` or `practice_across:`.")
 
     # practice page
@@ -254,7 +256,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
             assert pf is not None
             target = pf.get("practice_for")
             if not target:
-                report.problem(f"`{practice.name}`: a practice page needs `practice_for: {ident}` in its frontmatter.")
+                report.note(f"`{practice.name}`: without `practice_for: {ident}` in its frontmatter this is an ordinary tutorial, not {ident}'s practice page, and no course lists it.")
             elif target != ident:
                 if not (TUTORIALS / str(target)).is_dir():
                     report.problem(f"`{practice.name}`: `practice_for: {target}` names a tutorial that does not exist.")
@@ -311,9 +313,9 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
         return
     report.checked.append(("course", course_id, str(course.get("title") or course_id)))
     if not ID_RE.match(course_id):
-        report.problem(f"The file name `{course_id}` is not a valid id. Use small letters, digits and hyphens.")
+        report.note(f"The file name `{course_id}` is not a tidy id. Small letters, digits and hyphens make an address that is easy to type.")
     if not course.get("title"):
-        report.problem("The course needs `title:`.")
+        report.note(f"The course has no `title:`, so it is called `{course_id}` on the site. Add one.")
     if not course.get("contents"):
         # The build accepts a course with no series; it is a course with
         # nothing on it yet, not a mistake.

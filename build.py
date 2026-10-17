@@ -844,9 +844,16 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         fail(path, f"frontmatter is not valid YAML: {exc}")
     if not isinstance(meta, dict):
         fail(path, "frontmatter must be a mapping of fields")
-    missing = [f for f in REQUIRED_FRONTMATTER if f not in meta]
+    missing = [f for f in REQUIRED_FRONTMATTER if f != "title" and not meta.get(f)]
     if missing:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
+    if not meta.get("title"):
+        # A title is the page's name, and one left off (or left empty, which
+        # YAML reads as None and a page would print as "None") is a page
+        # still being written, not one to stop the build over.
+        meta["title"] = id_of(path).replace("-", " ").capitalize()
+        note(path, f"has no `title:`, so the page is called {meta['title']!r}. Add one to the "
+                   "frontmatter")
     for field_name, where_now in MOVED_FRONTMATTER.items():
         if field_name in meta:
             note(path, f"{field_name} no longer belongs in frontmatter — "
@@ -8452,17 +8459,28 @@ def load_all() -> list[Tutorial]:
     Two files claiming one id stop the build here, naming both — the
     filesystem already refuses a second folder with the same name, and
     this catches the other way it can happen, a practice file beside a
-    folder of the same name. A markdown file loose under `tutorials/`,
-    outside any folder, is refused too: it has no id.
+    folder of the same name. So does a main file that is not named for its
+    folder: `tutorials/first-steps/steps.md` would be the tutorial `steps`,
+    and every reader's saved work lives under `first-steps`. A page beside
+    it is named for the folder and goes on (`first-steps-practice.md`).
+    A markdown file loose under `tutorials/`, outside any folder, has no
+    id: it is noted and not built, since it is a scratch file as often as a
+    tutorial that forgot its folder.
     """
-    loose = sorted(TUTORIALS.glob("*.md"))
-    if loose:
-        fail(loose[0], "is not inside a folder. A tutorial is tutorials/<id>/<id>.md.")
+    for loose in sorted(TUTORIALS.glob("*.md")):
+        note(loose, "is not inside a folder, so it is not built. A tutorial is "
+                    "tutorials/<id>/<id>.md")
     everything = [load(p) for p in sorted(TUTORIALS.glob("*/*.md"))]
     claimed: dict[str, Tutorial] = {}
     for tutorial in everything:
         if VERSION_FILE_RE.match(tutorial.path.stem):
             continue
+        folder, stem = tutorial.path.parent.name, tutorial.path.stem
+        if stem != folder and not stem.startswith(f"{folder}-"):
+            fail(tutorial.path, f"is called {stem}.md, so its id would be {stem}. A tutorial's id is "
+                                f"its folder's name, and its main file is {folder}.md (a page "
+                                f"beside it starts {folder}-). Rename the file back, or the "
+                                "folder to match, before anyone has saved work under the id")
         other = claimed.get(tutorial.slug)
         if other is not None:
             fail(tutorial.path, f"has the id {tutorial.slug}, and so does "

@@ -225,7 +225,6 @@ MISTAKES = {
     # name: (frontmatter, body, course listing) — one mistake each, of a
     # kind check.py covers. `None` for a value keeps the good default.
     "a version that is not a release date": ('title: "T"\nyear: "2026-2027"\nversion: 1\n', None, None),
-    "a missing title": ('year: "2026-2027"\nversion: 2026.09.14.1\n', None, None),
     "a cell with no id": (None, "```python exec\nprint(1)\n```\n", None),
     "two cells with one id": (None, "```python exec\nid: a\nprint(1)\n```\n\n```python exec\nid: a\nprint(2)\n```\n", None),
     "an image that is not in the folder": (None, "![A plot](plot.png)\n", None),
@@ -264,6 +263,15 @@ NOTES = {
     "an old placement field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\n',
                                "delete these old lines from the frontmatter: module",
                                "module no longer belongs in frontmatter"),
+    "a missing title": ('year: "2026-2027"\nversion: 2026.09.14.1\n',
+                        "the frontmatter has no `title:`, so the page is called after its folder",
+                        "has no `title:`, so the page is called 'Good'"),
+    "an empty title": ('title:\nyear: "2026-2027"\nversion: 2026.09.14.1\n',
+                       "the frontmatter has no `title:`, so the page is called after its folder",
+                       "has no `title:`, so the page is called 'Good'"),
+    "a missing year": ('title: "T"\nversion: 2026.09.14.1\n', None, None),
+    "an empty context_for": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\ncontext_for: []\n',
+                             "`context_for:` is empty, so this is an ordinary tutorial", None),
     "an old order field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\norder: 3\n',
                            "delete these old lines from the frontmatter: order",
                            "order no longer belongs in frontmatter"),
@@ -286,9 +294,11 @@ def test_what_check_only_notes_the_build_accepts(repo, monkeypatch, capsys, case
 
     code, out = run_check(check)
     assert code == 0, f"check.py called {case} a problem:\n{out}"
-    assert expected in out
+    if expected:
+        assert expected in out
     b.build()
-    assert build_says in capsys.readouterr().err
+    if build_says:
+        assert build_says in capsys.readouterr().err
 
 
 def test_everything_check_and_the_build_both_accept_a_good_tree(repo, monkeypatch):
@@ -329,3 +339,31 @@ def test_a_context_page_is_not_a_problem_and_listing_one_in_a_course_is_a_note(s
     code, out = run_check(check, "courses/alpha.yaml")
     assert code == 0, out
     assert "`why-joins` is a context page" in out and "left out" in out
+
+
+def test_check_notes_a_rough_edge_the_build_accepts_and_offers_nothing_to_stop_over(repo, monkeypatch, capsys):
+    """An untidy folder name, a practice page that forgot `practice_for:`, and
+    a course with no title: all three used to be problems in check.py and are
+    notes in both now, so the author is told and not stopped."""
+    import importlib
+    sys.path.insert(0, str(DEWLAB))
+    check = importlib.import_module("check")
+    importlib.reload(check)
+    monkeypatch.setattr(check, "ROOT", repo)
+    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
+    monkeypatch.setattr(check, "COURSES", repo / "courses")
+
+    tutorial(repo, "Good-Name")
+    (repo / "tutorials" / "Good-Name" / "Good-Name-practice.md").write_text(
+        '---\ntitle: "Problems"\nyear: "2026-2027"\nversion: 2026.09.14.1\n---\n\nProblems.\n')
+    course(repo, "alpha", {"Start": ["Good-Name"]})
+    (repo / "courses" / "alpha.yaml").write_text("contents:\n  - title: Start\n    tutorials: [Good-Name]\n")
+
+    code, out = run_check(check)
+    assert code == 0, out
+    assert "is not a tidy id" in out
+    assert "this is an ordinary tutorial, not Good-Name's practice page" in out
+    assert "The course has no `title:`" in out
+    b.build()
+    assert "so the course is called 'alpha' on the site" in capsys.readouterr().err
+

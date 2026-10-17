@@ -52,6 +52,14 @@ class TestCrossLinks:
         assert 'href="other.html"' in built(repo, "sample")
         assert "other#absent" in capsys.readouterr().err
 
+    def test_a_markdown_file_loose_under_tutorials_is_noted_and_not_built(self, repo, capsys):
+        # A scratch file as often as a tutorial that forgot its folder.
+        write(repo, "One.\n")
+        (repo / "tutorials" / "loose.md").write_text(FRONTMATTER.format(version="2026.08.23.1") + "Prose.\n")
+        b.build()
+        assert "loose.md: is not inside a folder, so it is not built" in capsys.readouterr().err
+        assert not (repo / "site" / "tutorials" / "loose.html").exists()
+
     def _unknown_slug(repo):
         write(repo, "See [nowhere](tutorial:nowhere).\n")
 
@@ -63,26 +71,33 @@ class TestCrossLinks:
             FRONTMATTER.format(version="2026.08.23.1") + "Two.\n")
 
     def _a_second_file_with_an_existing_id(repo):
-        # Two people create first-steps on two branches and both merge: the
-        # filesystem refuses a second folder, and this catches the other
-        # way it happens, a file of that name in another folder.
+        # Two people create a page called first-steps-practice on two
+        # branches, one as a practice page of first-steps and one as a
+        # tutorial of its own, and both merge: the filesystem refuses a
+        # second folder of one name, and this catches the other way it
+        # happens, a file of that name in a folder that is not its own.
         write(repo, "One.\n", slug="first-steps")
-        write(repo, "Two.\n", slug="other")
-        (repo / "tutorials" / "other" / "first-steps.md").write_text(
+        write(repo, "Two.\n", slug="first-steps-practice")
+        (repo / "tutorials" / "first-steps" / "first-steps-practice.md").write_text(
             FRONTMATTER.format(version="2026.08.23.1") + "Again.\n")
 
-    def _a_file_loose_under_tutorials(repo):
-        write(repo, "One.\n")
-        (repo / "tutorials" / "loose.md").write_text(FRONTMATTER.format(version="2026.08.23.1") + "Prose.\n")
+    def _a_main_file_not_named_for_its_folder(repo):
+        # Its id would be `steps`, and everything a reader saved is under
+        # `first-steps`.
+        write(repo, "One.\n", slug="first-steps")
+        (repo / "tutorials" / "first-steps" / "first-steps.md").rename(
+            repo / "tutorials" / "first-steps" / "steps.md")
 
     BROKEN_LINKS = {
         "an unknown tutorial slug": (_unknown_slug, "unknown tutorial"),
         "two releases sharing a version date": (_two_releases_share_a_version_date, "cannot share a date"),
         "a duplicate id in a second file": (
             _a_second_file_with_an_existing_id,
-            r"tutorials/other/first-steps\.md: has the id first-steps, and so does tutorials/first-steps/first-steps\.md",
+            r"tutorials/first-steps-practice/first-steps-practice\.md: has the id first-steps-practice, "
+            r"and so does tutorials/first-steps/first-steps-practice\.md",
         ),
-        "a .md file loose directly under tutorials/": (_a_file_loose_under_tutorials, "not inside a folder"),
+        "a main file not named for its folder": (
+            _a_main_file_not_named_for_its_folder, r"is called steps\.md, so its id would be steps"),
     }
 
     @pytest.mark.parametrize("case", sorted(BROKEN_LINKS))
