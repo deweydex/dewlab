@@ -38,6 +38,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import tokenize
 import urllib.parse
 import zipfile
@@ -134,7 +135,7 @@ SHELL = ASSETS / "shell.html"
 OUT = ROOT / "site"
 PAGES = ROOT / "pages"
 
-REQUIRED_FRONTMATTER = ("title", "year", "version")
+REQUIRED_FRONTMATTER = ("title", "version")
 
 STATUSES = ("draft", "beta", "live", "archived")
 
@@ -843,9 +844,16 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         fail(path, f"frontmatter is not valid YAML: {exc}")
     if not isinstance(meta, dict):
         fail(path, "frontmatter must be a mapping of fields")
-    missing = [f for f in REQUIRED_FRONTMATTER if f not in meta]
+    missing = [f for f in REQUIRED_FRONTMATTER if f != "title" and not meta.get(f)]
     if missing:
         fail(path, f"frontmatter is missing {', '.join(missing)}")
+    if not meta.get("title"):
+        # A title is the page's name, and one left off (or left empty, which
+        # YAML reads as None and a page would print as "None") is a page
+        # still being written, not one to stop the build over.
+        meta["title"] = id_of(path).replace("-", " ").capitalize()
+        note(path, f"has no `title:`, so the page is called {meta['title']!r}. Add one to the "
+                   "frontmatter")
     for field_name, where_now in MOVED_FRONTMATTER.items():
         if field_name in meta:
             note(path, f"{field_name} no longer belongs in frontmatter — "
@@ -921,11 +929,16 @@ def expand_snapshot_dates(body: str, meta: dict, path: Path) -> str:
     def one(match: re.Match) -> str:
         name = match.group("name")
         if name not in declared:
-            fail(path, f"{match.group(0)} names a dataset that datasets: does not list")
+            note(path, f"{match.group(0)} names a dataset that datasets: does not list, so a "
+                       "downloaded copy of the page will not carry it")
         if not (DATA / f"{name}.yaml").is_file():
             fail(path, f"{match.group(0)} names a dataset with no data/{name}.yaml, so "
                        "there is no saved date to put here")
-        return long_date(datetime.date.fromisoformat(read_dataset(name)["snapshot"]))
+        data = read_dataset(name)
+        if data is None:
+            fail(path, f"{match.group(0)} names a dataset with no snapshot date in "
+                       f"data/{name}.yaml, so there is no saved date to put here")
+        return long_date(datetime.date.fromisoformat(data["snapshot"]))
 
     return SNAPSHOT_RE.sub(one, body)
 
@@ -982,7 +995,7 @@ def _block_header(lines: list[str], pattern: re.Pattern) -> dict[str, str]:
     return header
 
 
-def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution:
+def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution | None:
     """A ```solution fence: `for:` and `title:`, then Python, then
     optionally a `---` line and markdown notes. The code has to compile,
     so a typo in a solution fails the build, not a reader's comparison."""
@@ -995,7 +1008,8 @@ def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution
     code, notes = _split_solution("\n".join(lines))
     code = expand_includes(code.strip("\n"), path)
     if not code.strip():
-        fail(path, f"the solution for cell {cell!r} has no code in it")
+        note(path, f"the solution for cell {cell!r} has no code in it, so it is left out")
+        return None
     try:
         compile(code, f"<the solution for {cell}>", "exec",
                 flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
@@ -1031,16 +1045,19 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
                    "line naming one")
     first_option = next((i for i, line in enumerate(lines) if PREDICT_OPTION_RE.match(line)),
                         None)
-    kind = (header.get("type") or ("choice" if first_option is not None else "text")).lower()
+    inferred = "choice" if first_option is not None else "text"
+    kind = (header.get("type") or inferred).lower()
     if kind not in PREDICT_TYPES:
-        fail(path, f"the prediction for cell {cell!r} says `type: {kind}` — one of "
-                   f"{', '.join(PREDICT_TYPES)}")
+        note(path, f"the prediction for cell {cell!r} says `type: {kind}`, which is not one of "
+                   f"{', '.join(PREDICT_TYPES)}, so it is read as `{inferred}`")
+        kind = inferred
     options: list[PredictOption] = []
     prompt_lines = lines
+    if kind == "choice" and first_option is None:
+        note(path, f"the prediction for cell {cell!r} is a choice with no options, so it "
+                   "asks for a typed guess instead. List options with `- ` at the left margin")
+        kind = "text"
     if kind == "choice":
-        if first_option is None:
-            fail(path, f"the prediction for cell {cell!r} is a choice with no options — "
-                       "list them with `- ` at the left margin")
         prompt_lines = lines[:first_option]
         texts, notes, stray = options_and_notes(lines[first_option:])
         if stray:
@@ -1059,19 +1076,23 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
         try:
             tolerance = float(header["tolerance"])
         except ValueError:
-            fail(path, f"the prediction for cell {cell!r} says `tolerance: "
-                       f"{header['tolerance']}` — write a number")
-        if tolerance < 0:
-            fail(path, f"the prediction for cell {cell!r} has a negative tolerance")
+            note(path, f"the prediction for cell {cell!r} says `tolerance: "
+                       f"{header['tolerance']}`, which is not a number, so a guess "
+                       "has to match exactly")
+        if tolerance is not None and tolerance < 0:
+            note(path, f"the prediction for cell {cell!r} has a negative tolerance, "
+                       "so a guess has to match exactly")
+            tolerance = None
     prompt = "\n".join(prompt_lines).strip("\n")
     if not prompt.strip():
-        fail(path, f"the prediction for cell {cell!r} asks no question")
+        note(path, f"the prediction for cell {cell!r} asks no question; the reader "
+                   "gets the box with nothing above it")
     for text in [prompt] + [o.text for o in options] + [o.note for o in options]:
         no_footnotes_in(text, path, f"the prediction for cell {cell!r}")
     return Predict(cell=cell, type=kind, prompt=prompt, options=options, tolerance=tolerance)
 
 
-def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
+def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs | None:
     """An ```inputs fence: `for:` and `guess:`, then one expression per
     line. A `#` comment after an expression is its label, found with the
     tokenizer so a `#` inside a string is not mistaken for one. Every
@@ -1085,8 +1106,9 @@ def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
                    "line naming one")
     guess = header.get("guess", "no").lower()
     if guess not in TOOLKIT_VALUES:
-        fail(path, f"the inputs for cell {cell!r} say `guess: {header['guess']}` — "
-                   "write `guess: yes` or leave the line out")
+        note(path, f"the inputs for cell {cell!r} say `guess: {header['guess']}`, which "
+                   "is not yes or no, so the reader is not asked to guess")
+        guess = "no"
     cases: list[Case] = []
     for line in lines:
         if not line.strip() or line.strip().startswith("#"):
@@ -1107,11 +1129,12 @@ def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
             fail(path, f"an input for cell {cell!r} is not a Python expression: {expr}")
         cases.append(Case(expr=expr, label=label))
     if not cases:
-        fail(path, f"the inputs for cell {cell!r} list no cases")
+        note(path, f"the inputs for cell {cell!r} list no cases, so the block is left out")
+        return None
     return Inputs(cell=cell, cases=cases, guess=TOOLKIT_VALUES[guess])
 
 
-def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed:
+def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed | None:
     """A ```typed fence: `for:`, then one line for each time `input()`
     reads, kept exactly as written, spaces included, since a program that
     strips what it is given is one worth testing. A blank line between two
@@ -1127,7 +1150,8 @@ def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed:
     while lines and not lines[-1].strip():
         lines.pop()
     if not lines:
-        fail(path, f"the typed block for cell {cell!r} has no lines in it")
+        note(path, f"the typed block for cell {cell!r} has no lines in it, so it is left out")
+        return None
     return Typed(cell=cell, lines=lines)
 
 
@@ -1197,8 +1221,11 @@ def parse_trigger(text: str, path: Path) -> str:
 
     `5 errors`, `3 identical errors and 2 minutes`, `errors:5, minutes:2` all
     parse; the first two become the third. Every term must be one the
-    runtime knows (`TRIGGER_KEYS`), so a typo fails the build here rather
-    than producing a hint that never appears.
+    runtime knows (`TRIGGER_KEYS`). A line with a term that is not, or that
+    says nothing, is the educator's typo in an optional setting, not a reason
+    to stop the build: the hint takes the default trigger instead, the whole
+    line replaced and not only the bad term, since "3 errors and a typo" is
+    not "3 errors", and the build says so (DECISIONS_LOG 7.300).
     """
     terms = []
     for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
@@ -1209,24 +1236,29 @@ def parse_trigger(text: str, path: Path) -> str:
             continue
         match = TRIGGER_TERM_RE.match(raw)
         if not match:
-            fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
-                       f"— write it like `5 errors` or `errors:5`")
+            return _default_trigger(path, f"has a term I cannot read: {raw!r}")
         key = match.group("k1") or match.group("k2")
         count = int(match.group("n1") or match.group("n2"))
         canonical = TRIGGER_KEYS.get(key.strip())
         if canonical is None:
-            fail(path, f"a hint's after: line names a signal the runtime does not "
-                       f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, empty results, minutes, "
-                       f"unsure, guess differed")
+            return _default_trigger(
+                path, f"names a signal the runtime does not track: {key!r}. It tracks "
+                      "errors, identical errors, unchanged runs, runs, empty results, "
+                      "minutes, unsure and guess differed")
         if count < 1:
             note(path, f"a hint's after: count is {count}, so the hint opens after the "
                        "first counted run that does not reach the goal")
             count = 0
         terms.append(f"{canonical}:{count}")
     if not terms:
-        fail(path, "a hint's after: line is empty")
+        return _default_trigger(path, "says nothing")
     return " ".join(terms)
+
+
+def _default_trigger(path: Path, why: str) -> str:
+    note(path, f"a hint's after: line {why}, so the hint opens at the default "
+               f"({DEFAULT_HINT_AFTER.replace(':', ' ')}) instead")
+    return parse_trigger(DEFAULT_HINT_AFTER, path)
 
 
 # A footnote reference or definition: `[^label]`, optionally followed by a
@@ -1271,7 +1303,7 @@ def no_footnotes_in(text: str, path: Path, what: str) -> None:
                    "a literal bracket")
 
 
-def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
+def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint | None:
     """Read `for:`, `after:` and `title:` off the top of a ```hint fence.
 
     Everything after the header lines is the hint's own markdown. With no
@@ -1292,7 +1324,8 @@ def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
                    "naming one")
     text = "\n".join(lines).strip("\n")
     if not text.strip():
-        fail(path, f"the hint for cell {cell!r} has no text in it")
+        note(path, f"the hint for cell {cell!r} has no text in it, so it is left out")
+        return None
     no_footnotes_in(text, path, f"the hint for cell {cell!r}")
     return StagedHint(
         cell=cell,
@@ -1626,10 +1659,11 @@ def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
                 note(path, f"question {question_id!r} has a }} with no matching {{; "
                            "it shows as written")
     if depth > 0:
-        fail(path, f"question {question_id!r} has an unclosed {{")
+        note(path, f"question {question_id!r} has a {{ with no matching }}; "
+                   "it shows as written")
 
 
-def parse_question(body: str, path: Path) -> Question:
+def parse_question(body: str, path: Path) -> Question | None:
     """Read `id:`, `type:` and `answer:` off the top of a ```question
     fence — the same header loop parse_cell() and parse_hint() use.
     Everything after the header lines is the question's own markdown:
@@ -1655,7 +1689,8 @@ def parse_question(body: str, path: Path) -> Question:
                    f"not one of {sorted(QUESTION_TYPES)}")
     text = "\n".join(lines).strip("\n")
     if not text.strip():
-        fail(path, f"question {question_id!r} has no text in it")
+        note(path, f"question {question_id!r} has no text in it, so it is left out")
+        return None
     no_footnotes_in(text, path, f"question {question_id!r}")
 
     if question_type == "multiple-choice":
@@ -1806,6 +1841,10 @@ def page_worlds(meta: dict, path: Path) -> dict[str, str]:
     worlds = meta.get("worlds")
     if worlds is None:
         return {}
+    if isinstance(worlds, list) and worlds and all(isinstance(key, str) for key in worlds):
+        note(path, "`worlds:` is a list of keys, so each world goes without the line that "
+                   "would say what it is. Write `key: one line saying what it is` to add one")
+        worlds = {key: "" for key in worlds}
     if not isinstance(worlds, dict) or not worlds:
         fail(path, "`worlds:` lists each world as `key: one line saying what it is`")
     for key, line in worlds.items():
@@ -1885,10 +1924,16 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     data it uses, and an optional picture. `own: true` marks the project of
     the reader's own, which gets the wide card under the grid; any number of
     projects may say so and they may come in any position. `maths` and `data`
-    may be left out."""
+    may be left out, and so, with a note, may a project's title (it is called
+    after its id), its question and what it makes (its card goes without
+    them): a project still being drafted should not stop the page."""
     projects = meta.get("projects")
     if projects is None:
         return {}
+    if isinstance(projects, list) and projects and all(isinstance(key, str) for key in projects):
+        note(path, "`projects:` is a list of ids, so each project has no title, question "
+                   "or make yet. Write `id:` with those under it to fill them in")
+        projects = {key: {} for key in projects}
     if not isinstance(projects, dict) or not projects:
         fail(path, "`projects:` lists each project as `id:` with its title, "
                    "question, make, maths and data")
@@ -1898,11 +1943,14 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
             fail(path, f"project {key!r} in `projects:` is not an id like `best-line`: "
                        "lower-case letters and digits, joined by hyphens")
         if not isinstance(fields, dict):
-            fail(path, f"project {key!r} in `projects:` needs its fields: "
-                       + ", ".join(PROJECT_FIELDS))
+            fields = {}
+        fields = dict(fields)
         for name in PROJECT_REQUIRED:
             if not isinstance(fields.get(name), str) or not fields[name].strip():
-                fail(path, f"project {key!r} in `projects:` has no `{name}:`")
+                fields[name] = key.replace("-", " ").capitalize() if name == "title" else ""
+                note(path, f"project {key!r} in `projects:` has no `{name}:`, so "
+                           + ("it is called after its id" if name == "title"
+                              else f"its card goes without the {name} line"))
         picture = fields.get("picture")
         if picture is not None and not (path.parent / str(picture)).is_file():
             fail(path, f"project {key!r}'s picture {picture!r} is not in the tutorial's folder")
@@ -1987,10 +2035,12 @@ def render_project_chooser(projects: dict[str, dict]) -> str:
         return (
             f'<a class="dl-project-card{own}" href="#project-{key}" data-project="{key}">'
             f"{picture}"
-            f'<span class="dl-project-question">{_inline(fields["question"])}</span>'
-            f'<span class="dl-project-title">{_inline(fields["title"])}</span>'
-            f'<span class="dl-project-make">You make: {_inline(fields["make"])}</span>'
-            "</a>"
+            + (f'<span class="dl-project-question">{_inline(fields["question"])}</span>'
+               if fields["question"] else "")
+            + f'<span class="dl-project-title">{_inline(fields["title"])}</span>'
+            + (f'<span class="dl-project-make">You make: {_inline(fields["make"])}</span>'
+               if fields["make"] else "")
+            + "</a>"
         )
 
     grid = "".join(card(key, fields) for key, fields in projects.items() if not fields["own"])
@@ -2142,14 +2192,19 @@ def extract_blocks(
             return ""
         if info and info[0] == "hint":
             hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
+            if hint is None:
+                return ""
             hint.index = hints_per_cell.get(hint.cell, 0)
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
             placed.append(("hint", hint.cell, world))
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
         if info and info[0] == "solution":
-            solutions.append(parse_solution(match.group("body"), path,
-                                            cells[-1].id if cells else None))
+            solution = parse_solution(match.group("body"), path,
+                                      cells[-1].id if cells else None)
+            if solution is None:
+                return ""
+            solutions.append(solution)
             placed.append(("solution", solutions[-1].cell, world))
             return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
         if info and info[0] == "predict":
@@ -2158,13 +2213,17 @@ def extract_blocks(
             placed.append(("predict block", predictions[-1].cell, world))
             return ""
         if info and info[0] == "inputs":
-            inputs_blocks.append(parse_inputs(match.group("body"), path,
-                                              cells[-1].id if cells else None))
+            block = parse_inputs(match.group("body"), path, cells[-1].id if cells else None)
+            if block is None:
+                return ""
+            inputs_blocks.append(block)
             placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
         if info and info[0] == "typed":
-            typed_blocks.append(parse_typed(match.group("body"), path,
-                                            cells[-1].id if cells else None))
+            typed = parse_typed(match.group("body"), path, cells[-1].id if cells else None)
+            if typed is None:
+                return ""
+            typed_blocks.append(typed)
             placed.append(("typed block", typed_blocks[-1].cell, world))
             return ""
         if len(info) >= 2 and info[1] == "challenge":
@@ -2215,7 +2274,10 @@ def extract_blocks(
             site_editors.append(current_site)
             return f"{indent}<!--dewlab-site-{len(site_editors) - 1}-->"
         if info and info[0] == "question":
-            questions.append(parse_question(match.group("body"), path))
+            question = parse_question(match.group("body"), path)
+            if question is None:
+                return ""
+            questions.append(question)
             return f"{indent}<!--dewlab-question-{len(questions) - 1}-->"
         if len(info) >= 2 and info[1] == "app":
             language = info[0]
@@ -2299,15 +2361,20 @@ def extract_blocks(
             fail(path, f"cell {cell.id!r} is a {cell.type} cell; only a Python cell "
                        "can have typed lines")
         if cell.typed is not None:
-            fail(path, f"cell {cell.id!r} has two typed blocks — put every line in one")
-        cell.typed = block.lines
+            note(path, f"cell {cell.id!r} has two typed blocks, so their lines are read "
+                       "one after the other")
+            cell.typed = [*cell.typed, *block.lines]
+        else:
+            cell.typed = block.lines
     for prediction in predictions:
         cell = by_id.get(prediction.cell)
         if cell is None:
             fail(path, f"a prediction names a cell this tutorial does not have: "
                        f"{prediction.cell!r}")
         if cell.predict is not None:
-            fail(path, f"cell {cell.id!r} has two predict blocks — one guess per cell")
+            note(path, f"cell {cell.id!r} has two predict blocks, and a cell takes one "
+                       "guess, so the second is left out")
+            continue
         cell.predict = prediction
     def where(world: str | None) -> str:
         return f"in the {world!r} variant" if world else "outside every world variant"
@@ -2933,8 +3000,9 @@ def extract_generated_blocks(body: str, path: Path) -> tuple[str, list[str]]:
     def one(match: re.Match) -> str:
         name = match.group("name")
         if name not in GENERATED_BLOCKS:
-            fail(path, f"[[{name}]] is not a generated block dewlab knows — "
-                       f"one of {sorted(GENERATED_BLOCKS)}")
+            note(path, f"[[{name}]] is not a generated block dewlab knows, so it is left "
+                       f"out of the page. The ones it knows are {', '.join(sorted(GENERATED_BLOCKS))}")
+            return ""
         names.append(name)
         return f"<!--dewlab-generated-{len(names) - 1}-->"
 
@@ -2973,17 +3041,23 @@ def read_page(name: str) -> tuple[dict, str]:
     else:
         fail(path, "does not exist")
     if not text.startswith("---"):
-        fail(path, "no YAML frontmatter — the file must open with a --- line")
-    end = text.find("\n---", 3)
-    if end == -1:
-        fail(path, "frontmatter is never closed with a --- line")
-    raw, body = text[3:end], text[end + 4 :]
-    try:
-        meta = yaml.safe_load(raw) or {}
-    except yaml.YAMLError as exc:
-        fail(path, f"frontmatter is not valid YAML: {exc}")
-    if not isinstance(meta, dict) or "title" not in meta:
-        fail(path, "frontmatter is missing title")
+        # A page with nothing above it is only a page with no title yet.
+        meta, body = {}, text
+    else:
+        end = text.find("\n---", 3)
+        if end == -1:
+            fail(path, "frontmatter is never closed with a --- line")
+        raw, body = text[3:end], text[end + 4 :]
+        try:
+            meta = yaml.safe_load(raw) or {}
+        except yaml.YAMLError as exc:
+            fail(path, f"frontmatter is not valid YAML: {exc}")
+        if not isinstance(meta, dict):
+            fail(path, "frontmatter must be a mapping of fields")
+    if not meta.get("title"):
+        meta["title"] = name.replace("-", " ").capitalize()
+        note(path, f"has no title:, so the page is called {meta['title']!r}. Add "
+                   "`title:` between two --- lines at the top")
     body = body.lstrip("\n")
     body, cards = extract_page_cards(body, path)
     body, generated = extract_generated_blocks(body, path)
@@ -3130,7 +3204,13 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     def one(match: re.Match) -> str:
         note_id = match.group("id")
         if note_id in seen:
-            fail(path, f"two notes share the id {note_id!r}")
+            # An id only lets a link reach the note in the reference panel.
+            number = 2
+            while f"{note_id}-{number}" in seen:
+                number += 1
+            note(path, f"two notes share the id {note_id!r}, so the second is "
+                       f"{note_id}-{number}")
+            note_id = f"{note_id}-{number}"
         seen.add(note_id)
         note_html = match.group("html")
         notes.append(Note(id=note_id, html=note_html))
@@ -3250,7 +3330,9 @@ def courses() -> dict[str, Course]:
         data = yaml.safe_load(index.read_text()) or {}
         order = data.get("order") or []
         if not isinstance(order, list) or not all(isinstance(c, str) for c in order):
-            fail(index, "needs `order:` as a list of course ids, one per line")
+            note(index, "needs `order:` as a list of course ids, one per line, so the "
+                        "courses are in alphabetical order")
+            order = []
         for name in order:
             if name not in found:
                 note(index, f"lists {name}, and there is no courses/{name}.yaml, "
@@ -3271,10 +3353,15 @@ def read_course(path: Path) -> Course:
         fail(path, "a course file is a mapping: title, code, status, card, description, contents")
     title = data.get("title")
     if not isinstance(title, str) or not title.strip():
-        fail(path, "needs a `title:` line — what the course is called on the site")
+        title = path.stem
+        note(path, f"has no `title:` line, so the course is called {title!r} on the site")
     status = str(data.get("status", "live"))
     if status not in COURSE_STATUSES:
-        fail(path, f"status {status!r} is not one of {', '.join(COURSE_STATUSES)}")
+        # Status only picks the badge on the course's tile, so a value this
+        # build does not know is no badge, not a stopped build.
+        note(path, f"status {status!r} is not one of {', '.join(COURSE_STATUSES)}, "
+                   "so the course has no badge")
+        status = "live"
     contents = data.get("contents")
     if contents is None:
         contents = []
@@ -3282,34 +3369,46 @@ def read_course(path: Path) -> Course:
         fail(path, "`contents:` is a list of series, each with a title and its tutorials")
     series: list[Series] = []
     listed: dict[str, str] = {}
-    for entry in contents:
-        if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
-            fail(path, "each series under `contents:` needs a `title:` line")
+    for position, entry in enumerate(contents, start=1):
+        if not isinstance(entry, dict):
+            fail(path, "each series under `contents:` is a `title:` and its `tutorials:`")
+        title_line = entry.get("title")
+        if not isinstance(title_line, str) or not series_key(title_line):
+            # A series still being named keeps its tutorials where they are,
+            # under a heading that says where it comes in.
+            title_line = f"Part {position}"
+            note(path, f"series {position} under `contents:` has no usable `title:` (it needs "
+                       f"a letter or a digit), so it is headed {title_line!r}")
         ids = entry.get("tutorials")
         if ids is None:
             ids = []
         if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
-            fail(path, f'the series "{entry["title"]}" needs `tutorials:` as a list of ids')
-        key = series_key(entry["title"])
-        if not key:
-            fail(path, f'the series title {entry["title"]!r} has no letters or digits in it')
+            fail(path, f'the series "{title_line}" needs `tutorials:` as a list of ids')
+        key = series_key(title_line)
         if key in {s.key for s in series}:
-            fail(path, f'two series are both called "{entry["title"]}" (or differ only in '
+            fail(path, f'two series are both called "{title_line}" (or differ only in '
                        "punctuation). Give one of them another title.")
+        kept: list[str] = []
         for ident in ids:
             if ident in listed:
-                fail(path, f'lists {ident} twice — under "{listed[ident]}" and under '
-                           f'"{entry["title"]}". A tutorial sits in one place on a course.')
-            listed[ident] = entry["title"]
-        series.append(Series(key=key, title=entry["title"].strip(), ids=list(ids)))
+                # A tutorial sits in one place on a course, and the first
+                # place it is listed is the one it keeps.
+                note(path, f'lists {ident} twice — under "{listed[ident]}" and under '
+                           f'"{title_line}". It stays under "{listed[ident]}"')
+                continue
+            listed[ident] = title_line
+            kept.append(ident)
+        series.append(Series(key=key, title=title_line.strip(), ids=kept))
     mixed = data.get("mixed")
     if mixed is None:
         mixed = []
     if not isinstance(mixed, list) or not all(isinstance(i, str) for i in mixed):
         fail(path, "`mixed:` is a list of ids of mixed problem sets")
-    for ident in mixed:
+    for ident in list(mixed):
         if ident in listed:
-            fail(path, f'lists {ident} under `mixed:` and under "{listed[ident]}"')
+            note(path, f'lists {ident} under `mixed:` and under "{listed[ident]}". '
+                       f'It stays under "{listed[ident]}"')
+            mixed = [other for other in mixed if other != ident]
     return Course(
         id=path.stem,
         path=path,
@@ -3398,8 +3497,10 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
                 fail(course.path, f"lists {ident} under `mixed:`, but there is no folder "
                                   f"tutorials/{ident}/")
             if not member.practice_across:
-                fail(course.path, f"lists {ident} under `mixed:`, and it is not a mixed "
-                                  "problem set (it has no practice_across line)")
+                note(course.path, f"lists {ident} under `mixed:`, and it is not a mixed "
+                                  "problem set (it has no practice_across line), so the "
+                                  "line is left out")
+                continue
             member.placements.append(Placement(course.id, "", 0))
     # The route position: where the page sits in the series of its default
     # course. A page on no route keeps 0 (nav_for() reads that honestly).
@@ -4000,12 +4101,22 @@ def with_python(entries: list[dict], path: Path) -> list[dict]:
         if isinstance(names, str):
             names = [names]
         if not isinstance(names, list) or not all(isinstance(n, str) for n in names):
-            fail(path, f'glossary entry "{entry.get("term")}" has a `python:` that is '
-                       "not a dotted name or a list of them.")
+            note(path, f'glossary entry "{entry.get("term")}" has a `python:` that is not '
+                       "a dotted name or a list of them, so it shows no signature")
+            continue
         shown = [signatures[name] for name in names if name in signatures]
         if shown:
             entry["signatures"] = shown
     return entries
+
+
+# Each page's reference walks every earlier page of its series, so a page's
+# own glossary is asked for hundreds of times in a build (seventeen thousand
+# on this site) and was read, parsed and checked against Python's signatures
+# every time. The file does not change during a build, so what it said is
+# kept; build() clears it. Callers get copies, since the entries are handed
+# on to pages that add to them.
+_GLOSSARIES: dict[Path, list[dict]] = {}
 
 
 def own_glossary(tutorial: Tutorial) -> list[dict]:
@@ -4014,14 +4125,26 @@ def own_glossary(tutorial: Tutorial) -> list[dict]:
     yet, not an error: that is what lets this feature ship before every
     tutorial has one."""
     path = glossary_path(tutorial)
+    if path not in _GLOSSARIES:
+        _GLOSSARIES[path] = _read_glossary(path)
+    return [dict(entry) for entry in _GLOSSARIES[path]]
+
+
+def _read_glossary(path: Path) -> list[dict]:
     if not path.is_file():
         return []
     data = read_yaml(path) or {}
     entries = data.get("entries") or []
+    # What kind an entry is decides which group of the reference it sits in.
+    # One this build does not know has nowhere to go, so it is left out, and
+    # said: a guess at "concept" could put a function where a reader looks
+    # for an idea.
     for entry in entries:
         if entry.get("kind") not in GLOSSARY_KINDS:
-            fail(path, f'glossary entry "{entry.get("term")}" has kind '
-                       f'{entry.get("kind")!r}, not one of {GLOSSARY_KINDS}.')
+            note(path, f'glossary entry "{entry.get("term")}" has kind '
+                       f'{entry.get("kind")!r}, not one of {", ".join(GLOSSARY_KINDS)}, '
+                       "so it is left out of the reference")
+    entries = [entry for entry in entries if entry.get("kind") in GLOSSARY_KINDS]
     kept = [entry for entry in entries if entry.get("term") and entry.get("definition")]
     if len(kept) < len(entries):
         note(path, f"{len(entries) - len(kept)} glossary entr"
@@ -4110,21 +4233,37 @@ def cumulative_glossary(
     seen = set()
     found = []
     for member in chain[: chain.index(tutorial) + 1]:
+        # The path from this page to the one that introduced the term is the
+        # same for every term, so it is worked out once per page.
+        href = None if member is reader_at else _relative_href(
+            member.out_path, reader_at.out_path.parent)
         for entry in own_glossary(member):
             key = (entry["term"], entry["kind"])
             if key in seen:
                 continue
             seen.add(key)
-            found.append(entry if member is reader_at
-                         else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
+            found.append(entry if href is None
+                         else {**entry, "origin": _origin(member, href, entry["term"])})
     return found
+
+
+# Every term of every earlier page asks for the same path between the same
+# two pages, and a relative path is slower to work out than it looks: a
+# hundred thousand of them were most of the glossary's time. Cleared by
+# build(), like _origin_anchor().
+@functools.lru_cache(maxsize=None)
+def _relative_href(target: Path, start: Path) -> str:
+    return os.path.relpath(target, start)
 
 
 def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
     """The tutorial a term was introduced in, as something the reference panel
     can render: a title to name it and an href to reach it from the page the
     reader is on."""
-    href = os.path.relpath(introduced_by.out_path, reader_at.out_path.parent)
+    return _origin(introduced_by, _relative_href(introduced_by.out_path, reader_at.out_path.parent), term)
+
+
+def _origin(introduced_by: Tutorial, href: str, term: str) -> dict:
     anchor = origin_anchor(introduced_by, term)
     return {
         "title": introduced_by.title,
@@ -4219,16 +4358,19 @@ def _load_basics(path: Path, kind: str) -> list[dict]:
     groups = []
     for group in data.get("groups") or []:
         if not group.get("label"):
-            fail(path, f"a {kind} group is missing a label.")
+            note(path, f"a {kind} group is missing a label, so it is headed Other")
+            group["label"] = "Other"
         entries = group.get("entries") or []
-        if not entries:
+        kept = [entry for entry in entries if entry.get("term") and entry.get("definition")]
+        if len(kept) < len(entries):
+            note(path, f"a {kind} entry is missing a term or a definition, so it is left "
+                       f"out of the group {group['label']!r}")
+        if not kept:
             note(path, f'the group {group.get("label")!r} has no entries, so it is left out')
             continue
+        group["entries"] = kept
         groups.append(group)
-        for entry in entries:
-            if not entry.get("term") or not entry.get("definition"):
-                fail(path, f"a {kind} entry is missing a term or a definition.")
-        with_python(entries, path)
+        with_python(kept, path)
     return groups
 
 
@@ -5147,6 +5289,55 @@ asyncio.run(main())
 """
 
 
+# A page whose solutions all ran clean last time, with the same cells, the
+# same toolkit, the same data, the same runtime and the same packages, will
+# run clean again, and running them is three quarters of a build. The key is
+# a hash of exactly those things, so there is nothing to invalidate by hand:
+# an edit to a cell, a dataset, tutorial_tools.py or an installed package is
+# a different key and the page runs. Only a clean pass is kept. A failure, or
+# a solution skipped for a package this Python lacks, runs every time, so
+# the cache can hide nothing the build would have said. `--no-cache` turns it
+# off, and CI does for a push to main (DECISIONS_LOG 7.300).
+SOLUTION_CACHE = True
+
+
+def _cache_dir() -> Path:
+    return Path(os.environ.get("DEWLAB_BUILD_CACHE") or ROOT / ".build-cache") / "solutions"
+
+
+@functools.lru_cache(maxsize=None)
+def _tree_fingerprint(root: Path) -> str:
+    """A hash of every file under `root`, by relative path and content."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        digest.update(str(path.relative_to(root)).encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+@functools.lru_cache(maxsize=None)
+def _environment_fingerprint() -> str:
+    """The Python and every installed package, by version."""
+    from importlib import metadata
+    installed = sorted({(d.metadata["Name"] or "").lower(): d.version
+                        for d in metadata.distributions()}.items())
+    return f"{sys.version}\n{installed}"
+
+
+def _solution_key(job: dict) -> str:
+    """What a page's solution check depends on, as one hash. The job's two
+    absolute paths are left out so a checkout elsewhere has the same key."""
+    stable = {name: value for name, value in job.items() if name not in ("assets", "data")}
+    digest = hashlib.sha256()
+    for part in (json.dumps(stable, sort_keys=True), SOLUTION_RUNNER,
+                 (RUNTIME_TOOLS / "tutorial_tools.py").read_text(),
+                 _tree_fingerprint(DATA) if DATA.is_dir() else "",
+                 _environment_fingerprint()):
+        digest.update(part.encode())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
     """Run every solution on the page, with its inputs, before a reader can
     open it (#312).
@@ -5238,6 +5429,9 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         "toolkit": [entry["reference"] for entry in toolkit],
         "cells": cells,
     }
+    marker = _cache_dir() / _solution_key(job) if SOLUTION_CACHE else None
+    if marker is not None and marker.is_file():
+        return
     try:
         done = subprocess.run(
             [sys.executable, "-c", SOLUTION_RUNNER], input=json.dumps(job),
@@ -5249,12 +5443,14 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
     if done.returncode != 0:
         fail(tutorial.path, "the build could not run this page's solutions:\n"
                             + done.stderr.strip()[-2000:])
+    clean = True  # nothing skipped: only then is the result worth keeping
     for entry in json.loads(done.stdout or "[]"):
         result, cell = entry["result"], entry["cell"]
         problem = result.get("solutionError")
         if problem and problem.startswith("ModuleNotFoundError"):
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            clean = False
             continue
         if result.get("missingModule"):
             # A cell above it stopped at an import, so the names it would
@@ -5263,11 +5459,17 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
                   f"{result['missingModule']}", file=sys.stderr)
+            clean = False
             continue
         if problem and problem.startswith("EOFError"):
-            fail(tutorial.path, f"the solution for cell {cell!r} calls input(), and "
-                                "nobody can type in the build — give the cell a ```typed "
-                                f"block with enough lines for it ({problem})")
+            # The solution is not wrong; the build cannot type for it. Nothing
+            # was checked, so nothing is kept (DECISIONS_LOG 7.300).
+            print(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: it calls input() and nobody can type "
+                  "in the build. Give the cell a ```typed block with enough lines to check it",
+                  file=sys.stderr)
+            clean = False
+            continue
         if problem:
             fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
                                 "build ran it after the page's earlier cells")
@@ -5277,6 +5479,11 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                 fail(tutorial.path, f"the input `{row['input']}` for cell {cell!r} gives "
                                     f"{error} with the solution — is it spelled as the "
                                     "page spells it?")
+    if clean and marker is not None:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        temporary = marker.with_suffix(f".{os.getpid()}.{threading.get_ident()}")
+        temporary.write_text(tutorial.slug)
+        temporary.replace(marker)
 
 
 DATASET_FIELDS = ("source", "url", "license", "snapshot", "trimmed", "description")
@@ -5307,30 +5514,36 @@ def dataset_file(name: str) -> Path | None:
 
 
 @functools.lru_cache(maxsize=None)
-def read_dataset(name: str) -> dict:
-    """`data/<name>.yaml`, checked: every field #324 asks of a dataset, a
-    real date for its snapshot, a `recipe:` shape_live() can run, and
-    `live: true` only where there is a recipe to shape the live copy with.
+def read_dataset(name: str) -> dict | None:
+    """`data/<name>.yaml`, checked: a real date for its snapshot, a `recipe:`
+    shape_live() can run, and `live: true` only where there is a recipe to
+    shape the live copy with.
 
-    A dataset nobody can trace defeats the point of bundling one, so a
-    missing or incomplete file fails the build, the same way a
-    `practice_for` naming no real tutorial does. The `snapshot` date is
-    the one the page's numbers come from, and the note under a cell names
-    it, so it has to be a date and not a phrase.
+    Where a dataset came from is for the educator to say, and a file that
+    does not is a note, not a stopped build (DECISIONS_LOG 7.300): a field
+    left blank is listed, and the Reference tab says it was not recorded.
+    The one thing the page cannot do without is the `snapshot` date, which
+    its numbers and the note under a cell come from. A file without a
+    readable one is treated as a data file with no yaml at all, and None
+    comes back. A `recipe:` that cannot run is still refused: it is
+    machinery, and a wrong one would fetch the wrong numbers.
     """
     path = DATA / f"{name}.yaml"
     data = load_yaml_no_duplicate_keys(path.read_text()) or {}
-    missing = [f for f in DATASET_FIELDS if not data.get(f)]
-    if missing:
-        fail(path, f"is missing {', '.join(missing)}")
-    snapshot = data["snapshot"]
+    blank = [f for f in DATASET_FIELDS if f != "snapshot" and not data.get(f)]
+    if blank:
+        note(path, f"does not give its {', '.join(blank)}, so a page that uses it "
+                   "cannot say all of where it came from")
+    snapshot = data.get("snapshot")
     if isinstance(snapshot, str):
         try:
             snapshot = datetime.date.fromisoformat(snapshot)
         except ValueError:
-            fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+            pass
     if not isinstance(snapshot, datetime.date):
-        fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+        note(path, "has no snapshot: date like 2026-09-26, so a page that uses it "
+                   "cannot say when its numbers were saved")
+        return None
     data["snapshot"] = snapshot.isoformat()
     recipe = data.get("recipe")
     if recipe is not None:
@@ -5396,6 +5609,9 @@ def data_index() -> dict[str, dict]:
             index[data_file.name] = {}
             continue
         data = read_dataset(name)
+        if data is None:  # read_dataset() has said why
+            index[data_file.name] = {}
+            continue
         entry = {"snapshot": data["snapshot"]}
         if data.get("live"):
             entry["live"] = data["recipe"]
@@ -5425,10 +5641,17 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict | None:
     if not (DATA / f"{name}.yaml").is_file():
         return None  # data_index() has said so; the Reference tab leaves it out
     data = read_dataset(name)
+    if data is None:
+        return None
     saved = long_date(datetime.date.fromisoformat(data["snapshot"]))
+    # The Reference tab prints these as one sentence, so a field left blank
+    # says so in words instead of leaving a gap in it.
+    unsaid = {"source": "source not recorded", "license": "licence not recorded",
+              "description": "No description recorded"}
     return {
         "name": name,
-        **{f: str(data[f]).strip() for f in ("source", "url", "license", "description")},
+        **{f: str(data.get(f) or "").strip() or unsaid.get(f, "")
+           for f in ("source", "url", "license", "description")},
         "saved": saved,
         "live": data["recipe"]["source"] if data.get("live") else None,
     }
@@ -6384,7 +6607,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{VERSION}}": html.escape(str(tutorial.meta["version"]), quote=True),
         "{{SLUG}}": html.escape(tutorial.slug, quote=True),
         "{{MODULE}}": html.escape(tutorial.course, quote=True),
-        "{{YEAR}}": html.escape(str(tutorial.meta["year"]), quote=True),
+        "{{YEAR}}": html.escape(str(tutorial.meta.get("year") or ""), quote=True),
         "{{SERIES}}": html.escape(tutorial.series, quote=True),
         "{{ASSET_BASE}}": f"{up}assets/",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
@@ -6399,7 +6622,8 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             crumb_trail_html(tutorial, groups, members, up, practice, registry, also,
                              context)
             if groups is not None
-            else html.escape(f"{course_title(tutorial.course) or 'dewlab'} · {tutorial.meta['year']}")
+            else html.escape(" · ".join(filter(None, [course_title(tutorial.course) or "dewlab",
+                                                     str(tutorial.meta.get("year") or "")])))
         ),
         "{{NAV_PREV_NEXT}}": nav,
         "{{PAGE_SCRIPT}}": "",
@@ -7286,10 +7510,14 @@ def course_card_order() -> list[Course]:
     if index.is_file():
         first = (yaml.safe_load(index.read_text()) or {}).get("cards") or []
         if not isinstance(first, list) or not all(isinstance(c, str) for c in first):
-            fail(index, "needs `cards:` as a list of course ids, one per line")
+            note(index, "needs `cards:` as a list of course ids, one per line, so the "
+                        "tiles follow `order:`")
+            first = []
         for name in first:
             if name not in found:
-                fail(index, f"lists {name} under `cards:`, and there is no courses/{name}.yaml")
+                note(index, f"lists {name} under `cards:`, and there is no "
+                            f"courses/{name}.yaml, so it is left out")
+        first = [name for name in dict.fromkeys(first) if name in found]
     return [found[c] for c in first] + [c for name, c in found.items() if name not in first]
 
 
@@ -7430,8 +7658,11 @@ def write_redirects(pages: list[Path]) -> list[Path]:
         if target.resolve() not in current:
             fail(path, f"sends {old} to {new}, and this build wrote no page at {new}")
         if source.resolve() in current:
-            fail(path, f"sends {old} somewhere, but the build writes a page at {old}. "
-                       "Delete the line.")
+            # The page that lives there now is the better answer, and nothing
+            # a bookmark reaches is lost.
+            note(path, f"sends {old} somewhere, but the build writes a page at {old}, so "
+                       "the line is skipped. Delete it")
+            continue
         href = os.path.relpath(target, source.parent).replace(os.sep, "/")
         source.parent.mkdir(parents=True, exist_ok=True)
         source.write_text(REDIRECT_PAGE.format(href=html.escape(href, quote=True)))
@@ -8252,17 +8483,28 @@ def load_all() -> list[Tutorial]:
     Two files claiming one id stop the build here, naming both — the
     filesystem already refuses a second folder with the same name, and
     this catches the other way it can happen, a practice file beside a
-    folder of the same name. A markdown file loose under `tutorials/`,
-    outside any folder, is refused too: it has no id.
+    folder of the same name. So does a main file that is not named for its
+    folder: `tutorials/first-steps/steps.md` would be the tutorial `steps`,
+    and every reader's saved work lives under `first-steps`. A page beside
+    it is named for the folder and goes on (`first-steps-practice.md`).
+    A markdown file loose under `tutorials/`, outside any folder, has no
+    id: it is noted and not built, since it is a scratch file as often as a
+    tutorial that forgot its folder.
     """
-    loose = sorted(TUTORIALS.glob("*.md"))
-    if loose:
-        fail(loose[0], "is not inside a folder. A tutorial is tutorials/<id>/<id>.md.")
+    for loose in sorted(TUTORIALS.glob("*.md")):
+        note(loose, "is not inside a folder, so it is not built. A tutorial is "
+                    "tutorials/<id>/<id>.md")
     everything = [load(p) for p in sorted(TUTORIALS.glob("*/*.md"))]
     claimed: dict[str, Tutorial] = {}
     for tutorial in everything:
         if VERSION_FILE_RE.match(tutorial.path.stem):
             continue
+        folder, stem = tutorial.path.parent.name, tutorial.path.stem
+        if stem != folder and not stem.startswith(f"{folder}-"):
+            fail(tutorial.path, f"is called {stem}.md, so its id would be {stem}. A tutorial's id is "
+                                f"its folder's name, and its main file is {folder}.md (a page "
+                                f"beside it starts {folder}-). Rename the file back, or the "
+                                "folder to match, before anyone has saved work under the id")
         other = claimed.get(tutorial.slug)
         if other is not None:
             fail(tutorial.path, f"has the id {tutorial.slug}, and so does "
@@ -8289,6 +8531,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     read_dataset.cache_clear()
     data_index.cache_clear()
     _origin_anchor.cache_clear()
+    _tree_fingerprint.cache_clear()
+    _relative_href.cache_clear()
+    _GLOSSARIES.clear()
     data_index()
 
     registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
@@ -8494,14 +8739,21 @@ def main() -> int:
         help="skip the downloadable single-file copies, which are the slow part",
     )
     parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="run every page's solutions, even one that ran clean last time with "
+             "nothing changed (.build-cache/ holds what was kept)",
+    )
+    parser.add_argument(
         "--no-source-map",
         action="store_true",
         help="leave out the markdown range each block of a page carries (what "
              "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
-    global SOURCE_MAP
+    global SOURCE_MAP, SOLUTION_CACHE
     SOURCE_MAP = not args.no_source_map
+    SOLUTION_CACHE = not args.no_cache
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:

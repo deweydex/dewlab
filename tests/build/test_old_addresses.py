@@ -34,12 +34,15 @@ def test_a_line_pointing_at_nothing_stops_the_build(repo):
         b.build()
 
 
-def test_a_line_sitting_on_a_real_page_stops_the_build(repo):
+def test_a_line_sitting_on_a_real_page_is_skipped_and_the_real_page_stays(repo, capsys):
+    # The page that lives there now is the better answer, and a bookmark
+    # still reaches something (DECISIONS_LOG 7.300).
     write(repo, "Prose.\n")
     write(repo, "Other.\n", slug="other")
     redirects(repo, "tutorials/other.html: tutorials/sample.html\n")
-    with pytest.raises(b.BuildError, match="the build writes a page at tutorials/other.html"):
-        b.build()
+    b.build()
+    assert "the build writes a page at tutorials/other.html, so the line is skipped" in capsys.readouterr().err
+    assert "This page has moved" not in (repo / "site" / "tutorials" / "other.html").read_text()
 
 
 def test_no_redirects_file_writes_no_stubs(repo):

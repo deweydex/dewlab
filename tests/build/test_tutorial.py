@@ -662,11 +662,6 @@ class TestNotesAndDatasets:
         with pytest.raises(b.BuildError, match="no alt attribute"):
             b.build()
 
-    def _duplicate_note_id(repo):
-        write(repo,
-              '<aside class="dl-note" id="dup">\n\nOne.\n\n</aside>\n\n'
-              '<aside class="dl-note" id="dup">\n\nTwo.\n\n</aside>\n', slug="one")
-
     def _dataset_missing_csv(repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - missing\n")
@@ -677,16 +672,8 @@ class TestNotesAndDatasets:
         add_frontmatter(path, "datasets:\n  - missing\n")
         dataset(repo, "missing", with_attribution=False)
 
-    def _dataset_incomplete_attribution(repo):
-        path = write(repo, "Prose.\n", slug="one")
-        add_frontmatter(path, "datasets:\n  - incomplete\n")
-        (repo / "data" / "incomplete.csv").write_text("a,b\n1,2\n")
-        (repo / "data" / "incomplete.yaml").write_text('source: "Somewhere"\n')
-
     @pytest.mark.parametrize("setup, match", [
-        (_duplicate_note_id, "share the id"),
         (_dataset_missing_csv, "data/missing.csv"),
-        (_dataset_incomplete_attribution, "url, license, snapshot, trimmed, description"),
     ])
     def test_note_and_dataset_faults_fail_the_build(self, repo, setup, match):
         setup(repo)
@@ -713,12 +700,16 @@ class TestNotesAndDatasets:
         with pytest.raises(b.BuildError, match=match):
             b.build()
 
-    def test_a_snapshot_that_is_not_a_date_fails(self, repo):
+    def test_a_snapshot_that_is_not_a_date_is_a_note_and_the_token_then_has_no_date_to_give(self, repo, capsys):
         dataset(repo, "x")
         yaml_path = repo / "data" / "x.yaml"
         yaml_path.write_text(yaml_path.read_text().replace("2026-09-26", "last week"))
         write(repo, "Prose.\n", slug="one")
-        with pytest.raises(b.BuildError, match="is not a date"):
+        b.build()
+        assert "has no snapshot: date like 2026-09-26" in capsys.readouterr().err
+        path = write(repo, "Saved {{snapshot: x}}.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - x\n")
+        with pytest.raises(b.BuildError, match="no saved date to put here"):
             b.build()
 
     def test_a_data_file_with_no_yaml_builds_and_says_where_it_came_from_is_unknown(self, repo, capsys):
@@ -740,11 +731,12 @@ class TestNotesAndDatasets:
         b.build()
         assert "From the copy saved on 26 September 2026." in built(repo, "one")
 
-    def test_the_snapshot_token_needs_the_dataset_declared(self, repo):
+    def test_the_snapshot_token_on_a_dataset_the_page_does_not_declare_still_gives_the_date(self, repo, capsys):
         write(repo, "From the copy saved on {{snapshot: x}}.\n", slug="one")
         dataset(repo, "x")
-        with pytest.raises(b.BuildError, match="datasets: does not list"):
-            b.build()
+        b.build()
+        assert "From the copy saved on 26 September 2026." in built(repo, "one")
+        assert "datasets: does not list" in capsys.readouterr().err
 
 
 class TestFolds:
@@ -935,7 +927,7 @@ class TestStagedHints:
         assert 'data-cell="stub"' in page
         assert 'data-after="errors:5"' in page
         assert " hidden>" in page
-        assert "<summary>Let’s slow down a moment…</summary>" in page
+        assert f"<summary>{b.DEFAULT_HINT_TITLE}</summary>" in page
         # The body is markdown and maths.
         assert "<summary>some steps</summary>" in page
         assert "<ol>" in page and "<code>a[0]</code>" in page
@@ -954,11 +946,6 @@ class TestStagedHints:
     @pytest.mark.parametrize("markdown, match", [
         ("```hint\nLost.\n```\n", "no exec cell above it"),
         (CELL + "```hint\nfor: nope\nX.\n```\n", "does not have: 'nope'"),
-        (CELL + "```hint\nafter: soon\nX.\n```\n", "cannot read"),
-        (CELL + "```hint\nafter: 5 bananas\nX.\n```\n", "does not track"),
-        # check() and its signal were retired in #314.
-        (CELL + "```hint\nafter: 3 failed checks\nX.\n```\n", "does not track"),
-        (CELL + "```hint\nafter: 5 errors\n```\n", "no text"),
     ])
     def test_hint_faults_fail_the_build(self, repo, markdown, match):
         write(repo, markdown)

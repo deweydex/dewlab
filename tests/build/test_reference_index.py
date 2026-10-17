@@ -172,11 +172,17 @@ class TestTheReference:
         entry = by_term["gamma"]
         assert entry["origin"]["href"] == "one.html#where-it-is-taught"
 
-    def test_a_glossary_entry_of_an_unknown_kind_fails_the_build(self, repo):
+    def test_a_glossary_entry_of_an_unknown_kind_is_left_out_with_a_note(self, repo, capsys):
+        # Its kind decides which group of the reference it sits in, and a
+        # guess at "concept" could put a function where a reader looks for an
+        # idea, so it is left out and said (DECISIONS_LOG 7.300).
         write(repo, "One.\n", slug="one")
-        glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."}])
-        with pytest.raises(b.BuildError, match="not one of"):
-            b.build()
+        glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."},
+                               {"term": "y", "kind": "concept", "definition": "Kept."}])
+        b.build()
+        assert "not one of concept" in capsys.readouterr().err
+        entries = manifest(built(repo, "one"))["glossary"]
+        assert [entry["term"] for entry in entries] == ["y"]
 
     def test_a_glossary_entry_with_no_definition_is_left_out_with_a_note(self, repo, capsys):
         # The reference would show "undefined" for it, and an entry with no
@@ -196,7 +202,7 @@ class TestMathBasics:
     using the `repo` fixture's tutorial layout. The scenarios: a well-formed
     maths file and a well-formed Python file, loaded and both reaching a
     built page's manifest; and the files this repo ships, maths and Python
-    both. The three malformed shapes that stop the build are shared with
+    both. The three malformed shapes that are left out with a note are shared with
     Python Basics and live in TestBasicsValidation below. A missing file is
     covered by TestTheReference's lone tutorial with nothing."""
 
@@ -283,8 +289,8 @@ groups:
     ("PYTHON_BASICS_DATA", "python-basics.yaml", "load_python_basics"),
 ])
 class TestBasicsValidation:
-    """The three malformed shapes _load_basics() rejects, shared by Math
-    Basics and Python Basics alike, so each is checked once here against
+    """The three malformed shapes _load_basics() leaves out and says so,
+    shared by Math Basics and Python Basics alike, so each is checked once here against
     both files rather than twice in TestMathBasics and TestPythonBasics."""
 
     def _write(self, repo: Path, monkeypatch, attr: str, filename: str, text: str) -> Path:
@@ -294,16 +300,17 @@ class TestBasicsValidation:
         monkeypatch.setattr(b, attr, path)
         return path
 
-    def test_a_group_with_no_label_fails_the_build(
-            self, repo, monkeypatch, attr, filename, loader):
+    def test_a_group_with_no_label_is_headed_other_with_a_note(
+            self, repo, monkeypatch, attr, filename, loader, capsys):
         self._write(repo, monkeypatch, attr, filename, """
 groups:
   - entries:
       - term: Sum
         definition: Adding.
 """)
-        with pytest.raises(b.BuildError, match="label"):
-            getattr(b, loader)()
+        groups = getattr(b, loader)()
+        assert [g["label"] for g in groups] == ["Other"]
+        assert "missing a label, so it is headed Other" in capsys.readouterr().err
 
     def test_a_group_with_no_entries_is_left_out_with_a_note(
             self, repo, monkeypatch, attr, filename, loader, capsys):
@@ -314,16 +321,19 @@ groups:
         assert [g["label"] for g in groups] == ["Words"]
         assert "'Operations' has no entries, so it is left out" in capsys.readouterr().err
 
-    def test_an_entry_missing_a_definition_fails_the_build(
-            self, repo, monkeypatch, attr, filename, loader):
+    def test_an_entry_missing_a_definition_is_left_out_with_a_note(
+            self, repo, monkeypatch, attr, filename, loader, capsys):
         self._write(repo, monkeypatch, attr, filename, """
 groups:
   - label: Operations
     entries:
       - term: Sum
+      - term: Product
+        definition: Multiplying.
 """)
-        with pytest.raises(b.BuildError, match="term or a definition"):
-            getattr(b, loader)()
+        groups = getattr(b, loader)()
+        assert [entry["term"] for entry in groups[0]["entries"]] == ["Product"]
+        assert "missing a term or a definition" in capsys.readouterr().err
 
 
 class TestTheCrossTutorialReference:

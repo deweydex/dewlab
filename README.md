@@ -142,7 +142,8 @@ committed; it is regenerated on every push.
 
 Downloadable copies are the slow part of a build, so
 `python3 build.py --no-standalone` skips them while you are working on
-content. Run the tests with `python3 -m pytest`.
+content, and a page whose solutions ran clean last time is not run again
+(`--no-cache` runs everything). Run the tests with `python3 -m pytest`.
 
 ---
 

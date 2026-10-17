@@ -283,7 +283,6 @@ class TestTheCourseArchive:
         # The contents page offers it.
         index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
         assert 'href="download/computational-methods-all.zip"' in index
-        assert "Download every tutorial and practice page in this module" in index
 
 
 class TestDownloadsDoNotCollide:

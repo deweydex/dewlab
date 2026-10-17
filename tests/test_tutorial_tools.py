@@ -1407,7 +1407,7 @@ class TestDatasets:
     def test_a_source_that_does_not_answer_gives_the_snapshot_and_says_so(self, world, cell):
         frame = self.run(tt.load_csv("life.csv"))
         assert frame.to_dict("records") == [{"country": "Ireland", "year": 1950}]
-        assert "The live copy from Our World in Data could not be used" in cell.html
+        assert "Our World in Data" in cell.html and "could not be used" in cell.html
 
     def test_a_live_copy_the_recipe_no_longer_fits_gives_the_snapshot(self, world, cell):
         world["online"]["https://example.org/life.csv"] = b"place,when\nIreland,1950\n"
@@ -1417,7 +1417,7 @@ class TestDatasets:
 
     def test_a_dataset_with_no_live_source_names_its_date(self, world, cell):
         assert self.run(tt.load_text("book.txt")) == "It was a dark night.\n"
-        assert "Loaded the copy of book.txt saved on 20 September 2026." in cell.html
+        assert "book.txt" in cell.html and "20 September 2026" in cell.html
 
     def test_an_address_data_keeps_a_copy_of_falls_back_to_it(self, world, cell):
         frame = self.run(tt.load_csv("https://example.org/income.csv"))

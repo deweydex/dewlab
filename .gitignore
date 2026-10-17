@@ -40,3 +40,6 @@ __pycache__/
 # every other file in the repository.
 /.design/*/*.html
 !/.design/*/*.dc.html
+
+# What the build keeps between runs (build.py --no-cache skips it).
+/.build-cache/

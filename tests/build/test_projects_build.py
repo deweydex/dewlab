@@ -66,10 +66,39 @@ class TestRendering:
         assert tutorial.project_cells == {"sums": ["sums-1"], "squares": ["squares-1"], "own": []}
 
 
+class TestAProjectStillBeingDrafted:
+    """A project with a line missing builds, with a note, and its card goes
+    without what is missing (DECISIONS_LOG 7.300)."""
+
+    def test_a_project_with_only_a_title_has_a_card_with_only_a_title(self, repo, capsys):
+        page(repo, "# A page\n\n" + ALL, "projects:\n  sums:\n    title: Sums\n  squares:\n"
+             + fields("Squares") + "  own:\n" + fields("Your own", own="true"))
+        b.build()
+        err = capsys.readouterr().err
+        assert "project 'sums' in `projects:` has no `question:`, so its card goes without the question line" in err
+        assert "has no `make:`" in err
+        html = built(repo)
+        card = html[html.index('href="#project-sums"'):html.index("</a>", html.index('href="#project-sums"'))]
+        assert "dl-project-title" in card and "dl-project-question" not in card
+        assert "dl-project-make" not in card
+
+    def test_a_project_with_no_title_is_called_after_its_id(self, repo, capsys):
+        page(repo, "# A page\n\n" + ALL, "projects:\n  sums:\n    question: Why?\n    make: a sum\n  squares:\n"
+             + fields("Squares") + "  own:\n" + fields("Your own", own="true"))
+        b.build()
+        assert "called after its id" in capsys.readouterr().err
+        assert ">Sums</span>" in built(repo)
+
+    def test_projects_given_as_a_list_of_ids_are_cards_to_fill_in(self, repo, capsys):
+        page(repo, "# A page\n\n" + ALL, "projects: [sums, squares, own]\n")
+        b.build()
+        assert "`projects:` is a list of ids" in capsys.readouterr().err
+        assert built(repo).count('class="dl-project-card') == 3
+
+
 class TestRefusals:
     @pytest.mark.parametrize("body, projects, match", [
         (ALL, "projects:\n  Big One:\n" + fields("Big"), "not an id like"),
-        (ALL, "projects:\n  sums:\n    title: Sums\n", "has no `question:`"),
         (project("sums") + project("squares"), PROJECTS, "own with no project div"),
         (ALL + project("extra"), PROJECTS, "'extra', which is not in"),
         ('<div class="dl-project" data-project="sums">\n\n## Sums\n\n' + project("squares")

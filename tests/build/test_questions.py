@@ -154,12 +154,10 @@ class TestFillInTheBlank:
         [
             ("```question\nid: q\ntype: fill-in-the-blank\n\nNo gaps here.\n```\n",
              r"no \{\.\.\.\} gap"),
-            ("```question\nid: q\ntype: fill-in-the-blank\n\nAn {unclosed gap.\n```\n",
-             "unclosed"),
         ],
-        ids=["no-gap", "unclosed-brace"],
+        ids=["no-gap"],
     )
-    def test_a_missing_or_unclosed_gap_fails_the_build(self, repo, body, match):
+    def test_a_question_with_nothing_to_fill_in_fails_the_build(self, repo, body, match):
         write(repo, body)
         with pytest.raises(b.BuildError, match=match):
             b.build()

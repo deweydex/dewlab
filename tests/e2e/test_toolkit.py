@@ -322,4 +322,8 @@ def test_a_long_toolkit_marks_what_came_from_the_reference(tab, site_url):
 
 def test_a_short_toolkit_has_no_list(tab, site_url):
     _open_second(tab, site_url)
+    # The toolkit line is there and so is its list, and the list is closed:
+    # is_hidden() alone is also true of an element that was never made.
+    assert _line(tab)
+    assert tab.locator(".dl-toolkit-list").count() == 1
     assert tab.locator(".dl-toolkit-list").is_hidden()

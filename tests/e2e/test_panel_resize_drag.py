@@ -150,12 +150,17 @@ class TestTheRightDock:
     def test_the_other_two_panels_share_the_width_mid_drag(self, page):
         page.click("#dl-settings-toggle")
         page.wait_for_selector("#dl-settings:not([hidden])")
+        before = page.eval_on_selector("#dl-settings", "el => el.getBoundingClientRect().width")
         _drag_without_releasing(page, _handle("dl-settings"), -120)
         settings_style = page.eval_on_selector("#dl-settings", "el => el.style.width")
         notes_style = page.eval_on_selector("#dl-yourwork", "el => el.style.width")
         python_style = page.eval_on_selector("#dl-python", "el => el.style.width")
         page.mouse.up()
 
+        # Three empty strings are equal too, so the drag has to have set a
+        # width, and a wider one than the panel started with.
+        assert settings_style.endswith("px"), settings_style
+        assert float(settings_style[:-2]) > before + 50
         assert notes_style == settings_style
         assert python_style == settings_style
 

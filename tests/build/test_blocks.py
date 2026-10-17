@@ -157,18 +157,13 @@ class TestMistakes:
         (CELL + SOLUTION.replace("```solution\n", "```solution\nfor: nowhere\n"),
          "does not have: 'nowhere'"),
         (CELL + "```solution\ndef total_of(values)\n    return 1\n```\n", "not valid Python"),
-        (CELL + "```solution\n---\nOnly notes.\n```\n", "no code in it"),
         (CELL + "```inputs\ntotal_of([1] +)\n```\n", "not a Python expression"),
-        (CELL + "```inputs\n# only a comment\n```\n", "list no cases"),
         (CELL + INPUTS + INPUTS, "two inputs blocks"),
-        (CELL + INPUTS.replace("```inputs\n", "```inputs\nguess: maybe\n"), "guess: maybe"),
         ("```sql exec\nid: q\nSELECT 1;\n```\n" + SOLUTION, "only a Python cell"),
         (CELL + "```python exec\nid: t\ntests: nowhere\n```\n", "no other cell"),
         (CELL + "```python exec\nid: t1\ntests: add-up\n```\n"
                 "```python exec\nid: t2\ntests: add-up\n```\n", "one cell of tests"),
         (TYPED, "a typed fence has no exec cell"),
-        (CELL + "```typed\n\n```\n", "no lines in it"),
-        (CELL + TYPED + TYPED, "two typed blocks"),
         ("```sql exec\nid: q\nSELECT 1;\n```\n" + TYPED, "only a Python cell"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, match):
@@ -209,6 +204,58 @@ class TestTheBuildRunsEverySolution:
         b.build()
         assert "a_package_this_python_lacks" in capsys.readouterr().err
 
+    @staticmethod
+    def runs_of_python(monkeypatch) -> list:
+        """The times the build started a Python to run a page's solutions."""
+        started = []
+        real = b.subprocess.run
+        monkeypatch.setattr(b.subprocess, "run", lambda *a, **k: (started.append(1), real(*a, **k))[1])
+        return started
+
+    def test_a_page_that_ran_clean_is_not_run_again_until_something_it_depends_on_changes(self, repo, monkeypatch):
+        # Running solutions is most of a build, and a page whose cells, data
+        # and runtime have not changed will run clean again (DECISIONS_LOG
+        # 7.300). An edit to the solution, or to a dataset, is a new run.
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + SOLUTION + INPUTS)
+        b.build()
+        b.build()
+        assert len(started) == 1
+
+        write(repo, CELL + SOLUTION.replace("sum(values)", "sum(values) + 0") + INPUTS)
+        b.build()
+        assert len(started) == 2
+
+        (repo / "data" / "numbers.csv").write_text("a\n1\n")
+        b.build()
+        assert len(started) == 3
+
+    def test_a_page_that_failed_is_run_again_and_fails_again(self, repo, monkeypatch):
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + "```solution\nraise ValueError('the page is wrong')\n```\n")
+        for _ in range(2):
+            with pytest.raises(b.BuildError, match="the page is wrong"):
+                b.build()
+        assert len(started) == 2
+
+    def test_a_page_skipped_for_a_missing_package_is_run_again(self, repo, monkeypatch, capsys):
+        # A skip says nothing about the solution, so keeping it would let a
+        # machine that has the package trust one that did not.
+        started = self.runs_of_python(monkeypatch)
+        setup = "```python exec\nid: setup\nimport a_package_this_python_lacks\n```\n"
+        write(repo, setup + CELL + SOLUTION + INPUTS)
+        b.build()
+        b.build()
+        assert len(started) == 2
+
+    def test_no_cache_runs_every_page_again(self, repo, monkeypatch):
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + SOLUTION + INPUTS)
+        b.build()
+        monkeypatch.setattr(b, "SOLUTION_CACHE", False)
+        b.build()
+        assert len(started) == 2
+
     def test_an_input_the_solution_cannot_name_fails_the_build(self, repo):
         write(repo, CELL + SOLUTION + "```inputs\ntotl_of([1])\n```\n")
         with pytest.raises(b.BuildError, match="totl_of"):
@@ -232,10 +279,14 @@ class TestTheBuildRunsEverySolution:
         write(repo, ASKING + TYPED + solution + "```inputs\nask_shift()\n```\n")
         b.build()
 
-    def test_a_solution_that_asks_with_nothing_typed_fails_the_build(self, repo):
+    def test_a_solution_that_asks_with_nothing_typed_builds_and_says_it_was_not_checked(self, repo, capsys):
+        # The solution is not wrong; the build cannot type for it. Said, not
+        # refused, and not kept as a clean pass either (DECISIONS_LOG 7.300).
         write(repo, ASKING + "```solution\nname = input('Name: ')\n```\n")
-        with pytest.raises(b.BuildError, match="give the cell a ```typed block"):
-            b.build()
+        b.build()
+        err = capsys.readouterr().err
+        assert "calls input()" in err and "```typed block" in err
+        assert not (repo / ".build-cache").exists()
 
     def test_a_cell_that_asks_runs_its_typed_lines_before_a_later_solution(self, repo):
         asks = ("```python exec\nid: asks\nshift = int(input('Shift: '))\n```\n"

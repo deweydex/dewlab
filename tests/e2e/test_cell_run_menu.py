@@ -238,7 +238,9 @@ class TestRestartAndRunAll:
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
         run_cell(page, "numpy-basics")
-        assert "True" in output_text(page, "numpy-basics")
+        # The cell prints its own line first; ours is the last, and it is the
+        # value itself, not an error that happens to mention the word.
+        assert output_text(page, "numpy-basics").strip().splitlines()[-1] == "True"
 
 
 class TestRestartPython:
@@ -282,4 +284,6 @@ class TestRestartPython:
         page.keyboard.press("Control+End")
         page.keyboard.insert_text("\nprint(only_the_old_interpreter_has_this)")
         run_cell(page, "numpy-basics")
-        assert "True" in output_text(page, "numpy-basics")
+        # The cell prints its own line first; ours is the last, and it is the
+        # value itself, not an error that happens to mention the word.
+        assert output_text(page, "numpy-basics").strip().splitlines()[-1] == "True"

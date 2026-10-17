@@ -156,6 +156,10 @@ tutorials/working-with-tables/
 The tutorial itself is `<id>.md`, and it opens with frontmatter, then
 ordinary prose and code. Nothing in the file says which course or series
 it is in — that is written in `courses/`, described in the next section.
+The file is named for its folder, and a page beside it starts with the
+folder's name (`working-with-tables-practice.md`): the folder's name is the
+id, and every reader's saved work lives under it, so the build stops on a main
+file called anything else, rather than quietly give the tutorial a new id.
 
 Only the first of those is required. A tutorial with no practice page, no
 glossary, one release and no pictures is a folder with a single file in it,
@@ -172,8 +176,8 @@ version: 2026.08.24.1
 
 | Field | What it does |
 |---|---|
-| `title` | Shown in the browser tab and at the top of the page. |
-| `year` | An academic year like `2026-2027`, since the programme is scoped a year at a time. |
+| `title` | Shown in the browser tab and at the top of the page. Left off, the page is called after its folder and the build says so. |
+| `year` | Optional. An academic year like `2026-2027`, if you want one on the page. |
 | `version` | A dated version like `2026.08.24.1`. Bump it when you change the code in a cell, so a student's saved progress knows the page moved on. Prose fixes do not need it. See [Releasing a new version](#releasing-a-new-version) for when a bump needs a full versioned release instead. |
 | `status` | Optional, `live` by default. See the table below. |
 
@@ -331,7 +335,8 @@ own:
 
   Join several with a comma or `and`: `3 identical errors and 2 minutes`.
   Every term must hold. The `errors:5` spelling works too, if you prefer
-  it. The build fails on a term it does not know.
+  it. A term the build does not know, or a line it cannot read, gives the
+  hint the default trigger instead and says so.
 - `title:` is the fold's summary line. The default is *Let's slow down a
   moment…*.
 
@@ -1183,8 +1188,10 @@ way: they teach loading from an address, and they still work offline.
 Two files: `data/<name>.csv` (or `.txt`) and `data/<name>.yaml`. A data
 file with no yaml still loads, and the build notes that nothing says where
 it came from; `{{snapshot: name}}` is the one thing it refuses, since there
-is no date to print. A yaml that is there needs every one of these, or the
-build fails:
+is no date to print. A yaml that is there should give all of these. A blank
+one is listed in a note and the Reference tab says it was not recorded; only
+`snapshot` is needed, because the page's numbers and the line under a cell come
+from it, and a yaml without a date is treated like a data file with no yaml:
 
 | Field | What it says |
 |---|---|
@@ -1519,9 +1526,10 @@ covers:
 ```
 
 `covers:` under a code means the outcome is taught there. `touches:` means the
-section uses the idea without teaching it as its own outcome. The build fails if
-a section named here is not a real heading in the tutorial, so this list cannot
-drift from the page it describes.
+section uses the idea without teaching it as its own outcome. A section named
+here that is no longer a heading in the tutorial is noted and left out, so a
+teacher who cuts a section is not stopped; the note names the sections the
+page has, so the claim can move to the one that teaches it.
 
 The outcomes live in `planning/curriculum/outcomes.yaml`, one entry per learning
 outcome, transcribed from the QQI descriptors under
@@ -1714,8 +1722,8 @@ fourth page is one file plus one line in `SITE_PAGES` in `build.py`.
 
 Every page is optional. Delete `pages/about.md` and the site has no About
 page, with nothing left linking to it. Delete `pages/home.md` and the front
-page is the search box and the course cards. A page that exists but has no
-`title:` still stops the build.
+page is the search box and the course cards. A page with no `title:`, or no
+frontmatter at all, is called after its file name and the build says so.
 
 ---
 
