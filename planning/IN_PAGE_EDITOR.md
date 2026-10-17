@@ -447,6 +447,9 @@ Each step is a pull request that stands alone.
      other blocks follow in step 4.
    `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
    changes what they describe.
+   - **4a. Code cells. Done** (DECISIONS_LOG 7.302). Josh chose the order:
+     cells, then folds, then tables. A cell edits in a code editor with its id
+     fixed; its hint and solution fences edit as boxes beside it.
 4. **The other blocks,** as source-text boxes first, in the order of the
    counts above: `<details>` folds and solutions, then hints, predict and
    inputs, then questions and world variants, then notes. Rich forms for any

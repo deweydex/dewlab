@@ -5952,3 +5952,21 @@ The notebook's doc tooltips opened above the name whenever the pointer paused on
 Not done: placing a tooltip beside the code. CodeMirror positions a tooltip above or below its anchor only; to the side needs positioning of our own, and there is no side on a phone. The signature hint that appears above the line while typing a call is unchanged, and the notebook has no switch for it. Right-click has no keyboard equivalent yet, as hover had none.
 
 *Cost to change: delete `pythonDocOnRightClick()` and its line in `assistsFor()`, remove `NOTEBOOK_ASSISTS`, rebuild `assets/vendor/`.*
+
+**7.302 — "Edit this page": a code cell edits in a code editor, with its id fixed.** Josh, 17 October 2026, ordering the remaining blocks: "Let's start with the code cells. Then fold, then tables."
+
+A `python exec` or `sql exec` cell, with the hint, solution and similar fences written after it, opens as a panel in the cell's place: the code and any further header lines (`hint:`, `expect:`) in the same CodeMirror editor the notebook uses, and each following fence as a text box. `assets/inpage-cell.js` does the cutting and rebuilding.
+
+Choices somebody could have made differently.
+
+- **The id is shown and cannot be edited.** A cell id is the key saved work lives under (CLAUDE.md, "Two traps"). The block cannot be left while the code's header carries a typed `id:`; the message says to edit the file on GitHub for a rename. The alternative was to let it through with a warning, as the old editor does; here the cost of one slip is a class's saved work, and a rename is rare.
+- **The cell's other header lines stay editable as text,** not as form fields. They are few (`hint`, `expect`, `name`, `toolkit`, `tests`) and the build already reports a bad one.
+- **Running and resetting do nothing while editing.** A click on a cell opens its editor and is swallowed, so a teacher who clicks Run does not start Python on a page whose code they are changing.
+- **Other fences stay locked** (questions, site editors, apps, `typed`, `predict` as their own blocks); only fences attached to a cell are editable, as they are one block in the source map.
+- **An edited block opens again when clicked.** Before, an edited block's editor stood in the original's place and ignored clicks; now the editor stands for its block.
+
+Checked against all 2,526 cells in the repository: each parses, and rebuilds byte-identically from its own parts.
+
+Not done: folds and tables (next, in that order), questions and site editors, a form for a hint's `for:` line, and a real phone.
+
+*Cost to change: `classify()` back to sending a cell to `locked`, delete `assets/inpage-cell.js`, `openCell()` and the `code` entry in `manifest.edit`.*

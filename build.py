@@ -6579,6 +6579,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
             "sha": hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest(),
             "title": tutorial.title,
             "editor": versioned(f"{up}assets/", "vendor/milkdown.bundle.js"),
+            "code": versioned(f"{up}assets/", "vendor/codemirror.bundle.js"),
             "module": versioned(f"{up}assets/", "inpage-edit.js"),
         }
     versions = version_manifest(tutorial, family or [tutorial])
