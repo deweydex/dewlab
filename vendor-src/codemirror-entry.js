@@ -125,32 +125,116 @@ function jediCompletionSource(getJediCompletions) {
  * Settings panel says otherwise. CodeMirror's own default. */
 const DEFAULT_HOVER_DELAY_MS = 300;
 
+/* The name under `pos` and the doc Jedi has for it, or null. Both ways of
+ * asking for a doc — resting the pointer on a name and right-clicking one —
+ * read it here. */
+function wordAt(state, pos) {
+  const { from, text, number } = state.doc.lineAt(pos);
+  const rel = pos - from;
+  let start = rel;
+  let end = rel;
+  while (start > 0 && /\w/.test(text[start - 1])) start--;
+  while (end < text.length && /\w/.test(text[end])) end++;
+  if (start === end) return null;
+  return { word: text.slice(start, end), from: from + start, to: from + end, number, column: start };
+}
+
+async function docAt(view, getDoc, pos) {
+  const found = wordAt(view.state, pos);
+  if (!found) return null;
+  const doc = await getDoc(found.word, view.state.doc.toString(), found.number, found.column);
+  return { ...found, doc: doc || null };
+}
+
+function docTooltipDom(text) {
+  const dom = document.createElement("div");
+  dom.className = "cm-dewlab-doc-tooltip";
+  dom.textContent = text;
+  return { dom };
+}
+
 function pythonDocTooltip(getDoc, hoverDelay = DEFAULT_HOVER_DELAY_MS) {
   if (!getDoc) return [];
   return hoverTooltip(async (view, pos) => {
-    const { from, text, number } = view.state.doc.lineAt(pos);
-    const rel = pos - from;
-    let start = rel;
-    let end = rel;
-    while (start > 0 && /\w/.test(text[start - 1])) start--;
-    while (end < text.length && /\w/.test(text[end])) end++;
-    if (start === end) return null;
-    const word = text.slice(start, end);
-    const doc = await getDoc(word, view.state.doc.toString(), number, start);
-    if (!doc) return null;
-    
+    const found = await docAt(view, getDoc, pos);
+    if (!found || !found.doc) return null;
     return {
-      pos: from + start,
-      end: from + end,
+      pos: found.from,
+      end: found.to,
       above: true,
-      create() {
-        const dom = document.createElement("div");
-        dom.className = "cm-dewlab-doc-tooltip";
-        dom.textContent = doc;
-        return { dom };
-      },
+      create: () => docTooltipDom(found.doc),
     };
   }, { hoverTime: hoverDelay }).extension;
+}
+
+const setDocTooltip = StateEffect.define();
+
+const docTooltipField = StateField.define({
+  create: () => null,
+  update(value, tr) {
+    for (const effect of tr.effects) {
+      if (effect.is(setDocTooltip)) value = effect.value;
+    }
+    if (value && (tr.docChanged || tr.selection)) value = null;
+    return value;
+  },
+  provide: (field) => showTooltip.from(field),
+});
+
+/* The doc for the name under a right-click, for a reader who has switched
+ * the pointer-resting kind off (or never wanted it: it opens over whatever
+ * code sits above the name, whenever the pointer happens to pause). Asked
+ * for, it opens beneath the name and stays until the reader types, moves
+ * the cursor, clicks elsewhere or presses Escape. Over a selection, or off
+ * a name, the browser's own menu is left alone: copy and paste live there.
+ * A name Jedi knows nothing about says so, rather than the click doing
+ * nothing at all. */
+function pythonDocOnRightClick(getDoc) {
+  if (!getDoc) return [];
+  const close = (view) => {
+    if (view.state.field(docTooltipField, false)) view.dispatch({ effects: setDocTooltip.of(null) });
+  };
+  return [
+    docTooltipField,
+    EditorView.domEventHandlers({
+      contextmenu(event, view) {
+        const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+        if (pos == null) return false;
+        const selection = view.state.selection.main;
+        if (!selection.empty && pos >= selection.from && pos <= selection.to) return false;
+        if (!wordAt(view.state, pos)) return false;
+        event.preventDefault();
+        docAt(view, getDoc, pos).then((found) => {
+          if (!found) return;
+          const text = found.doc
+            || `No help found for “${found.word}”. Run the cell that defines it, then try again.`;
+          view.dispatch({
+            effects: setDocTooltip.of({
+              pos: found.from,
+              end: found.to,
+              above: false,
+              create() {
+                const made = docTooltipDom(text);
+                // A click inside it (the scrollbar of a long one) must not
+                // pull focus out of the editor, which would close it.
+                made.dom.addEventListener("mousedown", (e) => e.preventDefault());
+                return made;
+              },
+            }),
+          });
+        });
+        return true;
+      },
+      keydown(event, view) {
+        if (event.key === "Escape") close(view);
+        return false;
+      },
+      blur(event, view) {
+        close(view);
+        return false;
+      },
+    }),
+  ];
 }
 
 const setSignatureTooltip = StateEffect.define();
@@ -332,8 +416,10 @@ function assistsFor({ isPython, completeNames, getJediCompletions, getDoc, getSi
       : isPython ? pythonCompletion(completeNames, getJediCompletions) : autocompletion(),
     closeBrackets: assists.closeBrackets
       ? [closeBrackets(), keymap.of(closeBracketsKeymap)] : [],
-    hover: isPython && assists.hoverDelay > 0
-      ? pythonDocTooltip(getDoc, assists.hoverDelay) : [],
+    hover: !isPython ? [] : [
+      pythonDocOnRightClick(getDoc),
+      assists.hoverDelay > 0 ? pythonDocTooltip(getDoc, assists.hoverDelay) : [],
+    ],
     signature: isPython && assists.signatureHelp ? pythonSignatureHelp(getSignature) : [],
   });
 }
