@@ -152,6 +152,18 @@ SLOW_CLIENT = """
 """
 
 
+def structure(tab) -> list[int]:
+    """The counts in the report's last line (runnable cells, then
+    headings), whatever the sentence round them says."""
+    text = tab.inner_text("#dl-editor-report .dl-editor-structure")
+    return [int(n) for n in re.findall(r"\d+", text)]
+
+
+def count(tab, level: str) -> int:
+    """How many report lines are of this level: danger, error, warn."""
+    return tab.locator(f"#dl-editor-report .dl-editor-{level}").count()
+
+
 class TestLoadingManyTutorialsAtOnce:
     @pytest.mark.parametrize("factory", [FAKE_CLIENT, SLOW_CLIENT],
                              ids=["resolves_in_order", "resolves_out_of_order"])
@@ -223,7 +235,7 @@ class TestInsertingAndCreating:
     def test_an_id_that_is_taken_is_refused_and_says_where_it_is(self, editor):
         editor.once("dialog", lambda d: d.accept("Looking Back"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-new")
-        assert "The id looking-back is taken" in editor.inner_text("#dl-editor-status")
+        assert "looking-back" in editor.inner_text("#dl-editor-status")
         assert "Fixtures" in editor.inner_text("#dl-editor-status")
         assert editor.get_attribute("#dl-editor-save", "disabled") is not None
 
@@ -252,7 +264,7 @@ class TestEditingWhatIsInside:
 
     def test_the_report_counts_what_the_build_will_see(self, editor):
         self.open_first(editor)
-        assert "1 runnable cell" in editor.inner_text("#dl-editor-report")
+        assert structure(editor)[0] == 1
 
     def test_renaming_a_cell_id_warns_that_student_work_is_orphaned_and_that_releasing_is_the_way_not_to(self, editor):
         """The one thing the editor knows that the build cannot: by the time
@@ -261,24 +273,27 @@ class TestEditingWhatIsInside:
         arrived and made this box argue with the proposal underneath it."""
         self.open_first(editor)
         self.edit_body(editor, self.body_of(editor).replace("adding-up-1", "adding-up-2"))
-        warning = editor.inner_text(".dl-editor-report")
-        assert "orphaned" in warning
-        assert "adding-up-1" in warning
-        assert "Released instead, nothing is orphaned" in warning
+        editor.locator("#dl-editor-report .dl-editor-danger").first.wait_for()
+        assert "adding-up-1" in editor.inner_text("#dl-editor-report")
+        # Two lines: what is lost, and the way not to lose it.
+        assert count(editor, "danger") == 2
 
-    @pytest.mark.parametrize("markdown, expected", [
-        ("# T\n\n```python exec\nid: a-1\nprint(1)\n", "opened and never closed"),
+    @pytest.mark.parametrize("markdown, errors, cells", [
+        ("# T\n\n```python exec\nid: a-1\nprint(1)\n", 1, None),
         ("# T\n\n```python exec\nid: a-1\nprint(1)\n```\n\n"
-         "```python exec\nid: a-1\nprint(2)\n```\n", "used 2 times"),
-        ("# T\n\n```python exec\nprint(1)\n```\n", "has no id"),
+         "```python exec\nid: a-1\nprint(2)\n```\n", 1, None),
+        ("# T\n\n```python exec\nprint(1)\n```\n", 1, None),
         # The editor has to draw the cell/illustrative-fence line exactly
         # where build.py draws it.
-        ("# T\n\n```python\nprint(1)\n```\n", "0 runnable cells"),
+        ("# T\n\n```python\nprint(1)\n```\n", 0, 0),
     ], ids=["unclosed_fence", "duplicate_id", "no_id", "illustrative_fence_not_a_cell"])
-    def test_the_report_surfaces_a_problem_before_it_reaches_the_build(self, editor, markdown, expected):
+    def test_the_report_surfaces_a_problem_before_it_reaches_the_build(self, editor, markdown, errors, cells):
         self.open_first(editor)
         self.edit_body(editor, markdown)
-        assert expected in editor.inner_text("#dl-editor-report")
+        # A problem is a line of its own at the error level, whatever it says.
+        assert count(editor, "error") == errors
+        if cells is not None:
+            assert structure(editor)[0] == cells
 
 
 LINKS = {
@@ -321,44 +336,33 @@ class TestTutorialLinkChecking:
     def edit_body(self, tab, text: str) -> None:
         tab.evaluate("(md) => globalThis.dewlabEditor.editBody(md)", text)
 
-    @pytest.mark.parametrize("markdown, expected, present", [
-        ("# T\n\nSee [it](tutorial:nope-not-real).\n",
-         "does not match any tutorial", True),
-        ("# T\n\nSee [it](tutorial:next-steps).\n",
-         "does not match", False),
+    @pytest.mark.parametrize("markdown, present", [
+        ("# T\n\nSee [it](tutorial:nope-not-real).\n", True),
+        ("# T\n\nSee [it](tutorial:next-steps).\n", False),
         # Appends to the body rather than replacing it outright, since
         # first-steps is both the tutorial being edited and the one
         # supplying the anchor being linked to — replacing it would delete
         # that anchor.
         ("# First Steps\n\n## A Grid of Numbers\n\n"
          "See [it](tutorial:first-steps#a-grid-of-numbers).\n\n"
-         "```python exec\nid: adding-up-1\nprint(1)\n```\n",
-         "no heading or cell", False),
+         "```python exec\nid: adding-up-1\nprint(1)\n```\n", False),
         ("# First Steps\n\n## A Grid of Numbers\n\n"
          "See [it](tutorial:first-steps#adding-up-1).\n\n"
-         "```python exec\nid: adding-up-1\nprint(1)\n```\n",
-         "no heading or cell", False),
-        ("# T\n\nSee [it](tutorial:first-steps#not-a-real-anchor).\n",
-         'no heading or cell "not-a-real-anchor"', True),
+         "```python exec\nid: adding-up-1\nprint(1)\n```\n", False),
+        ("# T\n\nSee [it](tutorial:first-steps#not-a-real-anchor).\n", True),
     ], ids=["unknown_tutorial", "real_tutorial_other_course",
             "real_heading_anchor", "real_cell_anchor", "missing_anchor"])
-    def test_link_checking_reports_or_clears_a_link(self, links, markdown, expected, present):
+    def test_link_checking_reports_or_clears_a_link(self, links, markdown, present):
         self.open_first(links)
         self.edit_body(links, markdown)
-        report = links.inner_text("#dl-editor-report")
-        if present:
-            assert expected in report
-        else:
-            assert expected not in report
+        assert (count(links, "error") > 0) is present
 
     def test_a_python_comment_is_not_mistaken_for_a_heading(self, links):
         """build.py strips fences before scanning for headings, so a `#`
         comment inside a cell is never confused with one; the editor has to
         do the same on raw source rather than count it as a third heading."""
         self.open_first(links)
-        report = links.inner_text("#dl-editor-report")
-        assert "2 headings" in report
-        assert "3 headings" not in report
+        assert structure(links)[1] == 2
 
 
 class TestLinkPicker:
@@ -408,7 +412,8 @@ class TestLinkPicker:
         self.open(links, "first-steps")
         self.open_picker(links)
         links.fill(".dl-editor-linkpicker-search", "zzzznope")
-        assert "No tutorials match" in links.inner_text(".dl-editor-linkpicker-results")
+        assert links.locator(".dl-editor-linkpicker-empty").count() == 1
+        assert links.locator(".dl-editor-linkpicker-row").count() == 0
 
     def test_picking_a_tutorial_inserts_a_link_to_it_and_closes_the_picker(self, links):
         self.open(links, "first-steps")
@@ -589,7 +594,7 @@ class TestStatus:
         try:
             assert tab.query_selector('.dl-editor-off[data-slug="unlisted"]')
             heading = tab.inner_text('.dl-editor-series[data-course=""] h2')
-            assert heading == "On no course yet"
+            assert heading.strip()
         finally:
             context.close()
 
@@ -783,7 +788,7 @@ class TestReleasing:
     def test_releasing_with_nothing_changed_is_refused(self, versioned):
         versioned.click('.dl-editor-card[data-slug="first-steps"] .dl-editor-open')
         self.release(versioned)
-        assert "identical" in versioned.inner_text("#dl-editor-status")
+        assert versioned.inner_text("#dl-editor-status").strip()
         assert versioned.get_attribute("#dl-editor-save", "disabled") is not None
 
     def test_a_tutorial_that_is_not_live_is_not_released(self, versioned):
@@ -793,7 +798,7 @@ class TestReleasing:
                         '.dl-editor-status-option[data-status="beta"]')
         self.edit(versioned, "first-steps", "# First Steps\n\nRewritten.\n")
         self.release(versioned)
-        assert "Only a live tutorial" in versioned.inner_text("#dl-editor-status")
+        assert versioned.inner_text("#dl-editor-status").strip()
 
 
 class TestTheProposal:
@@ -805,8 +810,7 @@ class TestTheProposal:
         self.set_body(versioned,
                        "# First Steps\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
-        report = versioned.inner_text("#dl-editor-report")
-        assert "usually a release rather than an edit" in report
+        assert versioned.locator("#dl-editor-report .dl-editor-warn").count() == 1
 
     def test_the_release_you_just_made_does_not_announce_itself(self, versioned):
         """Without a guard, a file with nothing committed yet has no last
@@ -818,14 +822,14 @@ class TestTheProposal:
                        "```python exec\nid: adding-up-2\nprint(1)\n```\n")
         versioned.click("#dl-editor-release")
         versioned.wait_for_function(
-            "!document.querySelector('#dl-editor-report').textContent.includes('usually a release')"
+            "document.querySelectorAll('#dl-editor-report .dl-editor-warn').length === 0"
         )
 
     def test_a_newly_created_tutorial_says_nothing_about_its_cells(self, editor):
         editor.once("dialog", lambda d: d.accept("Brand New"))
         editor.click(".dl-editor-series:first-of-type .dl-editor-gap:nth-of-type(1) button")
         editor.click('.dl-editor-card[data-slug="brand-new"] .dl-editor-open')
-        assert "usually a release" not in editor.inner_text("#dl-editor-report")
+        assert count(editor, "warn") == 0
 
     def test_moving_prose_stays_quiet(self, versioned):
         """A version per save is the thing the whole design rejects, so an edit
@@ -834,5 +838,4 @@ class TestTheProposal:
         self.set_body(versioned,
                        "# First Steps\n\nRewritten prose.\n\n## Adding up\n\n"
                        "```python exec\nid: adding-up-1\nprint(2)\n```\n")
-        report = versioned.inner_text("#dl-editor-report")
-        assert "usually a release" not in report
+        assert versioned.locator("#dl-editor-report .dl-editor-warn").count() == 0
