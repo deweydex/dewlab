@@ -2838,6 +2838,31 @@ def render_math(item: Math) -> str:
     return f'<span class="{classes}">{html.escape(item.tex)}</span>'
 
 
+_CONVERTERS = threading.local()
+
+
+def _converter() -> markdown.Markdown:
+    """This thread's Markdown converter, built once. Making one registers
+    every extension's patterns afresh, which was most of the time a page
+    took to read (a whole-tree `check.py` built 30,000 of them); `reset()`
+    before each use clears what a document leaves behind, footnotes and the
+    contents tree included. One per thread, since a converter is not safe to
+    share between threads."""
+    converter = getattr(_CONVERTERS, "converter", None)
+    if converter is None:
+        converter = _CONVERTERS.converter = markdown.Markdown(
+            extensions=["extra", "sane_lists", "toc",
+                        "pymdownx.tilde", "pymdownx.tasklist"],
+            # `tilde` gives `~~struck out~~` as `<del>`, and would also give a
+            # single `~2~` as a subscript. Subscript is off: a lone tilde is
+            # already prose here — "~1,000", "after ~5 minutes", a CSS
+            # `:checked ~ .toggle` selector — and two of those on nearby lines
+            # would pair up into a subscript spanning them.
+            extension_configs={"pymdownx.tilde": {"subscript": False}},
+        )
+    return converter
+
+
 def to_html(body: str) -> tuple[str, list]:
     """The page's HTML, and the heading tree the `toc` extension collected.
 
@@ -2847,16 +2872,8 @@ def to_html(body: str) -> tuple[str, list]:
     list on the page is built from the same headings the anchors came from,
     rather than from a second pass that could disagree with them.
     """
-    converter = markdown.Markdown(
-        extensions=["extra", "sane_lists", "toc",
-                    "pymdownx.tilde", "pymdownx.tasklist"],
-        # `tilde` gives `~~struck out~~` as `<del>`, and would also give a
-        # single `~2~` as a subscript. Subscript is off: a lone tilde is
-        # already prose here — "~1,000", "after ~5 minutes", a CSS
-        # `:checked ~ .toggle` selector — and two of those on nearby lines
-        # would pair up into a subscript spanning them.
-        extension_configs={"pymdownx.tilde": {"subscript": False}},
-    )
+    converter = _converter()
+    converter.reset()
     html_out = converter.convert(mark_markdown_wrappers(body))
     return html_out, list(getattr(converter, "toc_tokens", []))
 
