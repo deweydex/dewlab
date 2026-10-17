@@ -954,11 +954,6 @@ class TestStagedHints:
     @pytest.mark.parametrize("markdown, match", [
         ("```hint\nLost.\n```\n", "no exec cell above it"),
         (CELL + "```hint\nfor: nope\nX.\n```\n", "does not have: 'nope'"),
-        (CELL + "```hint\nafter: soon\nX.\n```\n", "cannot read"),
-        (CELL + "```hint\nafter: 5 bananas\nX.\n```\n", "does not track"),
-        # check() and its signal were retired in #314.
-        (CELL + "```hint\nafter: 3 failed checks\nX.\n```\n", "does not track"),
-        (CELL + "```hint\nafter: 5 errors\n```\n", "no text"),
     ])
     def test_hint_faults_fail_the_build(self, repo, markdown, match):
         write(repo, markdown)

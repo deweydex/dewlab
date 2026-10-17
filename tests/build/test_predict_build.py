@@ -121,13 +121,8 @@ class TestMistakes:
     @pytest.mark.parametrize("body, match", [
         (CHOICE, "no exec cell above it"),
         (CELL + CHOICE.replace("```predict\n", "```predict\nfor: nowhere\n"), "does not have: 'nowhere'"),
-        (CELL + "```predict\ntype: essay\n\nWhy?\n```\n", "type: essay"),
-        (CELL + "```predict\ntype: choice\n\nWhich?\n```\n", "no options"),
-        (CELL + "```predict\ntype: number\ntolerance: lots\n\nHow many?\n```\n", "write a number"),
         (CELL + "```predict\nWhich?\n\n- a\n- b\nstray words\n```\n", "neither an option"),
         (CELL + "```predict\nWhich?\n\n- a long option\n  that wraps\n- b\n```\n", None),
-        (CELL + "```predict\n- a\n- b\n```\n", "asks no question"),
-        (CELL + CHOICE + CHOICE, "two predict blocks"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, match):
         write(repo, body)

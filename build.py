@@ -983,7 +983,7 @@ def _block_header(lines: list[str], pattern: re.Pattern) -> dict[str, str]:
     return header
 
 
-def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution:
+def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution | None:
     """A ```solution fence: `for:` and `title:`, then Python, then
     optionally a `---` line and markdown notes. The code has to compile,
     so a typo in a solution fails the build, not a reader's comparison."""
@@ -996,7 +996,8 @@ def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution
     code, notes = _split_solution("\n".join(lines))
     code = expand_includes(code.strip("\n"), path)
     if not code.strip():
-        fail(path, f"the solution for cell {cell!r} has no code in it")
+        note(path, f"the solution for cell {cell!r} has no code in it, so it is left out")
+        return None
     try:
         compile(code, f"<the solution for {cell}>", "exec",
                 flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
@@ -1032,16 +1033,19 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
                    "line naming one")
     first_option = next((i for i, line in enumerate(lines) if PREDICT_OPTION_RE.match(line)),
                         None)
-    kind = (header.get("type") or ("choice" if first_option is not None else "text")).lower()
+    inferred = "choice" if first_option is not None else "text"
+    kind = (header.get("type") or inferred).lower()
     if kind not in PREDICT_TYPES:
-        fail(path, f"the prediction for cell {cell!r} says `type: {kind}` — one of "
-                   f"{', '.join(PREDICT_TYPES)}")
+        note(path, f"the prediction for cell {cell!r} says `type: {kind}`, which is not one of "
+                   f"{', '.join(PREDICT_TYPES)}, so it is read as `{inferred}`")
+        kind = inferred
     options: list[PredictOption] = []
     prompt_lines = lines
+    if kind == "choice" and first_option is None:
+        note(path, f"the prediction for cell {cell!r} is a choice with no options, so it "
+                   "asks for a typed guess instead. List options with `- ` at the left margin")
+        kind = "text"
     if kind == "choice":
-        if first_option is None:
-            fail(path, f"the prediction for cell {cell!r} is a choice with no options — "
-                       "list them with `- ` at the left margin")
         prompt_lines = lines[:first_option]
         texts, notes, stray = options_and_notes(lines[first_option:])
         if stray:
@@ -1060,19 +1064,23 @@ def parse_predict(body: str, path: Path, previous_cell: str | None) -> Predict:
         try:
             tolerance = float(header["tolerance"])
         except ValueError:
-            fail(path, f"the prediction for cell {cell!r} says `tolerance: "
-                       f"{header['tolerance']}` — write a number")
-        if tolerance < 0:
-            fail(path, f"the prediction for cell {cell!r} has a negative tolerance")
+            note(path, f"the prediction for cell {cell!r} says `tolerance: "
+                       f"{header['tolerance']}`, which is not a number, so a guess "
+                       "has to match exactly")
+        if tolerance is not None and tolerance < 0:
+            note(path, f"the prediction for cell {cell!r} has a negative tolerance, "
+                       "so a guess has to match exactly")
+            tolerance = None
     prompt = "\n".join(prompt_lines).strip("\n")
     if not prompt.strip():
-        fail(path, f"the prediction for cell {cell!r} asks no question")
+        note(path, f"the prediction for cell {cell!r} asks no question; the reader "
+                   "gets the box with nothing above it")
     for text in [prompt] + [o.text for o in options] + [o.note for o in options]:
         no_footnotes_in(text, path, f"the prediction for cell {cell!r}")
     return Predict(cell=cell, type=kind, prompt=prompt, options=options, tolerance=tolerance)
 
 
-def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
+def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs | None:
     """An ```inputs fence: `for:` and `guess:`, then one expression per
     line. A `#` comment after an expression is its label, found with the
     tokenizer so a `#` inside a string is not mistaken for one. Every
@@ -1086,8 +1094,9 @@ def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
                    "line naming one")
     guess = header.get("guess", "no").lower()
     if guess not in TOOLKIT_VALUES:
-        fail(path, f"the inputs for cell {cell!r} say `guess: {header['guess']}` — "
-                   "write `guess: yes` or leave the line out")
+        note(path, f"the inputs for cell {cell!r} say `guess: {header['guess']}`, which "
+                   "is not yes or no, so the reader is not asked to guess")
+        guess = "no"
     cases: list[Case] = []
     for line in lines:
         if not line.strip() or line.strip().startswith("#"):
@@ -1108,11 +1117,12 @@ def parse_inputs(body: str, path: Path, previous_cell: str | None) -> Inputs:
             fail(path, f"an input for cell {cell!r} is not a Python expression: {expr}")
         cases.append(Case(expr=expr, label=label))
     if not cases:
-        fail(path, f"the inputs for cell {cell!r} list no cases")
+        note(path, f"the inputs for cell {cell!r} list no cases, so the block is left out")
+        return None
     return Inputs(cell=cell, cases=cases, guess=TOOLKIT_VALUES[guess])
 
 
-def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed:
+def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed | None:
     """A ```typed fence: `for:`, then one line for each time `input()`
     reads, kept exactly as written, spaces included, since a program that
     strips what it is given is one worth testing. A blank line between two
@@ -1128,7 +1138,8 @@ def parse_typed(body: str, path: Path, previous_cell: str | None) -> Typed:
     while lines and not lines[-1].strip():
         lines.pop()
     if not lines:
-        fail(path, f"the typed block for cell {cell!r} has no lines in it")
+        note(path, f"the typed block for cell {cell!r} has no lines in it, so it is left out")
+        return None
     return Typed(cell=cell, lines=lines)
 
 
@@ -1198,8 +1209,11 @@ def parse_trigger(text: str, path: Path) -> str:
 
     `5 errors`, `3 identical errors and 2 minutes`, `errors:5, minutes:2` all
     parse; the first two become the third. Every term must be one the
-    runtime knows (`TRIGGER_KEYS`), so a typo fails the build here rather
-    than producing a hint that never appears.
+    runtime knows (`TRIGGER_KEYS`). A line with a term that is not, or that
+    says nothing, is the educator's typo in an optional setting, not a reason
+    to stop the build: the hint takes the default trigger instead, the whole
+    line replaced and not only the bad term, since "3 errors and a typo" is
+    not "3 errors", and the build says so (DECISIONS_LOG 7.300).
     """
     terms = []
     for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
@@ -1210,24 +1224,29 @@ def parse_trigger(text: str, path: Path) -> str:
             continue
         match = TRIGGER_TERM_RE.match(raw)
         if not match:
-            fail(path, f"a hint's after: line has a term I cannot read: {raw!r} "
-                       f"— write it like `5 errors` or `errors:5`")
+            return _default_trigger(path, f"has a term I cannot read: {raw!r}")
         key = match.group("k1") or match.group("k2")
         count = int(match.group("n1") or match.group("n2"))
         canonical = TRIGGER_KEYS.get(key.strip())
         if canonical is None:
-            fail(path, f"a hint's after: line names a signal the runtime does not "
-                       f"track: {key!r} — one of errors, identical errors, "
-                       f"unchanged runs, runs, empty results, minutes, "
-                       f"unsure, guess differed")
+            return _default_trigger(
+                path, f"names a signal the runtime does not track: {key!r}. It tracks "
+                      "errors, identical errors, unchanged runs, runs, empty results, "
+                      "minutes, unsure and guess differed")
         if count < 1:
             note(path, f"a hint's after: count is {count}, so the hint opens after the "
                        "first counted run that does not reach the goal")
             count = 0
         terms.append(f"{canonical}:{count}")
     if not terms:
-        fail(path, "a hint's after: line is empty")
+        return _default_trigger(path, "says nothing")
     return " ".join(terms)
+
+
+def _default_trigger(path: Path, why: str) -> str:
+    note(path, f"a hint's after: line {why}, so the hint opens at the default "
+               f"({DEFAULT_HINT_AFTER.replace(':', ' ')}) instead")
+    return parse_trigger(DEFAULT_HINT_AFTER, path)
 
 
 # A footnote reference or definition: `[^label]`, optionally followed by a
@@ -1272,7 +1291,7 @@ def no_footnotes_in(text: str, path: Path, what: str) -> None:
                    "a literal bracket")
 
 
-def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
+def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint | None:
     """Read `for:`, `after:` and `title:` off the top of a ```hint fence.
 
     Everything after the header lines is the hint's own markdown. With no
@@ -1293,7 +1312,8 @@ def parse_hint(body: str, path: Path, previous_cell: str | None) -> StagedHint:
                    "naming one")
     text = "\n".join(lines).strip("\n")
     if not text.strip():
-        fail(path, f"the hint for cell {cell!r} has no text in it")
+        note(path, f"the hint for cell {cell!r} has no text in it, so it is left out")
+        return None
     no_footnotes_in(text, path, f"the hint for cell {cell!r}")
     return StagedHint(
         cell=cell,
@@ -2143,14 +2163,19 @@ def extract_blocks(
             return ""
         if info and info[0] == "hint":
             hint = parse_hint(match.group("body"), path, cells[-1].id if cells else None)
+            if hint is None:
+                return ""
             hint.index = hints_per_cell.get(hint.cell, 0)
             hints_per_cell[hint.cell] = hint.index + 1
             hints.append(hint)
             placed.append(("hint", hint.cell, world))
             return f"{indent}<!--dewlab-hint-{len(hints) - 1}-->"
         if info and info[0] == "solution":
-            solutions.append(parse_solution(match.group("body"), path,
-                                            cells[-1].id if cells else None))
+            solution = parse_solution(match.group("body"), path,
+                                      cells[-1].id if cells else None)
+            if solution is None:
+                return ""
+            solutions.append(solution)
             placed.append(("solution", solutions[-1].cell, world))
             return f"{indent}<!--dewlab-solution-{len(solutions) - 1}-->"
         if info and info[0] == "predict":
@@ -2159,13 +2184,17 @@ def extract_blocks(
             placed.append(("predict block", predictions[-1].cell, world))
             return ""
         if info and info[0] == "inputs":
-            inputs_blocks.append(parse_inputs(match.group("body"), path,
-                                              cells[-1].id if cells else None))
+            block = parse_inputs(match.group("body"), path, cells[-1].id if cells else None)
+            if block is None:
+                return ""
+            inputs_blocks.append(block)
             placed.append(("inputs block", inputs_blocks[-1].cell, world))
             return f"{indent}<!--dewlab-inputs-{len(inputs_blocks) - 1}-->"
         if info and info[0] == "typed":
-            typed_blocks.append(parse_typed(match.group("body"), path,
-                                            cells[-1].id if cells else None))
+            typed = parse_typed(match.group("body"), path, cells[-1].id if cells else None)
+            if typed is None:
+                return ""
+            typed_blocks.append(typed)
             placed.append(("typed block", typed_blocks[-1].cell, world))
             return ""
         if len(info) >= 2 and info[1] == "challenge":
@@ -2300,15 +2329,20 @@ def extract_blocks(
             fail(path, f"cell {cell.id!r} is a {cell.type} cell; only a Python cell "
                        "can have typed lines")
         if cell.typed is not None:
-            fail(path, f"cell {cell.id!r} has two typed blocks — put every line in one")
-        cell.typed = block.lines
+            note(path, f"cell {cell.id!r} has two typed blocks, so their lines are read "
+                       "one after the other")
+            cell.typed = [*cell.typed, *block.lines]
+        else:
+            cell.typed = block.lines
     for prediction in predictions:
         cell = by_id.get(prediction.cell)
         if cell is None:
             fail(path, f"a prediction names a cell this tutorial does not have: "
                        f"{prediction.cell!r}")
         if cell.predict is not None:
-            fail(path, f"cell {cell.id!r} has two predict blocks — one guess per cell")
+            note(path, f"cell {cell.id!r} has two predict blocks, and a cell takes one "
+                       "guess, so the second is left out")
+            continue
         cell.predict = prediction
     def where(world: str | None) -> str:
         return f"in the {world!r} variant" if world else "outside every world variant"

@@ -157,18 +157,13 @@ class TestMistakes:
         (CELL + SOLUTION.replace("```solution\n", "```solution\nfor: nowhere\n"),
          "does not have: 'nowhere'"),
         (CELL + "```solution\ndef total_of(values)\n    return 1\n```\n", "not valid Python"),
-        (CELL + "```solution\n---\nOnly notes.\n```\n", "no code in it"),
         (CELL + "```inputs\ntotal_of([1] +)\n```\n", "not a Python expression"),
-        (CELL + "```inputs\n# only a comment\n```\n", "list no cases"),
         (CELL + INPUTS + INPUTS, "two inputs blocks"),
-        (CELL + INPUTS.replace("```inputs\n", "```inputs\nguess: maybe\n"), "guess: maybe"),
         ("```sql exec\nid: q\nSELECT 1;\n```\n" + SOLUTION, "only a Python cell"),
         (CELL + "```python exec\nid: t\ntests: nowhere\n```\n", "no other cell"),
         (CELL + "```python exec\nid: t1\ntests: add-up\n```\n"
                 "```python exec\nid: t2\ntests: add-up\n```\n", "one cell of tests"),
         (TYPED, "a typed fence has no exec cell"),
-        (CELL + "```typed\n\n```\n", "no lines in it"),
-        (CELL + TYPED + TYPED, "two typed blocks"),
         ("```sql exec\nid: q\nSELECT 1;\n```\n" + TYPED, "only a Python cell"),
     ])
     def test_the_build_says_what_is_wrong(self, repo, body, match):

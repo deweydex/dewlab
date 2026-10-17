@@ -703,18 +703,30 @@ class TestLoadingSomebodyElsesFile:
             assert "could not be read" in page.evaluate(
                 "(r) => globalThis.dewlab.describeMismatch(r)", junk)
 
+    def _choose(self, page, record):
+        """Hand the page's own file chooser a saved-work file, as a student
+        does with Load, and wait for its answer to appear."""
+        page.set_input_files("#dl-progress-file", files=[{
+            "name": "saved.json", "mimeType": "application/json",
+            "buffer": json.dumps(record).encode()}])
+
     def test_a_mismatched_file_leaves_the_existing_record_alone(self, page):
+        # Through the page's real import control: a guard written inside the
+        # test would pass whatever the page did with a file that did not fit.
         mine = {"tutorial-id": page.get_attribute('meta[name="tutorial-slug"]', "content"),
                 "saved_at": "2026-01-01T00:00:00Z",
                 "cells": []}
         seed(page, mine)
-        page.evaluate(
-            """(other) => {
-                 if (!globalThis.dewlab.describeMismatch(other)) {
-                   localStorage.setItem(globalThis.dewlab.progressKey(),
-                                        JSON.stringify(other));
-                 }
-               }""",
-            {"tutorial-id": "elsewhere", "cells": []},
-        )
+        self._choose(page, {"tutorial-id": "elsewhere", "cells": []})
+        page.wait_for_function(
+            "() => document.getElementById('dl-progress-state').textContent.includes('not this tutorial')")
         assert page.evaluate("globalThis.dewlab.readSaved()")["saved_at"] == mine["saved_at"]
+
+    def test_a_file_that_fits_replaces_the_record(self, page):
+        # The other half, which also proves the control above is wired up: the
+        # same route with a file that does fit does change the record.
+        slug = page.get_attribute('meta[name="tutorial-slug"]', "content")
+        seed(page, {"tutorial-id": slug, "saved_at": "2026-01-01T00:00:00Z", "cells": []})
+        self._choose(page, {"tutorial-id": slug, "saved_at": "2026-02-02T00:00:00Z", "cells": []})
+        page.wait_for_function(
+            "() => globalThis.dewlab.readSaved().saved_at === '2026-02-02T00:00:00Z'")
