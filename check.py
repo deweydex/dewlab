@@ -12,8 +12,12 @@ Every line of output says one thing, in plain words:
     Note     nothing is broken, but you should know this
 
 The program ends with 1 when there is at least one Problem, and 0 otherwise.
-It needs only Python and PyYAML, and it does not build the site, so it runs
-in a second. docs/CHECK_YOUR_WORK.md describes it for contributors.
+It reads each page with the build's own code, so a Problem is exactly what the
+build would refuse, in its own words, and a Note is something it would carry on
+despite. It writes nothing and does not build the site: a tutorial takes a
+second or two, the whole site about half a minute. It needs what the build
+needs (pip install -r requirements-build.txt). docs/CHECK_YOUR_WORK.md
+describes it for contributors.
 
 When there are no problems it offers to open a pull request: it commits
 and pushes the files it checked (after asking), then opens GitHub's own
@@ -29,13 +33,15 @@ import subprocess
 import sys
 import urllib.parse
 import webbrowser
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
 try:
     import yaml
+
+    import build as b
 except ImportError:  # pragma: no cover
-    print("Problem  PyYAML is not installed. Run:  pip install -r requirements-build.txt")
+    print("Problem  A package the build needs is not installed. Run:  pip install -r requirements-build.txt")
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parent
@@ -43,21 +49,12 @@ TUTORIALS = ROOT / "tutorials"
 COURSES = ROOT / "courses"
 
 ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-VERSION_RE = re.compile(r"^\d{4}\.\d{2}\.\d{2}\.\d+$")
-FENCE_RE = re.compile(r"^```(\w+)[ \t]+exec[^\n]*\n(.*?)^```", re.M | re.S)
-IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)|<img[^>]+src=\"([^\"]+)\"")
-# The build's own fence pattern (build.py FENCE_RE): one that closes. A line
-# starting ``` outside every one of these is a fence that never closed.
-CLOSED_FENCE_RE = re.compile(r"^ *```[^\n]*\n.*?^ *```[ \t]*$", re.M | re.S)
-CODE_RE = re.compile(r"```.*?```|`[^`\n]*`", re.S)  # fences and code spans: examples, not images
-OLD_FIELDS = ("module", "module_title", "series", "slug", "order")
 
 
 class Report:
     def __init__(self) -> None:
         self.lines: list[tuple[str, str]] = []
         self.checked: list[tuple[str, str, str]] = []  # (kind, id, title) — for the pull request
-
 
     def ok(self, text: str) -> None:
         self.lines.append(("OK", text))
@@ -77,23 +74,53 @@ class Report:
             print(f"{kind:8} {text}")
 
 
-# ----------------------------------------------------------------- reading
+# ------------------------------------------------------ the build's own rules
+#
+# Whether a page is acceptable is the build's decision, not this file's. A
+# page is read by the same code the build reads it with: what the build
+# refuses is a Problem here, in its own words, and what it carries on despite
+# is a Note. There is no second copy of a rule to keep in step with the first
+# (DECISIONS_LOG 7.301).
 
-def split_frontmatter(text: str) -> tuple[dict | None, str, str | None]:
-    """(fields, body, error). fields is None when there is no frontmatter."""
-    if not text.startswith("---\n"):
-        return None, text, "the file does not start with a --- line"
-    end = text.find("\n---\n", 4)
-    if end == -1:
-        return None, text, "the frontmatter is never closed with a --- line"
-    raw = text[4:end]
+def from_build(report: Report, function, *args):
+    """Run part of the build. Its refusal is a Problem and the call returns
+    None; what it noted along the way is a Note either way."""
     try:
-        fields = yaml.safe_load(raw) or {}
-    except yaml.YAMLError as err:
-        return None, text[end + 5:], f"the frontmatter is not valid YAML ({err})"
-    if not isinstance(fields, dict):
-        return None, text[end + 5:], "the frontmatter is not a list of `key: value` lines"
-    return fields, text[end + 5:], None
+        return function(*args)
+    except b.BuildError as error:
+        report.problem(str(error))
+        return None
+    finally:
+        for line in b._NOTE_LINES:
+            report.note(line.removeprefix("note: "))
+        b._NOTE_LINES.clear()
+
+
+def read_page(path: Path):
+    """One page, read as the build reads it, with the per-page checks the
+    build runs after reading: folds, datasets, pictures."""
+    page = b.load_page(path, mapped=False)
+    b.check_folds(page)
+    b.check_datasets(page)
+    b.resolve_assets(page, page.body_html)
+    return page
+
+
+def fields_of(path: Path) -> dict:
+    """A page's frontmatter, or {} when the build cannot read it. Reading it
+    for a glance must not use up a note the page's own check will want to
+    show, so the build's notes are left as they were."""
+    if not path.is_file():
+        return {}
+    noted, lines = set(b._NOTED), list(b._NOTE_LINES)
+    try:
+        return b.split_frontmatter(path.read_text(), path)[0]
+    except b.BuildError:
+        return {}
+    finally:
+        b._NOTED.clear()
+        b._NOTED.update(noted)
+        b._NOTE_LINES[:] = lines
 
 
 def read_courses() -> dict[str, dict]:
@@ -107,7 +134,7 @@ def read_courses() -> dict[str, dict]:
             data = yaml.safe_load(path.read_text()) or {}
         except yaml.YAMLError as err:
             data = {"_error": str(err)}
-        courses[path.stem] = data
+        courses[path.stem] = data if isinstance(data, dict) else {}
     return courses
 
 
@@ -115,7 +142,7 @@ def listed_in(courses: dict[str, dict], ident: str) -> list[str]:
     where = []
     for course_id, course in courses.items():
         for series in course.get("contents") or []:
-            if ident in (series.get("tutorials") or []):
+            if isinstance(series, dict) and ident in (series.get("tutorials") or []):
                 where.append(f"{course_id} → {series.get('title', '?')}")
         if ident in (course.get("mixed") or []):
             where.append(f"{course_id} → mixed problems")
@@ -128,26 +155,10 @@ def all_tutorial_ids() -> list[str]:
     return sorted(p.name for p in TUTORIALS.iterdir() if p.is_dir() and any(p.glob("*.md")))
 
 
-def is_practice_page(path: Path) -> bool:
-    if not path.is_file():
-        return False
-    fields, _, _ = split_frontmatter(path.read_text())
-    return bool(fields and "practice_for" in fields)
-
-
-def is_context_page(path: Path) -> bool:
-    if not path.is_file():
-        return False
-    fields, _, _ = split_frontmatter(path.read_text())
-    return bool(fields and "context_for" in fields)
-
-
 def title_of(folder: Path) -> str | None:
     main = folder / f"{folder.name}.md"
-    if not main.is_file():
-        return None
-    fields, _, _ = split_frontmatter(main.read_text())
-    return str(fields.get("title")) if fields and fields.get("title") else None
+    fields = fields_of(main) if main.is_file() else {}
+    return str(fields["title"]) if fields.get("title") else None
 
 
 # ------------------------------------------------------------- one tutorial
@@ -163,133 +174,66 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
         return
     report.ok(f"The main file `{ident}.md` is there.")
 
-    text = main.read_text()
-    fields, body, error = split_frontmatter(text)
-    if error:
-        report.problem(f"`{ident}.md`: {error}.")
-        return
-    assert fields is not None
-    report.checked.append(("practice" if "practice_for" in fields else "tutorial", ident, str(fields.get("title") or ident)))
-    if not fields.get("title"):
-        report.note(f"`{ident}.md`: the frontmatter has no `title:`, so the page is called after its folder. Add one.")
-    if not fields.get("version"):
-        report.problem(f"`{ident}.md`: the frontmatter needs `version:`.")
-    if fields.get("version") and not VERSION_RE.match(str(fields["version"])):
-        report.problem(f"`{ident}.md`: `version:` must look like `2026.09.14.1` (year.month.day.number).")
-    old = [k for k in OLD_FIELDS if k in fields]
-    if old:
-        report.note(f"`{ident}.md`: delete these old lines from the frontmatter: {', '.join(old)}. The build ignores them; where a tutorial sits is written in `courses/`, not here.")
-    if not any(k in fields for k in OLD_FIELDS) and fields.get("title") and fields.get("version"):
-        report.ok("The frontmatter has title and version, and nothing about placement.")
-
-    # a fence that opens and never closes turns the rest of the page into code
-    closed = [m.span() for m in CLOSED_FENCE_RE.finditer(body)]
-    for opener in re.finditer(r"^ *```", body, re.M):
-        if not any(start <= opener.start() < end for start, end in closed):
-            line = text.count("\n", 0, text.rfind(body)) + body.count("\n", 0, opener.start()) + 1
-            report.problem(f"`{ident}.md`: the code fence on line {line} is opened and never closed, "
-                           "so everything after it would show as code. Close it with a line holding only ```.")
-            break
-
-    # cells
-    ids: list[str] = []
-    for match in FENCE_RE.finditer(body):
-        header = match.group(2).split("\n", 1)[0]
-        got = re.match(r"^id:\s*(\S+)", header)
-        if not got:
-            report.problem(f"`{ident}.md`: a `{match.group(1)} exec` cell has no `id:` line. Every cell needs one, as its first line.")
-        else:
-            ids.append(got.group(1))
-    repeated = [cid for cid, n in Counter(ids).items() if n > 1]
-    if repeated:
-        report.problem(f"`{ident}.md`: these cell ids are used more than once: {', '.join(repeated)}. Each id must be unique on the page.")
-    if ids and not repeated:
-        report.ok(f"{len(ids)} cell{'s' if len(ids) != 1 else ''}, each with its own id.")
-    elif not ids:
+    # every page in the folder, read the way the build reads it
+    pages = {}
+    for path in sorted(folder.glob("*.md")):
+        page = from_build(report, read_page, path)
+        if page is not None:
+            pages[path.name] = page
+    page = pages.get(main.name)
+    if page is None:
+        return  # the build's own message is above
+    report.checked.append(("practice" if page.practice_for else "tutorial", ident, page.title))
+    cells = [cell for cell in page.cells]
+    if cells:
+        report.ok(f"{len(cells)} cell{'s' if len(cells) != 1 else ''}, each with its own id.")
+    else:
         report.note("No runnable cells in this tutorial. That is fine for a reading page.")
 
-    # images — in the prose only; an <img> inside a code example is a lesson,
-    # not a picture the page shows (the build makes the same distinction)
-    for match in IMAGE_RE.finditer(CODE_RE.sub(" ", body)):
-        src = match.group(1) or match.group(2)
-        if src.startswith(("http://", "https://", "data:")):
+    # the rules between pages: who a practice or context page belongs to
+    registry = {p.slug: p for p in pages.values()}
+    for p in list(pages.values()):
+        for name in (p.practice_for, *p.practice_across, *p.context_for):
+            path = TUTORIALS / str(name) / f"{name}.md"
+            if name and name not in registry and path.is_file():
+                other = from_build(report, read_page, path)
+                if other is not None:
+                    registry[other.slug] = other
+    together = list(pages.values())
+    for rule in (b.practice_pairs, b.mixed_practice, b.context_pages):
+        from_build(report, rule, together, registry)
+
+    # a second page in the folder that follows no tutorial is a tutorial of its own
+    for name, other in pages.items():
+        if other is page or b.VERSION_FILE_RE.match(Path(name).stem):
             continue
-        if not (folder / src).is_file():
-            report.problem(f"`{ident}.md`: the image `{src}` is not in the folder.")
+        if not (other.practice_for or other.practice_across or other.is_context):
+            report.note(f"`{name}` has no `practice_for:`, `context_for:` or `practice_across:`, so it is a tutorial of its own, not a page that follows `{ident}`, and no course lists it.")
 
     # title collisions across the site
-    title = str(fields.get("title") or "")
+    title = str(page.title or "")
     others = [t for t in titles.get(title, []) if t != ident]
     if title and others:
         report.note(f"Another tutorial has the same title, \"{title}\": {', '.join(others)}. That is allowed, but check it is a different tutorial and not a copy.")
 
-    # context page: background reading, which follows the tutorial(s) it
-    # names the way a practice page does, so it is neither listed in a
-    # course nor given a practice page of its own
-    context_for = fields.get("context_for")
-    if context_for is not None and not context_for:
-        report.note(f"`{ident}.md`: `context_for:` is empty, so this is an ordinary tutorial. Name the tutorial it gives background for, or delete the line.")
-        context_for = None
-    if context_for is not None:
-        named = [context_for] if isinstance(context_for, str) else list(context_for or [])
-        missing = [str(n) for n in named if not (TUTORIALS / str(n)).is_dir()]
-        if missing:
-            report.problem(f"`{ident}.md`: `context_for:` names {', '.join(missing)}, and there is no such tutorial.")
-        else:
-            report.ok(f"A context page for {', '.join(str(n) for n in named)}. It is not listed in a course; it follows those tutorials.")
-        if "covers" in fields:
-            report.note(f"`{ident}.md`: a context page has `covers:`, so the curriculum map counts it as teaching an outcome. Nothing on it is needed to finish a tutorial; delete `covers:` unless you mean that.")
-        if fields.get("practice_for") or fields.get("practice_across"):
-            report.problem(f"`{ident}.md`: a context page cannot also be a practice page. Remove `practice_for:` or `practice_across:`.")
-
-    # practice page
-    practice = folder / f"{ident}-practice.md"
-    if context_for is not None:
-        pass  # a context page has no practice page of its own
-    elif fields and "practice_across" in fields:
-        pass  # a mixed problem set is itself practice
-    elif practice.is_file():
-        pf, _, perr = split_frontmatter(practice.read_text())
-        if perr:
-            report.problem(f"`{practice.name}`: {perr}.")
-        else:
-            assert pf is not None
-            target = pf.get("practice_for")
-            if not target:
-                report.note(f"`{practice.name}`: without `practice_for: {ident}` in its frontmatter this is an ordinary tutorial, not {ident}'s practice page, and no course lists it.")
-            elif target != ident:
-                if not (TUTORIALS / str(target)).is_dir():
-                    report.problem(f"`{practice.name}`: `practice_for: {target}` names a tutorial that does not exist.")
-                else:
-                    report.note(f"`{practice.name}` practises `{target}`, not `{ident}`. Is that what you meant?")
-            else:
-                report.ok(f"The practice page `{practice.name}` belongs to this tutorial.")
-            if "covers" in pf:
-                report.note(f"`{practice.name}`: a practice page has `covers:`, so the curriculum map counts its outcomes a second time. Its tutorial says what is taught; delete `covers:` unless you mean that.")
-            old = [k for k in OLD_FIELDS if k in pf]
-            if old:
-                report.note(f"`{practice.name}`: delete these old lines: {', '.join(old)}. The build ignores them.")
-    else:
+    # advice, not rules
+    if page.is_context:
+        report.ok(f"A context page for {', '.join(page.context_for)}. It is not listed in a course; it follows those tutorials.")
+    elif not page.practice_across and not any(p.practice_for == ident for p in pages.values()):
         report.note(f"No practice page. To add one, create `{ident}-practice.md` in this folder with `practice_for: {ident}`.")
+    elif any(p.practice_for == ident for p in pages.values()):
+        report.ok("There is a practice page, and it belongs to this tutorial.")
 
-    # glossary
     glossary = folder / f"{ident}.glossary.yaml"
     if glossary.is_file():
-        try:
-            data = yaml.safe_load(glossary.read_text()) or {}
-            entries = data.get("entries") or []
-            bad = [e for e in entries if not (isinstance(e, dict) and e.get("term") and e.get("definition"))]
-            if bad:
-                report.note(f"`{glossary.name}`: {len(bad)} entr{'y' if len(bad) == 1 else 'ies'} without a `term:` or a `definition:`, left out of the reference.")
-            else:
-                report.ok(f"The glossary has {len(entries)} entr{'y' if len(entries) == 1 else 'ies'}.")
-        except yaml.YAMLError as err:
-            report.problem(f"`{glossary.name}` is not valid YAML ({err}).")
+        entries = from_build(report, b.own_glossary, page)
+        if entries is not None:
+            report.ok(f"The glossary has {len(entries)} entr{'y' if len(entries) == 1 else 'ies'}.")
 
     # where it is listed
     where = listed_in(courses, ident)
-    if context_for is not None:
-        pass  # said above: it follows its tutorials, not a course
+    if page.is_context or page.practice_for:
+        pass  # it follows its tutorial, not a course
     elif where:
         report.ok("Listed on: " + "; ".join(where) + ".")
     else:
@@ -301,63 +245,42 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
 def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
     course_id = path.stem
     report.note(f"— {path.relative_to(ROOT)} —")
-    course = courses.get(course_id)
+    course = from_build(report, b.read_course, path)
     if course is None:
-        try:
-            course = yaml.safe_load(path.read_text()) or {}
-        except yaml.YAMLError as err:
-            report.problem(f"The file is not valid YAML ({err}).")
-            return
-    if "_error" in course:
-        report.problem(f"The file is not valid YAML ({course['_error']}).")
         return
-    report.checked.append(("course", course_id, str(course.get("title") or course_id)))
+    report.checked.append(("course", course_id, course.title))
     if not ID_RE.match(course_id):
         report.note(f"The file name `{course_id}` is not a tidy id. Small letters, digits and hyphens make an address that is easy to type.")
-    if not course.get("title"):
-        report.note(f"The course has no `title:`, so it is called `{course_id}` on the site. Add one.")
-    if not course.get("contents"):
+    if not course.contents:
         # The build accepts a course with no series; it is a course with
         # nothing on it yet, not a mistake.
         report.note("No series under `contents:` yet, so the course lists nothing. "
                     "Add a series with a title and its tutorials when you are ready.")
     for key in ("code", "card", "description"):
-        if not course.get(key):
+        if not getattr(course, key):
             report.note(f"No `{key}:`. The course page or its card will be missing that text.")
     known = set(all_tutorial_ids())
-    seen: Counter[str] = Counter()
-    for n, series in enumerate(course.get("contents") or [], start=1):
-        if not isinstance(series, dict):
-            report.problem(f"Series {n} needs a `title:` and its `tutorials:`.")
-            continue
-        if not series.get("title"):
-            report.note(f"Series {n} has no `title:`, so it is headed `Part {n}`. Add one.")
-            series = {**series, "title": f"Part {n}"}
-        listed = series.get("tutorials") or []
-        if not listed:
-            report.note(f"The series \"{series['title']}\" lists no tutorials yet, so the course page leaves it out.")
-        for ident in listed:
-            seen[ident] += 1
+    total = 0
+    for series in course.contents:
+        if not series.ids:
+            report.note(f"The series \"{series.title}\" lists no tutorials yet, so the course page leaves it out.")
+        for ident in series.ids:
+            total += 1
+            fields = fields_of(TUTORIALS / ident / f"{ident}.md")
             if ident not in known:
-                report.problem(f"The series \"{series['title']}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
-            elif is_practice_page(TUTORIALS / ident / f"{ident}.md"):
+                report.problem(f"The series \"{series.title}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
+            elif fields.get("practice_for"):
                 report.note(f"`{ident}` is a practice page (it has `practice_for:`). It follows its tutorial, so this line is left out.")
-            elif is_context_page(TUTORIALS / ident / f"{ident}.md"):
+            elif fields.get("context_for"):
                 report.note(f"`{ident}` is a context page (it has `context_for:`). It follows its tutorial, so this line is left out.")
-    for ident, n in seen.items():
-        if n > 1:
-            report.note(f"`{ident}` is listed {n} times in this course. It stays where it is first listed; delete the other lines.")
-    for ident in course.get("mixed") or []:
-        folder = TUTORIALS / ident
-        if not folder.is_dir():
+    for ident in course.mixed:
+        fields = fields_of(TUTORIALS / ident / f"{ident}.md")
+        if not (TUTORIALS / ident).is_dir():
             report.problem(f"`mixed:` names `{ident}`, but there is no folder `tutorials/{ident}/`.")
-        else:
-            fields, _, _ = split_frontmatter((folder / f"{ident}.md").read_text()) if (folder / f"{ident}.md").is_file() else (None, "", None)
-            if not fields or "practice_across" not in fields:
-                report.note(f"`mixed:` names `{ident}`, which is not a mixed problem set (it has no `practice_across:`), so the line is left out.")
+        elif not fields.get("practice_across"):
+            report.note(f"`mixed:` names `{ident}`, which is not a mixed problem set (it has no `practice_across:`), so the line is left out.")
     if not report.problems:
-        total = sum(seen.values())
-        report.ok(f"{len(course.get('contents') or [])} series, {total} tutorials, every id found.")
+        report.ok(f"{len(course.contents)} series, {total} tutorials, every id found.")
     index = COURSES / "index.yaml"
     if index.is_file():
         order = (yaml.safe_load(index.read_text()) or {}).get("order") or []
@@ -523,16 +446,20 @@ def check_everything(report: Report) -> None:
         check_course(COURSES / f"{course_id}.yaml", courses, report)
     listed = {i for c in courses.values() for s in c.get("contents") or [] for i in s.get("tutorials") or []}
     def follows_another(i: str) -> bool:
-        path = TUTORIALS / i / f"{i}.md"
-        fields = (split_frontmatter(path.read_text())[0] or {}) if path.is_file() else {}
-        return "practice_across" in fields or "context_for" in fields
+        fields = fields_of(TUTORIALS / i / f"{i}.md")
+        return bool(fields.get("practice_across") or fields.get("context_for"))
     unlisted = [i for i in ids if i not in listed and not i.endswith("-practice")
                 and not follows_another(i)]
-    report.note(f"— summary —")
+    report.note("— summary —")
     report.note(f"{len(ids)} tutorials, {len(courses)} courses, {len(unlisted)} tutorial{'s' if len(unlisted) != 1 else ''} on no course.")
 
 
 def main(argv: list[str]) -> int:
+    with b.collecting_notes():
+        return run(argv)
+
+
+def run(argv: list[str]) -> int:
     report = Report()
     mode = "ask"
     if "--pr" in argv:

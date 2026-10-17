@@ -4,7 +4,8 @@ This page is for you if you are adding one thing to dewlab: a tutorial, a
 practice page, a series, or a course. It shows you how to check that thing
 before you open a pull request.
 
-You need Python 3 and one command. Nothing else.
+You need Python 3, the packages the project lists (`pip install -r
+requirements-build.txt`, once), and one command.
 
 ## The one command
 
@@ -13,7 +14,9 @@ python3 check.py tutorials/my-tutorial
 ```
 
 Change `my-tutorial` to the name of your folder. The program reads your
-files and prints short lines. Each line starts with one word:
+files the way the site's build reads them, without building anything, and
+prints short lines. One tutorial takes a second or two; checking everything
+takes under a minute. Each line starts with one word:
 
 - **OK** — this part is fine.
 - **Problem** — this will break the build or a page. Fix it, then run the
@@ -238,7 +241,10 @@ If you never want the question, add `--no-pr`.
 
 ## If something is still wrong
 
-Run `python3 build.py`. It checks more than `check.py` does and stops at the
-first thing it cannot build, with the file name and a reason. If the reason
+Run `python3 build.py`. A **Problem** from `check.py` is a message the build
+itself would give, in the build's own words. The build also checks things
+across the whole site (that every link goes somewhere, that every solution
+runs) which `check.py` leaves alone, and it stops at the first thing it
+cannot build, with the file name and a reason. If the reason
 is not clear, open a pull request anyway and say what you see. Somebody
 will help.

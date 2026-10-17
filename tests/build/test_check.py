@@ -30,10 +30,19 @@ def site(tmp_path: Path, monkeypatch):
     sys.path.insert(0, str(DEWLAB))
     check = importlib.import_module("check")
     importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", root)
-    monkeypatch.setattr(check, "TUTORIALS", root / "tutorials")
-    monkeypatch.setattr(check, "COURSES", root / "courses")
+    point_at(monkeypatch, check, root)
     return root, check
+
+
+def point_at(monkeypatch, check, root: Path) -> None:
+    """check.py reads with the build's own code, so both are pointed at the
+    tree under test."""
+    for module in (check, b):
+        monkeypatch.setattr(module, "ROOT", root)
+        monkeypatch.setattr(module, "TUTORIALS", root / "tutorials")
+        monkeypatch.setattr(module, "COURSES", root / "courses")
+    monkeypatch.setattr(b, "DATA", root / "data")
+    monkeypatch.setattr(b, "PAGES", root / "pages")
 
 
 def tutorial(root: Path, ident: str, body: str = "Prose.\n", front: str = 'title: "A Title"\nyear: "2026-2027"\nversion: 2026.09.14.1\n') -> Path:
@@ -116,38 +125,45 @@ def test_a_good_tree_has_no_problems_only_notes_and_a_whole_site_check_never_off
 
 def test_a_fence_that_never_closes_is_a_problem_and_a_closed_one_is_not(site) -> None:
     """The build refuses an unclosed fence (DECISIONS_LOG 7.295), so check.py
-    names it first, with the line. A page whose fences all close is clean,
+    names it, in the build's words. A page whose fences all close is clean,
     and so is a backtick span that merely contains three backticks."""
     root, check = site
     tutorial(root, "open", body="Prose.\n\n```python\nprint(1)\n")
     code, out = run_check(check, "tutorials/open")
     assert code != 0
-    assert "opened and never closed" in out and "line 11" in out
+    assert "is opened and never closed" in out and "tutorials/open/open.md" in out
 
     tutorial(root, "shut", body="```python\nprint(1)\n```\n\nWrite ``` to open a fence.\n")
     code, out = run_check(check, "tutorials/shut")
     assert "never closed" not in out
 
 
-def test_every_problem_in_one_tutorial_is_named_and_so_is_an_unknown_path(site) -> None:
-    """One tutorial carrying every mistake check.py calls a Problem, a
+def test_each_mistake_is_named_in_the_builds_words_and_so_is_an_unknown_path(site) -> None:
+    """The build stops a page at its first mistake, so check.py shows one
+    Problem for each page: here a cell with no id, two cells with one id, and
+    a picture that is not in the folder, each in its own tutorial, then a
     course listing an id with no folder, and a path that is neither."""
     root, check = site
-    tutorial(root, "old",
-             front='title: "Old"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\nseries: start\n',
-             body="```python exec\nprint(1)\n```\n\n```python exec\nid: a\n```\n\n```python exec\nid: a\n```\n\n![A plot](plot.png)\n")
+    tutorial(root, "no-id", body="```python exec\nprint(1)\n```\n")
+    tutorial(root, "twice", body="```python exec\nid: a\n```\n\n```python exec\nid: a\n```\n")
+    tutorial(root, "picture", body="![A plot](plot.png)\n")
+    tutorial(root, "old", front='title: "Old"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\nseries: start\n')
     tutorial(root, "first-steps")
     course(root, "alpha", {"Start": ["first-steps", "frist-steps"]})
 
+    code, out = run_check(check, "tutorials/no-id")
+    assert code == 1 and "has no `id:` line" in out
+
+    code, out = run_check(check, "tutorials/twice")
+    assert code == 1 and "two exec cells share the id 'a'" in out
+
+    code, out = run_check(check, "tutorials/picture")
+    assert code == 1 and "references 'plot.png', which is not a file in this tutorial's folder" in out
+
+    # An old placement field is only a note that says to delete it.
     code, out = run_check(check, "tutorials/old")
-    # An old placement field is a problem that says to delete it.
-    assert code == 1
-    assert "delete these old lines" in out and "module, series" in out
-    # A cell without an id, and two cells with one id, are problems.
-    assert code == 1
-    assert "has no `id:` line" in out and "used more than once: a" in out
-    # A real missing image is a problem.
-    assert code == 1 and "`plot.png` is not in the folder" in out
+    assert code == 0
+    assert "module no longer belongs in frontmatter" in out
 
     # A course listing an unknown id is a problem naming the series.
     code, out = run_check(check, "courses/alpha.yaml")
@@ -220,10 +236,22 @@ def test_the_address_carries_the_title_and_body_and_the_branch(site, monkeypatch
 
 
 # ------------------------------------------------ the tool's promise, proven
+#
+# check.py reads every page with the build's own code, so it cannot disagree
+# with the build about what is refused. These prove it end to end: one tree
+# with one mistake in it, run through both.
+
+def checker(monkeypatch, root: Path):
+    sys.path.insert(0, str(DEWLAB))
+    check = importlib.import_module("check")
+    importlib.reload(check)
+    point_at(monkeypatch, check, root)
+    return check
+
 
 MISTAKES = {
-    # name: (frontmatter, body, course listing) — one mistake each, of a
-    # kind check.py covers. `None` for a value keeps the good default.
+    # name: (frontmatter, body, course listing) — one mistake each.
+    # `None` for a value keeps the good default.
     "a version that is not a release date": ('title: "T"\nyear: "2026-2027"\nversion: 1\n', None, None),
     "a cell with no id": (None, "```python exec\nprint(1)\n```\n", None),
     "two cells with one id": (None, "```python exec\nid: a\nprint(1)\n```\n\n```python exec\nid: a\nprint(2)\n```\n", None),
@@ -235,16 +263,8 @@ MISTAKES = {
 @pytest.mark.parametrize("mistake", sorted(MISTAKES))
 def test_everything_check_calls_a_problem_the_build_also_refuses(repo, monkeypatch, mistake):
     """check.py says "No problems" only about a tree the build accepts, and
-    every Problem it reports is a build failure: both run over one tree
-    with one mistake in it, and both refuse. The good tree passes both."""
-    import importlib
-    sys.path.insert(0, str(DEWLAB))
-    check = importlib.import_module("check")
-    importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", repo)
-    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
-    monkeypatch.setattr(check, "COURSES", repo / "courses")
-
+    every Problem it reports is a build failure."""
+    check = checker(monkeypatch, repo)
     front, body, listing = MISTAKES[mistake]
     tutorial(repo, "good", body=body or "Prose.\n", front=front or 'title: "Good"\nyear: "2026-2027"\nversion: 2026.09.14.1\n')
     course(repo, "alpha", {"Start": listing or ["good"]})
@@ -255,59 +275,39 @@ def test_everything_check_calls_a_problem_the_build_also_refuses(repo, monkeypat
         b.build()
 
 
-# The other half of the promise: what check.py only notes, the build accepts.
-# A rule about how a page is shaped is a note in both, so the two never
-# disagree about a tree an author can still publish.
+# The other half: what the build carries on despite, check.py shows as a Note
+# in the build's own words, and neither stops.
 NOTES = {
     "an old placement field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\nmodule: alpha\n',
-                               "delete these old lines from the frontmatter: module",
                                "module no longer belongs in frontmatter"),
+    "an old order field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\norder: 3\n',
+                           "order no longer belongs in frontmatter"),
     "a missing title": ('year: "2026-2027"\nversion: 2026.09.14.1\n',
-                        "the frontmatter has no `title:`, so the page is called after its folder",
                         "has no `title:`, so the page is called 'Good'"),
     "an empty title": ('title:\nyear: "2026-2027"\nversion: 2026.09.14.1\n',
-                       "the frontmatter has no `title:`, so the page is called after its folder",
                        "has no `title:`, so the page is called 'Good'"),
-    "a missing year": ('title: "T"\nversion: 2026.09.14.1\n', None, None),
-    "an empty context_for": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\ncontext_for: []\n',
-                             "`context_for:` is empty, so this is an ordinary tutorial", None),
-    "an old order field": ('title: "T"\nyear: "2026-2027"\nversion: 2026.09.14.1\norder: 3\n',
-                           "delete these old lines from the frontmatter: order",
-                           "order no longer belongs in frontmatter"),
+    "a missing year": ('title: "T"\nversion: 2026.09.14.1\n', None),
 }
 
 
 @pytest.mark.parametrize("case", sorted(NOTES))
-def test_what_check_only_notes_the_build_accepts(repo, monkeypatch, capsys, case):
-    import importlib
-    sys.path.insert(0, str(DEWLAB))
-    check = importlib.import_module("check")
-    importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", repo)
-    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
-    monkeypatch.setattr(check, "COURSES", repo / "courses")
-
-    front, expected, build_says = NOTES[case]
+def test_what_the_build_only_notes_check_shows_as_a_note_and_does_not_stop_on(repo, monkeypatch, capsys, case):
+    check = checker(monkeypatch, repo)
+    front, said = NOTES[case]
     tutorial(repo, "good", body="Prose.\n", front=front)
     course(repo, "alpha", {"Start": ["good"]})
 
     code, out = run_check(check)
     assert code == 0, f"check.py called {case} a problem:\n{out}"
-    if expected:
-        assert expected in out
+    assert "Problem" not in out
     b.build()
-    if build_says:
-        assert build_says in capsys.readouterr().err
+    if said:
+        assert f"Note     tutorials/good/good.md: {said}" in out
+        assert said in capsys.readouterr().err
 
 
 def test_everything_check_and_the_build_both_accept_a_good_tree(repo, monkeypatch):
-    import importlib
-    sys.path.insert(0, str(DEWLAB))
-    check = importlib.import_module("check")
-    importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", repo)
-    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
-    monkeypatch.setattr(check, "COURSES", repo / "courses")
+    check = checker(monkeypatch, repo)
     tutorial(repo, "good", body="```python exec\nid: one\nprint(1)\n```\n")
     course(repo, "alpha", {"Start": ["good"]})
     code, out = run_check(check)
@@ -341,17 +341,9 @@ def test_a_context_page_is_not_a_problem_and_listing_one_in_a_course_is_a_note(s
 
 
 def test_check_notes_a_rough_edge_the_build_accepts_and_offers_nothing_to_stop_over(repo, monkeypatch, capsys):
-    """An untidy folder name, a practice page that forgot `practice_for:`, and
-    a course with no title: all three used to be problems in check.py and are
-    notes in both now, so the author is told and not stopped."""
-    import importlib
-    sys.path.insert(0, str(DEWLAB))
-    check = importlib.import_module("check")
-    importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", repo)
-    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
-    monkeypatch.setattr(check, "COURSES", repo / "courses")
-
+    """An untidy folder name, a second page in the folder that follows no
+    tutorial, and a course with no title: said, and not stopped on."""
+    check = checker(monkeypatch, repo)
     tutorial(repo, "Good-Name")
     (repo / "tutorials" / "Good-Name" / "Good-Name-practice.md").write_text(
         '---\ntitle: "Problems"\nyear: "2026-2027"\nversion: 2026.09.14.1\n---\n\nProblems.\n')
@@ -361,26 +353,16 @@ def test_check_notes_a_rough_edge_the_build_accepts_and_offers_nothing_to_stop_o
     code, out = run_check(check)
     assert code == 0, out
     assert "is not a tidy id" in out
-    assert "this is an ordinary tutorial, not Good-Name's practice page" in out
-    assert "The course has no `title:`" in out
+    assert "is a tutorial of its own, not a page that follows `Good-Name`" in out
+    assert "has no `title:` line, so the course is called 'alpha' on the site" in out
     b.build()
     assert "so the course is called 'alpha' on the site" in capsys.readouterr().err
 
 
 def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_a_note_in_both(repo, monkeypatch, capsys):
-    """Three slips in a course file that change what a student sees, so they
-    are said, in the checker and in the build, and neither stops (DECISIONS_LOG
-    7.300): an untitled series is headed `Part N`, a tutorial listed twice
-    stays where it is first listed, and a page under `mixed:` that is not a
-    mixed set is left out."""
-    import importlib
-    sys.path.insert(0, str(DEWLAB))
-    check = importlib.import_module("check")
-    importlib.reload(check)
-    monkeypatch.setattr(check, "ROOT", repo)
-    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
-    monkeypatch.setattr(check, "COURSES", repo / "courses")
-
+    """Three slips in a course file that change what a student sees: said,
+    in the checker and in the build, and neither stops (DECISIONS_LOG 7.300)."""
+    check = checker(monkeypatch, repo)
     tutorial(repo, "good")
     tutorial(repo, "other")
     (repo / "courses" / "alpha.yaml").write_text(
@@ -390,9 +372,9 @@ def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_
         "mixed: [other]\n")
     code, out = run_check(check)
     assert code == 0, out
-    assert "Series 1 has no `title:`" in out
-    assert "`good` is listed 2 times in this course" in out
-    assert "`mixed:` names `other`, which is not a mixed problem set" in out
+    assert "series 1 under `contents:` has no usable `title:`" in out
+    assert "lists good twice" in out
+    assert "lists other under `mixed:` and under" in out
     b.build()
     err = capsys.readouterr().err
     assert "series 1 under `contents:` has no usable `title:`" in err
@@ -400,4 +382,3 @@ def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_
     assert "lists other under `mixed:` and under" in err
     assert [(s.title, s.ids) for s in b.courses()["alpha"].contents] == [
         ("Part 1", ["good"]), ("Second", ["other"])]
-

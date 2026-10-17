@@ -16,10 +16,10 @@ question, not by convention:
   topics calls `small_curriculum(repo)`, a made-up one with one of each
   thing the topic tree draws.
   `tests/build/test_check.py` is the one file here that isn't testing
-  `build.py`'s own output — it's testing `check.py`, a standalone tool
-  like the root five — but it lives here because it deliberately
-  cross-checks its own Problems against real `BuildError`s, which needs a
-  real build to compare against.
+  `build.py`'s own output — it's testing `check.py`, the contributor's
+  tool — but it lives here because `check.py` reads every page with the
+  build's own code, so a Problem is a `BuildError` by construction, and the
+  tests run one tree through both.
 - **`tests/e2e/`** — does this work in a real browser? Playwright drives a
   real Chromium against a real served site, sometimes against a real
   self-hosted Pyodide. Slower, and the only place JavaScript-only behavior
@@ -60,7 +60,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_context.py` | Context-page linking rules and the build errors a bad `context_for:` gets |
 | `test_links.py` | Cross-page link resolution and validation |
 | `test_old_addresses.py` | Legacy-URL redirect stub generation |
-| `test_check.py` | `check.py`'s own Problems, cross-checked against real `BuildError`s |
+| `test_check.py` | `check.py` reports what the build refuses as a Problem and what it carries on despite as a Note, and the pull-request offer |
 | `test_source_map.py` | The source map (`source_map.py`): how markdown is cut into blocks, that each range is the block it labels, that the map changes nothing about a page, and that splicing one range changes one block. One test builds every real tutorial with and without the map |
 
 **`tests/e2e/` — grouped by what's actually being exercised, not always one file per feature:**

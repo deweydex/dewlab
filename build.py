@@ -26,6 +26,7 @@ import argparse
 import ast
 import base64
 import concurrent.futures
+import contextlib
 import datetime
 import functools
 import gzip
@@ -799,6 +800,22 @@ def say(line: str) -> None:
         _NOTE_LINES.append(line)
     else:
         print(line, file=sys.stderr)
+
+
+@contextlib.contextmanager
+def collecting_notes():
+    """Keep every note for the caller to read while inside the block, instead
+    of printing it: what check.py turns into its Note lines. The way notes
+    were handled before is put back afterwards."""
+    global NOTES_AT_END
+    before = NOTES_AT_END
+    NOTES_AT_END = True
+    _NOTED.clear()
+    _NOTE_LINES.clear()
+    try:
+        yield
+    finally:
+        NOTES_AT_END = before
 
 
 def note(path: Path, message: str) -> None:
