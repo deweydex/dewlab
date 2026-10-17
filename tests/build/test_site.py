@@ -654,7 +654,7 @@ class TestWhatTheRuntimeReads:
         [entry] = series["tutorials"]
         assert entry == {
             "id": "sample", "title": "A Title", "url": "tutorials/sample.html",
-            "practice": {"id": "sample-practice", "title": "A Title", "url": "tutorials/sample-practice.html"},
+            "practices": [{"id": "sample-practice", "title": "A Title", "url": "tutorials/sample-practice.html"}],
         }
         assert routes[1]["series"][0]["title"] == "Also"
 

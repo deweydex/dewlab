@@ -54,6 +54,6 @@ educator makes can't break a build. About forty more refusals became notes,
 a tutorial whose main file is not named for its folder is now refused (a
 renamed file silently moved readers' saved work), and the build, which was
 three quarters running solutions, keeps a page's clean result between runs.
-A build without downloads: 186 s cold, 55 s with a warm cache. Still open:
-more than one practice page per tutorial, which wants its own change.
+A build without downloads: 186 s cold, 55 s with a warm cache. More
+than one practice page per tutorial is allowed since 7.302.
 

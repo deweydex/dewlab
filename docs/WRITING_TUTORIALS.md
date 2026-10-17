@@ -1271,6 +1271,12 @@ The contents page links a tutorial to its own practice page, and the tutorial
 links forward to it too, so practice is always one click from the material it is
 practising.
 
+A tutorial may have more than one practice page: a set for each topic, or an
+easier set and a harder one. Add `<slug>-practice-2.md` in the same folder with
+the same `practice_for:`. They are listed in the order of their ids, numbers
+read as numbers, and the contents page shows "Practice 1", "Practice 2" where
+there is more than one. Give each its own title; the build does not add one.
+
 A **mixed problem set** draws on several tutorials at once, declared with
 `practice_across:` instead, and listed in the course file under `mixed:` so
 the course page knows to show it:
