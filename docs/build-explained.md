@@ -149,9 +149,19 @@ finding each match, not just substitute fixed text.
   the comparison, `render_inputs()` says under a comparison table what
   it types (`render_typed()`), and `_run_solutions()` hands them to
   `SOLUTION_RUNNER`, which gives them to the cell's own run and to
-  `compare()`. A solution that raises `EOFError` fails the build with a
-  message asking for a typed block. A cell run by a reader never reads
-  them: there, `input()` waits for the reader.
+  `compare()`. A solution that raises `EOFError` is noted as unchecked, with
+  a message asking for a typed block; the build cannot type for it, and the
+  solution is not wrong. A cell run by a reader never reads them: there,
+  `input()` waits for the reader.
+- **"Why is a second build so much quicker?"** — `_run_solutions()` keeps
+  a clean page's result as an empty file named for `_solution_key()`: a hash
+  of the job (the cells, the toolkit, the data addresses), the runner's own
+  source, `tutorial_tools.py`, a fingerprint of `data/`
+  (`_tree_fingerprint()`) and of the Python and every installed package
+  (`_environment_fingerprint()`). Anything that could change a result is in
+  the key, so nothing is cleared by hand; only a clean pass is written, so a
+  failure or a skipped solution runs again every time. `--no-cache` turns it
+  off, and CI restores it for a pull request and not for `main`.
 - **"How does the knowledge map lay itself out?"** — `topic_tiers()`
   (how deep a topic is, based on its prerequisites) feeds `topic_layout()`
   (turning tiers into actual x/y coordinates), and `arrow_between()` draws

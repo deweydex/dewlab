@@ -32,10 +32,18 @@ That builds the whole site into `site/` and serves it at
 push, which is what keeps a published page from drifting from the markdown it
 came from.
 
-The downloadable single-file copies are the slow part of a build, so
-`python3 build.py --no-standalone` skips them while you are iterating. Build
-without that flag at least once before you open a pull request, since the
-download path has its own failure modes.
+Two things make a build slow. The downloadable single-file copies: 
+`python3 build.py --no-standalone` skips them while you are iterating, and a
+pull request's CI build leaves them out too, since the code that writes them is
+tested on small sites. A push to `main` and the publish job build them in full,
+so a failure only the download path has shows there, not in your pull request.
+And running every page's solutions, three quarters of a build: a page whose
+cells, toolkit, data, runtime and installed packages are unchanged ran clean
+last time and is not run again. What was kept is in `.build-cache/` (never
+committed), under a hash of exactly those things, so there is nothing to clear
+by hand; a failure, or a solution skipped for a missing package, is never kept.
+`python3 build.py --no-cache` runs everything, and a push to `main` does
+(`DECISIONS_LOG.md` 7.300).
 
 ---
 
@@ -61,8 +69,13 @@ things a browser test does not cover well.
 
 ### What a test or a refusal may stop
 
-A test that fails a pull request, or a `fail()` in `build.py` or a problem in
-`check.py`, has to name what breaks for a reader if it is let through: the page
+A choice an educator makes about their own page never stops a build: how many
+hints it has, whether a block has a question in it, which optional field is
+filled in, whether there is a practice page, a typo in a setting that has a
+sensible default. The build carries it out and says what it did. Only what a
+reader would find broken stops it. A test that fails a pull request, or a
+`fail()` in `build.py` or a problem in `check.py`, has to name what breaks for
+a reader if it is let through: the page
 does not load, a cell cannot run, a link or file points at nothing, a number
 the page states is wrong, saved work is lost, or the interface errors. Say it
 in the test's docstring or in the refusal's message. If you cannot, it is not
@@ -70,7 +83,9 @@ a gate. A preference about how a page is shaped or worded goes in the style
 guide, or, if an author would want to hear it at build time, in a `note()`
 that lets the build carry on. A check on the project's own planning files
 belongs in the script that owns those files (`dev/curriculum_map.py --check`),
-not in the test suite. A test that reads the project's own content (a real
+not in the test suite. The cases a teacher can reach are one table, in
+`tests/build/test_educator_choices.py`: each builds, says what it did, and
+shows it on the page. A test that reads the project's own content (a real
 tutorial, the real curriculum or map) reports, under `advisory`; a test of the
 build makes the small example it needs. One test of the rule: with every
 content folder emptied, the blocking tests all pass. And a link to a section a

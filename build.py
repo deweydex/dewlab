@@ -1924,10 +1924,16 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     data it uses, and an optional picture. `own: true` marks the project of
     the reader's own, which gets the wide card under the grid; any number of
     projects may say so and they may come in any position. `maths` and `data`
-    may be left out."""
+    may be left out, and so, with a note, may a project's title (it is called
+    after its id), its question and what it makes (its card goes without
+    them): a project still being drafted should not stop the page."""
     projects = meta.get("projects")
     if projects is None:
         return {}
+    if isinstance(projects, list) and projects and all(isinstance(key, str) for key in projects):
+        note(path, "`projects:` is a list of ids, so each project has no title, question "
+                   "or make yet. Write `id:` with those under it to fill them in")
+        projects = {key: {} for key in projects}
     if not isinstance(projects, dict) or not projects:
         fail(path, "`projects:` lists each project as `id:` with its title, "
                    "question, make, maths and data")
@@ -1937,11 +1943,14 @@ def page_projects(meta: dict, path: Path) -> dict[str, dict]:
             fail(path, f"project {key!r} in `projects:` is not an id like `best-line`: "
                        "lower-case letters and digits, joined by hyphens")
         if not isinstance(fields, dict):
-            fail(path, f"project {key!r} in `projects:` needs its fields: "
-                       + ", ".join(PROJECT_FIELDS))
+            fields = {}
+        fields = dict(fields)
         for name in PROJECT_REQUIRED:
             if not isinstance(fields.get(name), str) or not fields[name].strip():
-                fail(path, f"project {key!r} in `projects:` has no `{name}:`")
+                fields[name] = key.replace("-", " ").capitalize() if name == "title" else ""
+                note(path, f"project {key!r} in `projects:` has no `{name}:`, so "
+                           + ("it is called after its id" if name == "title"
+                              else f"its card goes without the {name} line"))
         picture = fields.get("picture")
         if picture is not None and not (path.parent / str(picture)).is_file():
             fail(path, f"project {key!r}'s picture {picture!r} is not in the tutorial's folder")
@@ -2026,10 +2035,12 @@ def render_project_chooser(projects: dict[str, dict]) -> str:
         return (
             f'<a class="dl-project-card{own}" href="#project-{key}" data-project="{key}">'
             f"{picture}"
-            f'<span class="dl-project-question">{_inline(fields["question"])}</span>'
-            f'<span class="dl-project-title">{_inline(fields["title"])}</span>'
-            f'<span class="dl-project-make">You make: {_inline(fields["make"])}</span>'
-            "</a>"
+            + (f'<span class="dl-project-question">{_inline(fields["question"])}</span>'
+               if fields["question"] else "")
+            + f'<span class="dl-project-title">{_inline(fields["title"])}</span>'
+            + (f'<span class="dl-project-make">You make: {_inline(fields["make"])}</span>'
+               if fields["make"] else "")
+            + "</a>"
         )
 
     grid = "".join(card(key, fields) for key, fields in projects.items() if not fields["own"])
@@ -3358,34 +3369,46 @@ def read_course(path: Path) -> Course:
         fail(path, "`contents:` is a list of series, each with a title and its tutorials")
     series: list[Series] = []
     listed: dict[str, str] = {}
-    for entry in contents:
-        if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
-            fail(path, "each series under `contents:` needs a `title:` line")
+    for position, entry in enumerate(contents, start=1):
+        if not isinstance(entry, dict):
+            fail(path, "each series under `contents:` is a `title:` and its `tutorials:`")
+        title_line = entry.get("title")
+        if not isinstance(title_line, str) or not series_key(title_line):
+            # A series still being named keeps its tutorials where they are,
+            # under a heading that says where it comes in.
+            title_line = f"Part {position}"
+            note(path, f"series {position} under `contents:` has no usable `title:` (it needs "
+                       f"a letter or a digit), so it is headed {title_line!r}")
         ids = entry.get("tutorials")
         if ids is None:
             ids = []
         if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
-            fail(path, f'the series "{entry["title"]}" needs `tutorials:` as a list of ids')
-        key = series_key(entry["title"])
-        if not key:
-            fail(path, f'the series title {entry["title"]!r} has no letters or digits in it')
+            fail(path, f'the series "{title_line}" needs `tutorials:` as a list of ids')
+        key = series_key(title_line)
         if key in {s.key for s in series}:
-            fail(path, f'two series are both called "{entry["title"]}" (or differ only in '
+            fail(path, f'two series are both called "{title_line}" (or differ only in '
                        "punctuation). Give one of them another title.")
+        kept: list[str] = []
         for ident in ids:
             if ident in listed:
-                fail(path, f'lists {ident} twice — under "{listed[ident]}" and under '
-                           f'"{entry["title"]}". A tutorial sits in one place on a course.')
-            listed[ident] = entry["title"]
-        series.append(Series(key=key, title=entry["title"].strip(), ids=list(ids)))
+                # A tutorial sits in one place on a course, and the first
+                # place it is listed is the one it keeps.
+                note(path, f'lists {ident} twice — under "{listed[ident]}" and under '
+                           f'"{title_line}". It stays under "{listed[ident]}"')
+                continue
+            listed[ident] = title_line
+            kept.append(ident)
+        series.append(Series(key=key, title=title_line.strip(), ids=kept))
     mixed = data.get("mixed")
     if mixed is None:
         mixed = []
     if not isinstance(mixed, list) or not all(isinstance(i, str) for i in mixed):
         fail(path, "`mixed:` is a list of ids of mixed problem sets")
-    for ident in mixed:
+    for ident in list(mixed):
         if ident in listed:
-            fail(path, f'lists {ident} under `mixed:` and under "{listed[ident]}"')
+            note(path, f'lists {ident} under `mixed:` and under "{listed[ident]}". '
+                       f'It stays under "{listed[ident]}"')
+            mixed = [other for other in mixed if other != ident]
     return Course(
         id=path.stem,
         path=path,
@@ -3474,8 +3497,10 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
                 fail(course.path, f"lists {ident} under `mixed:`, but there is no folder "
                                   f"tutorials/{ident}/")
             if not member.practice_across:
-                fail(course.path, f"lists {ident} under `mixed:`, and it is not a mixed "
-                                  "problem set (it has no practice_across line)")
+                note(course.path, f"lists {ident} under `mixed:`, and it is not a mixed "
+                                  "problem set (it has no practice_across line), so the "
+                                  "line is left out")
+                continue
             member.placements.append(Placement(course.id, "", 0))
     # The route position: where the page sits in the series of its default
     # course. A page on no route keeps 0 (nav_for() reads that honestly).

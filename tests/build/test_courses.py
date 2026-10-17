@@ -136,10 +136,13 @@ class TestNavigation:
         with pytest.raises(b.BuildError, match=r'courses/computational-methods\.yaml: the series "S" lists t3, but there is no folder tutorials/t3/'):
             b.build()
 
-    def test_an_id_listed_twice_in_one_course_stops_the_build(self, repo):
+    def test_an_id_listed_twice_in_one_course_stays_where_it_is_first_listed(self, repo, capsys):
+        # A tutorial sits in one place on a course; the first place wins and
+        # the note says so (DECISIONS_LOG 7.300).
         series(repo, count=2, order=["t1", "t2", "t1"])
-        with pytest.raises(b.BuildError, match="lists t1 twice"):
-            b.build()
+        b.build()
+        assert "lists t1 twice" in capsys.readouterr().err
+        assert [s.ids for s in b.courses()["computational-methods"].contents] == [["t1", "t2"]]
 
     def test_a_draft_listed_in_a_course_is_skipped_with_a_note(self, repo, capsys):
         series(repo, count=2)

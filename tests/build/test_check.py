@@ -229,7 +229,6 @@ MISTAKES = {
     "two cells with one id": (None, "```python exec\nid: a\nprint(1)\n```\n\n```python exec\nid: a\nprint(2)\n```\n", None),
     "an image that is not in the folder": (None, "![A plot](plot.png)\n", None),
     "a course listing an id with no folder": (None, None, ["good", "gone"]),
-    "a course listing an id twice": (None, None, ["good", "good"]),
 }
 
 
@@ -366,4 +365,39 @@ def test_check_notes_a_rough_edge_the_build_accepts_and_offers_nothing_to_stop_o
     assert "The course has no `title:`" in out
     b.build()
     assert "so the course is called 'alpha' on the site" in capsys.readouterr().err
+
+
+def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_a_note_in_both(repo, monkeypatch, capsys):
+    """Three slips in a course file that change what a student sees, so they
+    are said, in the checker and in the build, and neither stops (DECISIONS_LOG
+    7.300): an untitled series is headed `Part N`, a tutorial listed twice
+    stays where it is first listed, and a page under `mixed:` that is not a
+    mixed set is left out."""
+    import importlib
+    sys.path.insert(0, str(DEWLAB))
+    check = importlib.import_module("check")
+    importlib.reload(check)
+    monkeypatch.setattr(check, "ROOT", repo)
+    monkeypatch.setattr(check, "TUTORIALS", repo / "tutorials")
+    monkeypatch.setattr(check, "COURSES", repo / "courses")
+
+    tutorial(repo, "good")
+    tutorial(repo, "other")
+    (repo / "courses" / "alpha.yaml").write_text(
+        "title: Alpha\ncontents:\n"
+        "  - tutorials: [good]\n"
+        "  - title: Second\n    tutorials: [other, good]\n"
+        "mixed: [other]\n")
+    code, out = run_check(check)
+    assert code == 0, out
+    assert "Series 1 has no `title:`" in out
+    assert "`good` is listed 2 times in this course" in out
+    assert "`mixed:` names `other`, which is not a mixed problem set" in out
+    b.build()
+    err = capsys.readouterr().err
+    assert "series 1 under `contents:` has no usable `title:`" in err
+    assert "lists good twice" in err
+    assert "lists other under `mixed:` and under" in err
+    assert [(s.title, s.ids) for s in b.courses()["alpha"].contents] == [
+        ("Part 1", ["good"]), ("Second", ["other"])]
 

@@ -327,9 +327,12 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
     known = set(all_tutorial_ids())
     seen: Counter[str] = Counter()
     for n, series in enumerate(course.get("contents") or [], start=1):
-        if not isinstance(series, dict) or not series.get("title"):
-            report.problem(f"Series {n} needs a `title:`.")
+        if not isinstance(series, dict):
+            report.problem(f"Series {n} needs a `title:` and its `tutorials:`.")
             continue
+        if not series.get("title"):
+            report.note(f"Series {n} has no `title:`, so it is headed `Part {n}`. Add one.")
+            series = {**series, "title": f"Part {n}"}
         listed = series.get("tutorials") or []
         if not listed:
             report.note(f"The series \"{series['title']}\" lists no tutorials yet, so the course page leaves it out.")
@@ -343,7 +346,7 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
                 report.note(f"`{ident}` is a context page (it has `context_for:`). It follows its tutorial, so this line is left out.")
     for ident, n in seen.items():
         if n > 1:
-            report.problem(f"`{ident}` is listed {n} times in this course. List it once.")
+            report.note(f"`{ident}` is listed {n} times in this course. It stays where it is first listed; delete the other lines.")
     for ident in course.get("mixed") or []:
         folder = TUTORIALS / ident
         if not folder.is_dir():
@@ -351,7 +354,7 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
         else:
             fields, _, _ = split_frontmatter((folder / f"{ident}.md").read_text()) if (folder / f"{ident}.md").is_file() else (None, "", None)
             if not fields or "practice_across" not in fields:
-                report.problem(f"`mixed:` names `{ident}`, which is not a mixed problem set (it has no `practice_across:`).")
+                report.note(f"`mixed:` names `{ident}`, which is not a mixed problem set (it has no `practice_across:`), so the line is left out.")
     if not report.problems:
         total = sum(seen.values())
         report.ok(f"{len(course.get('contents') or [])} series, {total} tutorials, every id found.")

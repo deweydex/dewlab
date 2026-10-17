@@ -15,6 +15,14 @@ import yaml
 from helpers import *  # noqa: F401,F403
 from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
 
+class TestAMixedLineThatNamesAPageWithNoPracticeAcross:
+    def test_the_line_is_left_out_and_said(self, repo, capsys):
+        write(repo, "One.\n", slug="one")
+        course(repo, "zz-other", {}, mixed=["one"])
+        b.build()
+        assert "it is not a mixed problem set (it has no practice_across line), so the line is left out" in capsys.readouterr().err
+
+
 class TestPagesOfProblems:
     """A practice page belongs to a tutorial, or draws on several. Both
     shapes are the same mechanically; what differs is what they point at,
@@ -134,10 +142,6 @@ class TestPagesOfProblems:
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one"])
 
-    def _mixed_naming_a_non_mixed_page(self, repo):
-        write(repo, "One.\n", slug="one")
-        course(repo, "zz-other", {}, mixed=["one"])
-
     def _mixed_naming_a_nonexistent_slug(self, repo):
         write(repo, "One.\n", slug="one")
         self.practice(repo, "mixed", practice_across=["one", "nowhere"])
@@ -165,7 +169,6 @@ class TestPagesOfProblems:
 
     ERRORS = {
         "two pages claim one tutorial": (_two_pages_claim_one_tutorial, "has one page of problems"),
-        "mixed: names a page that is not a mixed set": (_mixed_naming_a_non_mixed_page, "lists one under `mixed:`, and it is not a mixed problem set"),
         "a mixed set names a slug that does not exist": (_mixed_naming_a_nonexistent_slug, "there is no folder tutorials/nowhere/"),
         "a mixed set names itself": (_mixed_naming_itself, "which is itself"),
         "a page sets both practice_for and practice_across": (_both_practice_for_and_practice_across, "cannot do both"),
