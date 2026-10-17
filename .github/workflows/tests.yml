@@ -110,35 +110,16 @@ jobs:
             python build.py --clean --no-cache
           fi
 
-      # The curriculum map is generated from the outcome data and the tutorials'
-      # own `covers:` frontmatter. A map that cannot be made at all (a `covers:`
-      # code that no outcome has) exits 2, and fails here; a claim for a
-      # section the page no longer has is noted and left out. One that
-      # is only out of date exits 1 and passes here: the map also counts the
-      # italic words in every tutorial's prose, so any new sentence can make it
-      # stale, and a stale planning document breaks no page. The house-style
-      # job below reports it (DECISIONS_LOG 7.291).
-      - name: Fail if the curriculum map cannot be made
-        run: python3 dev/curriculum_map.py --check || [ $? -eq 1 ]
-
-      # The pair game carries the topics as a JSON blob, because it is one file
-      # a phone opens with no build step. A copy drifts: after thirteen topics
-      # were split it still offered fourteen that no longer existed.
-      - name: Fail if the pair game's topics are out of date
-        run: python3 dev/build_topic_game.py --check
-
-      # The pair reports are generated from the judgement files and checked in,
-      # so a run that reported different loops each time would show up as noise
-      # in every diff.
-      - name: Fail if the topic editor's graph is out of date
-        run: python3 dev/build_topic_editor.py --check
-
-      - name: Fail if a pair report is out of date
-        run: |
-          python3 dev/pair_results.py
-          python3 dev/pair_results.py --from blind
-          python3 dev/pair_results.py --from sighted
-          git diff --exit-code planning/curriculum/review/pair-results*.md
+      # Files a script writes from other files, and that something depends on:
+      # the pair game's topics (one file a phone opens with no build step), the
+      # topic editor's graph, the pair reports (which would show up as noise in
+      # every diff if they changed on each run), and whether the curriculum map
+      # can be made at all. A stale one blocks; so does one that cannot be made
+      # (a `covers:` code no outcome has). The curriculum map merely being out
+      # of date, and the pictures, are reported by the house-style job below.
+      # One list of them, and `--fix` to regenerate, is dev/generated.py.
+      - name: Fail if a generated file is out of date, or cannot be made
+        run: python3 dev/generated.py
 
 
   # Checks that look after the project rather than any page, reported and
@@ -168,22 +149,14 @@ jobs:
           python -m pytest tests --ignore=tests/e2e -m advisory -rf \
             || echo "::warning title=Advisory tests::Some advisory tests failed. They do not block this pull request; the log names each one and what it found."
 
-      - name: Report whether the curriculum map is current and the plan agrees with itself
+      # The curriculum map and the Dewey Track's pictures are drawn from the
+      # pages' own cells and `covers:`, so a cell edited without a
+      # regeneration leaves them behind their page. A report: the page still
+      # works, and the fix is one command for whoever owns them.
+      - name: Report any generated file that is out of date
         run: |
-          python3 dev/curriculum_map.py --check \
-            || echo "::warning title=Curriculum map::planning/CURRICULUM_MAP.md is out of date, or the planning files disagree with each other. The log names each. Run python3 dev/curriculum_map.py to refresh the map, or leave it for a maintainer."
-
-      # The Dewey Track's pictures are drawn from the pages' own cells, so a
-      # cell edited without a regeneration leaves a picture that disagrees
-      # with its page. A report: the page still works, and the fix is one
-      # command for whoever owns the pictures.
-      - name: Report a generated picture that is out of date
-        run: |
-          stale=0
-          python3 dev/graphics/dewey_units_1_5.py --check || stale=1
-          python3 dev/graphics/dewey_units_6_10.py --check || stale=1
-          [ "$stale" -eq 0 ] \
-            || echo "::warning title=Pictures::A committed picture is not what its generator draws. Run the generator the log names with --write."
+          python3 dev/generated.py --all \
+            || echo "::warning title=Generated files::A file a script writes is not what its script writes now, or the planning files disagree with each other. The log above names each and the command that fixes it; python3 dev/generated.py --fix does them all."
 
       # The build already refuses to publish a tutorial whose `tutorial:` link
       # goes nowhere. This holds the documents about the project to a similar

@@ -107,19 +107,19 @@ one goes.
 
 Three workflows run on every push.
 
-`tests` runs the unit suite, builds the site, fails if the curriculum map
-cannot be made (a `covers:` code that no outcome has), and fails if
-one of the generated files for the topic tools is out of date. Its
-`house-style` job runs the checks that look after the project rather than any
-page: the tests marked `advisory`, whether `planning/CURRICULUM_MAP.md` is
-current and the planning files agree with each other, whether the Dewey Track's
-generated pictures are current, and the links inside the documents about the
-project. It reports what
-it finds as a warning on the pull request and never fails it
+`tests` runs the unit suite, builds the site, and runs `python3
+dev/generated.py`, which fails if a generated file something depends on is out
+of date (the pair game's topics, the topic editor's graph, the pair reports)
+or cannot be made (a `covers:` code that no outcome has). Its `house-style` job
+runs the checks that look after the project rather than any page: the tests
+marked `advisory`, `python3 dev/generated.py --all` (which adds the curriculum
+map being current, the planning files agreeing with each other, and the Dewey
+Track's pictures), and the links inside the documents about the project. It
+reports what it finds as a warning on the pull request and never fails it
 (`DECISIONS_LOG.md` 7.291). To see those checks locally, run
-`python3 -m pytest -m advisory`, `python3 dev/curriculum_map.py --check`,
-`python3 dev/graphics/dewey_units_1_5.py --check` (and `_6_10`) and
-`python3 dev/check_doc_links.py`.
+`python3 -m pytest -m advisory`, `python3 dev/generated.py --all` and
+`python3 dev/check_doc_links.py`. After changing a cell or a `covers:` line,
+`python3 dev/generated.py --fix` regenerates whatever fell behind.
 
 On a pull request, `tests` first sorts the changed files (`DECISIONS_LOG.md`
 7.299). One that changes only documents about the project (`planning/`,
