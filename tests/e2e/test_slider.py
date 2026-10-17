@@ -95,8 +95,8 @@ def test_where_the_reader_left_it_survives_a_reload(tab):
 def test_reset_empties_the_strip_with_the_output(tab):
     tab.evaluate(f"dewlab.runCell({CELL!r})")
     wait_for_output(tab, "amplitude is 2")
+    assert tab.locator(f"{STRIP} input[type=range]").count() == 1  # it was there to empty
     reset = tab.locator(f".dl-cell[data-cell-id='{CELL}'] .dl-btn-reset")
-    if reset.count() == 0:
-        pytest.skip("this cell has no reset button")
+    assert reset.count() == 1, "a cell that has run offers a reset"
     reset.first.click()
-    assert tab.locator(f"{STRIP} .dl-slider").count() == 0
+    assert tab.locator(f"{STRIP} input[type=range]").count() == 0

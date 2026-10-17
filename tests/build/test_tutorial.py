@@ -927,7 +927,7 @@ class TestStagedHints:
         assert 'data-cell="stub"' in page
         assert 'data-after="errors:5"' in page
         assert " hidden>" in page
-        assert "<summary>Let’s slow down a moment…</summary>" in page
+        assert f"<summary>{b.DEFAULT_HINT_TITLE}</summary>" in page
         # The body is markdown and maths.
         assert "<summary>some steps</summary>" in page
         assert "<ol>" in page and "<code>a[0]</code>" in page
