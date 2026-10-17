@@ -537,6 +537,14 @@ fold's title is given a range of its own in the browser (`foldTitle()`), and
 edit mode opens every fold that has blocks inside and closes it again on stop.
 A fold with nothing mapped inside still edits as one markdown box.
 
+`inpage-table.js` finds the text of each cell of a table in the file
+(`parseTable()`: splitting on pipes that are not escaped or inside code spans,
+leaving the delimiter row out). `tableCells()` in `inpage-edit.js` gives each
+`<td>`/`<th>` that range if the markdown's rows and columns agree with the
+page's table, and otherwise leaves the table as one markdown box. A cell being
+edited shows its markdown and is `contenteditable`; closing it splices only
+those characters, so padding and neighbouring cells are untouched.
+
 `inpage-cell.js` cuts a cell's block (its `python exec` or `sql exec` fence and
 the hint, solution and similar fences written after it) into the text a person
 may change and the text they may not. `classify()` calls such a block `cell`.

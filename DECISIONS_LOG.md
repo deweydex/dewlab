@@ -5986,3 +5986,18 @@ Choices somebody could have made differently.
 Not done: tables (next), plain code fences in a code editor, a real phone.
 
 *Cost to change: drop the recursion in `mark()` (`_fold_inside()`), and the `fold`/`summary` modes and the opening of folds in `assets/inpage-edit.js`; the markup is stripped from downloads either way.*
+
+**7.305 — "Edit this page": a table's cells edit one at a time, as their markdown.** Josh, 17 October 2026, last of the three in the order he set: "Let's start with the code cells. Then fold, then tables."
+
+There are 313 tables in the tutorials. Until now each opened as one markdown box holding every row, and the rich editor's table output pads every column, so a change to one cell would have rewritten the whole table in the pull request. Each cell now carries the byte range of its own text (`assets/inpage-table.js`). Clicking a cell turns it into its markdown; leaving it splices those characters and nothing else. Checked against the built site: all 333 tables on mapped pages (including those inside folds) agree with their markdown in rows and columns.
+
+Choices somebody could have made differently.
+
+- **A cell shows its markdown, not rendered text,** as maths shows its TeX. The alternative was to edit rendered text and convert back, which the table output of the rich editor showed to be lossy.
+- **One line per cell, pipes escaped.** Enter finishes the cell; a typed `|` becomes `\|`.
+- **No rows or columns added or removed.** That changes the delimiter row and every line, and a form for it is a design of its own. A table the page and the markdown disagree about still opens as one markdown box.
+- **An empty cell is filled after the space the file left in it.** The padding then looks a little off in the file, which renders the same.
+
+Not done: adding and removing rows and columns, a code editor for plain code fences, a real phone, the non-owner token check.
+
+*Cost to change: `tableCells()` and the `tablecell` mode in `assets/inpage-edit.js`, and `assets/inpage-table.js`; a table then edits as one box again.*

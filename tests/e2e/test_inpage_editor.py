@@ -34,6 +34,7 @@ PAGE = (
     "The *square root*{.term} of $x_1$ is a number.\n\n"
     '<details class="dl-hint"><summary>stuck?</summary>\n\n'
     "Try the first step.\n\n- one\n- two\n\n```python\nx = 1\n```\n\n</details>\n\n"
+    "| Name | Note |\n|------|------|\n| one  | two  |\n| *three* | $x_1$ |\n| | `a|b` |\n\n"
     "{{include: setup/shared.md}}\n\n"
     "```python exec\nid: only\nhint: Try it.\nprint(1)\n```\n\n"
     "```hint\nLook again.\n```\n"
@@ -267,7 +268,7 @@ def test_a_heading_and_a_plain_paragraph_edit_in_place_and_the_rest_is_locked_or
     modes = page.evaluate("""[...document.querySelectorAll('main#dl-body > [data-md]')]
         .map(n => [n.tagName.toLowerCase(), n.dataset.dlEdit])""")
     assert modes == [["h1", "rich"], ["p", "rich"], ["p", "rich"], ["p", "rich"],
-                     ["ul", "rich"], ["p", "rich"], ["details", ""], ["blockquote", ""], ["div", "cell"]]
+                     ["ul", "rich"], ["p", "rich"], ["details", ""], ["table", ""], ["blockquote", ""], ["div", "cell"]]
 
 
 def test_typing_in_a_paragraph_changes_that_paragraph_of_the_file_and_nothing_else(editing, site):
@@ -692,3 +693,60 @@ def test_discarding_puts_a_changed_fold_title_back(editing):
     page.click("#dl-edit-discard")
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('No changes')")
     assert page.inner_text("details.dl-hint > summary") == "stuck?"
+
+
+def test_a_tables_cells_each_edit_in_place_and_show_their_markdown(editing):
+    page, fake, manifest = editing
+    start(page)
+    modes = page.evaluate("""[...document.querySelectorAll('main#dl-body > table td, main#dl-body > table th')]
+        .map(n => n.dataset.dlEdit)""")
+    assert modes == ["tablecell"] * 8
+    page.click("main#dl-body > table tbody tr:nth-child(2) td:nth-child(1)")
+    assert page.inner_text("main#dl-body > table tbody tr:nth-child(2) td:nth-child(1)") == "*three*"
+    assert page.evaluate("document.activeElement.tagName") == "TD"
+
+
+def test_changing_one_cell_changes_only_that_cell_and_keeps_the_padding(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("main#dl-body > table tbody tr:nth-child(1) td:nth-child(2)")
+    page.keyboard.press("Control+A")
+    page.keyboard.type("2")
+    page.keyboard.press("Enter")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('1 block changed')")
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("| one  | two  |", "| one  | 2  |")
+
+
+def test_an_empty_cell_can_be_filled_and_a_typed_pipe_is_escaped(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("main#dl-body > table tbody tr:nth-child(3) td:nth-child(1)")
+    page.keyboard.type("a | b")
+    page.keyboard.press("Enter")
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("| | `a|b` |", "| a \\| b| `a|b` |")
+
+
+def test_a_cell_opened_and_left_alone_is_not_an_edit_and_is_put_back(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("main#dl-body > table tbody tr:nth-child(2) td:nth-child(2)")
+    leave(page)
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('No changes')")
+    assert page.evaluate("document.querySelector('main#dl-body > table tbody tr:nth-child(2) td:nth-child(2) .dl-math') !== null")
+
+
+def test_table_cells_are_found_in_the_markdown_by_their_text(editing):
+    page, fake, manifest = editing
+    result = page.evaluate("""async () => {
+        const m = await import('/assets/inpage-table.js');
+        const text = '| A | B |\\n|---|---|\\n| a \\\\| b | `x|y` |\\n|  | z |';
+        const rows = m.parseTable(text);
+        return [rows.map((r) => r.map((c) => text.slice(c.start, c.end))), m.parseTable('not a table'), m.cellText(' a | b\\n c ')];
+    }""")
+    assert result[0] == [["A", "B"], ["a \\| b", "`x|y`"], ["", "z"]]
+    assert result[1] is None
+    assert result[2] == "a \\| b c"
