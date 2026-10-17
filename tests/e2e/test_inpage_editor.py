@@ -189,6 +189,16 @@ def start(page):
     page.wait_for_selector("body.dl-editing")
 
 
+def page_text(page):
+    """The page's words, without the run buttons: their label reads "…" until
+    Python has booted and "Run" after, which is the boot, not an edit."""
+    return page.evaluate("""() => {
+        const body = document.querySelector("main#dl-body").cloneNode(true);
+        body.querySelectorAll("button").forEach((b) => b.remove());
+        return body.innerText || body.textContent;
+    }""")
+
+
 def type_into(page, selector, text):
     page.click(selector)
     page.wait_for_selector(".dl-inplace .ProseMirror")
@@ -380,12 +390,12 @@ def test_a_page_that_changed_on_main_since_the_build_is_not_saved_over(editing):
 def test_discard_puts_the_page_back_as_it_was(editing):
     page, fake, manifest = editing
     start(page)
-    before = page.inner_text("main#dl-body")
+    before = page_text(page)
     type_into(page, "main#dl-body > p:nth-of-type(2)", " Added.")
     leave(page)
     page.click("#dl-edit-discard")
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('No changes')")
-    assert page.inner_text("main#dl-body") == before
+    assert page_text(page) == before
 
 
 def test_stopping_with_unsaved_changes_asks_first_and_cancel_keeps_them(editing):
@@ -405,13 +415,13 @@ def test_stopping_with_unsaved_changes_asks_first_and_cancel_keeps_them(editing)
 def test_stopping_with_unsaved_changes_and_agreeing_puts_the_page_back(editing):
     page, fake, manifest = editing
     start(page)
-    before = page.inner_text("main#dl-body")
+    before = page_text(page)
     type_into(page, "main#dl-body > p:nth-of-type(2)", " Added.")
     leave(page)
     page.on("dialog", lambda dialog: dialog.accept())
     page.click("#dl-edit-toggle")
     page.wait_for_function("!document.body.classList.contains('dl-editing')")
-    assert page.inner_text("main#dl-body") == before
+    assert page_text(page) == before
     assert fake.blobs == []
 
 
