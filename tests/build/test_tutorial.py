@@ -662,11 +662,6 @@ class TestNotesAndDatasets:
         with pytest.raises(b.BuildError, match="no alt attribute"):
             b.build()
 
-    def _duplicate_note_id(repo):
-        write(repo,
-              '<aside class="dl-note" id="dup">\n\nOne.\n\n</aside>\n\n'
-              '<aside class="dl-note" id="dup">\n\nTwo.\n\n</aside>\n', slug="one")
-
     def _dataset_missing_csv(repo):
         path = write(repo, "Prose.\n", slug="one")
         add_frontmatter(path, "datasets:\n  - missing\n")
@@ -678,7 +673,6 @@ class TestNotesAndDatasets:
         dataset(repo, "missing", with_attribution=False)
 
     @pytest.mark.parametrize("setup, match", [
-        (_duplicate_note_id, "share the id"),
         (_dataset_missing_csv, "data/missing.csv"),
     ])
     def test_note_and_dataset_faults_fail_the_build(self, repo, setup, match):

@@ -2982,8 +2982,9 @@ def extract_generated_blocks(body: str, path: Path) -> tuple[str, list[str]]:
     def one(match: re.Match) -> str:
         name = match.group("name")
         if name not in GENERATED_BLOCKS:
-            fail(path, f"[[{name}]] is not a generated block dewlab knows — "
-                       f"one of {sorted(GENERATED_BLOCKS)}")
+            note(path, f"[[{name}]] is not a generated block dewlab knows, so it is left "
+                       f"out of the page. The ones it knows are {', '.join(sorted(GENERATED_BLOCKS))}")
+            return ""
         names.append(name)
         return f"<!--dewlab-generated-{len(names) - 1}-->"
 
@@ -3022,17 +3023,23 @@ def read_page(name: str) -> tuple[dict, str]:
     else:
         fail(path, "does not exist")
     if not text.startswith("---"):
-        fail(path, "no YAML frontmatter — the file must open with a --- line")
-    end = text.find("\n---", 3)
-    if end == -1:
-        fail(path, "frontmatter is never closed with a --- line")
-    raw, body = text[3:end], text[end + 4 :]
-    try:
-        meta = yaml.safe_load(raw) or {}
-    except yaml.YAMLError as exc:
-        fail(path, f"frontmatter is not valid YAML: {exc}")
-    if not isinstance(meta, dict) or "title" not in meta:
-        fail(path, "frontmatter is missing title")
+        # A page with nothing above it is only a page with no title yet.
+        meta, body = {}, text
+    else:
+        end = text.find("\n---", 3)
+        if end == -1:
+            fail(path, "frontmatter is never closed with a --- line")
+        raw, body = text[3:end], text[end + 4 :]
+        try:
+            meta = yaml.safe_load(raw) or {}
+        except yaml.YAMLError as exc:
+            fail(path, f"frontmatter is not valid YAML: {exc}")
+        if not isinstance(meta, dict):
+            fail(path, "frontmatter must be a mapping of fields")
+    if not meta.get("title"):
+        meta["title"] = name.replace("-", " ").capitalize()
+        note(path, f"has no title:, so the page is called {meta['title']!r}. Add "
+                   "`title:` between two --- lines at the top")
     body = body.lstrip("\n")
     body, cards = extract_page_cards(body, path)
     body, generated = extract_generated_blocks(body, path)
@@ -3179,7 +3186,13 @@ def extract_notes(body_html: str, path: Path) -> tuple[str, list[Note]]:
     def one(match: re.Match) -> str:
         note_id = match.group("id")
         if note_id in seen:
-            fail(path, f"two notes share the id {note_id!r}")
+            # An id only lets a link reach the note in the reference panel.
+            number = 2
+            while f"{note_id}-{number}" in seen:
+                number += 1
+            note(path, f"two notes share the id {note_id!r}, so the second is "
+                       f"{note_id}-{number}")
+            note_id = f"{note_id}-{number}"
         seen.add(note_id)
         note_html = match.group("html")
         notes.append(Note(id=note_id, html=note_html))
@@ -4049,8 +4062,9 @@ def with_python(entries: list[dict], path: Path) -> list[dict]:
         if isinstance(names, str):
             names = [names]
         if not isinstance(names, list) or not all(isinstance(n, str) for n in names):
-            fail(path, f'glossary entry "{entry.get("term")}" has a `python:` that is '
-                       "not a dotted name or a list of them.")
+            note(path, f'glossary entry "{entry.get("term")}" has a `python:` that is not '
+                       "a dotted name or a list of them, so it shows no signature")
+            continue
         shown = [signatures[name] for name in names if name in signatures]
         if shown:
             entry["signatures"] = shown
@@ -4082,10 +4096,16 @@ def _read_glossary(path: Path) -> list[dict]:
         return []
     data = read_yaml(path) or {}
     entries = data.get("entries") or []
+    # What kind an entry is decides which group of the reference it sits in.
+    # One this build does not know has nowhere to go, so it is left out, and
+    # said: a guess at "concept" could put a function where a reader looks
+    # for an idea.
     for entry in entries:
         if entry.get("kind") not in GLOSSARY_KINDS:
-            fail(path, f'glossary entry "{entry.get("term")}" has kind '
-                       f'{entry.get("kind")!r}, not one of {GLOSSARY_KINDS}.')
+            note(path, f'glossary entry "{entry.get("term")}" has kind '
+                       f'{entry.get("kind")!r}, not one of {", ".join(GLOSSARY_KINDS)}, '
+                       "so it is left out of the reference")
+    entries = [entry for entry in entries if entry.get("kind") in GLOSSARY_KINDS]
     kept = [entry for entry in entries if entry.get("term") and entry.get("definition")]
     if len(kept) < len(entries):
         note(path, f"{len(entries) - len(kept)} glossary entr"
@@ -4299,16 +4319,19 @@ def _load_basics(path: Path, kind: str) -> list[dict]:
     groups = []
     for group in data.get("groups") or []:
         if not group.get("label"):
-            fail(path, f"a {kind} group is missing a label.")
+            note(path, f"a {kind} group is missing a label, so it is headed Other")
+            group["label"] = "Other"
         entries = group.get("entries") or []
-        if not entries:
+        kept = [entry for entry in entries if entry.get("term") and entry.get("definition")]
+        if len(kept) < len(entries):
+            note(path, f"a {kind} entry is missing a term or a definition, so it is left "
+                       f"out of the group {group['label']!r}")
+        if not kept:
             note(path, f'the group {group.get("label")!r} has no entries, so it is left out')
             continue
+        group["entries"] = kept
         groups.append(group)
-        for entry in entries:
-            if not entry.get("term") or not entry.get("definition"):
-                fail(path, f"a {kind} entry is missing a term or a definition.")
-        with_python(entries, path)
+        with_python(kept, path)
     return groups
 
 

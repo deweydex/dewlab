@@ -411,11 +411,16 @@ class TestPageCardsAndSections:
         with pytest.raises(b.BuildError, match=match):
             b.build()
 
-    def test_an_unknown_generated_block_fails_the_build(self, repo):
-        self.home(repo, "[[not-a-real-block]]\n")
+    def test_an_unknown_generated_block_is_left_out_and_said(self, repo, capsys):
+        # A typo in a block's name is not worth a stopped build; the page
+        # lacks the block, and the note names the ones that exist.
+        self.home(repo, "Before.\n\n[[not-a-real-block]]\n\nAfter.\n")
         write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="not-a-real-block"):
-            b.build()
+        b.build()
+        err = capsys.readouterr().err
+        assert "[[not-a-real-block]] is not a generated block" in err and "search-box" in err
+        page = (repo / "site" / "index.html").read_text()
+        assert "Before." in page and "After." in page and "not-a-real-block" not in page
 
     def test_maths_flag_follows_whether_a_page_actually_uses_maths(self, repo):
         # convert_prose_with_math() is the same self-contained
@@ -457,14 +462,17 @@ class TestPageCardsAndSections:
 class TestTheAboutPage:
     """about.html: hand-written content, from pages/about.md rather than a
     hardcoded string in build.py — see read_page(). The page that builds
-    is checked in TestOnePlainTutorial; this is the way it fails."""
+    is checked in TestOnePlainTutorial; this is what it does with no title."""
 
-    def test_an_about_md_with_no_title_fails_the_build(self, repo):
+    @pytest.mark.parametrize("text", ["---\nnot_title: x\n---\n\nBody.\n", "Just a body.\n"],
+                             ids=["no-title", "no-frontmatter"])
+    def test_an_about_md_with_no_title_is_called_by_its_file_name_and_said(self, repo, capsys, text):
         (repo / "pages").mkdir(exist_ok=True)
-        (repo / "pages" / "about.md").write_text("---\nnot_title: x\n---\n\nBody.\n")
+        (repo / "pages" / "about.md").write_text(text)
         write(repo, "Prose.\n")
-        with pytest.raises(b.BuildError, match="title"):
-            b.build()
+        b.build()
+        assert "has no title:" in capsys.readouterr().err
+        assert "<title>About" in (repo / "site" / "about.html").read_text()
 
 
 class TestPagesAreOptional:

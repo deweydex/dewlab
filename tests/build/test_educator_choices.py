@@ -65,6 +65,11 @@ CASES = {
     "a question with no text": (
         "```question\nid: q\ntype: multiple-choice\nanswer: 1\n```\n",
         "has no text in it, so it is left out", None),
+    # notes on a page
+    "two notes with the same id": (
+        '<aside class="dl-note" id="dup">\n\nOne.\n\n</aside>\n\n'
+        '<aside class="dl-note" id="dup">\n\nTwo.\n\n</aside>\n',
+        "two notes share the id 'dup', so the second is dup-2", None),
     # predictions
     "a prediction of an unknown type": (
         CELL + "```predict\ntype: essay\n\nWhy?\n```\n", "so it is read as `text`", None),

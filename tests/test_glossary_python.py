@@ -92,8 +92,9 @@ class TestTheBuild:
         assert entries[0]["signatures"] == [gp.display("len", len, None)]
         assert "signatures" not in entries[1]
 
-    def test_a_python_field_of_the_wrong_shape_stops_the_build(self):
+    def test_a_python_field_of_the_wrong_shape_shows_no_signature_and_says_so(self, capsys):
         entries = [{"term": "len()", "kind": "function", "definition": "d",
                     "python": {"name": "len"}}]
-        with pytest.raises((build.BuildError, SystemExit)):
-            build.with_python(entries, ROOT / "tutorials" / "x" / "x.glossary.yaml")
+        shown = build.with_python(entries, ROOT / "tutorials" / "x" / "x.glossary.yaml")
+        assert "signatures" not in shown[0]
+        assert "not a dotted name" in capsys.readouterr().err
