@@ -430,6 +430,20 @@ def test_stopping_after_saving_does_not_ask(editing):
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
 
 
+def test_pressing_stop_editing_once_stops_and_stays_stopped(editing):
+    # The button had two click handlers, one the page's and one the session's.
+    # One press stopped the session and, if that finished first, the other
+    # started a new one a moment later.
+    page, fake, manifest = editing
+    start(page)
+    page.click("#dl-edit-toggle")
+    page.wait_for_function("!document.body.classList.contains('dl-editing')")
+    page.wait_for_timeout(1500)  # long enough for a second session to start
+    assert not page.evaluate("document.body.classList.contains('dl-editing')")
+    assert page.inner_text("#dl-edit-toggle") == "Edit this page"
+    assert "Getting this page's source" not in page.inner_text("#dl-edit-status")
+
+
 def test_forgetting_the_token_removes_it_and_hides_the_button(editing):
     page, fake, manifest = editing
     page.click("#dl-settings-toggle")
