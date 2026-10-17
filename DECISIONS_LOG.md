@@ -5953,7 +5953,7 @@ Not done: placing a tooltip beside the code. CodeMirror positions a tooltip abov
 
 *Cost to change: delete `pythonDocOnRightClick()` and its line in `assistsFor()`, remove `NOTEBOOK_ASSISTS`, rebuild `assets/vendor/`.*
 
-**7.302 — "Edit this page": a code cell edits in a code editor, with its id fixed.** Josh, 17 October 2026, ordering the remaining blocks: "Let's start with the code cells. Then fold, then tables."
+**7.303 — "Edit this page": a code cell edits in a code editor, with its id fixed.** Josh, 17 October 2026, ordering the remaining blocks: "Let's start with the code cells. Then fold, then tables."
 
 A `python exec` or `sql exec` cell, with the hint, solution and similar fences written after it, opens as a panel in the cell's place: the code and any further header lines (`hint:`, `expect:`) in the same CodeMirror editor the notebook uses, and each following fence as a text box. `assets/inpage-cell.js` does the cutting and rebuilding.
 
@@ -5970,3 +5970,19 @@ Checked against all 2,526 cells in the repository: each parses, and rebuilds byt
 Not done: folds and tables (next, in that order), questions and site editors, a form for a hint's `for:` line, and a real phone.
 
 *Cost to change: `classify()` back to sending a cell to `locked`, delete `assets/inpage-cell.js`, `openCell()` and the `code` entry in `manifest.edit`.*
+
+**7.304 — "Edit this page": the blocks inside a fold edit like the page around them.** Josh, 17 October 2026, second in the order he set: "Let's start with the code cells. Then fold, then tables."
+
+There are 3,337 folds in the tutorials (1,563 plain answers, 870 hints, 758 answers with a code fence, 50 "why" folds), and they hold most of the hand-written explanation a teacher would want to correct. The source map now goes inside them: the blocks of a hint or an answer carry the byte range of their own text, so the paragraph, list, quote and code editors built for the page work there unchanged, and an edit changes only that block of the file.
+
+Choices somebody could have made differently.
+
+- **Edit the blocks inside, not the fold as one box.** The alternative, one markdown box for a whole fold, was what the first slice did. It made a teacher fix one word in a box holding ten lines of markdown, with the `<details>` tag and the maths in view.
+- **Edit mode opens every fold, and stopping closes them.** A closed fold hides what is to be edited, and clicking a title now edits it instead of opening it. The page therefore looks different in edit mode in this one way.
+- **A fold's title is a line of plain text.** One that contains markup or runs over lines is left to the file.
+- **A plain code fence is a markdown box**, on the page as well as in folds, with its backticks in view. A code editor for them would be better; cells have one already, and these fences would be the next use of it.
+- **The map still falls back safely.** The build keeps the map only if the page reads the same with and without it; the corpus test confirms that holds for every page, with the folds marked.
+
+Not done: tables (next), plain code fences in a code editor, a real phone.
+
+*Cost to change: drop the recursion in `mark()` (`_fold_inside()`), and the `fold`/`summary` modes and the opening of folds in `assets/inpage-edit.js`; the markup is stripped from downloads either way.*

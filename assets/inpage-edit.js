@@ -51,12 +51,25 @@ export function splice(source, edits) {
 export function classify(tag, text) {
   const t = text.trim();
   if (isCellBlock(t) && parseCellBlock(t)) return "cell";
+  if (tag === "pre" && t.startsWith("```")) return "source";   // an ordinary code fence
   if (!t || t.startsWith("{{include") || t.startsWith("```")) return "locked";
   if (/^h[1-6]$/.test(tag) || tag === "p" || ["ul", "ol", "blockquote"].includes(tag)) {
     return richSafe(t) ? "rich" : "source";
   }
   if (["table", "details", "pre"].includes(tag)) return "source";
   return "locked";
+}
+
+/* Where the title of a fold lies in the fold's markdown, as offsets into the
+ * fold's text, or null when it is not a plain one-line title. */
+export function foldTitle(text) {
+  const open = text.indexOf("<summary>");
+  const close = text.indexOf("</summary>");
+  if (open < 0 || close < open) return null;
+  const start = open + "<summary>".length;
+  const title = text.slice(start, close);
+  if (/[\n<]/.test(title)) return null;
+  return { start, end: close };
 }
 
 export function summary(count) {
@@ -157,14 +170,39 @@ class Session {
     this.savedAt = 0;          // so "unsaved" is changes !== savedAt
 
     this.root = document.getElementById("dl-body");
-    this.blocks = [...this.root.children].filter((node) => node.hasAttribute("data-md"));
+    /* The page's blocks, and the blocks inside its folds. A fold's title is a
+     * block of its own, given a range here (the fold's markdown has one). */
+    const found = [];
+    const walk = (parent) => {
+      for (const node of parent.children) {
+        if (!node.hasAttribute("data-md")) continue;
+        found.push(node);
+        if (node.tagName === "DETAILS" && node.querySelector("[data-md]")) {
+          const [start] = node.getAttribute("data-md").split(":").map(Number);
+          const title = foldTitle(this.source.slice(start, Number(node.getAttribute("data-md").split(":")[1])));
+          const head = node.querySelector(":scope > summary");
+          if (title && head) {
+            head.setAttribute("data-md", `${start + title.start}:${start + title.end}`);
+            found.push(head);
+          }
+          walk(node);
+          /* Edit mode shows what a fold holds; stopping puts it back. */
+          if (!node.open) { node.open = true; this.folded.push(node); }
+        }
+      }
+    };
+    this.folded = [];
+    walk(this.root);
+    this.blocks = found;
     document.body.classList.add("dl-editing");
     for (const node of this.blocks) this.arm(node);
 
     this.onClick = (event) => {
       const hit = event.target.closest("[data-md]");
-      if (!hit || hit.parentElement !== this.root) return;
+      if (!hit) return;
       const node = hit.dlOwner || hit;           // an editor stands for the block it replaced
+      if (!this.blocks.includes(node)) return;
+      if (node.tagName === "SUMMARY" || event.target.closest("summary")) event.preventDefault();   // do not fold or unfold
       if (!node.dataset.dlEdit) return;
       if (event.target.closest("a")) event.preventDefault();
       /* A cell's own buttons (run, reset, the code box) do nothing while editing. */
@@ -180,10 +218,14 @@ class Session {
   arm(node) {
     const [start, end] = node.getAttribute("data-md").split(":").map(Number);
     const text = this.source.slice(start, end);
-    const mode = classify(node.tagName.toLowerCase(), text);
-    node.dataset.dlEdit = mode === "locked" ? "" : mode;
+    const tag = node.tagName.toLowerCase();
+    /* A fold with blocks inside is edited through them and its title. */
+    const mode = tag === "summary" ? "summary"
+      : tag === "details" && node.querySelector("[data-md]") ? "fold"
+      : classify(tag, text);
+    node.dataset.dlEdit = mode === "locked" || mode === "fold" ? "" : mode;
     if (mode === "locked") node.classList.add("dl-edit-locked");
-    else node.classList.add("dl-editable");
+    else if (mode !== "fold") node.classList.add("dl-editable");
     node.dlRange = { start, end, text };
   }
 
@@ -230,13 +272,28 @@ class Session {
       this.open = { node, wrap: node.dlBox, mode: "source", before: text, key };
       return;
     }
+    if (node.dlInput) {
+      node.dlInput.focus();
+      this.open = { node, wrap: node.dlInput, mode: "summary", before: text, key };
+      return;
+    }
     if (node.dlCell) {
       node.dlCell.focus();
       this.open = { node, wrap: node.dlCell.panel, mode: "cell", before: text, key };
       return;
     }
 
-    if (mode === "cell") {
+    if (mode === "summary") {
+      node.dlHtml = node.innerHTML;
+      const input = el("input", { class: "dl-inplace-summary", type: "text", value: text,
+                                  "aria-label": "Title of this fold" });
+      input.addEventListener("blur", () => this.closeBlock());
+      input.addEventListener("keydown", (event) => { if (event.key === "Enter") input.blur(); if (event.key === " ") event.stopPropagation(); });
+      node.replaceChildren(input);
+      node.dlInput = input;
+      input.focus();
+      this.open = { node, wrap: input, mode, before: text, key };
+    } else if (mode === "cell") {
       await this.openCell(node, text, key);
     } else if (mode === "rich") {
       const wrap = el("div", { class: "dl-inplace", "data-md": key });
@@ -341,7 +398,14 @@ class Session {
     const { node, mode, key } = open;
     const original = node.dlRange.text;
     let now;
-    if (mode === "cell") {
+    if (mode === "summary") {
+      now = node.dlInput.value.replace(/\s+/g, " ").trim();
+      if (/[<\n]/.test(now)) {
+        this.say("A fold's title is a single line of plain text. Edit the file on GitHub for more.");
+        this.open = open;
+        return false;
+      }
+    } else if (mode === "cell") {
       const { parsed, values, initial } = node.dlCell;
       const now_values = values();
       const unchanged = now_values.every((value, index) => value === initial[index]);
@@ -370,7 +434,7 @@ class Session {
       if (!was || was.text !== now) this.changes += 1;
       this.edits.set(key, { start: node.dlRange.start, end: node.dlRange.end, text: now });
       if (mode === "rich") node.dlEditor.setEditable(false);
-      (node.dlWrap || node.dlBox || node.dlCell.panel).dataset.edited = "";
+      (node.dlWrap || node.dlBox || node.dlInput || node.dlCell.panel).dataset.edited = "";
     }
     this.report();
     return true;
@@ -381,6 +445,7 @@ class Session {
     if (node.dlEditor) { node.dlEditor.destroy(); node.dlEditor = null; }
     if (node.dlWrap) { node.dlWrap.remove(); node.dlWrap = null; }
     if (node.dlBox) { node.dlBox.remove(); node.dlBox = null; }
+    if (node.dlInput) { node.innerHTML = node.dlHtml; node.dlInput = null; }
     if (node.dlCell) { node.dlCell.destroy(); node.dlCell.panel.remove(); node.dlCell = null; }
     node.hidden = false;
   }
@@ -409,6 +474,15 @@ class Session {
       await this.discard();
     }
     this.root.removeEventListener("click", this.onClick, true);
+    for (const fold of this.folded) fold.open = false;
+    for (const node of this.blocks) {
+      node.classList.remove("dl-editable", "dl-edit-locked");
+      delete node.dataset.dlEdit;
+      if (node.tagName === "SUMMARY") {
+        if (node.dlInput) node.textContent = node.dlInput.value;   // keep a saved title, drop the box
+        node.removeAttribute("data-md");
+      }
+    }
     document.body.classList.remove("dl-editing");
     $("dl-edit-toggle").textContent = "Edit this page";
     $("dl-edit-actions").hidden = true;

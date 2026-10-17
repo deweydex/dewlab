@@ -105,14 +105,26 @@ class TestTheMapOnAPage:
         b.build()
         text = path.read_text()
         got = re.findall(r"<(\w+)[^>]* data-md=\"(\d+):(\d+)\"", built(repo))
-        assert [tag for tag, *_ in got] == ["h1", "p", "ul", "details", "div", "p"]
+        assert [tag for tag, *_ in got] == ["h1", "p", "ul", "details", "p", "div", "p"]
         starts = [text[int(s):int(e)] for _, s, e in got]
         assert starts[0] == "# A page"
         assert starts[1] == "First paragraph."
         assert starts[2] == "- one\n- two"
         assert starts[3].startswith('<details class="dl-hint">') and starts[3].endswith("</details>")
-        assert starts[4].startswith("```python exec") and starts[4].endswith("```")
-        assert starts[5] == "Last."
+        assert starts[4] == "Try it."          # the block inside the fold
+        assert starts[5].startswith("```python exec") and starts[5].endswith("```")
+        assert starts[6] == "Last."
+
+    def test_the_blocks_inside_a_fold_carry_their_own_ranges_and_sit_inside_it(self, repo):
+        path = write(repo, '<details class="dl-answer"><summary>answer</summary>\n\n'
+                           'One.\n\n- a\n- b\n\n```python\nx = 1\n```\n\n</details>\n')
+        b.build()
+        page = built(repo)
+        text = path.read_text()
+        fold = re.search(r"<details[^>]* data-md=\"\d+:\d+\">(.*?)</details>", page, re.S).group(1)
+        inner = re.findall(r"<(\w+)[^>]* data-md=\"(\d+):(\d+)\"", fold)
+        assert [tag for tag, *_ in inner] == ["p", "ul", "pre"]
+        assert [text[int(s):int(e)] for _, s, e in inner] == ["One.", "- a\n- b", "```python\nx = 1\n```"]
 
     def test_the_map_changes_nothing_else_about_the_page(self, repo, monkeypatch):
         write(repo, self.PAGE)

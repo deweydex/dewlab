@@ -238,12 +238,23 @@ def _add(out: list[Block], start: int, end: int, kind: str) -> None:
     out.append(Block(start, end, kind))
 
 
+def _fold_inside(text: str) -> tuple[int, int] | None:
+    """Where a `<details>` block's own markdown lies: after its `</summary>`,
+    before its closing `</details>`. None if the block is not that shape."""
+    summary = text.find("</summary>")
+    close = text.rstrip().rfind("</details>")
+    if summary < 0 or close < summary:
+        return None
+    return summary + len("</summary>"), close
+
+
 def mark(body: str, base: int = 0) -> str:
     """`body` with a marker comment before each block that renders something.
 
     `base` is where `body` begins in the file, so the offsets in the markers
     are file offsets. Comments and nothing else are added, each followed by a
-    blank line.
+    blank line. The blocks inside a `<details>` fold are marked too, so that a
+    hint or an answer can be edited block by block like the page around it.
     """
     pieces: list[str] = []
     at = 0
@@ -253,6 +264,12 @@ def mark(body: str, base: int = 0) -> str:
         pieces.append(body[at:block.start])
         pieces.append(f"<!--dl-src:{base + block.start}:{base + block.end}-->\n\n")
         at = block.start
+        inside = _fold_inside(body[block.start:block.end]) if block.kind == "html:details" else None
+        if inside:
+            lo, hi = block.start + inside[0], block.start + inside[1]
+            pieces.append(body[at:lo])
+            pieces.append(mark(body[lo:hi], base + lo))
+            at = hi
     pieces.append(body[at:])
     return "".join(pieces)
 
