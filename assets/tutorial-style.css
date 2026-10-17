@@ -694,7 +694,10 @@ p code, li code {
 .dl-editor .cm-scroller { font-family: var(--dl-mono); line-height: var(--dl-code-line-height); }
 .dl-editor .cm-content { padding: 0.5rem 0; }
 
-.cm-tooltip .cm-dewlab-doc-tooltip {
+/* Compound, not descendant: CodeMirror adds .cm-tooltip to the very element
+   create() returns, so ".cm-tooltip .cm-dewlab-…" matched nothing and these
+   boxes ran as wide as the editor with their line breaks collapsed. */
+.cm-tooltip.cm-dewlab-doc-tooltip {
   max-width: min(28rem, 80vw);
   padding: 0.5rem 0.7rem;
   border-radius: 4px;
@@ -706,6 +709,10 @@ p code, li code {
   line-height: 1.45;
   color: var(--dl-fg);
   white-space: pre-wrap;
+  /* A docstring can run to a page; it scrolls rather than covering the code. */
+  box-sizing: border-box;
+  max-height: min(14rem, 40vh);
+  overflow-y: auto;
 }
 
 .dl-cell-custom { border-left: 3px solid var(--dl-orange); }
@@ -813,7 +820,7 @@ p code, li code {
   .dl-insert-btn { opacity: 0.75; }
 }
 
-.cm-tooltip .cm-dewlab-signature-tooltip {
+.cm-tooltip.cm-dewlab-signature-tooltip {
   max-width: min(28rem, 80vw);
   padding: 0.4rem 0.6rem;
   border-radius: 4px;

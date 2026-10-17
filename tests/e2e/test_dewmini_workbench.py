@@ -2190,3 +2190,100 @@ def test_a_dataset_on_a_site_tab_says_why_it_adds_no_cell(dewmini):
         "() => JSON.parse(localStorage.getItem('dewmini:notebooks:v1'))"
         ".notebooks.find(nb => nb.view === 'site').cells.length")
     assert site_cells == 0
+
+
+class TestNameDocsOnRightClick:
+    """A name's doc used to open whenever the pointer paused over it, on
+    top of the lines above. In the notebook it now opens when asked for."""
+
+    TOOLTIP = ".cm-dewlab-doc-tooltip"
+
+    @pytest.fixture
+    def documented(self, dewmini):
+        add_python_cell(dewmini, 'def helper_fn():\n    """my own real docstring"""\n\nprint("defined")')
+        dewmini.locator(".dm-cell .dm-icon-run").first.click()
+        dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+        return dewmini
+
+    def point(self, page, word="helper_fn"):
+        """Where a word sits on screen: CodeMirror does not always give a
+        bare name an element of its own, so this finds it in the text."""
+        return page.evaluate("""(word) => {
+            const root = document.querySelector(".dm-cell-python .cm-content");
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            let rect = null;
+            while (walker.nextNode()) {
+                const at = walker.currentNode.textContent.indexOf(word);
+                if (at === -1) continue;
+                walker.currentNode.parentElement.scrollIntoView({ block: "center" });
+                const range = document.createRange();
+                range.setStart(walker.currentNode, at);
+                range.setEnd(walker.currentNode, at + word.length);
+                const r = range.getBoundingClientRect();
+                rect = { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+            }
+            return rect;
+        }""", word)
+
+    def right_click(self, page, word="helper_fn"):
+        spot = self.point(page, word)
+        page.mouse.click(spot["x"], spot["y"], button="right")
+        return spot
+
+    def test_pausing_on_a_name_opens_nothing(self, documented):
+        spot = self.point(documented)
+        documented.mouse.move(spot["x"], spot["y"])
+        documented.wait_for_timeout(1200)
+        assert documented.locator(self.TOOLTIP).count() == 0
+
+    def test_right_clicking_a_name_opens_its_doc_beneath_it(self, documented):
+        spot = self.right_click(documented)
+        documented.wait_for_selector(self.TOOLTIP)
+        assert "my own real docstring" in documented.inner_text(self.TOOLTIP)
+        assert (documented.locator(self.TOOLTIP).bounding_box()["y"]
+                > spot["y"]), "below the name, not over the code above it"
+
+    def test_escape_and_typing_close_it(self, documented):
+        self.right_click(documented)
+        documented.wait_for_selector(self.TOOLTIP)
+        documented.keyboard.press("Escape")
+        documented.wait_for_selector(self.TOOLTIP, state="detached")
+
+        self.right_click(documented)
+        documented.wait_for_selector(self.TOOLTIP)
+        documented.keyboard.insert_text("x")
+        documented.wait_for_selector(self.TOOLTIP, state="detached")
+
+    def test_a_long_doc_scrolls_inside_a_capped_box(self, dewmini):
+        # The name is right-clicked where it is called, on the last line: in a
+        # cell this tall the `def` itself is scrolled out of the lines
+        # CodeMirror keeps in the page.
+        lines = "\n".join(f"    line {n} of a very long docstring" for n in range(80))
+        add_python_cell(dewmini, f'def long_fn():\n    """\n{lines}\n    """\n\nprint(long_fn)')
+        dewmini.locator(".dm-cell .dm-icon-run").first.click()
+        dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+        self.right_click(dewmini, "long_fn")
+        dewmini.wait_for_selector(self.TOOLTIP)
+        box = dewmini.locator(self.TOOLTIP)
+        assert box.evaluate("el => el.scrollHeight > el.clientHeight")
+        cap = dewmini.evaluate(
+            "() => Math.min(14 * parseFloat(getComputedStyle(document.documentElement).fontSize),"
+            " innerHeight * 0.4)")
+        assert box.bounding_box()["height"] <= cap + 1
+
+    def test_a_name_with_no_help_says_so_instead_of_doing_nothing(self, dewmini):
+        # Run something first: the answer comes from the Python engine, which
+        # only starts with the first run.
+        add_python_cell(dewmini, 'print("ready")\n# unknown_word')
+        dewmini.locator(".dm-cell .dm-icon-run").first.click()
+        dewmini.wait_for_selector(".dm-cell-output:not(.dm-empty)", timeout=90_000)
+        self.right_click(dewmini, "unknown_word")
+        dewmini.wait_for_selector(self.TOOLTIP)
+        assert "No help found" in dewmini.inner_text(self.TOOLTIP)
+
+    def test_over_a_selection_the_browsers_own_menu_is_left_alone(self, documented):
+        spot = self.point(documented)
+        documented.mouse.dblclick(spot["x"], spot["y"])  # selects the word
+        documented.mouse.click(spot["x"], spot["y"], button="right")
+        documented.wait_for_timeout(500)
+        assert documented.locator(self.TOOLTIP).count() == 0

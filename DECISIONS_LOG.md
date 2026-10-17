@@ -5918,3 +5918,16 @@ Found alongside it: a note's header (pill, name, View, Image, Duplicate, Delete)
 
 *Cost to change: the cache is `_solution_key()` and the marker in `_run_solutions()`; `SOLUTION_CACHE = False` or `--no-cache` removes it. Each conversion above is one `fail()` put back in its place and its row in `test_educator_choices.py`; `check.py` where it mirrors it.*
 
+---
+
+## A name's doc opens on right-click in the notebook, and its box is finally sized
+
+The notebook's doc tooltips opened above the name whenever the pointer paused on it for 0.3 s — CodeMirror's default, since the notebook has no Settings row for editor help the way tutorial pages do — and sat over the lines above it.
+
+- **Right-click opens it** (`pythonDocOnRightClick()` in `vendor-src/codemirror-entry.js`), beneath the name, until the reader types, moves the cursor, clicks elsewhere or presses Escape. Over a selection, or off a name, the browser's own menu is left alone so copy and paste still work. A name Jedi knows nothing about says so rather than the click doing nothing. It is available wherever the editor has a doc source, so a tutorial page with "Help when you point at a name" set to off now has it too.
+- **Hover is off in the notebook** (`NOTEBOOK_ASSISTS` in `compose/dewmini.js`). Tutorial pages keep their own setting, default 2 s.
+- **The boxes were never styled.** CodeMirror adds `.cm-tooltip` to the element `create()` returns, so `.cm-tooltip .cm-dewlab-doc-tooltip` (descendant) matched nothing: both tooltips ran as wide as the editor with their line breaks collapsed. They are compound selectors now, and the doc box is capped at 14rem / 40vh and scrolls.
+
+Not done: placing a tooltip beside the code. CodeMirror positions a tooltip above or below its anchor only; to the side needs positioning of our own, and there is no side on a phone. The signature hint that appears above the line while typing a call is unchanged, and the notebook has no switch for it. Right-click has no keyboard equivalent yet, as hover had none.
+
+*Cost to change: delete `pythonDocOnRightClick()` and its line in `assistsFor()`, remove `NOTEBOOK_ASSISTS`, rebuild `assets/vendor/`.*
