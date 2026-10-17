@@ -5002,3 +5002,12 @@ em.term, .term em { font-style: normal; }
   color: var(--dl-fg); background: var(--dl-cell-bg);
   border: 1px solid var(--dl-muted); border-radius: 4px; padding: 0.5rem 0.6rem;
 }
+
+/* A cell being edited in place (assets/inpage-cell.js): the id shown and fixed,
+ * the code in a code editor, each hint or solution fence as a text box. */
+.dl-inplace-cell { border: 1px solid var(--dl-muted); border-radius: 6px; padding: 0.6rem 0.8rem; background: var(--dl-cell-bg); }
+.dl-inplace-cell:focus-within { outline: 1px solid var(--dl-orange); outline-offset: 4px; }
+.dl-inplace-cell .dl-cell-part-label { margin: 0.6rem 0 0.2rem; font-size: 0.85em; font-weight: 600; }
+.dl-inplace-cell .dl-cell-part-label:first-child { margin-top: 0; }
+.dl-inplace-cell .dl-cell-id { margin: 0 0 0.4rem; font-size: 0.8em; color: var(--dl-muted); }
+.dl-inplace-cell .dl-cell-code { border: 1px solid var(--dl-muted); border-radius: 4px; overflow: hidden; }

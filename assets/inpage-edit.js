@@ -19,6 +19,7 @@
 
 import { githubClient, TOKEN_KEY } from "./github-client.js";
 import { richSafe, toEditor, fromEditor } from "./inpage-markdown.js";
+import { isCellBlock, parseCellBlock, buildCellBlock, problem } from "./inpage-cell.js";
 
 const MIN_WIDTH = 900;
 
@@ -40,11 +41,16 @@ export function splice(source, edits) {
  *   "rich"   a heading, paragraph, list or quote the rich editor round-trips
  *            safely (inpage-markdown.js says which; maths and `{.term}` marks
  *            are handled there)
+ *   "cell"   a `python exec` or `sql exec` cell with its hint and solution
+ *            fences: a code editor for the code, its id held fixed
+ *            (inpage-cell.js)
  *   "source" anything else a person can reasonably change, as its markdown:
  *            tables, folds, raw HTML, images, display maths, code
- *   "locked" cells, includes and the pieces of a page built from other parts */
+ *   "locked" includes, other fences, and the pieces of a page built from
+ *            other parts */
 export function classify(tag, text) {
   const t = text.trim();
+  if (isCellBlock(t) && parseCellBlock(t)) return "cell";
   if (!t || t.startsWith("{{include") || t.startsWith("```")) return "locked";
   if (/^h[1-6]$/.test(tag) || tag === "p" || ["ul", "ol", "blockquote"].includes(tag)) {
     return richSafe(t) ? "rich" : "source";
@@ -74,7 +80,7 @@ const $ = (id) => document.getElementById(id);
 
 /* ------------------------------------------------------------- the session */
 
-export async function begin(manifest, { client = null, createEditor = null } = {}) {
+export async function begin(manifest, { client = null, createEditor = null, createCode = null } = {}) {
   const status = $("dl-edit-status");
   const say = (text) => { if (status) status.textContent = text; };
 
@@ -105,7 +111,7 @@ export async function begin(manifest, { client = null, createEditor = null } = {
     createEditor = bundle.createInPlaceEditor;
   }
 
-  return new Session({ manifest, client, source, createEditor, say });
+  return new Session({ manifest, client, source, createEditor, createCode, say });
 }
 
 function askForToken() {
@@ -136,11 +142,12 @@ function askForToken() {
 }
 
 class Session {
-  constructor({ manifest, client, source, createEditor, say }) {
+  constructor({ manifest, client, source, createEditor, createCode, say }) {
     this.manifest = manifest;
     this.client = client;
     this.source = source;
     this.createEditor = createEditor;
+    this.createCode = createCode;
     this.say = say;
     this.edits = new Map();    // "start:end" -> { start, end, text }
     this.open = null;          // the block being edited now
@@ -155,9 +162,13 @@ class Session {
     for (const node of this.blocks) this.arm(node);
 
     this.onClick = (event) => {
-      const node = event.target.closest("[data-md]");
-      if (!node || node.parentElement !== this.root || !node.dataset.dlEdit) return;
+      const hit = event.target.closest("[data-md]");
+      if (!hit || hit.parentElement !== this.root) return;
+      const node = hit.dlOwner || hit;           // an editor stands for the block it replaced
+      if (!node.dataset.dlEdit) return;
       if (event.target.closest("a")) event.preventDefault();
+      /* A cell's own buttons (run, reset, the code box) do nothing while editing. */
+      if (node.dataset.dlEdit === "cell" && !hit.dlOwner) { event.preventDefault(); event.stopPropagation(); }
       if (!this.open || this.open.node !== node) this.openBlock(node);
     };
     this.root.addEventListener("click", this.onClick, true);
@@ -203,7 +214,7 @@ class Session {
   }
 
   async openBlock(node) {
-    await this.closeBlock();
+    if (!(await this.closeBlock())) return;
     const mode = node.dataset.dlEdit;
     const text = this.textOf(node);
     const key = node.getAttribute("data-md");
@@ -219,14 +230,22 @@ class Session {
       this.open = { node, wrap: node.dlBox, mode: "source", before: text, key };
       return;
     }
+    if (node.dlCell) {
+      node.dlCell.focus();
+      this.open = { node, wrap: node.dlCell.panel, mode: "cell", before: text, key };
+      return;
+    }
 
-    if (mode === "rich") {
+    if (mode === "cell") {
+      await this.openCell(node, text, key);
+    } else if (mode === "rich") {
       const wrap = el("div", { class: "dl-inplace", "data-md": key });
       /* An editable element is its own formatting context, so the block's
        * margins would stay inside it. The wrapper takes the block's own and the
        * editor's first and last child take none (tutorial-style.css), which
        * leaves the page's spacing exactly as it was. */
       wrap.style.margin = getComputedStyle(node).margin;
+      wrap.dlOwner = node;
       node.after(wrap);
       node.hidden = true;
       const state = toEditor(text);
@@ -249,6 +268,7 @@ class Session {
       const fit = () => { box.style.height = "auto"; box.style.height = `${box.scrollHeight}px`; };
       box.addEventListener("input", fit);
       box.addEventListener("blur", () => this.closeBlock());
+      box.dlOwner = node;
       node.after(box);
       node.hidden = true;
       node.dlBox = box;
@@ -258,14 +278,81 @@ class Session {
     }
   }
 
+  /* A cell: its code in a code editor, the id shown and held, and each fence
+   * written after it (hint, solution…) as a text box. */
+  async openCell(node, text, key) {
+    const parsed = parseCellBlock(text);
+    const code = this.createCode || (await import(this.manifest.edit.code)).createCodeEditor;
+    const dark = document.documentElement.getAttribute("data-theme") === "dark"
+      || (document.documentElement.getAttribute("data-theme") !== "light"
+          && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const panel = el("div", { class: "dl-inplace-cell", "data-md": key });
+    panel.dlOwner = node;
+    panel.style.margin = getComputedStyle(node).margin;
+    const fields = parsed.parts.map((part, index) => {
+      const label = el("p", { class: "dl-cell-part-label" }, part.label);
+      const children = [label];
+      let read;
+      let focus;
+      if (index === 0) {
+        children.push(el("p", { class: "dl-cell-id" },
+          el("code", {}, part.locked.trim()), " — the id is fixed: saved answers are filed under it"));
+        const host = el("div", { class: "dl-cell-code" });
+        children.push(host);
+        panel.append(...children);
+        const editor = code(host, part.text, { dark, language: part.language || "python" });
+        read = () => editor.getValue();
+        focus = () => editor.focus();
+        return { read, focus, destroy: () => editor.destroy() };
+      }
+      const box = el("textarea", { class: "dl-inplace-source", spellcheck: "true", "aria-label": part.label });
+      box.value = part.text;
+      const fit = () => { box.style.height = "auto"; box.style.height = `${box.scrollHeight}px`; };
+      box.addEventListener("input", fit);
+      children.push(box);
+      panel.append(...children);
+      fit();
+      return { read: () => box.value, focus: () => box.focus(), destroy: () => {}, fit };
+    });
+    panel.addEventListener("focusout", (event) => {
+      if (!panel.contains(event.relatedTarget)) this.closeBlock();
+    });
+    panel.addEventListener("focusin", () => {
+      if (!this.open || this.open.node !== node) this.openBlock(node);
+    });
+    node.after(panel);
+    node.hidden = true;
+    for (const field of fields) if (field.fit) field.fit();
+    node.dlCell = {
+      panel, parsed, fields,
+      values: () => fields.map((field) => field.read()),
+      focus: () => fields[0].focus(),
+      destroy: () => { for (const field of fields) field.destroy(); },
+    };
+    node.dlCell.initial = node.dlCell.values();
+    node.dlCell.focus();
+    this.open = { node, wrap: panel, mode: "cell", before: text, key };
+  }
+
   async closeBlock() {
     const open = this.open;
-    if (!open) return;
+    if (!open) return true;
     this.open = null;
     const { node, mode, key } = open;
     const original = node.dlRange.text;
     let now;
-    if (mode === "rich") {
+    if (mode === "cell") {
+      const { parsed, values, initial } = node.dlCell;
+      const now_values = values();
+      const unchanged = now_values.every((value, index) => value === initial[index]);
+      const wrong = unchanged ? null : problem(parsed, now_values);
+      if (wrong) {
+        this.say(wrong);
+        this.open = open;                       // stays open until it is put right
+        return false;
+      }
+      now = unchanged ? original : buildCellBlock(parsed, now_values);
+    } else if (mode === "rich") {
       const written = node.dlEditor.getMarkdown();
       /* Nothing typed: the editor writes the block a little differently from
        * the file (an indent, a marker), which is not a change. */
@@ -283,9 +370,10 @@ class Session {
       if (!was || was.text !== now) this.changes += 1;
       this.edits.set(key, { start: node.dlRange.start, end: node.dlRange.end, text: now });
       if (mode === "rich") node.dlEditor.setEditable(false);
-      (node.dlWrap || node.dlBox).dataset.edited = "";
+      (node.dlWrap || node.dlBox || node.dlCell.panel).dataset.edited = "";
     }
     this.report();
+    return true;
   }
 
   /* Put the page's own element back where an unchanged block was. */
@@ -293,6 +381,7 @@ class Session {
     if (node.dlEditor) { node.dlEditor.destroy(); node.dlEditor = null; }
     if (node.dlWrap) { node.dlWrap.remove(); node.dlWrap = null; }
     if (node.dlBox) { node.dlBox.remove(); node.dlBox = null; }
+    if (node.dlCell) { node.dlCell.destroy(); node.dlCell.panel.remove(); node.dlCell = null; }
     node.hidden = false;
   }
 
@@ -300,6 +389,7 @@ class Session {
 
   async discard() {
     await this.closeBlock();
+    this.open = null;                          // a cell left unfinished is discarded with the rest
     for (const node of this.blocks) this.restore(node);
     if (this.edits.size) this.changes += 1;
     this.edits.clear();
@@ -311,7 +401,7 @@ class Session {
   }
 
   async stop() {
-    await this.closeBlock();
+    if (!(await this.closeBlock())) return;
     if (this.unsaved) {
       const ok = window.confirm(`${summary(this.edits.size)} They are not saved. `
         + "Stop editing and lose them? Press Cancel to keep editing, then press Open pull request.");
@@ -328,7 +418,7 @@ class Session {
   }
 
   async save() {
-    await this.closeBlock();
+    if (!(await this.closeBlock())) return;
     if (!this.edits.size || this.saving) return;
     this.saving = true;
     this.report();

@@ -529,7 +529,17 @@ paragraph, list or quote that `richSafe()` in `assets/inpage-markdown.js`
 accepts), as its markdown in a text box (`source`: tables, folds, display
 maths, raw HTML, images, nested or loose lists, anything with a backslash or
 brace the editor would rewrite), or not at all
-(`locked`: cells, includes, and pieces of the page built from other parts).
+(`locked`: includes, other fences, and pieces of the page built from other parts).
+`inpage-cell.js` cuts a cell's block (its `python exec` or `sql exec` fence and
+the hint, solution and similar fences written after it) into the text a person
+may change and the text they may not. `classify()` calls such a block `cell`.
+`openCell()` swaps it for a panel: a CodeMirror editor
+(`createCodeEditor` from `vendor/codemirror.bundle.js`, named by
+`manifest.edit.code`) for the cell's code and its other header lines, and a text
+box for each further fence. The `id:` line is held apart and put back first, so
+no edit can change it, and a typed `id:` keeps the block open with a message.
+Every cell in the repository parses and rebuilds byte-identically (a test).
+
 `inpage-markdown.js` is the whole of what the rich editor is told about our
 markdown: inline maths goes in as a code span holding its TeX (so the TeX is
 what shows and what is edited), `*word*{.term}` goes in as emphasis and gets
