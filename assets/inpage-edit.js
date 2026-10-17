@@ -185,8 +185,10 @@ class Session {
   }
 
   buttons() {
+    /* The button's own listener (assets/shell.html) calls toggle(), which stops
+       a session that exists; a second handler here made one click stop the
+       session and, a moment later, start another. */
     $("dl-edit-toggle").textContent = "Stop editing";
-    $("dl-edit-toggle").onclick = () => this.stop();
     const actions = $("dl-edit-actions");
     actions.hidden = false;
     $("dl-edit-save").onclick = () => this.save();
@@ -319,7 +321,6 @@ class Session {
     this.root.removeEventListener("click", this.onClick, true);
     document.body.classList.remove("dl-editing");
     $("dl-edit-toggle").textContent = "Edit this page";
-    $("dl-edit-toggle").onclick = null;
     $("dl-edit-actions").hidden = true;
     this.say(this.pr ? `Your changes are saved as a draft pull request: ${this.pr.url}` : "");
     window.dlEditSession = null;
