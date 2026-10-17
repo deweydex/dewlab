@@ -16,6 +16,8 @@ the page must show it. `check.py` agrees with the build about every one
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from helpers import *  # noqa: F401,F403
@@ -56,6 +58,13 @@ CASES = {
     "two typed blocks for one cell": (
         CELL + "```typed\none\n```\n```typed\ntwo\n```\n",
         "two typed blocks, so their lines are read one after the other", None),
+    # questions, worlds
+    "a fill-in question with a brace that never closes": (
+        "```question\nid: q\ntype: fill-in-the-blank\n\nA {real} gap and an {open one.\n```\n",
+        "has a { with no matching }", 'data-expected="real"'),
+    "a question with no text": (
+        "```question\nid: q\ntype: multiple-choice\nanswer: 1\n```\n",
+        "has no text in it, so it is left out", None),
     # predictions
     "a prediction of an unknown type": (
         CELL + "```predict\ntype: essay\n\nWhy?\n```\n", "so it is read as `text`", None),
@@ -99,3 +108,46 @@ def test_two_typed_blocks_are_one_list_in_the_order_written(repo):
     b.build()
     cell = b.load(next((repo / "tutorials").rglob("sample.md"))).cells[0]
     assert cell.typed == ["one", "two"]
+
+
+def test_worlds_given_as_a_list_of_keys_are_worlds_without_a_line_each(repo, capsys):
+    variants = "".join(
+        f'<div class="dl-world" data-world="{world}">\n\nTask.\n\n'
+        f"```python exec\nid: task--{world}\nx = 1\n```\n</div>\n\n"
+        for world in ("planets", "sea-floor"))
+    path = write(repo, "# A page\n\n" + variants)
+    add_frontmatter(path, "worlds: [planets, sea-floor]\n")
+    b.build()
+    assert "is a list of keys" in capsys.readouterr().err
+    page = built(repo)
+    assert '<span class="dl-world-name">Sea floor</span>' in page
+    assert 'value="planets"' in page
+
+
+class TestADatasetThatDoesNotSayWhereItCameFrom:
+    """Where numbers came from is the educator's to say. A blank field is
+    listed in a note and the Reference tab says it was not recorded; only a
+    missing snapshot date makes the dataset unusable as a source, and then it
+    is treated like a data file with no yaml at all."""
+
+    def declare(self, repo, text):
+        path = write(repo, "Prose.\n", slug="one")
+        add_frontmatter(path, "datasets:\n  - sparse\n")
+        (repo / "data" / "sparse.csv").write_text("a,b\n1,2\n")
+        (repo / "data" / "sparse.yaml").write_text(text)
+
+    def test_blank_fields_are_listed_and_said_to_be_unrecorded(self, repo, capsys):
+        self.declare(repo, 'source: "Somewhere"\nsnapshot: 2026-09-26\n')
+        b.build()
+        assert "does not give its url, license, trimmed, description" in capsys.readouterr().err
+        page = built(repo, "one")
+        assert "No description recorded" in page and "licence not recorded" in page
+        assert "Somewhere" in page and "26 September 2026" in page
+
+    def test_no_snapshot_date_is_a_note_and_the_dataset_is_left_out_of_the_reference(self, repo, capsys):
+        self.declare(repo, 'source: "Somewhere"\n')
+        b.build()
+        assert "has no snapshot: date like 2026-09-26" in capsys.readouterr().err
+        # Not in the page's reference, and the data index carries it with no date.
+        assert "datasets" not in manifest(built(repo, "one"))
+        assert json.loads((repo / "site" / "data" / "index.json").read_text())["sparse.csv"] == {}

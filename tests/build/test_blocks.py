@@ -279,10 +279,14 @@ class TestTheBuildRunsEverySolution:
         write(repo, ASKING + TYPED + solution + "```inputs\nask_shift()\n```\n")
         b.build()
 
-    def test_a_solution_that_asks_with_nothing_typed_fails_the_build(self, repo):
+    def test_a_solution_that_asks_with_nothing_typed_builds_and_says_it_was_not_checked(self, repo, capsys):
+        # The solution is not wrong; the build cannot type for it. Said, not
+        # refused, and not kept as a clean pass either (DECISIONS_LOG 7.300).
         write(repo, ASKING + "```solution\nname = input('Name: ')\n```\n")
-        with pytest.raises(b.BuildError, match="give the cell a ```typed block"):
-            b.build()
+        b.build()
+        err = capsys.readouterr().err
+        assert "calls input()" in err and "```typed block" in err
+        assert not (repo / ".build-cache").exists()
 
     def test_a_cell_that_asks_runs_its_typed_lines_before_a_later_solution(self, repo):
         asks = ("```python exec\nid: asks\nshift = int(input('Shift: '))\n```\n"

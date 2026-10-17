@@ -922,11 +922,16 @@ def expand_snapshot_dates(body: str, meta: dict, path: Path) -> str:
     def one(match: re.Match) -> str:
         name = match.group("name")
         if name not in declared:
-            fail(path, f"{match.group(0)} names a dataset that datasets: does not list")
+            note(path, f"{match.group(0)} names a dataset that datasets: does not list, so a "
+                       "downloaded copy of the page will not carry it")
         if not (DATA / f"{name}.yaml").is_file():
             fail(path, f"{match.group(0)} names a dataset with no data/{name}.yaml, so "
                        "there is no saved date to put here")
-        return long_date(datetime.date.fromisoformat(read_dataset(name)["snapshot"]))
+        data = read_dataset(name)
+        if data is None:
+            fail(path, f"{match.group(0)} names a dataset with no snapshot date in "
+                       f"data/{name}.yaml, so there is no saved date to put here")
+        return long_date(datetime.date.fromisoformat(data["snapshot"]))
 
     return SNAPSHOT_RE.sub(one, body)
 
@@ -1647,10 +1652,11 @@ def _check_balanced_gaps(text: str, path: Path, question_id: str) -> None:
                 note(path, f"question {question_id!r} has a }} with no matching {{; "
                            "it shows as written")
     if depth > 0:
-        fail(path, f"question {question_id!r} has an unclosed {{")
+        note(path, f"question {question_id!r} has a {{ with no matching }}; "
+                   "it shows as written")
 
 
-def parse_question(body: str, path: Path) -> Question:
+def parse_question(body: str, path: Path) -> Question | None:
     """Read `id:`, `type:` and `answer:` off the top of a ```question
     fence — the same header loop parse_cell() and parse_hint() use.
     Everything after the header lines is the question's own markdown:
@@ -1676,7 +1682,8 @@ def parse_question(body: str, path: Path) -> Question:
                    f"not one of {sorted(QUESTION_TYPES)}")
     text = "\n".join(lines).strip("\n")
     if not text.strip():
-        fail(path, f"question {question_id!r} has no text in it")
+        note(path, f"question {question_id!r} has no text in it, so it is left out")
+        return None
     no_footnotes_in(text, path, f"question {question_id!r}")
 
     if question_type == "multiple-choice":
@@ -1827,6 +1834,10 @@ def page_worlds(meta: dict, path: Path) -> dict[str, str]:
     worlds = meta.get("worlds")
     if worlds is None:
         return {}
+    if isinstance(worlds, list) and worlds and all(isinstance(key, str) for key in worlds):
+        note(path, "`worlds:` is a list of keys, so each world goes without the line that "
+                   "would say what it is. Write `key: one line saying what it is` to add one")
+        worlds = {key: "" for key in worlds}
     if not isinstance(worlds, dict) or not worlds:
         fail(path, "`worlds:` lists each world as `key: one line saying what it is`")
     for key, line in worlds.items():
@@ -2245,7 +2256,10 @@ def extract_blocks(
             site_editors.append(current_site)
             return f"{indent}<!--dewlab-site-{len(site_editors) - 1}-->"
         if info and info[0] == "question":
-            questions.append(parse_question(match.group("body"), path))
+            question = parse_question(match.group("body"), path)
+            if question is None:
+                return ""
+            questions.append(question)
             return f"{indent}<!--dewlab-question-{len(questions) - 1}-->"
         if len(info) >= 2 and info[1] == "app":
             language = info[0]
@@ -5386,9 +5400,14 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             clean = False
             continue
         if problem and problem.startswith("EOFError"):
-            fail(tutorial.path, f"the solution for cell {cell!r} calls input(), and "
-                                "nobody can type in the build — give the cell a ```typed "
-                                f"block with enough lines for it ({problem})")
+            # The solution is not wrong; the build cannot type for it. Nothing
+            # was checked, so nothing is kept (DECISIONS_LOG 7.300).
+            print(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: it calls input() and nobody can type "
+                  "in the build. Give the cell a ```typed block with enough lines to check it",
+                  file=sys.stderr)
+            clean = False
+            continue
         if problem:
             fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
                                 "build ran it after the page's earlier cells")
@@ -5433,30 +5452,36 @@ def dataset_file(name: str) -> Path | None:
 
 
 @functools.lru_cache(maxsize=None)
-def read_dataset(name: str) -> dict:
-    """`data/<name>.yaml`, checked: every field #324 asks of a dataset, a
-    real date for its snapshot, a `recipe:` shape_live() can run, and
-    `live: true` only where there is a recipe to shape the live copy with.
+def read_dataset(name: str) -> dict | None:
+    """`data/<name>.yaml`, checked: a real date for its snapshot, a `recipe:`
+    shape_live() can run, and `live: true` only where there is a recipe to
+    shape the live copy with.
 
-    A dataset nobody can trace defeats the point of bundling one, so a
-    missing or incomplete file fails the build, the same way a
-    `practice_for` naming no real tutorial does. The `snapshot` date is
-    the one the page's numbers come from, and the note under a cell names
-    it, so it has to be a date and not a phrase.
+    Where a dataset came from is for the educator to say, and a file that
+    does not is a note, not a stopped build (DECISIONS_LOG 7.300): a field
+    left blank is listed, and the Reference tab says it was not recorded.
+    The one thing the page cannot do without is the `snapshot` date, which
+    its numbers and the note under a cell come from. A file without a
+    readable one is treated as a data file with no yaml at all, and None
+    comes back. A `recipe:` that cannot run is still refused: it is
+    machinery, and a wrong one would fetch the wrong numbers.
     """
     path = DATA / f"{name}.yaml"
     data = load_yaml_no_duplicate_keys(path.read_text()) or {}
-    missing = [f for f in DATASET_FIELDS if not data.get(f)]
-    if missing:
-        fail(path, f"is missing {', '.join(missing)}")
-    snapshot = data["snapshot"]
+    blank = [f for f in DATASET_FIELDS if f != "snapshot" and not data.get(f)]
+    if blank:
+        note(path, f"does not give its {', '.join(blank)}, so a page that uses it "
+                   "cannot say all of where it came from")
+    snapshot = data.get("snapshot")
     if isinstance(snapshot, str):
         try:
             snapshot = datetime.date.fromisoformat(snapshot)
         except ValueError:
-            fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+            pass
     if not isinstance(snapshot, datetime.date):
-        fail(path, f"snapshot: {snapshot!r} is not a date like 2026-09-26")
+        note(path, "has no snapshot: date like 2026-09-26, so a page that uses it "
+                   "cannot say when its numbers were saved")
+        return None
     data["snapshot"] = snapshot.isoformat()
     recipe = data.get("recipe")
     if recipe is not None:
@@ -5522,6 +5547,9 @@ def data_index() -> dict[str, dict]:
             index[data_file.name] = {}
             continue
         data = read_dataset(name)
+        if data is None:  # read_dataset() has said why
+            index[data_file.name] = {}
+            continue
         entry = {"snapshot": data["snapshot"]}
         if data.get("live"):
             entry["live"] = data["recipe"]
@@ -5551,10 +5579,18 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict | None:
     if not (DATA / f"{name}.yaml").is_file():
         return None  # data_index() has said so; the Reference tab leaves it out
     data = read_dataset(name)
+    if data is None:
+        return None
     saved = long_date(datetime.date.fromisoformat(data["snapshot"]))
+    # The Reference tab prints these as one sentence, so a field left blank
+    # says so in words instead of leaving a gap in it.
+    unsaid = {"source": "source not recorded", "license": "licence not recorded",
+              "description": "No description recorded"}
     return {
         "name": name,
-        **{f: str(data[f]).strip() for f in ("source", "url", "license", "description")},
+        "url": str(data.get("url") or "").strip(),
+        **{f: str(data.get(f) or "").strip() or unsaid[f]
+           for f in ("source", "license", "description")},
         "saved": saved,
         "live": data["recipe"]["source"] if data.get("live") else None,
     }
