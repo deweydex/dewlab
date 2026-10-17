@@ -45,6 +45,10 @@ by hand; a failure, or a solution skipped for a missing package, is never kept.
 `python3 build.py --no-cache` runs everything, and a push to `main` does
 (`DECISIONS_LOG.md` 7.300).
 
+A build prints one summary line, then every note it has for you together,
+last, where you will see them. `python3 build.py -v` prints a line for each
+page written and each note as it happens.
+
 ---
 
 ## Running the tests

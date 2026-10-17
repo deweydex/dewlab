@@ -785,6 +785,22 @@ def listed_ids(value) -> list[str]:
 _NOTED: set[tuple[str, str]] = set()
 
 
+# What the build says it carried on despite. A command-line build gathers it
+# and prints it once, after the summary and where it will be seen, instead of
+# among a thousand lines of progress; anything else (a test, a script that
+# imports build) gets each line as it happens.
+_NOTE_LINES: list[str] = []
+NOTES_AT_END = False
+
+
+def say(line: str) -> None:
+    """One note line: printed now, or kept for main() to print at the end."""
+    if NOTES_AT_END:
+        _NOTE_LINES.append(line)
+    else:
+        print(line, file=sys.stderr)
+
+
 def note(path: Path, message: str) -> None:
     """Tells the author something the build is carrying on in spite of.
 
@@ -797,7 +813,7 @@ def note(path: Path, message: str) -> None:
     if key in _NOTED:
         return
     _NOTED.add(key)
-    print(f"note: {path.relative_to(ROOT)}: {message}", file=sys.stderr)
+    say(f"note: {path.relative_to(ROOT)}: {message}")
 
 
 SHELL_TOKEN_RE = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
@@ -3471,9 +3487,8 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
                 member = registry.get(ident)
                 if member is None:
                     if (TUTORIALS / ident / f"{ident}.md").is_file():
-                        print(f"note: {course.path.relative_to(ROOT)} lists {ident}, "
-                              "which is a draft, so it is not on the course yet",
-                              file=sys.stderr)
+                        say(f"note: {course.path.relative_to(ROOT)} lists {ident}, "
+                              "which is a draft, so it is not on the course yet")
                         continue
                     fail(course.path, f'the series "{series.title}" lists {ident}, but '
                                       f"there is no folder tutorials/{ident}/")
@@ -5174,10 +5189,10 @@ def check_folds(tutorial: Tutorial) -> None:
     """
     for tag in DETAILS_RE.findall(tutorial.body_html):
         if not any(name in tag for name in FOLD_CLASSES):
-            print(f"note: {tutorial.path.relative_to(ROOT)}: a fold names no style: "
+            say(f"note: {tutorial.path.relative_to(ROOT)}: a fold names no style: "
                   f'{tag} — class="dl-hint" (steps), class="dl-answer" (an answer) or '
                   f'class="dl-why" (why a page chose as it did) gives it the '
-                  f"project's look", file=sys.stderr)
+                  f"project's look")
 
 
 # The build runs every solution before a reader can see it (#312), in a
@@ -5448,26 +5463,25 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         result, cell = entry["result"], entry["cell"]
         problem = result.get("solutionError")
         if problem and problem.startswith("ModuleNotFoundError"):
-            print(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            say(f"note: could not check the solution for cell {cell!r} in "
+                  f"{tutorial.path.relative_to(ROOT)}: {problem}")
             clean = False
             continue
         if result.get("missingModule"):
             # A cell above it stopped at an import, so the names it would
             # have made are missing too, and a NameError here would blame
             # the solution for this Python's missing package.
-            print(f"note: could not check the solution for cell {cell!r} in "
+            say(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
-                  f"{result['missingModule']}", file=sys.stderr)
+                  f"{result['missingModule']}")
             clean = False
             continue
         if problem and problem.startswith("EOFError"):
             # The solution is not wrong; the build cannot type for it. Nothing
             # was checked, so nothing is kept (DECISIONS_LOG 7.300).
-            print(f"note: could not check the solution for cell {cell!r} in "
+            say(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: it calls input() and nobody can type "
-                  "in the build. Give the cell a ```typed block with enough lines to check it",
-                  file=sys.stderr)
+                  "in the build. Give the cell a ```typed block with enough lines to check it")
             clean = False
             continue
         if problem:
@@ -6013,8 +6027,8 @@ def load(path: Path) -> Tutorial:
     if (source_map.strip(mapped.body_html) == plain.body_html
             and mapped.notes == plain.notes and mapped.toc == plain.toc):
         return mapped
-    print(f"note: {path.relative_to(ROOT)}: the source map would change how the page "
-          f"reads, so it has none", file=sys.stderr)
+    say(f"note: {path.relative_to(ROOT)}: the source map would change how the page "
+          f"reads, so it has none")
     return plain
 
 
@@ -6821,9 +6835,9 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
         for match in LOAD_CALL.finditer(cell.code):
             name = match.group("name")
             if name.startswith(("http://", "https://")) and name not in addresses:
-                print(f"note: {tutorial.path.relative_to(ROOT)} loads {name}, which "
+                say(f"note: {tutorial.path.relative_to(ROOT)} loads {name}, which "
                       "data/ keeps no copy of, so its downloaded copy needs the "
-                      "network for that cell", file=sys.stderr)
+                      "network for that cell")
 
     target = OUT / "download" / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -7185,7 +7199,7 @@ def write_dewmini_bundle() -> Path | None:
     for rel in DEWMINI_ASSET_FILES:
         src = ASSETS / rel
         if not src.exists():
-            print(f"note: dewmini bundle is missing {src.relative_to(ROOT)}", file=sys.stderr)
+            say(f"note: dewmini bundle is missing {src.relative_to(ROOT)}")
             continue
         dest = target / "assets" / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -7202,13 +7216,10 @@ def write_dewmini_bundle() -> Path | None:
     if pyodide_vendored:
         shutil.copytree(ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")
     else:
-        print(
-            "note: assets/vendor/pyodide/ not found (see "
+        say("note: assets/vendor/pyodide/ not found (see "
             "write_dewmini_bundle()'s docstring for the fetch command) — "
             "the dewmini bundle will still boot Python from the CDN on "
-            "first run rather than fully offline",
-            file=sys.stderr,
-        )
+            "first run rather than fully offline")
 
     coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
@@ -7743,8 +7754,7 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
                 f"{m.path.relative_to(ROOT)} (on {', '.join(m.courses) or 'no course'})"
                 for m in members
             )
-            print(f'note: two pages share the title "{members[0].title}": {named}',
-                  file=sys.stderr)
+            say(f'note: two pages share the title "{members[0].title}": {named}')
 
     def outcomes(page: Tutorial) -> set[str]:
         return {
@@ -7758,9 +7768,9 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
         for other, other_codes in covered[index + 1:]:
             shared = sorted(codes & other_codes)
             if len(shared) >= 3:
-                print(f"note: {page.path.relative_to(ROOT)} and "
+                say(f"note: {page.path.relative_to(ROOT)} and "
                       f"{other.path.relative_to(ROOT)} both cover "
-                      f"{', '.join(shared)}", file=sys.stderr)
+                      f"{', '.join(shared)}")
 
 
 def strand_key(data: dict) -> str:
@@ -7967,8 +7977,8 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
     unplaced = sorted(slug for slug, t in registry.items()
                       if slug not in placed and not t.archived and not t.is_practice)
     if unplaced:
-        print(f"note: {len(unplaced)} tutorials are on no topic of the map yet "
-              f"(first: {', '.join(unplaced[:3])}). Add them under map/graph.json.", file=sys.stderr)
+        say(f"note: {len(unplaced)} tutorials are on no topic of the map yet "
+              f"(first: {', '.join(unplaced[:3])}). Add them under map/graph.json.")
 
     course_titles: dict[str, list[str]] = {}
     for course in catalog.values():
@@ -8183,11 +8193,8 @@ def write_topics_page(
         for ident in group["tutorials"]:
             member = registry.get(str(ident))
             if member is None:
-                print(
-                    f'note: topic-groups.yaml group "{group["key"]}" names '
-                    f"{ident}, which this build has no tutorial for",
-                    file=sys.stderr,
-                )
+                say(f'note: topic-groups.yaml group "{group["key"]}" names '
+                    f"{ident}, which this build has no tutorial for")
                 continue
             href = member.out_path.relative_to(OUT).as_posix()
             extra = companion_buttons_html(member, practice, context)
@@ -8523,6 +8530,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         shutil.rmtree(OUT)
 
     _NOTED.clear()  # once per build; a test builds many sites in one process
+    _NOTE_LINES.clear()
     everything = load_all()
     tutorials = versions_of([t for t in everything if t.status != "draft"])
     # Every file in data/ traced to its source, before any page uses one.
@@ -8559,10 +8567,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     for tutorial in tutorials:
         if (tutorial.is_default and not tutorial.is_companion and not tutorial.placements
                 and catalog and tutorial.status == "live"):
-            print(f"note: no course lists {tutorial.slug}. It builds at "
+            say(f"note: no course lists {tutorial.slug}. It builds at "
                   f"tutorials/{tutorial.slug}.html, and nothing links to it — add "
-                  "its id to a course file under courses/ when it is ready.",
-                  file=sys.stderr)
+                  "its id to a course file under courses/ when it is ready.")
     for tutorial in tutorials:
         check_alt_text(tutorial)
         check_folds(tutorial)
@@ -8739,6 +8746,12 @@ def main() -> int:
         help="skip the downloadable single-file copies, which are the slow part",
     )
     parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="print a line for every page written, and each note as it happens "
+             "(by default there is one summary line, then the notes together)",
+    )
+    parser.add_argument(
         "--no-cache",
         action="store_true",
         help="run every page's solutions, even one that ran clean last time with "
@@ -8751,21 +8764,38 @@ def main() -> int:
              "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
-    global SOURCE_MAP, SOLUTION_CACHE
+    global SOURCE_MAP, SOLUTION_CACHE, NOTES_AT_END
     SOURCE_MAP = not args.no_source_map
     SOLUTION_CACHE = not args.no_cache
+    NOTES_AT_END = not args.verbose
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:
+        print_notes()
         print(f"build failed — {exc}", file=sys.stderr)
         return 1
     if not written:
         print("nothing to build: tutorials/ holds no .md files")
         return 0
-    for path in written:
-        print(f"wrote {path.relative_to(ROOT)}")
+    if args.verbose:
+        for path in written:
+            print(f"wrote {path.relative_to(ROOT)}")
     print(f"{len(written)} page{'s' if len(written) != 1 else ''} into {OUT.relative_to(ROOT)}/")
+    print_notes()
     return 0
+
+
+def print_notes() -> None:
+    """The notes a command-line build gathered, together and after the
+    summary, so a teacher reading the end of the output sees every place the
+    build carried on and what it did."""
+    if not _NOTE_LINES:
+        return
+    many = len(_NOTE_LINES)
+    print(f"\n{many} note{'s' if many != 1 else ''}: the build carried on, and says what it did.",
+          file=sys.stderr)
+    for line in _NOTE_LINES:
+        print("  " + line.removeprefix("note: "), file=sys.stderr)
 
 
 if __name__ == "__main__":
