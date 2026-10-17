@@ -38,6 +38,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import tokenize
 import urllib.parse
 import zipfile
@@ -4008,12 +4009,27 @@ def with_python(entries: list[dict], path: Path) -> list[dict]:
     return entries
 
 
+# Each page's reference walks every earlier page of its series, so a page's
+# own glossary is asked for hundreds of times in a build (seventeen thousand
+# on this site) and was read, parsed and checked against Python's signatures
+# every time. The file does not change during a build, so what it said is
+# kept; build() clears it. Callers get copies, since the entries are handed
+# on to pages that add to them.
+_GLOSSARIES: dict[Path, list[dict]] = {}
+
+
 def own_glossary(tutorial: Tutorial) -> list[dict]:
     """This tutorial's own contribution — what it introduces, not what it
     inherits from earlier in its series. A missing file means none written
     yet, not an error: that is what lets this feature ship before every
     tutorial has one."""
     path = glossary_path(tutorial)
+    if path not in _GLOSSARIES:
+        _GLOSSARIES[path] = _read_glossary(path)
+    return [dict(entry) for entry in _GLOSSARIES[path]]
+
+
+def _read_glossary(path: Path) -> list[dict]:
     if not path.is_file():
         return []
     data = read_yaml(path) or {}
@@ -4110,21 +4126,37 @@ def cumulative_glossary(
     seen = set()
     found = []
     for member in chain[: chain.index(tutorial) + 1]:
+        # The path from this page to the one that introduced the term is the
+        # same for every term, so it is worked out once per page.
+        href = None if member is reader_at else _relative_href(
+            member.out_path, reader_at.out_path.parent)
         for entry in own_glossary(member):
             key = (entry["term"], entry["kind"])
             if key in seen:
                 continue
             seen.add(key)
-            found.append(entry if member is reader_at
-                         else {**entry, "origin": origin_of(reader_at, member, entry["term"])})
+            found.append(entry if href is None
+                         else {**entry, "origin": _origin(member, href, entry["term"])})
     return found
+
+
+# Every term of every earlier page asks for the same path between the same
+# two pages, and a relative path is slower to work out than it looks: a
+# hundred thousand of them were most of the glossary's time. Cleared by
+# build(), like _origin_anchor().
+@functools.lru_cache(maxsize=None)
+def _relative_href(target: Path, start: Path) -> str:
+    return os.path.relpath(target, start)
 
 
 def origin_of(reader_at: Tutorial, introduced_by: Tutorial, term: str) -> dict:
     """The tutorial a term was introduced in, as something the reference panel
     can render: a title to name it and an href to reach it from the page the
     reader is on."""
-    href = os.path.relpath(introduced_by.out_path, reader_at.out_path.parent)
+    return _origin(introduced_by, _relative_href(introduced_by.out_path, reader_at.out_path.parent), term)
+
+
+def _origin(introduced_by: Tutorial, href: str, term: str) -> dict:
     anchor = origin_anchor(introduced_by, term)
     return {
         "title": introduced_by.title,
@@ -5147,6 +5179,55 @@ asyncio.run(main())
 """
 
 
+# A page whose solutions all ran clean last time, with the same cells, the
+# same toolkit, the same data, the same runtime and the same packages, will
+# run clean again, and running them is three quarters of a build. The key is
+# a hash of exactly those things, so there is nothing to invalidate by hand:
+# an edit to a cell, a dataset, tutorial_tools.py or an installed package is
+# a different key and the page runs. Only a clean pass is kept. A failure, or
+# a solution skipped for a package this Python lacks, runs every time, so
+# the cache can hide nothing the build would have said. `--no-cache` turns it
+# off, and CI does for a push to main (DECISIONS_LOG 7.300).
+SOLUTION_CACHE = True
+
+
+def _cache_dir() -> Path:
+    return Path(os.environ.get("DEWLAB_BUILD_CACHE") or ROOT / ".build-cache") / "solutions"
+
+
+@functools.lru_cache(maxsize=None)
+def _tree_fingerprint(root: Path) -> str:
+    """A hash of every file under `root`, by relative path and content."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        digest.update(str(path.relative_to(root)).encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+@functools.lru_cache(maxsize=None)
+def _environment_fingerprint() -> str:
+    """The Python and every installed package, by version."""
+    from importlib import metadata
+    installed = sorted({(d.metadata["Name"] or "").lower(): d.version
+                        for d in metadata.distributions()}.items())
+    return f"{sys.version}\n{installed}"
+
+
+def _solution_key(job: dict) -> str:
+    """What a page's solution check depends on, as one hash. The job's two
+    absolute paths are left out so a checkout elsewhere has the same key."""
+    stable = {name: value for name, value in job.items() if name not in ("assets", "data")}
+    digest = hashlib.sha256()
+    for part in (json.dumps(stable, sort_keys=True), SOLUTION_RUNNER,
+                 (RUNTIME_TOOLS / "tutorial_tools.py").read_text(),
+                 _tree_fingerprint(DATA) if DATA.is_dir() else "",
+                 _environment_fingerprint()):
+        digest.update(part.encode())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
     """Run every solution on the page, with its inputs, before a reader can
     open it (#312).
@@ -5238,6 +5319,9 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         "toolkit": [entry["reference"] for entry in toolkit],
         "cells": cells,
     }
+    marker = _cache_dir() / _solution_key(job) if SOLUTION_CACHE else None
+    if marker is not None and marker.is_file():
+        return
     try:
         done = subprocess.run(
             [sys.executable, "-c", SOLUTION_RUNNER], input=json.dumps(job),
@@ -5249,12 +5333,14 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
     if done.returncode != 0:
         fail(tutorial.path, "the build could not run this page's solutions:\n"
                             + done.stderr.strip()[-2000:])
+    clean = True  # nothing skipped: only then is the result worth keeping
     for entry in json.loads(done.stdout or "[]"):
         result, cell = entry["result"], entry["cell"]
         problem = result.get("solutionError")
         if problem and problem.startswith("ModuleNotFoundError"):
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: {problem}", file=sys.stderr)
+            clean = False
             continue
         if result.get("missingModule"):
             # A cell above it stopped at an import, so the names it would
@@ -5263,6 +5349,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             print(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
                   f"{result['missingModule']}", file=sys.stderr)
+            clean = False
             continue
         if problem and problem.startswith("EOFError"):
             fail(tutorial.path, f"the solution for cell {cell!r} calls input(), and "
@@ -5277,6 +5364,11 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                 fail(tutorial.path, f"the input `{row['input']}` for cell {cell!r} gives "
                                     f"{error} with the solution — is it spelled as the "
                                     "page spells it?")
+    if clean and marker is not None:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        temporary = marker.with_suffix(f".{os.getpid()}.{threading.get_ident()}")
+        temporary.write_text(tutorial.slug)
+        temporary.replace(marker)
 
 
 DATASET_FIELDS = ("source", "url", "license", "snapshot", "trimmed", "description")
@@ -8289,6 +8381,9 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     read_dataset.cache_clear()
     data_index.cache_clear()
     _origin_anchor.cache_clear()
+    _tree_fingerprint.cache_clear()
+    _relative_href.cache_clear()
+    _GLOSSARIES.clear()
     data_index()
 
     registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
@@ -8494,14 +8589,21 @@ def main() -> int:
         help="skip the downloadable single-file copies, which are the slow part",
     )
     parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="run every page's solutions, even one that ran clean last time with "
+             "nothing changed (.build-cache/ holds what was kept)",
+    )
+    parser.add_argument(
         "--no-source-map",
         action="store_true",
         help="leave out the markdown range each block of a page carries (what "
              "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
-    global SOURCE_MAP
+    global SOURCE_MAP, SOLUTION_CACHE
     SOURCE_MAP = not args.no_source_map
+    SOLUTION_CACHE = not args.no_cache
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:

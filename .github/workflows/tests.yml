@@ -84,8 +84,31 @@ jobs:
       - name: Run unit tests
         run: python -m pytest tests --ignore=tests/e2e -n auto
 
+      # Running every page's solutions is three quarters of a build, and a page
+      # whose cells, data, runtime and packages are unchanged runs clean again.
+      # The build keeps a clean page's result under a hash of exactly those
+      # things (DECISIONS_LOG 7.300), so what is restored here can only be
+      # used when it is still true. A pull request restores it; a push to main
+      # does not, and builds with --no-cache as well, so a result that was
+      # wrong can never reach main unchecked.
+      - name: Restore what earlier builds learned about each page's solutions
+        if: github.event_name == 'pull_request'
+        uses: actions/cache@v4
+        with:
+          path: .build-cache
+          key: solutions-${{ runner.os }}-${{ github.sha }}
+          restore-keys: solutions-${{ runner.os }}-
+
+      # A pull request leaves out the downloadable copies and the zips, a
+      # third of the build; the code that writes them is tested on small sites
+      # here, and main and the publish job build them in full.
       - name: Build the tutorials
-        run: python build.py --clean
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python build.py --clean --no-standalone
+          else
+            python build.py --clean --no-cache
+          fi
 
       # The curriculum map is generated from the outcome data and the tutorials'
       # own `covers:` frontmatter. A map that cannot be made at all (a `covers:`

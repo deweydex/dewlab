@@ -209,6 +209,58 @@ class TestTheBuildRunsEverySolution:
         b.build()
         assert "a_package_this_python_lacks" in capsys.readouterr().err
 
+    @staticmethod
+    def runs_of_python(monkeypatch) -> list:
+        """The times the build started a Python to run a page's solutions."""
+        started = []
+        real = b.subprocess.run
+        monkeypatch.setattr(b.subprocess, "run", lambda *a, **k: (started.append(1), real(*a, **k))[1])
+        return started
+
+    def test_a_page_that_ran_clean_is_not_run_again_until_something_it_depends_on_changes(self, repo, monkeypatch):
+        # Running solutions is most of a build, and a page whose cells, data
+        # and runtime have not changed will run clean again (DECISIONS_LOG
+        # 7.300). An edit to the solution, or to a dataset, is a new run.
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + SOLUTION + INPUTS)
+        b.build()
+        b.build()
+        assert len(started) == 1
+
+        write(repo, CELL + SOLUTION.replace("sum(values)", "sum(values) + 0") + INPUTS)
+        b.build()
+        assert len(started) == 2
+
+        (repo / "data" / "numbers.csv").write_text("a\n1\n")
+        b.build()
+        assert len(started) == 3
+
+    def test_a_page_that_failed_is_run_again_and_fails_again(self, repo, monkeypatch):
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + "```solution\nraise ValueError('the page is wrong')\n```\n")
+        for _ in range(2):
+            with pytest.raises(b.BuildError, match="the page is wrong"):
+                b.build()
+        assert len(started) == 2
+
+    def test_a_page_skipped_for_a_missing_package_is_run_again(self, repo, monkeypatch, capsys):
+        # A skip says nothing about the solution, so keeping it would let a
+        # machine that has the package trust one that did not.
+        started = self.runs_of_python(monkeypatch)
+        setup = "```python exec\nid: setup\nimport a_package_this_python_lacks\n```\n"
+        write(repo, setup + CELL + SOLUTION + INPUTS)
+        b.build()
+        b.build()
+        assert len(started) == 2
+
+    def test_no_cache_runs_every_page_again(self, repo, monkeypatch):
+        started = self.runs_of_python(monkeypatch)
+        write(repo, CELL + SOLUTION + INPUTS)
+        b.build()
+        monkeypatch.setattr(b, "SOLUTION_CACHE", False)
+        b.build()
+        assert len(started) == 2
+
     def test_an_input_the_solution_cannot_name_fails_the_build(self, repo):
         write(repo, CELL + SOLUTION + "```inputs\ntotl_of([1])\n```\n")
         with pytest.raises(b.BuildError, match="totl_of"):

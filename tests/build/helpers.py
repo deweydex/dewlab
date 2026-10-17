@@ -165,6 +165,8 @@ def repo(tmp_path, monkeypatch):
     monkeypatch.setattr(b, "SHELL", tmp_path / "assets" / "shell.html")
     monkeypatch.setattr(b, "OUT", tmp_path / "site")
     monkeypatch.setattr(b, "PAGES", tmp_path / "pages")
+    # What the build keeps between runs lives in the test's own site.
+    monkeypatch.delenv("DEWLAB_BUILD_CACHE", raising=False)
     # The curriculum files start empty too, so no test leans on the real
     # outcomes and topics by accident; one that needs some writes its own
     # with curriculum_file().
