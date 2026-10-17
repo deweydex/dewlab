@@ -530,6 +530,13 @@ accepts), as its markdown in a text box (`source`: tables, folds, display
 maths, raw HTML, images, nested or loose lists, anything with a backslash or
 brace the editor would rewrite), or not at all
 (`locked`: includes, other fences, and pieces of the page built from other parts).
+The source map goes inside folds: `mark()` recurses into a `<details>` block's
+own markdown (`_fold_inside()`), so the blocks of a hint or an answer carry
+their own ranges, and `inpage-edit.js` edits them as it edits the page's. A
+fold's title is given a range of its own in the browser (`foldTitle()`), and
+edit mode opens every fold that has blocks inside and closes it again on stop.
+A fold with nothing mapped inside still edits as one markdown box.
+
 `inpage-cell.js` cuts a cell's block (its `python exec` or `sql exec` fence and
 the hint, solution and similar fences written after it) into the text a person
 may change and the text they may not. `classify()` calls such a block `cell`.

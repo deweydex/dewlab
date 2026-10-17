@@ -32,6 +32,8 @@ PAGE = (
     "A paragraph with maths, $x + 1$, in it.\n\n"
     "- one\n- two\n\n"
     "The *square root*{.term} of $x_1$ is a number.\n\n"
+    '<details class="dl-hint"><summary>stuck?</summary>\n\n'
+    "Try the first step.\n\n- one\n- two\n\n```python\nx = 1\n```\n\n</details>\n\n"
     "{{include: setup/shared.md}}\n\n"
     "```python exec\nid: only\nhint: Try it.\nprint(1)\n```\n\n"
     "```hint\nLook again.\n```\n"
@@ -265,7 +267,7 @@ def test_a_heading_and_a_plain_paragraph_edit_in_place_and_the_rest_is_locked_or
     modes = page.evaluate("""[...document.querySelectorAll('main#dl-body > [data-md]')]
         .map(n => [n.tagName.toLowerCase(), n.dataset.dlEdit])""")
     assert modes == [["h1", "rich"], ["p", "rich"], ["p", "rich"], ["p", "rich"],
-                     ["ul", "rich"], ["p", "rich"], ["blockquote", ""], ["div", "cell"]]
+                     ["ul", "rich"], ["p", "rich"], ["details", ""], ["blockquote", ""], ["div", "cell"]]
 
 
 def test_typing_in_a_paragraph_changes_that_paragraph_of_the_file_and_nothing_else(editing, site):
@@ -346,7 +348,7 @@ def test_a_list_edits_as_rich_text_and_keeps_its_bullets(editing):
     leave(page)
     page.click("#dl-edit-save")
     page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
-    assert fake.blobs[0] == fake.source.replace("- two", "- two more")
+    assert fake.blobs[0] == fake.source.replace("- two", "- two more", 1)
 
 
 def test_opening_a_list_moves_nothing_on_the_page(editing):
@@ -624,3 +626,69 @@ def test_every_cell_in_the_repository_parses_and_goes_back_together_unchanged(ed
     }""", blocks)
     assert len(blocks) > 1000
     assert result == []
+
+
+def test_editing_opens_every_fold_and_stopping_closes_them_again(editing):
+    page, fake, manifest = editing
+    assert page.evaluate("document.querySelector('details.dl-hint').open") is False
+    start(page)
+    assert page.evaluate("document.querySelector('details.dl-hint').open") is True
+    page.click("#dl-edit-toggle")
+    page.wait_for_function("!document.body.classList.contains('dl-editing')")
+    assert page.evaluate("document.querySelector('details.dl-hint').open") is False
+
+
+def test_the_blocks_inside_a_fold_edit_like_the_page_around_it(editing):
+    page, fake, manifest = editing
+    start(page)
+    type_into(page, "details.dl-hint > p", " Then the second.")
+    leave(page)
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("Try the first step.", "Try the first step. Then the second.")
+
+
+def test_a_list_and_a_code_fence_inside_a_fold_are_editable(editing):
+    page, fake, manifest = editing
+    start(page)
+    modes = page.evaluate("""[...document.querySelectorAll('details.dl-hint > [data-md]')]
+        .map(n => [n.tagName.toLowerCase(), n.dataset.dlEdit])""")
+    assert modes == [["summary", "summary"], ["p", "rich"], ["ul", "rich"], ["pre", "source"]]
+
+
+def test_a_folds_title_edits_in_place_and_clicking_it_does_not_fold_it(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("details.dl-hint > summary")
+    box = page.wait_for_selector("summary input.dl-inplace-summary")
+    assert box.input_value() == "stuck?"
+    assert page.evaluate("document.querySelector('details.dl-hint').open") is True
+    box.fill("stuck? try this")
+    leave(page)
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("<summary>stuck?</summary>", "<summary>stuck? try this</summary>")
+
+
+def test_a_code_fence_inside_a_fold_edits_as_its_markdown(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("details.dl-hint > pre")
+    box = page.wait_for_selector("textarea.dl-inplace-source")
+    assert box.input_value() == "```python\nx = 1\n```"
+    box.fill("```python\nx = 2\n```")
+    leave(page)
+    page.click("#dl-edit-save")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.includes('pull/999')")
+    assert fake.blobs[0] == fake.source.replace("x = 1", "x = 2")
+
+
+def test_discarding_puts_a_changed_fold_title_back(editing):
+    page, fake, manifest = editing
+    start(page)
+    page.click("details.dl-hint > summary")
+    page.fill("summary input.dl-inplace-summary", "changed")
+    leave(page)
+    page.click("#dl-edit-discard")
+    page.wait_for_function("document.getElementById('dl-edit-status').textContent.startsWith('No changes')")
+    assert page.inner_text("details.dl-hint > summary") == "stuck?"

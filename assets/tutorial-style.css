@@ -5011,3 +5011,7 @@ em.term, .term em { font-style: normal; }
 .dl-inplace-cell .dl-cell-part-label:first-child { margin-top: 0; }
 .dl-inplace-cell .dl-cell-id { margin: 0 0 0.4rem; font-size: 0.8em; color: var(--dl-muted); }
 .dl-inplace-cell .dl-cell-code { border: 1px solid var(--dl-muted); border-radius: 4px; overflow: hidden; }
+
+/* A fold's title being edited in place: the summary's own text, as a box. */
+.dl-inplace-summary { font: inherit; color: inherit; background: transparent; border: 0; border-bottom: 1px dashed var(--dl-muted); padding: 0; min-width: 12ch; }
+.dl-inplace-summary:focus { outline: 1px solid var(--dl-orange); outline-offset: 2px; }
