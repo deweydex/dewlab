@@ -5650,9 +5650,8 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict | None:
               "description": "No description recorded"}
     return {
         "name": name,
-        "url": str(data.get("url") or "").strip(),
-        **{f: str(data.get(f) or "").strip() or unsaid[f]
-           for f in ("source", "license", "description")},
+        **{f: str(data.get(f) or "").strip() or unsaid.get(f, "")
+           for f in ("source", "url", "license", "description")},
         "saved": saved,
         "live": data["recipe"]["source"] if data.get("live") else None,
     }
