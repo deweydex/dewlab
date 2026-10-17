@@ -48,3 +48,12 @@ Josh settled the open questions on 16 October (DECISIONS_LOG 7.299): the
 verdict-word tests are retired; the 85 local-only browser tests stay local;
 CI skips jobs a pull request's files cannot affect; and the tests that held
 the real curriculum, map and pictures to account report instead of block.
+
+On 17 October (DECISIONS_LOG 7.300) the rule was put in one line: a choice an
+educator makes can't break a build. About forty more refusals became notes,
+a tutorial whose main file is not named for its folder is now refused (a
+renamed file silently moved readers' saved work), and the build, which was
+three quarters running solutions, keeps a page's clean result between runs.
+A build without downloads: 165 s, then 30 s with a warm cache. Still open:
+more than one practice page per tutorial, which wants its own change.
+
