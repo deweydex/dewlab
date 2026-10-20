@@ -6001,3 +6001,20 @@ Choices somebody could have made differently.
 Not done: adding and removing rows and columns, a code editor for plain code fences, a real phone, the non-owner token check.
 
 *Cost to change: `tableCells()` and the `tablecell` mode in `assets/inpage-edit.js`, and `assets/inpage-table.js`; a table then edits as one box again.*
+
+**7.306 — A series where the reader paints with a toolkit of their own: "Painting with numbers".** Josh, 21 October 2026: "what if we just show a sample image and see if they can make it?", "scaffold with the function definitions but just empty inside except we can ask questions as comments", and "for the lines we will definitely need a much larger canvas".
+
+Four pages in Computational Methods, before the Matrices series: a canvas of numbers (a point, a line), rectangles and grids, fading ink and gradients, and lines from equations. Each page gives an empty function with questions in comments, then a picture to make, then a prompt to test on canvases the reader chooses. The functions are toolkit cells, so the reader's own `make_canvas`, `paint_line` and the rest are there on every later page. The same steps exist as a notebook with a solutions notebook (outside this repository).
+
+Choices somebody could have made differently.
+
+- **A picture, not a recipe.** Each task shows the target and the reader reads rows and columns off its axes. The alternative was to list the calls to make. The picture is the task, and the axes give the numbers. A staged hint holds the more specific help.
+- **Comments are questions, not instructions.** Input types, what comes back, what the function does in words, and which earlier function could help. The docstring says what the function does, so a stub is also the reference for what it must do.
+- **Canvases grow from 16 by 16 to 255 by 255.** A line with a slope needs room to run, and a small canvas hides the steep-line problem. Pictures use `show_picture(canvas, darkest)`, where `darkest` is the amount of ink that draws as black, so the same canvas can show one layer or sixty-four.
+- **Ink is layers.** A square holds a count, and painting it again adds 1. Overlap, gradients and the skyline all come from that.
+- **Lists only.** The series uses no NumPy. The Matrices series starts from the reader's own canvas habits.
+- **Origin at the bottom left for lines.** The reader chooses, and the targets use the bottom-left square. A row of -1 is a deliberate trap, because Python counts it from the end of the list.
+
+Not done: practice pages, glossary files for the four pages, starbursts and string art, triangles and hexagons, and convolution with a kernel (planned as the next series).
+
+*Cost to change: remove the four folders under `tutorials/`, the "Painting with numbers" lines in `courses/computational-methods.yaml`, the group in `planning/curriculum/topic-groups.yaml`, the topic in `map/graph.json` (then rerun `dev/map_layout.py`), and `setup/painting/`.*

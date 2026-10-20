@@ -169,6 +169,19 @@ groups:
       - a-chart-that-tells-the-truth
       - mixed-data
 
+  - key: painting-with-numbers
+    name: Painting with numbers — a canvas, lines and shapes
+    intro: >
+      A picture is a grid of numbers, and each number is the amount of ink
+      on one square. You build your own small library that paints points,
+      lines, rectangles, grids, fading ink and straight lines, and then
+      make pictures of your own with it.
+    tutorials:
+      - a-canvas-of-numbers
+      - rectangles-and-grids
+      - fading-ink-and-gradients
+      - lines-from-equations
+
   - key: matrices
     name: Matrices and linear algebra
     intro: >

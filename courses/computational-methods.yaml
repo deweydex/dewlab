@@ -40,6 +40,12 @@ contents:
   - comprehensions-and-grids
   - two-names-one-list
   - looking-things-up-by-name
+- title: Painting with numbers
+  tutorials:
+  - a-canvas-of-numbers
+  - rectangles-and-grids
+  - fading-ink-and-gradients
+  - lines-from-equations
 - title: Matrices
   tutorials:
   - grid-of-numbers

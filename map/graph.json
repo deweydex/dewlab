@@ -2478,6 +2478,44 @@
    "size": "The second half of a page in each course, one sitting (DT) to two (PMI). Four old topics merge: both courses teach area, cosine rule, sine rule and the two-answer case together, and nothing later needs one without the others."
   },
   {
+   "id": "painting-with-numbers",
+   "name": "Painting with numbers: a canvas of squares",
+   "district": "matrices-and-3d",
+   "plain": "A picture is a grid of numbers, and each number is the amount of ink on one square. You write your own small library that paints points, lines, rectangles, grids, fading ink and straight lines from y = ax + b.",
+   "needs": [
+    "python-functions",
+    "python-for-loops",
+    "coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-canvas-of-numbers",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rectangles-and-grids",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "fading-ink-and-gradients",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "lines-from-equations",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Four short pages, about three sittings. Each page adds two or three functions to the reader's toolkit, and each function uses the ones before it. The series ends with the functions that paint a cube on a table from lines."
+  },
+  {
    "id": "matrices",
    "name": "Matrices that move pictures",
    "district": "matrices-and-3d",
