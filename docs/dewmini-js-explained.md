@@ -300,13 +300,20 @@ differently labelled.
 ## Two patterns worth understanding on their own
 
 **A small line-based Markdown parser.** Text cells support a deliberately
-small set of formatting (headings, bold, italic, code, bullets, images) —
-not real Markdown, on purpose (see the section comment above
-`escapeHtml`). `renderDocMarkdown` reads the text one line at a time,
-tracking whether a paragraph or a bullet list is currently "open," and
-decides what to output based on what kind of line it just saw. This is a
-good small example of how a simple parser can be built without a parsing
-library, for a format simple enough not to need one.
+small set of formatting, not real Markdown, on purpose (see the section comment
+above `escapeHtml`): headings, bold, italic, code spans, fenced code blocks,
+bullet and numbered lists, pipe tables, block quotes, rules, links to web and
+mail addresses, and data-URL images. That list is what a Jupyter notebook's
+Markdown cells ordinarily use, so an imported notebook reads as its author
+wrote it. `splitDocFences` first cuts a note into fenced code (shown exactly as
+written, never touched by the maths or line passes) and prose;
+`renderDocBlocks` then reads the prose one line at a time, tracking whether a
+paragraph or a list is currently "open," and decides what to output based on
+what kind of line it just saw. `renderDocInline` lifts code spans out before
+reading emphasis, so `a * b` inside backticks is never italic, and restores a
+short list of HTML entities (`&nbsp;`, `&amp;` and a few more) and attribute-free
+tags (`<br>`, `<b>`, `<i>` and a few more); anything else an author types stays
+visible text. Nested lists and raw HTML blocks are not supported.
 
 **Extract, then restore, for maths the same way as for cells and code
 blocks.** `renderDocMarkdown` extracts `$…$`/`$$…$$` into placeholder

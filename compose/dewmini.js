@@ -575,16 +575,44 @@ function setBtnLabel(btn, text) {
   (btn.querySelector(".dl-btn-label") || btn).textContent = text;
 }
 
+// The entities and tags a notebook's Markdown commonly carries. Jupyter
+// passes raw HTML through, so an author who wants a gap writes `&nbsp;` and
+// one who wants a line break writes `<br>`. escapeHtml() has already turned
+// those into visible text by the time renderDocInline() sees them; this puts
+// back exactly the short list below and nothing else, so nothing an author
+// types can become a script, an attribute, or a tag with a behaviour.
+const DOC_ENTITIES = "nbsp|amp|lt|gt|quot|apos|copy|reg|trade|hellip|mdash|ndash|lsquo|rsquo|ldquo|rdquo|times|rarr|larr|deg|middot";
+const DOC_ENTITY_RE = new RegExp(`&amp;(${DOC_ENTITIES}|#\\d{1,6}|#[xX][0-9a-fA-F]{1,6});`, "g");
+const DOC_TAG_RE = /&lt;(\/?)(b|i|u|em|strong|sub|sup|br)\s*\/?&gt;/gi;
+
 function renderDocInline(text) {
-  return text
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
+  // Code spans are lifted out first and put back last, so that what is
+  // inside them (`vowels / letters * 100`, `is_valid_message`) is never read
+  // as emphasis or as an entity: a code span shows exactly what was typed.
+  const codes = [];
+  const held = text.replace(/`([^`]+)`/g, (_match, code) => {
+    codes.push(code);
+    return `dlcode${codes.length - 1}z`;
+  });
+  return held
+    // Tags before entities: an author's `&lt;b&gt;` is the text "<b>", and
+    // decoding it first would hand the tag pass something it mistakes for markup.
+    .replace(DOC_TAG_RE, (_match, closing, tag) => (
+      tag.toLowerCase() === "br" ? "<br>" : `<${closing}${tag.toLowerCase()}>`))
+    .replace(DOC_ENTITY_RE, "&$1;")
     // Only a data: URL — the one thing the "insert image" button ever
     // writes — not an arbitrary remote image, which would need its own
     // loading and trust story this cell type has no reason to take on.
     .replace(/!\[([^\]]*)\]\((data:[^)\s]+)\)/g, '<img alt="$1" src="$2" loading="lazy">')
+    // A link is something the reader chooses to follow, so unlike an image
+    // it needs no trust story beyond the scheme: web and mail addresses
+    // only, never javascript: or data:.
+    .replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^)\s]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
-    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>");
+    .replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, "$1<em>$2</em>")
+    .replace(/dlcode(\d+)z/g, (_match, n) => `<code>${codes[Number(n)]}</code>`);
 }
 
 // A modest cap on an attached image's raw file size — comfortably inside a
@@ -641,43 +669,186 @@ function renderDocMathSpan(item) {
   return `<span class="${classes}">${escapeHtml(item.tex)}</span>`;
 }
 
-function renderDocMarkdown(text) {
-  const { body, found } = extractDocMath(text);
-  const out = [];
-  let listOpen = false;
-  let para = [];
-  const closeList = () => { if (listOpen) { out.push("</ul>"); listOpen = false; } };
-  const flushPara = () => { if (para.length) { out.push(`<p>${renderDocInline(para.join(" "))}</p>`); para = []; } };
+// Splits a note into fenced code and everything else, because a fence is the
+// one construct that has to be recognised before anything else is: what is
+// inside it is shown exactly as written, so it must not reach the maths
+// extractor (a `$` in pseudocode is not a formula) or the line parser (an
+// indented line is not a list item, and a blank line is not a paragraph break).
+function splitDocFences(text) {
+  const parts = [];
+  let prose = [];
+  let fence = null; // { char, length, lines }
+  const flushProse = () => {
+    if (prose.length) parts.push({ fence: false, text: prose.join("\n") });
+    prose = [];
+  };
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (fence) {
+      const closes = trimmed.length >= fence.length && [...trimmed].every((c) => c === fence.char);
+      if (closes) {
+        parts.push({ fence: true, text: fence.lines.join("\n") });
+        fence = null;
+      } else {
+        fence.lines.push(line);
+      }
+      continue;
+    }
+    const open = trimmed.match(/^(`{3,}|~{3,})(.*)$/);
+    // A backtick fence's info string cannot hold a backtick; ```like this```
+    // on one line is an inline code span, not the start of a block.
+    if (open && !(open[1][0] === "`" && open[2].includes("`"))) {
+      flushProse();
+      fence = { char: open[1][0], length: open[1].length, lines: [] };
+      continue;
+    }
+    prose.push(line);
+  }
+  // A fence left open runs to the end of the note, as it does in Jupyter.
+  if (fence) parts.push({ fence: true, text: fence.lines.join("\n") });
+  flushProse();
+  return parts;
+}
 
-  for (const raw of escapeHtml(body).split("\n")) {
+// One row of a pipe table as its cells. Leading and trailing pipes are
+// optional, and `\|` is a pipe inside a cell rather than a divider.
+function docTableCells(row) {
+  let body = row.trim();
+  if (body.startsWith("|")) body = body.slice(1);
+  if (body.endsWith("|") && !body.endsWith("\\|")) body = body.slice(0, -1);
+  return body.split(/(?<!\\)\|/).map((cell) => cell.trim().replace(/\\\|/g, "|"));
+}
+
+function isDocTableDivider(row) {
+  return row.includes("|") && /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(row.trim());
+}
+
+function renderDocTable(headerRow, dividerRow, bodyRows) {
+  const headers = docTableCells(headerRow);
+  const aligns = docTableCells(dividerRow).map((mark) => (
+    mark.startsWith(":") && mark.endsWith(":") ? " class=\"dm-align-center\""
+      : mark.endsWith(":") ? " class=\"dm-align-right\"" : ""));
+  const cell = (tag, text, i) => `<${tag}${aligns[i] || ""}>${renderDocInline(text)}</${tag}>`;
+  const head = `<tr>${headers.map((text, i) => cell("th", text, i)).join("")}</tr>`;
+  const rows = bodyRows.map((row) => {
+    const cells = docTableCells(row);
+    // A row is as wide as the header: a short one is padded and a long one
+    // trimmed, which is what GitHub and Jupyter both do.
+    return `<tr>${headers.map((_h, i) => cell("td", cells[i] || "", i)).join("")}</tr>`;
+  });
+  return `<div class="dm-doc-table"><table><thead>${head}</thead><tbody>${rows.join("")}</tbody></table></div>`;
+}
+
+// The line-by-line pass. `lines` are already HTML-escaped, so a quote marker
+// is `&gt;` here, not `>`.
+function renderDocBlocks(lines) {
+  const out = [];
+  let list = null; // { tag, start, items }
+  let para = [];
+  const closeList = () => {
+    if (!list) return;
+    const start = list.tag === "ol" && list.start !== 1 ? ` start="${list.start}"` : "";
+    const items = list.items.map((item) => `<li>${renderDocInline(item)}</li>`).join("");
+    out.push(`<${list.tag}${start}>${items}</${list.tag}>`);
+    list = null;
+  };
+  const flushPara = () => {
+    if (para.length) out.push(`<p>${renderDocInline(para.join(" "))}</p>`);
+    para = [];
+  };
+  const flushAll = () => { flushPara(); closeList(); };
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const raw = lines[i];
     const line = raw.trim();
-    const heading = line.match(/^(#{1,3})\s+(.*)$/);
+
+    // A closing run of #s only counts after a space, so "## Learning C#" keeps its #.
+    const heading = line.match(/^(#{1,6})\s+(.*?)(?:\s+#+)?$/);
     if (heading) {
-      flushPara();
-      closeList();
-      const level = heading[1].length + 3; // # -> h4 .. ### -> h6
+      flushAll();
+      const level = Math.min(heading[1].length + 3, 6); // # -> h4 .. ### and deeper -> h6
       out.push(`<h${level}>${renderDocInline(heading[2])}</h${level}>`);
       continue;
     }
-    const bullet = line.match(/^[-*]\s+(.*)$/);
-    if (bullet) {
-      flushPara();
-      if (!listOpen) { out.push("<ul>"); listOpen = true; }
-      out.push(`<li>${renderDocInline(bullet[1])}</li>`);
+
+    if (/^([-*_])(\s*\1){2,}$/.test(line)) {
+      flushAll();
+      out.push("<hr>");
       continue;
     }
+
+    if (line.includes("|") && i + 1 < lines.length && isDocTableDivider(lines[i + 1])
+        && docTableCells(line).length === docTableCells(lines[i + 1]).length) {
+      flushAll();
+      const bodyRows = [];
+      let next = i + 2;
+      while (next < lines.length && lines[next].trim() && lines[next].includes("|")) {
+        bodyRows.push(lines[next]);
+        next += 1;
+      }
+      out.push(renderDocTable(line, lines[i + 1], bodyRows));
+      i = next - 1;
+      continue;
+    }
+
+    if (/^&gt;/.test(line)) {
+      flushAll();
+      const quoted = [];
+      let next = i;
+      while (next < lines.length && /^&gt;/.test(lines[next].trim())) {
+        quoted.push(lines[next].trim().replace(/^&gt;\s?/, ""));
+        next += 1;
+      }
+      out.push(`<blockquote>${renderDocBlocks(quoted)}</blockquote>`);
+      i = next - 1;
+      continue;
+    }
+
+    const bullet = line.match(/^[-*+]\s+(.*)$/);
+    const numbered = line.match(/^(\d{1,9})[.)]\s+(.*)$/);
+    if (bullet || numbered) {
+      flushPara();
+      const tag = bullet ? "ul" : "ol";
+      if (list && list.tag !== tag) closeList();
+      if (!list) list = { tag, start: bullet ? 1 : Number(numbered[1]), items: [] };
+      list.items.push(bullet ? bullet[1] : numbered[2]);
+      continue;
+    }
+
     if (!line) {
-      flushPara();
-      closeList();
+      flushAll();
       continue;
     }
-    para.push(line);
+
+    // Text straight after a list item, with no blank line between, carries
+    // on that item rather than starting a paragraph inside the list.
+    if (list) {
+      list.items[list.items.length - 1] += ` ${line}`;
+      continue;
+    }
+    // Two trailing spaces, or a backslash, ask for a line break.
+    const hardBreak = /( {2,}|\\)$/.test(raw.replace(/[\r\t]+$/, ""));
+    para.push(hardBreak ? `${line.replace(/\\$/, "")}<br>` : line);
   }
-  flushPara();
-  closeList();
-  let html = out.join("\n") || '<p class="dm-doc-empty">Empty note.</p>';
+  flushAll();
+  return out.join("\n");
+}
+
+function renderDocProse(text) {
+  const { body, found } = extractDocMath(text);
+  let html = renderDocBlocks(escapeHtml(body).split("\n"));
   found.forEach((item, i) => { html = html.split(`dlmath${i}z`).join(renderDocMathSpan(item)); });
   return html;
+}
+
+function renderDocMarkdown(text) {
+  const html = splitDocFences(text)
+    .map((part) => (part.fence
+      ? `<pre class="dm-doc-code"><code>${escapeHtml(part.text)}</code></pre>`
+      : renderDocProse(part.text)))
+    .filter(Boolean)
+    .join("\n");
+  return html || '<p class="dm-doc-empty">Empty note.</p>';
 }
 
 // Loaded once, lazily, the first time any rendered text cell actually
@@ -3309,16 +3480,33 @@ function notebookNameFor(sourceLabel) {
   return base.length > 24 ? `${base.slice(0, 23)}…` : base;
 }
 
+/* A Markdown cell can carry its pictures inside the cell, in `attachments`,
+ * and point at them as `![alt](attachment:name.png)`. Nothing here can follow
+ * that address, so it becomes the data: URL the renderer already accepts. */
+function inlineIpynbAttachments(source, attachments) {
+  if (!attachments || typeof attachments !== "object") return source;
+  return source.replace(/!\[([^\]]*)\]\(attachment:([^)\s]+)\)/g, (whole, alt, name) => {
+    let key = name;
+    try { key = decodeURIComponent(name); } catch { /* keep the name as written */ }
+    const bundle = attachments[key] || attachments[name];
+    const mime = bundle && Object.keys(bundle).find((m) => /^image\/(png|jpeg|gif|webp)$/.test(m));
+    if (!mime) return whole;
+    const data = (Array.isArray(bundle[mime]) ? bundle[mime].join("") : String(bundle[mime])).replace(/\s+/g, "");
+    return `![${alt}](data:${mime};base64,${data})`;
+  });
+}
+
 function parseIpynbCells(text) {
   const notebook = JSON.parse(text);
   if (!Array.isArray(notebook.cells)) throw new Error("that file has no cells array");
   return notebook.cells.map((c) => {
     const output = c.cell_type === "code" ? htmlForIpynbOutputs(c.outputs) : "";
     const dewmini = (c.metadata && c.metadata.dewmini) || {};
+    const source = Array.isArray(c.source) ? c.source.join("") : c.source || "";
     return {
       id: generateId(),
       type: c.cell_type === "code" ? CELL_TYPES.PYTHON : CELL_TYPES.TEXT,
-      content: Array.isArray(c.source) ? c.source.join("") : c.source || "",
+      content: c.cell_type === "markdown" ? inlineIpynbAttachments(source, c.attachments) : source,
       output,
       // An imported cell has not been run here, so it has no code that
       // its output belongs to yet — `ranContent` stays unset and the
