@@ -23,7 +23,9 @@ show_picture(canvas, darkest=8)
 The numbers climb from 1 to 8, and the squares climb from pale grey to
 black. Now change `darkest=8` to `darkest=4` and run the cell again.
 Which squares look the same now? The picture changes, and the numbers
-do not. `darkest` is only the number that the picture treats as black.
+do not. `darkest` is only the number that the picture treats as black. It can
+be as large as 255, the biggest number that a square of a real picture
+holds.
 
 A smooth change from light to dark is a *gradient*. This page makes two
 functions that paint with a changing amount of ink: one for a line that
@@ -102,52 +104,50 @@ What is the largest number of ink on the row? The cell prints it.
 
 ## A block that fades
 
-A block that fades from top to bottom is a stack of rows, where every row
-has a little less ink than the one above it. How would you paint one?
+A block that fades is a stack of rows, where every row has a little more
+ink than the one before it. How would you paint one?
 
 ```python exec
 id: a-block-that-fades-1
 toolkit: yes
-expect: (lambda c: (paint_gradient(c, 0, 0, 2, 1), c == [[3, 3], [2, 2], [1, 1], [0, 0]])[1])(make_canvas(4, 2))
-def paint_gradient(canvas, top, left, bottom, right):
-    """Paint a block whose top row gets as much ink as the block has rows. Each row below it gets 1 less, so the bottom row gets 1."""
+expect: (lambda c: (paint_gradient(c, 0, 0, 2, 1), c == [[1, 1], [2, 2], [3, 3], [0, 0]])[1])(make_canvas(4, 2))
+def paint_gradient(canvas, first_row, first_column, last_row, last_column):
+    """Paint a block whose first row gets 1 ink. Each row after it gets 1 more, so the last row gets as much ink as the block has rows."""
+    # How much ink does the first row get? The second? Is there one rule for both?
     # How many rows does the block have?
-    # Which earlier function fades along one row?
     ...
 ```
 
 ```python toolkit-reference
 for: a-block-that-fades-1
-def paint_gradient(canvas, top, left, bottom, right):
-    """Paint a block whose top row gets as much ink as the block has rows. Each row below it gets 1 less, so the bottom row gets 1."""
-    height = bottom - top + 1
-    for step in range(height):
-        for column in range(left, right + 1):
-            canvas[top + step][column] = canvas[top + step][column] + (height - step)
+def paint_gradient(canvas, first_row, first_column, last_row, last_column):
+    """Paint a block whose first row gets 1 ink. Each row after it gets 1 more, so the last row gets as much ink as the block has rows."""
+    for step in range(last_row - first_row + 1):
+        for column in range(first_column, last_column + 1):
+            canvas[first_row + step][column] = canvas[first_row + step][column] + (step + 1)
 ```
 
 ```hint
 after: 3 errors
-How many rows does the block have? Which `paint_fade` idea tells you how
-much ink the first row gets, and the second?
+How much ink does the first row get, and the second? What number goes up
+by 1 for every row, and where does your loop count it?
 ```
 
 ```solution
-def paint_gradient(canvas, top, left, bottom, right):
-    """Paint a block whose top row gets as much ink as the block has rows. Each row below it gets 1 less, so the bottom row gets 1."""
-    height = bottom - top + 1
-    for step in range(height):
-        for column in range(left, right + 1):
-            canvas[top + step][column] = canvas[top + step][column] + (height - step)
+def paint_gradient(canvas, first_row, first_column, last_row, last_column):
+    """Paint a block whose first row gets 1 ink. Each row after it gets 1 more, so the last row gets as much ink as the block has rows."""
+    for step in range(last_row - first_row + 1):
+        for column in range(first_column, last_column + 1):
+            canvas[first_row + step][column] = canvas[first_row + step][column] + (step + 1)
 ---
-Here is one answer. Yours may be different and work too. `height` is
-`bottom - top + 1`, because both the top and the bottom row are part of
-the block.
+Here is one answer. Yours may be different and work too. `step` counts
+from 0, so `step + 1` gives 1 for the first row. The block has
+`last_row - first_row + 1` rows, because the last row is also part of it.
 ```
 
-Can you make this picture? Why does it need a `darkest` of 64?
+Can you make this picture? Why does it need a `darkest` of 255?
 
-![A white 100 by 128 grid. A line near the top fades from black on its left to white on its right. Below it a block fades from black at its top to white at its bottom.](a-fade-and-a-gradient.png)
+![A white 280 by 270 grid. A line near the top fades from black on its left to white on its right. Below it a block fades from black at its top to white at its bottom.](a-fade-and-a-gradient.png)
 
 ```python exec
 id: a-block-that-fades-2
@@ -157,14 +157,15 @@ id: a-block-that-fades-2
 ```solution
 {{include: setup/painting/toolkit.py}}
 
-canvas = make_canvas(100, 128)
-paint_fade(canvas, 8, 16, 64)
-paint_gradient(canvas, 20, 16, 83, 111)
-show_picture(canvas, darkest=64)
+canvas = make_canvas(280, 270)
+paint_gradient(canvas, 10, 7, 264, 261)
+paint_fade(canvas, 272, 7, 255)
+show_picture(canvas, darkest=255)
 ---
 Here is one answer. Yours may be different and work too. The gradient
-block has 64 rows, and so does the fade, so the darkest square holds 64
-ink. A `darkest` of 64 shows every step between white and black.
+block has 255 rows, and the fade is 255 squares long, so the darkest square
+holds 255 ink. A `darkest` of 255 shows every step between white and
+black, as a real greyscale picture does.
 ```
 
 Now try your own. Can you make the ink fade from left to right inside a
@@ -173,7 +174,8 @@ block? What stays the same as `paint_gradient`, and what changes?
 ## Your turn: a sky
 
 Can you paint a sky that is dark at the top and pale near the ground?
-Put a building in front of it, with its own ink. Before you run the
+Put a building in front of it, with its own ink. Which end of the canvas
+is the top? Before you run the
 cell, write a guess in a comment: where will the building look darker
 than the sky, and where lighter?
 
@@ -192,14 +194,14 @@ own. How much `darkest` do you need to see both?
 {{include: setup/painting/toolkit.py}}
 
 canvas = make_canvas(100, 120)
-paint_gradient(canvas, 0, 0, 39, 119)
+paint_gradient(canvas, 60, 0, 99, 119)
 for layer in range(20):
-    paint_rectangle(canvas, 25, 30, 99, 70)
+    paint_rectangle(canvas, 0, 30, 74, 70)
 show_picture(canvas, darkest=40)
 ---
 Here is one answer. Yours may be different and work too. The building
-holds 20 ink, which is half of `darkest`, so it is mid grey. In rows 25
-to 39 it stands in front of the sky and adds its ink to the sky's, so it
+holds 20 ink, which is half of `darkest`, so it is mid grey. In rows 60
+to 74 it stands in front of the sky and adds its ink to the sky's, so it
 is darker there.
 ```
 

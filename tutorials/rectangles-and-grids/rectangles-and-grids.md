@@ -20,7 +20,7 @@ for row in range(10, 30):
 show_picture(canvas)
 ```
 
-Twenty horizontal lines, one under another, make a block. A block with
+Twenty horizontal lines, one above another, make a block. A block with
 straight sides is a *rectangle*. This page turns that loop into a
 function, and then paints with it.
 
@@ -33,7 +33,7 @@ function is that loop with names.
 id: a-rectangle-1
 toolkit: yes
 expect: (lambda c: (paint_rectangle(c, 1, 1, 2, 3), c == [[0, 0, 0, 0, 0], [0, 1, 1, 1, 0], [0, 1, 1, 1, 0], [0, 0, 0, 0, 0]])[1])(make_canvas(4, 5))
-def paint_rectangle(canvas, top, left, bottom, right):
+def paint_rectangle(canvas, first_row, first_column, last_row, last_column):
     """Paint every square inside a box with these four edges."""
     # A rectangle is made of rows. Which earlier function paints a row?
     # How many rows are there, and how do you count through them?
@@ -42,10 +42,10 @@ def paint_rectangle(canvas, top, left, bottom, right):
 
 ```python toolkit-reference
 for: a-rectangle-1
-def paint_rectangle(canvas, top, left, bottom, right):
+def paint_rectangle(canvas, first_row, first_column, last_row, last_column):
     """Paint every square inside a box with these four edges."""
-    for row in range(top, bottom + 1):
-        paint_horizontal(canvas, row, left, right)
+    for row in range(first_row, last_row + 1):
+        paint_horizontal(canvas, row, first_column, last_column)
 ```
 
 ```hint
@@ -55,10 +55,10 @@ rows does a rectangle have, and how does your loop count through them?
 ```
 
 ```solution
-def paint_rectangle(canvas, top, left, bottom, right):
+def paint_rectangle(canvas, first_row, first_column, last_row, last_column):
     """Paint every square inside a box with these four edges."""
-    for row in range(top, bottom + 1):
-        paint_horizontal(canvas, row, left, right)
+    for row in range(first_row, last_row + 1):
+        paint_horizontal(canvas, row, first_column, last_column)
 ---
 Here is one answer. Yours may be different and work too. Every row of a
 rectangle is a horizontal line, and the function that paints one
@@ -71,27 +71,27 @@ What is a square, if you already have a rectangle?
 id: a-rectangle-2
 toolkit: yes
 expect: (lambda c: (paint_square(c, 1, 1, 3), sum(map(sum, c)) == 9 and c[3][3] == 1 and c[4][4] == 0)[1])(make_canvas(6, 6))
-def paint_square(canvas, top, left, size):
-    """Paint a square with its top-left corner at top and left. size is the length of each side."""
-    # Which earlier function paints a box? What do you give it for bottom and right?
+def paint_square(canvas, row, column, size):
+    """Paint a square. The corner with the smallest row and column is at row and column. size is the length of each side."""
+    # Which earlier function paints a box? What do you give it for last_row and last_column?
     # A square of size 3 that starts at row 2 ends at which row?
     ...
 ```
 
 ```python toolkit-reference
 for: a-rectangle-2
-def paint_square(canvas, top, left, size):
-    """Paint a square with its top-left corner at top and left. size is the length of each side."""
-    paint_rectangle(canvas, top, left, top + size - 1, left + size - 1)
+def paint_square(canvas, row, column, size):
+    """Paint a square. The corner with the smallest row and column is at row and column. size is the length of each side."""
+    paint_rectangle(canvas, row, column, row + size - 1, column + size - 1)
 ```
 
 ```solution
-def paint_square(canvas, top, left, size):
-    """Paint a square with its top-left corner at top and left. size is the length of each side."""
-    paint_rectangle(canvas, top, left, top + size - 1, left + size - 1)
+def paint_square(canvas, row, column, size):
+    """Paint a square. The corner with the smallest row and column is at row and column. size is the length of each side."""
+    paint_rectangle(canvas, row, column, row + size - 1, column + size - 1)
 ---
-Here is one answer. Yours may be different and work too. The bottom row
-is `top + size - 1`, because the first row is also part of the square.
+Here is one answer. Yours may be different and work too. The last row
+is `row + size - 1`, because the first row is also part of the square.
 Without the `- 1`, the square is one row and one column too big.
 ```
 
@@ -114,7 +114,7 @@ show_picture(canvas, darkest=2)
 type: number
 
 Each square is 24 by 24, and the corner of the second is 12 squares
-down and across from the first. How many squares hold 2 ink?
+up and across from the first. How many squares hold 2 ink?
 ```
 
 Can you make the same picture with the default `darkest`? What do you

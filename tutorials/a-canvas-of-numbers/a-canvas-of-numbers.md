@@ -13,7 +13,7 @@ you will write. Yours will look different, and that is the point.
 
 ![A night skyline. Overlapping grey buildings stand under a sky that fades from black to white, above a black road.](a-night-skyline.png)
 
-![A black outline of a cube with a grey front face, standing on a black table with two legs.](a-cube-on-a-table.png)
+![A cube on a table drawn in perspective. The cube has a grey front face, a white top and a darker side, and casts a grey shadow on the table top.](a-cube-on-a-table.png)
 
 ![Nested squares that grow darker towards the centre, like a stepped pyramid seen from above.](nested-squares.png)
 
@@ -31,11 +31,11 @@ id: a-letter-in-numbers-1
 letter = [
     [1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0],
     [1, 1, 1, 1, 0],
     [1, 0, 0, 0, 0],
     [1, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
 ]
 for row in letter:
     print(row)
@@ -44,41 +44,82 @@ for row in letter:
 Each number is the amount of *ink* on one square of the paper. A 0 means
 no ink, so the square stays white. A 1 means one layer of ink. The whole
 grid is a *canvas*: a list of rows, where each row is a list of numbers.
-`canvas[row][column]` is the square in that row and that column. Row 0
-is the top row and column 0 is the left column, the same way you read a
-page.
+`canvas[row][column]` is the square in that row and that column. Column 0
+is the left column. Where row 0 sits is a choice, and we make it in a
+moment.
 
-The next cell teaches Python to draw a canvas. It uses `matplotlib`, a
-library that draws pictures. You do not need to read it yet. Run it, and
-then run the cell under it.
+The next cell teaches Python to draw a canvas. Run it once. It defines a
+function called `show_picture`, and the comments say what each part does.
 
 ```python exec
 id: a-letter-in-numbers-2
 toolkit: yes
-def show_picture(canvas, darkest=1):
-    """Draw a canvas. A square with 0 ink is white. A square with `darkest` ink or more is black."""
+def show_picture(canvas, darkest=1, origin="bottom"):
+    """Draw a canvas. A square with 0 ink is white. A square with `darkest` ink or more is black.
+    origin="bottom" puts row 0 at the bottom of the picture. origin="top" puts it at the top."""
     import matplotlib.pyplot as plt
 
     rows = len(canvas)
     columns = len(canvas[0])
     longest = max(rows, columns)
     size = min(7, max(3, longest / 5))
+    # Scale the figure to the canvas so that every square stays square.
     plt.figure(figsize=(size * columns / longest, size * rows / longest))
-    plt.imshow(canvas, cmap="gray_r", vmin=0, vmax=darkest, interpolation="nearest")
+    # "gray_r" draws 0 as white. vmin and vmax set which numbers are white and black.
+    plt.imshow(canvas, cmap="gray_r", vmin=0, vmax=darkest, interpolation="nearest",
+               origin="lower" if origin == "bottom" else "upper")
+    # About ten labels along each edge, so a big canvas stays readable.
     plt.xticks(range(0, columns, max(1, columns // 10)))
     plt.yticks(range(0, rows, max(1, rows // 10)))
 ```
 
+Here is what the cell does. `matplotlib` is a library that draws
+pictures. Its `imshow` function takes a list of rows and colours one
+square for each number. The colour scale `gray_r` is a scale of greys that
+starts at white. The numbers `vmin` and `vmax` say which number is drawn
+white and which is drawn black, and `show_picture` sets them to 0 and
+`darkest`. A number between the two is a grey. A real picture file keeps
+each square as a whole number from 0 to 255, so `darkest` can be as high
+as 255. The input `origin` says which end of the picture row 0 sits
+at. Run the cell below. It draws the same letter twice.
+
 ```python exec
 id: a-letter-in-numbers-3
-show_picture(letter)
+show_picture(letter, origin="top")
+show_picture(letter, origin="bottom")
 ```
 
-It is an E. Now change one of the 0s in the second row of `letter` to a
-3, and run both cells again. What do you think the 3 will look like?
-Then try `show_picture(letter, darkest=3)`. The `darkest` number says
-how much ink counts as black. With the default of 1, a square with 3
-ink looks the same as a square with 1.
+```predict
+type: choice
+
+Both pictures show the same list. How will the second picture look?
+
+- The letter F, the right way up
+  - The list is the same, so the picture is the same.
+- The letter F, upside down
+  - With origin="bottom", the first row of the list is at the bottom.
+```
+
+## Where is row 0?
+
+A page counts its rows from the top, so a list written line by line is
+the right way up with `origin="top"`. A graph counts from the bottom, so
+a row number becomes a height, and `origin="bottom"` is the way to read
+it. Either choice works, and you can choose. In this series we count from
+the bottom, because the lines on the last page use $x$ and $y$ the way a
+graph does. Every picture in the series is drawn that way.
+
+To change your choice for good, edit `origin="bottom"` in the `def` line
+of the cell above to `origin="top"`, and run the cell again. To change it
+for one picture, give `origin` in the call. If you choose the top, your
+pictures will come out upside down next to ours, and `paint_xy` on the
+last page is the one function that needs to know.
+
+Now change one of the 0s in the second row of `letter` to a 3, and run
+the cells again. What do you think the 3 will look like? Then try
+`show_picture(letter, darkest=3)`. The `darkest` number says how much ink
+counts as black. With the default of 1, a square with 3 ink looks the
+same as a square with 1.
 
 ## A shortcut that goes wrong
 
@@ -210,7 +251,7 @@ to be returned.
 Can you make this picture? Read the numbers along its edges to find the
 rows and columns.
 
-![A white 16 by 16 grid with three black squares: one near the top left, one in the middle and one near the lower right.](three-points.png)
+![A white 16 by 16 grid with three black squares: one near the bottom left, one in the middle and one near the upper right.](three-points.png)
 
 ```python exec
 id: paint-a-point-1
@@ -347,10 +388,10 @@ one starts and ends?
 {{include: setup/painting/toolkit.py}}
 
 canvas = make_canvas(32, 32)
-paint_vertical(canvas, 6, 6, 26)
-paint_horizontal(canvas, 6, 6, 24)
-paint_horizontal(canvas, 16, 6, 20)
-paint_horizontal(canvas, 26, 6, 24)
+paint_vertical(canvas, 6, 5, 25)
+paint_horizontal(canvas, 5, 6, 24)
+paint_horizontal(canvas, 15, 6, 20)
+paint_horizontal(canvas, 25, 6, 24)
 show_picture(canvas)
 ---
 Here is one answer. Yours may be different and work too. The corners of

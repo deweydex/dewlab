@@ -6010,10 +6010,13 @@ Choices somebody could have made differently.
 
 - **A picture, not a recipe.** Each task shows the target and the reader reads rows and columns off its axes. The alternative was to list the calls to make. The picture is the task, and the axes give the numbers. A staged hint holds the more specific help.
 - **Comments are questions, not instructions.** Input types, what comes back, what the function does in words, and which earlier function could help. The docstring says what the function does, so a stub is also the reference for what it must do.
-- **Canvases grow from 16 by 16 to 255 by 255.** A line with a slope needs room to run, and a small canvas hides the steep-line problem. Pictures use `show_picture(canvas, darkest)`, where `darkest` is the amount of ink that draws as black, so the same canvas can show one layer or sixty-four.
+- **Canvases grow from 16 by 16 to 255 by 255.** A line with a slope needs room to run, and a small canvas hides the steep-line problem. Pictures use `show_picture(canvas, darkest)`, where `darkest` is the amount of ink that draws as black. It can be as large as 255, the biggest number a square of a real picture file holds, and the fade and gradient page uses all 255 steps.
 - **Ink is layers.** A square holds a count, and painting it again adds 1. Overlap, gradients and the skyline all come from that.
 - **Lists only.** The series uses no NumPy. The Matrices series starts from the reader's own canvas habits.
-- **Origin at the bottom left for lines.** The reader chooses, and the targets use the bottom-left square. A row of -1 is a deliberate trap, because Python counts it from the end of the list.
+- **The reader chooses where row 0 sits.** `show_picture` takes `origin="bottom"` or `origin="top"`, the reader meets both on the first page and picks one, and the default is the bottom so that a row number is a height. Every picture in the series is drawn from the bottom. A reader who picks the top sees upside-down pictures next to ours, and `paint_xy` is the one function that has to convert. The alternative, fixing the top, made the line pages spend a section on a conversion that the bottom does not need.
+- **Rectangle and gradient arguments do not say top or bottom.** They are `first_row` and `last_row`, so a function means the same thing under either origin.
+- **A cube in perspective.** The cube-on-a-table picture uses one vanishing point, and the sample slopes (0.6, 1.5 and 3) all pass through it. It gives `paint_line` a use for slanted edges, and it leaves hidden edges out.
+- **A row of -1 is a deliberate trap.** Python counts it from the end of the list, so `paint_xy` has to test both ends.
 
 Not done: practice pages, glossary files for the four pages, starbursts and string art, triangles and hexagons, and convolution with a kernel (planned as the next series).
 
