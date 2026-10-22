@@ -2481,7 +2481,7 @@
    "id": "painting-with-numbers",
    "name": "Painting with numbers: a canvas of squares",
    "district": "matrices-and-3d",
-   "plain": "A picture is a grid of numbers, and each number is the amount of ink on one square. You write your own small library that paints points, lines, rectangles, grids, fading ink and straight lines from y = ax + b.",
+   "plain": "A picture is a grid of numbers, and each number is the amount of ink on one square. You write your own small library that paints points, lines, rectangles, grids, fading ink, straight lines from y = ax + b, segments between two points and starbursts.",
    "needs": [
     "python-functions",
     "python-for-loops",
@@ -2507,13 +2507,18 @@
      "tutorial": "lines-from-equations",
      "section": null,
      "role": "teaches"
+    },
+    {
+     "tutorial": "segments-and-starbursts",
+     "section": null,
+     "role": "teaches"
     }
    ],
    "outcomes": [
     "CMPS-LO4"
    ],
    "replaces": [],
-   "size": "Four short pages, about three sittings. Each page adds two or three functions to the reader's toolkit, and each function uses the ones before it. The series ends with the functions that paint a cube on a table from lines."
+   "size": "Five short pages, about four sittings. Each page adds two or three functions to the reader's toolkit, and each function uses the ones before it. The pages end with a cube on a table painted from lines, and then segments, starbursts and play with fades."
   },
   {
    "id": "matrices",

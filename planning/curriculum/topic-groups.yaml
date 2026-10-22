@@ -174,13 +174,14 @@ groups:
     intro: >
       A picture is a grid of numbers, and each number is the amount of ink
       on one square. You build your own small library that paints points,
-      lines, rectangles, grids, fading ink and straight lines, and then
-      make pictures of your own with it.
+      lines, segments, rectangles, grids, fading ink, straight lines and
+      starbursts, and then make pictures of your own with it.
     tutorials:
       - a-canvas-of-numbers
       - rectangles-and-grids
       - fading-ink-and-gradients
       - lines-from-equations
+      - segments-and-starbursts
 
   - key: matrices
     name: Matrices and linear algebra

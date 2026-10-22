@@ -121,21 +121,89 @@ the cells again. What do you think the 3 will look like? Then try
 counts as black. With the default of 1, a square with 3 ink looks the
 same as a square with 1.
 
-## A shortcut that goes wrong
+## Lists that share, and lists that copy
 
-How would you make a blank canvas of any size? Here is a short way to
-make one with 4 rows and 6 columns. Run the cell, and then read the rows
-it prints.
+A canvas is a list of rows, and each row is a list of numbers. Before we
+write the function that makes one, we need to find out something about
+lists that surprises almost everyone: what happens when you copy one, and
+what happens when you multiply one. The next few cells are small
+experiments. Predict what each one prints before you run it.
+
+### Two names, one list
 
 ```python exec
-id: a-shortcut-that-goes-wrong-1
-rows = 4
-columns = 6
-shared = [[0] * columns] * rows
-shared[1][2] = 1
-for row in shared:
-    print(row)
-print(sum(sum(row) for row in shared))
+id: lists-share-1
+a = [0, 0, 0]
+b = a
+b[0] = 1
+print(a)
+print(a is b)
+```
+
+```predict
+type: choice
+
+What will `print(a)` show?
+
+- [0, 0, 0]
+  - A change to `b` leaves `a` alone, as if `b = a` made a copy. There
+    is [a closer look at this](tutorial:two-names-one-list).
+- [1, 0, 0]
+  - There is one list with two names, so a change through `b` shows
+    through `a`.
+```
+
+The line `b = a` does not make a second list. It gives the same list a
+second name, so a change made through `b` shows up through `a`. We say
+that `a` and `b` are *references* to one list. The word `is` asks
+whether two names point at the very same list.
+
+```
+a ──┐
+    ├──▶ [1, 0, 0]
+b ──┘
+```
+
+### A real copy
+
+Python has several ways to make a new list with the same numbers. Here
+are three. Which of them would you remember most easily?
+
+```python exec
+id: lists-copy-1
+a = [0, 0, 0]
+c = a[:]            # a slice of the whole list is a new list
+d = list(a)         # list() builds a new list from the old one
+e = a.copy()        # a list knows how to copy itself
+c[0] = 1
+print(a, c)
+print(a is c, a is d, a is e)
+```
+
+```predict
+type: choice
+
+What do the three `is` tests print?
+
+- True True True
+  - Each line would then give the same list a second name. There is
+    [a closer look at this](tutorial:two-names-one-list).
+- False False False
+  - Each of the three builds a new list, so none of them is `a`.
+```
+
+### Multiplying a list
+
+A quick way to make a row of zeros is `[0] * 3`. What about a grid with
+two rows? Predict first.
+
+```python exec
+id: lists-multiply-1
+row = [0, 0, 0]
+grid = [row] * 2
+grid[0][0] = 1
+print(grid)
+print(grid[0] is grid[1])
 ```
 
 ```predict
@@ -144,10 +212,109 @@ type: number
 Only one square got a 1. How many 1s will the cell print in total?
 ```
 
-The shortcut makes one row, and then repeats that same row four times.
-The four rows are one list with four names, the problem in
-[Two names, one list](tutorial:two-names-one-list). Changing one square
-changes the same square in every row.
+Multiplying a list repeats the *reference*, not the list. The grid has
+two places for a row, and both point at one row.
+
+```
+grid ──▶ [ ●, ● ]        every row is the same list
+           └──┴──▶ [1, 0, 0]
+```
+
+Why is `[0] * 3` safe, then? A number cannot be changed in place, only
+replaced by another number, so sharing a `0` does no harm. A list can be
+changed in place, so sharing a list does. The page
+[Two names, one list](tutorial:two-names-one-list) looks at this idea
+more slowly.
+
+### Your turn: two separate rows
+
+Can you build a grid of 2 rows and 3 columns in which every row is its
+own list? Start from an empty list, go round a loop, and put a *new* row
+on the end each time. When it works, a 1 appears in the first row only,
+and the last line prints `False`.
+
+```python exec
+id: separate-rows-1
+grid = []
+for row_number in range(2):
+    # what goes here, so that every row is a new list?
+    pass
+grid[0][0] = 1
+print(grid)                  # a 1 in the first row only
+print(grid[0] is grid[1])    # False
+```
+
+```solution
+grid = []
+for row_number in range(2):
+    grid.append([0] * 3)       # a new list every time round the loop
+grid[0][0] = 1
+print(grid)
+print(grid[0] is grid[1])
+---
+Here is one answer. Yours may be different and work too. `[0] * 3` runs
+again on every trip round the loop, so every row is a new list. A
+shorter way to write the same loop is
+`grid = [[0] * 3 for row_number in range(2)]`, where the part before
+`for` runs again for every row. Could `row[:]` or `list(row)` help in a
+loop that starts from a row you already have?
+```
+
+### Functions get the same list
+
+When you give a list to a function, the function does not get a copy. It
+gets the same list, under a new name.
+
+```python exec
+id: functions-share-1
+def add_one(numbers):
+    numbers[0] = numbers[0] + 1
+
+scores = [5, 5, 5]
+add_one(scores)
+print(scores)
+```
+
+```predict
+type: choice
+
+What will the cell print?
+
+- [5, 5, 5]
+  - The function returned nothing, so nothing changed. There is
+    [a closer look at this](tutorial:two-names-one-list).
+- [6, 5, 5]
+  - `numbers` is another name for the list `scores`.
+```
+
+The function returned nothing, and `scores` still changed. That is why
+`paint_point`, which you write below, does not need to return anything:
+it changes the canvas it is given.
+
+Sometimes you want the old list to stay as it was. Then the function
+makes a copy, changes the copy and returns it. Can you finish this one?
+What does the caller see in `scores` afterwards?
+
+```python exec
+id: add-one-safely
+expect: (lambda s: add_one_safely(s) == [6, 5, 5] and s == [5, 5, 5])([5, 5, 5])
+def add_one_safely(numbers):
+    """A new list like numbers, with 1 added to the first item. The list that was passed in stays as it was."""
+    # Make a copy first, change the copy, and give the copy back.
+    ...
+```
+
+```solution
+def add_one_safely(numbers):
+    """A new list like numbers, with 1 added to the first item. The list that was passed in stays as it was."""
+    result = numbers[:]
+    result[0] = result[0] + 1
+    return result
+---
+Here is one answer. Yours may be different and work too. `numbers[:]`
+is a new list, so the change to its first item cannot reach the list the
+caller holds.
+```
 
 ## A blank canvas
 
@@ -163,7 +330,9 @@ def make_canvas(rows, columns):
     """A canvas of this size with no ink on any square."""
     # Inputs: what type is rows? What type is columns?
     # Returns: what type should come back? What does it look like when it is empty?
-    # How many lists do you need? Do any of them share a name?
+    # A canvas is a list of rows, and every row is a list of numbers.
+    # Each row must be its own list. What did the experiments show about [row] * 2?
+    # Hint: start with an empty list, loop once for every row, and append a new row each time.
     ...
 ```
 
@@ -191,7 +360,7 @@ title: some steps
    `columns` zeros to `canvas`.
 3. Return `canvas` after the loop.
 
-**Think about:** which part of the shortcut made every row the same
+**Think about:** which part of `[row] * 2` made every row the same
 list, and why a loop does not.
 ```
 
@@ -227,7 +396,7 @@ expect: (lambda c: (paint_point(c, 1, 2), c[1][2] == 1 and sum(map(sum, c)) == 1
 def paint_point(canvas, row, column):
     """Add 1 ink to the square at this row and column."""
     # Inputs: what type is each of the three inputs?
-    # Returns: does this function need to return anything? Why, or why not?
+    # Returns: does this function need to return anything? Think about `add_one`.
     ...
 ```
 

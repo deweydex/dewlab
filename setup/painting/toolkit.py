@@ -86,3 +86,25 @@ def paint_line(canvas, a, b, start_x, end_x):
         y_last = round(a * end_x + b)
         for y in range(min(y_first, y_last), max(y_first, y_last) + 1):
             paint_xy(canvas, round((y - b) / a), y)
+
+
+def paint_segment(canvas, x1, y1, x2, y2):
+    if x1 == x2:
+        # A vertical line has no slope, so walk up it one square at a time.
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            paint_xy(canvas, x1, y)
+    else:
+        a = (y2 - y1) / (x2 - x1)
+        b = y1 - a * x1
+        paint_line(canvas, a, b, min(x1, x2), max(x1, x2))
+
+
+def paint_starburst(canvas, x, y, spacing):
+    rows = len(canvas)
+    columns = len(canvas[0])
+    for column in range(0, columns, spacing):
+        paint_segment(canvas, x, y, column, 0)
+        paint_segment(canvas, x, y, column, rows - 1)
+    for row in range(0, rows, spacing):
+        paint_segment(canvas, x, y, 0, row)
+        paint_segment(canvas, x, y, columns - 1, row)
