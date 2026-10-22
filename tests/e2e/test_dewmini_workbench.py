@@ -1069,6 +1069,52 @@ def import_file(page, path):
     page.wait_for_selector(".dm-tab")
 
 
+def test_an_imported_notebooks_markdown_renders_tables_fences_lists_and_entities(dewmini, tmp_path):
+    """What a notebook's author writes in a Markdown cell is what the reader
+    sees: a pipe table is a table, a fence is a code block that keeps its
+    indentation, `&nbsp;` is a space rather than the letters, and a code span
+    keeps its asterisks and underscores."""
+    source = "\n".join([
+        "| Name | Type |", "|---|:-:|", "| `has_letter` | bool |", "|  |  |",
+        "",
+        "```", "FUNCTION f(x)", "    RETURN $x * 2", "END FUNCTION", "```",
+        "",
+        "1. First", "2. Second **bold**", "",
+        "> Teacher copy.", "",
+        "Name:&nbsp;&nbsp;&nbsp;Number: <br> a &lt;b&gt; [site](https://example.com)",
+        "",
+        "Uses `vowels / letters * 100` and `a * b * c`.",
+    ])
+    notebook = {"nbformat": 4, "nbformat_minor": 5, "metadata": {}, "cells": [
+        {"cell_type": "markdown", "metadata": {}, "source": source.splitlines(keepends=True)},
+        {"cell_type": "markdown", "metadata": {},
+         "attachments": {"dot.png": {"image/png": TINY_PNG}},
+         "source": "![dot](attachment:dot.png)"},
+    ]}
+    path = tmp_path / "markdown.ipynb"
+    path.write_text(json.dumps(notebook))
+    import_file(dewmini, path)
+    dewmini.wait_for_selector(".dm-doc-render")
+    note = dewmini.locator(".dm-doc-render").first
+
+    assert note.locator("table th").all_inner_texts() == ["Name", "Type"]
+    assert note.locator("table td").first.locator("code").inner_text() == "has_letter"
+    assert note.locator("table tr").count() == 3, "the empty row of a blank data dictionary stays"
+    assert note.locator("th.dm-align-center").count() == 1
+    assert note.locator("pre.dm-doc-code").inner_text() == (
+        "FUNCTION f(x)\n    RETURN $x * 2\nEND FUNCTION"), "indentation and $ survive"
+    assert note.locator(".dl-math").count() == 0
+    assert note.locator("ol li").all_inner_texts() == ["First", "Second bold"]
+    assert note.locator("blockquote").inner_text() == "Teacher copy."
+    text = note.inner_text()
+    assert "&nbsp;" not in text and "<br>" not in text
+    assert "a <b>" in text, "an escaped tag is shown as text, not obeyed"
+    assert note.locator("a[href='https://example.com']").count() == 1
+    assert note.locator("code").all_inner_texts()[-2:] == ["vowels / letters * 100", "a * b * c"]
+    assert note.locator("em").count() == 0
+    assert dewmini.locator(".dm-doc-render img[src^='data:image/png;base64,']").count() == 1
+
+
 def cell_kinds_and_text(page):
     """Reads the kind from the cell element's own class —
     createCellElement() writes `dm-cell dm-cell-<type>` onto one div, so a
