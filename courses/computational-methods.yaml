@@ -47,6 +47,25 @@ contents:
   - fading-ink-and-gradients
   - lines-from-equations
   - segments-and-starbursts
+- title: Painting with numbers 2
+  tutorials:
+  - strings-and-polygons
+  - a-rule-for-every-square
+  - a-floor-in-perspective
+  - the-dot-product
+  - a-window-on-a-picture
+  - kernels-at-work
+- title: Painting with chance
+  tutorials:
+  - random-points-and-noise
+  - a-random-city
+  - walks-and-darts
+  - the-chaos-game-and-dots
+- title: Painting with numbers, learning a kernel
+  tutorials:
+  - edges-in-every-direction
+  - how-wrong-is-a-kernel
+  - a-kernel-that-learns
 - title: Matrices
   tutorials:
   - grid-of-numbers
