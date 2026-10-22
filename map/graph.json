@@ -2478,6 +2478,163 @@
    "size": "The second half of a page in each course, one sitting (DT) to two (PMI). Four old topics merge: both courses teach area, cosine rule, sine rule and the two-answer case together, and nothing later needs one without the others."
   },
   {
+   "id": "painting-with-numbers",
+   "name": "Painting with numbers: a canvas of squares",
+   "district": "matrices-and-3d",
+   "plain": "A picture is a grid of numbers, and each number is the amount of ink on one square. You write your own small library that paints points, lines, rectangles, grids, fading ink, straight lines from y = ax + b, segments between two points and starbursts.",
+   "needs": [
+    "python-functions",
+    "python-for-loops",
+    "coordinates"
+   ],
+   "steps": [
+    {
+     "tutorial": "a-canvas-of-numbers",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "rectangles-and-grids",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "fading-ink-and-gradients",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "lines-from-equations",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "segments-and-starbursts",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Five short pages, about four sittings. Each page adds two or three functions to the reader's toolkit, and each function uses the ones before it. The pages end with a cube on a table painted from lines, and then segments, starbursts and play with fades."
+  },
+  {
+   "id": "painting-with-numbers-2",
+   "name": "Painting with numbers 2: shapes, perspective and kernels",
+   "district": "matrices-and-3d",
+   "plain": "Curves from straight threads, polygons and stars, patterns from a rule for every square, a floor in perspective, and then the dot product, which you use to slide a small window of weights over a picture. That is a convolution, and it blurs, sharpens and finds edges.",
+   "needs": [
+    "painting-with-numbers"
+   ],
+   "steps": [
+    {
+     "tutorial": "strings-and-polygons",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-rule-for-every-square",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-floor-in-perspective",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-dot-product",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-window-on-a-picture",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "kernels-at-work",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Six short pages, about five sittings. The first three make pictures with the toolkit from the first series, and the last three build a convolution from the dot product."
+  },
+  {
+   "id": "painting-with-chance",
+   "name": "Painting with chance: random points, a city, walks and dots",
+   "district": "matrices-and-3d",
+   "plain": "Scattered points, noise that a blur can clear, a city whose buildings are random, a walker that wanders, darts that estimate pi, a triangle that appears from random moves, and a smooth picture turned into dots.",
+   "needs": [
+    "painting-with-numbers-2",
+    "random-numbers-and-seeds"
+   ],
+   "steps": [
+    {
+     "tutorial": "random-points-and-noise",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-random-city",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "walks-and-darts",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "the-chaos-game-and-dots",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Four short pages, about three sittings. Every function takes a seed, so a picture can be made again."
+  },
+  {
+   "id": "painting-learning-a-kernel",
+   "name": "Learning a kernel: edges, scores and gradients",
+   "district": "matrices-and-3d",
+   "plain": "Edges that run one way, edge strength and noise, then the question turned around: given a picture and what a hidden kernel made from it, can the computer find the kernel by guessing, nudging and following the gradient?",
+   "needs": [
+    "painting-with-chance"
+   ],
+   "steps": [
+    {
+     "tutorial": "edges-in-every-direction",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "how-wrong-is-a-kernel",
+     "section": null,
+     "role": "teaches"
+    },
+    {
+     "tutorial": "a-kernel-that-learns",
+     "section": null,
+     "role": "teaches"
+    }
+   ],
+   "outcomes": [
+    "CMPS-LO4"
+   ],
+   "replaces": [],
+   "size": "Three short pages, about three sittings. The last page writes gradient descent for a single kernel, using only lists, loops and functions."
+  },
+  {
    "id": "matrices",
    "name": "Matrices that move pictures",
    "district": "matrices-and-3d",

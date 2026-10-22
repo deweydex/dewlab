@@ -6001,3 +6001,40 @@ Choices somebody could have made differently.
 Not done: adding and removing rows and columns, a code editor for plain code fences, a real phone, the non-owner token check.
 
 *Cost to change: `tableCells()` and the `tablecell` mode in `assets/inpage-edit.js`, and `assets/inpage-table.js`; a table then edits as one box again.*
+
+**7.306 — A series where the reader paints with a toolkit of their own: "Painting with numbers".** Josh, 21 October 2026: "what if we just show a sample image and see if they can make it?", "scaffold with the function definitions but just empty inside except we can ask questions as comments", and "for the lines we will definitely need a much larger canvas".
+
+Four pages in Computational Methods, before the Matrices series: a canvas of numbers (a point, a line), rectangles and grids, fading ink and gradients, and lines from equations. Each page gives an empty function with questions in comments, then a picture to make, then a prompt to test on canvases the reader chooses. The functions are toolkit cells, so the reader's own `make_canvas`, `paint_line` and the rest are there on every later page. The same steps exist as a notebook with a solutions notebook (outside this repository).
+
+Choices somebody could have made differently.
+
+- **A picture, not a recipe.** Each task shows the target and the reader reads rows and columns off its axes. The alternative was to list the calls to make. The picture is the task, and the axes give the numbers. A staged hint holds the more specific help.
+- **Comments are questions, not instructions.** Input types, what comes back, what the function does in words, and which earlier function could help. The docstring says what the function does, so a stub is also the reference for what it must do.
+- **Canvases grow from 16 by 16 to 255 by 255.** A line with a slope needs room to run, and a small canvas hides the steep-line problem. Pictures use `show_picture(canvas, darkest)`, where `darkest` is the amount of ink that draws as black. It can be as large as 255, the biggest number a square of a real picture file holds, and the fade and gradient page uses all 255 steps.
+- **Ink is layers.** A square holds a count, and painting it again adds 1. Overlap, gradients and the skyline all come from that.
+- **Lists only.** The series uses no NumPy. The Matrices series starts from the reader's own canvas habits.
+- **The reader chooses where row 0 sits.** `show_picture` takes `origin="bottom"` or `origin="top"`, the reader meets both on the first page and picks one, and the default is the bottom so that a row number is a height. Every picture in the series is drawn from the bottom. A reader who picks the top sees upside-down pictures next to ours, and `paint_xy` is the one function that has to convert. The alternative, fixing the top, made the line pages spend a section on a conversion that the bottom does not need.
+- **Rectangle and gradient arguments do not say top or bottom.** They are `first_row` and `last_row`, so a function means the same thing under either origin.
+- **A cube in perspective.** The cube-on-a-table picture uses one vanishing point, and the sample slopes (0.6, 1.5 and 3) all pass through it. It gives `paint_line` a use for slanted edges, and it leaves hidden edges out.
+- **A row of -1 is a deliberate trap.** Python counts it from the end of the list, so `paint_xy` has to test both ends.
+
+Not done: practice pages and glossary files for the pages. Segments and starbursts, string art, polygons, convolution and learning a kernel followed in 7.307.
+
+*Cost to change: remove the four folders under `tutorials/`, the "Painting with numbers" lines in `courses/computational-methods.yaml`, the group in `planning/curriculum/topic-groups.yaml`, the topic in `map/graph.json` (then rerun `dev/map_layout.py`), and `setup/painting/`.*
+
+**7.307 — Painting with numbers continues: a fifth page, and three more series.** Josh, 22 October 2026: "the transition from our little playing with the show canvas and where the origin is... we need to actually show them that if they try to change an element of that multiplied list, it basically adjusts all of the lists that have been copied", and "we can try to push a new sequence to Dewlab... you can make pedagogical choices that are in line with how we have made the sheets."
+
+The first page now teaches references before `make_canvas`: two names for one list, three ways to copy (`a[:]`, `list(a)`, `a.copy()`), why `[row] * 2` shares one row, a grid the reader builds with a loop, and a function that changes the list it is given. A page on segments, starbursts and play with fades finishes the first series. Three more series follow it in Computational Methods: shapes, perspective and kernels (strings and polygons, a rule for every square, a floor in perspective, the dot product, a window on a picture, kernels at work); chance (random points and noise, a random city, walks and darts, the chaos game and dots); and learning a kernel (edges, scoring a guess, nudging and gradient descent). The same steps exist as four student notebooks and four teacher notebooks (outside this repository).
+
+Choices somebody could have made differently.
+
+- **References come before the canvas.** The earlier page showed the shared-rows surprise after the reader met `[[0] * columns] * rows`. Now the experiments come first, with a predict block on each, and `make_canvas` arrives with a hint that points back to them. The page still links to *Two names, one list* from the predict notes, because that page owns the explanation.
+- **A function that copies and a function that does not.** `add_one` changes the list it is given and `add_one_safely` returns a copy. Together they explain why `paint_point` returns nothing.
+- **The toolkit file grows to the whole sequence.** `setup/painting/toolkit.py` holds every function through the learning series, plus `cube_picture`, which packs the cube from the page on lines into a function so that later pages can start from it. A solution that includes the file therefore has more functions than the page has taught. That is harmless, and it keeps the solutions short.
+- **No function is hidden from the reader except the reference.** `kernel_gradient` is provided and commented, and the reader writes `train_kernel` around it. Asking a first-year reader to derive the gradient of a squared error was too much for one page, and the teacher note carries the derivation.
+- **Challenges are invitations.** Each target picture is introduced with "Can you make...?" and "Yours does not need to match", and the exact sizes and seeds live in the solution. The follow-up prompts are questions, not commands.
+- **Local checks.** There is no browser in this check, so a script outside the repository ran every toolkit reference, `expect` and solution with Python and matplotlib's Agg backend. It does not replace the browser tests.
+
+Not done: practice pages, glossary files, and a page for the Laplacian in the learning series beyond the mystery kernel.
+
+*Cost to change: remove the thirteen folders under `tutorials/` that this entry added, the four "Painting with" lines and the `segments-and-starbursts` line in `courses/computational-methods.yaml`, the four groups in `planning/curriculum/topic-groups.yaml`, the three topics in `map/graph.json` (then rerun `dev/map_layout.py` and `dev/build_topic_game.py`), and the functions after `paint_starburst` in `setup/painting/toolkit.py`.*

@@ -169,6 +169,57 @@ groups:
       - a-chart-that-tells-the-truth
       - mixed-data
 
+  - key: painting-with-numbers
+    name: Painting with numbers — a canvas, lines and shapes
+    intro: >
+      A picture is a grid of numbers, and each number is the amount of ink
+      on one square. You build your own small library that paints points,
+      lines, segments, rectangles, grids, fading ink, straight lines and
+      starbursts, and then make pictures of your own with it.
+    tutorials:
+      - a-canvas-of-numbers
+      - rectangles-and-grids
+      - fading-ink-and-gradients
+      - lines-from-equations
+      - segments-and-starbursts
+
+  - key: painting-with-numbers-2
+    name: Painting with numbers 2 — shapes, perspective and kernels
+    intro: >
+      Curves from straight threads, polygons, patterns from a rule for
+      every square and a floor in perspective. Then the dot product, and a
+      window of weights that slides over a picture to blur it, sharpen it
+      or find its edges.
+    tutorials:
+      - strings-and-polygons
+      - a-rule-for-every-square
+      - a-floor-in-perspective
+      - the-dot-product
+      - a-window-on-a-picture
+      - kernels-at-work
+
+  - key: painting-with-chance
+    name: Painting with chance — random points, walks and dots
+    intro: >
+      Scattered points, noise, a random city, a walker, darts that estimate
+      pi, the chaos game and dithering. Every function takes a seed, so a
+      picture can be made again.
+    tutorials:
+      - random-points-and-noise
+      - a-random-city
+      - walks-and-darts
+      - the-chaos-game-and-dots
+
+  - key: painting-learning-a-kernel
+    name: Learning a kernel — edges, scores and gradients
+    intro: >
+      Find edges in every direction, score a guess at a kernel, and let the
+      computer improve the guess by nudging and by following the gradient.
+    tutorials:
+      - edges-in-every-direction
+      - how-wrong-is-a-kernel
+      - a-kernel-that-learns
+
   - key: matrices
     name: Matrices and linear algebra
     intro: >
