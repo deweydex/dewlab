@@ -111,7 +111,22 @@ target = convolve(practice, [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])   # the hidden
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def nudge_kernel(canvas, target, kernel, amount):
+    new_kernel = [row[:] for row in kernel]              # a copy, so the old kernel stays as it was
+    for row in range(len(kernel)):
+        for column in range(len(kernel)):
+            original = new_kernel[row][column]
+            best_value = original
+            best_score = score(convolve(canvas, new_kernel), target)
+            for candidate in [original + amount, original - amount]:
+                new_kernel[row][column] = candidate
+                candidate_score = score(convolve(canvas, new_kernel), target)
+                if candidate_score < best_score:
+                    best_value = candidate
+                    best_score = candidate_score
+            new_kernel[row][column] = best_value          # keep whichever of the three was best
+    return new_kernel
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
@@ -259,7 +274,17 @@ id: train-kernel-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def train_kernel(canvas, target, size, rounds, rate):
+    kernel = [[0] * size for row in range(size)]
+    scores = []
+    for round_number in range(rounds):
+        gradient = kernel_gradient(canvas, target, kernel)
+        for i in range(size):
+            for j in range(size):
+                kernel[i][j] = kernel[i][j] - rate * gradient[i][j]
+        scores.append(score(convolve(canvas, kernel), target))
+    return kernel, scores
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
@@ -350,7 +375,17 @@ id: hidden-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def train_kernel(canvas, target, size, rounds, rate):
+    kernel = [[0] * size for row in range(size)]
+    scores = []
+    for round_number in range(rounds):
+        gradient = kernel_gradient(canvas, target, kernel)
+        for i in range(size):
+            for j in range(size):
+                kernel[i][j] = kernel[i][j] - rate * gradient[i][j]
+        scores.append(score(convolve(canvas, kernel), target))
+    return kernel, scores
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
@@ -416,7 +451,17 @@ id: hidden-4
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def train_kernel(canvas, target, size, rounds, rate):
+    kernel = [[0] * size for row in range(size)]
+    scores = []
+    for round_number in range(rounds):
+        gradient = kernel_gradient(canvas, target, kernel)
+        for i in range(size):
+            for j in range(size):
+                kernel[i][j] = kernel[i][j] - rate * gradient[i][j]
+        scores.append(score(convolve(canvas, kernel), target))
+    return kernel, scores
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)

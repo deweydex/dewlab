@@ -168,7 +168,24 @@ you $a$.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_xy(canvas, x, y):
+    """Paint the square at (x, y). With origin="bottom", (0, 0) is the bottom-left square and y is the row."""
+    # A row of -1 would quietly wrap to the last row, so test both ends.
+    if 0 <= y < len(canvas) and 0 <= x < len(canvas[0]):
+        paint_point(canvas, y, x)
+
+def paint_line(canvas, a, b, start_x, end_x):
+    if abs(a) <= 1:
+        for x in range(start_x, end_x + 1):
+            paint_xy(canvas, x, round(a * x + b))
+    else:
+        # A steep line climbs more than one row per column, so stepping through x
+        # leaves gaps. Step through y instead, and find x for each row.
+        y_first = round(a * start_x + b)
+        y_last = round(a * end_x + b)
+        for y in range(min(y_first, y_last), max(y_first, y_last) + 1):
+            paint_xy(canvas, round((y - b) / a), y)
 
 canvas = make_canvas(255, 255)
 paint_line(canvas, 1, 0, 0, 254)
@@ -225,7 +242,24 @@ is negative?
 
 ```solution
 for: a-steep-line-1
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_xy(canvas, x, y):
+    """Paint the square at (x, y). With origin="bottom", (0, 0) is the bottom-left square and y is the row."""
+    # A row of -1 would quietly wrap to the last row, so test both ends.
+    if 0 <= y < len(canvas) and 0 <= x < len(canvas[0]):
+        paint_point(canvas, y, x)
+
+def paint_line(canvas, a, b, start_x, end_x):
+    if abs(a) <= 1:
+        for x in range(start_x, end_x + 1):
+            paint_xy(canvas, x, round(a * x + b))
+    else:
+        # A steep line climbs more than one row per column, so stepping through x
+        # leaves gaps. Step through y instead, and find x for each row.
+        y_first = round(a * start_x + b)
+        y_last = round(a * end_x + b)
+        for y in range(min(y_first, y_last), max(y_first, y_last) + 1):
+            paint_xy(canvas, round((y - b) / a), y)
 
 canvas = make_canvas(255, 255)
 paint_line(canvas, 3, -2, 1, 80)
@@ -274,7 +308,24 @@ stops before the vanishing point, so paint only a few squares of it.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_xy(canvas, x, y):
+    """Paint the square at (x, y). With origin="bottom", (0, 0) is the bottom-left square and y is the row."""
+    # A row of -1 would quietly wrap to the last row, so test both ends.
+    if 0 <= y < len(canvas) and 0 <= x < len(canvas[0]):
+        paint_point(canvas, y, x)
+
+def paint_line(canvas, a, b, start_x, end_x):
+    if abs(a) <= 1:
+        for x in range(start_x, end_x + 1):
+            paint_xy(canvas, x, round(a * x + b))
+    else:
+        # A steep line climbs more than one row per column, so stepping through x
+        # leaves gaps. Step through y instead, and find x for each row.
+        y_first = round(a * start_x + b)
+        y_last = round(a * end_x + b)
+        for y in range(min(y_first, y_last), max(y_first, y_last) + 1):
+            paint_xy(canvas, round((y - b) / a), y)
 
 # Edges hold 3 ink (black), the front face 1, the shaded side 2 and the shadow 1.
 canvas = make_canvas(120, 120)

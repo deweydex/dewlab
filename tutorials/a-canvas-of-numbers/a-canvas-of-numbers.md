@@ -428,7 +428,15 @@ id: paint-a-point-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def make_canvas(rows, columns):
+    canvas = []
+    for row in range(rows):
+        canvas.append([0] * columns)
+    return canvas
+
+def paint_point(canvas, row, column):
+    canvas[row][column] = canvas[row][column] + 1
 
 canvas = make_canvas(16, 16)
 paint_point(canvas, 3, 4)
@@ -554,7 +562,23 @@ one starts and ends?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def make_canvas(rows, columns):
+    canvas = []
+    for row in range(rows):
+        canvas.append([0] * columns)
+    return canvas
+
+def paint_point(canvas, row, column):
+    canvas[row][column] = canvas[row][column] + 1
+
+def paint_horizontal(canvas, row, start_column, end_column):
+    for column in range(start_column, end_column + 1):
+        paint_point(canvas, row, column)
+
+def paint_vertical(canvas, column, start_row, end_row):
+    for row in range(start_row, end_row + 1):
+        paint_point(canvas, row, column)
 
 canvas = make_canvas(32, 32)
 paint_vertical(canvas, 6, 5, 25)

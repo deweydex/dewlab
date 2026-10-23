@@ -105,7 +105,12 @@ id: rule-stripes
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_where(canvas, rule):
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            ink = rule(column, row)      # x is the column and y is the row
+            canvas[row][column] = canvas[row][column] + ink
 
 def stripes(x, y):
     return (x // 8) % 2
@@ -127,7 +132,12 @@ id: rule-checker
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_where(canvas, rule):
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            ink = rule(column, row)      # x is the column and y is the row
+            canvas[row][column] = canvas[row][column] + ink
 
 def checkerboard(x, y):
     return (x // 8 + y // 8) % 2
@@ -149,7 +159,14 @@ id: rule-rings
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_where(canvas, rule):
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            ink = rule(column, row)      # x is the column and y is the row
+            canvas[row][column] = canvas[row][column] + ink
 
 def rings(x, y):
     distance = math.sqrt((x - 32) ** 2 + (y - 32) ** 2)
@@ -173,7 +190,12 @@ id: rule-disc
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_where(canvas, rule):
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            ink = rule(column, row)      # x is the column and y is the row
+            canvas[row][column] = canvas[row][column] + ink
 
 def disc(x, y):
     if (x - 32) ** 2 + (y - 32) ** 2 <= 24 ** 2:
@@ -210,7 +232,14 @@ id: rule-spiral
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_where(canvas, rule):
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            ink = rule(column, row)      # x is the column and y is the row
+            canvas[row][column] = canvas[row][column] + ink
 
 def spiral(x, y):
     dx = x - 50

@@ -105,7 +105,16 @@ id: a-floor-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_floor(canvas, horizon, vanishing_x, spacing):
+    columns = len(canvas[0])
+    for x in range(0, columns, spacing):
+        # Lines that run away from us all point at the vanishing point.
+        paint_segment(canvas, x, 0, vanishing_x, horizon)
+    for distance in range(4, 40):
+        # Equal steps in distance land closer and closer together on the picture.
+        y = horizon - round(400 / distance)
+        paint_horizontal(canvas, y, 0, columns - 1)
 
 canvas = make_canvas(120, 200)
 paint_floor(canvas, 100, 100, 20)
@@ -131,7 +140,16 @@ id: a-floor-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_floor(canvas, horizon, vanishing_x, spacing):
+    columns = len(canvas[0])
+    for x in range(0, columns, spacing):
+        # Lines that run away from us all point at the vanishing point.
+        paint_segment(canvas, x, 0, vanishing_x, horizon)
+    for distance in range(4, 40):
+        # Equal steps in distance land closer and closer together on the picture.
+        y = horizon - round(400 / distance)
+        paint_horizontal(canvas, y, 0, columns - 1)
 
 canvas = make_canvas(120, 200)
 paint_floor(canvas, 100, 100, 20)

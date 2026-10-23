@@ -128,7 +128,30 @@ id: random-city-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_city(canvas, seed):
+    random.seed(seed)       # the same seed gives the same city every time
+    columns = len(canvas[0])
+    paint_gradient(canvas, 80, 0, 99, columns - 1)
+    for tallest in [45, 65]:                    # far buildings first, then near ones on top
+        left = 0
+        while left < columns:
+            width = random.randint(8, 20)
+            height = random.randint(20, tallest)
+            right = min(left + width - 1, columns - 1)
+            for layer in range(6):
+                paint_rectangle(canvas, 0, left, height - 1, right)
+            left = left + width + random.randint(0, 3)
+    for layer in range(20):
+        paint_rectangle(canvas, 0, 0, 9, columns - 1)       # the road
+    for row in range(14, 60, 8):
+        for column in range(2, columns - 4, 7):
+            on_a_building = canvas[row][column] >= 6      # the sky has less than 6 ink here
+            if on_a_building and random.random() < 0.3:    # about 3 windows in 10 are lit
+                for layer in range(14):
+                    paint_square(canvas, row, column, 3)
 
 canvas = make_canvas(100, 150)
 paint_city(canvas, 7)

@@ -100,7 +100,26 @@ id: random-walk-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def random_walk(canvas, steps, seed):
+    random.seed(seed)
+    row = len(canvas) // 2
+    column = len(canvas[0]) // 2
+    for step in range(steps):
+        paint_point(canvas, row, column)
+        direction = random.randint(0, 3)
+        if direction == 0:
+            row = row + 1
+        elif direction == 1:
+            row = row - 1
+        elif direction == 2:
+            column = column + 1
+        else:
+            column = column - 1
+        row = min(max(row, 0), len(canvas) - 1)             # stay on the canvas
+        column = min(max(column, 0), len(canvas[0]) - 1)
 
 canvas = make_canvas(101, 101)
 random_walk(canvas, 4000, 11)
@@ -225,7 +244,7 @@ id: estimate-pi-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
 
 canvas = make_canvas(100, 100)
 random.seed(3)
