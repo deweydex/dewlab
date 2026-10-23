@@ -117,7 +117,20 @@ id: a-fan-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_fan(canvas, corner, first_end, second_end, steps):
+    corner_x, corner_y = corner
+    first_x, first_y = first_end
+    second_x, second_y = second_end
+    for step in range(steps + 1):
+        fraction = step / steps
+        # One end of the string slides in from first_end to the corner,
+        # and the other end slides out from the corner to second_end.
+        x1 = round(first_x + (corner_x - first_x) * fraction)
+        y1 = round(first_y + (corner_y - first_y) * fraction)
+        x2 = round(corner_x + (second_x - corner_x) * fraction)
+        y2 = round(corner_y + (second_y - corner_y) * fraction)
+        paint_segment(canvas, x1, y1, x2, y2)
 
 canvas = make_canvas(101, 101)
 paint_fan(canvas, (0, 0), (0, 100), (100, 0), 20)
@@ -139,7 +152,20 @@ id: a-fan-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_fan(canvas, corner, first_end, second_end, steps):
+    corner_x, corner_y = corner
+    first_x, first_y = first_end
+    second_x, second_y = second_end
+    for step in range(steps + 1):
+        fraction = step / steps
+        # One end of the string slides in from first_end to the corner,
+        # and the other end slides out from the corner to second_end.
+        x1 = round(first_x + (corner_x - first_x) * fraction)
+        y1 = round(first_y + (corner_y - first_y) * fraction)
+        x2 = round(corner_x + (second_x - corner_x) * fraction)
+        y2 = round(corner_y + (second_y - corner_y) * fraction)
+        paint_segment(canvas, x1, y1, x2, y2)
 
 canvas = make_canvas(101, 101)
 paint_fan(canvas, (0, 0), (0, 100), (100, 0), 20)
@@ -267,7 +293,23 @@ id: polygon-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def polygon_points(center_x, center_y, radius, sides):
+    points = []
+    for corner in range(sides):
+        angle = 2 * math.pi * corner / sides
+        x = round(center_x + radius * math.cos(angle))
+        y = round(center_y + radius * math.sin(angle))
+        points.append((x, y))
+    return points
+
+def paint_polygon(canvas, points):
+    for index in range(len(points)):
+        x1, y1 = points[index]
+        x2, y2 = points[(index + 1) % len(points)]   # the % joins the last point back to the first
+        paint_segment(canvas, x1, y1, x2, y2)
 
 canvas = make_canvas(160, 160)
 paint_polygon(canvas, polygon_points(40, 120, 30, 3))
@@ -333,7 +375,23 @@ id: star-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def polygon_points(center_x, center_y, radius, sides):
+    points = []
+    for corner in range(sides):
+        angle = 2 * math.pi * corner / sides
+        x = round(center_x + radius * math.cos(angle))
+        y = round(center_y + radius * math.sin(angle))
+        points.append((x, y))
+    return points
+
+def paint_star(canvas, points, step):
+    for index in range(len(points)):
+        x1, y1 = points[index]
+        x2, y2 = points[(index + step) % len(points)]
+        paint_segment(canvas, x1, y1, x2, y2)
 
 canvas = make_canvas(90, 170)
 paint_star(canvas, polygon_points(42, 45, 40, 5), 2)

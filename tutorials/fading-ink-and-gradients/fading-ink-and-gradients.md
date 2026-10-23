@@ -155,7 +155,16 @@ id: a-block-that-fades-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_fade(canvas, row, column, length):
+    for step in range(length):
+        canvas[row][column + step] = canvas[row][column + step] + (length - step)
+
+def paint_gradient(canvas, first_row, first_column, last_row, last_column):
+    height = last_row - first_row + 1
+    for step in range(height):
+        for column in range(first_column, last_column + 1):
+            canvas[first_row + step][column] = canvas[first_row + step][column] + (step + 1)
 
 canvas = make_canvas(280, 270)
 paint_gradient(canvas, 10, 7, 264, 261)
@@ -191,7 +200,12 @@ own. How much `darkest` do you need to see both?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_gradient(canvas, first_row, first_column, last_row, last_column):
+    height = last_row - first_row + 1
+    for step in range(height):
+        for column in range(first_column, last_column + 1):
+            canvas[first_row + step][column] = canvas[first_row + step][column] + (step + 1)
 
 canvas = make_canvas(100, 120)
 paint_gradient(canvas, 60, 0, 99, 119)

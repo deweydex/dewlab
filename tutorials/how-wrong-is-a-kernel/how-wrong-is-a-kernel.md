@@ -246,7 +246,34 @@ id: best-guess-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def score(first, second):
+    total = 0
+    for row in range(len(first)):
+        for column in range(len(first[0])):
+            difference = first[row][column] - second[row][column]
+            total = total + difference * difference
+    return total / (len(first) * len(first[0]))
+
+def random_kernel(size, seed):
+    random.seed(seed)
+    kernel = []
+    for row in range(size):
+        kernel.append([random.uniform(-1, 1) for column in range(size)])    # uniform gives a decimal in a range
+    return kernel
+
+def best_of_random(canvas, target, tries, seed):
+    best_kernel = random_kernel(3, seed)
+    best_score = score(convolve(canvas, best_kernel), target)
+    for attempt in range(1, tries):
+        kernel = random_kernel(3, seed + attempt)
+        kernel_score = score(convolve(canvas, kernel), target)
+        if kernel_score < best_score:
+            best_kernel = kernel
+            best_score = kernel_score
+    return best_kernel, best_score
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)

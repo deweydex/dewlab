@@ -70,8 +70,6 @@ id: edge-kernels-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -250,7 +248,25 @@ id: strength-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def combine(first, second):
+    result = make_canvas(len(first), len(first[0]))
+    for row in range(len(first)):
+        for column in range(len(first[0])):
+            a = first[row][column]
+            b = second[row][column]
+            result[row][column] = math.sqrt(a * a + b * b)     # the length of the pair (a, b)
+    return result
+
+def threshold(canvas, level):
+    result = make_canvas(len(canvas), len(canvas[0]))
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            if canvas[row][column] >= level:
+                result[row][column] = 1
+    return result
 
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
@@ -291,7 +307,25 @@ picture = cube_picture()
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def combine(first, second):
+    result = make_canvas(len(first), len(first[0]))
+    for row in range(len(first)):
+        for column in range(len(first[0])):
+            a = first[row][column]
+            b = second[row][column]
+            result[row][column] = math.sqrt(a * a + b * b)     # the length of the pair (a, b)
+    return result
+
+def threshold(canvas, level):
+    result = make_canvas(len(canvas), len(canvas[0]))
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            if canvas[row][column] >= level:
+                result[row][column] = 1
+    return result
 
 picture = cube_picture()
 vertical_edges = [[-1, 0, 1],
@@ -338,7 +372,25 @@ smooth = [[1 / 16, 2 / 16, 1 / 16],
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import math
+
+# From earlier on this page, repeated so that this answer runs on its own
+def combine(first, second):
+    result = make_canvas(len(first), len(first[0]))
+    for row in range(len(first)):
+        for column in range(len(first[0])):
+            a = first[row][column]
+            b = second[row][column]
+            result[row][column] = math.sqrt(a * a + b * b)     # the length of the pair (a, b)
+    return result
+
+def threshold(canvas, level):
+    result = make_canvas(len(canvas), len(canvas[0]))
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            if canvas[row][column] >= level:
+                result[row][column] = 1
+    return result
 
 picture = cube_picture()
 vertical_edges = [[-1, 0, 1],
