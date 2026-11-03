@@ -1824,6 +1824,63 @@ input.dl-stdin:focus-visible { outline: 2px solid var(--dl-orange); outline-offs
 .dl-corner-dock-tr .dl-corner-tab:last-child { border-radius: 0 0 0 6px; }
 .dl-corner-dock-tr .dl-corner-tab + .dl-corner-tab { border-top: none; }
 
+/* Embedded: a page shown inside another site's frame, such as a lesson
+   placed on a Moodle page (DECISIONS_LOG.md 7.308). The head of
+   assets/shell.html marks the page with data-dl-embedded when it finds
+   itself framed. A frame is narrower than the window the docks were sized
+   for, so the fixed docks sat over the reading column, and the host site
+   already gives the reader a way around. So the wordmark, search and tree
+   step aside, the tabs that are left sit in one row at the top of the page
+   and scroll away with it, and the column takes the frame's full width.
+   A panel opened from one of those tabs still opens over the page, as it
+   does anywhere else. */
+html[data-dl-embedded] .dl-corner-identity { display: none; }
+html[data-dl-embedded] .dl-corner-dock {
+  position: static;
+  display: inline-flex;
+  vertical-align: top;
+  margin: 0.75rem 0 1rem;
+}
+html[data-dl-embedded] .dl-corner-dock-tl { margin-right: 0.5rem; }
+/* !important because initReference() and initRightPanels() widen a stack
+   inline to match the panel open beneath it. In a row at the top of the
+   page that would stretch the row itself, not line a tab up with a rail. */
+html[data-dl-embedded] .dl-corner-stack { flex-direction: row; width: max-content !important; }
+html[data-dl-embedded] .dl-corner-dock-tl .dl-corner-tab {
+  width: auto;
+  border-left: 1px solid var(--dl-navy);
+  border-radius: 6px;
+}
+html[data-dl-embedded] .dl-corner-dock-tr .dl-corner-stack { border-radius: 6px; }
+html[data-dl-embedded] .dl-corner-dock-tr .dl-corner-tab {
+  width: auto;
+  border-right: 1px solid var(--dl-navy);
+  border-top: 1px solid var(--dl-navy);
+}
+html[data-dl-embedded] .dl-corner-dock-tr .dl-corner-tab:first-child { border-radius: 6px 0 0 6px; }
+html[data-dl-embedded] .dl-corner-dock-tr .dl-corner-tab:last-child { border-radius: 0 6px 6px 0; }
+html[data-dl-embedded] .dl-corner-dock-tr .dl-corner-tab + .dl-corner-tab { border-left: none; }
+/* The column no longer has docks beside it to clear. These selectors carry
+   one more attribute than the min-width: 34rem rule near the top of this
+   file, so they win over it without depending on order. */
+html[data-dl-embedded][data-dl-panel-left] .dl-page,
+html[data-dl-embedded][data-dl-panel-right] .dl-page {
+  max-width: var(--dl-line-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0;
+}
+/* A frame is often narrower than a figure was drawn for. At the top level
+   a wide plot runs past the column into the margin the docks leave, but a
+   frame has no margin to spare, so the figure would push the page sideways.
+   In a frame it shrinks to the column instead. */
+html[data-dl-embedded] .dl-page img { max-width: 100%; height: auto; }
+/* In a phone-width frame the launcher already holds every tab, and the
+   identity row is hidden above, so the left dock has nothing left to show. */
+@media (max-width: 34rem) {
+  html[data-dl-embedded] .dl-corner-dock-tl { display: none; }
+}
+
 .dl-reference-toggle[hidden] { display: none; }
 .dl-reference-toggle {
   display: inline-flex;
