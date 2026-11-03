@@ -6038,3 +6038,13 @@ Choices somebody could have made differently.
 Not done: practice pages, glossary files, and a page for the Laplacian in the learning series beyond the mystery kernel.
 
 *Cost to change: remove the thirteen folders under `tutorials/` that this entry added, the four "Painting with" lines and the `segments-and-starbursts` line in `courses/computational-methods.yaml`, the four groups in `planning/curriculum/topic-groups.yaml`, the three topics in `map/graph.json` (then rerun `dev/map_layout.py` and `dev/build_topic_game.py`), and the functions after `paint_starburst` in `setup/painting/toolkit.py`.*
+
+**7.308 — A page shown inside another site's frame drops its own navigation and keeps to the frame's width.** Josh, 3 November 2026, after placing the five pages of "Painting with numbers" on a Moodle course page in iframes: the lessons ran, but at Moodle's content width the top-left dock (wordmark, search and the where-you-are tree) sat over the opening paragraphs. Asked to make the change in the repo.
+
+- **Detection, not a setting.** A small script at the top of `assets/shell.html` compares `window.self` with `window.top` before the page first paints and, when they differ, marks `<html>` with `data-dl-embedded`. No query parameter is needed, so a teacher pastes the ordinary page address into the host site. A browser that refuses the comparison is treated as framed, since the embedded layout is safe at any size.
+- **What steps aside.** The identity block goes. The host site is the reader's way around, and a link followed inside a frame leaves the reader in a page within a page. Reference, Notes, Python and Settings stay, in one row at the top of the page that scrolls away with it, rather than fixed in the corners. Their panels open over the page exactly as before.
+- **The column takes the frame's width.** The rule that keeps the column clear of the docks is overridden by a selector one attribute heavier, so the order of the rules does not matter. Images shrink to the column, because a frame has no spare margin for a wide plot to run into.
+- **Phone-width frames.** The launcher already holds every tab there, so the left dock is hidden outright.
+- **Checked by hand.** A built lesson inside a 700px frame and the same lesson at the top level, both in Chrome; the top-level page is unchanged. No browser test was added: the e2e fixture serves pages at the top level, and a framed test needs a host page of its own.
+
+*Cost to change: remove the "Embedded" block in `assets/tutorial-style.css` and the framing script in the head of `assets/shell.html`.*

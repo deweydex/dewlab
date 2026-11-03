@@ -26,6 +26,19 @@
 <link rel="stylesheet" href="{{STYLE_URL}}">
 
 <script>
+/* A page shown inside another site's frame (a lesson placed on a Moodle
+   page, say) is marked data-dl-embedded before it first paints, so the
+   corner docks never flash over the column first (tutorial-style.css,
+   "Embedded"; DECISIONS_LOG.md 7.308). Reading window.top cannot throw
+   across origins, but a browser that refuses it is treated as framed. */
+(function () {
+  var framed;
+  try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  if (framed) document.documentElement.setAttribute("data-dl-embedded", "");
+})();
+</script>
+
+<script>
 (function () {
   try {
     var s = JSON.parse(localStorage.getItem("dewlab:texture") || "{}");
