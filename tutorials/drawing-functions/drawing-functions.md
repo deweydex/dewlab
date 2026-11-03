@@ -1,7 +1,7 @@
 ---
 title: "Functions and their graphs"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.03.1
 covers:
   a-function-is-a-machine:
     covers: [MIT-3.1]
@@ -545,6 +545,27 @@ $x = 3$, so every value arrives 2 later. So a change inside the bracket moves
 the curve the opposite way to its sign. Moving a whole curve without
 changing its shape is called a *translation*.
 
+Let's move the curve ourselves. The two sliders set $h$ and $k$ in
+$(x - h)^2 + k$. The grey curve stays at $x^2$, so we can see how far
+the new one has travelled. Which slider moves it sideways, and which
+moves it up and down?
+
+```python exec
+id: curves-that-bend-6
+h = slider("h", -6, 6, value=2, id="h").value
+k = slider("k", -10, 10, value=1, id="k").value
+
+ax = draw(lambda x: x ** 2, label="x^2")
+draw(lambda x: (x - h) ** 2 + k, label=f"(x - ({h}))^2 + ({k})", ax=ax)
+ax.plot([h], [k], "o")
+ax.set_ylim(-12, 30)
+print(f"the turning point is at ({h}, {k})")
+```
+
+Can you set the sliders so that the turning point lands at $(4, -2)$?
+Then try $(-3, 5)$. What do you notice about the sign of $h$ and the
+sign inside the bracket?
+
 What does the number $a$ in $ax^2$ do? The next cell builds each curve
 with a function `quadratic(a, b, c)`, which returns the function
 $ax^2 + bx + c$. It is a function that returns a function, so that one
@@ -569,6 +590,21 @@ ax.set_title("What the a in ax^2 does")
 A bigger $a$ makes the curve narrower. A negative $a$ turns it upside
 down. So far, each number does one visible thing: $c$ moves the curve up
 and down, and $a$ stretches it.
+
+The slider below sets $a$. The printed line gives the height of the
+curve at $x = 2$, so that we can compare a picture with a number.
+At $a = 0$ the $x^2$ term disappears. What is left?
+
+```python exec
+id: curves-that-bend-7
+a = slider("a", -3, 3, step=0.1, value=1, id="a").value
+
+ax = draw(quadratic(1, 0, 0), label="x^2")
+draw(quadratic(a, 0, 0), label=f"{a}x^2", ax=ax)
+ax.plot([2], [a * 2 ** 2], "o")
+ax.set_ylim(-10, 10)
+print(f"a = {a}: at x = 2 the height is {a * 2 ** 2:.2f}")
+```
 
 Does $b$ behave the same way? Before you run the next cell, guess. Will
 changing $b$ slide the curve left and right, move it up and down, or do
@@ -598,6 +634,24 @@ sideways and down at the same time, and the turning point travels along
 an upside-down curve of its own.
 [Parabolas: completing the square](tutorial:parabolas) shows where that
 path comes from.
+
+Now one curve at a time. The dashed line is $y = -x^2$. The slider sets
+$b$, and the dot marks the turning point. Does the dot stay on the
+dashed line for every $b$, including values between the whole numbers?
+
+```python exec
+id: curves-that-bend-8
+b = slider("b", -4, 4, step=0.5, value=2, id="b").value
+turn_x = -b / 2
+turn_y = turn_x ** 2 + b * turn_x
+
+ax = draw(quadratic(1, b, 0), label=f"x^2 + ({b})x")
+draw(lambda x: -x ** 2, label="-x^2", ax=ax)
+ax.lines[-1].set_linestyle("--")
+ax.plot([turn_x], [turn_y], "o")
+ax.set_ylim(-6, 10)
+print(f"b = {b}: the turning point is at ({turn_x}, {turn_y})")
+```
 
 A cubic has an $x^3$ in it, and it can bend twice. Look at the two
 cubics below. Which one turns, and which one does not?

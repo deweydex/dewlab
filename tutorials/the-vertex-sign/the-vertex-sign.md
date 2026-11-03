@@ -1,7 +1,7 @@
 ---
 title: "Parabolas: a closer look at the sign in (x - h)²"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.03.1
 ---
 
 # Parabolas: a closer look at the sign in (x - h)²
@@ -57,39 +57,122 @@ always have opposite signs.
 
 </details>
 
-## Why idea A feels right
+## Moving the bracket ourselves
 
-The second number is what it looks like. The $+1$ moves the whole curve 1
-higher. So it is natural to read the first number the same way.
-$-3$ appears on the page, so $-3$ is where the turning point should be.
+The experiment used one value of $h$. Let's try many. The slider sets
+$h$ in $(x - h)^2 + 1$. The grey curve is $x^2 + 1$, so we can see how
+far the new curve has moved. The dotted line marks the $x$ where the
+bracket is 0.
 
-The two numbers sit in different places. The $+1$ is added to the answer,
-after the square. The $-3$ is inside the bracket, with $x$, before the
-square. A number inside the bracket changes which $x$ gives a particular
-answer. Without the $-3$, the bracket is 0 at $x = 0$. With it, the
-bracket is 0 at $x = 3$. So the whole curve moves 3 to the right.
+```python exec
+id: moving-the-bracket-1
+import matplotlib.pyplot as plt
+
+h = slider("h", -6, 6, value=3, id="h").value
+
+xs = [step / 10 for step in range(-100, 101)]
+fig, ax = plt.subplots()
+ax.plot(xs, [x ** 2 + 1 for x in xs], color="grey", alpha=0.4, label="x^2 + 1")
+ax.plot(xs, [(x - h) ** 2 + 1 for x in xs], label=f"(x - ({h}))^2 + 1")
+ax.axvline(h, linestyle=":", color="black")
+ax.plot([h], [1], "o")
+ax.set_xlim(-10, 10)
+ax.set_ylim(-1, 30)
+ax.grid(alpha=0.3)
+ax.legend()
+print(f"h = {h}: the bracket is 0 when x = {h}")
+```
+
+Move the slider to $-3$. What does the bracket look like in the legend?
+Then move it to $4$. In each case, where is the turning point, and
+where is the bracket 0?
+
+## Two numbers, two jobs
+
+Now we add the second number. Both sliders are below. $h$ is inside the
+bracket and $k$ is added after the square.
+
+```python exec
+id: two-numbers-two-jobs-1
+h = slider("h", -6, 6, value=2, id="h").value
+k = slider("k", -10, 10, value=3, id="k").value
+
+xs = [step / 10 for step in range(-100, 101)]
+fig, ax = plt.subplots()
+ax.plot(xs, [x ** 2 for x in xs], color="grey", alpha=0.4, label="x^2")
+ax.plot(xs, [(x - h) ** 2 + k for x in xs], label=f"(x - ({h}))^2 + ({k})")
+ax.plot([h], [k], "o")
+ax.set_xlim(-10, 10)
+ax.set_ylim(-12, 30)
+ax.grid(alpha=0.3)
+ax.legend()
+print(f"turning point: x = {h}, y = {k}")
+```
+
+```predict
+type: choice
+
+We set $h = 2$ and $k = 3$ in the cell above, then change only $k$ to
+$-5$. What happens to the turning point?
+
+- It moves down 8 and stays at the same $x$
+  - This reads $k$ as the height of the turning point. It goes from 3 to
+    $-5$.
+- It moves down 5 and stays at the same $x$
+  - This reads the minus sign in $-5$ as the amount of movement.
+- It moves left 5 and stays at the same height
+  - This reads $k$ as if it were inside the bracket.
+- I am not sure yet
+  - Move the $k$ slider in the cell above, then come back to this question.
+```
+
+The two numbers do different jobs because they sit in different places.
+$k$ is added to the answer, after the square, so it raises or lowers
+every point. $h$ is inside the bracket, with $x$, before the square. A
+square is smallest when its bracket is 0, and $x - h$ is 0 when $x$ is
+$h$. So $h$ moves the turning point to $x = h$.
+
+### Your turn
+
+Can you set the sliders so that the turning point is at $(-4, 6)$? Write
+the bracket you expect in a comment first. Then check it against the
+legend.
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+$h = -4$ and $k = 6$. The function is $(x - (-4))^2 + 6$, which is
+$(x + 4)^2 + 6$. Here is one answer. Yours may be different and work
+too.
+
+</details>
 
 ## Where else it happens
 
-It happens with every function, not only parabolas. Here are two curves.
-One is $x^3$, and one is $(x - 1)^3$. Is the second one 1 to the left or 1
-to the right of the first?
+It happens with every function, not only parabolas. The slider below
+moves $(x - h)^3$ to the right or left of $x^3$. The curve crosses 0
+where the bracket is 0.
 
 ```python exec
 id: where-else-it-happens-1
 import matplotlib.pyplot as plt
 
-xs = [step / 10 for step in range(-20, 31)]
-plt.plot(xs, [x ** 3 for x in xs], label="x cubed")
-plt.plot(xs, [(x - 1) ** 3 for x in xs], label="(x - 1) cubed")
-plt.axhline(0, color="grey", linewidth=0.5)
-plt.axvline(0, color="grey", linewidth=0.5)
-plt.legend()
+h = slider("h", -3, 3, value=1, id="h").value
+
+xs = [step / 10 for step in range(-40, 41)]
+fig, ax = plt.subplots()
+ax.plot(xs, [x ** 3 for x in xs], color="grey", alpha=0.4, label="x cubed")
+ax.plot(xs, [(x - h) ** 3 for x in xs], label=f"(x - ({h})) cubed")
+ax.axhline(0, color="black", linewidth=0.5)
+ax.axvline(h, linestyle=":", color="black")
+ax.set_ylim(-30, 30)
+ax.grid(alpha=0.3)
+ax.legend()
+print(f"h = {h}: (x - h) cubed crosses 0 at x = {h}")
 ```
 
-$(x - 1)^3$ is 1 to the right. It crosses 0 at $x = 1$, where $x^3$
-crosses at 0. It reaches every height 1 further to the right, because $x$ has to be 1
-bigger to put the same number inside the brackets.
+With $h = 1$, $(x - 1)^3$ is 1 to the right of $x^3$. It reaches every
+height 1 further to the right, because $x$ has to be 1 bigger to put
+the same number inside the bracket.
 
 ## Where to read more
 
