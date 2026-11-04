@@ -343,7 +343,7 @@ A friend says, "BASIC is an interpreted language." What is the most
 careful reply?
 
 - Yes, every BASIC is interpreted.
-  - Most people met BASIC on home computers, where it was interpreted, so this is a common belief.
+  - This reads every BASIC as the interpreted home-computer kind.
 - No, BASIC is always compiled.
   - Some BASICs were compiled, but the home-computer ones were not.
 - The home-computer BASICs were interpreted, but the first one at

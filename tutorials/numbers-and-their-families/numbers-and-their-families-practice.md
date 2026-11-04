@@ -164,8 +164,7 @@ both sides by 3, and you get $1 = 0.999\ldots$ The careful argument says
 that the difference between them is never negative, and it is smaller
 than every positive number. The only number like that is zero.
 
-Many people find this hard to accept at first, because 0.999… looks
-like a process that keeps going. It is a single number, and both
+The number 0.999… can look like a process that keeps going. It is a single number, and both
 arguments above show which one.
 
 </details>

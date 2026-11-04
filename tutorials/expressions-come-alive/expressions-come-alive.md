@@ -427,8 +427,8 @@ returns `[0, 0]`, which is the polynomial 0.
 It takes more steps to multiply polynomials. To multiply $(2x + 3)(x + 4)$,
 we multiply each term of the first polynomial by every term of the
 second, and then add the results. This is called *expanding the
-brackets*. For two terms times two terms, many people use the *FOIL
-method*: multiply the First terms, then the Outer, then the Inner, then
+brackets*. For two terms times two terms, the *FOIL
+method* gives an order: multiply the First terms, then the Outer, then the Inner, then
 the Last.
 
 $$(2x + 3)(x + 4) = 2x^2 + 8x + 3x + 12 = 2x^2 + 11x + 12$$

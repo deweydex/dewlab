@@ -302,8 +302,8 @@ $$h'(x) = f(x)\,g'(x) + g(x)\,f'(x)$$
 
 <img src="product-rule-rectangle.svg" alt="A rectangle f(x) wide and g(x) tall, whose area before the change is f(x) × g(x). Both sides grow a little. Along the right is a new strip, the change in f wide and g(x) tall, with area g(x) × change in f. Along the bottom is a new strip, f(x) wide and the change in g tall, with area f(x) × change in g. In the bottom right corner is a tiny piece, change × change. For a very small change, it is so small that it disappears.">
 
-Many people's first guess is "the slope of a product is the product of
-the slopes". The cell tries both. Which do
+Suppose "the slope of a product is the product of the slopes". The cell
+tries that and the product rule. Which do
 you think will agree with `derivative_at`?
 
 ```python exec

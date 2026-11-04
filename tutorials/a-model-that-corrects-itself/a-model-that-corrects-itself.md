@@ -233,8 +233,7 @@ id: running-it-again-and-again-3
 hint: Copy the training loop into this cell and change the learning_rate line. After the loop, print(weights) and compare the numbers with the tutorial's.
 ```
 
-Many people expect a smaller learning rate to need more epochs. Here it
-does not. It takes the same seven epochs, with the same dip in the
+A smaller learning rate might need more epochs. Here it does not. It takes the same seven epochs, with the same dip in the
 sixth, and every weight is exactly ten times smaller at the end. Why?
 
 Every weight starts at zero, and every change is multiplied by the

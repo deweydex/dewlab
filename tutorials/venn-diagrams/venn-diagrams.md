@@ -241,8 +241,8 @@ draw_three(doubles, at_least_8, first_even, ["a double", "at least 8", "first di
 ```
 
 Now there are seven regions, one for each way of being in or out of each
-circle. Try holding all seven in your head at once. Most people cannot,
-and there is no reason they should.
+circle. Try holding all seven in your head at once. That is a lot to keep
+in mind, and the picture can hold them for us.
 
 Here is a question that is awkward in symbols and easy on the picture:
 which outcomes are a double or at least 8, but have an odd first die?

@@ -523,8 +523,8 @@ for position in range(len(colours)):
 ```
 
 The colours are black, red, green, yellow, blue, magenta, cyan and
-white. Red and green light make yellow. That surprises most people who
-learned to mix paint, where red and green make brown. Light adds colour,
+white. Red and green light make yellow. Paint mixes differently: red and green
+make brown. Light adds colour,
 and paint takes it away.
 
 <aside class="dl-note" id="collections-note-teletext">

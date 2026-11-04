@@ -604,9 +604,9 @@ A drone flies out to a weather station at 20 km/h, into the wind, and
 comes back at 30 km/h, with the wind behind it. What was its average
 speed for the whole trip?
 
-Pause and guess before you read on. Many people say 25 km/h, halfway
-between. Let's find out, without knowing how far the station is. Call
-the distance $d$.
+Pause and guess before you read on. One guess is 25 km/h, halfway
+between 20 and 30. Let's test that guess, without knowing how far the
+station is. Call the distance $d$.
 
 Going there takes $\frac{d}{20}$ hours, and coming back takes
 $\frac{d}{30}$ hours. The whole trip takes
@@ -686,7 +686,7 @@ work too.
 <details class="dl-why"><summary>Why this way?</summary>
 
 This page rearranged every formula with one rule: do the same move to
-both sides. Many people learned a shorter rule at school: "change sides,
+both sides. There is also a shorter rule: "change sides,
 change signs". A number moves across the equals sign, and a plus becomes
 a minus, a times becomes a divide.
 

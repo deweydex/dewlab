@@ -93,8 +93,8 @@ reach 32. What is it?
 ## One contact at a time
 
 Here are eight contacts, in the order they were added to a phone. The
-phone has not put them in any order. How would you find Niamh? Most
-people would read from the top until they reach her.
+phone has not put them in any order. How would you find Niamh? You
+could read from the top until you reach her.
 
 A *search* is a way of finding where a value,
 the *target*, sits in a list. A *linear search* looks at each item in
@@ -186,8 +186,8 @@ Here is a game to play with someone. They think of a whole number from
 guesses do you need?
 
 You could guess 1, then 2, then 3. That is a linear search, and it can
-take 100 guesses. Most people find a better way. They start at 50. If they
-say "higher", the number is from 51 to 100, and half the numbers are
+take 100 guesses. There is a better way. Start at 50. If the answer is
+"higher", the number is from 51 to 100, and half the numbers are
 gone with one guess. Guess 75, then 62 or 63, and so on. Each guess
 removes half of what is left.
 

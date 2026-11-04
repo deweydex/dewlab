@@ -267,7 +267,7 @@ It prints `3`. The constructor writes `Planet.planets_made`, not
 `self.planets_made`. The count belongs to the class, so we change it
 through the class.
 
-Most people make this mistake at least once. If you store a value under
+Here is a mistake to watch for. If you store a value under
 that name through an object, it never changes the class attribute. It makes a new
 instance attribute, on that one object:
 

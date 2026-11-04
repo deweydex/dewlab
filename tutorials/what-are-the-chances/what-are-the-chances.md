@@ -401,8 +401,8 @@ type: number
 Out of every 100 people who test positive, how many have the disease?
 ```
 
-It is about 1 in 100. Nearly everyone guesses much higher, and studies
-have found that many doctors do too. The first line of the loop makes
+It is about 1 in 100. Studies have found that many doctors give a much
+higher answer. The first line of the loop makes
 the difference. `sick` is `True` for only 1 person in 10,000. The test
 is wrong for 1% of the well people, and there are so many well people
 that their 1% outnumbers the sick people's 99%.
@@ -424,7 +424,7 @@ people. So 10,098 people test positive, and 99 of them are sick:
 $\frac{99}{10{,}098} \approx 0.0098$, just under 1%.
 
 When we count people, rather than multiply percentages, we are using
-*natural frequencies*. It asks a question most of us can answer: out of
+*natural frequencies*. It asks a question that is easy to answer: out of
 these people, how many?
 
 ### Given that

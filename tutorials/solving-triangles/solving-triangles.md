@@ -147,7 +147,7 @@ For example, in the 3-4-5 triangle above, the angle at the origin has
 opposite 3, adjacent 4 and hypotenuse 5, so its sine is
 $\frac{3}{5} = 0.6$.
 
-Many people remember the table with the memory aid SOH-CAH-TOA: Sine is
+A memory aid for the table is SOH-CAH-TOA: Sine is
 Opposite over Hypotenuse, Cosine is Adjacent over Hypotenuse, Tangent is
 Opposite over Adjacent. It helps you remember the table. The idea behind
 it is that a right-angled triangle is a piece of a circle.

@@ -99,7 +99,7 @@ It is more. Each month's 5% is taken of an amount that has already grown,
 so each rise is a little bigger than the last. That is *compound growth*{.term}.
 `1.05 ** 10` is about 1.629, a rise of about 62.9%.
 
-Many people add the percentages first, as Schlomo did. It
+Adding the percentages first, as Schlomo did,
 comes close for one or two small rises. But over many years the rises multiply, as they did on
 [Doing it again](tutorial:doing-it-again#pi-multiplying-instead-of-adding),
 and the gap grows.
@@ -299,8 +299,8 @@ An answer might weigh a few things, and can choose either way.
   as solving equations like $1.04^k = 2$ by hand, and calculus.
 - **Awkward cases.** A count is harder to picture when the answer is
   9.97. The algebra has no trouble with that.
-- **You.** Some people trust a rule more once they have seen it work
-  on numbers. Others find the numbers a slow way.
+- **You.** You may trust a rule more once you have seen it work
+  on numbers. You may find the numbers a slow way.
 
 You might also want both, in one order or the other.
 

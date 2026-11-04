@@ -94,8 +94,7 @@ What does `True or True` give?
 ```
 
 The logical `or` includes "both". Everyday English usually does not. If
-someone asks "tea or coffee?", they do not expect "both". This difference
-confuses most people at least once.
+someone asks "tea or coffee?", they do not expect "both". The two meanings are worth keeping apart.
 
 ### Your turn
 
@@ -198,8 +197,7 @@ inputs is the whole proof.
 
 ## De Morgan's laws
 
-Here is a question most people find hard, even after a month of writing
-conditions: what is `not (A and B)` the same as? The cell checks two
+Here is a question to work out with the cell: what is `not (A and B)` the same as? The cell checks two
 possible answers against every case, and prints the one that matches.
 
 ```python exec
@@ -583,7 +581,7 @@ page proves by looping over four rows.
 
 Steve Mould (2013). *Can you solve this 4 card puzzle?*
 <https://www.youtube.com/watch?v=Hpwd_ns2Wjs>. The puzzle in the
-challenge above, and why an "if" does not mean what most people expect.
+challenge above, and why a logical "if" is not the everyday "if".
 Three minutes. Try the challenge first.
 
 CrashCourse (2017). *Boolean Logic & Logic Gates: Crash Course Computer

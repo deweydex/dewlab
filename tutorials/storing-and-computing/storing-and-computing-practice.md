@@ -151,7 +151,7 @@ print(type(4 / 2))
 
 `int`, `float`, `str`, `bool`, `float`, `int`, `str`.
 
-Most people miss `4 / 2`. Division with `/` always gives a
+Look closely at `4 / 2`. Division with `/` always gives a
 float, even when the answer is whole: `2.0`, not `2`.
 
 </details>

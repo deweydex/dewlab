@@ -39,8 +39,7 @@ There are two ways, depending on the kind of number you want.
 
 Look closely at `randint`. Most Python functions that take a range stop
 *before* the end value: `range(1, 6)` gives you 1 to 5. `randint` is
-different, and includes both ends. That is what you want for a die, but
-it surprises many people. `random.randrange(10, 20)` works like `range`,
+different, and includes both ends. That is what you want for a die. `random.randrange(10, 20)` works like `range`,
 and stops at 19.
 
 </details>
@@ -121,7 +120,7 @@ What will the cell print?
 
 It prints 5. `randrange(1, 6)` stops *before* 6, like `range(1, 6)`,
 however many times you draw. `randint` is the one function here that
-includes its end value. That suits a die, and it surprises many people.
+includes its end value. That suits a die.
 
 </details>
 
@@ -443,7 +442,7 @@ def meteor_minutes(meteors, seed):
 With seed 1, five meteors appear in minutes 8, 36, 54, 51 and 48. With
 ten meteors, seeds 1 and 2 each give only 9 different minutes: two
 meteors shared a minute. With 60 minutes to choose from, that happens
-more often than most people guess.
+more often than a first guess suggests.
 ```
 
 </div>

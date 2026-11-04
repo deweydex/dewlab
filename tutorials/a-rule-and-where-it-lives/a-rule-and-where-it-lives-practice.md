@@ -54,9 +54,9 @@ h2 {
 
 CSS property names use American spelling, so the property is `color`,
 with no `u`. The browser does not know a property called `colour`, so
-it skips the whole declaration. Many people in Ireland and Britain make
-this mistake, because `colour` is how we spell the word everywhere
-else.
+it skips the whole declaration. The spelling `colour` is how we write
+the word everywhere else, so CSS is the one place that asks for
+`color`.
 
 </details>
 
@@ -113,7 +113,7 @@ reads everything up to the next semicolon as one value:
 skips it, and both changes are lost.
 
 And the *Try this next*? The semicolon after the last declaration is
-optional, because the `}` ends the rule anyway. Most people write it
+optional, because the `}` ends the rule anyway. It helps to write it
 every time. Then adding another declaration later cannot break the one
 above it.
 

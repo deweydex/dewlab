@@ -567,7 +567,7 @@ step is to notice that.
 </details>
 
 **16. Explain.** This page opened with the birthday problem, a
-question where most people's guess misses. Picture teaching a friend who
+question where a first guess can miss. Picture teaching a friend who
 is sure they are "bad at maths". Would you open with a question where
 their guess will probably miss, or one where it will probably land? What
 could go wrong with each choice?
@@ -579,8 +579,8 @@ Here is one answer. It looks at a few things.
 - **A question where the guess misses.** The surprise makes people want
   to know why, and it shows that a feeling about chance can be checked.
   What can go wrong? To someone who expects to fail, a missed guess can
-  look like more proof. It helps to say that most people guess the same way,
-  and that the guess is not marked.
+  look like more proof. It helps to say that the guess is not marked, and that
+  a miss is part of the plan.
 - **A question where the guess lands.** It builds confidence, and it gives
   the friend a first success. What can go wrong? If the point of the
   lesson is a surprise, starting safely can make the surprise feel like

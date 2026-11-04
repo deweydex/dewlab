@@ -153,7 +153,7 @@ So if a 3D scene goes flat after a change, look for one of these on the
 element that holds it. For example, `opacity: 0.9` on `.orbit` puts the
 ball back in the middle of the sun.
 
-There is one more thing that surprises most people. With `preserve-3d`,
+Let's look at one more thing. With `preserve-3d`,
 the element's own background is part of the scene, as a flat sheet at
 depth `0`. Anything pushed behind it is hidden. So the orbit's
 dark background is on `body`, and not on the stage.

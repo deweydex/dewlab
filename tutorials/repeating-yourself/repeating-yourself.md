@@ -388,7 +388,7 @@ decisions you already make when you write that loop:
 
 Two of those rows need a closer look.
 
-The stopping row confuses many people. Sigma stops **at** 5,
+The stopping row needs a closer look. Sigma stops **at** 5,
 and `range` stops **before** 6. So the two numbers differ by one, but
 they describe the same five values. The number in `range` marks a
 boundary, not an item. We will see the same idea again with slices, in

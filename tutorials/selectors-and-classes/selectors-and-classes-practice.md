@@ -148,7 +148,7 @@ selector miss? Fix it, and change only one character.
 
 The HTML says `Featured`, with a capital `F`, and the CSS says
 `featured`. Class names must match exactly, capital letters included.
-Changing the selector to `.Featured` works too. Most people write class
+Changing the selector to `.Featured` works too. One habit avoids this: write class
 names all in small letters, with a dash between words, like
 `skills-section`. Then there is nothing to remember.
 

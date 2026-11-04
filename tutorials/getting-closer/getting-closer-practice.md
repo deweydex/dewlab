@@ -279,7 +279,7 @@ that, the left column is always 2 and the right column always 3. So the
 *one-sided limits*{.term} are 2 from the left and 3 from the right, and `round`
 has no limit at 2.5.
 
-The last line prints `2 4`, which surprises most people. Exactly
+The last line prints `2 4`, and it is worth a close look. Exactly
 halfway, Python rounds to the even neighbour, so 2.5 goes down to 2
 and 3.5 goes up to 4. This is called banker's rounding. The value at
 2.5 is a rule someone chose, and the limit would not tell you which.

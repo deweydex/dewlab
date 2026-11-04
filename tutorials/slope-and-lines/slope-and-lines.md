@@ -247,7 +247,7 @@ Sound travels about 343 metres every second in air at 20 °C. The light
 from a flash of lightning reaches you almost at once, and the thunder
 takes longer. Can you write `storm_distance(seconds)`, the distance to
 the storm in metres when you count that many seconds between the flash
-and the thunder? What are $m$ and $c$ for this line? Many people say
+and the thunder? What are $m$ and $c$ for this line? A rule of thumb says
 "count the seconds, and divide by 3 to get kilometres". How close is
 that?
 
@@ -392,7 +392,7 @@ ax.set_title("Two of these are parallel")
 ```
 
 Two lines are *perpendicular* when they meet at a right angle. The rule
-for perpendicular lines surprises many people:
+for perpendicular lines is short:
 
 > Two lines are perpendicular when their slopes multiply to $-1$.
 

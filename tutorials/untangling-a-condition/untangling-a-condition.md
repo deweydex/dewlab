@@ -22,8 +22,8 @@ covers:
 # Untangling a condition: De Morgan's laws
 
 Sooner or later, you will open someone's program and find a line like
-`not (not (a and not b) and c)`. Most people cannot read it at first.
-If that happens to you, the line was written badly. This page shows how
+`not (not (a and not b) and c)`. The line takes several steps to read.
+If it reads slowly for you, the line was written badly. This page shows how
 to write it well.
 
 Let's start small. A food-delivery app has an **Order** button. The
@@ -438,7 +438,7 @@ def refuse_booking(is_under_12, with_adult, has_paid):
 ```
 
 Can you say, in one sentence, when a booking is refused? Pause and try
-before you read on. Most people cannot, at first. Let's untangle it,
+before you read on. The rule takes several steps to say. Let's untangle it,
 one law at a time, and check each step with
 `same_rule` before we take the next. Order matters here, so we work from the
 outside in.

@@ -565,7 +565,7 @@ $\left(2^3\right)^2$ the same amount as 32?
 
 No. $2^3 = 8$, and $8^2 = 64$. That is $2^6$: 2 boxes of 3 twos.
 Adding the exponents is the rule for joining two stacks, like $2^3
-\times 2^2$. The two rules look alike, so many people mix them. Here is
+\times 2^2$. The two rules look alike, so it helps to keep them apart. Here is
 one answer. Yours may be different and work too.
 
 </details>

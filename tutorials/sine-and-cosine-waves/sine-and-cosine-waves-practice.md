@@ -58,7 +58,7 @@ draw(wave(), label="the plain one")
 3 and −3. The amplitude is how far the wave swings *from the middle*, so
 the total height from top to bottom is 6.
 
-Many people miss this. An amplitude of 3 does not mean a range of 3.
+An amplitude of 3 does not mean a range of 3.
 
 </details>
 

@@ -27,9 +27,8 @@ covers:
 
 There are 23 people in a room. How likely is it that two of them share
 a birthday? Make a guess now, as a percentage, and keep it in mind.
-Many people guess something small, like 5% or 10%. Most people do not
-believe the real answer the first time they see it. By the end of this
-page we will know it three ways, and why it matters inside every
+Suppose the guess is something small, like 5% or 10%. Let's test it.
+By the end of this page we will know the real answer three ways, and why it matters inside every
 computer that stores files.
 
 On this page we:
@@ -527,7 +526,7 @@ simulation was close.
 
 ### Way three: think about pairs
 
-Why is it so high? The usual guess asks: "does anyone share my
+Why is it so high? One way to ask is: "does anyone share my
 birthday?" With 22 others in the room, that is
 `at_least_one(1 / 365, 22)`, about 0.06. But any two people can share a
 birthday, and a room of 23 has a lot of pairs. How many? `combinations`
@@ -577,7 +576,7 @@ plt.ylabel("chance two share a birthday")
 ```
 
 The curve crosses one half between 22 and 23 people. By 60 people it is
-very close to 1. Very few people guess that shape before they see it.
+very close to 1. Let's look closely at that shape.
 
 ### Your turn
 
@@ -621,8 +620,8 @@ tells more of this story.
 
 Most pages in this course open with a question where people's guesses
 tend to land, because a first success matters, most of all to someone who
-expects to fail. This one opened with a question most people guess far
-too low. The way chances combine is hard to believe until your own guess
+expects to fail. This one opened with a question where a first guess
+may sit far too low. The way chances combine is hard to believe until your own guess
 has missed, and a missed guess shows which way your sense of chance
 leans. Your guess was never marked.
 
