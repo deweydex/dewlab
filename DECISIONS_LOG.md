@@ -6056,6 +6056,8 @@ Not done: practice pages, glossary files, and a page for the Laplacian in the le
 - **Existing cells and ids are untouched.** Every new cell has a new id. The one exception is `where-else-it-happens-1` on the closer look, whose code now reads a slider; the page version moves on for that reason, and for the new cells.
 - **A predict block with a way out.** The $k$ question lists the three readings, one of which is "I am not sure yet", and the notes name the idea behind each option.
 
-Not done: the practice pages, the glossary files (no new terms), a slider cell in the worlds section, and a look at *Straight lines: slope*.
+Added on 4 November: a slider cell on *Straight lines: slope* ($m$ and $c$), a slider problem in *Functions and their graphs* practice (problem 12), and two in *Completing the square* practice (problems 16 and 17, under "Moving the numbers"). Later problems in both practice pages are renumbered.
+
+Not done: a slider cell in the worlds sections, and slider problems in the slope practice.
 
 *Cost to change: revert the three tutorial files and this entry.*
