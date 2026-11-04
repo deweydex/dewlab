@@ -168,8 +168,8 @@ What is △⁻²?
   - The minus sign in the exponent puts the two triangles on the
     bottom, under a 1.
 - −△²
-  - A minus sign in front of a number makes it negative, so this feels
-    natural. Here, the minus sign is in the exponent. It tells us where
+  - A minus sign in front of a number makes it negative, and this option
+    reads it that way. Here, the minus sign is in the exponent. It tells us where
     the triangles go.
 - △ × △
   - That is △², with both triangles on the top.
@@ -302,7 +302,7 @@ type: choice
 Before you run it: what will Python print?
 
 - -100
-  - A minus sign often makes a number negative, so this feels natural.
+  - A minus sign often makes a number negative, and this option reads it that way.
 - 0.01
 - -20
   - That is 10 × −2. The exponent is not multiplied. It counts the 10s,

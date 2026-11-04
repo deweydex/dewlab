@@ -103,7 +103,7 @@ What will it print?
 
 <details class="dl-answer"><summary>why</summary>
 
-It prints 2, and most people expect −1.
+It prints 2, not −1.
 
 In Python, the result of `%` always has the same sign as the number on the
 right, or is 0. Python makes `(a // b) * b + (a % b)` always equal `a`.
@@ -360,8 +360,8 @@ Python straight away?
 
 <details class="dl-answer"><summary>one good answer</summary>
 
-Programming has two hard parts. If you do both at once, it can feel
-impossible at the start. When you decide *what* the steps are, you think
+Programming has two hard parts. If you do both at once, it is a lot
+to hold at the start. When you decide *what* the steps are, you think
 about the problem. When you decide how to say them in Python, you think
 about Python. Pseudocode lets you finish the first before you start the
 second. Then, when the code does something you did not expect,

@@ -466,10 +466,10 @@ Before you run it: will any dot sit below the across line?
 - No, all five are above it
   - Each value is a power of 2, and every power of 2 is more than 0.
 - Yes, the two dots with negative steps
-  - A minus sign in the exponent can feel like a number below 0. Look
+  - This option reads the minus sign in the exponent as a number below 0. Look
     at the values: 1/4 and 1/2.
 - Yes, the dot for step 0
-  - 2⁰ can feel like 0. But the zero power is 1.
+  - This option reads 2⁰ as 0. The zero power is 1.
 ```
 
 Now change every 2 in `values` to a 3, and run it again. Is the dot for

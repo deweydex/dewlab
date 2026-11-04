@@ -79,7 +79,7 @@ long files. When two different pieces of data get the same hash, that is
 called a *collision*: two files with the same "birthday".
 
 Say a hash has 32 bits. Then there are $2^{32}$ possible hashes, more
-than four thousand million. That sounds like plenty. How many files do
+than four thousand million. Is that enough to rule out a collision? How many files do
 you think it takes before a collision is as likely as not? Make a guess,
 then run the cell. It counts the chance exactly, the way
 [Chances that combine](tutorial:chances-that-combine#way-two-count-it-exactly)

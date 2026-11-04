@@ -481,7 +481,7 @@ bases?
 
 They multiplied the exponents: 3 × 4 = 12. The row has 3 twos and then
 4 twos, which is 3 + 4 = 7 twos. So 2³ × 2⁴ = 2⁷ = 128, and 2¹² is 4096.
-Multiplying the exponents feels natural, because the question has a ×
+This answer multiplies the exponents because the question has a ×
 in it. Written the long way, the row has 7 twos, not 12.
 
 </details>

@@ -107,7 +107,7 @@ for value in [-2, 0, 3, 3, 3]:
 ```
 
 The input 3 appears three times, and it gives the same output each time.
-That may sound too obvious to mention. Now look at something that does
+A function gives the same output for the same input. Now look at something that does
 not behave that way. What do you think `roll(1)` will print each time?
 
 ```python exec
@@ -513,7 +513,7 @@ Where will the curve for $x^2 + 3$ be, compared with $x^2$?
 - 3 lower
   - Adding 3 to the formula could be undone by moving down.
 - 3 to the right
-  - A bigger number sounds like further along.
+  - This reads the bigger number as a distance along.
 ```
 
 Adding 3 to the output lifts every point by 3, so the whole curve moves
@@ -536,7 +536,7 @@ Where will the curve for $(x - 2)^2$ be, compared with $x^2$?
   - A minus sign usually means moving to the left, or down. There is
     [a closer look at this](tutorial:the-vertex-sign).
 - 2 lower
-  - A minus 2 sounds like the curve should drop.
+  - This reads the minus 2 as a drop in the curve.
 ```
 
 $(x - 2)^2$ is 2 to the right. Its lowest point is where the bracket is

@@ -22,7 +22,7 @@ covers:
 # When Python says no: reading error messages
 
 You press Run, and instead of an answer, red text appears under the
-cell. For a moment it can feel like a judgement on you. In fact, Python
+cell. It is not a judgement on you. Python
 is telling you, as exactly as it can, which move it could not make, and
 where. Every programmer sees these messages every day, including the
 ones who wrote Python.
@@ -190,7 +190,7 @@ The message is:
 TypeError: not all arguments converted during string formatting
 ```
 
-That seems to have nothing to do with digits. Here is what happened.
+This message does not mention digits. Here is what happened.
 With numbers, `%` gives a remainder. With text, `%` does a different
 job. It is an old way of filling gaps in a piece of text, a little like
 filling in a form. Python tried to put the 10 into a gap in `"2026"`,

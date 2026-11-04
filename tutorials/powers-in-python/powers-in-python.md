@@ -1,7 +1,7 @@
 ---
 title: "Powers: a closer look at ** and ^"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Powers: a closer look at ** and ^
@@ -49,7 +49,7 @@ few in the *cell*{.term}.
 
 <details class="dl-answer"><summary>one pair that does it</summary>
 
-It is hard to find one. `2 ^ 2` is 0 and `2 ** 2` is 4. `5 ^ 2` is 7 and
+There is almost none. `2 ^ 2` is 0 and `2 ** 2` is 4. `5 ^ 2` is 7 and
 `5 ** 2` is 25. Even `0 ^ 1` gives 1 and `0 ** 1` gives 0. With whole
 numbers from 0 to 20, only `1 ^ 0` and `1 ** 0` agree: both give 1. So a
 test with ordinary numbers almost always shows the mistake, if somebody
@@ -57,15 +57,47 @@ checks the answer.
 
 </details>
 
-## Why idea A feels right
+## What each idea counts
 
-Idea A is not a strange idea. It is what many tools do. On a calculator,
-the power key is often marked `^`. In a spreadsheet, `=2^3` gives 8. In an
-email or a message, people type `x^2` when they cannot write a small raised
-2. So `^` means "power" in many places a reader has been before Python.
+Idea A counts a power. `2 ^ 3` multiplies 2 by itself 3 times, so it gives
+$2 \times 2 \times 2 = 8$. A calculator key marked `^` and the spreadsheet
+formula `=2^3` do this.
 
-Python took `^` from the language C, where it does this logic job. It took
-`**` for powers from Fortran.
+Idea B counts digits. Python writes both whole numbers in binary, which
+uses only the digits 0 and 1. Then it compares them one place at a time.
+It writes 1 where the two digits differ, and 0 where they are the same.
+This job is called *exclusive or*{.term}. For `2 ^ 3`:
+
+| | left place | right place |
+|---|---|---|
+| 2 in binary | 1 | 0 |
+| 3 in binary | 1 | 1 |
+| result | 0 (same) | 1 (differ) |
+
+The result is `01` in binary, which is 1. That is what the experiment
+printed.
+
+Python took `^` from the language C, where it does this job. It took `**`
+for powers from Fortran.
+
+Let's watch the two jobs side by side. The slider sets the left number.
+The right number is 3. The cell prints each number in binary, with five
+places.
+
+```python exec
+id: what-each-idea-counts-1
+left = slider("left", 0, 20, step=1, value=2, id="left").value
+right = 3
+
+print(f"{left} in binary:  {left:05b}")
+print(f"{right} in binary:  {right:05b}")
+print(f"{left} ^ {right} = {left ^ right}   in binary: {left ^ right:05b}")
+print(f"{left} ** {right} = {left ** right}")
+```
+
+Move the slider from 0 to 20. How does the `**` line grow, and how does
+the `^` line grow? Can you see in the binary rows which places the `^`
+result changes?
 
 ## Where else it happens
 

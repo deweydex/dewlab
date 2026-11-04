@@ -28,7 +28,7 @@ own. How many photos are there in all, counting every folder inside
 every folder?
 
 A loop cannot answer that on its own, and you will see why. The answer
-is a function that uses itself. That sounds like a circle, the kind of
+is a function that uses itself. That is circular in form, like an
 answer that says "a word means the word". But if you are
 careful, it works, and it can be the shortest code on the page.
 
@@ -178,9 +178,8 @@ because that is what the *docstring*{.term} promises. Then $n \times (n - 1)!$
 is $n!$, which is what this call promised. So the promise keeps itself,
 as long as it stops somewhere.
 
-If trusting the promise feels like cheating, the next section can help.
-It follows every call, one at a time, so you can see that nothing is
-hidden. You can read it first and come back.
+The next section follows every call, one at a time, so you can see
+that nothing is hidden. You can read it first and come back.
 
 Every recursive function has two parts:
 

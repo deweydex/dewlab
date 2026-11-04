@@ -28,10 +28,10 @@ Three people you might meet write code at work. One builds web pages in
 remembers typing *BASIC*{.term} into a home computer in the 1980s. Are they
 doing the same thing you do in Python, or something quite different?
 
-There are thousands of programming languages. That sounds like a lot to
-learn. So let's give four of them the same small job, a week of rain,
+There are thousands of programming languages. That is a lot of
+languages to learn. So let's give four of them the same small job, a week of rain,
 and watch what changes. My guess is that you can already read more of
-them than you expect.
+them than their number suggests.
 
 On this page we:
 
@@ -241,8 +241,8 @@ reason to show the `.0`.
 ### Two ways to answer "5" + 1
 
 The bigger differences hide in what a language allows. In JavaScript,
-`"5" + 1` gives `"51"`. That is a piece of text, 5 and 1 joined. What do you
-expect Python to do with the same line? This cell raises an error on
+`"5" + 1` gives `"51"`. That is a piece of text, 5 and 1 joined. What will Python
+do with the same line? This cell raises an error on
 purpose.
 
 ```python exec

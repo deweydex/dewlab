@@ -1,7 +1,7 @@
 ---
 title: "Chance: a closer look at small samples"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Chance: a closer look at small samples
@@ -82,17 +82,45 @@ from 900.
 
 </details>
 
-## Why idea A feels right
+## What each idea counts
 
-A probability sounds like a promise. "One time in six" sounds like "every
-sixth roll", and 54 rolls sounds like enough. In most of life, a number
-someone calculates carefully is a number that comes true: a recipe, a bus
-timetable, a bill.
+Idea A compares the result with one number, 9, and counts the gap: 8 is 1
+away. It treats one sixth of 54 as the count the dice should give. Idea B
+compares the result with every count the dice can give. It asks how often
+fair dice give 8 or fewer, and the experiment found about 440 batches in
+1,000.
 
-The share of sevens comes close to one sixth only after many rolls. Over
-a few dozen rolls it can be far from one sixth, further than most people
-expect. That is why the
+The two ideas also look at different things as the number of rolls grows.
+The count of sevens can move further from one sixth of the rolls, and the
+share of sevens still comes closer to one sixth. That is why the
 probability page rolled 10,000 times before it drew any conclusions.
+
+The slider below sets the number of rolls in a batch. The cell does not
+simulate. It calculates how likely each count of sevens is, for fair dice.
+It shows the chance of exactly one sixth of the rolls, and the chance of
+landing within 20% of that count.
+
+```python exec
+id: what-each-idea-counts-1
+from math import lgamma, log, exp
+
+rolls = slider("rolls", 6, 5400, step=6, value=54, id="rolls").value
+expected = rolls // 6
+
+def chance_of(count):
+    ways = lgamma(rolls + 1) - lgamma(count + 1) - lgamma(rolls - count + 1)
+    return exp(ways + count * log(1 / 6) + (rolls - count) * log(5 / 6))
+
+near = sum(chance_of(count) for count in range(rolls + 1)
+           if 0.8 * expected <= count <= 1.2 * expected)
+
+print("expected sevens:", expected)
+print("chance of exactly", expected, "sevens:", round(100 * chance_of(expected), 1), "%")
+print("chance within 20% of", expected, ":", round(100 * near, 1), "%")
+```
+
+Move the slider from 6 up to 5,400. What happens to the chance of exactly
+one sixth? What happens to the chance of landing within 20% of it?
 
 ## Where else it happens
 

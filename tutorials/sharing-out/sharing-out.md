@@ -408,7 +408,7 @@ print the same number?
   - 7 + 3 = 10. Adding the exponents worked on the last page, for
     multiplying.
 - Neither of them
-  - Dividing can feel like it should give a fraction, not a power.
+  - This option reads a division as giving a fraction, not a power.
 ```
 
 The first line prints 16.0. Python writes the answer to a `/` division

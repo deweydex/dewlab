@@ -34,7 +34,7 @@ The pizza on the right has more slices than the one on the left. Does
 it have more pizza?
 
 - Yes, more slices means more pizza
-  - More pieces can feel like more. Look at the outside edge of each
+  - This option reads more pieces as more pizza. Look at the outside edge of each
     pizza: is any of them bigger?
 - No, it has less pizza
   - Cutting does not take any pizza away. Each slice is smaller, but
@@ -245,7 +245,7 @@ picture show?
 
 - One whole pizza, all orange
 - Six pizzas
-  - Six slices can sound like six of something.
+  - This option counts six slices as six separate things.
 - Six orange dots
 ```
 

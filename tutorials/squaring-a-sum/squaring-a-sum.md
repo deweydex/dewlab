@@ -1,7 +1,7 @@
 ---
 title: "Squaring: a closer look at (a + b)²"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Squaring: a closer look at (a + b)²
@@ -38,6 +38,7 @@ On how many of the four lines will the two answers be the same?
 - Some of them
   - This is what idea B predicts: they agree only when $2ab$ is 0.
 - None of them
+  - This reads the sum as always different, even when $a$ is 0.
 ```
 
 Run it. They agree on one line only, the line where $a$ is 0. With 3 and
@@ -54,15 +55,19 @@ other pair, $(a + b)^2$ and $a^2 + b^2$ are different numbers.
 
 </details>
 
-## Why idea A feels right
+## What each idea counts
 
-Idea A works for multiplying. $(ab)^2 = a^2 b^2$: squaring a product does
-square each part. It also looks like other rules we trust, such as
-$2(a + b) = 2a + 2b$. So $(a + b)^2 = a^2 + b^2$ looks like one more rule
-of the same kind.
+Idea A counts two pieces, a square with side $a$ and a square with side
+$b$. Idea B counts four pieces, because every term multiplies every term:
+$a \cdot a$, $a \cdot b$, $b \cdot a$ and $b \cdot b$.
 
-A picture shows what it leaves out. Here is a square with sides $a + b$,
-cut where $a$ ends.
+Squaring a product does square each part: $(ab)^2 = a^2 b^2$. The bracket
+holds one term, so there is nothing else to multiply. In $2(a + b)$, the 2
+multiplies each term once. In $(a + b)^2$, the bracket multiplies itself, so
+each term meets each term.
+
+A picture shows the four pieces. Here is a square with sides $a + b$, cut
+where $a$ ends.
 
 ```python exec
 id: why-idea-a-feels-right-1
@@ -84,8 +89,36 @@ ax.set_title("A square with sides a + b")
 ```
 
 The whole square is $(a + b)^2$. Inside it are the two squares idea A
-expects, $a^2$ and $b^2$, and two rectangles, each $a$ by $b$. Idea A
-leaves out the two rectangles.
+counts, $a^2$ and $b^2$, and two rectangles, each $a$ by $b$. Idea A leaves
+out the two rectangles. They add $2ab$ to the area, so the two ideas differ
+by $2ab$ and agree only when that is 0.
+
+Let's change the sides ourselves. The sliders set $a$ and $b$.
+
+```python exec
+id: what-each-idea-counts-1
+a = slider("a", 0, 6, step=1, value=3, id="side-a").value
+b = slider("b", 0, 6, step=1, value=2, id="side-b").value
+
+fig, ax = plt.subplots(figsize=(4, 4))
+pieces = [((0, 0), a, a, "a²"), ((a, a), b, b, "b²"),
+          ((a, 0), b, a, "ab"), ((0, a), a, b, "ab")]
+for (x, y), width, height, label in pieces:
+    ax.add_patch(plt.Rectangle((x, y), width, height, fill=False, linewidth=2))
+    if width > 0 and height > 0:
+        ax.text(x + width / 2, y + height / 2, label, ha="center",
+                va="center", fontsize=12)
+ax.set_xlim(0, 12)
+ax.set_ylim(0, 12)
+ax.set_aspect("equal")
+ax.set_title("A square with sides a + b")
+print("whole square:", (a + b) ** 2)
+print("the two squares:", a ** 2 + b ** 2)
+print("the two rectangles:", 2 * a * b)
+```
+
+Can you set $a$ and $b$ so that the two rectangles have the same area as
+the two squares together? Can you make the rectangles larger?
 
 ## Where else it happens
 

@@ -27,8 +27,7 @@ What is hops(10 → 100,000)?
 - 5
   - 100,000 has five zeros. Each hop of ×10 puts one zero on the end.
 - 6
-  - 2 × 3 is 6. The numbers multiply, so it can feel like the hops
-    multiply too. Count the zeros of 100,000.
+  - 2 × 3 is 6. The numbers multiply, and this option multiplies the hops too. Count the zeros of 100,000.
 - 100,000
   - 100,000 is where the hops land. The question asks how many hops.
 ```
@@ -448,15 +447,15 @@ Before you run it: will the first two lines print the same number?
 
 - Yes, the same number
 - No, different numbers
-  - Neither 2 nor 3 lands on a stop of ×10, so it can feel like the
-    rule might not hold for them.
+  - Neither 2 nor 3 lands on a stop of ×10, and this option takes the rule
+    to hold only on those stops.
 ```
 
 The first two lines both print `0.7781512503836436`. The last two both
 print `0.9030899869919435`. So the top 3 sits about 0.78 of the way
 along the bottom ruler, over the 6.
 
-You can keep writing hops when it feels calmer. hops(10 → 6) and
+You can keep writing hops when you want to. hops(10 → 6) and
 $\log_{10} 6$ are two names for one number.
 
 {{include: setup/zen-calm-check.md}}

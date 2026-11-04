@@ -183,8 +183,8 @@ What is x in x + 3 = 7?
   - x is a box with a letter on it. It holds 4, as the square and the
     heart did.
 - x is not a number
-  - A letter can feel strange in a sum. But x is a box, and a box holds
-    a number.
+  - This treats a letter as something that cannot go in a sum. But x is
+    a box, and a box holds a number.
 - 24
   - x is the 24th letter of the alphabet. In maths, the letter's place
     in the alphabet does not count.
@@ -399,7 +399,8 @@ Before you run it: what will the last line print?
 - True
   - 4 + 3 is 7, so the two sides are the same.
 - False
-  - The box is a guess, so it can feel as if the check must fail.
+  - This reads a guess in the box as a reason for the check to fail. The
+    check only compares the two sides.
 - 7
   - The line before it prints 7. This line asks a question about it.
 ```
@@ -467,7 +468,7 @@ What does the box hold?
 - 3
   - With 3 in the box, the left pan holds 6 beads.
 - No number works
-  - An empty box can feel like "no answer". But 0 is a number, and
+  - This reads an empty box as "no answer". But 0 is a number, and
     0 + 3 = 3.
 ```
 

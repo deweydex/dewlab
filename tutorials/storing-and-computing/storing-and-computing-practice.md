@@ -171,7 +171,7 @@ What will it print?
 - 33333
   - A string times a whole number is the string repeated.
 - An error
-  - Multiplying text by a number sounds like it should not work.
+  - This treats text times a number as an operation Python does not define.
 ```
 
 What do `"5" + "3"` and `"5" + 3` do? Try them.

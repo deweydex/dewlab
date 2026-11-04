@@ -597,8 +597,8 @@ evidence here. It looks at a few things.
   side meets it anyway.
 - **Two separate pages.** Each one can go at its own speed, and a reader
   who is nervous about one subject can take it on its own. The cost is
-  that nobody may ever show the link between the two, and one of them can feel like a
-  topic with no use.
+  that nobody may ever show the link between the two, and one of them has no visible
+  use.
 
 For the maths lover, the code may be a way to check their work. For the
 computer lover, the maths may be the reason `elif` needs its order.

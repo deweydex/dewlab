@@ -42,7 +42,7 @@ $(1, 0)$, and "up", $(0, 1)$? Those are its columns.
 `[[0, 1], [-1, 0]]` turns it back. "Right" goes to "down", $(0, -1)$,
 and "up" goes to "right". The turn and then the turn back leave the F
 where it started, so `multiply(back, turn)` is the identity. A matrix that undoes
-another is its *inverse*. Every move so far has felt as if it could be
+another is its *inverse*. Every move so far could be
 undone. Can every one? This page finds a single number that tells you.
 
 ## Measuring the F
@@ -205,7 +205,7 @@ formula read like the maths.
 
 The shear changed the F's shape a lot, but it did not change its area
 at all. Its determinant is $1 \times 1 - 1 \times 0 = 1$. The picture
-does not make that obvious, but the number shows it at once.
+does not show that, but the number does at once.
 
 ## When the F collapses
 
@@ -432,7 +432,7 @@ and one with determinant 1 always can?
 
 A challenge: the determinant of a product. Pick two matrices, and
 compare `det(multiply(A, B))` with `det(A) * det(B)`. What rule do you
-find, and why does it make sense for areas?
+find, and why does it hold for areas?
 
 ```python challenge
 def det(m):

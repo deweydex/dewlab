@@ -206,8 +206,8 @@ What share of the runs with five heads will have heads next?
 
 <details class="dl-answer"><summary>why</summary>
 
-About 0.5. The coin has no memory. The feeling that tails is now "due"
-is called the *gambler's fallacy*, and nearly everybody has it. Five
+About 0.5. The coin has no memory. The belief that tails is now "due"
+is called the *gambler's fallacy*. Five
 heads in a row is unlikely before the first flip: about $\frac{1}{32}$.
 That is why only about 3,000 of the 100,000 runs were kept. Once they
 have happened, they change nothing about the sixth.
@@ -274,9 +274,8 @@ def chance_all_different(people):
 
 print(round(1 - chance_all_different(23), 4))
 ---
-It is 0.5073, slightly better than even. Most people guess much lower,
-because the question sounds like "does someone share *my* birthday?",
-which for 23 people is only about 6%. But any two people can share, and
+It is 0.5073, slightly better than even. The question "does someone share *my* birthday?"
+has an answer of only about 6% for 23 people. But any two people can share, and
 23 people make $C(23, 2) = 253$ pairs. With 50 people, a shared birthday
 is 97% likely.
 ```

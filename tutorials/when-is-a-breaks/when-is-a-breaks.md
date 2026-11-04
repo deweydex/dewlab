@@ -1,7 +1,7 @@
 ---
 title: "Inheritance: a closer look at \"is a\""
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Inheritance: a closer look at "is a"
@@ -56,11 +56,11 @@ type: choice
 What will it print?
 
 - width 6 height 6 area 36
-  - This is what idea A predicts: a square stays a square.
+  - This is what idea A predicts: a square stays a square, because it belongs to the group of rectangles.
 - width 6 height 3 area 18
   - This is what idea B predicts: `stretch` changes one side only.
 - An error
-  - A square cannot be stretched.
+  - This reads `stretch` as a method a square refuses to run.
 ```
 
 Run it. It prints `width 6 height 3 area 18`. Python raised no error, and
@@ -87,18 +87,42 @@ keep the promises of, such as a `Shape` with `area`, and no `stretch`.
 
 </details>
 
-## Why idea A feels right
+## What each idea checks
 
-Idea A is true in maths. Every square is a rectangle: four right angles,
-with opposite sides equal. A square is a rectangle with one more rule. So
-the words "a square is a rectangle" are correct, and they sound like
-exactly what inheritance means.
+The two ideas ask different questions about `Square(Rectangle)`.
 
-But a maths square never changes. A square in a program can, because it
-has methods. "Is a" in a program means more than "belongs to the group".
-It means "can be used anywhere the parent is used, and nothing breaks".
-Computer scientists call this the *Liskov substitution principle*, after
-Barbara Liskov, who described it in 1987.
+Idea A asks whether every square belongs to the group of rectangles. In
+maths it does: four right angles, with opposite sides equal. A square adds
+one rule, that its sides are equal. A maths square never changes, so the
+group is all there is to check.
+
+Idea B asks what a program can do to the object. A square in a program has
+methods, and each method can change it. So idea B looks at every method the
+parent hands down. After the method runs, does the child still keep its own
+rule?
+
+The two ideas differ at `stretch`. Idea A checks only the group, so it never
+runs `stretch`. Idea B runs `stretch(2)` and finds sides of 6 and 3. "Is a"
+in a program means "can be used anywhere the parent is used, and nothing
+breaks". Computer scientists call this the *Liskov substitution principle*,
+after Barbara Liskov, who described it in 1987.
+
+Let's move the stretch factor ourselves. The slider sets the number we pass
+to `stretch`.
+
+```python exec
+id: what-each-idea-checks-1
+factor = slider("factor", 1, 6, step=1, value=2, id="stretch-factor").value
+
+tile = Square(3)
+tile.stretch(factor)
+print("stretch by", factor)
+print("width", tile.width, "height", tile.height, "area", tile.area())
+print("sides equal:", tile.width == tile.height)
+```
+
+Can you find a factor that leaves the square a square? What does that factor
+do to a rectangle?
 
 ## Where else it happens
 

@@ -6069,3 +6069,16 @@ Not done: a slider cell in the worlds sections, and slider problems in the slope
 - **A typed $a = 0$ no longer fails.** The typed-number cell on *Completing the square* says that the graph is a line and asks for another $a$.
 
 *Cost to change: revert the three tutorial files and this entry.*
+
+**7.311 — A page never says what feels natural, right or obvious to the reader.** Josh, 4 November 2026, after 7.309: "I dont ever want us to say 'why this feels right' because it might not to the student."
+
+A search of the tutorials found the phrase in the closer-look template, in `PEDAGOGICAL_STYLE_GUIDE.md` and `WRITING_TUTORIALS.md` ("why the other idea is so natural to hold"), in 13 closer-look pages headed "Why idea A feels right", and in about 100 other places: predict-option notes ("sounds like further along"), practice answer folds ("feels natural"), and page openings ("That sounds like plenty").
+
+- **The rule is now `#no-reader-claims` in the style guide.** Say what an idea reads, counts or does. A predict note names the idea behind its option. The guide's checklist has a line for it.
+- **Closer looks show what each idea counts.** The 13 sections are rewritten as mechanism, and where a number has a picture the page gains a slider cell, as in `the-vertex-sign`. The closer-look template and its description follow the same shape.
+- **About 90 sentences rewritten** in tutorials, practice pages and the running-totals template, and "Why staying feels fine" in the Monty Hall page became "The argument for one in two" (its `covers` key changed with it, and `CURRICULUM_MAP.md` was regenerated).
+- **A test keeps it from coming back.** `tests/test_house_style.py` flags the common phrases. It skips `id:` lines, because ids are a contract: five old cells keep `why-idea-a-feels-right-1` as their id although their headings changed.
+
+Not done: "most people", "many people", "everyone" and "just" before a step. They are the same kind of claim, but most uses are fine and each needs reading.
+
+*Cost to change: revert the commit. The test file can be deleted on its own.*

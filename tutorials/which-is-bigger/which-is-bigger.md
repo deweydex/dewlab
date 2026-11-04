@@ -200,9 +200,9 @@ answer: 3
 Look at the dot for 1/4. Which landmark is it closest to?
 
 - 0
-  - 1/4 is a small amount of pizza, so it can feel close to nothing.
+  - This reads 1/4 as a small amount of pizza and puts it near 0.
 - 1/2
-  - 1/4 is half of a half, so it can feel close to one half.
+  - 1/4 is half of a half, and this puts it near one half.
 - It is the same distance from 0 and from 1/2
   - From 0 to 1/4 is one quarter. From 1/4 to 1/2 is one quarter too.
 ```
@@ -221,7 +221,7 @@ answer: 2
 Where would 3/4 go on this line?
 
 - Between 0 and 1/2
-  - 4 is a small number, so 3/4 can feel small. Half of 4 slices is 2,
+  - This reads 4 as a small number and puts 3/4 low on the line. Half of 4 slices is 2,
     and 3/4 has 3.
 - Halfway between 1/2 and 1
   - One half is 2/4, and 1 is 4/4. 3/4 sits in the middle.
