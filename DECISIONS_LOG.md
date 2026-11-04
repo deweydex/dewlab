@@ -6082,3 +6082,12 @@ A search of the tutorials found the phrase in the closer-look template, in `PEDA
 Not done: "most people", "many people", "everyone" and "just" before a step. They are the same kind of claim, but most uses are fine and each needs reading.
 
 *Cost to change: revert the commit. The test file can be deleted on its own.*
+
+**7.312 — Headcount claims that label or predict the student are rewritten.** Josh, 4 November 2026, after 7.311: fix the ones that are negative or change the tone.
+
+About 70 sentences said what "most people" or "many people" guess, find hard, fear or get wrong ("Most people cannot read it at first", "Many people find the word scary", "Many people say 25 km/h"). They label the student or predict their mistake, and a headcount cannot be backed up. Each now offers the answer or the difficulty as something to test ("Suppose the guess is 5% or 10%. Let's test it.") or states the fact about the topic.
+
+- **Left alone, on purpose:** facts about the world (some people navigate by keyboard, some feel unwell with motion, how many people are in a model), history and sources, and the "You." reflection menus in four practice pages ("Some people want the reason before they will use a rule"), which read as neutral contrasts. They can become questions later.
+- **The test grows a few narrow patterns** ("most people guess", "surprises many people") and leaves the factual uses alone.
+
+*Cost to change: revert the commit.*

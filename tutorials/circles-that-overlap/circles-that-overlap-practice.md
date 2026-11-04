@@ -540,7 +540,7 @@ print(len(odd_ones), sorted(odd_ones))
 ```
 
 It gives 9 names: the 7 laptops with exactly one of the three, and the
-2 with all three. Most people make Schlomo's guess. It holds for two
+2 with all three. Schlomo's guess holds for two
 sets. For three, it includes the middle as well. A name is in the
 answer when it is in an odd number of the sets: 1 or 3. That is *parity*{.term}, as on
 [Bits that flip](tutorial:bits-that-flip): XOR of several bits is 1 when

@@ -43,13 +43,13 @@ module are about powers. For now, notice the surprise.
 ## What this module is for
 
 This module is about the maths that schools teach everyone: fractions,
-powers, roots and logarithms. Many people leave school and think "I am
-not a maths person". If you think that, this module is for you.
+powers, roots and logarithms. If you have ever thought "I am not a maths
+person", this module is for you.
 
 The name, *The Zen of Slashes and Surds*, comes from two things you will
 meet. A slash is the line in a fraction, like the line in 1/2. A surd is
-a number like the square root of 2. Its digits never end. Many people
-find slashes and surds scary. At the end of the module, we hope they
+a number like the square root of 2. Its digits never end. Both words
+are new, and each names a small idea. At the end of the module, we hope they
 feel normal. (*Zen* is a word for a calm mind.)
 
 ## Nothing to memorise
@@ -154,9 +154,8 @@ does. Then change a number and run it again.
 
 <details class="dl-why"><summary>Why this way?</summary>
 
-At school, many people learned maths as rules to memorise and use
-quickly. For many of them, the fear of maths started there, with speed
-and memory.
+At school, maths is often taught as rules to memorise and use
+quickly, which puts speed and memory first.
 
 This module does the opposite. A rule comes last, after a picture that
 shows why it works. You write the rule in your own words before you see

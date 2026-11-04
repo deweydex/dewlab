@@ -788,7 +788,7 @@ is a circle with depth.
 
 ### What doubling does
 
-The formulas can answer a question that surprises many people. If you
+The formulas can answer a question about scaling. If you
 double the radius, what happens to the area and the volume? The cell
 finds both, for a radius of 1, 2 and 4.
 

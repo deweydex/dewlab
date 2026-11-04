@@ -463,7 +463,7 @@ part give the same answer. For negative numbers they do not.
 The remainder follows from that. Python keeps the rule from problem 4:
 $-4 \times 2 + 1 = -7$. So the remainder is 1.
 
-Most people guess −3, and that is what some other programming
+The answer −3 is what some other programming
 languages give, because they round towards zero. Python
 chose "down" instead.
 

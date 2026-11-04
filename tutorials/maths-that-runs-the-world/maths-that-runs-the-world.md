@@ -38,8 +38,8 @@ is behind each of the others. You pick a door. The host, who knows
 where the car is, opens one of the other two and shows you a goat. Then
 he asks: do you want to switch to the last closed door?
 
-Most people say it makes no difference, because two doors are left and
-one hides the car. In fact, if you switch, you win two times in three. A
+Suppose it makes no difference, because two doors are left and
+one hides the car. Let's test that. In fact, if you switch, you win two times in three. A
 statistician, Steve Selvin, wrote about the puzzle in two letters to the
 journal *The American Statistician* in 1975. The second one called it
 the Monty Hall problem, after the host of the American game show

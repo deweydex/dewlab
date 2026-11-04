@@ -103,7 +103,7 @@ What will the cell print?
     name should be gone.
 ```
 
-It prints `True`, and many people expect `False`. So something called
+It prints `True`. So something called
 Project Gutenberg is still inside the novel. Where? `book.find("Project
 Gutenberg")` gives the position where the words first appear, and a
 slice from a little before that point shows the rest.

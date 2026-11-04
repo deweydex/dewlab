@@ -128,7 +128,7 @@ print(simulate(two_heads))
 ---
 It is 6 of 16, which is 0.375. The 6 is $C(4, 2)$ from
 [Counting](tutorial:counting-carefully), choosing which 2 of the 4 flips
-are heads. Many people guess a half, since two heads is the middle
+are heads. An answer of a half reads two heads as the middle
 result, but most ways of landing are not the middle one.
 ```
 

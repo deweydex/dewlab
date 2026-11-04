@@ -439,7 +439,7 @@ type: fill-in-the-blank
 ```
 
 Last of all, a word. A number like side(2), whose digits never end and
-never repeat, is called a *surd*. Many people find the word scary. On
+never repeat, is called a *surd*. The word is new, and the idea is small. On
 this page, you found one, and measured it to 20 places.
 
 The word is very old. About 1200 years ago, the mathematician

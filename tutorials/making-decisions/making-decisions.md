@@ -94,7 +94,7 @@ print(1 == 1.0)       # I think:
 print(0 == False)     # I think:
 ```
 
-The last one surprises most people. In Python, `False` counts as equal to
+Let's look closely at the last one. In Python, `False` counts as equal to
 `0`, and `True` as equal to `1`. That link between logic and arithmetic
 goes back to George Boole in the 1840s, and the word "Boolean" comes from
 his name.

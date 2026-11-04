@@ -99,7 +99,7 @@ give all three their 80 pixels, one moves down.
 
 ### Where the number comes from
 
-So did the third card move at 3 × 80 = 240 pixels? Most people expect
+So did the third card move at 3 × 80 = 240 pixels? Let's test
 that. The slider shows a larger number.
 
 The 80 pixels is the width of the card's content. It is not the width

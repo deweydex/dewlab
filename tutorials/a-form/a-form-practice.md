@@ -49,8 +49,8 @@ Compare the `for` and the `id`, letter by letter. Fix it.
 
 `for="Email"` has a capital E, and `id="email"` does not. An `id` must
 match exactly, capitals included, so the label named a field that does
-not exist. Many people write every `id` in small letters, so there is
-one less thing to check.
+not exist. Writing every `id` in small letters leaves one less thing to
+check.
 
 </details>
 

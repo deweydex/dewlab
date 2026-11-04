@@ -401,7 +401,7 @@ def chance_shared(people, days, trials, seed):
             shared += 1
     return shared / trials
 ---
-0.5039, and the exact answer is about 0.507: with only 23 riders, two share a birthday about half the time. Most people guess far lower. With 5 riders the chance is about 0.02.
+0.5039, and the exact answer is about 0.507: with only 23 riders, two share a birthday about half the time. With 5 riders the chance is about 0.02.
 ```
 
 </div>

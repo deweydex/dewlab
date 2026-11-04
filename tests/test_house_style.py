@@ -14,7 +14,9 @@ PHRASES = re.compile(
     r"\bfeels? (?:right|natural|obvious|wrong|strange|odd|fine)\b"
     r"|\bcan feel\b|\bnatural to\b|\bit is natural\b|\bso natural\b"
     r"|\bsounds (?:like|right)\b|\bcan sound like\b|\bobviously\b|\bof course\b"
-    r"|\bWhy idea A feels\b",
+    r"|\bWhy idea A feels\b"
+    r"|\b(?:most|many) people (?:guess|cannot|can't|say|skip|trust|expect|mix|stop|write)\b"
+    r"|\bsurprises (?:most|many|some) people\b|\bconfuses many people\b",
     re.IGNORECASE,
 )
 

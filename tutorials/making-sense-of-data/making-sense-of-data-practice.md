@@ -219,8 +219,7 @@ print(Counter([1, 2, 2, 3, 3, 3, 4, 4, 4, 4]))
 
 1 appears once, 2 twice, 3 three times and 4 four times. `Counter`,
 from Python's `collections` module, counts for you. The shape rises to
-the right, and its name is *skewed left*, which confuses many people.
-The name describes the tail, the thin end, and here the tail is on the
+the right, and its name is *skewed left*. The name describes the tail, the thin end, and here the tail is on the
 left.
 
 </details>

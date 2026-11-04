@@ -168,8 +168,7 @@ It shows `750`: 750 MB. In Python, multiply is `*`, not `x`. To Python,
 by side, with nothing to say what to do with them. So Python cannot
 read the line.
 
-Many people write `x`, as Schlomo did. On paper, most of us use
-an `x` for multiply. It is a move from a different space.
+Writing `x`, as Schlomo did, is how multiply looks on paper. It is a move from a different space.
 
 </details>
 

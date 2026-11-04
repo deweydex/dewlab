@@ -93,7 +93,7 @@ table(if_then)
 It is `False` in one row only: A true and B false. "If it rains, the
 ground is wet" is only broken by rain on dry ground. When A is false, the
 rule says nothing, so logic counts it as kept. "If it rains" makes no
-promise about a dry day. Most people find this part strange, and the
+promise about a dry day. This part takes a moment to take in, and the
 four-card challenge on the tutorial page depends on it.
 ```
 

@@ -209,7 +209,7 @@ September the days shrink as fast as they grew in March.
 The wave and the data do not agree exactly, because daylight is not
 exactly a sine wave, as the gap on the waves page showed. But the shape
 of the answer is the same. The days change fastest at the equinoxes,
-and hardly at all at the solstices. Many people notice this: the
+and hardly at all at the solstices. This matches daily life: the
 evenings seem to stretch quickly in March, and the long days of June
 seem to stay the same for weeks.
 

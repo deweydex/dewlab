@@ -325,7 +325,7 @@ What happened?
 <details class="dl-answer"><summary>one way through it</summary>
 
 1.96 is close to 2, but it is not 2. So 1.4 is a little less than
-side(2). Many people stop here, because
+side(2). It is easy to stop here, because
 1.96 looks so close. Adding digits brings the guess closer: 1.41, then
 1.414. No guess with digits that stop is ever exactly side(2). Here is
 one answer. Yours may be different and work too.

@@ -184,7 +184,7 @@ for x in range(-10, 11):
     assert 3 * (2 * x + 1) - 2 * (x - 4) == evaluate([11, 4], x)
 ```
 
-Many people write $-2(x - 4) = -2x - 8$. The check shows the difference at once.
+Suppose a step reads $-2(x - 4) = -2x - 8$. The check shows the difference at once.
 At $x = 0$ the two sides would be 11 and $-5$.
 
 </details>
@@ -292,7 +292,7 @@ An answer might weigh a few things, and can choose either way.
 - **You.** Some people need to see a rule work on numbers before they
   believe it. Others find the numbers slow.
 
-Many people want both in the end. Rules do the work, and a check
+You may want both in the end. Rules do the work, and a check
 catches the slips.
 
 </details>

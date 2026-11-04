@@ -438,8 +438,7 @@ around the outside. What is the area of the path?
 The area of the path is $(x + 4)^2 - x^2 = 8x + 16$.
 
 The lawn and path together are $x + 4$ wide, not $x + 2$, because the
-path is on both sides. Most people use $x + 2$ the first time, and that
-is the point of the problem. The answer is a small surprise too. It is
+path is on both sides. That is the point of the problem. The answer is a small surprise too. It is
 linear, so the path's area does not grow quadratically with the
 lawn.
 

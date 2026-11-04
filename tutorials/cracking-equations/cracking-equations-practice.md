@@ -440,8 +440,7 @@ The discriminant of this equation tells you which.
 
 Check both conditions: $2(12 + 5) = 34$ and $12 \times 5 = 60$.
 
-Many people first try 10 by 7, because 34 and 60 both seem to point to
-it. Its perimeter is 34, but its area is 70. A pair of values that
+Let's test 10 by 7, which 34 and 60 both seem to point to. Its perimeter is 34, but its area is 70. A pair of values that
 meets only one condition is not a solution.
 
 </details>

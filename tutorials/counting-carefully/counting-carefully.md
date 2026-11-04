@@ -586,7 +586,7 @@ which `itertools` tool lists its cases?
 A challenge: 23 people are in a room. How many ways can they have 23
 different birthdays, out of 365 days? And how many ways can they have
 birthdays at all? The first divided by the second is the chance that
-nobody shares. Most people expect it to be nearly certain.
+nobody shares. Is nobody sharing nearly certain? Let's test it.
 
 ```python challenge
 import math

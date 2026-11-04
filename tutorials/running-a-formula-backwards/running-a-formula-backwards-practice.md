@@ -561,8 +561,8 @@ zero, so the rearranged formula needs a BMI above 0.
 
 </details>
 
-**17. Explain.** Many people learned "change sides,
-change signs" at school. The tutorial page used "*the same move on both sides*{.term}"
+**17. Explain.** A shorter rule is "change sides,
+change signs". The tutorial page used "*the same move on both sides*{.term}"
 instead. Take $F = \frac{9}{5}C + 32$ and make $C$ the subject, once
 each way. Then say which way you would teach to someone meeting
 rearranging for the first time, and why.

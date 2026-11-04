@@ -302,7 +302,7 @@ def shared_birthday(people, trials, seed):
             shared += 1
     return shared / trials
 ---
-With 23 people, half the trials, 0.5, had a shared birthday. Most people guess much lower, because they think of the chance that somebody shares *their* birthday. But 23 people make 253 pairs, and any pair will do.
+With 23 people, half the trials, 0.5, had a shared birthday. A first guess can be much lower, if it counts only the chance that somebody shares *your* birthday. But 23 people make 253 pairs, and any pair will do.
 ```
 
 Now calculate it. The chance that nobody shares is the chance that the

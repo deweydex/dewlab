@@ -79,7 +79,7 @@ makes the answer a little bigger.
 
 Idea A comes from real experience.
 
-At school, most people first met multiplying with whole numbers: the
+At school, multiplying starts with whole numbers: the
 times tables, $3 \times 4$, $7 \times 8$. Almost every one of those
 numbers is bigger than 1. So almost every answer is bigger than the
 numbers we started with. After years of these, the pattern gets treated as

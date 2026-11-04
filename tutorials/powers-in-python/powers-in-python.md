@@ -7,8 +7,8 @@ version: 2026.11.04.3
 # Powers: a closer look at ** and ^
 
 In [Algorithms, pseudocode and your first Python](tutorial:first-steps#a-few-more-things-python-can-do),
-`2 ** 3` gave 8: two to the power of three. Many people write a power
-another way, with `^`, as in `2^3`. Here are two ideas about what `^` does
+`2 ** 3` gave 8: two to the power of three. A power can also be
+written with `^`, as in `2^3`. Here are two ideas about what `^` does
 in Python. Both are reasonable, and they cannot both be true.
 
 **Idea A.** `^` means a power, as it does on a calculator or in a
