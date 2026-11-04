@@ -2,7 +2,7 @@
 title: "Straight lines: slope, and the line that breaks the formula — Practice"
 practice_for: slope-and-lines
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.1
 worlds:
   sea-and-sky: Ships' courses on a chart. The numbers are made up.
   sound: Echoes from a cliff.
@@ -146,9 +146,39 @@ The fixed cost is €70.
 
 </details>
 
+**7.** The sliders set $m$ and $c$ in $y = mx + c$. The dots are at
+$(0, 3)$ and $(2, 9)$. Can you find the line through both? Check it by
+finding the slope between the dots with `slope`.
+
+```python exec
+id: slide-a-line-through-two-dots
+import matplotlib.pyplot as plt
+
+m = slider("m", -5, 5, step=0.5, value=0, id="m").value
+c = slider("c", -5, 10, value=0, id="c").value
+
+fig, ax = plt.subplots()
+ax.plot([-2, 5], [m * -2 + c, m * 5 + c])
+ax.plot([0, 2], [3, 9], "o", markersize=9)
+ax.axhline(0, color="black", linewidth=0.8)
+ax.axvline(0, color="black", linewidth=0.8)
+ax.set_xlim(-2, 5)
+ax.set_ylim(-5, 15)
+ax.grid(alpha=0.3)
+print(f"y = {m}x + ({c})")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$m = 3$ and $c = 3$. The line crosses the vertical axis at $(0, 3)$, so
+$c = 3$. From $(0, 3)$ to $(2, 9)$, $y$ goes up by 6 while $x$ goes up
+by 2, so $m = 6 \div 2 = 3$.
+
+</details>
+
 ## Parallel and perpendicular
 
-**7.** Which of these lines are parallel, and which are perpendicular?
+**8.** Which of these lines are parallel, and which are perpendicular?
 
 - (a) $y = 3x + 1$
 - (b) $y = 3x - 7$
@@ -167,7 +197,7 @@ $\tfrac{1}{3}$, not $-\tfrac{1}{3}$. The sign is easy to miss.
 
 </details>
 
-**8.** A triangle has corners at $(0, 0)$, $(4, 0)$ and $(4, 3)$. Does
+**9.** A triangle has corners at $(0, 0)$, $(4, 0)$ and $(4, 3)$. Does
 it have a right angle? What do the slopes of its sides say?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -179,7 +209,7 @@ to $-1$ cannot say this, because the vertical side has no slope.
 
 </details>
 
-**9.** Why do the slopes of perpendicular lines multiply to $-1$, and
+**10.** Why do the slopes of perpendicular lines multiply to $-1$, and
 not to some other number?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -193,9 +223,39 @@ $-1$ is left.
 
 </details>
 
+**11.** The first line is $y = 2x + 1$. The slider sets the slope of the
+second line. Can you find the slope that makes the two lines
+perpendicular? Then multiply the two slopes. What do you get?
+
+```python exec
+id: slide-to-perpendicular
+import matplotlib.pyplot as plt
+
+m = slider("slope of the second line", -4, 4, step=0.25, value=1, id="m2").value
+
+fig, ax = plt.subplots()
+xs = [-4, 4]
+ax.plot(xs, [2 * x + 1 for x in xs], label="y = 2x + 1")
+ax.plot(xs, [m * x + 1 for x in xs], label=f"y = {m}x + 1")
+ax.set_xlim(-4, 4)
+ax.set_ylim(-4, 4)
+ax.set_aspect("equal")
+ax.grid(alpha=0.3)
+ax.legend()
+print(f"the slopes multiply to {2 * m}")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+The slope is $-0.5$, and $2 \times (-0.5) = -1$. The axes have the same
+scale, so the right angle looks like a right angle. Here is one answer.
+Yours may be different and work too.
+
+</details>
+
 ## The general form
 
-**10.** Write each line in the form $ax + by + c = 0$.
+**12.** Write each line in the form $ax + by + c = 0$.
 
 - (a) $y = 2x + 5$
 - (b) $y = -3x$
@@ -216,7 +276,7 @@ Only (c) could not be written as $y = mx + c$.
 
 </details>
 
-**11.** Change $3x + 4y - 12 = 0$ into the form $y = mx + c$. Where does
+**13.** Change $3x + 4y - 12 = 0$ into the form $y = mx + c$. Where does
 the line cross each axis?
 
 <details class="dl-answer"><summary>one way through it</summary>
@@ -228,7 +288,7 @@ horizontal axis at 4 (put $y = 0$).
 
 </details>
 
-**12.** What does $ax + by + c = 0$ become when $b = 0$? What about when
+**14.** What does $ax + by + c = 0$ become when $b = 0$? What about when
 $a = 0$?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -244,7 +304,7 @@ or for none, so it is not a line.
 
 </details>
 
-**13.** Somebody wrote their own `to_slope_intercept`. For
+**15.** Somebody wrote their own `to_slope_intercept`. For
 $2x - y + 1 = 0$, which is $y = 2x + 1$, it returns `(-2.0, -1.0)`.
 Can you find the mistake, and fix it?
 
@@ -285,7 +345,7 @@ The two minus signs were missing.
 
 ## Your world
 
-**14.** A problem from the world you chose.
+**16.** A problem from the world you chose.
 
 <div class="dl-world" data-world="sea-and-sky">
 
@@ -433,7 +493,7 @@ That is less than a kilometre from the tower. `foot` stops with a
 
 ## From earlier
 
-**15.** From
+**17.** From
 [Solving equations: linear, quadratic and simultaneous](tutorial:cracking-equations).
 Where do $y = 2x + 1$ and $y = -x + 7$ cross? What are their slopes,
 and are they perpendicular?
@@ -448,7 +508,7 @@ not at a right angle.
 
 </details>
 
-**16.** From [Number types, powers and logarithms](tutorial:numbers-and-their-families).
+**18.** From [Number types, powers and logarithms](tutorial:numbers-and-their-families).
 `slope((1, 2), (4, 3))` prints `0.3333333333333333`. Can you use
 `Fraction` to find the slope exactly?
 
