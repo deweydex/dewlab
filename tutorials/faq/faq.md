@@ -69,7 +69,7 @@ Follow your teacher when there is a difference.
 
 Your website files stay in your GitHub repository when you save them
 there. A repository holds a project's files and records changes to them.
-Saving a file only on your computer does not send it to GitHub.
+Saving a file only on your computer does not send it to GitHub. This is a problem waiting to happen! Please think about where your files are when you edit them!
 
 Everything you type in a cell on this site — Python, SQL, or an HTML,
 CSS or JavaScript site editor — is saved in this browser as you go,
