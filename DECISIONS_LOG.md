@@ -6061,3 +6061,11 @@ Added on 4 November: a slider cell on *Straight lines: slope* ($m$ and $c$), a s
 Not done: a slider cell in the worlds sections, and slider problems in the slope practice.
 
 *Cost to change: revert the three tutorial files and this entry.*
+
+**7.310 — Sliders reach the worlds and the slope practice.** Josh, 4 November 2026, asking to finish what 7.309 left open.
+
+- **A launch cell in each parabola world.** The rocket world slides the launch speed, the electronics world the supply voltage, and the fantasy-maps world the steepness of the throw, each with the vertex marked. The cell comes after the world's own task, with its own id (`the-vertex-in-your-world-2--<world>`), so saved work on the old cells is untouched.
+- **Slope practice.** Problem 7 slides $m$ and $c$ until a line meets two dots. Problem 11 slides a slope until two lines are perpendicular on equal axes. Later problems are renumbered.
+- **A typed $a = 0$ no longer fails.** The typed-number cell on *Completing the square* says that the graph is a line and asks for another $a$.
+
+*Cost to change: revert the three tutorial files and this entry.*

@@ -1,7 +1,7 @@
 ---
 title: "Parabolas: completing the square"
 year: "2026-2027"
-version: 2026.11.03.1
+version: 2026.11.04.2
 covers:
   every-quadratic-is-the-same-curve:
     covers: [MIT-3.4]
@@ -243,12 +243,16 @@ a = float(text_input("a", value="1", id="a").value or 1)
 b = float(text_input("b", value="6", id="b").value or 0)
 c = float(text_input("c", value="5", id="c").value or 0)
 
-h = -b / (2 * a)
-k = c - a * h ** 2
-ax = draw(lambda x: a * x ** 2 + b * x + c, low=h - 6, high=h + 6,
-          label=f"{a}x^2 + {b}x + {c}")
-ax.plot([h], [k], "o", markersize=9)
-print(f"vertex form: {a}(x - ({h}))^2 + ({k})")
+if a == 0:
+    print("With a = 0 the x^2 term is gone, and the graph is a straight line.")
+    print("A line has no turning point. Try another a.")
+else:
+    h = -b / (2 * a)
+    k = c - a * h ** 2
+    ax = draw(lambda x: a * x ** 2 + b * x + c, low=h - 6, high=h + 6,
+              label=f"{a}x^2 + {b}x + {c}")
+    ax.plot([h], [k], "o", markersize=9)
+    print(f"vertex form: {a}(x - ({h}))^2 + ({k})")
 ```
 
 ### Your turn
@@ -483,6 +487,22 @@ at about 1.53 s, at about 13.48 m. The roots are about $-0.13$ s and
 launch, which is not part of this flight.
 ```
 
+Before we use the algebra, let's launch some rockets. The slider sets
+the launch speed $v$ in $-4.9t^2 + vt + 2$. What speed gives a flight
+that reaches 20 metres?
+
+```python exec
+id: the-vertex-in-your-world-2--rockets
+speed = slider("launch speed (m/s)", 5, 30, step=0.5, value=15, id="speed").value
+
+ax = draw(lambda t: -4.9 * t ** 2 + speed * t + 2, low=0, high=7, label="height")
+top_time = speed / 9.8
+top = -4.9 * top_time ** 2 + speed * top_time + 2
+ax.plot([top_time], [top], "o", markersize=9)
+ax.set_ylim(0, 50)
+print(f"speed {speed}: highest at {top_time:.2f} s, at {top:.1f} m")
+```
+
 </div>
 
 <div class="dl-world" data-world="electronics">
@@ -530,6 +550,22 @@ This is true for any supply. It delivers the most power to a resistor
 that matches its own inside resistance.
 ```
 
+Let's change the supply. The slider sets its voltage $V$, and the power
+is $-2I^2 + VI$ watts. How does the best current change when we double
+the voltage?
+
+```python exec
+id: the-vertex-in-your-world-2--electronics
+volts = slider("supply voltage (V)", 6, 24, step=2, value=12, id="volts").value
+
+ax = draw(lambda i: -2 * i ** 2 + volts * i, low=0, high=volts / 2, label="power")
+best = volts / 4
+most = -2 * best ** 2 + volts * best
+ax.plot([best], [most], "o", markersize=9)
+ax.set_ylim(0, 80)
+print(f"{volts} V: best current {best} A, most power {most} W")
+```
+
 </div>
 
 <div class="dl-world" data-world="fantasy-maps">
@@ -575,6 +611,22 @@ landing = h + root
 stone is highest 20 m out, at 14 m. The roots are about $-6.5$ m and
 46.5 m. The stone lands about 46.5 m from the wall. The negative root
 is behind the wall, where the stone never was.
+```
+
+Let's aim the catapult. The slider sets the number $b$ in
+$-0.02x^2 + bx + 6$, which is how steeply the stone leaves the wall.
+Which $b$ lands the stone about 60 m from the wall?
+
+```python exec
+id: the-vertex-in-your-world-2--fantasy-maps
+steep = slider("steepness b", 0.2, 1.6, step=0.1, value=0.8, id="steep").value
+
+ax = draw(lambda x: -0.02 * x ** 2 + steep * x + 6, low=0, high=90, label="stone")
+top_x = steep / 0.04
+top = -0.02 * top_x ** 2 + steep * top_x + 6
+ax.plot([top_x], [top], "o", markersize=9)
+ax.set_ylim(0, 50)
+print(f"b = {steep}: highest {top_x:.1f} m out, at {top:.1f} m")
 ```
 
 </div>
