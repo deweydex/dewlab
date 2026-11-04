@@ -118,7 +118,15 @@ id: random-points-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_random_points(canvas, count, seed):
+    random.seed(seed)       # the same seed gives the same points every time
+    for dot in range(count):
+        row = random.randint(0, len(canvas) - 1)          # randint includes both ends
+        column = random.randint(0, len(canvas[0]) - 1)
+        paint_point(canvas, row, column)
 
 canvas = make_canvas(60, 60)
 paint_random_points(canvas, 300, 1)
@@ -232,7 +240,15 @@ blur = [[1 / 9, 1 / 9, 1 / 9],
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def add_noise(canvas, chance, seed):
+    random.seed(seed)
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            if random.random() < chance:           # true about chance of the time
+                canvas[row][column] = canvas[row][column] + 1
 
 picture = cube_picture()
 blur = [[1 / 9, 1 / 9, 1 / 9],

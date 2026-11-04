@@ -102,7 +102,16 @@ id: a-segment-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_segment(canvas, x1, y1, x2, y2):
+    if x1 == x2:
+        # A vertical line has no slope, so walk up it one square at a time.
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            paint_xy(canvas, x1, y)
+    else:
+        a = (y2 - y1) / (x2 - x1)
+        b = y1 - a * x1
+        paint_line(canvas, a, b, min(x1, x2), max(x1, x2))
 
 canvas = make_canvas(100, 100)
 paint_segment(canvas, 20, 10, 80, 10)     # the floor
@@ -197,7 +206,26 @@ id: a-starburst-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_segment(canvas, x1, y1, x2, y2):
+    if x1 == x2:
+        # A vertical line has no slope, so walk up it one square at a time.
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            paint_xy(canvas, x1, y)
+    else:
+        a = (y2 - y1) / (x2 - x1)
+        b = y1 - a * x1
+        paint_line(canvas, a, b, min(x1, x2), max(x1, x2))
+
+def paint_starburst(canvas, x, y, spacing):
+    rows = len(canvas)
+    columns = len(canvas[0])
+    for column in range(0, columns, spacing):
+        paint_segment(canvas, x, y, column, 0)
+        paint_segment(canvas, x, y, column, rows - 1)
+    for row in range(0, rows, spacing):
+        paint_segment(canvas, x, y, 0, row)
+        paint_segment(canvas, x, y, columns - 1, row)
 
 canvas = make_canvas(101, 101)
 paint_starburst(canvas, 50, 50, 10)
@@ -230,8 +258,6 @@ id: play-with-fades-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
 # A block that fades from left to right: each row is a fade.
 canvas = make_canvas(30, 120)
 for row in range(30):
@@ -253,8 +279,6 @@ id: play-with-fades-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
 # A ridge: the ink rises to the middle row and falls away again.
 canvas = make_canvas(100, 60)
 paint_gradient(canvas, 0, 0, 49, 59)             # rows 0 to 49 get 1 to 50 ink
@@ -280,7 +304,26 @@ id: play-with-fades-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_segment(canvas, x1, y1, x2, y2):
+    if x1 == x2:
+        # A vertical line has no slope, so walk up it one square at a time.
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            paint_xy(canvas, x1, y)
+    else:
+        a = (y2 - y1) / (x2 - x1)
+        b = y1 - a * x1
+        paint_line(canvas, a, b, min(x1, x2), max(x1, x2))
+
+def paint_starburst(canvas, x, y, spacing):
+    rows = len(canvas)
+    columns = len(canvas[0])
+    for column in range(0, columns, spacing):
+        paint_segment(canvas, x, y, column, 0)
+        paint_segment(canvas, x, y, column, rows - 1)
+    for row in range(0, rows, spacing):
+        paint_segment(canvas, x, y, 0, row)
+        paint_segment(canvas, x, y, columns - 1, row)
 
 # A sunrise: a sky that is dark at the top, with rays from a sun on the horizon.
 canvas = make_canvas(101, 101)

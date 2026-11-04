@@ -87,7 +87,17 @@ id: chaos-game-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def chaos_game(canvas, corners, steps, seed):
+    random.seed(seed)
+    x, y = corners[0]
+    for step in range(steps):
+        corner_x, corner_y = random.choice(corners)
+        x = (x + corner_x) / 2                  # move halfway towards a corner
+        y = (y + corner_y) / 2
+        paint_xy(canvas, round(x), round(y))
 
 canvas = make_canvas(130, 150)
 chaos_game(canvas, [(5, 5), (145, 5), (75, 126)], 8000, 2)
@@ -194,7 +204,18 @@ id: dither-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+import random
+
+# From earlier on this page, repeated so that this answer runs on its own
+def dither(canvas, darkest, seed):
+    random.seed(seed)
+    result = make_canvas(len(canvas), len(canvas[0]))
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            chance = canvas[row][column] / darkest
+            if random.random() < chance:
+                result[row][column] = 1
+    return result
 
 canvas = make_canvas(80, 160)
 paint_gradient(canvas, 0, 0, 79, 159)

@@ -208,8 +208,6 @@ id: kernels-own-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
 picture = cube_picture()
 shift_right = [[0, 0, 0], [0, 0, 1], [0, 0, 0]]       # each square copies its neighbour
 show_picture(convolve(picture, shift_right), darkest=3)
@@ -227,7 +225,13 @@ id: kernels-own-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def absolute(canvas):
+    result = make_canvas(len(canvas), len(canvas[0]))
+    for row in range(len(canvas)):
+        for column in range(len(canvas[0])):
+            result[row][column] = abs(canvas[row][column])
+    return result
 
 picture = cube_picture()
 vertical_only = [[-1, -2, -1], [0, 0, 0], [1, 2, 1]]  # finds edges that run across the picture

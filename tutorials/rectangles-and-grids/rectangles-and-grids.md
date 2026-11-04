@@ -194,7 +194,14 @@ twice, so which `darkest` makes them black?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_grid(canvas, spacing):
+    rows = len(canvas)
+    columns = len(canvas[0])
+    for row in range(0, rows, spacing):
+        paint_horizontal(canvas, row, 0, columns - 1)
+    for column in range(0, columns, spacing):
+        paint_vertical(canvas, column, 0, rows - 1)
 
 canvas = make_canvas(129, 129)
 paint_grid(canvas, 16)
@@ -226,7 +233,13 @@ that grow in steps, can place a whole grid of windows.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
+# From earlier on this page, repeated so that this answer runs on its own
+def paint_rectangle(canvas, first_row, first_column, last_row, last_column):
+    for row in range(first_row, last_row + 1):
+        paint_horizontal(canvas, row, first_column, last_column)
+
+def paint_square(canvas, row, column, size):
+    paint_rectangle(canvas, row, column, row + size - 1, column + size - 1)
 
 canvas = make_canvas(80, 60)
 paint_rectangle(canvas, 5, 5, 74, 54)
