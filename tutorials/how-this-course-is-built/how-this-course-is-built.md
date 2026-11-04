@@ -94,8 +94,8 @@ own `sum()`.
 
 **Some ideas come early, and some late.** Lists get their own page
 in Unit 5, but earlier pages use them. Logarithms appear in the first
-unit. Meeting an idea before its own page can feel strange, and it is
-worth knowing in advance that it will happen.
+unit. An idea can appear before its own page, and it is worth knowing in
+advance that this will happen.
 
 **Some people prefer the formula first.** That is a reasonable way to
 learn. If it is yours, the formula is always on the page, on a line of

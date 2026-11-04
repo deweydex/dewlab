@@ -30,8 +30,8 @@ software, a program that looks for harmful programs? Is its work
 time to fix the laptops that are one step away from all three. How
 many laptops have exactly two of the three?
 
-There are three yes-or-no questions and twenty laptops. It sounds like
-a job for a pencil. But three circles do the job better, and the
+There are three yes-or-no questions and twenty laptops. A pencil and
+a list can do the job. But three circles do it better, and the
 circles are a *truth table*{.term} drawn as a picture.
 
 On this page we:
@@ -543,7 +543,7 @@ size a real one might give.
   antivirus and backups.
 - 3 have all three.
 
-How many have exactly two? It is tempting to add $12 + 8 + 6 = 26$.
+How many have exactly two? One way is to add $12 + 8 + 6 = 26$.
 Before you read on, what is the problem?
 
 The 12 with updates and antivirus include the 3 that have all three.

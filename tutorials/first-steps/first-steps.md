@@ -48,8 +48,8 @@ and ends, so they are not shown.
 
 This is the first programming page, and everyone starts here. You do not
 need to know anything about computers or maths to begin. Over the coming
-weeks we learn to program, and some maths along the way. The two are closer
-than most people expect. A formula is also a set of steps, written for a
+weeks we learn to program, and some maths along the way. The two have a lot
+in common. A formula is also a set of steps, written for a
 person instead of a computer.
 
 On this page you run a few lines of Python and change them. You learn the
@@ -150,7 +150,7 @@ closer looks at [powers](tutorial:powers-in-python) and at
 
 The last two work as a pair. Five goes into 17 three times, with 2 left
 over. `17 // 5` counts the whole fives, and `17 % 5` gives what is left.
-The remainder appears more often than you might expect. A number is even
+The remainder appears in many places. A number is even
 when its remainder after dividing by 2 is 0, and a clock goes back to 0
 after 23 because of a remainder.
 
@@ -307,7 +307,7 @@ This is the way of working we use all through these pages:
 2. Write it as pseudocode.
 3. Turn the pseudocode into Python.
 
-For a small problem, the pseudocode can feel like extra work. As problems
+For a small problem, the pseudocode adds a step. As problems
 get bigger, it keeps you from getting lost.
 
 ### Your turn

@@ -3,7 +3,7 @@ title: "The Monty Hall problem: three doors and a simulation"
 year: "2026-2027"
 version: 2026.09.26.1
 covers:
-  why-staying-feels-fine:
+  the-argument-for-one-in-two:
     touches: [MIT-5.6]
   playing-it-ten-thousand-times:
     touches: [MIT-5.6, MIT-5.7]
@@ -42,9 +42,9 @@ old American game show. On this page we:
 We use the simulation and the counting from
 [Probability: simple, compound and conditional](tutorial:what-are-the-chances).
 
-## Why staying feels fine
+## The argument for one in two
 
-Here is the reasoning most people reach first, step by step.
+Here is one argument about the two shut doors, step by step.
 
 Two doors are still shut. One of them has the car. Nothing you have been
 told makes one door different from the other. So the chance is one in
@@ -53,9 +53,8 @@ two for either door, and switching gains you nothing.
 That argument is careful, and one step in it fails. This page finds
 that step.
 
-If you are still not convinced at the end, many clever people agree with
-you. This problem caused a public argument among people who do
-mathematics for a living.
+This problem caused a public argument among people who do mathematics for
+a living.
 
 So we will not settle it by arguing. Instead, we will play the game a few
 thousand times and count.
@@ -392,8 +391,8 @@ print("Switching won:", round(wins / 10000, 3))
 ---
 It is about 0.99. Your first pick is the car 1 time in 100, and switching
 wins all the other times. With a hundred doors, the host's 98 goats
-clearly tell you something. Of all the doors he could have left shut, he
-left that one. Three doors work the same way, but the numbers are too small to make it obvious.
+tell you something. Of all the doors he could have left shut, he
+left that one. Three doors work the same way, but the numbers are too small to show it as plainly.
 ```
 
 ## What you have now
@@ -439,7 +438,7 @@ three more ways.
 vos Savant, M. (1990). *Ask Marilyn*. Parade Magazine. The column that
 set off the argument. Thousands of readers wrote in to say the answer
 was wrong, including people with doctorates, which is worth remembering
-the next time an answer feels obvious.
+the next time an answer arrives without a calculation.
 
 Rosenhouse, J. (2009). *The Monty Hall Problem: The Remarkable Story of
 Math's Most Contentious Brain Teaser*. Oxford University Press. A whole

@@ -454,9 +454,9 @@ print(simulate(four_in_a_row, 10000))
 ```
 
 It gives something near 0.48, which is almost half the time. The exact answer
-is about 0.478. Most people guess much lower. Streaks in real chance
-are longer and more common than they feel, which is one reason a
-"hot streak" in sport or at a casino often means less than it seems.
+is about 0.478. Streaks in real chance
+are long and common, which is one reason a
+"hot streak" in sport or at a casino often means little.
 
 </details>
 
@@ -493,7 +493,7 @@ Here is one answer. It looks at a few things.
   research, and in later courses. A reader who has them can search for
   them and read more.
 - **Before the question.** The reader gets a label before there is
-  anything to put it on, and it can feel like something to memorise.
+  anything to put it on, so the label is a word to memorise.
 - **After the answer.** The name is a label for something the reader has
   already done. Many pages in this course name a thing after you have
   used it.

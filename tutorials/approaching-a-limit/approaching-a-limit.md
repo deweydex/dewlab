@@ -24,7 +24,7 @@ worlds:
 A limit answers a question of this kind: *what would this value be, if
 we could get there?*
 
-That can sound like a way of avoiding the question. Calculus began, in
+The question asks for a number we cannot reach, so it can look like a way of avoiding the answer. Calculus began, in
 the 1600s, with numbers that were "infinitely small": smaller than any
 number you could name, but still not zero. For about two hundred years,
 mathematicians were uneasy about those numbers. The philosopher George

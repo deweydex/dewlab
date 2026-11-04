@@ -98,8 +98,8 @@ What will it print?
   - $x = x + 1$ can never be true, so Python should leave $x$ alone.
     There is [a closer look at this](tutorial:equals-three-ways).
 - An error
-  - An equation with no solution sounds like something Python should
-    refuse.
+  - This takes an equation with no solution as something Python
+    refuses.
 - False
   - In maths, $x = x + 1$ is a false statement.
 ```
@@ -160,7 +160,7 @@ $$3x^2 + 5x - 2 \quad\leftrightarrow\quad [-2, 5, 3]$$
 - The coefficient of $x^1$, which is 5, is at index 1.
 - The coefficient of $x^2$, which is 3, is at index 2.
 
-This rule is easy to remember, because the index matches the exponent.
+In this rule, the index matches the exponent.
 It does mean the list is in the opposite order to the way we usually
 write the polynomial. The rocket's list in the opening cell used the
 same rule. Look at the cubic in the cell below before you run it. Can
@@ -552,8 +552,8 @@ Before you run it: when are $(x + 3)^2$ and $x^2 + 9$ equal?
 The two columns agree only at $x = 0$. Expand the bracket and you can
 see why: $(x + 3)^2 = x^2 + 6x + 9$. The $6x$ is missing from $x^2 + 9$,
 and $6x$ is zero only when $x$ is zero. In general,
-$(a + b)^2 = a^2 + 2ab + b^2$, and the $2ab$ in the middle is easy to
-forget.
+$(a + b)^2 = a^2 + 2ab + b^2$, and the $2ab$ in the middle is the term that
+goes missing in $a^2 + b^2$.
 
 ## Checking by evaluating
 

@@ -1,7 +1,7 @@
 ---
 title: "Dividing: a closer look at (2x + 6) / 2"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Dividing: a closer look at (2x + 6) / 2
@@ -55,17 +55,37 @@ always 3 more than $(2x + 6) / 2$. No value of $x$ makes them agree.
 
 </details>
 
-## Why idea A feels right
+## What the line under the fraction does under each idea
 
-Idea A comes from a move that works: $\frac{2x}{2} = x$. The 2 on top and
-the 2 underneath look like they cancel, and in $\frac{2x}{2}$ they do. In
-$\frac{2x + 6}{2}$, the eye sees the same 2 on top and the same 2
-underneath, and makes the same move.
+Both ideas use the same small fact: $\frac{2x}{2}$ is $x$, because the 2 on
+top and the 2 underneath cancel.
 
-But the line under a fraction divides everything above it. $\frac{2x + 6}{2}$
-means "half of the whole of $2x + 6$". To halve a sum, halve each part
-and add them: $\frac{2x}{2} + \frac{6}{2}$, which is $x + 3$. You can cancel only
-a number that multiplies everything above the line.
+Idea A uses that fact on the $2x$ and leaves the 6 as it is. The 2 under
+the line divides only the first term. The answer is $x + 6$.
+
+Idea B reads the line under a fraction as dividing everything above it.
+$\frac{2x + 6}{2}$ is half of the whole of $2x + 6$. To halve a sum, we
+halve each part and add them: $\frac{2x}{2} + \frac{6}{2}$, which is
+$x + 3$. A number cancels only when it multiplies everything above the
+line.
+
+The two ideas differ in one place, the 6. Idea A keeps 6. Idea B halves it
+to 3. The cell below lets us move $x$ and watch both answers against the
+direct calculation.
+
+```python exec
+id: what-the-line-under-the-fraction-does-under-each-idea-1
+x = slider("x", -10, 10, step=1, value=5, id="x").value
+
+direct = (2 * x + 6) / 2
+print("x =", x)
+print("(2x + 6) / 2 =", direct)
+print("idea A, x + 6 =", x + 6, " gap from direct:", x + 6 - direct)
+print("idea B, x + 3 =", x + 3, " gap from direct:", x + 3 - direct)
+```
+
+Move the slider to a few values. What happens to the gap for idea A? What
+happens to the gap for idea B?
 
 ## Where else it happens
 

@@ -6,7 +6,7 @@ version: 2026.09.26.1
 
 <!-- TEMPLATE: a closer look. One misconception, taught as an experiment.
 Both ideas make a prediction, only one matches what happens, and then the
-page explains why the other idea is so natural to hold (#closer-look). A
+page shows what each idea counts or does (#closer-look). A
 predict block elsewhere links here from the option that shows this
 misconception. The page never says the reader held it. -->
 
@@ -62,21 +62,15 @@ and the total grows: 0, 10 and 20, and 30 at the end.
 
 </details>
 
-## Why idea A feels right
+## What the line does under each idea
 
-Idea A is how mathematics works. When a proof says "let $t = 0$", that is
-true from then on, everywhere in the argument. It is not said again at
-every step. Writing something down once and having it stay true is what
-"let" means.
+Under idea A, `total = 0` is a fact. It says what `total` is from then on,
+the way "let $t = 0$" does in a proof. It is said once.
 
-A recipe works the same way. "Start with an empty bowl" is said once, and
-nobody empties the bowl again at every step. So a line that looks like
-preparation feels like something that happens once, before the real work.
-
-Python reads a program differently. It does not look at the whole program
-and decide what is true. It goes through it line by line, and each line is
-an action it takes when it reaches it. `total = 0` is not a fact about
-`total`. It is an instruction: make `total` 0, now.
+Python does not read a program that way. It goes through it line by line,
+and each line is an action it takes when it reaches it. `total = 0` is not
+a fact about `total`. It is an instruction: make `total` 0, now. Inside a
+loop, Python reaches it again on every pass.
 
 ## Where else it happens
 

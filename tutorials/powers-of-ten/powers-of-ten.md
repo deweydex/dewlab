@@ -350,7 +350,7 @@ Before you run it: which power of ten will the mass have?
 
 - 10²⁴
 - 10⁶³
-  - 3 × 21 is 63. Multiplying the powers can feel natural here.
+  - 3 × 21 is 63. This option multiplies the exponents.
 - 10²¹
   - The volume has 10²¹. But the density has a power of ten too.
 ```

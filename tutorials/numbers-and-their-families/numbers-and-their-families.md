@@ -808,10 +808,10 @@ type: choice
 The radius doubles from 1 to 2. What happens to the sphere's volume?
 
 - It doubles
-  - Twice the radius sounds like twice the sphere.
+  - This option scales the volume by the same factor as the radius.
 - It becomes four times as big
-  - An area grows four times, and a volume sounds like an area with
-    some depth.
+  - An area grows four times, and this option treats a volume as an
+    area with some depth.
 - It becomes eight times as big
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: "The fraction line: a closer look at v - u / a"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # The fraction line: a closer look at v - u / a
@@ -56,16 +56,33 @@ $13 + 2.5 = 15.5$.
 
 </details>
 
-## Why idea A feels right
+## What the line does under each idea
 
-On paper, the fraction line does two jobs. It says "divide", and it also
-groups. Everything above the line is one number, and everything below it
-is another. Nobody writes brackets round $v - u$, because the line already
-holds it together. The fraction line is a bracket you cannot see.
+Idea A reads `v - u / a` as a fraction, with `v - u` on top and `a` below.
+On paper, the fraction line does two jobs. It says "divide", and it holds
+everything above it together as one number, so nobody writes brackets
+round $v - u$.
 
-When the formula is typed on one line, the grouping disappears, and only
-"divide" is left. So you have to type the brackets that the fraction line
-hid.
+Idea B reads `v - u / a` the way Python does. Python has no fraction line,
+so only "divide" is left. It works in two steps: first `u / a`, then `v`
+minus that answer. To divide the whole of `v - u`, we type the brackets
+that the fraction line did the job of.
+
+The slider sets the acceleration `a`. The cell shows the answer with the
+brackets, and the answer without them.
+
+```python exec
+id: what-the-line-does-1
+v = 13     # final speed, m/s
+u = 5      # starting speed, m/s
+a = slider("a", 1, 8, step=1, value=2, id="a").value
+
+print("(v - u) / a =", (v - u) / a)
+print("v - u / a   =", v - u / a)
+```
+
+Move the slider from 1 to 8. For which value of `a` do the two lines print
+the same number? Can you say why, using what `u / a` is at that value?
 
 ## Where else it happens
 

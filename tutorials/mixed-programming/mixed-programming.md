@@ -389,8 +389,8 @@ letters.
 ## 10. Ten thousand lookups
 
 You have a sorted list of a million numbers, and 10,000 numbers to look up
-in it. How would you do it, and how much faster is that than the obvious
-way?
+in it. How would you do it, and how much faster is that than checking the list one
+number at a time?
 
 <details class="dl-answer"><summary>answer</summary>
 

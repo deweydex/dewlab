@@ -1,15 +1,15 @@
 ---
 title: "Checking: a closer look at two methods that agree"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Checking: a closer look at two methods that agree
 
 In [The Monty Hall problem](tutorial:three-doors#three-cases-you-can-count),
 a simulation said two thirds, and counting the cases said two thirds. When
-two different methods give the same answer, it feels like proof. Here are
-two ideas about what that agreement shows. Both are reasonable, and they
+two different methods give the same answer, we can take it as a check.
+Here are two ideas about what that agreement shows. Both are reasonable, and they
 cannot both be true.
 
 **Idea A.** Two methods that agree are both right. If one had a mistake,
@@ -77,21 +77,42 @@ this time the picture of the die matches a real one.
 
 </details>
 
-## Why idea A feels right
+## What each idea counts
 
-Checking a calculation with a second method is a good habit. It catches
-many mistakes: a mistake in the arithmetic, a loop that stops one step early,
-a wrong sign. Those mistakes belong to one method, so the other method
-does not make them, and the answers disagree.
+Each method has two parts: a description of the die, and a way of
+calculating from that description. A second method gives a different way
+of calculating. It catches a mistake in the arithmetic, a loop that stops
+one step early, or a wrong sign. Those mistakes belong to one method, so
+the other method does not make them, and the answers differ.
 
-But some mistakes come before either method starts. They are in how we
-describe the problem: the faces of the die, the rules of the game, the
-question we ask. Every method we build on that description has the same
-mistake. Two methods that agree have checked each other's working. Nothing
-has checked the description.
+Idea A counts mistakes of that kind. Idea B counts them too, and adds a
+second kind: a mistake in the description. The faces of the die, the rules
+of a game and the question we ask are all part of the description. Every
+method built on it receives the same mistake, so the answers still agree.
 
-So a second method helps most when it starts from somewhere different. For
-a die, that might be a real die, rolled by hand 60 times.
+In the experiment, both methods used the faces 0 to 5. The slider below
+sets how many rolls the simulation makes. The counted average does not
+depend on the rolls. The cell also shows the average of a real die, 1 to 6.
+
+```python exec
+id: what-each-idea-counts-1
+import random
+
+rolls = slider("rolls", 10, 5000, step=10, value=100, id="rolls").value
+
+counted = sum([0, 1, 2, 3, 4, 5]) / 6
+simulated = sum([random.randint(0, 5) for roll in range(rolls)]) / rolls
+
+print("counted, faces 0 to 5:  ", counted)
+print("simulated, faces 0 to 5:", round(simulated, 2))
+print("a real die, faces 1 to 6:", sum([1, 2, 3, 4, 5, 6]) / 6)
+```
+
+Move the slider from 10 up to 5,000. What happens to the gap between the
+first two lines? Does the third line move?
+
+A second method helps most when it starts from somewhere different. For a
+die, that might be a real die, rolled by hand 60 times.
 
 ## Where else it happens
 

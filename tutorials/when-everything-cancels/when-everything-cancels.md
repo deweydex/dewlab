@@ -41,7 +41,7 @@ answer: 2
 What is ♡⁴/♡⁴?
 
 - 0
-  - No tile is left without a line, so 0 can feel natural. But each
+  - This reads "no tile is left" as 0. But each
     crossed-out pair is worth 1, not 0.
 - 1
   - There are four pairs, each worth 1. And 1 × 1 × 1 × 1 = 1.
@@ -178,7 +178,7 @@ answer: 3
 What must ♡⁰ be?
 
 - 0
-  - An exponent of 0 can feel like "no hearts, so nothing". But
+  - This reads an exponent of 0 as "no hearts, so nothing". But
     crossing out all the pairs gave 1.
 - ♡
   - ♡ is ♡¹, one heart. The exponent here is 0.
@@ -225,9 +225,9 @@ Before you run it: what will the first line, `5 ** 0`, print?
 
 - 1
 - 0
-  - An exponent of 0 can feel like "no fives", so nothing.
+  - This reads an exponent of 0 as "no fives", so nothing.
 - 5
-  - With no multiplying at all, it can feel like the 5 stays as it is.
+  - This reads no multiplying at all as leaving the 5 as it is.
 ```
 
 The first two lines print 1. The last line prints 1.0. Python writes

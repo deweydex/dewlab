@@ -150,7 +150,7 @@ inside, and the plus stays a plus:
 
 $$-(3 + 5) = -3 + (-5)$$
 
-Both sides are $-8$. It is natural to try the same move with `not`. We put it
+Both sides are $-8$. We can try the same move with `not`. We put it
 on each part, and keep the joining word. That gives a third version.
 
 ```python
@@ -176,8 +176,7 @@ Order button, and so would one that is open with nothing to sell.
 
 <img src="grey-out-grids.svg" alt="Two grids of four squares, with is_open down the side and has_stock along the top. In the grid for not (is_open and has_stock), three squares say 'greyed out'. Only the square where is_open and has_stock are both True says 'Order works'. In the grid for not is_open and not has_stock, only the square where both are False says 'greyed out', and the other three say 'Order works'.">
 
-If you guessed "the same", many people do. I think it is the most
-natural guess in the whole unit, and the move has a reason behind it.
+If you guessed "the same", the move behind that guess has a reason.
 It works in arithmetic, the space of numbers,
 where a minus sign goes onto each part and the plus stays. In the space of
 True and False, `not` does a second job as well. It changes the joining

@@ -47,8 +47,8 @@ answer: 2
 The long row is the long way to write one power. Which power?
 
 - $\heartsuit^6$
-  - 2 × 3 = 6. Multiplying the powers can feel like multiplying the
-    small numbers too. Count the hearts in the row.
+  - 2 × 3 = 6. This option reads multiplying the powers as multiplying
+    the small numbers too. Count the hearts in the row.
 - $\heartsuit^5$
   - Five hearts, multiplied together.
 - $5\heartsuit$
@@ -425,10 +425,11 @@ print the same number?
 
 - The second line, 2 ** 7
 - The third line, 2 ** 12
-  - 3 × 4 = 12. When two powers are multiplied, multiplying the
-    exponents can feel natural.
+  - 3 × 4 = 12. This option multiplies the exponents, matching the ×
+    between the powers.
 - Neither of them
-  - Two powers multiplied together can feel too big to be one power.
+  - This option treats two powers multiplied together as too big to be
+    one power.
 ```
 
 The first two lines both print 128. The third prints 4096, which is

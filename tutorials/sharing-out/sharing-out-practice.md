@@ -506,8 +506,8 @@ bases?
 
 They divided the exponents: 6 ÷ 2 = 3. But the bottom crosses out only
 2 of the 6 twos on the top, and 4 are left. So 2⁶/2² = 2⁴ = 16. The
-cell prints 16.0 for the division, and 8 for 2³. Dividing the exponents
-feels natural, because the question is a division.
+cell prints 16.0 for the division, and 8 for 2³. This answer divides the exponents
+because the question is a division.
 
 </details>
 

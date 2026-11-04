@@ -1,7 +1,7 @@
 ---
 title: "Angles: a closer look at degrees and radians"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Angles: a closer look at degrees and radians
@@ -60,18 +60,51 @@ print 1.0.
 
 </details>
 
-## Why idea A feels right
+## What each idea reads the number as
 
-Degrees are the angles most of us learned first. A right angle is 90, a
-full turn is 360, and a calculator in school was usually set to degrees.
-So 90 looks like an angle in degrees, and "the sine of 90 is 1" feels like
-a fact about the number 90.
+`math.sin` takes one number and gives the sine of the direction that number
+points to. The two ideas give the number a different unit.
 
-But 90 is only a number. It needs a unit, like 90 metres or 90 minutes.
-Python and spreadsheets both take radians for their
-sine and cosine. A calculator shows its unit on the screen, as DEG or
-RAD. Python has no screen to show it on, so its unit is written in its
-documentation.
+Idea A reads 90 as degrees, where a full turn is 360. Then 90 is a quarter
+turn, and its sine is 1. Idea B reads 90 as radians, where a full turn is
+$2\pi$, about 6.28. Then 90 is about 14.3 turns. The 14 whole turns bring
+us back to the start, and the 0.3 of a turn left over has a sine of 0.894.
+
+Python and spreadsheets both take radians for their sine and cosine, so
+`math.sin(90)` gives idea B's answer. A calculator shows its unit on the
+screen, as DEG or RAD. Python has no screen to show it on, so its unit is
+written in its documentation.
+
+Let's watch the two readings. The slider sets the number. One arrow points
+where the number goes when it is read as degrees. The other points where it
+goes when it is read as radians.
+
+```python exec
+id: what-each-idea-reads-the-number-as-1
+import matplotlib.pyplot as plt
+
+number = slider("number", 0, 360, step=1, value=90, id="angle-number").value
+
+ts = [step * 2 * math.pi / 100 for step in range(101)]
+fig, ax = plt.subplots(figsize=(4, 4))
+ax.plot([math.cos(t) for t in ts], [math.sin(t) for t in ts],
+        color="grey", alpha=0.4)
+readings = [("read as degrees", math.radians(number), "o"),
+            ("read as radians", number, "s")]
+for label, angle, marker in readings:
+    ax.plot([0, math.cos(angle)], [0, math.sin(angle)], marker=marker,
+            label=label)
+ax.set_xlim(-1.2, 1.2)
+ax.set_ylim(-1.2, 1.2)
+ax.set_aspect("equal")
+ax.grid(alpha=0.3)
+ax.legend(loc="lower left")
+print(f"{number} read as degrees: sine {math.sin(math.radians(number)):.3f}")
+print(f"{number} read as radians: sine {math.sin(number):.3f}")
+```
+
+Move the slider to 360. Which way does each arrow point? Is there a number
+above 0 where the two arrows point the same way?
 
 ## Where else it happens
 

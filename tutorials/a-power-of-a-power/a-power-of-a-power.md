@@ -26,7 +26,7 @@ is that?
 - ♡⁶
   - There are 3 boxes, with 2 hearts in each. That is 6 hearts.
 - ♡⁵
-  - That is 2 + 3. Adding the two numbers feels natural. Count the
+  - That is 2 + 3, which adds the two powers. Count the
     hearts in the picture.
 - ♡⁸
   - That is 2³, which is 8. Count the hearts in the picture.
@@ -210,8 +210,8 @@ are the same amount.
 
 - True
 - False
-  - Swapping changed the answer for 2³ and 3², so it feels likely to
-    change here too.
+  - Swapping changed the answer for 2³ and 3², and this option carries
+    that change over to here.
 ```
 
 Both are 4096. Count the twos: 4 boxes of 3 is 12 twos, and 3 boxes of

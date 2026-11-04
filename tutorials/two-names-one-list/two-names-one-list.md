@@ -1,7 +1,7 @@
 ---
 title: "Two names, one list: a closer look at copying"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Two names, one list: a closer look at copying
@@ -76,15 +76,24 @@ the name to a new list and leaves `row` alone.
 
 </details>
 
-## Why idea A feels right
+## What each idea counts
 
-Idea A is how numbers behave, and we all use numbers for years before we
-meet a list. `other = width` followed by `other = 7` never changes `width`,
-so the habit forms: `=` copies. It is also how paper works. Write a number
-on a second sheet, change the second sheet, and the first stays the same.
+After `other_row = row`, the two ideas count different things.
 
-A list is more like a shared document. Two people can have the link to the
-same document. When one of them edits it, the other sees the edit, because
+Idea A counts two lists, `row` and `other_row`. Each holds `[5]`, and a
+change to one list leaves the other as it was.
+
+Idea B counts one list with two names. A change to that list shows under
+both names.
+
+For a number, the two ideas give the same result. A number cannot be
+changed in place, so one number with two names looks the same as two
+numbers. For a list, they differ. `other_row[0] = 7` changes the list in
+place. Idea A says `row` is still `[5]`. Idea B says `row` is now `[7]`,
+and that is what the experiment printed.
+
+A shared document works in the same way. Two people hold the link to one
+document. When one of them edits it, the other sees the edit, because
 there is only one document.
 
 ## Where else it happens
@@ -109,6 +118,34 @@ What will it print?
 
 It prints `[[1, 0], [1, 0]]`. `* 2` did not make two rows. It put one row
 into the grid twice, with two names: `grid[0]` and `grid[1]`.
+
+Let's change the number after `*`. The slider sets how many rows the grid
+has. The last line uses `id()`, which gives each list its own number. Two
+names for one list give the same number, so the last line counts how many
+different lists the grid holds.
+
+```python exec
+id: where-else-it-happens-2
+rows = slider("rows", 1, 6, step=1, value=2, id="rows").value
+
+grid = [[0, 0]] * rows
+grid[0][0] = 1
+print(grid)
+print("rows in the grid:", len(grid))
+print("different lists in the grid:", len({id(line) for line in grid}))
+```
+
+Move the slider from 1 to 6. What happens to the first number as the grid
+grows, and what happens to the second? Can you change the cell so that
+only the first row shows a 1?
+
+<details class="dl-answer"><summary>one change that does it</summary>
+
+`grid = [[0, 0] for _ in range(rows)]` makes a new row each time round, so
+the grid holds as many different lists as it has rows. Here is one answer.
+Yours may be different and work too.
+
+</details>
 
 ## Where to read more
 

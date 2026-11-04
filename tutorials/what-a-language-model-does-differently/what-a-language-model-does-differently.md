@@ -184,7 +184,7 @@ print("two words:", " ".join(two))
 print("longest copied:", longest_copied(one), "and", longest_copied(two))
 ```
 
-The one-word chain writes nonsense that sounds like the book, and its
+The one-word chain writes nonsense built from the book's words, and its
 longest copied run is 4 words. The two-word chain copies 12 words in a
 row: "the Provincial Mayor. “It is simply this. That Space, as our
 mathematicians". It is not writing. It is reciting.

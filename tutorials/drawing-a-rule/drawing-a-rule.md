@@ -522,9 +522,8 @@ yourself, and after a few you know the shapes of lines and parabolas by
 heart. It is also what many exams ask for.
 
 We drew by computer because it makes a graph cheap, so we could draw
-many and compare them. The cost is that a picture on a screen can feel
-like the truth, and the last section shows that it can only show what
-its points show.
+many and compare them. The cost is that a picture on a screen shows
+only what its points show, and the last section shows this.
 
 </details>
 

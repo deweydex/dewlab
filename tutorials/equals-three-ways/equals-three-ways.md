@@ -1,7 +1,7 @@
 ---
 title: "The equals sign: a closer look at =, == and maths"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # The equals sign: a closer look at =, == and maths
@@ -68,14 +68,19 @@ It prints `False`. 15 is not the same as 20. The maths statement "score
 equals score plus 5" is false, and `==` says so. `=` never asks this
 question.
 
-## Why idea A feels right
+## What each idea does with a line
 
-In maths, $x = 5$ and $5 = x$ say the same thing. The sign works both
-ways, and it states a fact. Most of us met `=` in maths for years before we
-met it in a *program*{.term}, so the maths meaning comes first.
+Idea A reads `score = score + 5` as a statement that two sides are the
+same. A statement is true or false, and this one is false, so Python would
+stop. Idea B reads it as an instruction. Python calculates the right-hand
+side, and then gives the answer the name on the left. An instruction is not
+true or false. It happens.
 
-Here is a way to see that Python's `=` does not work both ways. This cell
-is meant to fail.
+In maths, $x = 5$ and $5 = x$ say the same thing. The sign states a fact
+about both sides, so it works both ways. Idea B gives the sign a different
+shape. The left side has to be a name that can receive a value, so a
+*program*{.term} cannot reverse it. Here is a cell to test that. It is
+meant to fail.
 
 ```python exec
 id: why-idea-a-feels-right-1
@@ -83,9 +88,28 @@ score = 15
 15 = score
 ```
 
-Python stops with a `SyntaxError`. Python can give a name a
-value. It cannot give the number 15 a value. The error message even asks whether you
+Python stops with a `SyntaxError`. Python can give a name a value. It
+cannot give the number 15 a value. The error message asks whether you
 meant `==`.
+
+Now let's put the two jobs side by side. The slider sets `amount`. The
+cell first asks the question `score == score + amount`, which is what idea
+A reads the line as. Then it runs the instruction `score = score + amount`.
+
+```python exec
+id: what-each-idea-does-1
+amount = slider("amount", -10, 20, step=1, value=5, id="amount").value
+
+score = 10
+print("the question score == score + amount:", score == score + amount)
+
+score = score + amount
+print("score after the instruction:", score)
+```
+
+Move the slider through 0. Can you find the one amount where the question
+prints `True`? What does the instruction do with that amount, and with
+every other amount?
 
 Fortran used `=` for this instruction in 1957, and most languages since
 have done the same. Some, such as Pascal, write `:=` instead, so that `=`

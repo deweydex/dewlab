@@ -9,7 +9,7 @@ version: 2026.09.27.1
 On [Multiplying fractions: a fraction of a fraction](tutorial:a-fraction-of-a-fraction),
 half of a half was a quarter. We multiplied, and the answer was smaller
 than both numbers we started with. Here are two ideas about multiplying.
-Both make sense, and they cannot both be true.
+Each fits many examples, and they cannot both be true.
 
 **Idea A.** Multiplying always makes a number bigger.
 
@@ -75,24 +75,24 @@ makes the answer a little bigger.
 
 </details>
 
-## Why idea A feels so natural
+## What supports idea A
 
 Idea A comes from real experience.
 
 At school, most people first met multiplying with whole numbers: the
 times tables, $3 \times 4$, $7 \times 8$. Almost every one of those
 numbers is bigger than 1. So almost every answer is bigger than the
-numbers we started with. After years of these, the pattern feels like
+numbers we started with. After years of these, the pattern gets treated as
 a rule.
 
 The words help the pattern too. "Three times" means three goes: three
-bags of 4 apples. "Times" sounds like "more times". Nobody says "half a
-time". So the word itself seems to promise more.
+bags of 4 apples. "Times" counts repeats, as in "three times". Nobody says "half a
+time". So the word itself points to more.
 
 Idea A works for every multiplication in the times tables, except the
 ones with 0 or 1. It stops working when fractions and decimals arrive.
-For them, "of" is a better word than "times". "Half of 40" does not
-sound like more than 40.
+For them, "of" is a better word than "times". "Half of 40" takes a part
+of 40, which is less than 40.
 
 ## Where else it happens
 

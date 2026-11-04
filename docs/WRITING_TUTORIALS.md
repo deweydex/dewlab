@@ -103,8 +103,11 @@ leaves it out.
 
 One misconception, as an experiment. The page states two ideas, both
 reasonable, and a predict block whose notes name the idea behind each
-option. Only one idea matches what happens. Then the page explains why the
-other idea is so natural to hold. It never says the reader held it. A
+option. Only one idea matches what happens. Then the page shows what each
+idea counts or does, and where the two differ. It never says what feels
+natural to the reader, and it never says the reader held an idea. Where a
+number has a picture, a slider or a typed number lets the reader move it
+and watch. A
 predict block on another page links here from the option that shows the
 misconception.
 

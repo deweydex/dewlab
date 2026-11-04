@@ -299,8 +299,8 @@ them?
 
 The step "2 + 5 = 7" changed the amount. A fraction of a fraction
 multiplies the bottoms: 1/2 × 1/5 = 1/10. A tenth of 1000 is 100, as the
-picture shows. Adding the bottoms feels natural, because adding is the
-first thing we learn to do with two numbers. Here is one answer. Yours
+picture shows. Adding the bottoms reads the two steps as two counts to
+combine. Here is one answer. Yours
 may be different and work too.
 
 </details>

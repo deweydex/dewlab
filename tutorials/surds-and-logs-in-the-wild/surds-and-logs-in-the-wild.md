@@ -82,7 +82,7 @@ Before you run it: what will the three lines print?
   - A3 is much bigger than A5. But each line divides the two sides of
     one sheet.
 - Three numbers close to 2
-  - A3 is two A4s, so 2 can feel natural here.
+  - A3 is two A4s, so this takes 2 as the ratio.
 ```
 
 All three start with 1.41. On every sheet, the long side is about 1.41

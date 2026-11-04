@@ -95,8 +95,8 @@ You can read any wave from its highest and lowest values this way.
 
 (b). A shorter period means more repeats in the same distance.
 
-A *smaller* period means a *faster* wave. This can feel backwards at
-first. That is why people often use the *frequency* instead. The frequency
+A *smaller* period means a *faster* wave. A bigger period means a
+slower wave. That is why people often use the *frequency* instead. The frequency
 is the number of repeats in one unit of time, and it is 1 divided by the
 period.
 

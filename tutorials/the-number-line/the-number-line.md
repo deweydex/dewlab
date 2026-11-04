@@ -254,8 +254,8 @@ Which number is bigger, −1 or −3?
 - −1
   - −1 is to the right of −3. On a thermometer, −1 degrees is warmer.
 - −3
-  - 3 is bigger than 1, so −3 can feel bigger. Look where each one
-    sits on the line.
+  - This reads 3 being bigger than 1 as −3 being bigger than −1. Look
+    where each one sits on the line.
 - They are the same size
   - Both are below zero. They sit at different places on the line.
 ```
@@ -435,7 +435,7 @@ Before you run it: which dot will be furthest to the left?
 - The dot for −4
   - −4 is 4 steps to the left of 0. The others are closer.
 - The dot for −1
-  - 1 is a smaller number than 4, so −1 can feel further left.
+  - This reads 1 being smaller than 4 as −1 sitting further left.
 - The dot for 1.5
   - 1.5 is the only number here that is not whole. It is still to the
     right of 0.

@@ -203,8 +203,7 @@ What will $(2 + i)^3$ be?
 - $8 - i$
   - $2^3$ is 8, and $i^3$ is $-i$.
 - An error
-  - A complex number to a power sounds like something Python may not
-    do.
+  - This supposes Python has no rule for a complex number to a power.
 ```
 
 It prints `(2+11j)`. Multiplied out, $(2 + i)^3 = 8 + 12i + 6i^2 + i^3$.
@@ -377,10 +376,10 @@ type: choice
 Before you run it: as $c$ grows past 1, where do the two roots go?
 
 - They vanish
-  - "No real roots" sounds as if there is nothing left to draw.
+  - This reads "no real roots" as nothing left to draw.
 - They meet at 1, then move apart, up and down
 - They meet at 1, then both move off to the right
-  - A bigger $c$ sounds like the roots should get bigger.
+  - This reads a bigger $c$ as bigger roots.
 ```
 
 For $c$ up to 1, both roots are real, on the horizontal axis. They move

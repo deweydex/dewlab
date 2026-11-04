@@ -27,8 +27,8 @@ no real number could do that. Python has been keeping a number that
 "does not exist" ready all along. What does it mean by `2j`, and why
 does it keep one ready?
 
-I think this is the strangest page in the unit. The new numbers look
-like a trick at first. By the end, they turn a shape
+I think this is the strangest page in the unit. The new numbers have a rule and a
+picture. By the end, they turn a shape
 on a screen, and every *quadratic*{.term} has its *roots*{.term}.
 
 On this page we:
@@ -402,8 +402,8 @@ at all.
 The rule on its own is shorter, and it is all that solving a quadratic
 needs. Exam questions on complex numbers are mostly that algebra.
 
-We drew the plane because a rule with no picture can feel like a trick,
-and "imaginary" already sounds like one. The quarter turn gives
+We drew the plane because a rule needs a picture, and the word
+"imaginary" supplies none. The quarter turn gives
 $i^2 = -1$ a reason. The cost is a section that the quadratics did not
 need, and some geometry that waits until a later unit to be used again.
 

@@ -338,8 +338,8 @@ more pizza? Why might they have thought it was 5/9?
 <details class="dl-answer"><summary>one answer</summary>
 
 2/3 is the same amount as 6/9. Six ninths is more than five ninths. So
-2/3 is more pizza, by one ninth. Bigger numbers can feel like more. But
-the 9 on the bottom makes each slice smaller, and that matters too.
+2/3 is more pizza, by one ninth. The 9 on the bottom makes each
+slice smaller, and that matters too.
 Here is one answer. Yours may be different and work too.
 
 </details>

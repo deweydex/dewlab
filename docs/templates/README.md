@@ -14,7 +14,7 @@ The syntax they use is in
 |---|---|---|
 | A tutorial | [running-totals.md](running-totals.md) | An opening that runs something and asks, two predict blocks, a walk-through in a fold after a "try changing" prompt, a task in three worlds with its solution, inputs and hint, and the closer with a challenge. |
 | A practice page | [running-totals-practice.md](running-totals-practice.md) | Several kinds of problem, a solution in two tiers, a "one way through it" fold for mathematics by hand, and two problems from earlier pages. |
-| A closer look | [where-the-total-starts.md](where-the-total-starts.md) | Two ideas, an experiment where only one matches what happens, and why the other idea is so natural to hold. |
+| A closer look | [where-the-total-starts.md](where-the-total-starts.md) | Two ideas, an experiment where only one matches what happens, and what each idea counts or does. |
 | A mixed set | [mixed-running-totals.md](mixed-running-totals.md) | Problems from across a series, with no label saying which page each comes from. |
 | A series-end making task | [a-total-you-can-see.md](a-total-you-can-see.md) | A first step anyone can take, then the reader's own piece of work in their world, with no top. |
 | A project brief | [a-scale-model-of-the-solar-system.md](a-scale-model-of-the-solar-system.md) | A group version and an individual version, and reflection questions instead of a rubric. |

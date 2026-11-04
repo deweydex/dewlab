@@ -1,7 +1,7 @@
 ---
 title: "Starting a total: a closer look at total = 0"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Starting a total: a closer look at total = 0
@@ -56,21 +56,36 @@ and the total grows: 0, 10 and 20, and 30 at the end.
 
 </details>
 
-## Why idea A feels right
+## What the line does under each idea
 
-Idea A is how mathematics works. When a proof says "let $t = 0$", that is
-true from then on, everywhere in the argument. It is not said again at
-every step. Once something is written down, it stays true. That is what
-"let" means.
+Idea A reads `total = 0` as a statement about the name `total`. It
+creates the name once, and the name keeps that start from then on. A
+proof that says "let $t = 0$" works like this: it is said once, and it holds
+through the rest of the argument.
 
-A recipe works the same way. "Start with an empty bowl" is said once, and
-nobody empties the bowl again at every step. So a line that looks like
-preparation feels like something that happens once, before the real work.
+Idea B reads `total = 0` as an action. Python takes one line at a time,
+and each line does its work whenever Python reaches it. `total = 0` means
+"make `total` 0, now". Inside a loop, Python reaches the line every time
+round, so `total` goes back to 0 every time round.
 
-Python reads a *program*{.term} differently. It does not look at the whole program
-and decide what is true. It takes one line at a time, and each line is an
-action it takes when it reaches it. `total = 0` is not a fact about
-`total`. It is an instruction: make `total` 0, now.
+The two ideas differ in what happens on the second day. Idea A leaves
+`total` at 10. Idea B sets it to 0 again before adding 10. The cell below
+lets us change the number of days and watch the end total.
+
+```python exec
+id: what-the-line-does-under-each-idea-1
+days = slider("days", 1, 10, step=1, value=3, id="days").value
+
+for day in range(1, days + 1):
+    total = 0
+    print("day", day, "starts at", total)
+    total = total + 10
+print("at the end:", total)
+print("if the line ran only once, the end would be:", days * 10)
+```
+
+Move the slider to a few values. What does the end total depend on? Which
+line would you move so that it depends on the number of days?
 
 ## Where else it happens
 

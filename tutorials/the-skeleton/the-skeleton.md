@@ -89,7 +89,7 @@ We have now made two changes. How do they compare?
 | `<h1>`, on this page | body | the page itself |
 
 What happens if we make them identical for a moment, then different
-again? Which feels right for your site?
+again? Which one do you want for your site?
 
 ## What we have now
 

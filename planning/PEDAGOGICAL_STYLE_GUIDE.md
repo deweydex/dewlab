@@ -127,7 +127,7 @@ series or course.
   is judged by reflection questions only, with no rubric shown to
   students. How a class runs it is the teacher's decision.
 - **A closer look** takes one misconception, experiment first, and then
-  explains why the wrong idea is so natural to hold.
+  shows what each idea counts or does, and where the two differ.
 
 Every page ends with somewhere real to read more: the original paper or
 a textbook where one exists, or a channel such as 3Blue1Brown,
@@ -229,6 +229,18 @@ step is hard, it may say so once, with what to do about it: *if this
 feels like hard work, open the hint under the cell, or come back after
 the next section*. A feeling named with nothing under it becomes a
 verdict on the reader (7.229). A route helps more than reassurance.
+
+<a id="no-reader-claims"></a>
+**Say what an idea does, never how it feels.** A page cannot know what
+feels natural, right or obvious to a reader, and a reader who does not
+feel it is told they are odd. Not *Adding the exponents feels natural*,
+and not *A bigger number sounds like further along*. Write what the idea
+reads or counts: *This reads the bigger number as a distance along.* Name
+the idea behind a predict option in the same way. The same goes for
+*obviously*, *of course*, *clearly*, *everyone* and *most people*, and for
+*just* in front of a step. If a step is hard, the page says where the hint
+is (see [feelings](#feelings)). `tests/test_house_style.py` flags the
+common phrases.
 
 **"We" for the learning, "you" for what is the reader's own.** *We
 explore, then we name what we found.* *Your work is saved on this
@@ -347,6 +359,8 @@ frontmatter, the build) are in
   [say it directly](#say-it-directly)
 - Is a feeling named only rarely, and with a route?
   [feelings](#feelings)
+- Does any line say what feels natural, right or obvious to the reader?
+  [no reader claims](#no-reader-claims)
 - Does every task have a first step anyone can take, and room above it?
   [low floor](#low-floor-high-ceiling)
 - Does the practice page have problems from earlier pages?

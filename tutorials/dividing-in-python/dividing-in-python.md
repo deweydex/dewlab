@@ -1,14 +1,14 @@
 ---
 title: "Dividing: a closer look at //, / and 0.1"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.3
 ---
 
 # Dividing: a closer look at //, / and 0.1
 
 In [Algorithms, pseudocode and your first Python](tutorial:first-steps#a-few-more-things-python-can-do),
 `17 // 5` gave 3: the number of whole fives in 17. With positive numbers,
-`//` looks like it removes the part after the decimal point. Here are two
+removing the part after the decimal point gives the same answer. Here are two
 ideas about what it does. Both are reasonable, and they cannot both be
 true.
 
@@ -55,18 +55,44 @@ whole, rounding down gives the next number further from zero: `-7 // 2` is
 
 </details>
 
-## Why idea A feels right
+## What each idea does
 
-Most of the numbers we divide are positive: people, prices, minutes. For
-all of them, removing the decimals and rounding down give the same answer.
-So we learn the shortcut, "ignore the decimals", and it works every time,
-until we divide a negative number.
+Each idea starts from the answer of `/` and does one more step. Idea A
+cuts off the digits after the decimal point. That moves the number towards
+zero: 3.5 becomes 3, and -3.5 becomes -3. Idea B moves the number to the
+whole number below it, to the left on the number line: 3.5 becomes 3, and
+-3.5 becomes -4.
 
-Python's rule is the one that makes `//` and `%` fit together.
-`-7 // 2` is -4 and `-7 % 2` is 1, and $-4 \times 2 + 1 = -7$, the number
-we started with. The whole number and the remainder always rebuild the
-number, and the remainder is never negative when you divide by a positive
-number.
+For a positive number, "towards zero" and "to the left" are the same
+direction, so the two ideas give the same answer. For a negative number
+that is not whole, they are opposite directions, and the answers differ by 1.
+
+Here is a slider for the number on top. The bottom is 4. The cell shows the
+answer of `/`, what each idea does with it, and what Python gives.
+
+```python exec
+id: what-each-idea-does-1
+top = slider("top", -20, 20, step=1, value=-7, id="top").value
+bottom = 4
+
+answer = top / bottom
+cut_off = int(answer)
+rounded_down = top // bottom
+
+print("top / bottom       =", answer)
+print("idea A (cut off)   =", cut_off)
+print("idea B (round down) =", rounded_down)
+print("top // bottom      =", top // bottom)
+```
+
+Move the slider through the negative numbers. For which values of `top` do
+the lines for idea A and idea B differ? Which line matches `//` every time?
+
+Python's rule also fits with `%`. `-7 // 2` is -4 and `-7 % 2` is 1, and
+$-4 \times 2 + 1 = -7$, the number we started with. The whole number and the
+remainder rebuild the number, and the remainder is never negative when we
+divide by a positive number. With idea A, `-7` would split into -3 and a
+remainder of -1.
 
 ## Where else it happens
 

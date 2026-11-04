@@ -342,8 +342,7 @@ five dots make?
 
 - A straight line
 - A curve that gets steeper
-  - The values grow, and growing can feel like a curve. Look at the
-    gaps.
+  - This reads growth as a curve. Look at the gaps.
 - No clear shape at all
   - Each value follows a rule, so each dot follows the rule too.
 ```

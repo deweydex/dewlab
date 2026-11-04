@@ -25,7 +25,7 @@ How much of the pizza did the two friends eat in total?
 - 5/8
   - 3 slices and 2 slices make 5 slices. Each slice is still one eighth.
 - 5/16
-  - Adding the tops and adding the bottoms feels natural. But the pizza
+  - This adds the tops and adds the bottoms. But the pizza
     still has 8 slices, not 16.
 - 5
   - The friends ate 5 slices. 5 slices is less than one whole pizza.

@@ -447,8 +447,8 @@ Before you run it: what will the last line print?
 - True
   - 2 × 4 is 8, and 8 + 1 is 9. Both pans hold 9.
 - False
-  - The cell builds the left pan from the box, so it can feel as if it
-    will not match.
+  - The cell builds the left pan from the box, and this option reads that
+    as a different amount from the right pan.
 - 9 9
   - The line before it prints both pans. This line asks if they match.
 ```
