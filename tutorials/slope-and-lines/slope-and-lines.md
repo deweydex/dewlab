@@ -1,7 +1,7 @@
 ---
 title: "Straight lines: slope, and the line that breaks the formula"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.1
 covers:
   slope-as-how-fast-something-changes:
     covers: [MIT-4.2]
@@ -136,6 +136,31 @@ We get 2.0 all three times, from three different pairs of points.
 **A line is straight when its slope is the same between any two of its
 points.** If the slope changed from one pair to another, the line would
 bend.
+
+Let's move a line ourselves. The sliders set $m$ and $c$ in
+$y = mx + c$. The cell prints the slope between the points at $x = 1$
+and $x = 4$. Does it change when we move $c$? Does it change when we
+move $m$?
+
+```python exec
+id: slope-as-how-fast-something-changes-3
+import matplotlib.pyplot as plt
+
+m = slider("m", -4, 4, step=0.5, value=2, id="m").value
+c = slider("c", -5, 5, value=1, id="c").value
+
+xs = [-5, 5]
+fig, ax = plt.subplots()
+ax.plot(xs, [m * x + c for x in xs], label=f"y = {m}x + ({c})")
+ax.plot([1, 4], [m * 1 + c, m * 4 + c], "o")
+ax.axhline(0, color="black", linewidth=0.8)
+ax.axvline(0, color="black", linewidth=0.8)
+ax.set_xlim(-5, 5)
+ax.set_ylim(-12, 12)
+ax.grid(alpha=0.3)
+ax.legend()
+print("slope between x = 1 and x = 4:", ((m * 4 + c) - (m * 1 + c)) / (4 - 1))
+```
 
 ### A number about the world
 

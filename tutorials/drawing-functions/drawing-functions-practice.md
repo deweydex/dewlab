@@ -2,7 +2,7 @@
 title: "Functions and their graphs — Practice"
 practice_for: drawing-functions
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.1
 worlds:
   rockets: Rockets, launches and the arcs they fly. The numbers are made up.
   electronics: Batteries, resistors and the power between them. The numbers are made up.
@@ -244,9 +244,30 @@ same way as its sign.
 
 </details>
 
+**12.** The dot sits at $(2, 12)$. The slider sets $a$ in $y = ax^2$.
+Move it until the curve passes through the dot. What is $a$? Then check
+by calculating $a \times 2^2$ by hand.
+
+```python exec
+id: move-the-curve-to-the-dot
+a = slider("a", -1, 5, step=0.5, value=1, id="a").value
+
+ax = draw(lambda x: a * x ** 2, low=-4, high=4, label=f"{a}x^2")
+ax.plot([2], [12], "o", markersize=9)
+ax.set_ylim(-5, 25)
+print(f"a = {a}: at x = 2 the height is {a * 2 ** 2}")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$a = 3$. At $x = 2$ the height is $3 \times 4 = 12$. Here is one way to
+find it without sliding: the height at $x = 2$ is $4a$, and $4a = 12$.
+
+</details>
+
 ## Reading answers off the picture
 
-**12.** Plot $y = x^2 - 3x - 4$ and read its roots from the plot. Then check
+**13.** Plot $y = x^2 - 3x - 4$ and read its roots from the plot. Then check
 each one by putting it back into the expression.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -260,7 +281,7 @@ finds the same two numbers.
 
 </details>
 
-**13.** Solve $x^3 - 2x = 1$ from a picture, to one decimal place.
+**14.** Solve $x^3 - 2x = 1$ from a picture, to one decimal place.
 
 <details class="dl-answer"><summary>answer</summary>
 
@@ -274,7 +295,7 @@ The picture needs no trick, so it is often the easier way.
 
 </details>
 
-**14.** Where do $y = x^2$ and $y = x + 2$ cross? Read it from the
+**15.** Where do $y = x^2$ and $y = x + 2$ cross? Read it from the
 picture, then check.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -287,7 +308,7 @@ exactly where the two values agree.
 
 </details>
 
-**15.** A ball is thrown upwards. Its height in metres after $t$ seconds
+**16.** A ball is thrown upwards. Its height in metres after $t$ seconds
 is $h = 20t - 4.9t^2$. Plot it, then answer:
 
 1. When does the ball land?
@@ -310,7 +331,7 @@ between the roots.
 
 ## Inverses
 
-**16.** What is the inverse of each function?
+**17.** What is the inverse of each function?
 
 - (a) $f(x) = x + 7$
 - (b) $f(x) = 5x$
@@ -339,7 +360,7 @@ explains what that is.
 
 </details>
 
-**17.** Check one of your answers with a round trip: send several values
+**18.** Check one of your answers with a round trip: send several values
 through the function and then through its inverse.
 
 <details class="dl-answer"><summary>answer</summary>
@@ -355,7 +376,7 @@ also give `x` again.
 
 </details>
 
-**18.** Why does $x^2$ have no inverse over all the numbers, when $x^3$
+**19.** Why does $x^2$ have no inverse over all the numbers, when $x^3$
 does?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -372,7 +393,7 @@ or more. `math.sqrt` does this. It gives only the positive root.
 
 </details>
 
-**19.** Plot $y = 2x + 1$, its inverse, and $y = x$ on one pair of axes.
+**20.** Plot $y = 2x + 1$, its inverse, and $y = x$ on one pair of axes.
 What do you notice?
 
 <details class="dl-answer"><summary>answer</summary>
@@ -387,7 +408,7 @@ inverse is the graph of the function, reflected across the diagonal.
 
 ## One longer problem
 
-**20.** A shop's profit, in euro, from selling $n$ items is
+**21.** A shop's profit, in euro, from selling $n$ items is
 $P(n) = -0.5n^2 + 30n - 200$.
 
 1. Plot it for $n$ from 0 to 60.
@@ -412,7 +433,7 @@ $P(n) = -0.5n^2 + 30n - 200$.
 
 ## Your world
 
-**21.** A problem from the world you chose.
+**22.** A problem from the world you chose.
 
 <div class="dl-world" data-world="rockets">
 
@@ -539,7 +560,7 @@ The line passes through both marked points.
 
 ## From earlier
 
-**22.** In
+**23.** In
 [Dictionaries: looking things up by name](tutorial:looking-things-up-by-name)
 we stored values under keys. Is a dictionary a function in the
 mathematical sense? What are its domain and its range?
@@ -556,7 +577,7 @@ cannot tell which key it came from.
 
 </details>
 
-**23.** In [Number types, powers and logarithms](tutorial:numbers-and-their-families)
+**24.** In [Number types, powers and logarithms](tutorial:numbers-and-their-families)
 we found that ten doublings take 1 past 1000. Plot $2^x$ for $x$ from
 0 to 12, with the flat line at 1000, and read where they cross.
 

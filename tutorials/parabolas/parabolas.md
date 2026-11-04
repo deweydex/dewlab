@@ -1,7 +1,7 @@
 ---
 title: "Parabolas: completing the square"
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.03.1
 covers:
   every-quadratic-is-the-same-curve:
     covers: [MIT-3.4]
@@ -29,9 +29,9 @@ we solved them with the formula. On this page we do a third thing with
 a quadratic. We rewrite it in a form that shows where the curve turns,
 so that we can read it straight from the expression.
 
-This rewriting is called completing the square. Many people learn it as
-a trick, without being told what it is for. Its purpose is the best
-reason to learn it, so we start there.
+This rewriting is called completing the square. We start with the curve
+and the question it answers: where is the lowest point? Then we find the
+rewriting that answers it.
 
 ## Every quadratic is the same curve
 
@@ -168,6 +168,32 @@ That is the whole idea. Completing the square is worth doing because it
 makes the vertex visible. It works because a squared number cannot be
 negative.
 
+### Moving a, h and k
+
+Let's build vertex forms ourselves. Three sliders set $a$, $h$ and $k$
+in $a(x - h)^2 + k$. The printed line shows the same function written as
+$ax^2 + bx + c$. Move one slider at a time. Which of $b$ and $c$ change
+when we move $h$? Which change when we move $k$?
+
+```python exec
+id: the-form-that-tells-you-where-the-bottom-is-3
+a = slider("a", -3, 3, step=0.5, value=1, id="a").value
+h = slider("h", -6, 6, value=-3, id="h").value
+k = slider("k", -10, 10, value=-4, id="k").value
+
+ax = draw(lambda x: a * (x - h) ** 2 + k, low=-10, high=10,
+          label=f"{a}(x - ({h}))^2 + ({k})")
+ax.plot([h], [k], "o", markersize=9)
+ax.set_ylim(-12, 20)
+b = -2 * a * h
+c = a * h ** 2 + k
+print(f"vertex ({h}, {k}).  Standard form: {a}x^2 + ({b})x + ({c})")
+```
+
+Set $a = 1$, $h = -3$ and $k = -4$. The printed line should give
+$x^2 + 6x + 5$, the quadratic from the cell above. Can you find
+sliders that give $x^2 - 4x + 1$? What is its vertex?
+
 ## Doing the rearrangement
 
 How do we get from $ax^2 + bx + c$ to $a(x - h)^2 + k$? Multiply out
@@ -203,6 +229,27 @@ for x in [0, 1, 2, 5]:
 $(x + 3)^2$ is $x^2 + 6x + 9$. It has the right $x^2$ and the right
 $6x$, but a 9 where we want a 5. So we subtract the 9 and add the 5,
 and that is where $k = 5 - 9 = -4$ comes from.
+
+### Try a quadratic of your own
+
+Type three numbers and press Run. The cell marks the vertex using
+$h = -\frac{b}{2a}$ and $k = c - ah^2$. Does the dot sit at the lowest
+point of the curve for every quadratic you try? Try a negative $a$, and
+then try $b = 0$.
+
+```python exec
+id: doing-the-rearrangement-4
+a = float(text_input("a", value="1", id="a").value or 1)
+b = float(text_input("b", value="6", id="b").value or 0)
+c = float(text_input("c", value="5", id="c").value or 0)
+
+h = -b / (2 * a)
+k = c - a * h ** 2
+ax = draw(lambda x: a * x ** 2 + b * x + c, low=h - 6, high=h + 6,
+          label=f"{a}x^2 + {b}x + {c}")
+ax.plot([h], [k], "o", markersize=9)
+print(f"vertex form: {a}(x - ({h}))^2 + ({k})")
+```
 
 ### Your turn
 

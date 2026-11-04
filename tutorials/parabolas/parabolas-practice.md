@@ -2,7 +2,7 @@
 title: "Parabolas: completing the square — Practice"
 practice_for: parabolas
 year: "2026-2027"
-version: 2026.09.26.1
+version: 2026.11.04.1
 worlds:
   rockets: Rockets, launches and the arcs they fly. The numbers are made up.
   electronics: Batteries, resistors and the power between them. The numbers are made up.
@@ -308,9 +308,59 @@ need a general method.
 
 </details>
 
+## Moving the numbers
+
+**16.** The sliders set $a$, $h$ and $k$ in $a(x - h)^2 + k$. Can you
+find values so that the parabola opens downwards, with its highest point
+at $(2, 5)$? Write the quadratic you expect in a comment first. Then
+check it with the printed line.
+
+```python exec
+id: set-the-vertex-form
+a = slider("a", -3, 3, step=0.5, value=1, id="a").value
+h = slider("h", -6, 6, value=0, id="h").value
+k = slider("k", -10, 10, value=0, id="k").value
+
+ax = draw(lambda x: a * (x - h) ** 2 + k, label=f"{a}(x - ({h}))^2 + ({k})")
+ax.plot([h], [k], "o", markersize=9)
+ax.set_ylim(-12, 12)
+print(f"vertex ({h}, {k}).  Standard form: {a}x^2 + ({-2 * a * h})x + ({a * h ** 2 + k})")
+```
+
+<details class="dl-answer"><summary>one way through it</summary>
+
+Any negative $a$ with $h = 2$ and $k = 5$ works. With $a = -1$ the
+function is $-(x - 2)^2 + 5$, which is $-x^2 + 4x + 1$. Here is one
+answer. Yours may be different and work too.
+
+</details>
+
+**17.** The slider sets $b$ in $x^2 + bx + 3$. Find the $b$ that puts the
+vertex at $x = 4$. Then use $h = -\frac{b}{2a}$ to check your answer.
+What $b$ would put it at $x = -1.5$?
+
+```python exec
+id: slide-b-to-the-vertex
+b = slider("b", -12, 12, step=0.5, value=0, id="b").value
+
+h = -b / 2
+ax = draw(lambda x: x ** 2 + b * x + 3, low=-8, high=10, label=f"x^2 + ({b})x + 3")
+ax.plot([h], [h ** 2 + b * h + 3], "o", markersize=9)
+ax.set_ylim(-20, 40)
+print(f"b = {b}: the vertex is at x = {h}")
+```
+
+<details class="dl-answer"><summary>answer</summary>
+
+$b = -8$ puts the vertex at $x = 4$, because $-\frac{-8}{2} = 4$. For
+$x = -1.5$ we need $b = 3$. The vertex is at $x = -\frac{b}{2}$ when
+$a = 1$, so $b$ is $-2$ times the $x$ we want.
+
+</details>
+
 ## Your world
 
-**16.** A problem from the world you chose.
+**18.** A problem from the world you chose.
 
 <div class="dl-world" data-world="rockets">
 
@@ -378,7 +428,7 @@ reaches from $x = 7$ to $x = 13$, and `arch(7)` and `arch(13)` are both
 
 ## From earlier
 
-**17.** In [Functions and their graphs](tutorial:drawing-functions),
+**19.** In [Functions and their graphs](tutorial:drawing-functions),
 the vertices of $x^2 + bx$ seemed to lie on the curve $y = -x^2$. Can
 you show that they do, with $h$ and $k$?
 
@@ -392,7 +442,7 @@ $b$ is. Changing $b$ moves the vertex along that curve.
 
 </details>
 
-**18.** In [Solving equations: linear, quadratic and
+**20.** In [Solving equations: linear, quadratic and
 simultaneous](tutorial:cracking-equations), the discriminant
 $b^2 - 4ac$ told us how many roots a quadratic has. Show that
 $k = -\frac{b^2 - 4ac}{4a}$. Why does that explain the three cases?

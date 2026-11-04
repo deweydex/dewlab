@@ -6048,3 +6048,16 @@ Not done: practice pages, glossary files, and a page for the Laplacian in the le
 - **Checked by hand.** A built lesson inside a 700px frame and the same lesson at the top level, both in Chrome; the top-level page is unchanged. No browser test was added: the e2e fixture serves pages at the top level, and a framed test needs a host page of its own.
 
 *Cost to change: remove the "Embedded" block in `assets/tutorial-style.css` and the framing script in the head of `assets/shell.html`.*
+
+**7.309 — The graphs-route parabola pages move by sliders and typed numbers, and stop explaining why a wrong idea is natural.** Josh, 3 November 2026, after reading *Functions and their graphs*, *Parabolas: completing the square* and the vertex-sign closer look: the pages were fixed pictures and algebra, and a heading said "Why idea A feels right", which a reader may not feel. He asked for more scaffolding, more visuals and problems where a reader changes a parameter and watches the function run.
+
+- **No claim about what a reader feels.** The closer look no longer has a section on why idea A is natural. It gives a slider for $h$ and then one for $h$ and $k$, and says plainly why the two numbers do different jobs: $k$ is added after the square, $h$ sits inside the bracket.
+- **Sliders where a parameter has a picture.** *Functions and their graphs* gets sliders for $h$ and $k$, for $a$, and for $b$ (with the turning point marked against $y = -x^2$). *Completing the square* gets a slider cell for $a$, $h$ and $k$ that prints the same function as $ax^2 + bx + c$, and a cell where the reader types $a$, $b$ and $c$ and sees the vertex marked.
+- **Existing cells and ids are untouched.** Every new cell has a new id. The one exception is `where-else-it-happens-1` on the closer look, whose code now reads a slider; the page version moves on for that reason, and for the new cells.
+- **A predict block with a way out.** The $k$ question lists the three readings, one of which is "I am not sure yet", and the notes name the idea behind each option.
+
+Added on 4 November: a slider cell on *Straight lines: slope* ($m$ and $c$), a slider problem in *Functions and their graphs* practice (problem 12), and two in *Completing the square* practice (problems 16 and 17, under "Moving the numbers"). Later problems in both practice pages are renumbered.
+
+Not done: a slider cell in the worlds sections, and slider problems in the slope practice.
+
+*Cost to change: revert the three tutorial files and this entry.*
