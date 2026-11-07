@@ -194,8 +194,7 @@ twice, so which `darkest` makes them black?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(129, 129)
 paint_grid(canvas, 16)
 show_picture(canvas, darkest=2)
@@ -226,8 +225,7 @@ that grow in steps, can place a whole grid of windows.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(80, 60)
 paint_rectangle(canvas, 5, 5, 74, 54)
 for row in range(12, 70, 14):

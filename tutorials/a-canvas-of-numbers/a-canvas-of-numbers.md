@@ -428,8 +428,7 @@ id: paint-a-point-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(16, 16)
 paint_point(canvas, 3, 4)
 paint_point(canvas, 8, 8)
@@ -554,8 +553,7 @@ one starts and ends?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(32, 32)
 paint_vertical(canvas, 6, 5, 25)
 paint_horizontal(canvas, 5, 6, 24)

@@ -87,8 +87,7 @@ id: chaos-game-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(130, 150)
 chaos_game(canvas, [(5, 5), (145, 5), (75, 126)], 8000, 2)
 show_picture(canvas, darkest=3)
@@ -194,8 +193,7 @@ id: dither-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(80, 160)
 paint_gradient(canvas, 0, 0, 79, 159)
 show_picture(dither(canvas, 80, 2))

@@ -430,7 +430,14 @@ The same loop as the rocky planets, with a new list.
 ```
 ````
 
-`title:` is optional; the default is *One way to do it*. A cell may have
+`title:` is optional; the default is *One way to do it*. `needs:` is optional
+too: it names a file in `setup/` (or several, separated by commas) that the
+solution is run on but the fold does not show. Use it when the solution
+calls functions the reader already has, as in the painting series
+(`needs: setup/painting/toolkit.py`), so the fold holds only the new lines
+(PEDAGOGICAL_STYLE_GUIDE.md#show-what-changed). A plain
+`{{include: ...}}` in a solution still shows, for code the reader is meant
+to read. A cell may have
 more than one solution, shown in order, and the comparison uses the first.
 Only a Python cell can have one.
 

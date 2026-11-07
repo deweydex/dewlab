@@ -71,6 +71,19 @@ class TestRendering:
         b.build()
         assert "<summary>a shorter way</summary>" in built(repo)
 
+    def test_a_needs_line_runs_the_file_but_the_fold_does_not_show_it(self, repo):
+        (repo / "setup").mkdir(exist_ok=True)
+        (repo / "setup" / "helpers.py").write_text("def double(n):\n    return n * 2\n")
+        solution = ("```solution\nneeds: setup/helpers.py\n"
+                    "print(double(4))\n```\n")
+        write(repo, "```python exec\nid: twice\n# Your code\n```\n" + solution)
+        b.build()
+        page = built(repo)
+        assert "print(double(4))" in page.split("dewlab-manifest")[0]
+        assert "def double" not in page.split("dewlab-manifest")[0]
+        # What the comparison runs still has the file in front of it.
+        assert cell_spec(page, "twice")["solution"].startswith("def double(n):")
+
     def test_inputs_become_a_table_with_a_row_per_case_and_its_label(self, repo):
         write(repo, CELL + SOLUTION + INPUTS)
         b.build()

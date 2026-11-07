@@ -155,8 +155,7 @@ id: a-block-that-fades-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(280, 270)
 paint_gradient(canvas, 10, 7, 264, 261)
 paint_fade(canvas, 272, 7, 255)
@@ -191,8 +190,7 @@ own. How much `darkest` do you need to see both?
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(100, 120)
 paint_gradient(canvas, 60, 0, 99, 119)
 for layer in range(20):

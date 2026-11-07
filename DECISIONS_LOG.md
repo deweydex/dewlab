@@ -6091,3 +6091,14 @@ About 70 sentences said what "most people" or "many people" guess, find hard, fe
 - **The test grows a few narrow patterns** ("most people guess", "surprises many people") and leaves the factual uses alone.
 
 *Cost to change: revert the commit.*
+
+**7.313 — An answer in the painting series shows only its own lines.** Josh, 7 November 2026: the sample answers in "Painting with numbers", its second part and "Painting with chance" all carried every function of the series, which is not clear to a student.
+
+7.307 kept the whole of `setup/painting/toolkit.py` in each answer, so the answer would run whatever the reader's own functions held. That was a mistake for the reader: forty-three answers opened with 430 lines, and the three lines of the answer sat underneath them.
+
+- **A `needs:` line in a `solution` fence.** `needs: setup/painting/toolkit.py` names a file the answer is run on, and the fold leaves it out. The build still puts the file in front of the code, so the comparison, the build's check of the answer and the answer's saved copy behave as before. A reader whose own `paint_grid` is still a stub gets the same picture from the answer as anyone else.
+- **Why not show only the functions the answer calls.** The reader already has those functions: they wrote them, or loaded the reference, on this page or an earlier one. Showing `paint_grid` and the four functions under it would repeat what the page above it taught (PEDAGOGICAL_STYLE_GUIDE.md#show-what-changed).
+- **Opt-in, not a rule for every include.** Answers on the class pages and the matrix pages include code the reader is meant to read, so a plain `{{include: ...}}` still shows.
+- **All forty-three answers in the series moved to `needs:`.** That covers the series called "Painting with numbers" (parts 1 and 2), "Painting with chance" and "Learning a kernel".
+
+*Cost to change: put `{{include: setup/painting/toolkit.py}}` back as the first line of each answer in place of `needs:`, and revert `build.py`.*

@@ -117,8 +117,7 @@ id: a-fan-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(101, 101)
 paint_fan(canvas, (0, 0), (0, 100), (100, 0), 20)
 show_picture(canvas, darkest=2)
@@ -139,8 +138,7 @@ id: a-fan-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(101, 101)
 paint_fan(canvas, (0, 0), (0, 100), (100, 0), 20)
 paint_fan(canvas, (100, 0), (0, 0), (100, 100), 20)
@@ -267,8 +265,7 @@ id: polygon-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(160, 160)
 paint_polygon(canvas, polygon_points(40, 120, 30, 3))
 paint_polygon(canvas, polygon_points(115, 120, 32, 6))
@@ -333,8 +330,7 @@ id: star-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(90, 170)
 paint_star(canvas, polygon_points(42, 45, 40, 5), 2)
 paint_star(canvas, polygon_points(127, 45, 40, 7), 3)

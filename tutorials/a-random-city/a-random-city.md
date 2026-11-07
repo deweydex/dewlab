@@ -128,8 +128,7 @@ id: random-city-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(100, 150)
 paint_city(canvas, 7)
 show_picture(canvas, darkest=20)

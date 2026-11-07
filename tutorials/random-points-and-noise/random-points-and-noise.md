@@ -118,8 +118,7 @@ id: random-points-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(60, 60)
 paint_random_points(canvas, 300, 1)
 print(sum(row.count(2) for row in canvas), "squares hold 2 ink")
@@ -232,8 +231,7 @@ blur = [[1 / 9, 1 / 9, 1 / 9],
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 picture = cube_picture()
 blur = [[1 / 9, 1 / 9, 1 / 9],
         [1 / 9, 1 / 9, 1 / 9],

@@ -111,8 +111,7 @@ target = convolve(practice, [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])   # the hidden
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -259,8 +258,7 @@ id: train-kernel-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -350,8 +348,7 @@ id: hidden-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -416,8 +413,7 @@ id: hidden-4
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)

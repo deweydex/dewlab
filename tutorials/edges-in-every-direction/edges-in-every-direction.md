@@ -70,8 +70,7 @@ id: edge-kernels-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -250,8 +249,7 @@ id: strength-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)
@@ -291,8 +289,7 @@ picture = cube_picture()
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 picture = cube_picture()
 vertical_edges = [[-1, 0, 1],
                   [-1, 0, 1],
@@ -338,8 +335,7 @@ smooth = [[1 / 16, 2 / 16, 1 / 16],
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 picture = cube_picture()
 vertical_edges = [[-1, 0, 1],
                   [-1, 0, 1],
