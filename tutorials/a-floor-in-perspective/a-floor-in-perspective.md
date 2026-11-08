@@ -105,8 +105,7 @@ id: a-floor-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(120, 200)
 paint_floor(canvas, 100, 100, 20)
 show_picture(canvas, darkest=2)
@@ -131,8 +130,7 @@ id: a-floor-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(120, 200)
 paint_floor(canvas, 100, 100, 20)
 for distance in range(4, 30):

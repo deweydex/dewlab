@@ -100,8 +100,7 @@ id: random-walk-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(101, 101)
 random_walk(canvas, 4000, 11)
 show_picture(canvas, darkest=6)
@@ -225,8 +224,7 @@ id: estimate-pi-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(100, 100)
 random.seed(3)
 inside = 0

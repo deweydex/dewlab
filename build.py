@@ -220,7 +220,7 @@ DEFAULT_HINT_AFTER = "errors:5"
 DEFAULT_HINT_TITLE = "Let\u2019s slow down a moment\u2026"
 # The ```solution and ```inputs blocks (#312). Like a hint, each belongs to
 # the exec cell above it, or to the one its `for:` line names.
-SOLUTION_HEADER_RE = re.compile(r"^\s*(for|title)\s*:\s*(.*)$")
+SOLUTION_HEADER_RE = re.compile(r"^\s*(for|title|needs)\s*:\s*(.*)$")
 INPUTS_HEADER_RE = re.compile(r"^\s*(for|guess)\s*:\s*(.*)$")
 # The ```typed block: the lines input() reads when nobody can type, in the
 # comparison and in the build. Only `for:` is a header; every other line is
@@ -365,6 +365,9 @@ class Solution:
     title: str
     code: str
     notes: str = ""
+    # What the fold shows when `code` is more than the reader should read:
+    # a `needs:` file is run first, so it is in `code`, but it is not here.
+    shown: str = ""
 
 
 @dataclass
@@ -1040,6 +1043,13 @@ def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution
                    "line naming one")
     code, notes = _split_solution("\n".join(lines))
     code = expand_includes(code.strip("\n"), path)
+    shown = ""
+    if header.get("needs"):
+        # Setup the solution runs on, kept out of the fold: the reader has
+        # these functions already, from this page and the pages before it.
+        setup = "\n".join(_included_text(rel, path) for rel in header["needs"].split(","))
+        shown = code
+        code = f"{setup}\n\n{code}" if code.strip() else code
     if not code.strip():
         note(path, f"the solution for cell {cell!r} has no code in it, so it is left out")
         return None
@@ -1053,7 +1063,7 @@ def parse_solution(body: str, path: Path, previous_cell: str | None) -> Solution
     if notes:
         no_footnotes_in(notes, path, f"the solution for cell {cell!r}")
     return Solution(cell=cell, title=header.get("title") or DEFAULT_SOLUTION_TITLE,
-                    code=code, notes=notes)
+                    code=code, notes=notes, shown=shown)
 
 
 def _split_solution(text: str) -> tuple[str, str]:
@@ -1420,7 +1430,7 @@ def render_solution(solution: Solution, maths: list[Math]) -> str:
     return (
         f'<details class="dl-solution" data-cell="{safe_cell}">'
         f"<summary>{html.escape(solution.title)}</summary>\n"
-        f"{render_code_block(CodeBlock(language='python', code=solution.code))}\n"
+        f"{render_code_block(CodeBlock(language='python', code=solution.shown or solution.code))}\n"
         f"{notes_html}\n"
         "</details>"
     )

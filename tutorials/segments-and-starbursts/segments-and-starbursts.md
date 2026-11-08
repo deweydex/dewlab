@@ -102,8 +102,7 @@ id: a-segment-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(100, 100)
 paint_segment(canvas, 20, 10, 80, 10)     # the floor
 paint_segment(canvas, 80, 10, 80, 60)     # the right wall
@@ -197,8 +196,7 @@ id: a-starburst-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(101, 101)
 paint_starburst(canvas, 50, 50, 10)
 show_picture(canvas, darkest=4)
@@ -230,8 +228,7 @@ id: play-with-fades-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # A block that fades from left to right: each row is a fade.
 canvas = make_canvas(30, 120)
 for row in range(30):
@@ -253,8 +250,7 @@ id: play-with-fades-2
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # A ridge: the ink rises to the middle row and falls away again.
 canvas = make_canvas(100, 60)
 paint_gradient(canvas, 0, 0, 49, 59)             # rows 0 to 49 get 1 to 50 ink
@@ -280,8 +276,7 @@ id: play-with-fades-3
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # A sunrise: a sky that is dark at the top, with rays from a sun on the horizon.
 canvas = make_canvas(101, 101)
 paint_gradient(canvas, 0, 0, 100, 100)

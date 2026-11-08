@@ -168,8 +168,7 @@ you $a$.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 canvas = make_canvas(255, 255)
 paint_line(canvas, 1, 0, 0, 254)
 paint_line(canvas, 0.4, 30, 0, 254)
@@ -224,9 +223,8 @@ is negative?
 ```
 
 ```solution
+needs: setup/painting/toolkit.py
 for: a-steep-line-1
-{{include: setup/painting/toolkit.py}}
-
 canvas = make_canvas(255, 255)
 paint_line(canvas, 3, -2, 1, 80)
 show_picture(canvas)
@@ -274,8 +272,7 @@ stops before the vanishing point, so paint only a few squares of it.
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # Edges hold 3 ink (black), the front face 1, the shaded side 2 and the shadow 1.
 canvas = make_canvas(120, 120)
 

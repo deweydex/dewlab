@@ -246,8 +246,7 @@ id: best-guess-1
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 # PROVIDED. A small picture to practise on: a block, a smaller block and a slanted line.
 practice = make_canvas(30, 30)
 paint_rectangle(practice, 4, 4, 15, 18)

@@ -105,8 +105,7 @@ id: rule-stripes
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 def stripes(x, y):
     return (x // 8) % 2
 
@@ -127,8 +126,7 @@ id: rule-checker
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 def checkerboard(x, y):
     return (x // 8 + y // 8) % 2
 
@@ -149,8 +147,7 @@ id: rule-rings
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 def rings(x, y):
     distance = math.sqrt((x - 32) ** 2 + (y - 32) ** 2)
     return int(distance) // 6 % 2
@@ -173,8 +170,7 @@ id: rule-disc
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 def disc(x, y):
     if (x - 32) ** 2 + (y - 32) ** 2 <= 24 ** 2:
         return 1
@@ -210,8 +206,7 @@ id: rule-spiral
 ```
 
 ```solution
-{{include: setup/painting/toolkit.py}}
-
+needs: setup/painting/toolkit.py
 def spiral(x, y):
     dx = x - 50
     dy = y - 50
