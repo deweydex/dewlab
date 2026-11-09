@@ -553,8 +553,8 @@ modularity.
 **Running it again lays the whole map out again**, so towns can move, and not
 only the one that changed. This plan once held every placed town still and put
 a new one beside what it needs (`--keep` and `--only`). Josh dropped that on 2
-October 2026: the map may change, and nobody minds a town moving
-. Check `git diff --stat map/layout.json` before
+October 2026: the map may change, and nobody minds a town moving.
+Check `git diff --stat map/layout.json` before
 committing, and say in the pull request that the map moved.
 
 **By hand**, through the existing topic editor. `topic_editor/index.html`

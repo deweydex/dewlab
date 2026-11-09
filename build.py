@@ -181,8 +181,8 @@ QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # "|" a dropdown, the first item either way the expected answer. Braces
 # inside $...$ maths are the maths' own, not gaps: find_gaps() below.
 GAP_RE = re.compile(r"\{([^{}]*)\}")
-# `html app`/`css app`/`js app` — a full-stack module's own fence kind
-#. Same three languages as a site pane, on
+# `html app`/`css app`/`js app` — a full-stack module's own fence kind.
+# Same three languages as a site pane, on
 # purpose, but a separate pair of constants: site fences and app fences
 # are read by two different branches in extract_blocks(), and nothing
 # here should make changing one silently change the other.
@@ -7165,8 +7165,8 @@ DEWMINI_ASSET_FILES = (
 COMPOSE_REDIRECTS = ("dewmini.html", "dewminiweb.html")
 
 # dewmark, the exam track, lived in dewmark/ and its marking workbench was
-# published at /dewmark/ until it moved to its own repository and site
-#. The old address is kept, as a redirect to
+# published at /dewmark/ until it moved to its own repository and site.
+# The old address is kept, as a redirect to
 # dewmark's home page, for anyone who bookmarked it; the stub follows the
 # compose/ redirects' pattern, keeping a query string and a #hash.
 DEWMARK_HOME = "https://deweydex.github.io/dewmark/"

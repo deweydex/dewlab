@@ -717,8 +717,8 @@ column.
 <a id="choose-your-project"></a>
 ### Choose your project
 
-A world changes a task's setting. A project changes the job an idea does
-: where one idea has several good uses, a page offers
+A world changes a task's setting. A project changes the job an idea does:
+where one idea has several good uses, a page offers
 two to four short projects, and a project of the reader's own, and the
 reader picks one. A page can have worlds, projects, or both.
 
@@ -1268,8 +1268,8 @@ year: "2026-2027"
 version: 2026.08.24.1
 ```
 
-A practice page's title is its tutorial's, with " — Practice" added
-. A practice page is never listed in a course file:
+A practice page's title is its tutorial's, with " — Practice" added.
+A practice page is never listed in a course file:
 it follows its tutorial onto every course that lists it. If one is, the build
 leaves the line out and says so. It should declare
 no `covers:` either. It sets problems on what its tutorial taught, and

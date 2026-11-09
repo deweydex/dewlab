@@ -262,8 +262,8 @@ own planning rather than any page: the curriculum map in
 with each other, the generated pictures matching the cells they are drawn
 from, the links inside documents about the project. They live in the scripts
 that own those files (`dev/curriculum_map.py --check`, each picture
-generator's `--check`, `dev/check_doc_links.py`), not in the test suite
-. A pull request shows what they find as a
+generator's `--check`, `dev/check_doc_links.py`), not in the test suite.
+A pull request shows what they find as a
 warning, and a maintainer tidies it up. House preferences about tutorial
 prose, such as not naming an institution's assessments, are not checked: they
 are advice in the style guide.

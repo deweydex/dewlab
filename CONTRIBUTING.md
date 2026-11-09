@@ -121,8 +121,8 @@ runs the checks that look after the project rather than any page: the tests
 marked `advisory`, `python3 dev/generated.py --all` (which adds the curriculum
 map being current, the planning files agreeing with each other, and the Dewey
 Track's pictures), and the links inside the documents about the project. It
-reports what it finds as a warning on the pull request and never fails it
-. To see those checks locally, run
+reports what it finds as a warning on the pull request and never fails it.
+To see those checks locally, run
 `python3 -m pytest -m advisory`, `python3 dev/generated.py --all` and
 `python3 dev/check_doc_links.py`. After changing a cell or a `covers:` line,
 `python3 dev/generated.py --fix` regenerates whatever fell behind.

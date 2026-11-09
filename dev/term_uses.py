@@ -23,8 +23,8 @@ Reads the built site, so run `python3 build.py` first.
     python3 dev/term_uses.py --check         # marks to look at
     python3 dev/term_uses.py --common        # terms marked only near the start
 
-`--common` lists, for each course, the terms marked only near the start
-: the site's own words (cell, toolkit, illustration) and any term
+`--common` lists, for each course, the terms marked only near the start:
+the site's own words (cell, toolkit, illustration) and any term
 the course uses on three in five of its pages after introducing it. They
 are marked only on the tutorial that introduces them and the next three,
 with their practice pages, and the candidate list leaves them out after

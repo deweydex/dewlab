@@ -499,8 +499,8 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 // close on an outside click, unlike a popover"), so the left dock's own
 // panel can stay open at the same time without either one stealing focus
 // from the other. Give Feedback, handled here too, is the popover that
-// sentence contrasts them with, and does close on an outside click
-//. Appearance (now a tab inside Settings, not a panel of its own)
+// sentence contrasts them with, and does close on an outside click.
+// Appearance (now a tab inside Settings, not a panel of its own)
 // alone carries a search box, filtering its own rows. All three
 // share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width

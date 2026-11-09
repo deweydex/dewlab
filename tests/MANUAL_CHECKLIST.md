@@ -128,8 +128,8 @@ checked against a real offline bundle yet.
 
 The one check the sandbox this was built in could not run at all: its
 network policy blocks `ourworldindata.org`, so whether a browser is
-allowed to fetch those CSVs was never observed, only expected
-. Everything else about the Data catalogue —
+allowed to fetch those CSVs was never observed, only expected.
+Everything else about the Data catalogue —
 the cards, the code it writes, the local datasets — is covered by
 `tests/e2e/test_dewmini_workbench.py`; this is the half that needs a
 real network.

@@ -165,8 +165,8 @@ the topics claim every outcome) lives in the script that owns those files,
 `dev/curriculum_map.py --check`, and the Dewey Track's generated pictures are
 checked by their generators' `--check`. CI's `house-style` job runs those and
 reports a failure as a warning. The tests marked `@pytest.mark.advisory`
-run there too; a plain `python3 -m pytest` leaves them out
-. They are the ones that read the
+run there too; a plain `python3 -m pytest` leaves them out.
+They are the ones that read the
 project's own files rather than a test's: two author warnings, the page
 templates building, the links inside the project's documents,
 `topic-groups.yaml` naming every real tutorial, the real map's shape and
