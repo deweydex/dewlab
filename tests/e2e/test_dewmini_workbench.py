@@ -167,12 +167,12 @@ def test_a_rail_survives_clicking_your_own_notebook(dewmini):
 
 
 def test_both_rails_drag_wider_and_the_notebook_gives_up_the_room(browser, dewmini_url):
-    """The left rail relied on native `resize: horizontal` until 7.103 — a
+    """The left rail relied on native `resize: horizontal` once — a
     small corner grip facing a full-height strip, whose handle loses half
     its width to the panel's own overflow clipping.
 
     A wide context, deliberately: the notebook's own reading column
-    shares `.dl-page`'s 26rem floor (DECISIONS_LOG.md 7.170), which holds
+    shares `.dl-page`'s 26rem floor, which holds
     even under a dock — "the lesser evil against text 218px wide", since
     the reader opened that panel. At the suite's default 1280px
     viewport, both rails dragged this wide leave under 26rem between
@@ -724,7 +724,7 @@ def test_a_web_cell_can_be_collapsed_and_duplicated(dewmini):
 
 
 def test_old_html_and_css_cells_migrate_to_web_cells_on_load(dewmini):
-    """Each old `html`/`css` cell (retired in 7.120) becomes its own new
+    """Each old `html`/`css` cell (since retired) becomes its own new
     `web` cell — never merged into one, since guessing which HTML an old
     CSS cell was meant to style is exactly the ambiguity this leaves
     unresolved."""
@@ -2054,7 +2054,7 @@ def test_jedi_completes_a_modules_attributes(dewmini):
     assert "sqrt" in labels
 
 
-# The hunt that followed DECISIONS_LOG 7.223's two-press delete: controls
+# The hunt that followed the two-press delete: controls
 # that break when the page redraws under them, keyboard paths that do not
 # match the mouse, and a touch screen that could not reach a note's header.
 

@@ -39,7 +39,7 @@ Mathematics and programming are partners here. Code is where a reader
 tries an idea; mathematics is the structure under the code. Two things
 follow that paper cannot offer: a reader can just try it, and being
 wrong is cheap and visible. These principles were decided for the
-2026 revision (#306; `DECISIONS_LOG.md` 7.230). Everything else on this
+2026 revision (#306). Everything else on this
 page follows from them.
 
 <a id="no-verdicts"></a>

@@ -10,7 +10,7 @@ how it gets built. The working folder is `planning/topic-map/`; its
 `graph-final.json` the proposed map itself.
 
 Status, 2 October 2026: **the map is on the site as `map.html`**, beside the
-topic tree (`DECISIONS_LOG.md` 7.293). It is drawn from `map/graph.json`, which
+topic tree. It is drawn from `map/graph.json`, which
 began as the proposal below with Josh's answers to its twelve questions applied
 (see [Josh's decisions](#joshs-decisions)), and is laid out as continents (see
 [How the land is laid out](#how-the-land-is-laid-out)). The tree, the topic

@@ -1,11 +1,11 @@
-/* Definitions on hover (#339; DECISIONS_LOG 7.273).
+/* Definitions on hover (#339).
  *
  * A term shows its glossary definition on hover, tap or keyboard focus,
  * but only where the author marked it as the term. That means one of two
  * places: the italicised first use (docs/WRITING_TUTORIALS.md#marking-a-term),
  * or a later use marked `*term*{.term}`. Nothing here searches the prose
  * for a term's words. That was built once as prose-linking and withdrawn
- * (7.94), because a regex cannot tell the everyday "set a seed" from a set.
+ *, because a regex cannot tell the everyday "set a seed" from a set.
  * An italic the author wrote as the term is the term, in that sense.
  *
  * Marking adds attributes to the author's own <em> and never wraps text,

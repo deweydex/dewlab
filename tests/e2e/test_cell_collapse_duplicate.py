@@ -1,4 +1,4 @@
-"""Collapse and Duplicate, ported onto tutorial pages' `.dl-cell` from dewmini's cell anatomy (DECISIONS_LOG.md 7.114)."""
+"""Collapse and Duplicate, ported onto tutorial pages' `.dl-cell` from dewmini's cell anatomy."""
 
 from __future__ import annotations
 

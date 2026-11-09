@@ -79,8 +79,7 @@ class Report:
 # Whether a page is acceptable is the build's decision, not this file's. A
 # page is read by the same code the build reads it with: what the build
 # refuses is a Problem here, in its own words, and what it carries on despite
-# is a Note. There is no second copy of a rule to keep in step with the first
-# (DECISIONS_LOG 7.301).
+# is a Note. There is no second copy of a rule to keep in step with the first.
 
 def from_build(report: Report, function, *args):
     """Run part of the build. Its refusal is a Problem and the call returns

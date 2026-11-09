@@ -339,7 +339,7 @@ outcomes:
   # own "e.g." examples (ASCII art, PKI, Google PageRank, server-room
   # temperature, and so on) are suggested content, not the thing coverage is
   # measured against — they live in topics.yaml's `uses:` for each code, never
-  # here. See DECISIONS_LOG.md 7.55.
+  # here.
   - code: CMPS-LO1
     title: "Data structures and representations — arrays, lists, matrices, trees — and the difference between iterative and recursive algorithms"
     strand: data-structures

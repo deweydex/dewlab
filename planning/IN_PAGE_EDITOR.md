@@ -296,7 +296,7 @@ same pull request that makes it untrue, per `CONTRIBUTING.md`.
 | `docs/HOW_DEWLAB_THINKS.md`, "What the machine holds you to" | The first tier, "ids are contracts", is a list of blocking rules | Rewritten against the new list of what blocks (below). The doc already says advice and enforcement are different kinds of thing, so this is an edit, not a reversal |
 | `docs/CHECK_YOUR_WORK.md`, `check.py` | Problem / Note output a contributor reads in a terminal | `check.py` is the same logic the editor needs in the browser. Decide whether the editor calls a JavaScript port (`problems()` today) or whether the two are generated from one list |
 | `planning/PEDAGOGICAL_STYLE_GUIDE.md`, "Before a page ships" | A checklist for a person | Unchanged in content. Its role changes: it is now also what the editor links to from a warning, and what the LLM review reads (below). Worth one sentence at the top saying so |
-| `DECISIONS_LOG.md` | Entries on the editor, the cell-id contract (7.23), the structural fold rule (7.52), advisory tests (7.291) | One new entry for this decision. The entries it supersedes get a pointer forward, not a deletion |
+| the decision log (since retired) | Entries on the editor, the cell-id contract (7.23), the structural fold rule (7.52), advisory tests (7.291) | One new entry for this decision. The entries it supersedes get a pointer forward, not a deletion |
 
 One more constraint comes from `CLAUDE.md` itself. The words on the Edit
 button and in its Settings section appear on every page a student opens, so
@@ -316,7 +316,7 @@ You said a test should check only whether code runs and whether the interface
 shows errors. `docs/tests-explained.md` already holds a rule close to that,
 as its sixth question: *would a page still build and teach well if the test
 failed? Then it checks a preference, not a fault; mark it advisory.* And
-`DECISIONS_LOG.md` 7.291 did a first pass. So the starting point is better
+the decision log (since retired) 7.291 did a first pass. So the starting point is better
 than "tests enforce style everywhere". The job is to finish the pass, using a
 sharper statement of the rule:
 
@@ -412,7 +412,7 @@ not notice.
 
 Each step is a pull request that stands alone.
 
-1. **Audit and the test principle. Done (DECISIONS_LOG 7.295).** Most of the
+1. **Audit and the test principle. Done.** Most of the
    sorting had been done in 7.291. Running twenty-four plausible teacher edits
    through the real build found two refusals in the wrong place. A bare
    `<details>` now builds, with its markdown converted, and the build says
@@ -430,14 +430,14 @@ Each step is a pull request that stands alone.
 3. **Edit mode, in slices.** Decisions made after the spike: maths shows as TeX
    while its block is edited; the `{.term}` mark is taught to the editor;
    phones get "needs a larger screen" for now (see the spike report).
-   - **3a. The way in. Done** (DECISIONS_LOG 7.296). The button at the foot of
+   - **3a. The way in. Done**. The button at the foot of
      Settings, the how-to fold and the guide (`docs/EDITING_A_PAGE.md`), `#edit`,
      the token prompt and "Forget my token", the width check. The editor loads
      only when Edit is pressed, and a download carries none of it.
    - **3b. Headings and paragraphs. Done.** The in-place editor bundle, the
      swap, the outline, the splice, one draft PR per session with later saves
      added as commits. Blocks that need more open as their markdown in a box.
-   - **3c. Lists, quotes, maths and terms. Done** (DECISIONS_LOG 7.297).
+   - **3c. Lists, quotes, maths and terms. Done**.
      `assets/inpage-markdown.js` makes a block safe going in and puts it back
      coming out: inline maths as a code span of its TeX, `{.term}` kept by the
      words it marks, bullets and tightness restored. Of 17,994 prose blocks,
@@ -447,13 +447,13 @@ Each step is a pull request that stands alone.
      other blocks follow in step 4.
    `ARCHITECTURE.md` and `WRITING_TUTORIALS.md` are updated in the slice that
    changes what they describe.
-   - **4a. Code cells. Done** (DECISIONS_LOG 7.303). Josh chose the order:
+   - **4a. Code cells. Done**. Josh chose the order:
      cells, then folds, then tables. A cell edits in a code editor with its id
      fixed; its hint and solution fences edit as boxes beside it.
-   - **4c. Tables. Done** (DECISIONS_LOG 7.305). Each cell of a table has the
+   - **4c. Tables. Done**. Each cell of a table has the
      range of its own text and edits in place as its markdown; rows and columns
      cannot be added or removed yet.
-   - **4b. Folds. Done** (DECISIONS_LOG 7.304). The blocks inside a `<details>`
+   - **4b. Folds. Done**. The blocks inside a `<details>`
      fold carry ranges and edit like the page around them; the title edits as
      a line of text; edit mode opens every fold. Plain code fences edit as
      markdown boxes, here and on the page.

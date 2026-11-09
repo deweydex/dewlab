@@ -83,7 +83,7 @@ class TestThePage:
 
     def test_a_section_the_page_no_longer_has_links_to_the_page_and_says_so(self, repo, capsys):
         # A teacher cut the section; the map should not stop their page going
-        # live (DECISIONS_LOG 7.299).
+        # live.
         def pin(g):
             next(t for t in g["topics"] if t["id"] == "t-asking")["steps"][0]["section"] = "no-such-part"
         mapped(repo, graph=pin)

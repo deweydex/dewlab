@@ -288,7 +288,7 @@ immediate (`saveNow()`/`saveCustomCells()`), not the debounced
 `scheduleSave()`/`scheduleCustomSave()` every keystroke goes through —
 a discrete click has nothing to coalesce, and debouncing it risks
 losing the state to a reload that beats the timer (a real bug an e2e
-test caught during 7.114, before it shipped).
+test caught before it shipped).
 
 Duplicate (`.dl-btn-duplicate`, `duplicateAsCustomCell(cell, type)`)
 means something narrower here than in dewmini, because an authored cell
@@ -308,7 +308,7 @@ same chain. Custom cells got a Duplicate button too, `type` carried
 through so a text cell's own copy stays text.
 
 A rendered custom text cell goes quiet until touched (`.dl-cell-text`,
-`assets/tutorial-style.css`, DECISIONS_LOG.md 7.115): its `.dl-cell-head`
+`assets/tutorial-style.css`): its `.dl-cell-head`
 and `.dl-cell-collapse-col` sit at `opacity: 0; pointer-events: none`
 until a reader hovers or focuses the cell, so a rendered note reads like
 part of the page rather than a code widget sitting open among cells that
@@ -479,8 +479,7 @@ when a cell is running, as soon as it finishes
 ## Highlights: colour, the Notes panel's own list, and My Notes
 
 A highlight anchors to a passage of prose (`locateHighlightAnchor()`,
-`describeQuote()`) rather than a build-time id — see `DECISIONS_LOG.md`
-7.155–7.160 for why that turned out cheap. Everything past that base is
+`describeQuote()`) rather than a build-time id. Everything past that base is
 this file's own addition, built together rather than across six rollout
 steps the way the base feature was:
 
@@ -508,7 +507,7 @@ steps the way the base feature was:
 - **My Notes** (`all-notes.html`, `write_all_notes_page()` in `build.py`,
   `assets/my-notes.js`) is the same idea across every tutorial at once.
   The link to it is the first thing in the Notes panel, above this page's
-  own notes; it sat under the wordmark until 7.204, where a reader looking
+  own notes; it used to sit under the wordmark, where a reader looking
   for what they had written had no reason to look.
   `localStorage` is shared per origin, not per page, so this page reads
   every `dewlab:progress:*` record itself, client-side — nothing here
@@ -530,7 +529,7 @@ steps the way the base feature was:
   site?"** — `manifest.standalone`, checked throughout the Pyodide
   section. A `file://`-opened page can't reliably create a module Worker,
   so the standalone export always uses the main-thread path — see the
-  module's own top comment and `DECISIONS_LOG.md` 7.77 for the full
+  module's own top comment for the full
   reasoning.
 - **"Why does the Reference panel's search find `loop` when I type
   `loops`?"** — `filterReferenceContent()`/`filterBasicsContent()` match
@@ -603,7 +602,7 @@ steps the way the base feature was:
   `data-answer`, so nothing records where the page's answer moved to) and
   enables the button once one is picked. A dropdown gap's choices are
   shuffled the same way, all but the blank "choose" that `build.py` puts
-  first, which stays selected until the reader picks (7.255).
+  first, which stays selected until the reader picks.
   `showPageAnswer()` calls
   `revealAnswer()`, which labels the page's option, shows only the note
   for the reader's choice, and shows "You chose the same as the page."

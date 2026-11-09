@@ -22,7 +22,7 @@ vendored library, which is covered further down.
 ```sh
 git clone https://github.com/deweydex/dewlab
 cd dewlab
-pip install -r requirements-build.txt
+pip install -r requirements-dev.txt
 python3 build.py --clean
 python3 -m http.server -d site 8000
 ```
@@ -30,7 +30,8 @@ python3 -m http.server -d site 8000
 That builds the whole site into `site/` and serves it at
 `http://localhost:8000`. `site/` is never committed — it is regenerated on every
 push, which is what keeps a published page from drifting from the markdown it
-came from.
+came from. `requirements-dev.txt` is the build's three packages plus what
+the tests need; `requirements-build.txt` alone is enough to build and preview.
 
 Two things make a build slow. The downloadable single-file copies: 
 `python3 build.py --no-standalone` skips them while you are iterating, and a
@@ -42,8 +43,7 @@ cells, toolkit, data, runtime and installed packages are unchanged ran clean
 last time and is not run again. What was kept is in `.build-cache/` (never
 committed), under a hash of exactly those things, so there is nothing to clear
 by hand; a failure, or a solution skipped for a missing package, is never kept.
-`python3 build.py --no-cache` runs everything, and a push to `main` does
-(`DECISIONS_LOG.md` 7.300).
+`python3 build.py --no-cache` runs everything, and a push to `main` does.
 
 A build prints one summary line, then every note it has for you together,
 last, where you will see them. `python3 build.py -v` prints a line for each
@@ -58,15 +58,21 @@ python3 -m pytest                      # everything
 python3 -m pytest --ignore=tests/e2e   # the fast ones, no browser
 ```
 
-The unit tests need nothing but Python. Most of them build a small site of
-their own, so there are a lot of short ones; with `pytest-xdist` installed
-(`pip install pytest-xdist`), `python3 -m pytest --ignore=tests/e2e -n auto`
-runs them on every core, as CI does, in a little over half the time.
+The unit tests need only what `requirements-dev.txt` installs. Most of them
+build a small site of their own, so there are a lot of short ones;
+`python3 -m pytest --ignore=tests/e2e -n auto` runs them on every core, as CI
+does, in under ten seconds on a laptop.
 
-The end-to-end tests drive a real
-browser against a real Python runtime, so they need a local copy of that runtime
-first — `python3 dev/fetch_pyodide.py`, about 30 MB. Without it they skip with a
-message rather than failing.
+The end-to-end tests drive a real browser against a real Python runtime, so
+they need three more things, once:
+
+```sh
+pip install playwright
+python -m playwright install chromium
+python3 dev/fetch_pyodide.py           # about 30 MB
+```
+
+Without them they skip with a message rather than failing.
 
 There is also [`tests/MANUAL_CHECKLIST.md`](tests/MANUAL_CHECKLIST.md) for the
 things a browser test does not cover well.
@@ -94,7 +100,7 @@ tutorial, the real curriculum or map) reports, under `advisory`; a test of the
 build makes the small example it needs. One test of the rule: with every
 content folder emptied, the blocking tests all pass. And a link to a section a
 page no longer has still reaches the page, so cutting a section is a note, not
-a refusal. `DECISIONS_LOG.md` 7.295, 7.298 and 7.299 say why.
+a refusal.
 
 New to the suite, or not sure where a new test belongs?
 [`docs/tests-explained.md`](docs/tests-explained.md) maps what's in each
@@ -105,7 +111,7 @@ one goes.
 
 ## What runs in CI
 
-Three workflows run on every push.
+Two workflows run on a push: `tests` and `publish`.
 
 `tests` runs the unit suite, builds the site, and runs `python3
 dev/generated.py`, which fails if a generated file something depends on is out
@@ -116,13 +122,12 @@ marked `advisory`, `python3 dev/generated.py --all` (which adds the curriculum
 map being current, the planning files agreeing with each other, and the Dewey
 Track's pictures), and the links inside the documents about the project. It
 reports what it finds as a warning on the pull request and never fails it
-(`DECISIONS_LOG.md` 7.291). To see those checks locally, run
+. To see those checks locally, run
 `python3 -m pytest -m advisory`, `python3 dev/generated.py --all` and
 `python3 dev/check_doc_links.py`. After changing a cell or a `covers:` line,
 `python3 dev/generated.py --fix` regenerates whatever fell behind.
 
-On a pull request, `tests` first sorts the changed files (`DECISIONS_LOG.md`
-7.299). One that changes only documents about the project (`planning/`,
+On a pull request, `tests` first sorts the changed files. One that changes only documents about the project (`planning/`,
 `docs/`, the top-level `.md` files, `.claude/`) gets the house-style job and
 nothing else. One that also changes `tutorials/` gets the unit tests and the
 glossary check as well, but not the browser job or the bundle check, since
@@ -141,11 +146,6 @@ the result.
 `publish` (`.github/workflows/deploy.yml`) builds the site and deploys it to
 GitHub Pages on a push to `main`.
 
-`auto-disable-feedback` is a one-shot, not a check: it fires once, on a
-date written into its own cron expression, flips
-`planning/feedback.yaml` off, and deletes itself in the same commit. See
-"Student feedback pipeline" below.
-
 ---
 
 ## Student feedback pipeline
@@ -156,8 +156,7 @@ hint icon. Both open the same three doors: a question goes to GitHub
 Discussions, an error or a page that is wrong or hard to follow both open
 a prefilled issue on `.github/ISSUE_TEMPLATE/report.yml`. `report_doors_links()`
 and `report_issue_url()` in `build.py` build the doors; `ARCHITECTURE.md`
-§1 step 8 has the mechanics, `DECISIONS_LOG.md` Phase 8 has the reasoning
-behind each piece of it.
+§1 step 8 has the mechanics.
 
 `planning/feedback.yaml` is the switch — `enabled: false` turns every
 door off, everywhere, without touching a tutorial. `.claude/skills/triage-report/SKILL.md`
@@ -241,10 +240,6 @@ course in dewlab, or a developer changing the code. Do not rewrite these to
 address a student; that is not who reads them, and it would make them harder to
 use for the people who do.
 
-**`DECISIONS_LOG.md`**: a record of engineering decisions, each dated and
-numbered. Keep entries accurate and readable, but do not simplify away real
-information for the sake of a friendlier tone. Its job is precision.
-
 ---
 
 ## Before you open a pull request
@@ -253,15 +248,16 @@ information for the sake of a friendlier tone. Its job is precision.
   first — [`docs/CHECK_YOUR_WORK.md`](docs/CHECK_YOUR_WORK.md) explains what
   it reports, and it can open the pull request for you.
 - Run `python3 -m pytest` (skip `tests/e2e` unless you are testing browser
-  behaviour directly), `ruff check` on any Python you touched, and
-  `python3 build.py` to confirm the site still builds.
+  behaviour directly) and `python3 build.py` to confirm the site still
+  builds.
 - Read back the documentation and comments you touched as if you had never seen
   this codebase. If something needs reading twice to make sense, it needs
   another pass.
-- Record a decision somebody could reasonably have made differently as a new
-  numbered entry in [`DECISIONS_LOG.md`](DECISIONS_LOG.md), with what it would
-  cost to change your mind later. [`QUESTIONS.md`](QUESTIONS.md) is where
-  anything still waiting on a decision belongs.
+- Say why in the pull request description, wherever somebody could reasonably
+  have done it differently. If the reason will matter to the next person to
+  read the code, it also belongs in a comment beside that code. There is no
+  separate log to update. Something still waiting on a decision is a GitHub
+  issue or Discussion.
 - If you are unsure whether a change needs a new explanation file or an update to
   an existing one, write it. A missing explanation costs the next person more
   time than a redundant one.

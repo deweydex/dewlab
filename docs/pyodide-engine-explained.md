@@ -11,8 +11,7 @@ running underneath.
 It lives under `assets/` as a page-independent module rather than inside
 `compose/` with the rest of dewmini: 700 lines of tricky
 Worker/interrupt/postMessage logic deserve their own file, decoupled
-from any one page's markup (`DECISIONS_LOG.md` 7.89 for how it came to
-be structured this way). `configure()` is what keeps it
+from any one page's markup. `configure()` is what keeps it
 page-independent: the page that calls it hands this module accessors
 for its own output elements and status display, plus a couple of small
 per-page overrides (`dataBase`, since dewmini lives one directory below
@@ -77,7 +76,7 @@ of the file: two engines, one dispatcher, one shared public interface.
    `runCellWorker()`. `bootWorker()`'s boot message always sets
    `seedDb: true` — the signal `assets/pyodide-worker.js`'s own boot()
    reads to decide whether to seed the dewmini-only `db` global (SQL
-   cells, DECISIONS_LOG.md 7.118); see
+   cells); see
    [`pyodide-worker-explained.md`](pyodide-worker-explained.md) for why
    that flag has to exist at all rather than the worker just always
    doing it.
@@ -103,7 +102,7 @@ of the file: two engines, one dispatcher, one shared public interface.
    each cell's strip in `widgetHolders`, because the Notebook redraws a
    cell's elements; `sliderStripFor()` gives it back to the page, and
    `clearWidgets()` empties it. A slider's move calls `rerunCell` from
-   `configure()`, the page's own Run (7.268).
+   `configure()`, the page's own Run.
 
 ---
 

@@ -144,7 +144,7 @@ VERSION_RE = re.compile(r"^(?P<y>\d{4})\.(?P<m>\d{2})\.(?P<d>\d{2})\.(?P<n>\d+)$
 
 # Fields a tutorial used to carry and no longer may. Where a tutorial sits is
 # not the tutorial's own business any more: a course file under courses/
-# lists it, and the folder name is its id (DECISIONS_LOG 7.172).
+# lists it, and the folder name is its id.
 MOVED_FRONTMATTER = {
     "order": "the course file under courses/ lists ids in reading order",
     "slug": "the folder name is the tutorial's id",
@@ -182,7 +182,7 @@ QUESTION_TYPES = {"multiple-choice", "fill-in-the-blank"}
 # inside $...$ maths are the maths' own, not gaps: find_gaps() below.
 GAP_RE = re.compile(r"\{([^{}]*)\}")
 # `html app`/`css app`/`js app` — a full-stack module's own fence kind
-# (DECISIONS_LOG.md 7.180). Same three languages as a site pane, on
+#. Same three languages as a site pane, on
 # purpose, but a separate pair of constants: site fences and app fences
 # are read by two different branches in extract_blocks(), and nothing
 # here should make changing one silently change the other.
@@ -293,7 +293,7 @@ ROOT_HREF = 'href="dlroot:'
 WORLD_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-world" data-world="(?P<world>[^"]*)">[ \t]*$')
 WORLD_KEY_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 WORLD_DIV_RE = re.compile(r'<div class="dl-world" data-world="(?P<world>[a-z0-9-]+)">')
-# One project of a "choose your project" page (DECISIONS_LOG 7.288): the
+# One project of a "choose your project" page: the
 # opening tag on a line of its own, an id from the page's `projects:`
 # frontmatter, and a matching `</div>`. See project_spans().
 PROJECT_OPEN_RE = re.compile(r'^[ \t]*<div class="dl-project" data-project="(?P<project>[^"]*)">[ \t]*$')
@@ -595,7 +595,7 @@ class Tutorial:
     anchors: set[str] = field(default_factory=set)
     toc: list = field(default_factory=list)
     # A "choose your project" page's projects, each with the ids of the
-    # cells inside it, in source order (7.288). Empty on most pages.
+    # cells inside it, in source order. Empty on most pages.
     project_cells: dict[str, list[str]] = field(default_factory=dict)
     notes: list[Note] = field(default_factory=list)
     # Where this page sits: every course that lists it, in courses/index.yaml
@@ -700,7 +700,7 @@ class Tutorial:
         finish it: where the idea is used, why things behave as they do,
         history, the deeper detail. Mechanically it is a practice page's
         shape — off the reading order, no coverage, hanging off the
-        tutorial(s) it names, which link to it in turn (DECISIONS_LOG 7.208).
+        tutorial(s) it names, which link to it in turn.
         """
         return tuple(dict.fromkeys(listed_ids(self.meta.get("context_for"))))
 
@@ -827,7 +827,7 @@ def note(path: Path, message: str) -> None:
     For a rule about how a page is shaped, as opposed to one whose breaking
     would leave a reader with a page that does not work. The page builds
     and the note goes to stderr in the same "file: what" shape `fail()`
-    uses (DECISIONS_LOG 7.295, 7.298).
+    uses.
     """
     key = (str(path), message)
     if key in _NOTED:
@@ -1268,7 +1268,7 @@ def parse_trigger(text: str, path: Path) -> str:
     says nothing, is the educator's typo in an optional setting, not a reason
     to stop the build: the hint takes the default trigger instead, the whole
     line replaced and not only the bad term, since "3 errors and a typo" is
-    not "3 errors", and the build says so (DECISIONS_LOG 7.300).
+    not "3 errors", and the build says so.
     """
     terms = []
     for raw in re.split(r"\s*(?:,|\band\b|&)\s*", text.strip().lower()):
@@ -1814,7 +1814,7 @@ def render_question(question: Question) -> str:
                 # The gap starts on a blank "choose", which cannot be chosen
                 # back. Without it the browser shows the first option, the
                 # page's own word, and the runtime's shuffle leaves it
-                # selected wherever it lands (DECISIONS_LOG 7.255).
+                # selected wherever it lands.
                 option_tags = '<option value="" selected disabled>choose</option>' + "".join(
                     (f'<option data-answer="true">{html.escape(choice)}</option>' if i == 0
                      else f"<option>{html.escape(choice)}</option>")
@@ -1962,7 +1962,7 @@ PROJECT_FIELDS = PROJECT_REQUIRED + ("maths", "data")
 
 def page_projects(meta: dict, path: Path) -> dict[str, dict]:
     """A "choose your project" page's projects, from its `projects:`
-    frontmatter (7.288): each id, in order, with its title, the curious
+    frontmatter: each id, in order, with its title, the curious
     question its card leads with, what the reader makes, the maths and the
     data it uses, and an optional picture. `own: true` marks the project of
     the reader's own, which gets the wide card under the grid; any number of
@@ -2053,7 +2053,7 @@ def project_spans(body: str, path: Path, projects: dict[str, dict]) -> dict[str,
 
 
 def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[Cell]) -> dict[str, list[str]]:
-    """Each project's cells, by id, for the progress counts (7.288)."""
+    """Each project's cells, by id, for the progress counts."""
     known = {cell.id for cell in cells}
     return {
         project: [found for found in re.findall(r"^id:\s*(\S+)\s*$", body[start:end], re.M)
@@ -2063,7 +2063,7 @@ def project_cell_ids(body: str, spans: dict[str, tuple[int, int]], cells: list[C
 
 
 def render_project_chooser(projects: dict[str, dict]) -> str:
-    """A "choose your project" page's cards and comparison table (7.288):
+    """A "choose your project" page's cards and comparison table:
     a 2×2 grid, each card led by its curious question, the reader's own
     project as a wide card under it, then the projects side by side. Each
     card is a link to its project, so without JavaScript it still takes
@@ -2117,7 +2117,7 @@ def render_project_chooser(projects: dict[str, dict]) -> str:
 
 def place_projects(body_html: str, projects: dict[str, dict], path: Path) -> str:
     """Give each project its anchor, and put the cards and table just before
-    the first one (7.288)."""
+    the first one."""
     if not projects:
         return body_html
     if body_html.count('<div class="dl-project"') != len(projects):
@@ -2144,7 +2144,7 @@ def check_fences_closed(body: str, path: Path) -> None:
     the page becomes one grey block, with no error to say why. A line that
     starts with ``` and sits outside every matched fence is that opener.
     This needs no judgement about what the author meant, which is why it
-    refuses while the style rules around it do not (DECISIONS_LOG 7.295).
+    refuses while the style rules around it do not.
     """
     matched = [m.span() for m in FENCE_RE.finditer(body)]
     for opener in re.finditer(r"^ *```", body, re.MULTILINE):
@@ -4925,7 +4925,7 @@ def progress_attrs(tutorial: Tutorial) -> str:
     than a "0/0"."""
     if not tutorial.cells:
         return ""
-    # A choose-your-project page's projects count only once started (7.288),
+    # A choose-your-project page's projects count only once started,
     # so the badge needs to know which cells are whose.
     projects = (f' data-projects="{html.escape(json.dumps(tutorial.project_cells), quote=True)}"'
                 if tutorial.project_cells else "")
@@ -4952,7 +4952,7 @@ def render_search_box(placeholder: str, big: bool = False, id_prefix: str = "dl-
     place this is the primary way in rather than a convenience partway
     down a long list. `hint=False` leaves out the line under the field
     saying what a search matches — the front page's own sentence above
-    its box already says it (7.175).
+    its box already says it.
     """
     classes = "dl-search dl-search-big" if big else "dl-search"
     input_id = f"{id_prefix}-input"
@@ -4984,7 +4984,7 @@ def nav_search_html() -> str:
     other one, drawn with no border or background and those words as its
     placeholder. A click on the words or the magnifier puts the cursor in
     front of them; typing replaces them; the results drop beneath. There
-    is no second bar to open, on any width (7.169 — Josh: "a tap or click
+    is no second bar to open, on any width (Josh: "a tap or click
     on the icon or text puts a cursor in front of the text and then as
     the user types the text goes away and the results just appear
     below"). The magnifier sits over the input's left padding and lets
@@ -5227,7 +5227,7 @@ def check_alt_text(tutorial: Tutorial) -> None:
 def check_folds(tutorial: Tutorial) -> None:
     """Say so when a `<details>` names none of the project's fold styles.
 
-    A note, not a refusal (DECISIONS_LOG 7.295). A fold with no class still
+    A note, not a refusal. A fold with no class still
     works: its markdown is converted (`mark_markdown_wrappers()`) and a reader
     can open it. What it lacks is the project's look and marker, so it shows
     as the browser's default triangle. That is worth telling the author, and
@@ -5358,7 +5358,7 @@ asyncio.run(main())
 # a different key and the page runs. Only a clean pass is kept. A failure, or
 # a solution skipped for a package this Python lacks, runs every time, so
 # the cache can hide nothing the build would have said. `--no-cache` turns it
-# off, and CI does for a push to main (DECISIONS_LOG 7.300).
+# off, and CI does for a push to main.
 SOLUTION_CACHE = True
 
 
@@ -5524,7 +5524,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             continue
         if problem and problem.startswith("EOFError"):
             # The solution is not wrong; the build cannot type for it. Nothing
-            # was checked, so nothing is kept (DECISIONS_LOG 7.300).
+            # was checked, so nothing is kept.
             say(f"note: could not check the solution for cell {cell!r} in "
                   f"{tutorial.path.relative_to(ROOT)}: it calls input() and nobody can type "
                   "in the build. Give the cell a ```typed block with enough lines to check it")
@@ -5580,7 +5580,7 @@ def read_dataset(name: str) -> dict | None:
     shape the live copy with.
 
     Where a dataset came from is for the educator to say, and a file that
-    does not is a note, not a stopped build (DECISIONS_LOG 7.300): a field
+    does not is a note, not a stopped build: a field
     left blank is listed, and the Reference tab says it was not recorded.
     The one thing the page cannot do without is the `snapshot` date, which
     its numbers and the note under a cell come from. A file without a
@@ -5768,7 +5768,7 @@ def resolve_links(tutorial: Tutorial, registry: dict[str, Tutorial]) -> str:
     student who follows it. A link to a section the page no longer has is a
     note, and goes to the top of the page: the reader still arrives, and a
     teacher who cuts a section should not have to edit every page that
-    pointed at it before theirs can go live (DECISIONS_LOG 7.299).
+    pointed at it before theirs can go live.
     """
 
     def one(match: re.Match) -> str:
@@ -6476,8 +6476,7 @@ def report_doors_html(page: str, version: str) -> str:
 
 def report_doors_panel_html(page: str, version: str) -> str:
     """The Give Feedback door's own content — the small circle fixed at the
-    bottom-right of the screen, not a corner-dock tab (DECISIONS_LOG.md
-    7.194) — the same three doors as the footer's disclosure (report_doors_html()),
+    bottom-right of the screen, not a corner-dock tab — the same three doors as the footer's disclosure (report_doors_html()),
     without the <details> wrapper, since the button that opens this panel
     is already the thing a reader clicked on purpose. This is a second way
     to the same doors, not a replacement: the footer's own version stays,
@@ -7167,7 +7166,7 @@ COMPOSE_REDIRECTS = ("dewmini.html", "dewminiweb.html")
 
 # dewmark, the exam track, lived in dewmark/ and its marking workbench was
 # published at /dewmark/ until it moved to its own repository and site
-# (DECISIONS_LOG.md 7.292). The old address is kept, as a redirect to
+#. The old address is kept, as a redirect to
 # dewmark's home page, for anyone who bookmarked it; the stub follows the
 # compose/ redirects' pattern, keeping a query string and a #hash.
 DEWMARK_HOME = "https://deweydex.github.io/dewmark/"
@@ -7489,7 +7488,7 @@ def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
     """My Notes: every highlight and every page's own free-text notes,
     gathered from every tutorial this browser has ever saved progress
     for — into one page to review, search, or download as a plain-text
-    study sheet (DECISIONS_LOG.md, the highlight-colours-and-list entry).
+    study sheet (the highlight-colours-and-list entry).
 
     Nothing here comes from the build: localStorage is shared per
     origin, not per page, so `assets/my-notes.js` reads every saved
@@ -7789,8 +7788,7 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
     """Two things the build lets through and says so: two pages with one
     title, and two tutorials teaching mostly the same outcomes. Neither is
     wrong — two courses may each have a "Joins" — but each is worth a
-    second look, and nothing else would ever mention it (refactor
-    decisions: DECISIONS_LOG 7.172).
+    second look, and nothing else would ever mention it.
     """
     pages = [t for t in tutorials if t.is_default and not t.is_companion]
     by_title: dict[str, list[Tutorial]] = {}

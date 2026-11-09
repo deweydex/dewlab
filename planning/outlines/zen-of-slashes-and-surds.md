@@ -75,13 +75,13 @@ says right or wrong.
 
 ### A departure from 7.229, decided in 7.254
 
-`DECISIONS_LOG.md` 7.229 (25 September 2026) says the whole site names a
+The whole site names a
 feeling *rarely*, and always with a route. This module names one more
 often than that, because noticing frustration is part of what it teaches.
 Every mention still carries a route, which keeps the part of 7.229 that
 protects the reader. The difference is frequency and purpose: a fixed
 "calm check" at the same places on every page (below), not a feeling
-named in passing. `DECISIONS_LOG.md` 7.254 records the decision. The
+named in passing. The
 words live once, in `setup/zen-calm-check.md`, and every page includes
 them.
 

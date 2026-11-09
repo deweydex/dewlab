@@ -433,8 +433,7 @@ A fenced block tagged `` ```html site=name `` (or `css`, or `js`)
 becomes a pane; consecutive blocks sharing a name form one editor.
 `build.py`'s `extract_site_editors()` and `render_site_editor()` do the
 work, ported in shape (not code) from dewmini's Site tab
-(`dewlab/compose/dewmini.js`, `openSiteFile()`/`renderSiteView()`;
-DECISIONS_LOG 7.121): a pane per file, a preview built from
+(`dewlab/compose/dewmini.js`, `openSiteFile()`/`renderSiteView()`): a pane per file, a preview built from
 `<style>{css}</style>{html}<script>{js}</script>`, redrawn on every
 keystroke, in an iframe sandboxed to `allow-scripts` with no
 `allow-same-origin`. `assets/site-editor.js` is the runtime; new rules in

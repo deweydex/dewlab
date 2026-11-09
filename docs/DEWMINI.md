@@ -144,13 +144,13 @@ copied:
 
 **Three of the five widgets work here, and two do not.** The Notebook runs
 Python in a background worker, off the page's own thread, and that is what
-lets the Stop button interrupt a runaway cell (`DECISIONS_LOG.md` 7.77).
+lets the Stop button interrupt a runaway cell.
 `text_input`, `dropdown` and `slider` work anyway: before a cell runs, the
 page reads what each of the cell's widgets holds and hands it to Python,
 so a run sees what the reader typed, chose or dragged to. Moving a slider
 runs its cell again, and the slider sits in a strip above the output that
 a run never clears, so it keeps its place while the cell redraws. This is
-the same code a tutorial page uses (`assets/cell-widgets.js`, 7.268). A
+the same code a tutorial page uses (`assets/cell-widgets.js`). A
 Notebook does not keep a slider across a reload, since Python starts
 afresh then: run the cell and the slider comes back.
 

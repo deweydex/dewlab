@@ -57,13 +57,12 @@ receive a message (`"set-input-buffer"`, `readLine()`, and
 6. **`boot()`** — starts Pyodide, loads packages, loads
    `tutorial_tools.py`, sets up the shared namespace (`RESEED_GLOBALS_SOURCE`),
    and, only if the boot message set `msg.seedDb`, seeds the `db` global too
-   (`SEED_DEWMINI_DB_SOURCE`, DECISIONS_LOG.md 7.118 — a fresh, in-memory
+   (`SEED_DEWMINI_DB_SOURCE` — a fresh, in-memory
    `sqlite3` connection a SQL cell runs against and an ordinary Python
    cell can read under the same name). Originally dewmini-only
    (`assets/pyodide-engine.js`'s `bootWorker()`); a tutorial page's own
    `assets/tutorial-runtime.js` `bootWorker()` now sets it too, whenever
-   the page's manifest has a `sql exec` cell (`manifest.needsSqlite`,
-   DECISIONS_LOG.md 7.140) — the variable name `seedDewminiDb` is a
+   the page's manifest has a `sql exec` cell (`manifest.needsSqlite`) — the variable name `seedDewminiDb` is a
    holdover from when only dewmini ever asked, not a claim about who
    still does. `resetPageState()` further down re-seeds both the same
    way, reading that flag rather than needing the caller to say so again

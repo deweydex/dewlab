@@ -29,7 +29,7 @@
 /* A page shown inside another site's frame (a lesson placed on a Moodle
    page, say) is marked data-dl-embedded before it first paints, so the
    corner docks never flash over the column first (tutorial-style.css,
-   "Embedded"; DECISIONS_LOG.md 7.308). Reading window.top cannot throw
+   "Embedded"). Reading window.top cannot throw
    across origins, but a browser that refuses it is treated as framed. */
 (function () {
   var framed;
@@ -166,10 +166,10 @@
 <!-- The right-hand panels. Three corner-dock tabs — Notes (your own work
      on the page), Python (running the cells and what it currently holds),
      Settings (Appearance/Behavior/Imports & Exports, an internal tablist
-     rather than three more corner tabs, DECISIONS_LOG.md 7.185) — plus
+     rather than three more corner tabs) — plus
      Give Feedback's own door, a fixed circle at the bottom-right rather
      than a corner tab, since a report is something you reach for, not a
-     preference (7.194). Every section keeps the id it always had; only
+     preference. Every section keeps the id it always had; only
      which panel holds it has moved a few times. Versions is marked up in
      Imports & Exports but lives in the where-you-are tree, under this
      tutorial's own rung — initVersionsSection() moves it there on every
@@ -179,7 +179,7 @@
      Each panel's own <h2> is sr-only: the corner tab (or, for Give
      Feedback, the circle) that opens it already shows its label, so a
      second, visible copy at the panel's own top was the same word twice
-     (DECISIONS_LOG.md 7.183). The id stays, since aria-labelledby still
+. The id stays, since aria-labelledby still
      needs it for the dialog's name. -->
 <div class="dl-right-panel dl-yourwork" id="dl-yourwork" role="dialog" aria-modal="false"
      aria-labelledby="dl-yourwork-title" hidden>
@@ -187,7 +187,7 @@
 
   <!-- The way out to My Notes (all-notes.html): every highlight and every
        page's own notes, from every tutorial this browser holds, on one
-       page. It sat under the wordmark until now (DECISIONS_LOG.md 7.195),
+       page. It sat under the wordmark until now,
        where the top-left block answers where you are rather than what you
        have written, and a reader looking for their notes had no reason to
        read it. This panel is the one place on the page that is about the
@@ -341,7 +341,7 @@
      Behavior holds the "how the page runs" and "what the tree shows"
      settings that used to sit oddly inside Give Feedback's old tab: run
      time, staged hints, and the progress-badges toggle a reader sets once
-     and rarely revisits (DECISIONS_LOG.md 7.194). Defaults to Appearance,
+     and rarely revisits. Defaults to Appearance,
      the one of the three actually reached for often. -->
 <div class="dl-right-panel" id="dl-settings" role="dialog" aria-modal="false"
      aria-labelledby="dl-settings-title" hidden>
@@ -707,12 +707,12 @@
      links and two short lines, so a full-height column reaching to the top
      of the screen left most of itself empty, pushed the reading column
      over for nothing, and landed nowhere near the circle that had just
-     been clicked (DECISIONS_LOG.md 7.204). It keeps .dl-right-panel for
+     been clicked. It keeps .dl-right-panel for
      its type, its colours and its phone sheet; .dl-report-popover puts it
      just above its own circle at the size its contents actually need.
 
      Its <h2> is visible, where every other panel's is sr-only: those are
-     named by the corner tab that opens them (7.183), and this circle is an
+     named by the corner tab that opens them, and this circle is an
      icon with no label, so nothing else on screen says what the box is. -->
 <div class="dl-right-panel dl-report-popover" id="dl-report" role="dialog" aria-modal="false"
      aria-labelledby="dl-report-title" hidden>

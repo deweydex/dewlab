@@ -1,6 +1,6 @@
 # Unit tests, plus the handful of browser files the `browser` job at the end
 # names. The rest of the e2e suite needs a 30 MB Pyodide download and a
-# browser for every cell it runs (DECISIONS_LOG 0.17, 0.20); running all of
+# browser for every cell it runs; running all of
 # it here would dominate the workflow for a suite that mostly guards the
 # runtime, so it stays a local and manual step.
 name: tests
@@ -16,8 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Which jobs a pull request needs, from the files it changes (DECISIONS_LOG
-  # 7.299). A change only to documents about the project (planning/, docs/,
+  # Which jobs a pull request needs, from the files it changes. A change only to documents about the project (planning/, docs/,
   # the top-level .md files, .claude/) runs the house-style reports and
   # nothing else: no page reads them. A change that also touches tutorials/
   # adds the unit tests and the glossary check, which build and read the
@@ -71,8 +70,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest pytest-xdist numpy pandas matplotlib svgwrite
-          python -m pip install -r requirements-build.txt
+          python -m pip install -r requirements-dev.txt
 
       # Everything under tests/ except the browser suite, rather than a list of
       # files — a named list quietly stops covering each new test module.
@@ -87,7 +85,7 @@ jobs:
       # Running every page's solutions is three quarters of a build, and a page
       # whose cells, data, runtime and packages are unchanged runs clean again.
       # The build keeps a clean page's result under a hash of exactly those
-      # things (DECISIONS_LOG 7.300), so what is restored here can only be
+      # things, so what is restored here can only be
       # used when it is still true. A pull request restores it; a push to main
       # does not, and builds with --no-cache as well, so a result that was
       # wrong can never reach main unchecked.
@@ -123,7 +121,7 @@ jobs:
 
 
   # Checks that look after the project rather than any page, reported and
-  # never blocking (DECISIONS_LOG 7.291): the tests marked `advisory` (a
+  # never blocking: the tests marked `advisory` (a
   # house preference about tutorial prose, the tidiness of planning files),
   # the curriculum map being current, and the links inside the documents
   # about the project. Each step turns a failure into a warning on the pull
@@ -141,8 +139,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest numpy pandas matplotlib svgwrite
-          python -m pip install -r requirements-build.txt
+          python -m pip install -r requirements-dev.txt
 
       - name: Report the advisory tests
         run: |
@@ -232,10 +229,10 @@ jobs:
   # and the layout, and never run a cell — the reference panel, the phone
   # layout, link contrast, the course chooser, the remembered course, the
   # saved-work key migration and an old address, a panel's edge-resize
-  # drag, and the topic map's names, towns and phone panel (7.293). The
+  # drag, and the topic map's names, towns and phone panel. The
   # phone identity-row regression in #230 reached main with CI
-  # green because none of these ran here (DECISIONS_LOG 7.173) — the same
-  # reasoning added the resize-drag file after a live-sync bug (7.197)
+  # green because none of these ran here — the same
+  # reasoning added the resize-drag file after a live-sync bug
   # shipped with nothing here to have caught it either. Pyodide is fetched
   # once and cached: the fixture site serves it, and a page with cells
   # boots it even when no test presses Run.

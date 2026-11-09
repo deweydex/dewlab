@@ -138,7 +138,7 @@ class TestNavigation:
 
     def test_an_id_listed_twice_in_one_course_stays_where_it_is_first_listed(self, repo, capsys):
         # A tutorial sits in one place on a course; the first place wins and
-        # the note says so (DECISIONS_LOG 7.300).
+        # the note says so.
         series(repo, count=2, order=["t1", "t2", "t1"])
         b.build()
         assert "lists t1 twice" in capsys.readouterr().err
@@ -311,7 +311,7 @@ class TestAllTutorialsPage:
         assert "Later Module</a></summary>" not in page
 
         # A card for a course with no file is left out and said, not a stopped
-        # build (DECISIONS_LOG 7.300).
+        # build.
         index.write_text("cards:\n  - nowhere\n  - computational-methods\norder:\n  - computational-methods\n")
         b.build()
         assert len(b.course_card_order()) == len(b.courses())
@@ -508,7 +508,7 @@ class TestArchivedTutorials:
 class TestTopicGroupsMatchRealTutorials:
     """Checked directly against real tutorials on disk, since a sandboxed
     build's tiny fixture set can't hold topic-groups.yaml to account. A
-    report, not a gate (DECISIONS_LOG 7.299): a tutorial added or retired
+    report, not a gate: a tutorial added or retired
     without a matching edit here is a curriculum decision still to make, and
     write_topics_page() itself only warns."""
 

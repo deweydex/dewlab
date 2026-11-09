@@ -2,9 +2,9 @@
 
 The other door in, for reading the code rather than writing a tutorial —
 read `docs/WRITING_TUTORIALS.md` first if you're writing one; this document
-assumes that and goes underneath it. `DECISIONS_LOG.md` records why specific
-choices were made; this document maps what the pieces are and how they fit
-together.
+assumes that and goes underneath it. It maps what the pieces are and how
+they fit together; why a piece is the way it is lives in the comment beside
+it.
 
 There is no backend: nothing here is a server you deploy, a database you
 migrate, or an API you version. Four separate programs, none aware of the
@@ -66,8 +66,7 @@ The pipeline, in order:
    `site:` name into one `SiteEditor` — a live preview with no Pyodide
    involved), an `AppPane` (the same three languages tagged `app` instead,
    grouped by `app:` name into one `AppCell` — a full-stack cell whose
-   JavaScript can reach the page's own shared `db`, `DECISIONS_LOG.md`
-   7.180), a `Solution`, `Inputs` or `Typed` block (a ```` ```solution ````,
+   JavaScript can reach the page's own shared `db`), a `Solution`, `Inputs` or `Typed` block (a ```` ```solution ````,
    ```` ```inputs ```` or ```` ```typed ```` fence, attached to the exec
    cell above it or the one its `for:` names, #312), or a `CodeBlock`
    (anything else). `extract_math()` does the
@@ -89,7 +88,7 @@ The pipeline, in order:
    the rest of the page into one code block (`check_fences_closed()`). A
    `<details>` fold without `dl-hint`, `dl-answer` or `dl-why` gets a note on
    stderr and builds, its markdown converted like any fold's
-   (`check_folds()`, DECISIONS_LOG 7.295). `problems()` in `editor.js` (§3)
+   (`check_folds()`). `problems()` in `editor.js` (§3)
    runs the structural checks client-side, before a commit rather than after
    CI.
 
@@ -232,8 +231,6 @@ Worker round trip (`queryRows()`) on a hosted page, the same fork every
 other dual-path call in this file already makes. A page with an app cell
 but no cells still boots Pyodide, unlike a page with only a site editor,
 since a query needs `sqlite3` running even with nothing to execute.
-`DECISIONS_LOG.md` 7.180 has the full design, including why this is a
-separate cell kind rather than a third site-pane language.
 
 What happens on load:
 
@@ -409,7 +406,7 @@ most 400ms for it), or where it has nothing to offer. Jedi's first look
 at a module can take most of a second; an answer that arrives after the
 older sources have been shown is kept, and the list reopens with it if
 the cursor has not moved. The tutorial cells and dewmini's editors take
-the same wiring. DECISIONS_LOG.md 7.214.
+the same wiring.
 
 **The reference** (`planning/REFERENCE_PANEL.md`) is the settings panel's
 sibling — same floating-card positioning and open/close mechanics, mutually
@@ -425,7 +422,7 @@ list.append`), and `dev/glossary_python.py` checks the name and the
 entry's example against Python itself and writes the signatures
 (`assets/python-signatures.json`) that `with_python()` attaches, so the
 reference shows each built-in or standard-library function's signature as
-Python gives it (DECISIONS_LOG.md 7.215).
+Python gives it.
 
 ---
 
@@ -628,7 +625,7 @@ dewmini's downloadable copy avoids by serving itself from
 just without a genuine Stop button. What a cell's widgets hold reaches
 Python through `assets/cell-widgets.js`, which the engine and
 `tutorial-runtime.js` share, so a text box, a menu or a slider behaves the
-same in the Notebook as on a tutorial page (7.268).
+same in the Notebook as on a tutorial page.
 
 A JavaScript cell runs through neither of those — `compose/js-cell-engine.js`
 is a second, smaller engine: one persistent sandboxed `<iframe
@@ -699,8 +696,7 @@ A site's HTML pane holds only what goes inside `<body>`; the preview adds
 the frame. Download therefore saves three files, and the `.html` one is a
 whole page (`pageFile()`): doctype, head, a `<link>` to the `.css` saved
 beside it, and a `<script src>` for the `.js`. Load files reverses it
-(`bodyOf()`), so a downloaded page comes back into the panes as it left
-(DECISIONS_LOG 7.233).
+(`bodyOf()`), so a downloaded page comes back into the panes as it left.
 
 ---
 
@@ -788,12 +784,12 @@ PR that touches the runtime or the editor.
 | Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |
 | The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
 | The tutorial link picker (search-and-insert `tutorial:` links) | `matchTutorials()`/the picker UI in `assets/editor.js`; `insertLink()` in `vendor-src/milkdown-entry.js` |
-| What a search box counts as a match — stems, synonyms, prefixes | `assets/search-words.js`, imported by `search.js`, the Reference panel filters in `tutorial-runtime.js`, dewmini's Library and the editor's picker (DECISIONS_LOG 7.174) |
+| What a search box counts as a match — stems, synonyms, prefixes | `assets/search-words.js`, imported by `search.js`, the Reference panel filters in `tutorial-runtime.js`, dewmini's Library and the editor's picker |
 | House styling, both reading pages and the editor | `assets/tutorial-style.css` |
 | The reference's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
 | What one tutorial's reference actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |
 | Highlight-to-look-up (the button a selection offers) | `initReferenceLookup()` in `assets/tutorial-runtime.js`; `.dl-lookup` in `assets/tutorial-style.css` |
-| My words: a reader's own word list, its marks on every page, its export and import | `assets/my-words.js` (imported by the runtime, so in the standalone bundle); the **Add to my words** button in `initReferenceLookup()`; `#dl-settings-words` and `#dl-settings-words-io` in `assets/shell.html`; one `localStorage` key, `dewlab:my-words` (DECISIONS_LOG 7.282) |
-| How a page behaves inside another site's frame (a lesson placed on a Moodle page) | the framing script in the head of `assets/shell.html`; the "Embedded" block in `assets/tutorial-style.css` (DECISIONS_LOG 7.308) |
+| My words: a reader's own word list, its marks on every page, its export and import | `assets/my-words.js` (imported by the runtime, so in the standalone bundle); the **Add to my words** button in `initReferenceLookup()`; `#dl-settings-words` and `#dl-settings-words-io` in `assets/shell.html`; one `localStorage` key, `dewlab:my-words` |
+| How a page behaves inside another site's frame (a lesson placed on a Moodle page) | the framing script in the head of `assets/shell.html`; the "Embedded" block in `assets/tutorial-style.css` |
 | The reference panel or toggle's look and behaviour | `assets/shell.html`, `assets/tutorial-style.css`, `initReference()`/`renderReference()` in `assets/tutorial-runtime.js` |
-| *Why* something works the way it does, before you change it | `DECISIONS_LOG.md` (numbered, searchable) |
+| *Why* something works the way it does, before you change it | the comment beside the code, then `git log -S` or `git blame` for the pull request that introduced it |

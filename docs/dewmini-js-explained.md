@@ -28,7 +28,7 @@ then make the page match it, never the other way around. One element
 is the exception: a cell that is still running keeps its `.outputEl`
 through a redraw, because the engine is still writing into it and
 `executeCell()` saves what it holds once the run ends. A fresh, empty
-element there lost the whole run's output (DECISIONS_LOG.md 7.224).
+element there lost the whole run's output.
 `ranContent`/`lastRunMs`/`ranOrder` are deliberately *not* among the
 fields `saveState()`/`readCells()` carry to
 and from `localStorage`: they describe a live Python session, and no
@@ -41,19 +41,19 @@ the collapse triangle (every cell type, not only code-bearing ones),
 the header-end group (Edit for text, Duplicate, Delete), and a text
 cell's chrome going quiet — `opacity: 0; pointer-events: none` on
 `.dm-cell-head`/`.dm-cell-collapse-col` — until a reader hovers or
-focuses the cell (DECISIONS_LOG.md 7.115). That rule sits inside
+focuses the cell. That rule sits inside
 `@media (hover: hover)`; a touch screen, with no hover to reveal it,
-always shows the header (7.224). Tutorial and practice pages
-carry this same anatomy now too (7.113–7.115), by way of `build.py`'s
+always shows the header. Tutorial and practice pages
+carry this same anatomy now too, by way of `build.py`'s
 `render_cell()` and `assets/tutorial-runtime.js` rather than this file —
 see `docs/tutorial-runtime-explained.md` for that side.
 
 Three more `CELL_TYPES` values are dewmini-only: `web`, `sql`, and
-`javascript` (DECISIONS_LOG.md 7.116–7.120) — the shipped set, not the
+`javascript` — the shipped set, not the
 four separate types originally designed. HTML and CSS shipped as
 separate types first and were merged into one, `web`, once both existed
 to show the merge was the right call
-(7.120) — this file's own history briefly had separate `HTML`/`CSS`
+ — this file's own history briefly had separate `HTML`/`CSS`
 members on `CELL_TYPES` and a matching pair of near-identical
 `createCellElement()` branches; neither exists anymore.
 
@@ -79,8 +79,8 @@ switching notebooks, replacing the whole list) needs to destroy both,
 not just `cell.editor`. `readCells()`'s own migration,
 `migrateLegacyCellType()`, turns a notebook's old standalone `html`/
 `css` cells into independent `web` cells on load — each old cell
-becomes its own new one, never merged with a neighbour; see
-DECISIONS_LOG.md 7.120 for why guessing at a pairing was rejected.
+becomes its own new one, never merged with a neighbour:
+guessing at a pairing was rejected.
 
 The SQL and JavaScript branches look nothing like a web cell's, because
 neither is a read-not-run type — both run against a shared session, the
@@ -107,7 +107,7 @@ in-memory `sqlite3` connection dewmini seeds at boot and on every reset
 (see [`pyodide-engine-explained.md`](pyodide-engine-explained.md) for
 where); the same connection is reachable from an ordinary Python cell
 under that name, which is the whole point of building SQL on Python's
-own `sqlite3` rather than a second engine (DECISIONS_LOG.md 7.118).
+own `sqlite3` rather than a second engine.
 
 A JavaScript cell dispatches to a different engine entirely —
 `executeCell()` hands its content, unwrapped, to
@@ -212,8 +212,8 @@ for `load_csv()`).
    friendly-error map (`SITE_FRIENDLY`/`siteFriendlyHint`), and the
    document assembly (`buildSiteDocument`, now recording a `<base
    href="about:srcdoc">` so a relative link inside the preview navigates
-   the preview and not this page) used to live here directly; since
-   `DECISIONS_LOG.md` 7.142 they're `assets/site-relay.js`'s
+   the preview and not this page) used to live here directly; now
+   they're `assets/site-relay.js`'s
    `mountSitePreview(iframe, {onReset, onConsole, onError})`, imported by
    both this file and `assets/tutorial-runtime.js` — a tutorial page's
    own site editor is the same engine, mounted several times on one page
@@ -325,9 +325,8 @@ else. This is a JavaScript port of `build.py`'s own
 dewmini's text cells never go through Python — but the reason is
 identical: letting the line-based parser see raw TeX first means
 `$a_i$`'s underscore gets read as `renderDocInline`'s emphasis marker
-before anyone gets a chance to render it as maths. See
-DECISIONS_LOG.md 7.107 for the rest of the maths decision, including why
-this is deliberately a *second* implementation of the same idea rather
+before anyone gets a chance to render it as maths. This is
+deliberately a *second* implementation of the same idea rather
 than a shared one with the tutorial pipeline.
 
 **A button that has to listen on `mousedown`, not `click`.** A text
@@ -392,12 +391,12 @@ decided.
   comment: it calls `engine.resetPageState()` so a stale value from a
   previous run can never mask a genuine mistake. `runAbove()` does the
   same for the same reason; `runBelow()` deliberately does not, since its
-  whole point is keeping what came before it (DECISIONS_LOG.md 7.106).
+  whole point is keeping what came before it.
 - **"How is 'Restart & run all' different from 'Run all'?"** — `runAllCells()`
   only calls `engine.resetPageState()` (clear and re-seed the same
   interpreter); "Restart & run all" calls `restartPython()` first, a real
   `engine.restart()` that also clears Jedi's cache and the mounted
-  filesystem handle. See DECISIONS_LOG.md 7.108.
+  filesystem handle.
 - **"How does a tutorial's challenge arrive?"** (#316) —
   `openChallengeFromAddress()`, called at the end of `init()` and on
   `hashchange`. It reads `#challenge=` and a JSON object from the address,

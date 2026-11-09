@@ -5,7 +5,7 @@
 module.
 **Closes:** nothing in the MIT descriptor, which is why this outline was
 written before 5N0554 existed as data. It now closes `CMPS-LO4` in full, and
-touches `CMPS-LO1` and `CMPS-LO2` — see DECISIONS_LOG 7.56.
+touches `CMPS-LO1` and `CMPS-LO2`.
 **Attaches to:** lists and arrays (`MIT-6.3`) and coordinate graphing
 (`MIT-3.2`). Nothing else in the map depends on it.
 

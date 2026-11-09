@@ -12,7 +12,7 @@ want more.
 learn by doing: by working on real questions rather than memorising answers
 first. Its tagline, "learn by dewing", is his idea with the site's name in
 it. It was called *Plot Twist* while its first units were written; Josh
-renamed it (DECISIONS_LOG 7.226), and the course id moved from `plot-twist`
+renamed it, and the course id moved from `plot-twist`
 to `dewey-track`, with a redirect from the old address.
 
 ---
@@ -32,8 +32,7 @@ most needs to keep:
   The capstone draws on algebra alone.
 - **Nothing carries over.** Every page is its own Python session, so the
   functions a student wrote last week are gone. Two cells in *Solving
-  equations* failed for exactly that reason until the maths pass fixed them
-  (DECISIONS_LOG 7.216).
+  equations* failed for exactly that reason until the maths pass fixed them.
 
 A reader who arrives sure they are "not a maths person" or "not a computer
 person" is the one this hurts most: a topic met once and never needed again

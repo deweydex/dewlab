@@ -254,7 +254,7 @@ def load_tutorials(known: dict[str, Outcome]) -> list[Tutorial]:
         for anchor, claim in declared.items():
             if anchor not in headings:
                 # A section cut from a page is the teacher's call; the claim
-                # goes with it, and the map says so (DECISIONS_LOG 7.299).
+                # goes with it, and the map says so.
                 print(
                     f"note: {path.relative_to(ROOT)} declares coverage for "
                     f"{anchor!r}, which is not a section of it, so the map "
@@ -934,7 +934,7 @@ OUTLINES = ROOT / "planning" / "outlines"
 def planning_problems(text: str) -> list[str]:
     """Where the planning files disagree with each other, as sentences.
 
-    These were advisory tests until 7.298: they look after the project's own
+    These were once advisory tests: they look after the project's own
     plan (`planning/curriculum/`, `planning/outlines/`), which no page reads,
     so they report and never block. A problem here means a file wants tidying,
     not that anything a reader sees is wrong. `text` is the map just rendered,
@@ -1034,7 +1034,7 @@ def main() -> int:
     match or if the planning files disagree with each other
     (`planning_problems()`). A map that cannot be made at all (a `covers:` code or section
     that does not exist) exits 2 instead, in either mode. CI fails a pull
-    request on the 2 and only reports the 1 (DECISIONS_LOG 7.291): the
+    request on the 2 and only reports the 1: the
     map counts italic words in the tutorials' prose, so any new sentence
     makes it stale, and a stale planning document breaks no page.
     """

@@ -55,7 +55,7 @@ machine that is not the one this was built on.
 
 - [ ] **A school machine, on the school network.** Does Pyodide load at all?
       Nothing else can answer it. If the CDN is blocked, the fix is
-      `dev/fetch_pyodide.py` plus decision 0.17 in DECISIONS_LOG.md.
+      `dev/fetch_pyodide.py`, which fetches a copy the site can serve itself.
 - [ ] Time the first load on a school machine and on a home connection. Roughly
       how long before the Run buttons enable?
 - [ ] A second page load — the browser cache should make it markedly faster.
@@ -112,10 +112,10 @@ Then, on a machine with the network off (or with everything but
 - [ ] the Stop button interrupts a `while True: pass`
 - [ ] a cell running `print("Hi " + input("Name? "))` shows a box after
       `Name? `; typing `Ada` and pressing Enter prints `Name? Ada` and
-      `Hi Ada` (`assets/input-wait.js`, 7.284)
+      `Hi Ada` (`assets/input-wait.js`)
 - [ ] a text cell with `Solve $x^2 = 4$.` renders as real maths, with no
       failed request for `katex.bundle.js`, `katex.min.css`, or a font
-      (DECISIONS_LOG.md 7.107 — the offline copy carries all three so a
+      (the offline copy carries all three so a
       classroom with no network at all can still render maths, not just
       one with a slow one)
 
@@ -129,7 +129,7 @@ checked against a real offline bundle yet.
 The one check the sandbox this was built in could not run at all: its
 network policy blocks `ourworldindata.org`, so whether a browser is
 allowed to fetch those CSVs was never observed, only expected
-(`DECISIONS_LOG.md` 7.99). Everything else about the Data catalogue —
+. Everything else about the Data catalogue —
 the cards, the code it writes, the local datasets — is covered by
 `tests/e2e/test_dewmini_workbench.py`; this is the half that needs a
 real network.

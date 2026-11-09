@@ -8,7 +8,7 @@ It builds on the prototype that became `assets/map.js`, `assets/map.css` and
 in `planning/topic-map/BRIEF.md`. It does not redo that search.
 
 **Status, 2 October 2026.** The prototype is now a page of the site, `map.html`,
-beside `tree.html` (`DECISIONS_LOG.md` 7.293). Built: `map/graph.json` and
+beside `tree.html`. Built: `map/graph.json` and
 `map/layout.json`, `dev/map_layout.py`, `write_map_page()`, the script and
 styles, a list of every topic for a reader with no script, and the build's
 refusals when the map names a page or section that does not exist. Still
@@ -25,7 +25,7 @@ because `dev/check_doc_links.py` fails any backticked path that is not in the
 repository.
 
 Josh has approved the direction: a map with semantic zoom, the warmth of a game
-map, and no locks. Where an earlier entry in `DECISIONS_LOG.md` conflicts with
+map, and no locks. Where an earlier entry in the decision log (since retired) conflicts with
 a clean, unified design, the unified design wins; section 6 lists each entry
 that is superseded or amended so the log can record it.
 
@@ -554,7 +554,7 @@ modularity.
 only the one that changed. This plan once held every placed town still and put
 a new one beside what it needs (`--keep` and `--only`). Josh dropped that on 2
 October 2026: the map may change, and nobody minds a town moving
-(`DECISIONS_LOG.md` 7.293). Check `git diff --stat map/layout.json` before
+. Check `git diff --stat map/layout.json` before
 committing, and say in the pull request that the map moved.
 
 **By hand**, through the existing topic editor. `topic_editor/index.html`
@@ -690,7 +690,7 @@ column refers to section 5.
 | `planning/REFERENCE_PANEL.md` | Names `topics.yaml` as the reachability model. | 6 |
 | `.claude/skills/tutorial-glossary/SKILL.md` (line 9) | "`covers:` in its frontmatter already names broad curriculum outcomes." | 6 |
 | `planning/topic-map/README.md`, `planning/topic-map/BRIEF.md`, this document | Name files later phases delete, in backticks. When phase 3 deletes `assets/tree.js` and phase 8 the old YAML, that phase either adds `planning/topic-map/` to `ELSEWHERE` in `dev/check_doc_links.py` (the folder becomes a record) or rewrites the references. | 3, 8 |
-| `DECISIONS_LOG.md` | New entries per phase; section 6's supersessions. | all |
+| the decision log (since retired) | New entries per phase; section 6's supersessions. | all |
 
 ### 3.6 The downloadable copies and the vendor bundle
 
@@ -958,7 +958,7 @@ scope. `tests/build/test_check.py` for the new line.
 *Documents*: *map/README.md*; `ARCHITECTURE.md` §1; `docs/build-explained.md`;
 `docs/WRITING_TUTORIALS.md` ("Putting a page on the map"; the `topic:`
 paragraph goes); `docs/CHECK_YOUR_WORK.md`; `CLAUDE.md`'s table;
-`planning/topic-map/README.md`; a `DECISIONS_LOG.md` entry recording 2.1.
+`planning/topic-map/README.md`; a decision-log entry recording 2.1.
 
 **PR 2 — Positions and land.** Adds *dev/map_layout.py* (built, and deterministic) and the committed layout
 (built, as *map/layout.json*) from one run. Adds
@@ -972,7 +972,7 @@ the time budget. *tests/test_map_layout_script.py* for the dev script (a
 different name from the build test, since pytest refuses two test modules with
 one basename).
 *Documents*: `docs/dev-scripts-explained.md`; `docs/build-explained.md`;
-*map/README.md* (positions, moving a town); a `DECISIONS_LOG.md` entry
+*map/README.md* (positions, moving a town); a decision-log entry
 (positions are source; the build never moves a town).
 
 **PR 3 — map.html replaces tree.html and topics.html.** Adds `section_cells()`
@@ -1005,7 +1005,7 @@ signal; dark theme uses the dark tokens; no sideways scroll at 360, 768 and
 `docs/tests-explained.md`; `docs/tutorial-runtime-explained.md`;
 `assets/my-notes.js`'s comment; `README.md`; `pages/about.md`,
 `pages/features.md`, `pages/studying.md`; `docs/FOR_STUDENTS.md`;
-`docs/FAQ.md`; a `DECISIONS_LOG.md` entry with section 6's supersessions for
+`docs/FAQ.md`; a decision-log entry with section 6's supersessions for
 the tree and figure.
 
 **PR 4 — Where you have worked, directions and open doors.** Adds `sections`,
@@ -1021,7 +1021,7 @@ directions stop at visited and known towns and keep a same-district order; the
 rendered strings contain none of the forbidden words.
 *Documents*: *docs/map-js-explained.md*; `docs/FOR_STUDENTS.md` (what the map
 shows about your work, and that it stays in this browser); a
-`DECISIONS_LOG.md` entry on what the map may claim.
+the decision log (since retired) entry on what the map may claim.
 
 **PR 5 — From every page to the map, and courses as routes.** Adds the
 `dl-crumb-map` line in `crumb_trail_html()`, its stripping in
@@ -1037,7 +1037,7 @@ right topic and marks its stop; `?course=` fits the route, dims the rest and
 lists it by series. `tests/e2e/test_multi_course_pages.py`: redrawing the
 course and series rungs leaves the map line in place.
 *Documents*: `docs/FOR_STUDENTS.md`; `docs/WRITING_TUTORIALS.md`;
-`ARCHITECTURE.md` §1 step 5; `docs/CHECK_YOUR_WORK.md`; a `DECISIONS_LOG.md`
+`ARCHITECTURE.md` §1 step 5; `docs/CHECK_YOUR_WORK.md`; a decision-log
 entry.
 
 **PR 6 — `covers:` and `touches:` retire; coverage and the Library come from
@@ -1060,7 +1060,7 @@ from regions, rearranging needs re-files a term, the new shape);
 outcomes paragraph is rewritten); `.claude/skills/tutorial-glossary/SKILL.md`;
 `docs/DEWMINI.md`; `planning/REFERENCE_PANEL.md`; `CONTRIBUTING.md`;
 `.github/workflows/tests.yml`'s comment; `docs/dev-scripts-explained.md`; a
-`DECISIONS_LOG.md` entry amending 7.36 and 7.101.
+the decision log (since retired) entry amending 7.36 and 7.101.
 
 **PR 7 — The teacher's coverage layer.** Adds the `outcomes` block to the
 island and the layer to map.js.
@@ -1068,7 +1068,7 @@ island and the layer to map.js.
 *tests/e2e/test_map.py*: the layer rings exactly the serving towns and lists a
 culled outcome with its landmark link.
 *Documents*: *docs/map-js-explained.md*; `README.md`'s section for teachers; a
-`DECISIONS_LOG.md` entry.
+the decision log (since retired) entry.
 
 **PR 8 — The tools follow the map; the old files go.**
 `dev/build_topic_editor.py`, `dev/apply_topic_edits.py`,
@@ -1084,7 +1084,7 @@ test.
 *Documents*: `topic_editor/README.md` and `topic_editor/help.html`;
 `topic_tree_game/README.md` and `topic_tree_game/help.html`;
 `docs/dev-scripts-explained.md`; `ARCHITECTURE.md`; `planning/topic-map/README.md`
-and `planning/topic-map/BRIEF.md`; a `DECISIONS_LOG.md` entry.
+and `planning/topic-map/BRIEF.md`; a decision-log entry.
 
 **Follow-ups, not part of the replacement.** A manifest flag for generated
 pages in place of `NON_TUTORIAL_PAGES`, with one bundle rebuild (question 4).

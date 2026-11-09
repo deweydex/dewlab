@@ -167,8 +167,7 @@ finding each match, not just substitute fixed text.
   (turning tiers into actual x/y coordinates), and `arrow_between()` draws
   the connecting lines between them.
 - **"How does a downloadable copy differ from the hosted page?"** —
-  `standalone_html()` builds it, and its own comments (plus
-  `DECISIONS_LOG.md` 7.77, referenced throughout) explain what's
+  `standalone_html()` builds it, and its own comments explain what's
   different and why — most notably, Pyodide running on the main thread
   rather than in a Worker, and the page's datasets packed into its
   manifest by `standalone_data()` (#324).

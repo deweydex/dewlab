@@ -103,10 +103,9 @@ reading this file: only `var` and `function` declarations persist across
 separate cells (they still attach to the real global object, the same as
 a `<script>` tag's would); a `let`/`const` from one cell is gone the
 moment that cell's `eval()` call returns, invisible to a later cell even
-though it worked fine within its own cell. `DECISIONS_LOG.md` 7.119 has
-the full story, including how this was actually found (re-running a
-`let`-declaring cell in a real browser during verification, not by
-reading the code).
+though it worked fine within its own cell. It was found by re-running a
+`let`-declaring cell in a real browser, not by
+reading the code.
 
 **Reusing `assets/pyodide-engine.js`'s own output plumbing.** This file
 imports `applyOutputEvent`/`clearOutput` from `pyodide-engine.js` rather
@@ -136,8 +135,7 @@ over.
   has already finished?"** — it still reports, tagged with whichever
   cell last ran (`RUNTIME_SRC`'s own `currentCellId` is never cleared,
   only ever reassigned by the next `"run"` message) — late/async output
-  is a known, accepted limitation, not a bug; see `DECISIONS_LOG.md`
-  7.119.
+  is a known, accepted limitation, not a bug.
 - **"Why is the iframe never visible?"** — `frame.style.display = "none"`
   in `ensureSession()`. Unlike an HTML cell's own sandboxed preview
   iframe, this one is a headless execution session — its output is

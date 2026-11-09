@@ -175,7 +175,7 @@ class TestTheReference:
     def test_a_glossary_entry_of_an_unknown_kind_is_left_out_with_a_note(self, repo, capsys):
         # Its kind decides which group of the reference it sits in, and a
         # guess at "concept" could put a function where a reader looks for an
-        # idea, so it is left out and said (DECISIONS_LOG 7.300).
+        # idea, so it is left out and said.
         write(repo, "One.\n", slug="one")
         glossary(repo, "one", [{"term": "x", "kind": "vibe", "definition": "Nope."},
                                {"term": "y", "kind": "concept", "definition": "Kept."}])

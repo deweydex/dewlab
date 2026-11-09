@@ -39,7 +39,7 @@ sense.
 ## Reading order
 
 1. **The module docstring** — what this file is for, in the author's own
-   words, plus where its design comes from (`DECISIONS_LOG.md`).
+   words, plus where its design comes from.
 2. **Environment** — `IN_BROWSER`, the try/except that decides whether
    `js` and `pyodide.ffi` are actually available, since this file also
    has to work under plain CPython for the test suite.
@@ -78,7 +78,7 @@ sense.
     element: the page moves a live slider out of the output into its
     cell's strip, and hands every widget's value in before each run
     (`widgetValues()` and `reconcileSliders()` in `assets/cell-widgets.js`,
-    which tutorial pages and the Notebook share; #329, 7.268).
+    which tutorial pages and the Notebook share; #329).
 11. **Shared data** — `load_csv`, `load_text`, and `run_query`; `load_text`
     sits right after `load_csv` and fetches the same way (the shared
     `/data/` folder, or a full URL), returning the file's contents as a
@@ -101,8 +101,8 @@ sense.
     prediction or a comparison never sees it. Right after `run_query`
     sits `_run_sql_cell` (not in `__all__` — internal plumbing, not
     something a reader calls by name), `run_query`'s multi-statement
-    counterpart: dewmini's own SQL cell type (DECISIONS_LOG.md 7.118)
-    and a tutorial page's `sql exec` cell (DECISIONS_LOG.md 7.140) both
+    counterpart: dewmini's own SQL cell type
+    and a tutorial page's `sql exec` cell both
     generate a call to this rather than handing a reader's raw SQL to
     Pyodide directly. Splits a script on a
     bare `;`, runs every statement but the last, and renders only the
@@ -213,5 +213,5 @@ more detail; it's worth reading once, since the same shape shows up in
   inside `image_input()` for how `asyncio.ensure_future` fits in.
 - **"What happens if a widget is used in a Worker-run tutorial page?"**
   — `_require_dom_sink` raises a clear error instead of silently doing
-  nothing; see its own comment and `DECISIONS_LOG.md` 7.77 for why
+  nothing; see its own comment for why
   widgets need a real page to attach to.

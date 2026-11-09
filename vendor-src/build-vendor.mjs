@@ -29,7 +29,7 @@ await build({
 
 /* KaTeX: the stylesheet every built page links, plus a bundle of the renderer
  * itself, which the runtime imports only on pages that contain maths.
- * Student-side rendering was settled as acceptable (DECISIONS_LOG 1.8), and doing it
+ * Student-side rendering was settled as acceptable, and doing it
  * here rather than from build.py keeps the property this whole directory exists
  * for: neither CI nor an author previewing locally needs Node. */
 await build({
@@ -102,8 +102,7 @@ await build({
 
 /* Unmodified, not bundled: it has no imports, and esbuild's minifier is not
  * worth running on a 4 KB script that needs to stay readable enough for
- * `Service-Worker-Allowed`-less debugging (OPEN_QUESTIONS.md, "the Web
- * Worker migration"). build.py additionally copies this one file to the
+ * `Service-Worker-Allowed`-less debugging. build.py additionally copies this one file to the
  * site root rather than assets/ -- a service worker's scope is the
  * directory it is served from, and assets/ would be too narrow to cover
  * every tutorial the reload needs to reach. */
@@ -122,12 +121,12 @@ for (const file of fonts.filter((f) => f.endsWith(".woff2"))) {
   await cp(join(katex, "fonts", file), join(outDir, "fonts", file));
 }
 
-/* Two accessible reading fonts (DECISIONS_LOG.md 7.123, 7.127): Lexend
+/* Two accessible reading fonts: Lexend
  * (Google Fonts, designed to reduce the visual complexity linked to
  * reading difficulty) and OpenDyslexic, both SIL OFL 1.1. Self-hosted
  * from the @fontsource packages — matching every other vendored asset
  * here rather than a Google Fonts CDN `<link>`, which this repository's
- * own offline bundle (write_dewmini_bundle(), DECISIONS_LOG.md 7.92)
+ * own offline bundle (write_dewmini_bundle())
  * could never reach anyway. Regular and bold, roman and italic — four
  * faces per font, the minimum for a page's own bold/italic markdown to
  * render as a real face rather than a synthetic one — except Lexend,

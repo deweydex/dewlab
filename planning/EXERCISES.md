@@ -27,7 +27,7 @@ roughly 60 problems.
 — `04e_optimisation`, `07a_matrix_operations`, `07c_eigenvalues`,
 `07d_markov_chains`, `08a_bayes` and `08b_distributions` — have answers only as
 PDFs under `pdfs/solutions/`, so every number on a page they fed was worked
-afresh (`DECISIONS_LOG.md` 7.56).
+afresh.
 
 Which worksheet fed which page:
 

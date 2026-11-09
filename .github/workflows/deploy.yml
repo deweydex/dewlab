@@ -69,7 +69,7 @@ jobs:
           # depth, not by guessing at names.
           current=$(find site/tutorials -mindepth 1 -maxdepth 1 -name '*.html' | wc -l)
           # One kind of stub does sit directly under site/tutorials/: a page
-          # whose own id was retired (lines-and-distances, 7.267) leaves a
+          # whose own id was retired (lines-and-distances) leaves a
           # redirect at tutorials/<old id>.html. It forwards to a page with
           # its own download, so the count leaves it out, read from the
           # file that asks for it rather than guessed from the page.
