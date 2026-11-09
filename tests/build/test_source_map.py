@@ -206,9 +206,59 @@ class TestSplice:
             sm.splice("abcdef", [(0, 3, "x"), (2, 4, "y")])
 
 
+def _range_problem(ranges: list[tuple[int, int]], size: int) -> str:
+    """What is wrong with a page's ranges, read in page order, or "" if nothing.
+
+    Sound means: every range lies inside the file, and any two ranges are either
+    apart or one wholly inside the other. A fold's range holds the ranges of the
+    blocks inside it (source_map.mark() marks those too), so nesting is right;
+    two ranges that share only part of their text never are.
+    """
+    open_ranges: list[tuple[int, int]] = []   # the folds this range may sit inside
+    for start, end in ranges:
+        if not (0 <= start < end <= size):
+            return f"range {start}:{end} is outside the file"
+        while open_ranges and start >= open_ranges[-1][1]:
+            open_ranges.pop()
+        if open_ranges:
+            outer_start, outer_end = open_ranges[-1]
+            if start < outer_start:
+                return f"range {start}:{end} comes after {outer_start}:{outer_end} but starts before it"
+            if end > outer_end:
+                return f"range {start}:{end} overlaps {outer_start}:{outer_end}"
+            if (start, end) == (outer_start, outer_end):
+                return f"range {start}:{end} is on two blocks"
+        open_ranges.append((start, end))
+    return ""
+
+
+class TestSoundRanges:
+    """The rule the every-real-page test holds each page's ranges to."""
+
+    def test_ranges_one_after_another_are_sound(self):
+        assert _range_problem([(0, 5), (7, 12), (12, 20)], 20) == ""
+
+    def test_blocks_inside_a_fold_and_a_fold_inside_a_fold_are_sound(self):
+        assert _range_problem([(0, 5), (7, 60), (20, 25), (27, 50), (30, 40), (42, 48), (52, 55), (62, 70)], 70) == ""
+
+    def test_two_ranges_that_share_only_part_of_their_text_are_refused(self):
+        assert "overlaps" in _range_problem([(0, 10), (5, 15)], 20)
+        assert "overlaps" in _range_problem([(0, 30), (5, 15), (10, 20)], 40)
+
+    def test_a_range_out_of_page_order_is_refused(self):
+        assert "starts before" in _range_problem([(10, 20), (30, 40), (0, 5)], 40)
+
+    def test_a_range_past_the_end_of_the_file_or_empty_is_refused(self):
+        assert "outside" in _range_problem([(0, 5), (7, 21)], 20)
+        assert "outside" in _range_problem([(5, 5)], 20)
+
+    def test_one_range_on_two_blocks_is_refused(self):
+        assert "two blocks" in _range_problem([(0, 10), (0, 10)], 20)
+
+
 def _check_page(path: str) -> tuple[str, str]:
     """In a worker process: the page built with the map and stripped, against
-    the page built without it; and whether every range lies inside the file."""
+    the page built without it; and what is wrong with its ranges, if anything."""
     page = Path(path)
     b.SOURCE_MAP = False
     plain = b.load(page).body_html
@@ -218,22 +268,24 @@ def _check_page(path: str) -> tuple[str, str]:
         return path, "lost"
     if sm.strip(mapped) != plain:
         return path, "changed"
-    size = len(page.read_text())
-    last = -1
-    for start, end in re.findall(r' data-md="(\d+):(\d+)"', mapped):
-        start, end = int(start), int(end)
-        if not (0 <= start < end <= size) or start < last:
-            return path, "range outside the file or out of order"
-        last = end
-    return path, ""
+    ranges = [(int(start), int(end))
+              for start, end in re.findall(r' data-md="(\d+):(\d+)"', mapped)]
+    return path, _range_problem(ranges, len(page.read_text()))
 
 
 @pytest.mark.advisory
 def test_every_real_page_reads_the_same_with_the_map_and_has_sound_ranges():
     """Across every tutorial in the repository, so a new kind of markup the
     tokenizer misreads is found here rather than on a teacher's page. The
-    build would drop the map for such a page (see load()), so this reports
-    where the tokenizer needs teaching, not a page that is broken."""
+    build would drop the map for a page it changed (see load()), so that half
+    reports where the tokenizer needs teaching, not a page that is broken.
+
+    The ranges are the other half, and the build does not check them. A
+    teacher editing a page where it stands has each block written back over
+    its own range. Two ranges that overlap without one holding the other mean
+    saving one block writes over part of its neighbour; a range past the end
+    of the file means the save lands on the wrong text. Blocks inside a fold
+    do sit inside the fold's range, and that is sound (_range_problem())."""
     files = sorted(str(p) for p in (DEWLAB / "tutorials").glob("*/*.md"))
     with ProcessPoolExecutor() as pool:
         problems = [(p.replace(str(DEWLAB) + "/", ""), why)
