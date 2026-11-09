@@ -55,6 +55,3 @@ needs between countries and the groupings with the highest modularity.
 `python3 planning/topic-map/validate.py graph map/graph.json` checks the
 graph against the pages and the course outcomes (it needs
 `python3 planning/topic-map/inventory.py` first).
-
-The reasoning behind all of this is in `planning/TOPIC_MAP.md` and
-`planning/topic-map/design.md`.

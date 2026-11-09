@@ -59,7 +59,7 @@ with different inputs cannot.
 
 The `--write` pass writes `finished(relative, draw)`, from
 `dev/graphics/palette.py`, rather than `draw()` itself. That adds the hidden
-pattern layer a reader turns on with *Patterns in pictures* (7.283): a
+pattern layer a reader turns on with *Patterns in pictures*: a
 stripe or dot pattern over each tinted area, one pattern per tint, for a
 reader who cannot tell the tints apart. A picture with no tints comes back
 unchanged, and `tests/test_picture_patterns.py` fails for a new generator
@@ -394,7 +394,7 @@ that is answerable by looking.
 
 ### Object-oriented programming
 
-**[Composition: objects inside other objects](../tutorials/objects-inside-objects/objects-inside-objects.md) — a UML class diagram.** (Placed here since the 7.211 split: its "Is a, or has a?" section is about exactly this contrast, and the inheritance half now lives on [Inheritance: one class built on another](../tutorials/one-parent-many-children/one-parent-many-children.md).)
+**[Composition: objects inside other objects](../tutorials/objects-inside-objects/objects-inside-objects.md) — a UML class diagram.** (Placed here since the split: its "Is a, or has a?" section is about exactly this contrast, and the inheritance half now lives on [Inheritance: one class built on another](../tutorials/one-parent-many-children/one-parent-many-children.md).)
 `BankAccount` above, `SavingsAccount` and `CheckingAccount` beneath it with
 hollow-triangle inheritance arrows, and `Bank` holding accounts as a different
 relationship entirely. It carries content the code makes you scroll to see:

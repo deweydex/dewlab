@@ -193,35 +193,29 @@ behaviour rather than the old one.
 **Update the document that describes it.** If you change what a page does,
 update the document a reader would reach for — `docs/FOR_STUDENTS.md`,
 `docs/DEWMINI.md`. If you change how the code works, update
-the matching `docs/<name>-explained.md`, and `README.md` or `ARCHITECTURE.md` if
+the comment at the top of the file, and `README.md` or `ARCHITECTURE.md` if
 they mention it.
 
 **Comment sparingly.** A name and a well-shaped function usually say what code
 does; add a comment only where the *why* is not obvious from the code itself —
 a constraint, a workaround, a non-obvious ordering. Keep it to a line or two.
 Don't write banner comments, section dividers, or a walkthrough of what the
-next ten lines do — that belongs in the file's own `docs/<file>-explained.md`
-if it belongs anywhere.
+next ten lines do.
 
 **Never leave a comment or document describing behaviour that no longer
 exists.** A stale comment is worse than no comment, because it misleads the next
 person to read it. If you are not sure whether a comment is still accurate,
 check it against the code before you leave it alone.
 
-### Explanation files
+### Where a file explains itself
 
-Every substantial code file has a matching file in `docs/` named
-`<file>-explained.md` — `compose/dewmini.js` has `docs/dewmini-js-explained.md`,
-and so on. These walk through how the file is put together: what its main pieces
-are, how they call each other, and why it is organised the way it is. They are
-for someone reading the code for the first time. They are not a changelog and
-not an API reference; the inline comments already cover the details of any one
-function.
-
-If you add a file substantial enough to need its own inline comments, give it an
-explanation file too. If you restructure an existing file, update its
-explanation file to match — a walkthrough describing a structure the code no
-longer has is worse than confusing.
+A code file says what it is for, and how it is laid out, in the comment or
+docstring at its top. There is no separate walkthrough per file to keep in
+step: the explanation sits where a change to the file will meet it. How the
+files fit together is `ARCHITECTURE.md`. Two folders have a map of their own,
+because the question there is which file to open, not how one works:
+[`docs/tests-explained.md`](docs/tests-explained.md) and
+[`docs/dev-scripts-explained.md`](docs/dev-scripts-explained.md).
 
 ### Who reads what
 
@@ -258,9 +252,6 @@ use for the people who do.
   read the code, it also belongs in a comment beside that code. There is no
   separate log to update. Something still waiting on a decision is a GitHub
   issue or Discussion.
-- If you are unsure whether a change needs a new explanation file or an update to
-  an existing one, write it. A missing explanation costs the next person more
-  time than a redundant one.
 
 ---
 

@@ -10,7 +10,7 @@ uneven ("Styling pages with CSS" swallows 20 pages; Powers and Logarithms are
 separate topics).
 
 Josh, who teaches from this, has said: where earlier decisions (in
-the decision log (since retired), `topics.yaml`, `strands.yaml`, `topic-groups.yaml`,
+`topics.yaml`, `strands.yaml`, `topic-groups.yaml`,
 `review/decisions.yaml`) conflict with a clean, unified structure, the unified
 structure wins. Treat them as evidence, not as constraints.
 

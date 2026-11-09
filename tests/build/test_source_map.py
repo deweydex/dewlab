@@ -1,8 +1,8 @@
 """The source map (source_map.py): which range of a page's markdown file each
 top-level block of the rendered page came from.
 
-It is the foundation of editing a page where it stands
-(planning/IN_PAGE_EDITOR.md). The properties that matter, in order: it never
+It is the foundation of editing a page where it stands.
+The properties that matter, in order: it never
 changes how a page reads; each range really is the block it labels; and
 splicing new text over one range changes that block and nothing else.
 """

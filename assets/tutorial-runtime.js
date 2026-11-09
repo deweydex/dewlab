@@ -1,3 +1,18 @@
+/* What makes a built tutorial page work: it turns build.py's static HTML
+ * into a page with panels, editable cells and a running Python. Loaded on
+ * every tutorial and practice page, and bundled into each downloadable copy.
+ *
+ * One file, several jobs that barely touch each other: the docked panels
+ * (Settings, Reference, Notes, where-you-are); the reader's theme, typeface
+ * and size; each cell's editor and buttons; a reader's own added cells;
+ * printing and notebook export; booting Pyodide and running a cell;
+ * highlighting and maths; saved work, highlights and margin notes; progress;
+ * and moving between a tutorial's versions. The block at the foot of the
+ * file calls all of it, in order, when the page loads.
+ *
+ * Python runs in a Web Worker (pyodide-worker.js) where the page can make
+ * one, which is what gives a real Stop button, and on this thread where it
+ * cannot: a downloaded copy opened from disk. Both paths are kept. */
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth, setEditorAssists } from "./vendor/codemirror.bundle.js";

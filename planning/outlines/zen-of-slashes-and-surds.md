@@ -1,6 +1,6 @@
 # Outline — The Zen of Slashes and Surds
 
-**Status:** written (7.275). Every page in the plan below is written,
+**Status:** written. Every page in the plan below is written,
 with its practice page (the closer look has none, like the other closer
 looks), and the four mixed sets are `mixed-slashes`, `mixed-powers`,
 `mixed-surds-and-logs` and `mixed-zen`. The pages will change once a
@@ -73,12 +73,12 @@ this (`PEDAGOGICAL_STYLE_GUIDE.md#no-verdicts`). The picture, the cell's
 output, or the page's answer behind a fold shows what happened, and nobody
 says right or wrong.
 
-### A departure from 7.229, decided in 7.254
+### A departure from the rest of the site
 
 The whole site names a
 feeling *rarely*, and always with a route. This module names one more
 often than that, because noticing frustration is part of what it teaches.
-Every mention still carries a route, which keeps the part of 7.229 that
+Every mention still carries a route, which keeps the part of the rule that
 protects the reader. The difference is frequency and purpose: a fixed
 "calm check" at the same places on every page (below), not a feeling
 named in passing. The
@@ -257,7 +257,7 @@ Kinds of problem to mix, beyond "simplify this":
   number sense.
 - **Where does it go on the line?** Placing fractions on a number line.
 - **Spot what happened.** A worked problem by "somebody", or an unnamed
-  worked line (7.274: no recurring character). Which step changed the
+  worked line (no recurring character). Which step changed the
   amount? The reader finds it, and the mistake belongs to no one.
 - **Two paths, one answer.** From worksheet 8, question 5: simplify
   $(z^{12})^{1/6}$ two ways and see they agree.
@@ -369,7 +369,7 @@ friendly one enough to want something shorter.
 | $\log_2 16$ | **folds(16)**: how many folds make 16 pieces | the folded paper from strand B |
 
 **Titles** put the friendly phrase first and the usual term straight
-after the colon (7.274): "Counting hops: logarithms, how many times did
+after the colon: "Counting hops: logarithms, how many times did
 we multiply?". A reader who searches for the term finds the page, and
 the page itself still shows the sign last.
 
@@ -509,17 +509,17 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
 
 ## Before writing
 
-- **A pilot first.** Strand 0, pages A1 and A2 and page B1 came first
-  (7.254). The overnight batch (7.270) wrote the rest of strands A and B
+- **A pilot first.** Strand 0, pages A1 and A2 and page B1 came first.
+  The overnight batch wrote the rest of strands A and B
   up to their mixed pages, and the first four pages of strand C. A class
   should still meet the early pages before the rest is written. What
   the pilot should answer: are the steps small enough, does the calm
   check help or annoy, and do readers use the notation switch.
-- **No recurring character** (7.274). The style guide allows one who
+- **No recurring character**. The style guide allows one who
   makes the mistakes, but this module uses "somebody" or an unnamed
   worked line instead. The mistake belongs to no one, and there is no
   name to translate.
-- **Colour words** (done, 7.283). Measured under simulated colour
+- **Colour words** (done). Measured under simulated colour
   blindness, the yellow, green and blue tints stay apart for red-green
   colour blindness in both themes, but green and blue merge for
   tritanopia. The prose now names each part by where it is as well as
@@ -527,7 +527,7 @@ Equation'", *Int. J. Astrobiology*, 2018. Backus, University of Warwick,
   default and on under high contrast, lays a different pattern over each
   tint. A new picture gets its patterns from `finished()` in
   `dev/graphics/palette.py`, which every generator writes through.
-- **Glossary files** (done, 7.283). Every Zen tutorial page has a
+- **Glossary files** (done). Every Zen tutorial page has a
   `<slug>.glossary.yaml`. A new page needs one too, written to
   `.claude/skills/tutorial-glossary/SKILL.md`; a later use of a term is
   marked `*term*{.term}`.

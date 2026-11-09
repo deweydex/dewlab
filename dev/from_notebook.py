@@ -80,9 +80,8 @@ def slugify(text: str) -> str:
 def source_of(cell: dict) -> str:
     """Reads one notebook cell's source, handling nbformat's own choice
     of representation: a cell's `source` can be stored as either one
-    plain string or a list of individual line-strings (see
-    `docs/dewmini-js-explained.md`'s note on `handleImportFile` for the
-    same ambiguity, handled the same way, on the JavaScript side). This
+    plain string or a list of individual line-strings (`handleImportFile` in `compose/dewmini.js` handles the
+    same ambiguity the same way on the JavaScript side). This
     accepts either and always returns one plain string either way.
     """
     source = cell.get("source", "")

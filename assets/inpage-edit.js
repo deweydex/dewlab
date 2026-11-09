@@ -1,4 +1,4 @@
-/* Editing a page where it stands (planning/IN_PAGE_EDITOR.md).
+/* Editing a page where it stands.
  *
  * Loaded only when a teacher presses "Edit this page" in Settings (or opens a
  * page with #edit on the end), never by a student's page load. A built page

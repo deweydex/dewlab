@@ -228,7 +228,7 @@ following*.
 step is hard, it may say so once, with what to do about it: *if this
 feels like hard work, open the hint under the cell, or come back after
 the next section*. A feeling named with nothing under it becomes a
-verdict on the reader (7.229). A route helps more than reassurance.
+verdict on the reader. A route helps more than reassurance.
 
 <a id="no-reader-claims"></a>
 **Say what an idea does, never how it feels.** A page cannot know what

@@ -160,7 +160,7 @@ The pipeline, in order:
    contract between `build.py` and `tutorial-runtime.js` — read once at
    `readManifest()` and trusted from then on.
 
-   **The source map** (`source_map.py`; `planning/IN_PAGE_EDITOR.md`). A
+   **The source map** (`source_map.py`). A
    build from the command line turns it on and `--no-source-map` leaves it out;
    `build()` and `load()` called from code leave it off, so tests get the plain
    page. Python-Markdown records no positions, so
@@ -506,9 +506,7 @@ expects, mapped to the matching `--dl-*` token — importing only the
 structural stylesheet, with none of Crepe's skins, otherwise leaves those
 undefined.
 
-**Editing a page where it stands** (`assets/inpage-edit.js`; the plan is
-`planning/IN_PAGE_EDITOR.md`, what was measured first is
-`planning/IN_PAGE_EDITOR_SPIKE.md`). The control is a section at the foot of the
+**Editing a page where it stands** (`assets/inpage-edit.js`). The control is a section at the foot of the
 Settings panel in `assets/shell.html`, hidden until the page's manifest has an
 `edit` entry, with a small inline module that shows it and imports the editor
 only when its button is pressed or the address ends in `#edit`. It is inline
@@ -662,12 +660,9 @@ workspace has no position in a series to protect. And
 `describeGlobals()` and a `describe-globals` worker message, in Python
 rather than JavaScript so it's unit-testable without a browser.
 
-Each of these files has its own `docs/<file>-explained.md` walking through
-its internal structure — start with
-[`docs/pyodide-engine-explained.md`](docs/pyodide-engine-explained.md) for
-the worker/main-thread split, or
-[`docs/dewmini-js-explained.md`](docs/dewmini-js-explained.md) for the rest
-of dewmini (cell CRUD, drag reorder, the standalone HTML export).
+Each of these files opens with a comment saying what it is for and how it
+is laid out; start with `assets/pyodide-engine.js` for the worker/main-thread
+split.
 
 **The Notebook has a downloadable, offline-capable copy**
 (`write_dewmini_bundle()`, `build.py`) — it mirrors the hosted site's
@@ -681,8 +676,7 @@ straight off disk (no origin for a CORS check to approve).
 **The Workspace (`compose/workspace.html`) is a separate product, not
 another Notebook tab.** The Notebook is a Python-and-SQL notebook; the
 Workspace is a
-multi-file HTML/CSS/JS workspace with no notebook cells at all, shaped
-like dewstack's own `workspace.js`. `compose/dewminiweb.js` owns the part
+multi-file HTML/CSS/JS workspace with no notebook cells at all. `compose/dewminiweb.js` owns the part
 that differs — several named sites in one `localStorage` record, which one is
 open, New/Delete/Load files/Download — and hands the preview, the Run
 model and the console to `assets/site-relay.js`'s `mountSitePreview()`,

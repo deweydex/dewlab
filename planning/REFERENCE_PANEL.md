@@ -42,7 +42,7 @@ series' tutorials in reading order.
 
 **A reference draws from the current series, up to and including the
 current tutorial's own position, plus every earlier series of the course the
-reader is following** (then 7.172) — never from a
+reader is following** — never from a
 course they are not on. `courses/computational-methods.yaml` lists Python
 fundamentals before Matrices, so a matrices tutorial's reference includes
 what fundamentals introduced. A tutorial on two courses accumulates along
@@ -215,8 +215,7 @@ terms carry none: "you met this here" on the page teaching it says nothing.
 
 An earlier version linked every later occurrence of a term **in the
 prose**, and was withdrawn: ordinary English words are also glossary terms,
-and a regex can't tell "set a seed" from set theory (7.94 has the
-measurement). The obstacle was sense disambiguation, not matching, so a
+and a regex can't tell "set a seed" from set theory. The obstacle was sense disambiguation, not matching, so a
 stemmer or a `forms:` list would not have helped.
 
 ## 6d. Signatures from Python itself

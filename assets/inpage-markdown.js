@@ -1,5 +1,5 @@
-/* What the in-page editor gives the rich editor, and what it takes back
- * (planning/IN_PAGE_EDITOR.md). Pure text in, text out; no page, no editor.
+/* What the in-page editor gives the rich editor, and what it takes back.
+ * Pure text in, text out; no page, no editor.
  *
  * The rich editor (Crepe) does not know dewlab's markdown: it would read the
  * `_` in `$x_1$` as emphasis, and drop the `{.term}` after `*word*`. So a block

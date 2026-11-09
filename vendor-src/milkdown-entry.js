@@ -55,7 +55,7 @@ export function createProseEditor(parent, doc, { onChange = null, spellcheck = t
  * is being edited where it stands. Every feature that draws its own markup is
  * off, and Crepe's stylesheet is not imported (the import at the top of this
  * file is the old editor's), so the page's own styles reach the editor's
- * paragraphs and headings. See planning/IN_PAGE_EDITOR_SPIKE.md. */
+ * paragraphs and headings. */
 const IN_PLACE_FEATURES = {
   [Crepe.Feature.ImageBlock]: false,
   [Crepe.Feature.Toolbar]: false,

@@ -114,7 +114,7 @@ compose/         the Notebook and the Workspace (dewmini and dewmini web in the 
 build.py         markdown in, site/ out
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist
-docs/            reader documentation, plus one <file>-explained.md per code file
+docs/            guides for students, authors and contributors
 planning/        design notes and the curriculum data
 ```
 

@@ -1465,7 +1465,7 @@ input.dl-stdin:focus-visible { outline: 2px solid var(--dl-orange); outline-offs
   color: var(--dl-muted);
 }
 
-/* The two upper docks (planning/mockups/upper-docks.html): the top-left
+/* The two upper docks: the top-left
    carries the wordmark, the where-you-are tree, then a search bar and
    Reference; the top-right is one vertical stack of the four remaining
    tabs. Nothing sits above the page any more, so both start at the top

@@ -1,3 +1,13 @@
+/* The Notebook's connection to Python. It draws nothing and stores nothing;
+ * it answers "start Python", "run this code" and "what does this name mean"
+ * for the page that calls configure(), which hands over its own output
+ * elements and status display so nothing here assumes a page.
+ *
+ * Two engines behind one interface. Python runs in a Web Worker
+ * (pyodide-worker.js) so a runaway loop cannot freeze the page and Stop can
+ * interrupt it. Where a Worker cannot be made, as on a page opened from
+ * disk, the functions ending in MT run the same Pyodide on this thread,
+ * with no real Stop. */
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
 import { widgetValues, reconcileSliders, clearSliders, followSlider } from "./cell-widgets.js";

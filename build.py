@@ -6549,8 +6549,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
           toolkit: list[dict] | None = None) -> Path:
     """Assembles and writes one finished tutorial page to disk: builds
     the JSON manifest that `assets/tutorial-runtime.js` reads on the
-    page (`docs/tutorial-runtime-explained.md` covers what that file
-    does with it), fills the page shell template with the tutorial's own
+    page, fills the page shell template with the tutorial's own
     content and navigation, and writes the result under `site/`. This is
     the one function that turns a parsed `Tutorial` object plus all its
     surrounding context (its series, its glossary, its notes) into an
