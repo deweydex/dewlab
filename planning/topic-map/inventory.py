@@ -3,7 +3,7 @@ non-practice page, plus the search area it is handed to."""
 import collections, json, re, sys
 from pathlib import Path
 import yaml
-sys.path.insert(0, "/home/user/dewlab")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import build
 
 OUT = Path(__file__).parent / "generated"

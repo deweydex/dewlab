@@ -32,7 +32,7 @@ def point_build_at(monkeypatch, root: Path) -> None:
     what a browser test of the real runtime wants."""
     import build as b
 
-    real = Path(b.__file__).resolve().parent
+    real = b.REPO
     fresh = b.Config(root)
     fresh.use(root, SETUP=real / "setup", DATA=real / "data", ASSETS=real / "assets")
     for name in ("ROOT", "TUTORIALS", "COURSES", "OUT", "SETUP", "DATA", "ASSETS", "SHELL"):
