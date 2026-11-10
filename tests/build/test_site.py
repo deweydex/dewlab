@@ -8,16 +8,13 @@ from __future__ import annotations
 import json
 import re
 import shutil
-import sys
 import urllib.parse
-import zipfile
-from pathlib import Path
 
 import pytest
 import yaml
 
 from helpers import *  # noqa: F401,F403
-from helpers import DEWLAB, FRONTMATTER, CELL, COURSE, SERIES, b
+from helpers import b
 
 CONTENTS_RUNG = r'<details class="dl-crumb-level dl-crumb-level-4">.*?</details>'
 

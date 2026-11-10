@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import svgwrite
 
-from palette import FILL_AMBER, FILL_BLUE, FILL_GREEN, INK, MONO, MUTED, PANEL, RULE, SANS
+from palette import FILL_AMBER, FILL_BLUE, FILL_GREEN, INK, MONO, MUTED, PANEL, SANS
 
 CELL_W = 42
 CELL_H = 32

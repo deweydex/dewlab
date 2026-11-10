@@ -41,7 +41,6 @@ import collections
 import glob
 import random
 import itertools
-import html
 import json
 import sys
 from pathlib import Path
@@ -707,10 +706,6 @@ MODULES = {
 
 def module_of(unit: str) -> str:
     return unit.split("-")[0]
-
-
-def esc(text: str) -> str:
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 TEMPLATE = """<!doctype html>

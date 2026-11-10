@@ -22,7 +22,7 @@ def wait_for_output(page, text: str) -> None:
     )
 
 
-def test_what_a_reader_types_reaches_the_next_run(dewmini):
+def test_what_a_reader_types_reaches_the_next_run(dewmini):  # noqa: F811 (a pytest fixture, imported)
     add_python_cell(dewmini, 'name = text_input("Name", value="Ada", id="name")\nprint("hello", name.value)')
     run_first_cell(dewmini)
     wait_for_output(dewmini, "hello Ada")
@@ -32,7 +32,7 @@ def test_what_a_reader_types_reaches_the_next_run(dewmini):
     wait_for_output(dewmini, "hello Grace")
 
 
-def test_a_slider_runs_its_cell_and_survives_a_redraw(dewmini):
+def test_a_slider_runs_its_cell_and_survives_a_redraw(dewmini):  # noqa: F811
     add_python_cell(dewmini, 'amp = slider("Amp", 1, 5, value=2, id="amp")\nprint("amp is", amp.value)')
     run_first_cell(dewmini)
     wait_for_output(dewmini, "amp is 2")

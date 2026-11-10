@@ -18,7 +18,7 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
-from layout import point_build_at, write_course, write_tutorial  # noqa: E402
+from layout import point_build_at, write_course  # noqa: E402
 
 TRAILING_ANCHOR = "__trailing__"
 

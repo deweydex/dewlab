@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-from conftest import PAGE
 from contrast import AA_MINIMUM, contrast_ratio, parse_rgb
 
 DEWLAB = Path(__file__).resolve().parents[2]

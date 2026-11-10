@@ -13,7 +13,7 @@ overlapping would mean something these sets never do.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import svgwrite
 
