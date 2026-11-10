@@ -27,7 +27,7 @@ A topic with no place in the layout means the map changed and the layout did not
 `python3 dev/map_layout.py` and commit `layout.json`. It takes about ten
 seconds and gives the same layout for the same graph. A change to the graph
 settles the whole map again, so it can move towns that did not change. That is
-accepted: the map may change (`DECISIONS_LOG.md` 7.293). Check
+accepted: the map may change. Check
 `git diff --stat map/layout.json` before committing, and say in the pull
 request that the map moved.
 
@@ -55,6 +55,3 @@ needs between countries and the groupings with the highest modularity.
 `python3 planning/topic-map/validate.py graph map/graph.json` checks the
 graph against the pages and the course outcomes (it needs
 `python3 planning/topic-map/inventory.py` first).
-
-The reasoning behind all of this is in `planning/TOPIC_MAP.md` and
-`planning/topic-map/design.md`, and the decision is `DECISIONS_LOG.md` 7.293.

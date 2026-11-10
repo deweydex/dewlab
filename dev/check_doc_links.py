@@ -29,8 +29,8 @@ What it checks, and deliberately nothing more:
   such anchor, in every file in the repository, has to exist in the guide it
   names, as an `<a id>` or a heading. A citation of the style guide by section
   number fails outright. The guide used to be cited that way, and a number
-  goes stale silently the first time a section moves: one entry in
-  `DECISIONS_LOG.md` cited a section eleven that never existed.
+  goes stale silently the first time a section moves: one citation
+  named a section eleven that never existed.
 
 What it does not check: external URLs (that needs the network, and a link rot
 check is a different job with a different failure mode), anchors in any other
@@ -41,7 +41,7 @@ path.
 
 Prints one line per problem and exits 1 if there are any. CI runs it in the
 `house-style` job, which reports a failure as a warning and does not block a
-pull request (`DECISIONS_LOG.md` 7.291): no page a reader opens depends on it.
+pull request: no page a reader opens depends on it.
 """
 
 from __future__ import annotations
@@ -56,11 +56,6 @@ ROOT = Path(__file__).resolve().parent.parent
 DOC_ROOTS = ("docs", "planning", ".github", ".claude/skills")
 DOC_FILES = ("README.md", "ARCHITECTURE.md", "CONTRIBUTING.md", "LICENSE.md",
              "CLAUDE.md")
-
-HISTORY = {
-    "DECISIONS_LOG.md",
-    "QUESTIONS.md",
-}
 
 # [text](target) — the target only, and only up to a # or a space.
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s#]+)")
@@ -168,8 +163,7 @@ def documents() -> list[Path]:
     found = [ROOT / name for name in DOC_FILES if (ROOT / name).is_file()]
     for folder in DOC_ROOTS:
         found.extend(sorted((ROOT / folder).rglob("*.md")))
-    return [doc for doc in found
-            if str(doc.relative_to(ROOT)) not in HISTORY]
+    return found
 
 
 def problems_in(doc: Path) -> list[str]:

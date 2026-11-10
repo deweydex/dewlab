@@ -5,7 +5,7 @@ description: Work an issue opened through dewlab's own report doors (the footer'
 
 # Triaging a student report
 
-An issue from the report doors (DECISIONS_LOG.md Phase 8) has a fixed shape: `page` and `version` always filled in; `kind` one of the issue template's three options; `cell`, `code`, `output` and `browser` only when it came from a cell's report icon; and whatever the student typed under "What happened." Every report ends as a fix, a redirect, or a stated reason nothing changes yet. Never close one silently.
+An issue from the report doors has a fixed shape: `page` and `version` always filled in; `kind` one of the issue template's three options; `cell`, `code`, `output` and `browser` only when it came from a cell's report icon; and whatever the student typed under "What happened." Every report ends as a fix, a redirect, or a stated reason nothing changes yet. Never close one silently.
 
 ## Read first
 

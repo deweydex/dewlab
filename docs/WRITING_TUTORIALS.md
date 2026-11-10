@@ -717,8 +717,8 @@ column.
 <a id="choose-your-project"></a>
 ### Choose your project
 
-A world changes a task's setting. A project changes the job an idea does
-(DECISIONS_LOG 7.288): where one idea has several good uses, a page offers
+A world changes a task's setting. A project changes the job an idea does:
+where one idea has several good uses, a page offers
 two to four short projects, and a project of the reader's own, and the
 reader picks one. A page can have worlds, projects, or both.
 
@@ -1003,8 +1003,7 @@ the same shape on every page and in every diagram:
   other columns.
 
 A table built straight from a published CSV keeps the CSV's own column
-names; only its table name follows the convention. The reasoning is in
-DECISIONS_LOG 7.212, and `dev/graphics/erd.py` draws every relationship
+names; only its table name follows the convention. `dev/graphics/erd.py` draws every relationship
 from the key's own row, which the convention makes readable.
 
 ## Sharing setup code between tutorials
@@ -1269,8 +1268,8 @@ year: "2026-2027"
 version: 2026.08.24.1
 ```
 
-A practice page's title is its tutorial's, with " — Practice" added
-(`DECISIONS_LOG.md` 7.213). A practice page is never listed in a course file:
+A practice page's title is its tutorial's, with " — Practice" added.
+A practice page is never listed in a course file:
 it follows its tutorial onto every course that lists it. If one is, the build
 leaves the line out and says so. It should declare
 no `covers:` either. It sets problems on what its tutorial taught, and
@@ -1381,7 +1380,7 @@ behave the way they do, a little history, the deeper detail — goes on a
 **context page** beside it instead. Students can finish the tutorial without
 ever opening it. (Common mistakes go on the practice page, not here; and a
 tutorial that teaches two ideas is better split into two tutorials than
-trimmed. `DECISIONS_LOG.md` 7.208 has the reasoning.)
+trimmed.)
 
 A context page is an ordinary tutorial file in its own folder,
 `tutorials/<id>/<id>.md`, like a mixed problem set. It names the tutorial it
@@ -1453,15 +1452,14 @@ A term met first in a code cell may never be italicised; the build then links
 to its first plain use instead.
 
 **Definitions on hover.** A marked term also shows its glossary definition
-when a reader points at it, taps it, or reaches it with Tab (DECISIONS_LOG
-7.273). Only the italics mark it, so only a use you marked shows one. To
+when a reader points at it, taps it, or reaches it with Tab. Only the italics mark it, so only a use you marked shows one. To
 give a later page's use of an earlier term the same help, write
 `*matrix*{.term}`. It shows in plain type with the dotted line, since the
 term is not being introduced again, and the `{.term}` tells the vocabulary
 report and the glossary skill the same. Mark the first use on a page that
 means the term, and only that one. "Set a seed" is not a set.
 
-Some terms are marked only near the start (DECISIONS_LOG 7.285): on the
+Some terms are marked only near the start: on the
 tutorial that introduces them and the next three, with their practice
 pages. They are the site's own words (*cell*, *toolkit*, *illustration*),
 and any term a course uses on three in five of its pages after introducing
@@ -1599,7 +1597,7 @@ can type (the comparison, and the build), `input()` reads the cell's
 [typed](#typed) lines.
 
 `button()` and `image_input()` need Python on the page's own thread. On the
-site, a page runs Python in a background Worker (`DECISIONS_LOG.md` 7.77), so
+site, a page runs Python in a background Worker, so
 both raise a `RuntimeError` that says so; only a downloaded copy, which runs
 Python on the page's thread, can use them. `text_input()`, `dropdown()` and
 `slider()` work everywhere: their values reach the Worker as messages. A page that wants
@@ -1633,7 +1631,7 @@ Fix the axis limits, as `plt.ylim` does here. Left to matplotlib, the axes
 rescale with every move and the curve looks as if it never changes.
 
 **Two of the four widgets need Python on the page's own thread, and the
-hosted site runs it in a Worker** (`DECISIONS_LOG.md` 7.77 — that Worker is
+hosted site runs it in a Worker** (that Worker is
 what makes a real Stop button possible). `text_input` and `dropdown` work on a
 hosted page: the page watches the control and posts each change to the
 Worker, and the next run reads the value. `button` and `image_input` have to
@@ -1802,8 +1800,6 @@ Then read the page against the style guide's
 [checklist](../planning/PEDAGOGICAL_STYLE_GUIDE.md#checklist). That one is about
 how the page teaches; this list is about whether it builds.
 
-Record a real decision — something somebody could reasonably have done
-differently — as a new numbered entry in [`../DECISIONS_LOG.md`](../DECISIONS_LOG.md),
-with what it would cost to change your mind later.
-[`../QUESTIONS.md`](../QUESTIONS.md) is where anything still waiting on a
-decision belongs.
+Where you made a real decision — something somebody could reasonably have
+done differently — say why in the pull request description. Anything still
+waiting on a decision is a GitHub issue or Discussion.

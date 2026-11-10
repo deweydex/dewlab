@@ -1,4 +1,4 @@
-/* Editing a cell where it stands (planning/IN_PAGE_EDITOR.md, step 4).
+/* Editing a cell where it stands.
  *
  * A cell's block in the markdown file is its `python exec` or `sql exec` fence
  * plus any hint, solution, predict, inputs and typed fences written straight

@@ -8,7 +8,7 @@
  * and writes the line into the buffer when the reader presses Enter
  * (answerLine()). Stop ends the wait (endLine()). SharedArrayBuffer needs
  * the page to be cross-origin isolated, which the Stop button already needs
- * too (coi-serviceworker, DECISIONS_LOG 7.77).
+ * too (coi-serviceworker).
  *
  * The buffer: two Int32s, the state and the line's length in bytes, then
  * the line as UTF-8. */

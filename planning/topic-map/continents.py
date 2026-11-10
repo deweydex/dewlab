@@ -1,6 +1,6 @@
 """Find which countries belong on one continent, from the roads between them.
 
-    python3 planning/topic-map/continents.py planning/topic-map/graph-final.json
+    python3 planning/topic-map/continents.py map/graph.json
 
 Prints the matrix of needs between regions (row needs column) and the
 groupings of regions with the highest modularity: how much more often roads

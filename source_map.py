@@ -1,6 +1,6 @@
 """Where each block of a rendered page came from in its markdown file.
 
-The in-page editor (planning/IN_PAGE_EDITOR.md) edits one block at a time and
+The in-page editor (assets/inpage-edit.js) edits one block at a time and
 writes it back over the exact bytes it came from. That needs the build to say,
 for every top-level block of a page, which range of the file produced it.
 Python-Markdown records no positions, so this module does it from outside:

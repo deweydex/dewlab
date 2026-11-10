@@ -79,7 +79,7 @@ class TestWhatItRefusesToBuild:
             cm.load_tutorials(outcomes)
 
     def test_a_claim_for_a_section_the_page_no_longer_has_is_left_out_and_noted(self, repo, capsys):
-        # A teacher cut the section (DECISIONS_LOG 7.299). The note names the
+        # A teacher cut the section. The note names the
         # sections the page has, so the claim can be moved to one of them.
         write_tutorial(repo, "covers:\n  no-such-section:\n    covers: [DEMO-1.1]\n")
         outcomes, _ = cm.load_outcomes()

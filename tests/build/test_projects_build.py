@@ -1,4 +1,4 @@
-"""Choose your project (DECISIONS_LOG 7.288): a page's `projects:`
+"""Choose your project: a page's `projects:`
 frontmatter names each project with its card and table fields, and each
 project is a `<div class="dl-project" data-project="…">` in the page that
 opens with its `##` heading. The build writes the cards and the table just
@@ -68,7 +68,7 @@ class TestRendering:
 
 class TestAProjectStillBeingDrafted:
     """A project with a line missing builds, with a note, and its card goes
-    without what is missing (DECISIONS_LOG 7.300)."""
+    without what is missing."""
 
     def test_a_project_with_only_a_title_has_a_card_with_only_a_title(self, repo, capsys):
         page(repo, "# A page\n\n" + ALL, "projects:\n  sums:\n    title: Sums\n  squares:\n"

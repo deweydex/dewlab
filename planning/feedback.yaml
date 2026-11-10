@@ -5,5 +5,5 @@
 # or the feature is not working as meant. Flip it back the same way.
 #
 # Read by build.py's feedback_enabled(). Missing this file, or missing
-# `enabled:` inside it, both mean on. See DECISIONS_LOG.md, Phase 8.
+# `enabled:` inside it, both mean on.
 enabled: true

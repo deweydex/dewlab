@@ -2,9 +2,9 @@
 
 A term shows its definition on hover only where the author marked it: the
 italicised first use, or a later use written `*term*{.term}`
-(docs/WRITING_TUTORIALS.md#marking-a-term, DECISIONS_LOG 7.273). Nothing
+(docs/WRITING_TUTORIALS.md#marking-a-term). Nothing
 marks a later use automatically, because a word match cannot tell the
-everyday "set a seed" from a set (7.94). This lists the candidates instead:
+everyday "set a seed" from a set. This lists the candidates instead:
 for each built page, each concept it inherits from an earlier page that
 appears in its prose as a whole word, unmarked, with the sentence around
 the first appearance. An author reads each and marks the ones that mean the
@@ -23,8 +23,8 @@ Reads the built site, so run `python3 build.py` first.
     python3 dev/term_uses.py --check         # marks to look at
     python3 dev/term_uses.py --common        # terms marked only near the start
 
-`--common` lists, for each course, the terms marked only near the start
-(7.285): the site's own words (cell, toolkit, illustration) and any term
+`--common` lists, for each course, the terms marked only near the start:
+the site's own words (cell, toolkit, illustration) and any term
 the course uses on three in five of its pages after introducing it. They
 are marked only on the tutorial that introduces them and the next three,
 with their practice pages, and the candidate list leaves them out after
@@ -104,7 +104,7 @@ STOPWORDS = {"a", "an", "the", "and", "or", "of", "to", "in", "on", "for", "is",
              "are", "with", "by", "at", "from", "your", "what", "how"}
 
 ROOT = Path(__file__).resolve().parent.parent
-# Two kinds of term are marked only near the start (DECISIONS_LOG 7.285): the
+# Two kinds of term are marked only near the start: the
 # site's own furniture, which a reader uses on every page, and a term a
 # course uses on three in five of its pages after introducing it. Meeting either
 # every page or two keeps it fresh; a definition on the fortieth page is

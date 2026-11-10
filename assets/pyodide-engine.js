@@ -1,3 +1,13 @@
+/* The Notebook's connection to Python. It draws nothing and stores nothing;
+ * it answers "start Python", "run this code" and "what does this name mean"
+ * for the page that calls configure(), which hands over its own output
+ * elements and status display so nothing here assumes a page.
+ *
+ * Two engines behind one interface. Python runs in a Web Worker
+ * (pyodide-worker.js) so a runaway loop cannot freeze the page and Stop can
+ * interrupt it. Where a Worker cannot be made, as on a page opened from
+ * disk, the functions ending in MT run the same Pyodide on this thread,
+ * with no real Stop. */
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
 import { widgetValues, reconcileSliders, clearSliders, followSlider } from "./cell-widgets.js";
@@ -565,7 +575,7 @@ export function clearWidgets(cellId) {
 
 /* What the cell's text boxes, menus and sliders hold, handed in before
  * the run clears them — the one way Python hears a widget, in a Worker or
- * on this thread (7.268). */
+ * on this thread. */
 async function seedWidgets(cellId, values) {
   for (const { widgetId, value } of values) {
     if (mode === "main-thread") toolsMT._set_widget_value(cellId, widgetId, value);

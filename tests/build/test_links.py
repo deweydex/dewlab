@@ -45,7 +45,7 @@ class TestCrossLinks:
 
     def test_a_link_to_a_section_the_page_no_longer_has_goes_to_the_page_and_says_so(self, repo, capsys):
         # A teacher cut the section; pages that pointed at it still reach the
-        # right page, and nobody else's page stops theirs (DECISIONS_LOG 7.299).
+        # right page, and nobody else's page stops theirs.
         write(repo, "See [other](tutorial:other#absent).\n", slug="sample")
         write(repo, "Other.\n", slug="other")
         b.build()

@@ -1,0 +1,17 @@
+# What the tests and the dev/ scripts need on top of the build. One install
+# for a contributor, and the same list CI installs:
+#
+#     pip install -r requirements-dev.txt
+-r requirements-build.txt
+pytest
+pytest-xdist
+# The tutorials' own cells import these. The build runs every page's
+# solutions, and skips (with a note) any that need a package it cannot find.
+numpy
+pandas
+matplotlib
+# The pictures under dev/graphics/.
+svgwrite
+# The browser tests in tests/e2e/ need one more thing, left out here because
+# most changes never touch them: `pip install playwright`, then
+# `python -m playwright install chromium` and `python3 dev/fetch_pyodide.py`.

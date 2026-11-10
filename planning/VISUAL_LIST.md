@@ -59,7 +59,7 @@ with different inputs cannot.
 
 The `--write` pass writes `finished(relative, draw)`, from
 `dev/graphics/palette.py`, rather than `draw()` itself. That adds the hidden
-pattern layer a reader turns on with *Patterns in pictures* (7.283): a
+pattern layer a reader turns on with *Patterns in pictures*: a
 stripe or dot pattern over each tinted area, one pattern per tint, for a
 reader who cannot tell the tints apart. A picture with no tints comes back
 unchanged, and `tests/test_picture_patterns.py` fails for a new generator
@@ -191,7 +191,7 @@ the export's theming is removed rather than worked with, and the root is given
 ### It fails the build
 
 A missing `alt` already stops the build rather than logging a warning, because
-a warning in a CI log is a warning nobody reads (`DECISIONS_LOG.md` 1.4). The
+a warning in a CI log is a warning nobody reads. The
 same applies here with more force: the contributor who breaks a diagram is in
 light mode, so the failure is invisible to exactly the person who caused it.
 
@@ -247,7 +247,7 @@ control and posts each change into the Worker, so a cell that runs afterwards
 reads what the reader left. `button` and `image_input` still do not — one has
 to call Python the moment it is clicked with no cell running, the other has to
 read a picked file's bytes, and both need a DOM reference the Worker cannot
-hold (`DECISIONS_LOG.md` 7.77).
+hold.
 
 A form that writes to a student's own database wants a full-stack `app` cell
 rather than either: `dlQuery(sql, params)` runs against the page's shared
@@ -394,7 +394,7 @@ that is answerable by looking.
 
 ### Object-oriented programming
 
-**[Composition: objects inside other objects](../tutorials/objects-inside-objects/objects-inside-objects.md) — a UML class diagram.** (Placed here since the 7.211 split: its "Is a, or has a?" section is about exactly this contrast, and the inheritance half now lives on [Inheritance: one class built on another](../tutorials/one-parent-many-children/one-parent-many-children.md).)
+**[Composition: objects inside other objects](../tutorials/objects-inside-objects/objects-inside-objects.md) — a UML class diagram.** (Placed here since the split: its "Is a, or has a?" section is about exactly this contrast, and the inheritance half now lives on [Inheritance: one class built on another](../tutorials/one-parent-many-children/one-parent-many-children.md).)
 `BankAccount` above, `SavingsAccount` and `CheckingAccount` beneath it with
 hollow-triangle inheritance arrows, and `Bank` holding accounts as a different
 relationship entirely. It carries content the code makes you scroll to see:
@@ -415,8 +415,7 @@ page asks the reader to predict: the ramp's slope, the paint's area and the
 predicted bearings are left off on purpose. Charts and animations a cell
 already draws are not copied as stills. Each generator's `--check` reports
 a committed SVG that is not what it draws (CI's house-style job runs it), and
-`tests/test_erd_graphics.py` checks the drawing code itself. DECISIONS_LOG has
-the entry.
+`tests/test_erd_graphics.py` checks the drawing code itself.
 
 ### Web authoring
 

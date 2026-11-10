@@ -341,7 +341,7 @@ class TestOpeningAndClosing:
         context.close()
 
     def test_clicking_outside_does_not_close_it(self, site, browser, site_url):
-        """DECISIONS_LOG 7.99 already ruled this for dewmini's own docked
+        """The same rule as dewmini's own docked
         rails -- "a docked rail must not close on an outside click, unlike
         a popover" -- and this panel was the one place on the tutorial
         pages still doing it the other way. Josh, after finding it closed

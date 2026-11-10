@@ -200,9 +200,9 @@ class TestOnePlainTutorial:
         # nav_search_html() — a magnifier and "Search for a topic" between
         # the wordmark and the tree, and the line is the search widget's own
         # input with those words as its placeholder: nothing to open first,
-        # no second bar (7.169). It has to be the input itself: a summary
+        # no second bar. It has to be the input itself: a summary
         # styled to look like a field read as a search bar that did nothing
-        # when typed into (7.166).
+        # when typed into.
         start = page.index('<div class="dl-corner-dock dl-corner-dock-tl"')
         end = page.index('<div class="dl-corner-dock dl-corner-dock-tr"', start)
         left = page[start:end]
