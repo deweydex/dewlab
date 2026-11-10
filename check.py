@@ -312,13 +312,26 @@ def git(*args: str) -> str | None:
     return done.stdout.strip() if done.returncode == 0 else None
 
 
-def repository_slug() -> str | None:
-    """`owner/name` from the origin remote, for https or ssh addresses."""
-    url = git("remote", "get-url", "origin")
+def repository_slug(remote: str = "origin") -> str | None:
+    """`owner/name` from a remote's address, for https or ssh addresses."""
+    url = git("remote", "get-url", remote)
     if not url:
         return None
     match = re.search(r"github\.com[:/]([^/]+)/([^/]+?)(?:\.git)?/?$", url)
     return f"{match.group(1)}/{match.group(2)}" if match else None
+
+
+def pull_request_address(origin: str, upstream: str | None, base: str, branch: str, query: str) -> str:
+    """The GitHub page that opens a pull request for `branch`.
+
+    A contributor who was not invited to the project works in their own copy
+    of it, a fork, and a remote called `upstream` names the project it came
+    from. The pull request then goes to that project, from the fork's branch.
+    With no such remote the clone is the project itself.
+    """
+    if upstream and upstream != origin:
+        return f"https://github.com/{upstream}/compare/{base}...{origin.split('/')[0]}:{branch}?{query}"
+    return f"https://github.com/{origin}/compare/{base}...{branch}?{query}"
 
 
 def changed_paths(items: list[tuple[str, str, str]]) -> list[str]:
@@ -421,13 +434,15 @@ def offer_pull_request(report: Report, mode: str) -> None:
     if not upstream or git("log", "--oneline", "@{u}..HEAD"):
         if git("push", "-u", "origin", branch) is None:
             print(f"Problem  git could not push. Try:  git push -u origin {branch}")
+            print("If you were not invited to work on this project, GitHub will not let you push to it. Make your own")
+            print("copy first (a fork), and send the pull request from there: docs/YOUR_FIRST_TUTORIAL.md says how.")
             return
     all_paths = paths or (git("diff", "--name-only", "origin/main...HEAD") or "").splitlines()
     title, body = describe(report.checked, all_paths)
     base = git("symbolic-ref", "--short", "refs/remotes/origin/HEAD") or "origin/main"
     base = base.split("/", 1)[-1]
     query = urllib.parse.urlencode({"quick_pull": "1", "title": title, "body": body})
-    url = f"https://github.com/{slug}/compare/{base}...{branch}?{query}"
+    url = pull_request_address(slug, repository_slug("upstream"), base, branch, query)
     print()
     print("Your pull request page is ready. The title and description are filled in;")
     print("read them, change anything you like, and press the green button.")

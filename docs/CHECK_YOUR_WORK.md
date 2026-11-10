@@ -2,7 +2,9 @@
 
 This page is for you if you are adding one thing to dewlab: a tutorial, a
 practice page, a series, or a course. It shows you how to check that thing
-before you open a pull request.
+before you open a pull request. If this is your first tutorial,
+[`YOUR_FIRST_TUTORIAL.md`](YOUR_FIRST_TUTORIAL.md) walks you through from the
+start.
 
 You need Python 3, the packages the project lists (`pip install -r
 requirements-build.txt`, once), and one command.
@@ -230,8 +232,13 @@ python3 check.py tutorials/first-steps --pr
 The description is written from what you have changed at that moment, so it
 is always up to date.
 
-Two things to know:
+Three things to know:
 
+- You need permission to push to the project, or your own copy of it. If you
+  were not invited, press **Fork** on the project's GitHub page, clone your
+  copy, and run `git remote add upstream https://github.com/deweydex/dewlab`.
+  The program then pushes to your copy and opens the pull request to the
+  project. [`YOUR_FIRST_TUTORIAL.md`](YOUR_FIRST_TUTORIAL.md) shows each step.
 - You must be on a branch, not on `main`. If you are on `main`, the program
   tells you the one command that makes a branch, and stops.
 - `python3 check.py` with no folder checks the whole site and never offers a

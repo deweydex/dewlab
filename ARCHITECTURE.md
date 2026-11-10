@@ -38,6 +38,7 @@ package beside it:
 | `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
 | `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. |
 | `builder/solutions.py`, `builder/solution_runner.py` | Running every solution on a page, the way a reader's browser would. Not part of a build: `check.py` and CI call it. |
+| `builder/serve.py` | The preview server behind `python3 build.py --serve`: the built site, on this machine only. |
 | `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
 
 `import build` gives you `builder.main` itself, so scripts and tests can go on
