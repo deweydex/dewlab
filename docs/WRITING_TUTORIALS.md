@@ -186,7 +186,7 @@ version: 2026.08.24.1
 
 | `status` | Built as a page? | In the reading order? | What it means |
 |---|---|---|---|
-| `draft` | No | No | Work in progress — visible only in a local build or the authoring editor. |
+| `draft` | No | No | Work in progress — visible only in a local build. |
 | `beta` | Yes | No | Reachable by direct URL, for testing or preview — never the default route. |
 | `live` | Yes | Yes | The active, canonical release — the one a plain URL serves. |
 | `archived` | Yes | No | Retired — still built, at its old URL, so old links and past students' saved work still have somewhere to land, but out of the reading order. |
@@ -441,11 +441,13 @@ to read. A cell may have
 more than one solution, shown in order, and the comparison uses the first.
 Only a Python cell can have one.
 
-The build runs every solution before a reader can open it. In a separate
-Python, it runs the page's own cells in order (a cell that fails as
+Every solution is run before a reader can open it: by `python3 check.py`
+when you check your page, and again by the tests on your pull request. (A
+build only writes the page; it does not run it.) In a separate
+Python, the check runs the page's own cells in order (a cell that fails as
 written is fine), then each solution with the cell's inputs, through the
-same function the button calls. A solution that raises an error stops the
-build, and so does an input the solution side cannot even name: a
+same function the button calls. A solution that raises an error is a
+Problem, and so is an input the solution side cannot even name: a
 `NameError` or `SyntaxError` there is a typo in the page. Any other error an
 input raises is an outcome, and the table shows it. A machine without a
 package the page imports (pandas, say) gets a note, not a failure, and so
@@ -453,7 +455,7 @@ does every solution below a cell that stopped at that import: the publish
 job installs only `requirements-build.txt`, so a page that draws with
 matplotlib is checked by the test job, not by the publish job. Each cell
 gets 20 seconds, so a deliberate endless loop earlier on the page is a cell
-that fails, not a build that hangs.
+that fails, not a check that hangs.
 
 ### inputs
 
@@ -477,7 +479,7 @@ running it.
 ### typed
 
 The lines `input()` reads where nobody can type: in the comparison, and
-when the build runs the page's cells and solutions. One line for each time
+when `check.py` runs the page's cells and solutions. One line for each time
 the code calls `input()`, written exactly as a person would type it,
 spaces included. A blank line between two others is an empty line typed.
 
@@ -1741,15 +1743,7 @@ frontmatter at all, is called after its file name and the build says so.
 
 ---
 
-## The authoring editor
-
-A browser-based editor at `/editor.html` reads and writes tutorials through the
-GitHub API, for changes that do not need a local checkout: reordering a series,
-editing frontmatter, renaming a slug with the cell-id warnings that protect
-saved student work, and opening a pull request with the result. It sits on top
-of the same markdown files described here — nothing about a tutorial's format is
-different because it went through the editor. For substantial writing, a local
-checkout and an ordinary text editor is still the more comfortable tool.
+## Editing a page in the browser
 
 For a small change to a page that already exists (a typo, a clearer sentence)
 you can edit the page where it stands: open **Settings**, press **Edit this
@@ -1757,16 +1751,6 @@ page** at the bottom, click a heading or a paragraph and type, then press
 **Open pull request**. The page looks the same while you edit. What is
 editable and what is not yet is in [`EDITING_A_PAGE.md`](EDITING_A_PAGE.md),
 which is also the guide for a teacher who has never used GitHub.
-
-The editor reports a `tutorial:slug#anchor` link that does not resolve, checked
-against every other tutorial's real slugs and headings, before you commit rather
-than after. A "Link to another tutorial" toggle above the prose editor searches
-every tutorial by title, id or course and inserts a real link at the cursor,
-so you reach for a tutorial that exists rather than typing a slug from memory.
-Its code cells offer keyword and locally-typed-name completion as you write. Open
-the same tutorial as a student and their cell offers the same completion plus a
-hover docstring, read off whatever the setup cell imported and whatever the
-student has defined so far.
 
 ---
 

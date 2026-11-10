@@ -192,8 +192,8 @@ gate them.
 One line in that section is different in kind: every number is run. A number
 in a page or an answer is executed before it is published, never reasoned
 about. A test checks code, not prose, so a wrong number in an answer is the
-one mistake nothing else would catch. That is why the build runs every
-solution on every page before it publishes (#312), and why a handful of tests
+one mistake nothing else would catch. That is why every
+solution on every page is run before it publishes (#312, `python3 check.py`), and why a handful of tests
 read particular pages and check that the numbers their prose states still
 follow from their own code. If you change such a page and one of those tests
 fails, it is telling you that the prose and the code have drifted apart.

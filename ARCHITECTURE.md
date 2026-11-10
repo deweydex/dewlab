@@ -16,24 +16,34 @@ others (the fourth reads what the first writes into a page):
    the *student's* browser tab. Boots Pyodide (Python compiled to
    WebAssembly) client-side and executes cells there. No student code ever
    reaches a dewlab-controlled server, because there isn't one.
-3. **`assets/editor.js`** — ships inside `editor.html` and runs in an
-   *author's* browser tab. Reads and writes tutorial markdown through
-   GitHub's own API, using a token the author supplies, and opens a pull
-   request. A client of GitHub, not of anything dewlab hosts.
-4. **`assets/inpage-edit.js`** — loaded into an ordinary built page only when
+3. **`assets/inpage-edit.js`** — loaded into an ordinary built page only when
    an author presses **Edit this page** in Settings (§3). Edits the page where
-   it stands and opens a pull request through the same GitHub client. A
-   student's page load never fetches it.
+   it stands and opens a pull request through GitHub's own API, using a token
+   the author supplies. A client of GitHub, not of anything dewlab hosts, and
+   a student's page load never fetches it.
 
-None of the four needs the others running.
+None of the three needs the others running.
 
 ---
 
 ## 1. The build: markdown in, static site out
 
-`build.py` is a single script that reads `tutorials/*/*.md` and `courses/*.yaml`
-and writes
-`site/`. It runs locally for a preview and again in
+`python3 build.py` reads `tutorials/*/*.md` and `courses/*.yaml` and writes
+`site/`. The file `build.py` is only the command; the code is the `builder/`
+package beside it:
+
+| File | What it holds |
+|---|---|
+| `builder/main.py` | Most of the build: reading a page, rendering its blocks, courses and navigation, checks, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
+| `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
+| `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. |
+| `builder/solutions.py`, `builder/solution_runner.py` | Running every solution on a page, the way a reader's browser would. Not part of a build: `check.py` and CI call it. |
+| `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
+
+`import build` gives you `builder.main` itself, so scripts and tests can go on
+saying `build.load(...)`.
+
+The build It runs locally for a preview and again in
 `.github/workflows/deploy.yml` on every push to `main`. `site/` is gitignored
 and rebuilt from scratch each time, so a published page never drifts from the
 markdown that describes it.
@@ -88,9 +98,7 @@ The pipeline, in order:
    the rest of the page into one code block (`check_fences_closed()`). A
    `<details>` fold without `dl-hint`, `dl-answer` or `dl-why` gets a note on
    stderr and builds, its markdown converted like any fold's
-   (`check_folds()`). `problems()` in `editor.js` (§3)
-   runs the structural checks client-side, before a commit rather than after
-   CI.
+   (`check_folds()`).
 
 5. **Assemble navigation.** `series_of()`, `versions_of()`, `practice_pairs()`,
    `mixed_practice()`, `context_pages()`, `archived_of()` read
@@ -111,13 +119,11 @@ The pipeline, in order:
    old address `courses/redirects.yaml` lists.
 
 6. **Render into `assets/shell.html`.** Every page — tutorial, contents
-   page, topic tree, topic map, `editor.html` — is the same template with `{{TOKEN}}`
+   page, topic tree, topic map — is the same template with `{{TOKEN}}`
    placeholders filled by `fill_shell()`. A token in the template that
    `build.py` has no value for fails the build. A `{{` in an author's own
    words, such as an f-string in a cell or an example template in a
-   sentence, is theirs and is left alone. `write_editor_page()` assembles
-   `editor.html` specifically, wiring on its `<script type="module"
-   src="editor.js">` tag and the vendored Milkdown stylesheet. A hand-written
+   sentence, is theirs and is left alone. A hand-written
    page with no curriculum data of its own — the home page, About, Features,
    Studying here and Reading helpers today — has its content in
    `pages/<name>.md`, not a string
@@ -304,11 +310,12 @@ code. `build.py` renders a ```` ```solution ```` fence as a closed
 `tests:` cell in the manifest. A button under the table runs the cell, then
 `tutorial_tools.compare()`, which evaluates each input against copies of the
 page namespace, the solution's copy having run the solution first; the page
-fills the table and marks rows that differ, without a verdict. Before
-writing any page, `check_solutions()` runs each page's cells and every
-solution in a separate Python, through that same `compare()`, and stops the
-build if a solution raises; `check_every_solution()` runs several pages'
-checks at once, one per core, and reports the first failure in page order. Nobody can type in either, so a cell whose code calls
+fills the table and marks rows that differ, without a verdict. A build
+does not run any of this. `python3 check.py` and CI do (`builder/solutions.py`):
+`check_solutions()` runs each page's cells and every solution in a separate
+Python (`builder/solution_runner.py`), through that same `compare()`, and a
+solution that raises is a Problem; `every_problem()` runs several pages'
+checks at once, one per core, and reports every page that failed. Nobody can type in either, so a cell whose code calls
 `input()` can carry a ```` ```typed ```` fence: the lines `input()` reads
 there, in order.
 
@@ -366,7 +373,7 @@ a cell can do starts in `tutorial_tools.py`; changing what it looks like
 starts in `tutorial-runtime.js`.
 
 Two more pieces: `assets/tree.js` draws the topic-tree and knowledge-map
-SVGs from data `build.py` computes (`tree_data()`); `vendor-src/build-vendor.mjs`
+SVGs from data the build computes (`tree_data()` in `builder/finding.py`); `vendor-src/build-vendor.mjs`
 also produces `assets/vendor/standalone.bundle.js`, the entire runtime as one
 classic script rather than an ES module, which is what a **Download to
 keep** file runs, since `file://` can't load a module.
@@ -426,85 +433,28 @@ Python gives it.
 
 ---
 
-## 3. The authoring editor: a GitHub client, not a server client
+## 3. Editing a page where it stands: a GitHub client, not a server client
 
-`editor.html` is never linked from a student page. It exists for tutorial
-authors, and everything about it follows from one fact: it has nowhere to
-send a change except GitHub. `assets/editor.js`'s `githubClient()` wraps
-GitHub's REST and Git Data APIs directly — list the tree at `main`, read a
-blob, create blobs/a tree/a commit, push a branch, open a **draft** pull
-request — using a fine-grained personal access token the author pastes in
-once (`gate()`), kept in that browser's own `localStorage` and nowhere else.
-The token needs `contents: write` and `pull requests: write`, scoped to
-`deweydex/dewlab`, nothing broader — that scope is the access model, since
-GitHub's own collaborator settings decide who can be issued one. The token
-can propose commits; it cannot merge them. Every change lands as a draft PR
-against `main`, going through whatever review the repository already
-requires.
+Everything about the editor follows from one fact: it has nowhere to send a
+change except GitHub. `githubClient()` in `assets/github-client.js` wraps
+GitHub's REST and Git Data APIs directly — read a blob, create blobs, a tree
+and a commit, push a branch, open a **draft** pull request — using a
+fine-grained personal access token the author pastes in once, kept in that
+browser's own `localStorage` and nowhere else. The token needs
+`contents: write` and `pull requests: write`, scoped to `deweydex/dewlab`,
+nothing broader — that scope is the access model, since GitHub's own
+collaborator settings decide who can be issued one. The token can propose
+commits; it cannot merge them. Every change lands as a draft PR against
+`main`, going through whatever review the repository already requires.
 
-What the editor holds in memory (`start()`'s `state` object): every file
-under `tutorials/` fetched once at load, as both a mutable working copy
-(`state.files`) and an untouched original (`state.original`) — releasing
-needs both, since freezing from the edited buffer rather than the original
-would misrepresent what students actually had. `state.dirty` and
-`state.removing` track exactly which paths a commit needs to touch.
-
-**The prose surface.** The body of a tutorial is edited with
-`createProseEditor()` (`vendor-src/milkdown-entry.js`), a thin wrapper
-around Milkdown's Crepe preset, vendored the same way CodeMirror and KaTeX
-are: `npm run build` inside `vendor-src/` bundles it with esbuild into
-`assets/vendor/milkdown.bundle.js` (+ a sibling `.css`), committed so neither
-a local preview nor CI needs Node. `.github/workflows/tests.yml`'s
-`standalone-bundle-is-current` job fails if the committed bundle goes stale
-against `vendor-src/`.
-
-Two things worth knowing if you touch this integration:
-
-- **Crepe reads its document once, at construction, and cannot swap it in
-  place.** Loading different content — switching tutorials, or driving the
-  editor from a test — means destroying the instance and creating a new
-  one. `render()` already does this on every state change
-  (`root.replaceChildren()`); it also tears down the previous Crepe
-  instance first (`state.editor.destroy()`).
-  `globalThis.dewlabEditor.setBody(markdown)` drives this path.
-
-- **Crepe's code-block feature keeps only the first word of a fence's info
-  string as its "language."** dewlab's convention repurposes that string to
-  mean two things — `python` for highlighting, ` exec` for "this is a
-  runnable cell" — which Crepe's language picker can't preserve.
-  `restoreExecTag()` (`assets/editor.js`) restores it on the way out, using
-  the same signal `build.py` uses to mean a fence is a cell: an `id:` line
-  as the fence's first content (and, for a `python toolkit-reference`
-  fence, its `for:` line).
-
-The structural report (`problems()`, the same checks `build.py` fails on,
-run here before a commit) also checks cross-tutorial links —
-`tutorialLinkProblems()` validates every `tutorial:slug#anchor` against
-every other tutorial's real slugs and headings (`tutorialAnchors()`, which
-reproduces Python-Markdown's toc heading-id algorithm in JavaScript). The
-cell-id-rename warning (`renamedCells()` — the one thing the editor knows
-that the build can't, since by build time the rename has happened) and the
-release mechanism (`release()`: freeze what students have, publish the
-buffer as a new dated version beside it) are separate from this. Start in
-`assets/editor.js` for that logic, or `vendor-src/milkdown-entry.js` for the
-prose surface itself, including its code blocks' completion (the same
-static sources as §2, minus the live layer — the editor has no interpreter
-to read from).
-
-The link picker (`matchTutorials()`, the toggle above the prose editor)
-searches every tutorial by title, id or course and inserts
-`[title](tutorial:slug#anchor)` at the cursor. Insertion is
-`insertLink(title, href)` (`vendor-src/milkdown-entry.js`), which builds the
-text node and its link mark directly against the schema rather than going
-through `@milkdown/utils`'s `insert()` helper, since that helper's inline
-path sanitizes any link scheme outside http/https/mailto/tel/ftp — which
-would silently strip a `tutorial:` link.
-
-`tutorial-style.css` defines the full set of `--crepe-color-*`/`--crepe-
-font-*`/`--crepe-shadow-*` custom properties Crepe's structural stylesheet
-expects, mapped to the matching `--dl-*` token — importing only the
-structural stylesheet, with none of Crepe's skins, otherwise leaves those
-undefined.
+The rich-text surface is Milkdown's Crepe preset, vendored the same way
+CodeMirror and KaTeX are: `npm run build` inside `vendor-src/` bundles
+`vendor-src/milkdown-entry.js` with esbuild into
+`assets/vendor/milkdown.bundle.js`, committed so neither a local preview nor
+CI needs Node. `.github/workflows/tests.yml`'s `standalone-bundle-is-current`
+job fails if the committed bundle goes stale against `vendor-src/`. Crepe
+reads its document once, at construction, and cannot swap it in place:
+different content means destroying the instance and creating a new one.
 
 **Editing a page where it stands** (`assets/inpage-edit.js`). The control is a section at the foot of the
 Settings panel in `assets/shell.html`, hidden until the page's manifest has an
@@ -572,9 +522,6 @@ rules) hides what Crepe mounts beside its text, gives the wrapper the block's
 margins (an editable element keeps its margins inside itself) and takes the
 virtual cursor out of the flow. Both are found by measuring, not by reading
 Crepe's docs: the numbers are in the spike report.
-
-`assets/github-client.js` is the one GitHub client, shared by this editor and
-`editor.js`.
 
 ---
 
@@ -651,7 +598,7 @@ editor split-screen against a live sandboxed preview, discovering whatever
 `.css`/`.js` of the same base name sit beside it.
 
 Two pieces reach outside `compose/`. `write_reference_index()` in
-`build.py` emits `assets/reference-index.json`, the union of every
+`builder/finding.py` emits `assets/reference-index.json`, the union of every
 tutorial's glossary — deliberately dropping the "never show what hasn't
 been taught" rule the tutorial pages' Reference is built around, since a
 workspace has no position in a series to protect. And
@@ -732,21 +679,14 @@ python3 -m pytest tests --ignore=tests/e2e   the fast ones, no browser
   workers blocked, so the real GitHub client's calls to `api.github.com` are
   answered by a fake in the test file: nothing touches the network and the
   token is not real. Needs no Pyodide. Runs in CI's `browser` job.
-- **`tests/e2e/test_editor.py`** — the authoring editor, driven with
-  Playwright against a **fake** GitHub client injected in-page
-  (`FAKE_CLIENT`, top of that file) — nothing here touches the network or
-  needs a token. Since the prose editor is a real block editor, not a
-  `<textarea>`, these tests drive it through
-  `globalThis.dewlabEditor`'s `getBody()`/`setBody()`/`editBody()` rather
-  than filling a field directly.
 - **`tests/e2e/test_*.py`** (the rest) — a real Chromium against a real,
   self-hosted Pyodide, built from `tests/e2e/fixture/rendering-tour.md` by
   an actual `build.py` run. Needs `pip install playwright && playwright
   install chromium` and `python3 dev/fetch_pyodide.py` (~30 MB) first;
   skips with a message if either is missing.
 
-None of the e2e suite runs in CI — it's a local, manual check, run before a
-PR that touches the runtime or the editor.
+CI's `browser` job runs the few e2e files that never run a cell; the rest is
+a local, manual check, run before a PR that touches the runtime.
 
 ---
 
@@ -766,20 +706,17 @@ PR that touches the runtime or the editor.
 | The Notebook's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | The Notebook's cells, toolbar, or downloads | `compose/dewmini.js` |
-| The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
-| The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
-| The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `build.py`'s `map_data()` and `write_map_page()`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
-| The authoring editor's structural checks and release logic | `assets/editor.js` |
-| Any GitHub call, from either editor | `assets/github-client.js` |
+| The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `builder/downloads.py` |
+| The topic tree or knowledge map's layout | `assets/tree.js` and `tree_data()`/`render_knowledge_map()` in `builder/finding.py` |
+| The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `map_data()` and `write_map_page()` in `builder/finding.py`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
+| Any GitHub call from the editor | `assets/github-client.js` |
 | Editing a page where it stands: which blocks can be edited and how, saving, the Settings section | `assets/inpage-edit.js`; the section and its loader in `assets/shell.html`; `.dl-inplace` in `assets/tutorial-style.css` |
 | Which markdown range each block of a page came from | `source_map.py`; `load()` and the manifest's `edit` entry in `build.py` |
-| The authoring editor's prose-editing surface itself | `vendor-src/milkdown-entry.js` |
+| The editor's rich-text surface itself | `vendor-src/milkdown-entry.js` |
 | A vendored library's version | `vendor-src/package.json`, then `npm run build` there |
 | Code completion or hover docs, either surface | `vendor-src/codemirror-entry.js` (both surfaces' static sources, plus the extension points); `assets/tutorial-runtime.js` (the runtime's live sources) |
-| The curated names the editor's future hover docs would cover | `dev/generate_doc_snippets.py`, then re-run it |
-| The tutorial link picker (search-and-insert `tutorial:` links) | `matchTutorials()`/the picker UI in `assets/editor.js`; `insertLink()` in `vendor-src/milkdown-entry.js` |
-| What a search box counts as a match — stems, synonyms, prefixes | `assets/search-words.js`, imported by `search.js`, the Reference panel filters in `tutorial-runtime.js`, dewmini's Library and the editor's picker |
-| House styling, both reading pages and the editor | `assets/tutorial-style.css` |
+| What a search box counts as a match — stems, synonyms, prefixes | `assets/search-words.js`, imported by `search.js`, the Reference panel filters in `tutorial-runtime.js`, and dewmini's Library |
+| House styling | `assets/tutorial-style.css` |
 | The reference's assembly logic (what counts as "already covered") | `cumulative_glossary()`/`own_glossary()` in `build.py` |
 | What one tutorial's reference actually says | `<slug>.glossary.yaml` beside it, or run `.claude/skills/tutorial-glossary/SKILL.md` on it |
 | Highlight-to-look-up (the button a selection offers) | `initReferenceLookup()` in `assets/tutorial-runtime.js`; `.dl-lookup` in `assets/tutorial-style.css` |

@@ -74,7 +74,7 @@ GENERATED = ("site/", "dev/pyodide/", "assets/vendor/pyodide/",
              "node_modules/", "__pycache__/", "planning/topic-map/generated/")
 
 GENERATED_PAGES = {"index.html", "tree.html", "map.html", "topics.html", "about.html",
-                   "editor.html", "all-notes.html", "search-index.json",
+                   "all-notes.html", "search-index.json",
                    "reference-index.json", "routes.json"}
 
 # Docs in these folders aren't held to link currency: generated or
@@ -143,7 +143,7 @@ def resolve(doc: Path, target: str) -> Path | None:
     if is_generated(target):
         return None
     # A page the build writes rather than a file anyone edits, named by URL:
-    # `/editor.html`.
+    # `/map.html`.
     if Path(target).name in GENERATED_PAGES:
         return None
     first = target.strip("/").split("/")[0]

@@ -62,11 +62,9 @@ await build({
   legalComments: "none",
 });
 
-/* Milkdown's Crepe preset, for the authoring editor's prose surface
- * (assets/editor.js). Only the structural stylesheet is imported in
- * milkdown-entry.js, not Crepe's themed skin — esbuild writes whatever CSS a
- * bundled entry point imports to a sibling file automatically, here
- * milkdown.bundle.css, which editor.html links same as katex.min.css. */
+/* Milkdown's Crepe preset, for editing a page where it stands
+ * (assets/inpage-edit.js). No stylesheet is imported in milkdown-entry.js:
+ * the page's own styles are the editor's. */
 await build({
   entryPoints: [join(here, "milkdown-entry.js")],
   outfile: join(outDir, "milkdown.bundle.js"),
@@ -76,29 +74,7 @@ await build({
   sourcemap: false,
   target: ["es2020"],
   legalComments: "none",
-  /* Crepe's own structural CSS carries its math support's KaTeX font files.
-   * `file` rather than `dataurl`: those fonts are the same ones already
-   * vendored above for the reading pages, and inlining a second base64 copy
-   * of each into this CSS file (three formats a piece) would have made it
-   * over a megabyte for no reason — real font files, written out and cached
-   * by the browser like any other asset, cost nothing until an author's
-   * cell actually contains maths. */
-  loader: { ".woff2": "file", ".woff": "empty", ".ttf": "empty", ".svg": "file" },
-  assetNames: "milkdown-fonts/[name]",
 });
-
-/* The `empty` loader above leaves each stubbed woff/truetype alternative as a
- * bare, argument-less `url()` in the generated @font-face rules — every
- * browser dewlab targets supports woff2, so nothing is lost by dropping them,
- * but an empty `url()` is invalid CSS and risks the whole `src` declaration
- * being discarded rather than just that one alternative. Removed here rather
- * than trusted to parse leniently everywhere. */
-{
-  const cssPath = join(outDir, "milkdown.bundle.css");
-  const css = await readFile(cssPath, "utf8");
-  const cleaned = css.replace(/,url\(\)\s*format\("(?:woff|truetype)"\)/g, "");
-  if (cleaned !== css) await writeFile(cssPath, cleaned);
-}
 
 /* Unmodified, not bundled: it has no imports, and esbuild's minifier is not
  * worth running on a 4 KB script that needs to stay readable enough for
@@ -178,6 +154,6 @@ for (const { pkg, slug, faces } of ACCESSIBLE_FONTS) {
 await writeFile(join(outDir, "accessible-fonts.css"), accessibleCss);
 
 console.log(`vendor/ rebuilt: codemirror.bundle.js, katex.bundle.js, standalone.bundle.js, ` +
-  `milkdown.bundle.js, milkdown.bundle.css, katex.min.css, coi-serviceworker.js, ${
+  `milkdown.bundle.js, katex.min.css, coi-serviceworker.js, ${
   fonts.filter((f) => f.endsWith(".woff2")).length} fonts, accessible-fonts.css (${
   ACCESSIBLE_FONTS.reduce((n, f) => n + f.faces.length, 0)} faces)`);

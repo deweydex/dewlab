@@ -68,8 +68,7 @@ its panel.
 
 A new sibling file, `tutorials/<id>/<id>.glossary.yaml` — beside the
 `.md` (or beside the release folder, for a tutorial with several releases;
-keyed the same way `assets/editor.js`'s `allTutorials()` already keys a
-tutorial, by module+slug rather than by path, since what a tutorial teaches
+keyed by module+slug rather than by path, since what a tutorial teaches
 does not change release to release the way its prose might).
 
 ```yaml

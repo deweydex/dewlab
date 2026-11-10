@@ -94,7 +94,7 @@ class TestBlocks:
 class TestTheMapOnAPage:
     @pytest.fixture(autouse=True)
     def _on(self, monkeypatch):
-        monkeypatch.setattr(b, "SOURCE_MAP", True)
+        monkeypatch.setattr(b.cfg, "SOURCE_MAP", True)
 
     PAGE = ("# A page\n\nFirst paragraph.\n\n- one\n- two\n\n"
             '<details class="dl-hint"><summary>stuck?</summary>\n\nTry it.\n\n</details>\n\n'
@@ -130,7 +130,7 @@ class TestTheMapOnAPage:
         write(repo, self.PAGE)
         b.build()
         mapped = built(repo)
-        monkeypatch.setattr(b, "SOURCE_MAP", False)
+        monkeypatch.setattr(b.cfg, "SOURCE_MAP", False)
         b.build()
         assert sm.strip(mapped) == built(repo)
         assert "dl-src" not in mapped
@@ -165,7 +165,7 @@ class TestWhatEditThisPageReads:
     (assets/inpage-edit.js fetches that blob, so the offsets are always true)."""
 
     def test_a_mapped_page_names_its_file_and_the_git_blob_it_was_built_from(self, repo, monkeypatch):
-        monkeypatch.setattr(b, "SOURCE_MAP", True)
+        monkeypatch.setattr(b.cfg, "SOURCE_MAP", True)
         path = write(repo, "# A page\n\nText.\n")
         b.build()
         edit = manifest(built(repo))["edit"]
@@ -177,7 +177,7 @@ class TestWhatEditThisPageReads:
         assert edit["editor"].startswith("../assets/vendor/milkdown.bundle.js?v=")
 
     def test_the_sha_is_the_one_git_itself_gives_the_file(self, repo, monkeypatch):
-        monkeypatch.setattr(b, "SOURCE_MAP", True)
+        monkeypatch.setattr(b.cfg, "SOURCE_MAP", True)
         path = write(repo, "# A page\n\nText.\n")
         b.build()
         git = subprocess.run(["git", "hash-object", str(path)], capture_output=True, text=True)
@@ -210,9 +210,9 @@ def _check_page(path: str) -> tuple[str, str]:
     """In a worker process: the page built with the map and stripped, against
     the page built without it; and whether every range lies inside the file."""
     page = Path(path)
-    b.SOURCE_MAP = False
+    b.cfg.SOURCE_MAP = False
     plain = b.load(page).body_html
-    b.SOURCE_MAP = True
+    b.cfg.SOURCE_MAP = True
     mapped = b.load(page).body_html
     if "data-md" not in mapped and "data-md" in plain:
         return path, "lost"

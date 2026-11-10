@@ -55,10 +55,8 @@ class TestTheReference:
         # Absence all round: no glossary file, and neither basics file. A
         # missing basics file is fine, not an error (the two basics classes
         # below test the files themselves).
-        monkeypatch.setattr(
-            b, "MATH_BASICS_DATA", repo / "planning" / "curriculum" / "math-basics.yaml")
-        monkeypatch.setattr(
-            b, "PYTHON_BASICS_DATA", repo / "planning" / "curriculum" / "python-basics.yaml")
+        monkeypatch.setattr(b.cfg, "MATH_BASICS_DATA", repo / "planning" / "curriculum" / "math-basics.yaml")
+        monkeypatch.setattr(b.cfg, "PYTHON_BASICS_DATA", repo / "planning" / "curriculum" / "python-basics.yaml")
         assert b.load_math_basics() == []
         assert b.load_python_basics() == []
         write(repo, "One.\n", slug="one")
@@ -210,7 +208,7 @@ class TestMathBasics:
         path = repo / "planning" / "curriculum" / "math-basics.yaml"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-        monkeypatch.setattr(b, "MATH_BASICS_DATA", path)
+        monkeypatch.setattr(b.cfg, "MATH_BASICS_DATA", path)
         return path
 
     def test_well_formed_files_load_their_groups_and_reach_every_pages_own_manifest(
@@ -237,7 +235,7 @@ groups:
       - term: String
         definition: Text, written between quotation marks.
 """)
-        monkeypatch.setattr(b, "PYTHON_BASICS_DATA", python_path)
+        monkeypatch.setattr(b.cfg, "PYTHON_BASICS_DATA", python_path)
         write(repo, "One.\n", slug="one")
         b.build()
         assert manifest(built(repo, "one"))["mathBasics"] == [
@@ -266,7 +264,7 @@ class TestPythonBasics:
         path = repo / "planning" / "curriculum" / "python-basics.yaml"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-        monkeypatch.setattr(b, "PYTHON_BASICS_DATA", path)
+        monkeypatch.setattr(b.cfg, "PYTHON_BASICS_DATA", path)
         return path
 
     def test_an_entry_with_no_example_is_fine(self, repo, monkeypatch):
@@ -297,7 +295,7 @@ class TestBasicsValidation:
         path = repo / "planning" / "curriculum" / filename
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-        monkeypatch.setattr(b, attr, path)
+        monkeypatch.setattr(b.cfg, attr, path)
         return path
 
     def test_a_group_with_no_label_is_headed_other_with_a_note(
@@ -441,7 +439,7 @@ class TestWhatTheReferenceCanBeFilteredBy:
         # planning/curriculum/topics.yaml would be read instead.
         path = tmp_path / "topics.yaml"
         path.write_text(topics)
-        monkeypatch.setattr(b, "TOPIC_DATA", path)
+        monkeypatch.setattr(b.cfg, "TOPIC_DATA", path)
 
     def index(self, repo: Path):
         return json.loads((repo / "site" / "assets" / "reference-index.json").read_text())

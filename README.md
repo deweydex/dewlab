@@ -111,7 +111,8 @@ setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared datasets, each with a yaml saying where it came from
 assets/          the page template, styles, runtime, editors, and vendored libraries
 compose/         the Notebook and the Workspace (dewmini and dewmini web in the code)
-build.py         markdown in, site/ out
+build.py         the command: markdown in, site/ out
+builder/         the build's code (build.py is the command that runs it)
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist
 docs/            guides for students, authors and contributors
@@ -119,7 +120,7 @@ planning/        design notes and the curriculum data
 ```
 
 [`ARCHITECTURE.md`](ARCHITECTURE.md) covers all of this properly: the build
-stage by stage, what the browser does, how the authoring editor talks to
+stage by stage, what the browser does, how the in-page editor talks to
 GitHub, and where to start reading for a given kind of change.
 
 ---
@@ -142,8 +143,8 @@ committed; it is regenerated on every push.
 
 Downloadable copies are the slow part of a build, so
 `python3 build.py --no-standalone` skips them while you are working on
-content, and a page whose solutions ran clean last time is not run again
-(`--no-cache` runs everything). To run the tests,
+content. A build does not run the code on a page; `python3 check.py
+tutorials/my-tutorial` does, solutions included. To run the tests,
 `pip install -r requirements-dev.txt` and then `python3 -m pytest`.
 
 ---

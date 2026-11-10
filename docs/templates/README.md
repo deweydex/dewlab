@@ -24,5 +24,5 @@ them in a temporary copy of the site on every test run, so a template that
 stops building fails there first.
 
 Everything they use is live: the solution, inputs, predict and challenge
-blocks and the worlds. The build runs every solution in these templates,
+blocks and the worlds. Every solution in these templates is run,
 once per world, on every test run.

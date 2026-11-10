@@ -88,32 +88,32 @@ def site(tmp_path_factory):
     topic_groups_path = tmp_path / "curriculum" / "topic-groups.yaml"
     topic_groups_path.write_text(TOPIC_GROUPS)
 
-    original = {name: getattr(b, name) for name in (
+    original = {name: getattr(b.cfg, name) for name in (
         "ROOT", "TUTORIALS", "COURSES", "OUT", "SETUP", "DATA", "ASSETS",
         "SHELL", "PAGES", "TOPIC_DATA", "TOPIC_GROUPS_DATA", "OUTCOME_DATA",
     )}
-    b.ROOT = tmp_path
-    b.TUTORIALS = tmp_path / "tutorials"
-    b.COURSES = tmp_path / "courses"
-    b.OUT = tmp_path / "site"
-    b.SETUP = DEWLAB / "setup"
-    b.DATA = DEWLAB / "data"
-    b.ASSETS = DEWLAB / "assets"
-    b.SHELL = DEWLAB / "assets" / "shell.html"
+    b.cfg.ROOT = tmp_path
+    b.cfg.TUTORIALS = tmp_path / "tutorials"
+    b.cfg.COURSES = tmp_path / "courses"
+    b.cfg.OUT = tmp_path / "site"
+    b.cfg.SETUP = DEWLAB / "setup"
+    b.cfg.DATA = DEWLAB / "data"
+    b.cfg.ASSETS = DEWLAB / "assets"
+    b.cfg.SHELL = DEWLAB / "assets" / "shell.html"
     # The real project's own pages and outcomes/tree data, read-only --
     # this fixture's own tutorials don't need to correspond to any of it
     # for the home/about/features/tree pages to load and lay out
     # correctly (only topics.html actually gates on a group resolving,
     # hence its own small file above).
-    b.PAGES = DEWLAB / "pages"
-    b.TOPIC_DATA = DEWLAB / "planning" / "curriculum" / "topics.yaml"
-    b.TOPIC_GROUPS_DATA = topic_groups_path
-    b.OUTCOME_DATA = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
+    b.cfg.PAGES = DEWLAB / "pages"
+    b.cfg.TOPIC_DATA = DEWLAB / "planning" / "curriculum" / "topics.yaml"
+    b.cfg.TOPIC_GROUPS_DATA = topic_groups_path
+    b.cfg.OUTCOME_DATA = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
     try:
         b.build()
     finally:
         for name, value in original.items():
-            setattr(b, name, value)
+            setattr(b.cfg, name, value)
     return tmp_path
 
 
