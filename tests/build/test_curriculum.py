@@ -220,7 +220,7 @@ class TestTheTopicTree:
                 "needs": [],
             }
         }
-        monkeypatch.setattr(b, "load_topics", lambda: {**real, **split})
+        monkeypatch.setattr(b.finding, "load_topics", lambda: {**real, **split})
         write(repo, "Some prose.\n")
         b.build()
 

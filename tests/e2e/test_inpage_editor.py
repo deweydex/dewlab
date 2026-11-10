@@ -78,7 +78,7 @@ def site(tmp_path_factory):
         "OUTCOME_DATA": root / "planning" / "curriculum" / "outcomes.yaml",
         "SOURCE_MAP": True,
     }.items():
-        patch.setattr(b, name, value)
+        patch.setattr(b.cfg, name, value)
     b.build(clean=True, standalone=True)
     patch.undo()
     return root

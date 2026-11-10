@@ -199,8 +199,8 @@ class TestSqlCells:
 
 class TestSiteEditors:
     """Site identity lives in an id:/site: header, not a `site=name` info
-    string, because the Crepe-based authoring editor's round trip keeps
-    only a fence's first word. Scenarios: an html pane alone; html and css;
+    string, because a rich-text editor's round trip keeps only a fence's
+    first word. Scenarios: an html pane alone; html and css;
     html, css and js; two sites on one page with a cell between them; and
     the headers and orderings that fail the build. (A page with no site
     editors at all is checked in TestCells.)"""

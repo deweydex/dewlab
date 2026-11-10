@@ -1,6 +1,5 @@
 /* A client of GitHub's own API and nothing else: dewlab has no server to send
- * a change to. Shared by the authoring editor (editor.js) and the in-page
- * editor (inpage-edit.js). The token is one the author pastes in; it stays in
+ * a change to. Used by the in-page editor (inpage-edit.js). The token is one the author pastes in; it stays in
  * this browser's localStorage and needs `contents: write` and `pull requests:
  * write` on this repository, nothing broader. It can propose commits and
  * cannot merge them. */

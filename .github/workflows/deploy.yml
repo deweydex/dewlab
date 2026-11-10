@@ -43,6 +43,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-build.txt
 
+      # A build does not run a page's code. This does, with only the build's
+      # own packages installed, so a page that needs numpy or pandas is noted
+      # and skipped here (the tests workflow runs those); what it stops is a
+      # solution in plain Python that raises.
+      - name: Run the solutions this Python can run
+        run: python check.py --solutions
+
       - name: Build
         run: python build.py --clean
 

@@ -270,13 +270,13 @@ class TestTheOutputActuallyBuilds:
             "DATA": repo / "data", "ASSETS": repo / "assets",
             "SHELL": repo / "assets" / "shell.html", "OUT": repo / "site",
         }.items():
-            monkeypatch.setattr(b, name, value)
+            monkeypatch.setattr(b.cfg, name, value)
 
         written = b.build()
         # The tutorial, minus the pages (and the search index, not a page at
         # all) the build always writes alongside it.
         alongside = {"index.html", "features.html", "all-tutorials.html",
-                     "all-notes.html", "tree.html", "about.html", "editor.html",
+                     "all-notes.html", "tree.html", "about.html",
                      "studying.html", "reading-helpers.html",
                      "fixtures.html", "search-index.json", "routes.json",
                      "reference-index.json"}

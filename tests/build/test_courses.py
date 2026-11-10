@@ -334,21 +334,19 @@ class TestAllTutorialsPage:
         assert "tutorials/one/one.md (on computational-methods)" in err
         assert "tutorials/two/two.md (on computational-methods)" in err
 
-    @pytest.mark.advisory
-    def test_tutorials_covering_the_same_outcomes_are_reported(self, repo, capsys):
+    def test_pages_covering_the_same_outcomes_are_named_by_the_check_and_not_by_a_build(self, repo, capsys):
         # Coverage, not titles, is the signal; three shared outcomes is the line.
+        # Nobody building a page can act on it, so a build says nothing.
         claim = "covers:\n  a:\n    covers: [MIT-1.1, MIT-1.2, MIT-1.3]\n"
         for slug in ("one", "two"):
             path = write(repo, "## A\n\nProse.\n", slug=slug)
             add_frontmatter(path, claim)
         b.build()
-        err = capsys.readouterr().err
-        assert "tutorials/one/one.md and tutorials/two/two.md both cover MIT-1.1, MIT-1.2, MIT-1.3" in err
-        add_frontmatter(write(repo, "## A\n\nProse.\n", slug="three"),
-                        "covers:\n  a:\n    covers: [MIT-1.1, MIT-1.2]\n")
-        b.build()
-        reported = [line for line in capsys.readouterr().err.splitlines() if "both cover" in line]
-        assert reported and all("three" not in line for line in reported)
+        assert "both cover" not in capsys.readouterr().err
+        three = {"a": {"covers": ["MIT-1.1", "MIT-1.2", "MIT-1.3"]}}
+        two = {"a": {"covers": ["MIT-1.1", "MIT-1.2"]}}
+        assert b.shared_outcomes([("one", three), ("two", three), ("three", two)]) == [
+            "one and two both cover MIT-1.1, MIT-1.2, MIT-1.3"]
 
 
 class TestTheCrumbTrail:

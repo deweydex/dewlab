@@ -28,23 +28,6 @@ hatch for a school network that blocks the CDN, and `build.py`'s dewmini
 bundle (with a wider package list, to make the downloadable Notebook work
 completely offline).
 
-## `dev/generate_doc_snippets.py`
-
-Generates `assets/editor-doc-snippets.js` — real Python docstrings,
-captured once and committed, for the small set of names the *authoring*
-editor (where a maintainer writes tutorials, not where a student runs
-code) might show a hover tooltip for. The reason this needs its own
-script at all: the authoring editor never boots a real Pyodide (see
-`ARCHITECTURE.md`), so unlike a student's cell — which can just ask a
-live interpreter — there's no live Python here to ask.
-
-The fix this script takes is to ask a *real* Pyodide, once, in a
-disposable headless browser tab, and save the answer. `_collect()` is
-worth reading slowly if the idea of code calling into other code across
-languages is new: it's Python, calling `page.evaluate()` with a string of
-real JavaScript, which itself contains a triple-backtick string of real
-Python passed to `pyodide.runPython(...)` — three languages, nested.
-
 ## `dev/from_notebook.py`
 
 Converts Jupyter notebooks into dewlab tutorial Markdown files — used

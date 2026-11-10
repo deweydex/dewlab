@@ -14,13 +14,16 @@ python3 check.py tutorials/my-tutorial
 ```
 
 Change `my-tutorial` to the name of your folder. The program reads your
-files the way the site's build reads them, without building anything, and
-prints short lines. One tutorial takes a second or two; checking everything
-takes under a minute. Each line starts with one word:
+files the way the site's build reads them, without building anything. Then it
+runs your page: each cell in order, and every answer you wrote in a
+`solution` block, the way a reader's browser would. It prints short lines.
+One tutorial takes about a quarter of a minute. Checking everything takes a
+couple of minutes the first time and less after that. Each line starts with
+one word:
 
 - **OK** — this part is fine.
-- **Problem** — this will break the build or a page. Fix it, then run the
-  command again.
+- **Problem** — this will break the build or a page. An answer that gives an
+  error when it runs is a Problem too. Fix it, then run the command again.
 - **Note** — nothing is broken. It is something useful to know.
 
 At the end it says either *No problems. You can open a pull request.* or
@@ -39,6 +42,17 @@ python3 check.py
 ```
 
 ## If you are adding a tutorial
+
+The quick way to start is one command. It makes the folder, the tutorial
+and its practice page for you, copied from the project's templates, with
+today's date as the version:
+
+```bash
+python3 new.py my-tutorial "A title for it"
+```
+
+Then replace the template's content with yours. The checklist below is what
+that command sets up, and what to keep true as you write.
 
 A tutorial is one folder inside `tutorials/`. The folder name is the
 tutorial's **id**. The id is used in the web address, in links from other

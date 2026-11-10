@@ -35,14 +35,10 @@ def site(tmp_path: Path, monkeypatch):
 
 
 def point_at(monkeypatch, check, root: Path) -> None:
-    """check.py reads with the build's own code, so both are pointed at the
-    tree under test."""
-    for module in (check, b):
-        monkeypatch.setattr(module, "ROOT", root)
-        monkeypatch.setattr(module, "TUTORIALS", root / "tutorials")
-        monkeypatch.setattr(module, "COURSES", root / "courses")
-    monkeypatch.setattr(b, "DATA", root / "data")
-    monkeypatch.setattr(b, "PAGES", root / "pages")
+    """check.py reads with the build's own code and the build's own paths, so
+    pointing the build at the tree under test points check.py at it too."""
+    for name in ("ROOT", "TUTORIALS", "COURSES", "DATA", "PAGES"):
+        monkeypatch.setattr(b.cfg, name, root if name == "ROOT" else root / name.lower())
 
 
 def tutorial(root: Path, ident: str, body: str = "Prose.\n", front: str = 'title: "A Title"\nyear: "2026-2027"\nversion: 2026.09.14.1\n') -> Path:
@@ -382,3 +378,49 @@ def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_
     assert "lists other under `mixed:` and under" in err
     assert [(s.title, s.ids) for s in b.courses()["alpha"].contents] == [
         ("Part 1", ["good"]), ("Second", ["other"])]
+
+
+# ------------------------------------------------------------- solutions
+
+CELL = "```python exec\nid: add-up\ndef total_of(values):\n    ...\n```\n\n"
+GOOD = CELL + "```solution\ndef total_of(values):\n    return sum(values)\n```\n\n```inputs\ntotal_of([1, 2])\n```\n"
+WRONG = CELL + "```solution\nraise ValueError('the page is wrong')\n```\n"
+
+
+def test_a_solution_that_raises_is_a_problem_and_a_build_does_not_run_it(site) -> None:
+    """A reader who opens the answer and runs it would get an error. A build
+    only writes pages, so check.py is what says so."""
+    root, check = site
+    tutorial(root, "sums", body=WRONG)
+    course(root, "alpha", {"Start": ["sums"]})
+    code, out = run_check(check, "tutorials/sums")
+    assert code == 1
+    assert "— solutions —" in out and "raised ValueError: the page is wrong" in out
+
+    tutorial(root, "sums", body=GOOD)
+    code, out = run_check(check, "tutorials/sums")
+    assert code == 0 and "The solutions on 1 page ran" in out
+
+
+def test_every_page_with_a_wrong_solution_is_named_not_only_the_first(site) -> None:
+    """Fixing one and running again to find the next wastes a contributor's
+    afternoon, so a whole-site check says all of them at once."""
+    root, check = site
+    tutorial(root, "first", body=WRONG)
+    tutorial(root, "second", body=WRONG.replace("the page is wrong", "so is this one"))
+    tutorial(root, "third", body=GOOD)
+    course(root, "alpha", {"Start": ["first", "second", "third"]})
+    code, out = run_check(check, "--solutions")
+    assert code == 1
+    assert "the page is wrong" in out and "so is this one" in out
+    assert "third" not in out  # --solutions says nothing else about a page
+
+
+def test_one_tutorials_check_runs_only_its_own_solutions(site) -> None:
+    """Somebody else's wrong solution is not this contributor's problem."""
+    root, check = site
+    tutorial(root, "mine", body=GOOD)
+    tutorial(root, "theirs", body=WRONG)
+    course(root, "alpha", {"Start": ["mine", "theirs"]})
+    code, out = run_check(check, "tutorials/mine")
+    assert code == 0 and "the page is wrong" not in out

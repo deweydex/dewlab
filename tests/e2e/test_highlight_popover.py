@@ -21,7 +21,7 @@ DEWLAB = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DEWLAB))
 
 import build as b  # noqa: E402
-from layout import write_course, write_tutorial  # noqa: E402
+from layout import point_build_at, write_course, write_tutorial  # noqa: E402
 
 COURSE = "highlight-popover-fixtures"
 
@@ -61,14 +61,7 @@ def site(tmp_path, monkeypatch):
     (tmp_path / "tutorials").mkdir(parents=True)
     write_tutorial(tmp_path, "one", FRONTMATTER)
     write_course(tmp_path, COURSE, "Sample Series", ["one"])
-    monkeypatch.setattr(b, "ROOT", tmp_path)
-    monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
-    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
-    monkeypatch.setattr(b, "OUT", tmp_path / "site")
-    monkeypatch.setattr(b, "SETUP", DEWLAB / "setup")
-    monkeypatch.setattr(b, "DATA", DEWLAB / "data")
-    monkeypatch.setattr(b, "ASSETS", DEWLAB / "assets")
-    monkeypatch.setattr(b, "SHELL", DEWLAB / "assets" / "shell.html")
+    point_build_at(monkeypatch, tmp_path)
     b.build()
     return tmp_path
 
