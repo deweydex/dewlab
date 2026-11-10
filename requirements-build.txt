@@ -1,8 +1,8 @@
 # What build.py needs. Not what a student needs — nothing here reaches the
 # browser; the page's own dependencies are vendored in assets/vendor/ and
 # loaded from Pyodide at runtime.
-Markdown>=3.5
-PyYAML>=6.0
+Markdown>=3.11.3
+PyYAML>=6.0.3
 # `~~struck out~~` and `- [ ]` task lists, which Python-Markdown's own
 # `extra` bundle does not cover — see to_html(). dewnote writes both.
-pymdown-extensions>=10.0
+pymdown-extensions>=12.3
