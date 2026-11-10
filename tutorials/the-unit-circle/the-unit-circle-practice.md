@@ -282,7 +282,7 @@ What will it print?
 It prints $-0.5$. 120° is in the top-left quarter, where the across
 value is negative. It is 60° short of a half turn, so it is the 60°
 point reflected in the vertical axis, and the 60° point is
-$\left(rac{1}{2}, rac{\sqrt{3}}{2}ight)$.
+$\left(\frac{1}{2}, \frac{\sqrt{3}}{2}\right)$.
 
 </details>
 
