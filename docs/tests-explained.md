@@ -97,10 +97,6 @@ substantial on its own.
 
 *In-page editing:* `test_inpage_editor.py` — editing a page where it stands, against a fake GitHub (real client code, service workers blocked so the browser's calls to `api.github.com` can be answered by the test). Needs no Pyodide, so it runs in CI.
 
-*Authoring tool:* `test_editor.py` — the editor's own UI. Its build-time
-counterpart, what the tutorials it writes actually build into, is
-`tests/build/test_tutorial.py`.
-
 *The Notebook and the Workspace (dewmini and dewmini web in the code):* `test_dewminiweb.py`, `test_dewmini_workbench.py`, and `test_old_compose_addresses.py` for the redirects at their old addresses.
 
 *My Notes:* `test_my_notes.py` — the cross-tutorial notes/highlights page.
@@ -209,9 +205,8 @@ build reads both, while how long the description is was left to the author.
 5. **Are you adding a build-time and a live-behavior test for the same new
    feature?** Give them names that say so — a `_markup`/`_live` suffix
    pair the way `test_app_cell_markup.py`/`test_app_cell_live.py` read as
-   a pair, or a shared root the way `test_tutorial.py`/`test_editor.py`
-   and `test_reference_index.py`/`test_reference_panel.py` are meant to,
-   even though neither of those two pairs shares a literal filename stem.
+   a pair, or a shared root the way
+   `test_reference_index.py`/`test_reference_panel.py` are meant to.
    Two files named one character apart for unrelated reasons — the build
    and live halves of app-cell coverage used to differ only by a plural
    `s`, easy to misread in a CI failure list — is exactly what this is

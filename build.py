@@ -8471,63 +8471,6 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
     return target
 
 
-def write_editor_page(shell: str) -> Path:
-    """The editor: reorder a series, insert a tutorial, and edit what is in one.
-
-    It edits the repository through the GitHub API rather than anything this
-    build produces, so it needs no data from here — only the shell, so that it
-    looks like the rest of the site and inherits the reader's theme.
-
-    Not linked from anywhere a student goes. It is a tool for the two people
-    who write the tutorials, and it holds a token.
-    """
-    body = (
-        "<h1>Editor</h1>"
-        '<p class="dl-editor-intro">Reorder a series by dragging, insert a '
-        "tutorial between two others, start a new one, or open any tutorial and "
-        "edit its text and its runnable cells. Nothing here touches the live "
-        "site: every change becomes one commit on a new branch and a draft pull "
-        "request, which you then read before merging.</p>"
-        '<div id="dl-editor"></div>'
-    )
-    manifest = {"slug": "editor", "version": 1, "assetBase": "assets/",
-                "dataBase": "data/", "cells": [], "assetVersions": {}}
-    tokens = {
-        "{{TITLE}}": "Editor",
-        "{{VERSION}}": "1",
-        "{{SLUG}}": "editor",
-        "{{MODULE}}": "",
-        "{{YEAR}}": "",
-        "{{SERIES}}": "",
-        "{{CRUMBS}}": '<span class="dl-crumbs">editor</span>',
-        "{{ASSET_BASE}}": "assets/",
-        "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
-        "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
-        "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
-        "{{NAV_SEARCH}}": nav_search_html(),
-        "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
-        "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
-        "{{RUNTIME_URL}}": versioned("assets/", "tutorial-runtime.js"),
-        "{{ROOT_BASE}}": "",
-        "{{NAV_PREV_NEXT}}": '<a class="dl-nav-up" href="all-tutorials.html">All tutorials</a>',
-        "{{PAGE_SCRIPT}}": (
-            f'<link rel="stylesheet" href="{versioned("assets/", "vendor/milkdown.bundle.css")}">'
-            f'<script type="module" src="{versioned("assets/", "editor.js")}"></script>'
-        ),
-        "{{CANONICAL}}": "",
-        "{{DOWNLOAD}}": "",
-        "{{BODY}}": body,
-        "{{MANIFEST_JSON}}": json.dumps(manifest).replace("<", "\\u003c"),
-        "{{FOOTER}}": site_footer("editor", "1"),
-        "{{REPORT_DOORS}}": report_doors_panel_html("editor", "1"),
-    }
-    page = fill_shell(shell, tokens, "the editor")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "editor.html"
-    target.write_text(page)
-    return target
-
-
 def load_all() -> list[Tutorial]:
     """Every page under `tutorials/`, drafts included: one folder per
     tutorial, holding `<id>.md`, its practice page and any frozen release.
@@ -8703,7 +8646,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         if topics_page is not None:
             written.append(topics_page)
         written.extend(write_site_pages(shell, ("about", "studying", "reading-helpers")))
-        written.append(write_editor_page(shell))
         written.extend(write_redirects(written))
 
     OUT.mkdir(parents=True, exist_ok=True)

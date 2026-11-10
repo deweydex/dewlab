@@ -1,8 +1,7 @@
 // One idea of "does this word match that word", shared by every search
 // box on the site: the search line on each page and the all-tutorials
 // page (search.js), the Reference panel and the two Basics tabs
-// (tutorial-runtime.js), dewmini's Library (compose/dewmini.js) and the
-// authoring editor's link picker (editor.js). A reader who has learned
+// (tutorial-runtime.js) and dewmini's Library (compose/dewmini.js). A reader who has learned
 // that "loops" finds Loops and Lists in one box should not find that it
 // does nothing in the next.
 //

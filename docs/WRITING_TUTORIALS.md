@@ -186,7 +186,7 @@ version: 2026.08.24.1
 
 | `status` | Built as a page? | In the reading order? | What it means |
 |---|---|---|---|
-| `draft` | No | No | Work in progress — visible only in a local build or the authoring editor. |
+| `draft` | No | No | Work in progress — visible only in a local build. |
 | `beta` | Yes | No | Reachable by direct URL, for testing or preview — never the default route. |
 | `live` | Yes | Yes | The active, canonical release — the one a plain URL serves. |
 | `archived` | Yes | No | Retired — still built, at its old URL, so old links and past students' saved work still have somewhere to land, but out of the reading order. |
@@ -1741,15 +1741,7 @@ frontmatter at all, is called after its file name and the build says so.
 
 ---
 
-## The authoring editor
-
-A browser-based editor at `/editor.html` reads and writes tutorials through the
-GitHub API, for changes that do not need a local checkout: reordering a series,
-editing frontmatter, renaming a slug with the cell-id warnings that protect
-saved student work, and opening a pull request with the result. It sits on top
-of the same markdown files described here — nothing about a tutorial's format is
-different because it went through the editor. For substantial writing, a local
-checkout and an ordinary text editor is still the more comfortable tool.
+## Editing a page in the browser
 
 For a small change to a page that already exists (a typo, a clearer sentence)
 you can edit the page where it stands: open **Settings**, press **Edit this
@@ -1757,16 +1749,6 @@ page** at the bottom, click a heading or a paragraph and type, then press
 **Open pull request**. The page looks the same while you edit. What is
 editable and what is not yet is in [`EDITING_A_PAGE.md`](EDITING_A_PAGE.md),
 which is also the guide for a teacher who has never used GitHub.
-
-The editor reports a `tutorial:slug#anchor` link that does not resolve, checked
-against every other tutorial's real slugs and headings, before you commit rather
-than after. A "Link to another tutorial" toggle above the prose editor searches
-every tutorial by title, id or course and inserts a real link at the cursor,
-so you reach for a tutorial that exists rather than typing a slug from memory.
-Its code cells offer keyword and locally-typed-name completion as you write. Open
-the same tutorial as a student and their cell offers the same completion plus a
-hover docstring, read off whatever the setup cell imported and whatever the
-student has defined so far.
 
 ---
 

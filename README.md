@@ -119,7 +119,7 @@ planning/        design notes and the curriculum data
 ```
 
 [`ARCHITECTURE.md`](ARCHITECTURE.md) covers all of this properly: the build
-stage by stage, what the browser does, how the authoring editor talks to
+stage by stage, what the browser does, how the in-page editor talks to
 GitHub, and where to start reading for a given kind of change.
 
 ---

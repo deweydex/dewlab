@@ -276,7 +276,7 @@ class TestTheOutputActuallyBuilds:
         # The tutorial, minus the pages (and the search index, not a page at
         # all) the build always writes alongside it.
         alongside = {"index.html", "features.html", "all-tutorials.html",
-                     "all-notes.html", "tree.html", "about.html", "editor.html",
+                     "all-notes.html", "tree.html", "about.html",
                      "studying.html", "reading-helpers.html",
                      "fixtures.html", "search-index.json", "routes.json",
                      "reference-index.json"}
