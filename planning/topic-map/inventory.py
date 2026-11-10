@@ -118,7 +118,7 @@ for t in pages:
         "words": words, "cells": cells, "first_paragraph": first,
         "headings": heads, "glossary": terms[:40], "covers": covers, "touches": touches,
         "old_topics": sorted({tc for oc in codes for tc in outcome_topics.get(oc, [])}),
-        "area": area, "path": str(t.path.relative_to(build.ROOT)),
+        "area": area, "path": str(t.path.relative_to(build.cfg.ROOT)),
     })
 OVERRIDE = {"issues-and-pull-requests": "programming"}
 for r in records:

@@ -264,7 +264,7 @@ class TestTheBuildRunsEverySolution:
         started = self.runs_of_python(monkeypatch)
         write(repo, CELL + SOLUTION + INPUTS)
         b.build()
-        monkeypatch.setattr(b, "SOLUTION_CACHE", False)
+        monkeypatch.setattr(b.cfg, "SOLUTION_CACHE", False)
         b.build()
         assert len(started) == 2
 

@@ -118,7 +118,7 @@ def site_dir(tmp_path_factory) -> Path:
         "TOPIC_GROUPS_DATA": root / "planning" / "curriculum" / "topic-groups.yaml",
         "OUTCOME_DATA": root / "planning" / "curriculum" / "outcomes.yaml",
     }.items():
-        setattr(b, name, value)
+        setattr(b.cfg, name, value)
     b.build(clean=True)
 
     # Point the runtime at the Pyodide staged in this tree rather than the CDN,

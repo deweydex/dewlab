@@ -270,7 +270,7 @@ class TestTheOutputActuallyBuilds:
             "DATA": repo / "data", "ASSETS": repo / "assets",
             "SHELL": repo / "assets" / "shell.html", "OUT": repo / "site",
         }.items():
-            monkeypatch.setattr(b, name, value)
+            monkeypatch.setattr(b.cfg, name, value)
 
         written = b.build()
         # The tutorial, minus the pages (and the search index, not a page at

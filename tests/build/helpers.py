@@ -58,16 +58,6 @@ def outside_style_and_script(page: str) -> str:
     return re.sub(r"<script>.*?</script>", "", page, flags=re.DOTALL)
 
 
-CURRICULUM_FILES = {
-    "OUTCOME_DATA": "outcomes.yaml",
-    "TOPIC_DATA": "topics.yaml",
-    "TOPIC_GROUPS_DATA": "topic-groups.yaml",
-    "SCOPE_DATA": "out-of-scope.yaml",
-    "MATH_BASICS_DATA": "math-basics.yaml",
-    "PYTHON_BASICS_DATA": "python-basics.yaml",
-}
-
-
 def curriculum_file(repo: Path, name: str, text: str) -> Path:
     """Write one of planning/curriculum/'s files into a test site."""
     path = repo / "planning" / "curriculum" / name
@@ -156,22 +146,16 @@ def repo(tmp_path, monkeypatch):
         (tmp_path / name).mkdir(parents=True)
     (tmp_path / "assets" / "shell.html").write_text(SHELL)
 
-    monkeypatch.setattr(b, "ROOT", tmp_path)
-    monkeypatch.setattr(b, "TUTORIALS", tmp_path / "tutorials")
-    monkeypatch.setattr(b, "COURSES", tmp_path / "courses")
-    monkeypatch.setattr(b, "SETUP", tmp_path / "setup")
-    monkeypatch.setattr(b, "DATA", tmp_path / "data")
-    monkeypatch.setattr(b, "ASSETS", tmp_path / "assets")
-    monkeypatch.setattr(b, "SHELL", tmp_path / "assets" / "shell.html")
-    monkeypatch.setattr(b, "OUT", tmp_path / "site")
-    monkeypatch.setattr(b, "PAGES", tmp_path / "pages")
+    # Every path the build reads or writes, in the test's own folder, except
+    # the three folders it copies whole and no test writes (the Notebook, the
+    # pair game, the topic editor). The curriculum files start absent too, so
+    # no test leans on the real outcomes and topics by accident; one that
+    # needs some writes its own with curriculum_file().
+    for name, value in vars(b.Config(tmp_path)).items():
+        if isinstance(value, Path) and name not in ("COMPOSE", "TOPIC_GAME", "TOPIC_EDITOR"):
+            monkeypatch.setattr(b.cfg, name, value)
     # What the build keeps between runs lives in the test's own site.
     monkeypatch.delenv("DEWLAB_BUILD_CACHE", raising=False)
-    # The curriculum files start empty too, so no test leans on the real
-    # outcomes and topics by accident; one that needs some writes its own
-    # with curriculum_file().
-    for name, file in CURRICULUM_FILES.items():
-        monkeypatch.setattr(b, name, tmp_path / "planning" / "curriculum" / file)
     course(tmp_path, COURSE, {}, title="Computational Methods")
     return tmp_path
 

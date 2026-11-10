@@ -35,14 +35,10 @@ def site(tmp_path: Path, monkeypatch):
 
 
 def point_at(monkeypatch, check, root: Path) -> None:
-    """check.py reads with the build's own code, so both are pointed at the
-    tree under test."""
-    for module in (check, b):
-        monkeypatch.setattr(module, "ROOT", root)
-        monkeypatch.setattr(module, "TUTORIALS", root / "tutorials")
-        monkeypatch.setattr(module, "COURSES", root / "courses")
-    monkeypatch.setattr(b, "DATA", root / "data")
-    monkeypatch.setattr(b, "PAGES", root / "pages")
+    """check.py reads with the build's own code and the build's own paths, so
+    pointing the build at the tree under test points check.py at it too."""
+    for name in ("ROOT", "TUTORIALS", "COURSES", "DATA", "PAGES"):
+        monkeypatch.setattr(b.cfg, name, root if name == "ROOT" else root / name.lower())
 
 
 def tutorial(root: Path, ident: str, body: str = "Prose.\n", front: str = 'title: "A Title"\nyear: "2026-2027"\nversion: 2026.09.14.1\n') -> Path:

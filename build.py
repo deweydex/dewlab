@@ -51,6 +51,7 @@ import markdown
 import yaml
 
 import source_map
+from builder.config import Config, cfg  # noqa: F401
 
 
 class _NoDuplicateKeysLoader(yaml.SafeLoader):
@@ -123,18 +124,6 @@ def read_yaml(path: Path, *, strict: bool = True):
         )
     return _YAML_CACHE[key]
 
-ROOT = Path(__file__).resolve().parent
-TUTORIALS = ROOT / "tutorials"
-COURSES = ROOT / "courses"
-SETUP = ROOT / "setup"
-DATA = ROOT / "data"
-ASSETS = ROOT / "assets"
-COMPOSE = ROOT / "compose"
-TOPIC_GAME = ROOT / "topic_tree_game"
-TOPIC_EDITOR = ROOT / "topic_editor"
-SHELL = ASSETS / "shell.html"
-OUT = ROOT / "site"
-PAGES = ROOT / "pages"
 
 REQUIRED_FRONTMATTER = ("title", "version")
 
@@ -647,7 +636,7 @@ class Tutorial:
         it. So every link written before versions existed — in a tutorial, on
         the topic tree, in a student's bookmarks — keeps working and keeps
         meaning "the current one"."""
-        here = OUT / "tutorials"
+        here = cfg.OUT / "tutorials"
         if self.is_default:
             return here / f"{self.slug}.html"
         return here / self.slug / f"v{self.version}.html"
@@ -762,7 +751,7 @@ class Tutorial:
     @property
     def depth(self) -> int:
         """How many directories deep the built page sits under site/."""
-        return len(self.out_path.relative_to(OUT).parts) - 1
+        return len(self.out_path.relative_to(cfg.OUT).parts) - 1
 
 
 def fail(path: Path, message: str) -> None:
@@ -773,7 +762,7 @@ def fail(path: Path, message: str) -> None:
     raising directly, so every build failure reads in the same
     "file: what's wrong" shape.
     """
-    raise BuildError(f"{path.relative_to(ROOT)}: {message}")
+    raise BuildError(f"{path.relative_to(cfg.ROOT)}: {message}")
 
 
 def listed_ids(value) -> list[str]:
@@ -794,12 +783,11 @@ _NOTED: set[tuple[str, str]] = set()
 # among a thousand lines of progress; anything else (a test, a script that
 # imports build) gets each line as it happens.
 _NOTE_LINES: list[str] = []
-NOTES_AT_END = False
 
 
 def say(line: str) -> None:
     """One note line: printed now, or kept for main() to print at the end."""
-    if NOTES_AT_END:
+    if cfg.NOTES_AT_END:
         _NOTE_LINES.append(line)
     else:
         print(line, file=sys.stderr)
@@ -810,15 +798,14 @@ def collecting_notes():
     """Keep every note for the caller to read while inside the block, instead
     of printing it: what check.py turns into its Note lines. The way notes
     were handled before is put back afterwards."""
-    global NOTES_AT_END
-    before = NOTES_AT_END
-    NOTES_AT_END = True
+    before = cfg.NOTES_AT_END
+    cfg.NOTES_AT_END = True
     _NOTED.clear()
     _NOTE_LINES.clear()
     try:
         yield
     finally:
-        NOTES_AT_END = before
+        cfg.NOTES_AT_END = before
 
 
 def note(path: Path, message: str) -> None:
@@ -833,7 +820,7 @@ def note(path: Path, message: str) -> None:
     if key in _NOTED:
         return
     _NOTED.add(key)
-    say(f"note: {path.relative_to(ROOT)}: {message}")
+    say(f"note: {path.relative_to(cfg.ROOT)}: {message}")
 
 
 SHELL_TOKEN_RE = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
@@ -916,8 +903,8 @@ def loosen_tight_lists(body: str) -> str:
 def _included_text(rel: str, path: Path) -> str:
     """The contents of an included file, named relative to the repository."""
     rel = rel.strip()
-    target = (ROOT / rel).resolve()
-    if not str(target).startswith(str(ROOT)):
+    target = (cfg.ROOT / rel).resolve()
+    if not str(target).startswith(str(cfg.ROOT)):
         fail(path, f"include escapes the repository: {rel}")
     if not target.is_file():
         fail(path, f"include names a file that does not exist: {rel}")
@@ -967,7 +954,7 @@ def expand_snapshot_dates(body: str, meta: dict, path: Path) -> str:
         if name not in declared:
             note(path, f"{match.group(0)} names a dataset that datasets: does not list, so a "
                        "downloaded copy of the page will not carry it")
-        if not (DATA / f"{name}.yaml").is_file():
+        if not (cfg.DATA / f"{name}.yaml").is_file():
             fail(path, f"{match.group(0)} names a dataset with no data/{name}.yaml, so "
                        "there is no saved date to put here")
         data = read_dataset(name)
@@ -3093,7 +3080,7 @@ def read_page(name: str) -> tuple[dict, str]:
     `<details>` fold is. Returns the frontmatter mapping and the rendered body
     — never the raw markdown.
     """
-    path = PAGES / f"{name}.md"
+    path = cfg.PAGES / f"{name}.md"
     if path.is_file():
         text = path.read_text()
     elif name == "home":
@@ -3341,11 +3328,11 @@ _COURSES_CACHE: tuple[tuple, dict[str, Course]] | None = None
 
 
 def _courses_stamp() -> tuple:
-    if not COURSES.is_dir():
-        return (str(COURSES),)
+    if not cfg.COURSES.is_dir():
+        return (str(cfg.COURSES),)
     return tuple(
         (str(path), path.stat().st_mtime_ns, path.stat().st_size)
-        for path in sorted(COURSES.glob("*.yaml"))
+        for path in sorted(cfg.COURSES.glob("*.yaml"))
     )
 
 
@@ -3378,14 +3365,14 @@ def courses() -> dict[str, Course]:
         return _COURSES_CACHE[1]
 
     found: dict[str, Course] = {}
-    if COURSES.is_dir():
-        for path in sorted(COURSES.glob("*.yaml")):
+    if cfg.COURSES.is_dir():
+        for path in sorted(cfg.COURSES.glob("*.yaml")):
             if path.name in (COURSE_INDEX_FILE, REDIRECTS_FILE):
                 continue
             found[path.stem] = read_course(path)
 
     order: list[str] = []
-    index = COURSES / COURSE_INDEX_FILE
+    index = cfg.COURSES / COURSE_INDEX_FILE
     if index.is_file():
         data = yaml.safe_load(index.read_text()) or {}
         order = data.get("order") or []
@@ -3496,7 +3483,7 @@ def legacy_ids() -> dict[str, str]:
     tutorial-runtime.js). Read from `courses/redirects.yaml`, since the old
     address already says both halves; a tutorial written after the change
     has no line there and no legacy id."""
-    path = COURSES / REDIRECTS_FILE
+    path = cfg.COURSES / REDIRECTS_FILE
     if not path.is_file():
         return {}
     data = read_yaml(path, strict=False) or {}
@@ -3530,8 +3517,8 @@ def place_tutorials(tutorials: list[Tutorial], registry: dict[str, Tutorial]) ->
             for position, ident in enumerate(series.ids, start=1):
                 member = registry.get(ident)
                 if member is None:
-                    if (TUTORIALS / ident / f"{ident}.md").is_file():
-                        say(f"note: {course.path.relative_to(ROOT)} lists {ident}, "
+                    if (cfg.TUTORIALS / ident / f"{ident}.md").is_file():
+                        say(f"note: {course.path.relative_to(cfg.ROOT)} lists {ident}, "
                               "which is a draft, so it is not on the course yet")
                         continue
                     fail(course.path, f'the series "{series.title}" lists {ident}, but '
@@ -3591,7 +3578,7 @@ def versions_of(tutorials: list[Tutorial]) -> list[Tutorial]:
         for version in versions:
             if version.version in seen:
                 fail(version.path, f"is version {version.version} of {slug}, and so "
-                                   f"is {seen[version.version].path.relative_to(ROOT)}. "
+                                   f"is {seen[version.version].path.relative_to(cfg.ROOT)}. "
                                    "Two releases cannot share a date and a number.")
             seen[version.version] = version
 
@@ -4142,7 +4129,7 @@ def python_signatures() -> dict[str, str]:
     (which also checks every such name exists and every example calls it
     the way its signature allows). Read at call time, like the glossary
     files themselves, and `{}` when the file is not there."""
-    path = ASSETS / "python-signatures.json"
+    path = cfg.ASSETS / "python-signatures.json"
     if not path.is_file():
         return {}
     return json.loads(path.read_text()).get("signatures") or {}
@@ -4399,8 +4386,6 @@ def toolkit_for(
     return []
 
 
-MATH_BASICS_DATA = ROOT / "planning" / "curriculum" / "math-basics.yaml"
-PYTHON_BASICS_DATA = ROOT / "planning" / "curriculum" / "python-basics.yaml"
 
 
 def _load_basics(path: Path, kind: str) -> list[dict]:
@@ -4446,7 +4431,7 @@ def load_math_basics() -> list[dict]:
     per page; a ~100-line YAML file is not worth memoizing against, and
     not caching it keeps this trivially safe to monkeypatch in tests.
     """
-    return _load_basics(MATH_BASICS_DATA, "math-basics")
+    return _load_basics(cfg.MATH_BASICS_DATA, "math-basics")
 
 
 def load_python_basics() -> list[dict]:
@@ -4459,7 +4444,7 @@ def load_python_basics() -> list[dict]:
     short `example`, since Python's own syntax marks are often clearer
     shown than said.
     """
-    return _load_basics(PYTHON_BASICS_DATA, "python-basics")
+    return _load_basics(cfg.PYTHON_BASICS_DATA, "python-basics")
 
 
 def download_link_html(href: str, label: str) -> str:
@@ -4493,9 +4478,6 @@ def download_section(tutorial: Tutorial) -> str:
     )
 
 
-TOPIC_DATA = ROOT / "planning" / "curriculum" / "topics.yaml"
-SCOPE_DATA = ROOT / "planning" / "curriculum" / "out-of-scope.yaml"
-TOPIC_GROUPS_DATA = ROOT / "planning" / "curriculum" / "topic-groups.yaml"
 
 # One node is a comfortable tap target with room for a two-line name.
 TOPIC_W, TOPIC_H = 178, 66
@@ -4513,9 +4495,9 @@ def load_topics() -> dict:
     Optional, like the outcome data — the site has to build from the tutorials
     alone, and without this there is simply no topic tree.
     """
-    if not TOPIC_DATA.is_file():
+    if not cfg.TOPIC_DATA.is_file():
         return {}
-    return (load_yaml_no_duplicate_keys(TOPIC_DATA.read_text()) or {}).get("topics") or {}
+    return (load_yaml_no_duplicate_keys(cfg.TOPIC_DATA.read_text()) or {}).get("topics") or {}
 
 
 def load_topic_groups() -> list[dict]:
@@ -4524,17 +4506,17 @@ def load_topic_groups() -> list[dict]:
     own header comment for what these are and why they're a separate file
     from `topics.yaml` above. Optional, the same way the topic tree's own
     data is: without the file, there's simply no topics page."""
-    if not TOPIC_GROUPS_DATA.is_file():
+    if not cfg.TOPIC_GROUPS_DATA.is_file():
         return []
-    data = load_yaml_no_duplicate_keys(TOPIC_GROUPS_DATA.read_text()) or {}
+    data = load_yaml_no_duplicate_keys(cfg.TOPIC_GROUPS_DATA.read_text()) or {}
     return data.get("groups") or []
 
 
 def load_out_of_scope() -> set[str]:
     """Outcomes we have decided not to teach. Shown, and shown as decided."""
-    if not SCOPE_DATA.is_file():
+    if not cfg.SCOPE_DATA.is_file():
         return set()
-    data = load_yaml_no_duplicate_keys(SCOPE_DATA.read_text()) or {}
+    data = load_yaml_no_duplicate_keys(cfg.SCOPE_DATA.read_text()) or {}
     return {entry["code"] for entry in data.get("outcomes") or []}
 
 
@@ -4730,7 +4712,6 @@ def tree_data(tutorials: list[Tutorial]) -> dict:
     }
 
 
-OUTCOME_DATA = ROOT / "planning" / "curriculum" / "outcomes.yaml"
 
 # Nodes wide enough for two short lines of title, spaced so an arrow between
 # them is visibly an arrow rather than a join.
@@ -4766,9 +4747,9 @@ def load_strands() -> dict[str, str]:
     Optional on purpose: the site has to build without the planning folder, so
     a missing file means a map without lanes rather than a failed build.
     """
-    if not OUTCOME_DATA.is_file():
+    if not cfg.OUTCOME_DATA.is_file():
         return {}
-    data = load_yaml_no_duplicate_keys(OUTCOME_DATA.read_text()) or {}
+    data = load_yaml_no_duplicate_keys(cfg.OUTCOME_DATA.read_text()) or {}
     return {e["code"]: e["strand"] for e in data.get("outcomes") or []}
 
 
@@ -4843,7 +4824,7 @@ def render_knowledge_map(members: list[Tutorial], strands: dict[str, str]) -> st
         )
         for tutorial in row:
             x, _ = place[tutorial.slug]
-            href = tutorial.out_path.relative_to(OUT).as_posix()
+            href = tutorial.out_path.relative_to(cfg.OUT).as_posix()
             label = tutorial.title.split(":", 1)[-1].strip()
             parts.append(
                 f'<a class="dl-map-node" href="{href}">'
@@ -5014,11 +4995,11 @@ def companion_buttons_html(
     extra = ""
     pages = practice.get(member.slug, [])
     for number, also in enumerate(pages, 1):
-        where = also.out_path.relative_to(OUT).as_posix()
+        where = also.out_path.relative_to(cfg.OUT).as_posix()
         label = "Practice" if len(pages) == 1 else f"Practice {number}"
         extra += f' <a class="dl-contents-practice" href="{where}">{label}</a>'
     for page in (context or {}).get(member.slug, []):
-        where = page.out_path.relative_to(OUT).as_posix()
+        where = page.out_path.relative_to(cfg.OUT).as_posix()
         extra += (f' <a class="dl-contents-context" href="{where}">'
                   f'{html.escape(page.title)} <span class="dl-contents-tag">context</span></a>')
     return extra
@@ -5087,7 +5068,7 @@ def render_tutorials_list(
         + ('the <a href="map.html">topic map</a> shows what the courses cover and what '
            'usually comes first, as towns on a map. The <a href="tree.html">topic tree</a> '
            "shows the same topics as a list that reads downwards. "
-           if (ROOT / "map" / "graph.json").is_file() else
+           if (cfg.ROOT / "map" / "graph.json").is_file() else
            'the <a href="tree.html">topic tree</a> shows what the course covers and what '
            "usually comes first. ")
         + '<a href="topics.html">Browse by topic</a> gathers one subject — '
@@ -5095,7 +5076,7 @@ def render_tutorials_list(
         "</ul>",
         ('<p class="dl-intro-tree">This project is open and still growing. '
          '<a href="about.html">About this project</a> explains how to suggest a '
-         "change or report a mistake.</p>") if (PAGES / "about.md").is_file() else "",
+         "change or report a mistake.</p>") if (cfg.PAGES / "about.md").is_file() else "",
         "</div>",
     ]
 
@@ -5167,7 +5148,7 @@ def render_course_body(
             )
         out.append('<ol class="dl-contents">')
         for member in members:
-            href = member.out_path.relative_to(OUT).as_posix()
+            href = member.out_path.relative_to(cfg.OUT).as_posix()
             extra = companion_buttons_html(member, practice, context)
             out.append(
                 f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
@@ -5184,7 +5165,7 @@ def render_course_body(
                 "tutorials they name.</p>"
             )
             out.append('<ul class="dl-contents dl-mixed">')
-        href = member.out_path.relative_to(OUT).as_posix()
+        href = member.out_path.relative_to(cfg.OUT).as_posix()
         out.append(
             f'<li><a href="{href}"{progress_attrs(member)}>'
             f"{html.escape(member.title)}</a></li>"
@@ -5203,7 +5184,7 @@ def render_course_body(
                 "links still work.</p>"
             )
             out.append('<ul class="dl-contents dl-archive">')
-        href = member.out_path.relative_to(OUT).as_posix()
+        href = member.out_path.relative_to(cfg.OUT).as_posix()
         out.append(f'<li><a href="{href}">{html.escape(member.title)}</a></li>')
         if member is retired[course.id][-1]:
             out.append("</ul>")
@@ -5235,7 +5216,7 @@ def check_folds(tutorial: Tutorial) -> None:
     """
     for tag in DETAILS_RE.findall(tutorial.body_html):
         if not any(name in tag for name in FOLD_CLASSES):
-            say(f"note: {tutorial.path.relative_to(ROOT)}: a fold names no style: "
+            say(f"note: {tutorial.path.relative_to(cfg.ROOT)}: a fold names no style: "
                   f'{tag} — class="dl-hint" (steps), class="dl-answer" (an answer) or '
                   f'class="dl-why" (why a page chose as it did) gives it the '
                   f"project's look")
@@ -5358,12 +5339,11 @@ asyncio.run(main())
 # a different key and the page runs. Only a clean pass is kept. A failure, or
 # a solution skipped for a package this Python lacks, runs every time, so
 # the cache can hide nothing the build would have said. `--no-cache` turns it
-# off, and CI does for a push to main.
-SOLUTION_CACHE = True
+# off (cfg.SOLUTION_CACHE), and CI does for a push to main.
 
 
 def _cache_dir() -> Path:
-    return Path(os.environ.get("DEWLAB_BUILD_CACHE") or ROOT / ".build-cache") / "solutions"
+    return Path(os.environ.get("DEWLAB_BUILD_CACHE") or cfg.ROOT / ".build-cache") / "solutions"
 
 
 @functools.lru_cache(maxsize=None)
@@ -5392,7 +5372,7 @@ def _solution_key(job: dict) -> str:
     digest = hashlib.sha256()
     for part in (json.dumps(stable, sort_keys=True), SOLUTION_RUNNER,
                  (RUNTIME_TOOLS / "tutorial_tools.py").read_text(),
-                 _tree_fingerprint(DATA) if DATA.is_dir() else "",
+                 _tree_fingerprint(cfg.DATA) if cfg.DATA.is_dir() else "",
                  _environment_fingerprint()):
         digest.update(part.encode())
         digest.update(b"\0")
@@ -5481,7 +5461,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
                           "inputs": cases}
                          | ({"typed": cell.typed} if cell.typed else {}))
     job = {
-        "assets": str(RUNTIME_TOOLS), "data": str(DATA), "sqlite": tutorial.has_sql,
+        "assets": str(RUNTIME_TOOLS), "data": str(cfg.DATA), "sqlite": tutorial.has_sql,
         # A web address data/ keeps a copy of runs against that copy, as a
         # page offline would (#324).
         "addresses": {entry["live"]["url"]: file_name
@@ -5490,13 +5470,13 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         "toolkit": [entry["reference"] for entry in toolkit],
         "cells": cells,
     }
-    marker = _cache_dir() / _solution_key(job) if SOLUTION_CACHE else None
+    marker = _cache_dir() / _solution_key(job) if cfg.SOLUTION_CACHE else None
     if marker is not None and marker.is_file():
         return
     try:
         done = subprocess.run(
             [sys.executable, "-c", SOLUTION_RUNNER], input=json.dumps(job),
-            capture_output=True, text=True, timeout=SOLUTION_PAGE_SECONDS, cwd=ROOT,
+            capture_output=True, text=True, timeout=SOLUTION_PAGE_SECONDS, cwd=cfg.ROOT,
         )
     except subprocess.TimeoutExpired:
         fail(tutorial.path, f"the build ran this page's cells to check its solutions, "
@@ -5510,7 +5490,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         problem = result.get("solutionError")
         if problem and problem.startswith("ModuleNotFoundError"):
             say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(ROOT)}: {problem}")
+                  f"{tutorial.path.relative_to(cfg.ROOT)}: {problem}")
             clean = False
             continue
         if result.get("missingModule"):
@@ -5518,7 +5498,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             # have made are missing too, and a NameError here would blame
             # the solution for this Python's missing package.
             say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(ROOT)}: an earlier cell raised "
+                  f"{tutorial.path.relative_to(cfg.ROOT)}: an earlier cell raised "
                   f"{result['missingModule']}")
             clean = False
             continue
@@ -5526,7 +5506,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
             # The solution is not wrong; the build cannot type for it. Nothing
             # was checked, so nothing is kept.
             say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(ROOT)}: it calls input() and nobody can type "
+                  f"{tutorial.path.relative_to(cfg.ROOT)}: it calls input() and nobody can type "
                   "in the build. Give the cell a ```typed block with enough lines to check it")
             clean = False
             continue
@@ -5568,8 +5548,8 @@ def long_date(day: datetime.date) -> str:
 def dataset_file(name: str) -> Path | None:
     """`data/<name>.csv` or `data/<name>.txt`, whichever exists."""
     for ext in DATASET_EXTENSIONS:
-        if (DATA / f"{name}{ext}").is_file():
-            return DATA / f"{name}{ext}"
+        if (cfg.DATA / f"{name}{ext}").is_file():
+            return cfg.DATA / f"{name}{ext}"
     return None
 
 
@@ -5588,7 +5568,7 @@ def read_dataset(name: str) -> dict | None:
     comes back. A `recipe:` that cannot run is still refused: it is
     machinery, and a wrong one would fetch the wrong numbers.
     """
-    path = DATA / f"{name}.yaml"
+    path = cfg.DATA / f"{name}.yaml"
     data = load_yaml_no_duplicate_keys(path.read_text()) or {}
     blank = [f for f in DATASET_FIELDS if f != "snapshot" and not data.get(f)]
     if blank:
@@ -5653,16 +5633,16 @@ def data_index() -> dict[str, dict]:
     the page works, and cannot say where its numbers came from.
     """
     index: dict[str, dict] = {}
-    if not DATA.is_dir():
+    if not cfg.DATA.is_dir():
         return index
-    names = sorted({p.stem for p in DATA.iterdir()
+    names = sorted({p.stem for p in cfg.DATA.iterdir()
                     if p.suffix in DATASET_EXTENSIONS + (".yaml",)})
     for name in names:
         data_file = dataset_file(name)
         if data_file is None:
-            fail(DATA / f"{name}.yaml", f"describes data/{name}.csv or "
+            fail(cfg.DATA / f"{name}.yaml", f"describes data/{name}.csv or "
                                         f"data/{name}.txt, and neither exists")
-        if not (DATA / f"{name}.yaml").is_file():
+        if not (cfg.DATA / f"{name}.yaml").is_file():
             note(data_file, f"has no data/{name}.yaml giving its "
                             f"{', '.join(DATASET_FIELDS)}, so a page that uses it "
                             "cannot say where it came from")
@@ -5698,7 +5678,7 @@ def dataset_attribution(tutorial: Tutorial, name: str) -> dict | None:
         extensions = " or ".join(f"data/{name}{ext}" for ext in DATASET_EXTENSIONS)
         fail(tutorial.path, f"declares datasets: {name}, and neither "
                             f"{extensions} exists.")
-    if not (DATA / f"{name}.yaml").is_file():
+    if not (cfg.DATA / f"{name}.yaml").is_file():
         return None  # data_index() has said so; the Reference tab leaves it out
     data = read_dataset(name)
     if data is None:
@@ -6003,7 +5983,7 @@ def resolve_assets(tutorial: Tutorial, body_html: str) -> str:
             fail(
                 tutorial.path,
                 f"references {url!r}, which is not a file in this tutorial's "
-                f"folder ({folder.relative_to(ROOT)}).",
+                f"folder ({folder.relative_to(cfg.ROOT)}).",
             )
         return f'src="{prefix}{url}"'
 
@@ -6042,19 +6022,10 @@ def copy_tutorial_assets(tutorial: Tutorial) -> None:
     assets = tutorial_assets(tutorial)
     if not assets:
         return
-    target = OUT / "tutorials" / tutorial.folder
+    target = cfg.OUT / "tutorials" / tutorial.folder
     target.mkdir(parents=True, exist_ok=True)
     for asset in assets:
         shutil.copy2(asset, target / asset.name)
-
-
-# When true, every page carries `data-md="START:END"` on each top-level block,
-# the byte range of the markdown file that produced it (source_map.py), and its
-# manifest says which file and blob that is, which is what "Edit this page"
-# works from. A build from the command line turns it on (`--no-source-map`
-# leaves it out). It is off here so that code which calls load() or build()
-# directly, the tests above all, gets the plain page.
-SOURCE_MAP = False
 
 
 def load(path: Path) -> Tutorial:
@@ -6066,14 +6037,14 @@ def load(path: Path) -> Tutorial:
     a page whose markup it misreads would otherwise render differently. Such a
     page gets no map and a note, and is otherwise untouched.
     """
-    if not SOURCE_MAP:
+    if not cfg.SOURCE_MAP:
         return load_page(path, mapped=False)
     mapped = load_page(path, mapped=True)
     plain = load_page(path, mapped=False)
     if (source_map.strip(mapped.body_html) == plain.body_html
             and mapped.notes == plain.notes and mapped.toc == plain.toc):
         return mapped
-    say(f"note: {path.relative_to(ROOT)}: the source map would change how the page "
+    say(f"note: {path.relative_to(cfg.ROOT)}: the source map would change how the page "
           f"reads, so it has none")
     return plain
 
@@ -6161,7 +6132,7 @@ def asset_version(name: str) -> str:
     Hashed per file rather than one version for everything, so editing the
     stylesheet does not also force a fresh download of the 266 KB maths bundle.
     """
-    path = ASSETS / name
+    path = cfg.ASSETS / name
     key = str(path)
     if key not in _ASSET_VERSIONS:
         _ASSET_VERSIONS[key] = (
@@ -6400,7 +6371,7 @@ def feedback_enabled() -> bool:
     GitHub's own web editor, no code to find — not to make on the fussy
     path.
     """
-    path = ROOT / "planning" / FEEDBACK_CONFIG_FILE
+    path = cfg.ROOT / "planning" / FEEDBACK_CONFIG_FILE
     if not path.is_file():
         return True
     data = read_yaml(path, strict=False) or {}
@@ -6600,7 +6571,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         # reads exactly the bytes the page's block ranges point into.
         data = tutorial.path.read_bytes()
         manifest["edit"] = {
-            "path": tutorial.path.relative_to(ROOT).as_posix(),
+            "path": tutorial.path.relative_to(cfg.ROOT).as_posix(),
             "sha": hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest(),
             "title": tutorial.title,
             "editor": versioned(f"{up}assets/", "vendor/milkdown.bundle.js"),
@@ -6725,10 +6696,10 @@ def inline_katex_css() -> str:
     Only the woff2 files it actually names, which is what keeps this to a few
     hundred kilobytes rather than the whole family.
     """
-    css = (ASSETS / "vendor" / "katex.min.css").read_text()
+    css = (cfg.ASSETS / "vendor" / "katex.min.css").read_text()
 
     def one(match: re.Match) -> str:
-        font = ASSETS / "vendor" / "fonts" / match.group("name")
+        font = cfg.ASSETS / "vendor" / "fonts" / match.group("name")
         if not font.is_file():
             return match.group(0)
         data = base64.b64encode(font.read_bytes()).decode("ascii")
@@ -6744,10 +6715,10 @@ def inline_accessible_fonts_css() -> str:
     writes these woff2 files flat into vendor/fonts/ beside KaTeX's own
     rather than into a subfolder of their own.
     """
-    css = (ASSETS / "vendor" / "accessible-fonts.css").read_text()
+    css = (cfg.ASSETS / "vendor" / "accessible-fonts.css").read_text()
 
     def one(match: re.Match) -> str:
-        font = ASSETS / "vendor" / "fonts" / match.group("name")
+        font = cfg.ASSETS / "vendor" / "fonts" / match.group("name")
         if not font.is_file():
             return match.group(0)
         data = base64.b64encode(font.read_bytes()).decode("ascii")
@@ -6782,9 +6753,9 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     # for anything under assets/, `root` for the site root itself.
     root = "../" * tutorial.depth
     up = root + "assets/"
-    style = (ASSETS / "tutorial-style.css").read_text()
-    bundle = (ASSETS / "vendor" / "standalone.bundle.js").read_text()
-    tools = (ASSETS / "tutorial_tools.py").read_text()
+    style = (cfg.ASSETS / "tutorial-style.css").read_text()
+    bundle = (cfg.ASSETS / "vendor" / "standalone.bundle.js").read_text()
+    tools = (cfg.ASSETS / "tutorial_tools.py").read_text()
 
     page = replace_once(
         page,
@@ -6883,11 +6854,11 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
         for match in LOAD_CALL.finditer(cell.code):
             name = match.group("name")
             if name.startswith(("http://", "https://")) and name not in addresses:
-                say(f"note: {tutorial.path.relative_to(ROOT)} loads {name}, which "
+                say(f"note: {tutorial.path.relative_to(cfg.ROOT)} loads {name}, which "
                       "data/ keeps no copy of, so its downloaded copy needs the "
                       "network for that cell")
 
-    target = OUT / "download" / f"{tutorial.slug}.html"
+    target = cfg.OUT / "download" / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(standalone_html(tutorial, page))
     return target
@@ -7002,7 +6973,7 @@ def write_zip_entries(
     entries = []
     for offset, member in enumerate(sequence):
         name = zip_entry_name(start + offset, width, member.slug)
-        archive.write(OUT / "download" / f"{member.slug}.html", f"{folder}/{name}")
+        archive.write(cfg.OUT / "download" / f"{member.slug}.html", f"{folder}/{name}")
         entries.append((name, member))
     return entries
 
@@ -7024,7 +6995,7 @@ def write_series_zip(
     second copy to keep in step with anything.
     """
     folder = series_slug(course, series)
-    target = OUT / "download" / f"{folder}.zip"
+    target = cfg.OUT / "download" / f"{folder}.zip"
     target.parent.mkdir(parents=True, exist_ok=True)
     sequence = zip_sequence(members, practice)
     width = max(2, len(str(len(sequence))))
@@ -7052,7 +7023,7 @@ def write_course_zip(
     reads as one sequence top to bottom rather than several that happen to
     share a listing.
     """
-    target = OUT / "download" / f"{course}-all.zip"
+    target = cfg.OUT / "download" / f"{course}-all.zip"
     target.parent.mkdir(parents=True, exist_ok=True)
     show_headings = len(series_in_order) > 1
 
@@ -7218,20 +7189,20 @@ def write_dewmini_bundle() -> Path | None:
     autocomplete.) A build run without that first still produces a working
     bundle, just one that falls back to the CDN on first run.
     """
-    notebook_html = COMPOSE / "notebook.html"
+    notebook_html = cfg.COMPOSE / "notebook.html"
     if not notebook_html.exists():
         return None
 
-    target = OUT / "download" / "notebook"
+    target = cfg.OUT / "download" / "notebook"
     shutil.rmtree(target, ignore_errors=True)
     (target / "assets" / "vendor").mkdir(parents=True, exist_ok=True)
 
-    pyodide_vendored = (ASSETS / "vendor" / "pyodide").is_dir()
+    pyodide_vendored = (cfg.ASSETS / "vendor" / "pyodide").is_dir()
 
     # The two old-address redirects (compose/dewmini.html and
     # compose/dewminiweb.html) are for bookmarks into the hosted site; a
     # fresh download has none to keep.
-    shutil.copytree(COMPOSE, target / "compose",
+    shutil.copytree(cfg.COMPOSE, target / "compose",
                     ignore=shutil.ignore_patterns(*COMPOSE_REDIRECTS))
     html = (target / "compose" / "notebook.html").read_text()
     if pyodide_vendored:
@@ -7243,31 +7214,31 @@ def write_dewmini_bundle() -> Path | None:
         (target / "compose" / "notebook.html").write_text(html)
 
     for rel in DEWMINI_ASSET_FILES:
-        src = ASSETS / rel
+        src = cfg.ASSETS / rel
         if not src.exists():
-            say(f"note: dewmini bundle is missing {src.relative_to(ROOT)}")
+            say(f"note: dewmini bundle is missing {src.relative_to(cfg.ROOT)}")
             continue
         dest = target / "assets" / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dest)
 
-    if DATA.is_dir():
-        shutil.copytree(DATA, target / "data")
+    if cfg.DATA.is_dir():
+        shutil.copytree(cfg.DATA, target / "data")
         write_data_index(target / "data")
 
-    fonts_dir = ASSETS / "vendor" / "fonts"
+    fonts_dir = cfg.ASSETS / "vendor" / "fonts"
     if fonts_dir.is_dir():
         shutil.copytree(fonts_dir, target / "assets" / "vendor" / "fonts")
 
     if pyodide_vendored:
-        shutil.copytree(ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")
+        shutil.copytree(cfg.ASSETS / "vendor" / "pyodide", target / "assets" / "vendor" / "pyodide")
     else:
         say("note: assets/vendor/pyodide/ not found (see "
             "write_dewmini_bundle()'s docstring for the fetch command) — "
             "the dewmini bundle will still boot Python from the CDN on "
             "first run rather than fully offline")
 
-    coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
+    coi_src = cfg.ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
         shutil.copy2(coi_src, target / "coi-serviceworker.js")
 
@@ -7369,13 +7340,13 @@ def write_page(shell: str, name: str) -> Path | None:
     in PEDAGOGICAL_STYLE_GUIDE.md#plain-language apply.
     """
     stem, crumb, nav = SITE_PAGES[name]
-    if name != "home" and not (PAGES / f"{name}.md").is_file():
+    if name != "home" and not (cfg.PAGES / f"{name}.md").is_file():
         return None
     meta, body = read_page(name)
     missing = {other_stem: other for other, (other_stem, _, _) in SITE_PAGES.items()
-               if other != "home" and not (PAGES / f"{other}.md").is_file()}
+               if other != "home" and not (cfg.PAGES / f"{other}.md").is_file()}
     for target in sorted(set(re.findall(r'href="([\w-]+)\.html', body)) & set(missing)):
-        note(PAGES / f"{name}.md", f"links to {target}.html, and this site has no "
+        note(cfg.PAGES / f"{name}.md", f"links to {target}.html, and this site has no "
                                    f"pages/{missing[target]}.md, so the link goes nowhere")
     manifest = {"slug": stem, "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}
@@ -7417,8 +7388,8 @@ def write_page(shell: str, name: str) -> Path | None:
         "{{REPORT_DOORS}}": report_doors_panel_html(stem, "1"),
     }
     page = fill_shell(shell, tokens, f"the {name} page")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / f"{stem}.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / f"{stem}.html"
     target.write_text(page)
     return target
 
@@ -7477,8 +7448,8 @@ def write_all_tutorials_page(
         "{{REPORT_DOORS}}": report_doors_panel_html("all-tutorials", "1"),
     }
     page = fill_shell(shell, tokens, "the all-tutorials page")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "all-tutorials.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / "all-tutorials.html"
     target.write_text(page)
     return target
 
@@ -7549,8 +7520,8 @@ def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
         "{{REPORT_DOORS}}": report_doors_panel_html("all-notes", "1"),
     }
     page = fill_shell(shell, tokens, "the my-notes page")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "all-notes.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / "all-notes.html"
     target.write_text(page)
     return target
 
@@ -7562,7 +7533,7 @@ def course_card_order() -> list[Course]:
     each shared page's default course, so a card can move to the top
     without every page it shares changing its tree and previous/next."""
     found = courses()
-    index = COURSES / COURSE_INDEX_FILE
+    index = cfg.COURSES / COURSE_INDEX_FILE
     first: list[str] = []
     if index.is_file():
         first = (yaml.safe_load(index.read_text()) or {}).get("cards") or []
@@ -7664,8 +7635,8 @@ def write_course_page(
         "{{REPORT_DOORS}}": report_doors_panel_html(course.id, "1"),
     }
     page = fill_shell(shell, tokens, "the course page")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / f"{course.id}.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / f"{course.id}.html"
     target.write_text(page)
     return target
 
@@ -7701,7 +7672,7 @@ def write_redirects(pages: list[Path]) -> list[Path]:
     would otherwise refuse the very line that retires it. The stub
     overwrites it.
     """
-    path = COURSES / REDIRECTS_FILE
+    path = cfg.COURSES / REDIRECTS_FILE
     if not path.is_file():
         return []
     data = yaml.safe_load(path.read_text()) or {}
@@ -7711,7 +7682,7 @@ def write_redirects(pages: list[Path]) -> list[Path]:
     current = {page.resolve() for page in pages}
     for old, new in data.items():
         old, new = str(old), str(new)
-        source, target = OUT / old, OUT / new
+        source, target = cfg.OUT / old, cfg.OUT / new
         if target.resolve() not in current:
             fail(path, f"sends {old} to {new}, and this build wrote no page at {new}")
         if source.resolve() in current:
@@ -7750,14 +7721,14 @@ def write_routes(
                 entry = {
                     "id": member.slug,
                     "title": member.title,
-                    "url": member.out_path.relative_to(OUT).as_posix(),
+                    "url": member.out_path.relative_to(cfg.OUT).as_posix(),
                 }
                 problems = practice.get(member.slug, [])
                 if problems:
                     entry["practices"] = [{
                         "id": page.slug,
                         "title": page.title,
-                        "url": page.out_path.relative_to(OUT).as_posix(),
+                        "url": page.out_path.relative_to(cfg.OUT).as_posix(),
                     } for page in problems]
                 entries.append(entry)
             series.append({
@@ -7773,11 +7744,11 @@ def write_routes(
             "series": series,
             "mixed": [
                 {"id": page.slug, "title": page.title,
-                 "url": page.out_path.relative_to(OUT).as_posix()}
+                 "url": page.out_path.relative_to(cfg.OUT).as_posix()}
                 for page in mixed.get(course.id, [])
             ],
         })
-    target = OUT / "assets" / "routes.json"
+    target = cfg.OUT / "assets" / "routes.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps({"courses": routes}, ensure_ascii=False))
     return target
@@ -7796,7 +7767,7 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
     for members in by_title.values():
         if len(members) > 1:
             named = ", ".join(
-                f"{m.path.relative_to(ROOT)} (on {', '.join(m.courses) or 'no course'})"
+                f"{m.path.relative_to(cfg.ROOT)} (on {', '.join(m.courses) or 'no course'})"
                 for m in members
             )
             say(f'note: two pages share the title "{members[0].title}": {named}')
@@ -7813,8 +7784,8 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
         for other, other_codes in covered[index + 1:]:
             shared = sorted(codes & other_codes)
             if len(shared) >= 3:
-                say(f"note: {page.path.relative_to(ROOT)} and "
-                      f"{other.path.relative_to(ROOT)} both cover "
+                say(f"note: {page.path.relative_to(cfg.ROOT)} and "
+                      f"{other.path.relative_to(cfg.ROOT)} both cover "
                       f"{', '.join(shared)}")
 
 
@@ -7866,7 +7837,7 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
         "move around, scroll to zoom, and choose any topic to see what it is, "
         "where it comes up in computing, and where it is taught."
         + (' The <a href="map.html">topic map</a> shows these topics as a map.'
-           if (ROOT / "map" / "graph.json").is_file() else "")
+           if (cfg.ROOT / "map" / "graph.json").is_file() else "")
         + "</p>"
         '<div class="dl-tree-layout">'
         '<div class="dl-tree-main">'
@@ -7939,8 +7910,8 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
     }
     page = fill_shell(shell, tokens, "the tree page")
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "tree.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / "tree.html"
     target.write_text(page)
     return target
 
@@ -7948,14 +7919,14 @@ def write_tree_page(shell: str, tutorials: list[Tutorial]) -> Path | None:
 def load_map() -> tuple[dict, dict]:
     """The map's graph (map/graph.json, edited by hand) and its committed
     layout (map/layout.json, written by dev/map_layout.py)."""
-    graph_path, layout_path = ROOT / "map" / "graph.json", ROOT / "map" / "layout.json"
+    graph_path, layout_path = cfg.ROOT / "map" / "graph.json", cfg.ROOT / "map" / "layout.json"
     for path in (graph_path, layout_path):
         if not path.is_file():
             fail(path, "is missing. map/README.md says what the map's two files are.")
     try:
         return json.loads(graph_path.read_text()), json.loads(layout_path.read_text())
     except json.JSONDecodeError as exc:
-        fail(ROOT / "map", f"is not valid JSON: {exc}")
+        fail(cfg.ROOT / "map", f"is not valid JSON: {exc}")
 
 
 def toc_name(tutorial: Tutorial, anchor: str) -> str | None:
@@ -7978,7 +7949,7 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
     tutorial or section stops the build, the same as a link in a tutorial does.
     """
     graph, layout = load_map()
-    graph_path = ROOT / "map" / "graph.json"
+    graph_path = cfg.ROOT / "map" / "graph.json"
     topics = {t["id"]: t for t in graph["topics"]}
     districts = {d["id"]: d for d in graph["districts"]}
     regions = {r["id"]: r for r in graph["regions"]}
@@ -8002,7 +7973,7 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
                 del step["section"]
     for code in layout["towns"]:
         if code not in topics:
-            note(ROOT / "map" / "layout.json", f"places {code!r}, which is not a topic; "
+            note(cfg.ROOT / "map" / "layout.json", f"places {code!r}, which is not a topic; "
                                                "it is ignored. Re-run dev/map_layout.py to tidy it")
     for lm in graph["landmarks"]:
         need(lm["tutorial"] in registry, f"landmark {lm['tutorial']!r} is not a tutorial")
@@ -8189,8 +8160,8 @@ def write_map_page(shell: str, registry: dict[str, Tutorial], catalog: dict[str,
         "{{REPORT_DOORS}}": report_doors_panel_html("map", "1"),
     }
     page = fill_shell(shell, tokens, "the map page")
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "map.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / "map.html"
     target.write_text(page)
     return target
 
@@ -8241,7 +8212,7 @@ def write_topics_page(
                 say(f'note: topic-groups.yaml group "{group["key"]}" names '
                     f"{ident}, which this build has no tutorial for")
                 continue
-            href = member.out_path.relative_to(OUT).as_posix()
+            href = member.out_path.relative_to(cfg.OUT).as_posix()
             extra = companion_buttons_html(member, practice, context)
             items.append(
                 f'<li><a class="dl-contents-btn" href="{href}"{progress_attrs(member)}>'
@@ -8291,8 +8262,8 @@ def write_topics_page(
     }
     page = fill_shell(shell, tokens, "the topics page")
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "topics.html"
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    target = cfg.OUT / "topics.html"
     target.write_text(page)
     return target
 
@@ -8333,10 +8304,10 @@ def write_search_index(
             "moduleTitle": course.title if course else "",
             "series": course.series_title(tutorial.series) if course and tutorial.series else "",
             "courses": tutorial.courses,
-            "url": tutorial.out_path.relative_to(OUT).as_posix(),
+            "url": tutorial.out_path.relative_to(cfg.OUT).as_posix(),
             "terms": terms,
         })
-    target = OUT / "assets" / "search-index.json"
+    target = cfg.OUT / "assets" / "search-index.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(documents, ensure_ascii=False))
     return target
@@ -8465,7 +8436,7 @@ def write_reference_index(tutorials: list[Tutorial]) -> Path:
             seen[key] = record
 
     entries = sorted(seen.values(), key=lambda e: e["term"].lower())
-    target = OUT / "assets" / "reference-index.json"
+    target = cfg.OUT / "assets" / "reference-index.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(entries, ensure_ascii=False))
     return target
@@ -8486,10 +8457,10 @@ def load_all() -> list[Tutorial]:
     id: it is noted and not built, since it is a scratch file as often as a
     tutorial that forgot its folder.
     """
-    for loose in sorted(TUTORIALS.glob("*.md")):
+    for loose in sorted(cfg.TUTORIALS.glob("*.md")):
         note(loose, "is not inside a folder, so it is not built. A tutorial is "
                     "tutorials/<id>/<id>.md")
-    everything = [load(p) for p in sorted(TUTORIALS.glob("*/*.md"))]
+    everything = [load(p) for p in sorted(cfg.TUTORIALS.glob("*/*.md"))]
     claimed: dict[str, Tutorial] = {}
     for tutorial in everything:
         if VERSION_FILE_RE.match(tutorial.path.stem):
@@ -8503,7 +8474,7 @@ def load_all() -> list[Tutorial]:
         other = claimed.get(tutorial.slug)
         if other is not None:
             fail(tutorial.path, f"has the id {tutorial.slug}, and so does "
-                                f"{other.path.relative_to(ROOT)}. An id is site-wide; "
+                                f"{other.path.relative_to(cfg.ROOT)}. An id is site-wide; "
                                 "rename one folder.")
         claimed[tutorial.slug] = tutorial
     return everything
@@ -8512,10 +8483,10 @@ def load_all() -> list[Tutorial]:
 def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     """Build the site. `standalone` also writes the downloadable single files,
     which need the real assets on disk and are the slow part of a build."""
-    if not SHELL.is_file():
-        raise BuildError(f"no shell template at {SHELL.relative_to(ROOT)}")
-    if clean and OUT.exists():
-        shutil.rmtree(OUT)
+    if not cfg.SHELL.is_file():
+        raise BuildError(f"no shell template at {cfg.SHELL.relative_to(cfg.ROOT)}")
+    if clean and cfg.OUT.exists():
+        shutil.rmtree(cfg.OUT)
 
     _NOTED.clear()  # once per build; a test builds many sites in one process
     _NOTE_LINES.clear()
@@ -8548,7 +8519,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         if not tutorial.is_default and tutorial.slug in registry:
             tutorial.placements = list(registry[tutorial.slug].placements)
 
-    shell = SHELL.read_text()
+    shell = cfg.SHELL.read_text()
     groups = series_of(tutorials)
     retired = archived_of(tutorials)
     warn_about_titles_and_overlap(tutorials)
@@ -8640,7 +8611,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         tree = write_tree_page(shell, tutorials)
         if tree is not None:
             written.append(tree)
-        if (ROOT / "map" / "graph.json").is_file():
+        if (cfg.ROOT / "map" / "graph.json").is_file():
             written.append(write_map_page(shell, registry, catalog))
         topics_page = write_topics_page(shell, registry, practice, context)
         if topics_page is not None:
@@ -8648,13 +8619,13 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         written.extend(write_site_pages(shell, ("about", "studying", "reading-helpers")))
         written.extend(write_redirects(written))
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    shutil.rmtree(OUT / "assets", ignore_errors=True)
-    shutil.copytree(ASSETS, OUT / "assets", ignore=shutil.ignore_patterns("shell.html"))
-    if DATA.is_dir():
-        shutil.rmtree(OUT / "data", ignore_errors=True)
-        shutil.copytree(DATA, OUT / "data")
-        write_data_index(OUT / "data")
+    cfg.OUT.mkdir(parents=True, exist_ok=True)
+    shutil.rmtree(cfg.OUT / "assets", ignore_errors=True)
+    shutil.copytree(cfg.ASSETS, cfg.OUT / "assets", ignore=shutil.ignore_patterns("shell.html"))
+    if cfg.DATA.is_dir():
+        shutil.rmtree(cfg.OUT / "data", ignore_errors=True)
+        shutil.copytree(cfg.DATA, cfg.OUT / "data")
+        write_data_index(cfg.OUT / "data")
 
     if tutorials:
         written.append(write_reference_index(tutorials))
@@ -8663,36 +8634,36 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     # The Notebook and the Workspace (compose/) are their own small folder
     # rather than more root-level files, so it copies wholesale like assets/
     # does, COMPOSE_REDIRECTS included.
-    if COMPOSE.is_dir():
-        shutil.rmtree(OUT / "compose", ignore_errors=True)
-        shutil.copytree(COMPOSE, OUT / "compose")
+    if cfg.COMPOSE.is_dir():
+        shutil.rmtree(cfg.OUT / "compose", ignore_errors=True)
+        shutil.copytree(cfg.COMPOSE, cfg.OUT / "compose")
 
     # The old address of dewmark's marking workbench, now a redirect.
-    shutil.rmtree(OUT / "dewmark", ignore_errors=True)
-    (OUT / "dewmark").mkdir(parents=True)
-    (OUT / "dewmark" / "index.html").write_text(DEWMARK_REDIRECT)
+    shutil.rmtree(cfg.OUT / "dewmark", ignore_errors=True)
+    (cfg.OUT / "dewmark").mkdir(parents=True)
+    (cfg.OUT / "dewmark" / "index.html").write_text(DEWMARK_REDIRECT)
 
-    if TOPIC_GAME.is_dir():
-        shutil.rmtree(OUT / "topic_tree_game", ignore_errors=True)
-        shutil.copytree(TOPIC_GAME, OUT / "topic_tree_game",
+    if cfg.TOPIC_GAME.is_dir():
+        shutil.rmtree(cfg.OUT / "topic_tree_game", ignore_errors=True)
+        shutil.copytree(cfg.TOPIC_GAME, cfg.OUT / "topic_tree_game",
                         ignore=shutil.ignore_patterns("README.md"))
 
     # And the topic editor, on the same terms: reached by typing
     # /topic_editor/, for whoever is drawing the graph, and never linked.
-    if TOPIC_EDITOR.is_dir():
-        shutil.rmtree(OUT / "topic_editor", ignore_errors=True)
-        shutil.copytree(TOPIC_EDITOR, OUT / "topic_editor",
+    if cfg.TOPIC_EDITOR.is_dir():
+        shutil.rmtree(cfg.OUT / "topic_editor", ignore_errors=True)
+        shutil.copytree(cfg.TOPIC_EDITOR, cfg.OUT / "topic_editor",
                         ignore=shutil.ignore_patterns("README.md"))
 
     if standalone:
         dewmini_bundle_dir = write_dewmini_bundle()
         if dewmini_bundle_dir is not None:
             written.append(dewmini_bundle_dir)
-            written.append(zip_directory(dewmini_bundle_dir, OUT / "download" / "notebook.zip"))
+            written.append(zip_directory(dewmini_bundle_dir, cfg.OUT / "download" / "notebook.zip"))
 
-    coi_src = ASSETS / "vendor" / "coi-serviceworker.js"
+    coi_src = cfg.ASSETS / "vendor" / "coi-serviceworker.js"
     if coi_src.exists():
-        shutil.copy2(coi_src, OUT / "coi-serviceworker.js")
+        shutil.copy2(coi_src, cfg.OUT / "coi-serviceworker.js")
 
     if tutorials:
         written.append(write_search_index(tutorials, registry, groups))
@@ -8710,7 +8681,7 @@ def _reference_index_for_bundle(target: Path) -> None:
     should still produce a working bundle (just one whose Library says
     the reference is unavailable rather than showing an empty list).
     """
-    source = OUT / "assets" / "reference-index.json"
+    source = cfg.OUT / "assets" / "reference-index.json"
     if source.exists():
         shutil.copy2(source, target / "assets" / "reference-index.json")
 
@@ -8751,10 +8722,9 @@ def main() -> int:
              "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
-    global SOURCE_MAP, SOLUTION_CACHE, NOTES_AT_END
-    SOURCE_MAP = not args.no_source_map
-    SOLUTION_CACHE = not args.no_cache
-    NOTES_AT_END = not args.verbose
+    cfg.SOURCE_MAP = not args.no_source_map
+    cfg.SOLUTION_CACHE = not args.no_cache
+    cfg.NOTES_AT_END = not args.verbose
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
     except BuildError as exc:
@@ -8766,8 +8736,8 @@ def main() -> int:
         return 0
     if args.verbose:
         for path in written:
-            print(f"wrote {path.relative_to(ROOT)}")
-    print(f"{len(written)} page{'s' if len(written) != 1 else ''} into {OUT.relative_to(ROOT)}/")
+            print(f"wrote {path.relative_to(cfg.ROOT)}")
+    print(f"{len(written)} page{'s' if len(written) != 1 else ''} into {cfg.OUT.relative_to(cfg.ROOT)}/")
     print_notes()
     return 0
 

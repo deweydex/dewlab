@@ -694,7 +694,7 @@ def test_the_topic_pair_game_and_the_topic_editor_are_published_when_present_and
     (game / "index.html").write_text("<h1>topic pairs</h1>")
     (game / "help.html").write_text("<h1>how to play</h1>")
     (game / "README.md").write_text("how the loop works")
-    monkeypatch.setattr(b, "TOPIC_GAME", game)
+    monkeypatch.setattr(b.cfg, "TOPIC_GAME", game)
     # The topic editor is published beside the game, on the same terms:
     # one page, nothing linking to it.
     editor = repo / "topic_editor"
@@ -702,32 +702,32 @@ def test_the_topic_pair_game_and_the_topic_editor_are_published_when_present_and
     (editor / "index.html").write_text("<h1>topic editor</h1>")
     (editor / "help.html").write_text("<h1>how it works</h1>")
     (editor / "README.md").write_text("for a reader of the repository")
-    monkeypatch.setattr(b, "TOPIC_EDITOR", editor)
+    monkeypatch.setattr(b.cfg, "TOPIC_EDITOR", editor)
 
     b.build()
 
     # dewmark moved to its own repository; its old address redirects there.
     # Nothing on the site links to /dewmark/, so a broken stub would go
     # unnoticed until somebody typed the address.
-    assert b.DEWMARK_HOME in (b.OUT / "dewmark" / "index.html").read_text()
+    assert b.DEWMARK_HOME in (b.cfg.OUT / "dewmark" / "index.html").read_text()
     # The topic pair game is published without its README.
-    assert (b.OUT / "topic_tree_game" / "index.html").is_file()
-    assert (b.OUT / "topic_tree_game" / "help.html").is_file()
-    assert not (b.OUT / "topic_tree_game" / "README.md").exists()
+    assert (b.cfg.OUT / "topic_tree_game" / "index.html").is_file()
+    assert (b.cfg.OUT / "topic_tree_game" / "help.html").is_file()
+    assert not (b.cfg.OUT / "topic_tree_game" / "README.md").exists()
     # The topic editor likewise.
-    assert (b.OUT / "topic_editor" / "index.html").read_text() == "<h1>topic editor</h1>"
-    assert (b.OUT / "topic_editor" / "help.html").is_file()
-    assert not (b.OUT / "topic_editor" / "README.md").exists()
+    assert (b.cfg.OUT / "topic_editor" / "index.html").read_text() == "<h1>topic editor</h1>"
+    assert (b.cfg.OUT / "topic_editor" / "help.html").is_file()
+    assert not (b.cfg.OUT / "topic_editor" / "README.md").exists()
 
     # With the source folders gone, a rebuild is silent — no error, and
     # nothing left behind from the previous build.
-    shutil.rmtree(b.OUT)
+    shutil.rmtree(b.cfg.OUT)
     for path in (game, editor):
         shutil.rmtree(path)
     b.build()
 
-    assert not (b.OUT / "topic_tree_game").exists()
-    assert not (b.OUT / "topic_editor").exists()
+    assert not (b.cfg.OUT / "topic_tree_game").exists()
+    assert not (b.cfg.OUT / "topic_editor").exists()
 
 
 class TestFeedbackFooter:
@@ -762,7 +762,7 @@ class TestFeedbackFooter:
         assert "kind=The+page+is+wrong" in url
         # report_doors_html()'s kinds match the issue template.
         template = yaml.safe_load(
-            (b.ROOT / ".github" / "ISSUE_TEMPLATE" / "report.yml").read_text()
+            (b.cfg.ROOT / ".github" / "ISSUE_TEMPLATE" / "report.yml").read_text()
         )
         options = next(
             f["attributes"]["options"] for f in template["body"] if f.get("id") == "kind"

@@ -19,8 +19,8 @@ A_NOTE = CELL + "```hint\nafter: soon\nX.\n```\n"  # an unreadable after: is a n
 
 @pytest.fixture()
 def run(repo, monkeypatch, capsys):
-    monkeypatch.setattr(b, "NOTES_AT_END", False)  # main() sets it; put it back after
-    monkeypatch.setattr(b, "SOURCE_MAP", True)
+    monkeypatch.setattr(b.cfg, "NOTES_AT_END", False)  # main() sets it; put it back after
+    monkeypatch.setattr(b.cfg, "SOURCE_MAP", True)
 
     def go(*flags):
         monkeypatch.setattr(sys, "argv", ["build.py", "--no-standalone", *flags])

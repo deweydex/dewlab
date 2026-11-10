@@ -44,9 +44,9 @@ except ImportError:  # pragma: no cover
     print("Problem  A package the build needs is not installed. Run:  pip install -r requirements-build.txt")
     sys.exit(1)
 
-ROOT = Path(__file__).resolve().parent
-TUTORIALS = ROOT / "tutorials"
-COURSES = ROOT / "courses"
+# The same paths the build reads, so a test (or anything else) that points
+# the build at another tree points this at it too.
+cfg = b.cfg
 
 ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
@@ -124,9 +124,9 @@ def fields_of(path: Path) -> dict:
 
 def read_courses() -> dict[str, dict]:
     courses: dict[str, dict] = {}
-    if not COURSES.is_dir():
+    if not cfg.COURSES.is_dir():
         return courses
-    for path in sorted(COURSES.glob("*.yaml")):
+    for path in sorted(cfg.COURSES.glob("*.yaml")):
         if path.name in ("index.yaml", "redirects.yaml"):
             continue
         try:
@@ -149,9 +149,9 @@ def listed_in(courses: dict[str, dict], ident: str) -> list[str]:
 
 
 def all_tutorial_ids() -> list[str]:
-    if not TUTORIALS.is_dir():
+    if not cfg.TUTORIALS.is_dir():
         return []
-    return sorted(p.name for p in TUTORIALS.iterdir() if p.is_dir() and any(p.glob("*.md")))
+    return sorted(p.name for p in cfg.TUTORIALS.iterdir() if p.is_dir() and any(p.glob("*.md")))
 
 
 def title_of(folder: Path) -> str | None:
@@ -164,7 +164,7 @@ def title_of(folder: Path) -> str | None:
 
 def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, titles: dict[str, list[str]]) -> None:
     ident = folder.name
-    report.note(f"— {folder.relative_to(ROOT)} —")
+    report.note(f"— {folder.relative_to(cfg.ROOT)} —")
     if not ID_RE.match(ident):
         report.note(f"The folder name `{ident}` is not a tidy id. Small letters, digits and hyphens, like `first-steps`, make an address that is easy to type and share. Once readers have saved work under it, the name cannot change.")
     main = folder / f"{ident}.md"
@@ -193,7 +193,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
     registry = {p.slug: p for p in pages.values()}
     for p in list(pages.values()):
         for name in (p.practice_for, *p.practice_across, *p.context_for):
-            path = TUTORIALS / str(name) / f"{name}.md"
+            path = cfg.TUTORIALS / str(name) / f"{name}.md"
             if name and name not in registry and path.is_file():
                 other = from_build(report, read_page, path)
                 if other is not None:
@@ -243,7 +243,7 @@ def check_tutorial(folder: Path, courses: dict[str, dict], report: Report, title
 
 def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
     course_id = path.stem
-    report.note(f"— {path.relative_to(ROOT)} —")
+    report.note(f"— {path.relative_to(cfg.ROOT)} —")
     course = from_build(report, b.read_course, path)
     if course is None:
         return
@@ -265,7 +265,7 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
             report.note(f"The series \"{series.title}\" lists no tutorials yet, so the course page leaves it out.")
         for ident in series.ids:
             total += 1
-            fields = fields_of(TUTORIALS / ident / f"{ident}.md")
+            fields = fields_of(cfg.TUTORIALS / ident / f"{ident}.md")
             if ident not in known:
                 report.problem(f"The series \"{series.title}\" lists `{ident}`, but there is no folder `tutorials/{ident}/`.")
             elif fields.get("practice_for"):
@@ -273,14 +273,14 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
             elif fields.get("context_for"):
                 report.note(f"`{ident}` is a context page (it has `context_for:`). It follows its tutorial, so this line is left out.")
     for ident in course.mixed:
-        fields = fields_of(TUTORIALS / ident / f"{ident}.md")
-        if not (TUTORIALS / ident).is_dir():
+        fields = fields_of(cfg.TUTORIALS / ident / f"{ident}.md")
+        if not (cfg.TUTORIALS / ident).is_dir():
             report.problem(f"`mixed:` names `{ident}`, but there is no folder `tutorials/{ident}/`.")
         elif not fields.get("practice_across"):
             report.note(f"`mixed:` names `{ident}`, which is not a mixed problem set (it has no `practice_across:`), so the line is left out.")
     if not report.problems:
         report.ok(f"{len(course.contents)} series, {total} tutorials, every id found.")
-    index = COURSES / "index.yaml"
+    index = cfg.COURSES / "index.yaml"
     if index.is_file():
         order = (yaml.safe_load(index.read_text()) or {}).get("order") or []
         if course_id in order:
@@ -296,7 +296,7 @@ def check_course(path: Path, courses: dict[str, dict], report: Report) -> None:
 def git(*args: str) -> str | None:
     """stdout of a git command, or None when git says no."""
     try:
-        done = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+        done = subprocess.run(["git", *args], cwd=cfg.ROOT, capture_output=True, text=True)
     except FileNotFoundError:
         return None
     return done.stdout.strip() if done.returncode == 0 else None
@@ -436,16 +436,16 @@ def check_everything(report: Report) -> None:
     ids = all_tutorial_ids()
     titles: dict[str, list[str]] = defaultdict(list)
     for ident in ids:
-        title = title_of(TUTORIALS / ident)
+        title = title_of(cfg.TUTORIALS / ident)
         if title:
             titles[title].append(ident)
     for ident in ids:
-        check_tutorial(TUTORIALS / ident, courses, report, titles)
+        check_tutorial(cfg.TUTORIALS / ident, courses, report, titles)
     for course_id in courses:
-        check_course(COURSES / f"{course_id}.yaml", courses, report)
+        check_course(cfg.COURSES / f"{course_id}.yaml", courses, report)
     listed = {i for c in courses.values() for s in c.get("contents") or [] for i in s.get("tutorials") or []}
     def follows_another(i: str) -> bool:
-        fields = fields_of(TUTORIALS / i / f"{i}.md")
+        fields = fields_of(cfg.TUTORIALS / i / f"{i}.md")
         return bool(fields.get("practice_across") or fields.get("context_for"))
     unlisted = [i for i in ids if i not in listed and not i.endswith("-practice")
                 and not follows_another(i)]
@@ -474,16 +474,16 @@ def run(argv: list[str]) -> int:
         ids = all_tutorial_ids()
         titles: dict[str, list[str]] = defaultdict(list)
         for ident in ids:
-            title = title_of(TUTORIALS / ident)
+            title = title_of(cfg.TUTORIALS / ident)
             if title:
                 titles[title].append(ident)
         for arg in argv[1:]:
-            path = (ROOT / arg).resolve() if not Path(arg).is_absolute() else Path(arg)
-            if path.is_dir() and path.parent == TUTORIALS:
+            path = (cfg.ROOT / arg).resolve() if not Path(arg).is_absolute() else Path(arg)
+            if path.is_dir() and path.parent == cfg.TUTORIALS:
                 check_tutorial(path, courses, report, titles)
-            elif path.is_file() and path.parent == COURSES and path.suffix == ".yaml":
+            elif path.is_file() and path.parent == cfg.COURSES and path.suffix == ".yaml":
                 check_course(path, courses, report)
-            elif path.is_file() and path.parent.parent == TUTORIALS:
+            elif path.is_file() and path.parent.parent == cfg.TUTORIALS:
                 check_tutorial(path.parent, courses, report, titles)
             else:
                 report.problem(f"I do not know how to check `{arg}`. Give a tutorial folder (tutorials/name) or a course file (courses/name.yaml).")

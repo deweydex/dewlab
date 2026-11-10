@@ -55,17 +55,17 @@ def site(tmp_path_factory):
     names = ("ROOT", "TUTORIALS", "COURSES", "OUT", "SETUP", "DATA", "ASSETS", "SHELL", "PAGES",
              "TOPIC_DATA", "TOPIC_GROUPS_DATA", "OUTCOME_DATA")
     original = {name: getattr(b, name) for name in names}
-    b.ROOT, b.TUTORIALS, b.COURSES, b.OUT = root, root / "tutorials", root / "courses", root / "site"
-    b.SETUP, b.DATA, b.ASSETS, b.SHELL = DEWLAB / "setup", DEWLAB / "data", DEWLAB / "assets", DEWLAB / "assets" / "shell.html"
-    b.PAGES = root / "pages"
-    b.TOPIC_DATA = DEWLAB / "planning" / "curriculum" / "topics.yaml"
-    b.TOPIC_GROUPS_DATA = groups
-    b.OUTCOME_DATA = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
+    b.cfg.ROOT, b.cfg.TUTORIALS, b.cfg.COURSES, b.cfg.OUT = root, root / "tutorials", root / "courses", root / "site"
+    b.cfg.SETUP, b.cfg.DATA, b.cfg.ASSETS, b.cfg.SHELL = DEWLAB / "setup", DEWLAB / "data", DEWLAB / "assets", DEWLAB / "assets" / "shell.html"
+    b.cfg.PAGES = root / "pages"
+    b.cfg.TOPIC_DATA = DEWLAB / "planning" / "curriculum" / "topics.yaml"
+    b.cfg.TOPIC_GROUPS_DATA = groups
+    b.cfg.OUTCOME_DATA = DEWLAB / "planning" / "curriculum" / "outcomes.yaml"
     try:
         b.build()
     finally:
         for name, value in original.items():
-            setattr(b, name, value)
+            setattr(b.cfg, name, value)
     return root
 
 

@@ -24,3 +24,16 @@ def write_course(root: Path, course: str, series_title: str, ids: list[str],
         + "".join(f"      - {i}\n" for i in ids)
     )
     return path
+
+
+def point_build_at(monkeypatch, root: Path) -> None:
+    """Have the build read a test's own tutorials and courses from `root` and
+    write its site there, with the real setup files, data, assets and shell:
+    what a browser test of the real runtime wants."""
+    import build as b
+
+    real = Path(b.__file__).resolve().parent
+    fresh = b.Config(root)
+    fresh.use(root, SETUP=real / "setup", DATA=real / "data", ASSETS=real / "assets")
+    for name in ("ROOT", "TUTORIALS", "COURSES", "OUT", "SETUP", "DATA", "ASSETS", "SHELL"):
+        monkeypatch.setattr(b.cfg, name, getattr(fresh, name))
