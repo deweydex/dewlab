@@ -3,9 +3,11 @@
 Six real pages, one of each shape a dewlab page can take. Together they make
 a small series, *Running totals*: a tutorial, its practice page, a closer
 look at the misconception the tutorial runs into, a mixed set, a making task
-to end the series, and a project brief. Copy the one you need into
-`tutorials/<id>/`, change the id and the content, and delete the `<!-- -->`
-notes. Each note points to the reason for a choice in
+to end the series, and a project brief. `python3 new.py my-tutorial "A title"` copies the first two into
+a new folder under `tutorials/`, named for your id, with your title and
+today's version. For the
+others, copy the one you need into `tutorials/<id>/` and change the id.
+Either way, change the content and delete the `<!-- -->` notes. Each note points to the reason for a choice in
 [`../../planning/PEDAGOGICAL_STYLE_GUIDE.md`](../../planning/PEDAGOGICAL_STYLE_GUIDE.md).
 The syntax they use is in
 [`../WRITING_TUTORIALS.md`](../WRITING_TUTORIALS.md#page-templates).

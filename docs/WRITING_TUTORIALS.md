@@ -29,8 +29,10 @@ you.
 
 `docs/templates/` holds one real page of each shape a dewlab page can take.
 Together they make a small series, *Running totals*, that you can read in
-order. Start a new page by copying the one that fits, then change its id and
-its content. The notes in `<!-- -->` comments say why each part is there;
+order. Start a new tutorial and its practice page with
+`python3 new.py my-tutorial "A title for it"`, which copies the first two
+for you with your id, your title and today's version. For any other shape,
+copy the one that fits, then change its id and its content. The notes in `<!-- -->` comments say why each part is there;
 delete them when you copy. The style guide's
 [page shapes](../planning/PEDAGOGICAL_STYLE_GUIDE.md#page-shapes) says what
 each shape is for.

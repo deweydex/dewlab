@@ -866,7 +866,10 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         fail(path, "frontmatter must be a mapping of fields")
     missing = [f for f in REQUIRED_FRONTMATTER if f != "title" and not meta.get(f)]
     if missing:
-        fail(path, f"frontmatter is missing {', '.join(missing)}")
+        today = datetime.date.today()
+        fail(path, f"frontmatter is missing {', '.join(missing)}"
+                   + (f" — for a new page, write `version: {today.year}.{today.month:02d}.{today.day:02d}.1`"
+                      if "version" in missing else ""))
     if not meta.get("title"):
         # A title is the page's name, and one left off (or left empty, which
         # YAML reads as None and a page would print as "None") is a page
@@ -883,8 +886,10 @@ def split_frontmatter(text: str, path: Path) -> tuple[dict, str]:
         fail(path, f"status {status!r} is not one of {', '.join(STATUSES)}")
     version = str(meta.get("version", ""))
     if not VERSION_RE.match(version):
+        today = datetime.date.today()
         fail(path, f"version {version!r} is not a release date — it should look "
-                   "like 2026.09.15.1 (year, month, day, which release of that day)")
+                   f"like {today.year}.{today.month:02d}.{today.day:02d}.1 (year, month, day, "
+                   "which release of that day; that one is today's first)")
     return meta, body.lstrip("\n")
 
 
@@ -6439,10 +6444,9 @@ def write_routes(
     return target
 
 
-def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
-    """Two things the build lets through and says so: two pages with one
-    title, and two tutorials teaching mostly the same outcomes. Neither is
-    wrong — two courses may each have a "Joins" — but each is worth a
+def warn_about_titles(tutorials: list[Tutorial]) -> None:
+    """Two pages with one title: the build lets it through and says so. It
+    is not wrong — two courses may each have a "Joins" — but it is worth a
     second look, and nothing else would ever mention it.
     """
     pages = [t for t in tutorials if t.is_default and not t.is_companion]
@@ -6457,21 +6461,28 @@ def warn_about_titles_and_overlap(tutorials: list[Tutorial]) -> None:
             )
             say(f'note: two pages share the title "{members[0].title}": {named}')
 
-    def outcomes(page: Tutorial) -> set[str]:
-        return {
-            code
-            for claim in (page.meta.get("covers") or {}).values()
-            for code in (claim.get("covers") or [])
-        }
 
-    covered = [(page, outcomes(page)) for page in pages if page.status == "live"]
-    for index, (page, codes) in enumerate(covered):
+def shared_outcomes(claims: list[tuple[str, dict]]) -> list[str]:
+    """Pairs of pages that say they teach three or more of the same outcomes,
+    one line a pair. `claims` is each page's name and its `covers:`
+    frontmatter. Coverage, not titles, is the signal that two pages may be
+    one page written twice.
+
+    A whole-site `python3 check.py` reports these. A build does not: nobody
+    building a page can act on what two other pages have in common.
+    """
+    def outcomes(covers: dict) -> set[str]:
+        return {code for claim in (covers or {}).values()
+                for code in ((claim or {}).get("covers") or [])}
+
+    covered = [(name, outcomes(covers)) for name, covers in claims]
+    lines = []
+    for index, (name, codes) in enumerate(covered):
         for other, other_codes in covered[index + 1:]:
             shared = sorted(codes & other_codes)
             if len(shared) >= 3:
-                say(f"note: {page.path.relative_to(cfg.ROOT)} and "
-                      f"{other.path.relative_to(cfg.ROOT)} both cover "
-                      f"{', '.join(shared)}")
+                lines.append(f"{name} and {other} both cover {', '.join(shared)}")
+    return lines
 
 
 def load_all() -> list[Tutorial]:
@@ -6575,7 +6586,7 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
 
     shell = cfg.SHELL.read_text()
     retired = archived_of(tutorials)
-    warn_about_titles_and_overlap(tutorials)
+    warn_about_titles(tutorials)
     for tutorial in tutorials:
         if (tutorial.is_default and not tutorial.is_companion and not tutorial.placements
                 and catalog and tutorial.status == "live"):
