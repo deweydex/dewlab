@@ -7,7 +7,7 @@ pytest
 pytest-xdist
 # The linter, held to the short list of rules in ruff.toml: `ruff check`.
 # A minor version can add findings, so the range is the minor version.
-ruff~=0.16.9
+ruff~=0.17.4
 # The tutorials' own cells import these. The build runs every page's
 # solutions, and skips (with a note) any that need a package it cannot find.
 numpy
