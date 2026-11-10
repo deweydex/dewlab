@@ -1,14 +1,17 @@
 # Weekly: the whole browser suite, every file in tests/e2e/. A pull request
-# runs six of them (the `browser` job in tests.yml), the ones that never run a
-# cell, because the rest take about ten minutes and need Python loaded in the
-# browser for every page. They used to run only on whoever's laptop remembered,
-# so a regression in them could sit for weeks. This is the net under that.
+# runs seven of them (the browser job in tests.yml), the ones that never run a
+# cell, because the rest take about forty minutes on one runner and need Python
+# loaded in the browser for every page. They used to run only on whoever's
+# laptop remembered, so a regression in them could sit for weeks. This is the
+# net under that.
 #
-# When it fails it opens one `browser-suite` issue, or adds a comment to the one
-# that is open; when it passes again it closes it. Nobody has to watch it.
+# The files run on four machines at once (dev/shard.py deals whole files out,
+# heaviest first), each machine running its tests one at a time. When any of
+# them fails, one `browser-suite` issue is opened, or commented on if one is
+# open; when all pass again it is closed. Nobody has to watch it.
 #
 # It also runs on a pull request that changes this file, so a change here is
-# tried before it is merged.
+# tried before it is merged, and a newer push cancels the run before it.
 name: browser-suite
 
 on:
@@ -19,15 +22,24 @@ on:
     paths:
       - .github/workflows/browser-suite.yml
       - requirements-e2e.txt
+      - dev/shard.py
 
 permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: browser-suite-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   suite:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        share: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
 
@@ -52,24 +64,33 @@ jobs:
         if: steps.pyodide.outputs.cache-hit != 'true'
         run: python3 dev/fetch_pyodide.py
 
-      # One test at a time: they share a machine with two cores, and a test
-      # that measures a page is the first to fail when that machine is busy.
-      - name: Run every browser test
-        run: python -m pytest tests/e2e
+      # One test at a time on each machine: a test that measures a page is the
+      # first to fail when the machine is busy.
+      - name: Run share ${{ matrix.share }} of 4
+        run: |
+          files=$(python3 dev/shard.py 4 ${{ matrix.share }} tests/e2e/test_*.py)
+          echo "$files"
+          python -m pytest $files
 
+  # Once, after all four, so one failure is one issue and not four.
+  report:
+    needs: suite
+    if: always() && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
       - name: Open or update the issue when it failed
-        if: failure() && github.event_name != 'pull_request'
+        if: needs.suite.result == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh label create browser-suite --color B60205 \
             --description "The weekly run of the whole browser suite failed" 2>/dev/null || true
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          number=$(gh issue list --label browser-suite --state open --json number --jq '.[0].number // empty')
+          number=$(gh issue list --repo "$GITHUB_REPOSITORY" --label browser-suite --state open --json number --jq '.[0].number // empty')
           if [ -n "$number" ]; then
-            gh issue comment "$number" --body "Still failing: $run_url"
+            gh issue comment "$number" --repo "$GITHUB_REPOSITORY" --body "Still failing: $run_url"
           else
-            gh issue create --label browser-suite \
+            gh issue create --repo "$GITHUB_REPOSITORY" --label browser-suite \
               --title "The whole browser suite is failing" \
               --body "The weekly run of every file in tests/e2e failed: $run_url
 
@@ -77,11 +98,11 @@ jobs:
           fi
 
       - name: Close the issue when it passes again
-        if: success() && github.event_name != 'pull_request'
+        if: needs.suite.result == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          for number in $(gh issue list --label browser-suite --state open --json number --jq '.[].number'); do
-            gh issue close "$number" --comment "Passing again: $run_url"
+          for number in $(gh issue list --repo "$GITHUB_REPOSITORY" --label browser-suite --state open --json number --jq '.[].number'); do
+            gh issue close "$number" --repo "$GITHUB_REPOSITORY" --comment "Passing again: $run_url"
           done

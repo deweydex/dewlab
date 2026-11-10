@@ -23,9 +23,14 @@ class Config:
         # off here so that code which calls load() or build() directly, the
         # tests above all, gets the plain page.
         self.SOURCE_MAP = False
-        # Whether a page whose solutions ran clean last time is skipped this
-        # time (build.py, "check_every_solution"). `--no-cache` turns it off.
+        # Whether a page whose solutions ran clean is remembered
+        # (builder/solutions.py), and whether a page that is remembered is
+        # skipped. `check.py --no-cache` does neither, so every page runs and
+        # nothing is kept; `--refresh-cache` runs every page and keeps what
+        # was clean, which is how a push to main fills the cache that pull
+        # requests start from.
         self.SOLUTION_CACHE = True
+        self.SOLUTION_CACHE_REUSE = True
         # Whether notes are kept and printed together when the build ends
         # (the command line) or printed as they happen (everything else).
         self.NOTES_AT_END = False
