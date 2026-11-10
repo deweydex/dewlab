@@ -34,8 +34,9 @@ package beside it:
 
 | File | What it holds |
 |---|---|
-| `builder/main.py` | Nearly all of the build: reading a page, rendering its blocks, courses and navigation, checks, downloads, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
+| `builder/main.py` | Most of the build: reading a page, rendering its blocks, courses and navigation, checks, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
 | `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
+| `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. |
 | `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
 
 `import build` gives you `builder.main` itself, so scripts and tests can go on
@@ -703,7 +704,7 @@ a local, manual check, run before a PR that touches the runtime.
 | The Notebook's file manager, uploads, or storage backend | `compose/dewmini-fs.js` |
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | The Notebook's cells, toolbar, or downloads | `compose/dewmini.js` |
-| The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
+| The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `builder/downloads.py` |
 | The topic tree or knowledge map's layout | `assets/tree.js` and `tree_data()`/`render_knowledge_map()` in `builder/finding.py` |
 | The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `map_data()` and `write_map_page()` in `builder/finding.py`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
 | Any GitHub call from the editor | `assets/github-client.js` |
