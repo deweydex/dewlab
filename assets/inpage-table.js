@@ -1,4 +1,4 @@
-/* Editing a table where it stands (planning/IN_PAGE_EDITOR.md, step 4).
+/* Editing a table where it stands.
  *
  * A table in the markdown file is rows of cells between pipes. This module
  * finds where each cell's text lies, so that changing one cell changes those

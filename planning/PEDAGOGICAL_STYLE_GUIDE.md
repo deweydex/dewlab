@@ -39,7 +39,7 @@ Mathematics and programming are partners here. Code is where a reader
 tries an idea; mathematics is the structure under the code. Two things
 follow that paper cannot offer: a reader can just try it, and being
 wrong is cheap and visible. These principles were decided for the
-2026 revision (#306; `DECISIONS_LOG.md` 7.230). Everything else on this
+2026 revision (#306). Everything else on this
 page follows from them.
 
 <a id="no-verdicts"></a>
@@ -228,7 +228,7 @@ following*.
 step is hard, it may say so once, with what to do about it: *if this
 feels like hard work, open the hint under the cell, or come back after
 the next section*. A feeling named with nothing under it becomes a
-verdict on the reader (7.229). A route helps more than reassurance.
+verdict on the reader. A route helps more than reassurance.
 
 <a id="no-reader-claims"></a>
 **Say what an idea does, never how it feels.** A page cannot know what

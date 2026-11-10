@@ -227,8 +227,7 @@ class TestTheBuildRunsEverySolution:
 
     def test_a_page_that_ran_clean_is_not_run_again_until_something_it_depends_on_changes(self, repo, monkeypatch):
         # Running solutions is most of a build, and a page whose cells, data
-        # and runtime have not changed will run clean again (DECISIONS_LOG
-        # 7.300). An edit to the solution, or to a dataset, is a new run.
+        # and runtime have not changed will run clean again. An edit to the solution, or to a dataset, is a new run.
         started = self.runs_of_python(monkeypatch)
         write(repo, CELL + SOLUTION + INPUTS)
         b.build()
@@ -294,7 +293,7 @@ class TestTheBuildRunsEverySolution:
 
     def test_a_solution_that_asks_with_nothing_typed_builds_and_says_it_was_not_checked(self, repo, capsys):
         # The solution is not wrong; the build cannot type for it. Said, not
-        # refused, and not kept as a clean pass either (DECISIONS_LOG 7.300).
+        # refused, and not kept as a clean pass either.
         write(repo, ASKING + "```solution\nname = input('Name: ')\n```\n")
         b.build()
         err = capsys.readouterr().err

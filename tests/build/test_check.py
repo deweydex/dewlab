@@ -124,7 +124,7 @@ def test_a_good_tree_has_no_problems_only_notes_and_a_whole_site_check_never_off
 
 
 def test_a_fence_that_never_closes_is_a_problem_and_a_closed_one_is_not(site) -> None:
-    """The build refuses an unclosed fence (DECISIONS_LOG 7.295), so check.py
+    """The build refuses an unclosed fence, so check.py
     names it, in the build's words. A page whose fences all close is clean,
     and so is a backtick span that merely contains three backticks."""
     root, check = site
@@ -361,7 +361,7 @@ def test_check_notes_a_rough_edge_the_build_accepts_and_offers_nothing_to_stop_o
 
 def test_a_course_with_an_untitled_series_a_repeated_id_or_a_non_mixed_mixed_is_a_note_in_both(repo, monkeypatch, capsys):
     """Three slips in a course file that change what a student sees: said,
-    in the checker and in the build, and neither stops (DECISIONS_LOG 7.300)."""
+    in the checker and in the build, and neither stops."""
     check = checker(monkeypatch, repo)
     tutorial(repo, "good")
     tutorial(repo, "other")

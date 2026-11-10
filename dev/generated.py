@@ -18,7 +18,6 @@ show up as noise in a diff. The curriculum map and the pictures are reported:
 a stale planning document breaks no page, and a picture that is a sentence
 behind its page still works. A file that cannot be made at all (the map names
 an outcome that does not exist) always blocks.
-(DECISIONS_LOG 7.291, 7.301.)
 """
 from __future__ import annotations
 

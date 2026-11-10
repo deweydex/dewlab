@@ -12,9 +12,6 @@ This is the module a student's cell code sees. It does two jobs:
     `show` and `show_table`, plus `load_csv`, `load_text` and `run_query` for pulling
     in data, the last usable wherever sqlite3 is loaded.
 
-How each behaves was designed rather than looked up, and every such choice
-is written down in DECISIONS_LOG.md rather than left implicit here.
-
 Nothing about this is assessment-shaped: no scoring, no submission, no record
 kept anywhere, and no verdict. `compare()` (the comparison view, #312) shows
 what a reader's code gives beside what a solution gives, when they ask; it

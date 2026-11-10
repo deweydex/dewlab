@@ -7,17 +7,16 @@ each.
 
 Not every site implements every facet -- this file asserts what each one
 actually does, not what a tidier design would have it do. Outside-click no
-longer closes Your Work/Python/Settings or Reference (DECISIONS_LOG
-7.99/7.199: "a docked rail must not close on an outside click, unlike a
+longer closes Your Work/Python/Settings or Reference (the rule is "a docked rail must not close on an outside click, unlike a
 popover" -- the tutorial pages' panels used to be the exception, on
 purpose, until Josh found it closing a panel he'd left open on the other
 dock); it still does for the mobile launcher menu, the highlight popover,
 the cell run menu, and the versions toggle, none of which are part of that
-dock system. Give Feedback moved to that second list in 7.204: it stopped
+dock system. Give Feedback moved to that second list when it stopped
 being a rail and became the popover the sentence above contrasts them
 with, so the same clause that protects the rails is what makes an outside
 click close it. All five of those panels also close by clicking their own
-toggle again, now that Reference's close button is gone too (7.190/7.196's
+toggle again, now that Reference's close button is gone too (the
 "no repeated title, no close button" cleanup, applied to all five in the
 end). Returning focus to the opener on
 Escape is only wired for Reference, the mobile launcher menu, the cell run
@@ -220,7 +219,7 @@ CASES = [
     pytest.param(None, functools.partial(_open_generic_panel, name="settings"), "#dl-settings",
                  None, None, None, False, "#dl-settings-toggle", id="settings"),
     # The one right-hand panel that is not a rail: a popover above its own
-    # circle, so an outside click does close it (DECISIONS_LOG 7.204).
+    # circle, so an outside click does close it.
     pytest.param(None, functools.partial(_open_generic_panel, name="report"), "#dl-report",
                  None, None, None, True, "#dl-report-toggle", id="report"),
     pytest.param(PHONE, _open_mobile_menu, "#dl-mobile-menu",
@@ -276,7 +275,7 @@ class TestDismissiblePanels:
         else:
             assert page.is_visible(target), (
                 f"{target}: an outside click closed it, but this is a docked panel -- "
-                "DECISIONS_LOG 7.99/7.199 says a docked rail must not close on an outside click"
+                "a docked rail must not close on an outside click"
             )
         context.close()
 

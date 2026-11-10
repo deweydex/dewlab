@@ -114,8 +114,8 @@ compose/         the Notebook and the Workspace (dewmini and dewmini web in the 
 build.py         markdown in, site/ out
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist
-docs/            reader documentation, plus one <file>-explained.md per code file
-planning/        design notes, decision records, and the curriculum data
+docs/            guides for students, authors and contributors
+planning/        design notes and the curriculum data
 ```
 
 [`ARCHITECTURE.md`](ARCHITECTURE.md) covers all of this properly: the build
@@ -143,7 +143,8 @@ committed; it is regenerated on every push.
 Downloadable copies are the slow part of a build, so
 `python3 build.py --no-standalone` skips them while you are working on
 content, and a page whose solutions ran clean last time is not run again
-(`--no-cache` runs everything). Run the tests with `python3 -m pytest`.
+(`--no-cache` runs everything). To run the tests,
+`pip install -r requirements-dev.txt` and then `python3 -m pytest`.
 
 ---
 
@@ -178,8 +179,8 @@ build it.
   [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md).
 - **Want to work on the code?** [`CONTRIBUTING.md`](CONTRIBUTING.md) has the
   setup, then [`ARCHITECTURE.md`](ARCHITECTURE.md) for how it fits together.
-- **Have a question, or a decision you'd make differently?** Raise it in
-  [`QUESTIONS.md`](QUESTIONS.md), or open a GitHub Discussion.
+- **Have a question, or a decision you'd make differently?** Open a GitHub
+  Discussion.
 
 ---
 

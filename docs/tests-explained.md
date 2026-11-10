@@ -165,8 +165,8 @@ the topics claim every outcome) lives in the script that owns those files,
 `dev/curriculum_map.py --check`, and the Dewey Track's generated pictures are
 checked by their generators' `--check`. CI's `house-style` job runs those and
 reports a failure as a warning. The tests marked `@pytest.mark.advisory`
-run there too; a plain `python3 -m pytest` leaves them out
-(`DECISIONS_LOG.md` 7.291, 7.298, 7.299). They are the ones that read the
+run there too; a plain `python3 -m pytest` leaves them out.
+They are the ones that read the
 project's own files rather than a test's: two author warnings, the page
 templates building, the links inside the project's documents,
 `topic-groups.yaml` naming every real tutorial, the real map's shape and
@@ -180,8 +180,7 @@ page states is wrong, or the interface shows an error or a broken layout.
 Anything that depends on what the author meant is a note for the author or a
 review by a reader, never a test. The same rule applies to the build's own
 refusals: `check_folds()` is a note, and `check_fences_closed()` refuses,
-because an unclosed fence breaks the page whatever the author meant
-(`DECISIONS_LOG.md` 7.295).
+because an unclosed fence breaks the page whatever the author meant.
 
 Where one test checked both kinds of thing, it was split, so the half a page
 depends on still blocks: a topic has a name and a description, because the

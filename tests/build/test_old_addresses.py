@@ -36,7 +36,7 @@ def test_a_line_pointing_at_nothing_stops_the_build(repo):
 
 def test_a_line_sitting_on_a_real_page_is_skipped_and_the_real_page_stays(repo, capsys):
     # The page that lives there now is the better answer, and a bookmark
-    # still reaches something (DECISIONS_LOG 7.300).
+    # still reaches something.
     write(repo, "Prose.\n")
     write(repo, "Other.\n", slug="other")
     redirects(repo, "tutorials/other.html: tutorials/sample.html\n")

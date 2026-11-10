@@ -1,3 +1,10 @@
+/* The inside of the Web Worker that Python runs in, for tutorial pages
+ * (tutorial-runtime.js) and the Notebook (pyodide-engine.js). A Worker
+ * cannot touch the page, so everything arrives as a message naming what is
+ * wanted ("run-cell", "hover-doc", "fs-write") and leaves as a message with
+ * the answer. Two things cross without a message, as shared memory: the
+ * interrupt buffer Stop writes to, and the buffer input() waits on
+ * (input-wait.js). */
 
 import { importPathSource, importedModuleTimesSource, reloadModulesSource, workingDirectorySource } from "./module-watch.js";
 import { waitForLine } from "./input-wait.js";

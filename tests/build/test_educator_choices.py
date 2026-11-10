@@ -1,7 +1,7 @@
 """Choices an educator makes that the build carries out and says so.
 
 A page that builds with a note is a page a teacher can ship; a page that
-stops the build is a page they cannot. The rule (DECISIONS_LOG 7.300) is that
+stops the build is a page they cannot. The rule is that
 a choice an educator makes about their own page, how many hints, whether a
 block has a question in it, which setting a typo leaves unreadable, never
 stops a build. Only what a reader would find broken does: a page that cannot

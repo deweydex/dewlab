@@ -121,8 +121,7 @@ anything needs it rather than requiring a maintainer to set one up by
 hand in GitHub's settings first.
 
 No `kind:` label exists for "a question, an idea, or something else" on
-purpose — see the file's own docstring for why, and `DECISIONS_LOG.md`
-8.4 for the fuller reasoning.
+purpose — see the file's own docstring for why.
 
 ## `dev/report_patterns.py`
 

@@ -356,6 +356,9 @@ def test_opening_a_list_moves_nothing_on_the_page(editing):
     page, fake, manifest = editing
     start(page)
     page.click("#dl-settings-toggle")
+    # The "starting Python" line sits above the page and goes when Python is
+    # ready, which moves everything up. That is the boot, not the editor.
+    page.wait_for_selector("#dl-status", state="hidden", timeout=60_000)
     tops = "[...document.querySelectorAll('main#dl-body > [data-md]:not([hidden])')].map(n => Math.round(n.getBoundingClientRect().top + scrollY))"
     before = page.evaluate(tops)
     page.click("main#dl-body > ul")

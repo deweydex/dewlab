@@ -3,9 +3,8 @@
 *A first draft, September 2026. Written to be argued with.*
 
 dewlab has a great deal of written guidance. There is a style guide, a
-writing guide of sixteen hundred lines, a decisions log of more than five
-thousand, and a build that checks a couple of hundred things before it will
-publish a page. Read end to end, all of that can look like a body of law, and
+writing guide of eighteen hundred lines, and a build that checks a couple of
+hundred things before it will publish a page. Read end to end, all of that can look like a body of law, and
 a new author could fairly conclude that the way to write a dewlab page is to
 satisfy every clause of it.
 
@@ -70,7 +69,7 @@ person.
 This was not the first design. The runtime once had a `check()` function that
 ticked an answer, and it was retired (#314) because a tick is a verdict and
 so is its absence. The comparison view that replaced it shows two values side
-by side and draws no conclusion (`DECISIONS_LOG.md` 7.232). A prediction
+by side and draws no conclusion. A prediction
 always offers "I'm not sure yet", which leads to a hint rather than a
 penalty (#313).
 
@@ -167,8 +166,7 @@ the reader opens for themselves, and says it is one good answer among others
 
 A page may say, once, that a step is hard, as long as it says what to do
 about it. A feeling named with nothing under it becomes a verdict on the
-reader ([feelings](../planning/PEDAGOGICAL_STYLE_GUIDE.md#feelings);
-`DECISIONS_LOG.md` 7.229).
+reader ([feelings](../planning/PEDAGOGICAL_STYLE_GUIDE.md#feelings)).
 
 How far this bends: the number of hints, their order, and whether a worked
 cell gets one are judgement calls. The guide's advice to ration hints comes
@@ -235,8 +233,7 @@ fail, when a page would break for somebody. In practice that means:
   folder name), is the key a student's saved work lives under. Rename either
   after a class has used the page and that work is gone. So every runnable
   cell needs an `id:`, no two cells on a page share one, and a cell in a world
-  variant carries its world in its id (`DECISIONS_LOG.md` 7.23;
-  [`WRITING_TUTORIALS.md`](WRITING_TUTORIALS.md#cell-ids)).
+  variant carries its world in its id ([`WRITING_TUTORIALS.md`](WRITING_TUTORIALS.md#cell-ids)).
 - **The page has to parse.** Frontmatter the build can read, fences that
   close, a hint or a solution that names a cell the page has.
 - **What a page points at has to exist.** A link to another tutorial, an
@@ -253,10 +250,10 @@ nothing, a number the page states is wrong, or the interface shows an error or
 a broken layout. Anything that depends on what the author meant belongs in
 the next two tiers.
 
-A fold with none of the three styles the site draws (`DECISIONS_LOG.md` 7.52)
+A fold with none of the three styles the site draws
 used to be on this list and is not any more: it still opens and its markdown
 still converts, it just looks like the browser's own triangle, so the build
-says so and carries on (7.295). If another refusal stops you writing the page
+says so and carries on. If another refusal stops you writing the page
 you want, and the page would still work, that is worth raising.
 
 **What is reported and never blocks.** Some checks look after the project's
@@ -265,8 +262,8 @@ own planning rather than any page: the curriculum map in
 with each other, the generated pictures matching the cells they are drawn
 from, the links inside documents about the project. They live in the scripts
 that own those files (`dev/curriculum_map.py --check`, each picture
-generator's `--check`, `dev/check_doc_links.py`), not in the test suite
-(`DECISIONS_LOG.md` 7.291, 7.298). A pull request shows what they find as a
+generator's `--check`, `dev/check_doc_links.py`), not in the test suite.
+A pull request shows what they find as a
 warning, and a maintainer tidies it up. House preferences about tutorial
 prose, such as not naming an institution's assessments, are not checked: they
 are advice in the style guide.
@@ -290,13 +287,11 @@ build would refuse the page, and *worth fixing* otherwise.
 <a id="disagreeing"></a>
 ## Disagreeing with this document
 
-The decisions log records every choice "somebody could reasonably have made
-differently", each with what it would cost to change. That phrase is an
-invitation. The style guide has already been rewritten once from scratch,
+Most of what is written here is a choice somebody could reasonably have made
+differently, and saying so is an invitation. The style guide has already been rewritten once from scratch,
 from 579 lines to under 390, because the old one, however accurate, was not
 doing its job: it had come to carry its own history, and the reasons were
-hard to find under it (`DECISIONS_LOG.md` 7.189).
+hard to find under it.
 
-If a rule got in your way and your page is better for breaking it, say so: in
-the pull request, in [`QUESTIONS.md`](../QUESTIONS.md), or as a new entry in
-the log. A rule that good pages keep breaking is a rule that should change.
+If a rule got in your way and your page is better for breaking it, say so in
+the pull request, or open a GitHub Discussion. A rule that good pages keep breaking is a rule that should change.

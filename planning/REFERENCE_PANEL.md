@@ -42,7 +42,7 @@ series' tutorials in reading order.
 
 **A reference draws from the current series, up to and including the
 current tutorial's own position, plus every earlier series of the course the
-reader is following** (`DECISIONS_LOG.md` 7.66, then 7.172) — never from a
+reader is following** — never from a
 course they are not on. `courses/computational-methods.yaml` lists Python
 fundamentals before Matrices, so a matrices tutorial's reference includes
 what fundamentals introduced. A tutorial on two courses accumulates along
@@ -105,7 +105,7 @@ authors to mark a term's first meaningful use in single-asterisk emphasis,
 and
 `dev/curriculum_map.py` already relies on that same convention
 (`EMPHASIS_RE`, `terms_of()`, `term_findings()`'s "introduced more than
-once"/"used before it was introduced" checks, DECISIONS_LOG.md 5.11). That
+once"/"used before it was introduced" checks). That
 gives most of a tutorial's glossary candidates already extracted,
 mechanically, before the skill reads a word of prose.
 
@@ -178,7 +178,7 @@ skill never has to re-derive "what came before," only receive it.
 
 ## 6b. Highlight to look up
 
-Built — `DECISIONS_LOG.md` 7.93, `initReferenceLookup()` in
+Built — `initReferenceLookup()` in
 `assets/tutorial-runtime.js`.
 
 Selecting text in the reading offers a **Look up** button, which opens this
@@ -196,9 +196,9 @@ prose.
 Matching is whole-word in both directions with an exact match preferred:
 plain substring matching offered *pandas* for "and" and *cell* for
 "excellent" — the same false-positive problem §6c describes, reached by a
-different route (`DECISIONS_LOG.md` 7.96). Failing that, it falls back to
+different route. Failing that, it falls back to
 the stemming and synonym rule every search box on the site shares
-(`assets/search-words.js`, `DECISIONS_LOG.md` 7.174 and 7.178), so
+(`assets/search-words.js`), so
 selecting "gradients" meets the entry for "gradient" the way typing either
 word into a search box would.
 
@@ -206,7 +206,7 @@ Nothing is stored. Selection in, the existing filter out.
 
 ## 6c. Where a term came from
 
-Built — `DECISIONS_LOG.md` 7.94, `origin_of()`/`origin_anchor()` in
+Built — `origin_of()`/`origin_anchor()` in
 `build.py`, rendered by `renderReference()`.
 
 Every entry a reader inherited from an earlier tutorial carries **Introduced
@@ -215,13 +215,12 @@ terms carry none: "you met this here" on the page teaching it says nothing.
 
 An earlier version linked every later occurrence of a term **in the
 prose**, and was withdrawn: ordinary English words are also glossary terms,
-and a regex can't tell "set a seed" from set theory (7.94 has the
-measurement). The obstacle was sense disambiguation, not matching, so a
+and a regex can't tell "set a seed" from set theory. The obstacle was sense disambiguation, not matching, so a
 stemmer or a `forms:` list would not have helped.
 
 ## 6d. Signatures from Python itself
 
-Built — `DECISIONS_LOG.md` 7.215. An entry that names something in Python
+Built. An entry that names something in Python
 says what, with `python:` (`list.append`, `[math.sin, math.cos]`,
 `tutorial_tools.check`). `dev/glossary_python.py` checks every such name
 against Python: that it exists, and that the entry's example calls it the
@@ -244,7 +243,7 @@ still reach a reader: hovering a name in a cell shows the real one.
 
 ## 6e. Definitions on hover
 
-Built — `DECISIONS_LOG.md` 7.273, `assets/term-definitions.js`, issue #339.
+Built — `assets/term-definitions.js`, issue #339.
 
 A term shows its entry's definition on hover, tap or keyboard focus, in a
 small popover with **More in the Reference**. Only a use the author marked

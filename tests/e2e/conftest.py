@@ -46,7 +46,7 @@ def _open_panel(actor, selector: str) -> None:
     Documentation, Series, Notes, Report, Appearance, Imports & Exports —
     is a plain, always-visible button now; none is folded behind a
     disclosure the way Series once was, behind the "Panels" toggle the
-    corner-dock rebuild eventually made pointless (DECISIONS_LOG.md). Kept
+    corner-dock rebuild eventually made pointless. Kept
     as its own helper, rather than inlining `actor.click(selector)` at
     every call site, so a future toggle that does need an extra step to
     reach only has to change here."""

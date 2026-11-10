@@ -333,7 +333,7 @@ def test_the_settings_panel_switches_theme_font_and_width(page):
 
 def test_patterns_in_pictures_show_when_asked_for_or_with_high_contrast(page):
     # A generated picture carries its pattern layer always; the setting only
-    # decides whether it is seen (DECISIONS_LOG 7.283).
+    # decides whether it is seen.
     page.evaluate("""() => {
         const ns = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(ns, "svg");
@@ -395,7 +395,7 @@ def test_the_pages_own_rung_of_the_tree_jumps_to_a_section(page):
 def test_the_contents_page_never_scrolls_sideways(browser, base_url):
     # "The contents page" is all-tutorials.html (write_all_tutorials_page()
     # in build.py) — index.html is the home page, a separate page since
-    # the redesign (DECISIONS_LOG.md 7.175) split the two apart.
+    # the redesign split the two apart.
     for width in (1400, 900, 390):
         context = browser.new_context(viewport={"width": width, "height": 800})
         tab = context.new_page()

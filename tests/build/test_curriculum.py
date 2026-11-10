@@ -258,7 +258,7 @@ class TestTheTopicTree:
 
 
     def test_a_claim_for_a_section_the_page_no_longer_has_is_left_out_and_noted(self, repo, capsys):
-        # A teacher cut the section (DECISIONS_LOG 7.299): the page builds,
+        # A teacher cut the section: the page builds,
         # and the tree does not link a topic to a section that is not there.
         small_curriculum(repo)
         path = write(repo, "## A section\n\nProse.\n")

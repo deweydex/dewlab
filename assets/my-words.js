@@ -7,8 +7,8 @@
  * paragraph is marked quietly, and pointing at it, tapping it or tabbing
  * to it shows the reader's own meaning.
  *
- * Unlike term-definitions.js, this searches the prose for words. 7.94
- * withdrew that for glossary terms because a regex cannot tell "set a seed"
+ * Unlike term-definitions.js, this searches the prose for words.
+ * Glossary terms stopped doing that because a regex cannot tell "set a seed"
  * from a set. Here the reader chose the word and wrote its meaning, so a
  * mark in the other sense shows them their own words, which they can judge;
  * it never shows the site's definition as if it applied.

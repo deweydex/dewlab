@@ -1,3 +1,18 @@
+/* What makes a built tutorial page work: it turns build.py's static HTML
+ * into a page with panels, editable cells and a running Python. Loaded on
+ * every tutorial and practice page, and bundled into each downloadable copy.
+ *
+ * One file, several jobs that barely touch each other: the docked panels
+ * (Settings, Reference, Notes, where-you-are); the reader's theme, typeface
+ * and size; each cell's editor and buttons; a reader's own added cells;
+ * printing and notebook export; booting Pyodide and running a cell;
+ * highlighting and maths; saved work, highlights and margin notes; progress;
+ * and moving between a tutorial's versions. The block at the foot of the
+ * file calls all of it, in order, when the page loads.
+ *
+ * Python runs in a Web Worker (pyodide-worker.js) where the page can make
+ * one, which is what gives a real Stop button, and on this thread where it
+ * cannot: a downloaded copy opened from disk. Both paths are kept. */
 
 import { createCodeEditor, createReadOnlyCode, setEditorTheme,
          setLineNumbers, setIndentWidth, setEditorAssists } from "./vendor/codemirror.bundle.js";
@@ -53,7 +68,7 @@ const TEXTURE_DEFAULTS = {
   // query, so a reader can ask for it even on a system that hasn't.
   motion: "normal",
   // Stripes and dots over the tinted parts of a picture, for a reader who
-  // cannot tell the tints apart (7.283). High contrast shows them too.
+  // cannot tell the tints apart. High contrast shows them too.
   patterns: "off",
   // A multiplier on the code editor's own line height, independent of the
   // overall text size above — a reader who wants more air between lines of
@@ -224,7 +239,7 @@ function closeReference() {
 // — the same pattern Reference already uses for its own three sections.
 // "report" is Give Feedback's own door: not in the corner dock at all (a
 // fixed circle at the bottom-right, .dl-report-fab) and not a rail either
-// — a small popover above that circle (7.204) — but sharing this array's
+// — a small popover above that circle — but sharing this array's
 // one-open-at-a-time rule and its Escape handling, since two boxes open
 // over the same corner of the screen is one too many either way.
 /* My words (#340; my-words.js), once the page has booted: the selection
@@ -307,7 +322,7 @@ function watchPanelOverlap() {
   // that dock to the screen's edge full height. Give Feedback's popover
   // floats in the bottom corner over the margin the docks already reserve,
   // so widening the column's gutter to its width only shoved the text
-  // sideways for a box that was never in its way (7.204).
+  // sideways for a box that was never in its way.
   const rightPanels = RIGHT_DOCK_PANELS.map((name) => document.getElementById(`dl-${name}`)).filter(Boolean);
   const leftPanels = [document.getElementById("dl-reference")].filter(Boolean);
   // The corner docks themselves — unlike a panel, always on screen, never
@@ -494,13 +509,13 @@ function makeEdgeResizable(panel, side = "right", min = 256, max = 640, onResize
 
 // One right-hand panel per corner tab (RIGHT_DOCK_PANELS above), each
 // opened by its own tab and closed by that tab again, its close button, or
-// Escape — a docked panel does not close on a click outside it (DECISIONS_LOG
-// 7.99 already ruled this for dewmini's own rails: "a docked rail must not
+// Escape — a docked panel does not close on a click outside it (the rule
+// dewmini's own rails follow: "a docked rail must not
 // close on an outside click, unlike a popover"), so the left dock's own
 // panel can stay open at the same time without either one stealing focus
 // from the other. Give Feedback, handled here too, is the popover that
-// sentence contrasts them with, and does close on an outside click
-// (7.204). Appearance (now a tab inside Settings, not a panel of its own)
+// sentence contrasts them with, and does close on an outside click.
+// Appearance (now a tab inside Settings, not a panel of its own)
 // alone carries a search box, filtering its own rows. All three
 // share one dock width
 // (RIGHT_DOCK_WIDTH_KEY): dragging one panel's edge applies the new width
@@ -583,11 +598,11 @@ function initRightPanels() {
     if (p.close) p.close.addEventListener("click", () => { setOpen(false); p.toggle.focus(); });
 
     // Give Feedback's popover, and only it, closes on a click outside.
-    // 7.199 took that behaviour off the rails for a good reason — a rail
+    // The rails lost that behaviour for a good reason — a rail
     // is meant to stay open beside the page while you work in the page —
     // but this is a popover hanging off one circle, read once and done,
     // and a box that stays put after a reader has plainly moved on is the
-    // same annoyance from the other side (7.204). pointerdown, not click:
+    // same annoyance from the other side. pointerdown, not click:
     // it fires before focus moves, so the popover is gone by the time
     // whatever was clicked underneath reacts.
     if (p.name === "report") {
@@ -2429,7 +2444,7 @@ function inHiddenWorld(element) {
   return !!element.closest(".dl-world[hidden]");
 }
 
-/* A project (7.288) the reader has neither opened nor worked in is not
+/* A project the reader has neither opened nor worked in is not
  * on show: "run all" and the export leave it alone. */
 function inProjectNotInPlay(element) {
   const section = projectOf(element);
@@ -2555,7 +2570,7 @@ function buildQuestions() {
       question.gaps = [...host.querySelectorAll(".dl-question-gap-select, .dl-question-gap-input")];
       for (const gap of question.gaps) {
         // The blank "choose" option stays first and selected; only the
-        // real choices are shuffled (DECISIONS_LOG 7.255).
+        // real choices are shuffled.
         if (gap.tagName === "SELECT") {
           shuffle([...gap.options].filter((opt) => opt.value !== "")).forEach((opt) => gap.appendChild(opt));
         }
@@ -5924,7 +5939,7 @@ function progressCounts(entries) {
 }
 
 function liveProgressCounts() {
-  /* A project's cells count once the reader has run one of them (7.288),
+  /* A project's cells count once the reader has run one of them,
    * so doing one project of four does not read as a quarter done. */
   const counted = cells.filter((cell) => {
     if (inHiddenWorld(cell.element)) return false;
@@ -5972,7 +5987,7 @@ function writeProgressBadges(mode) {
 }
 
 /* A choose-your-project page's total leaves out the projects the reader
- * has not started (7.288): `data-projects` lists each project's cells. */
+ * has not started: `data-projects` lists each project's cells. */
 function totalCounted(link, record, total) {
   let projects;
   try {

@@ -1,13 +1,12 @@
 # dewlab
 
 Markdown in, a static site out. `README.md` has the full picture,
-`ARCHITECTURE.md` has the map, `DECISIONS_LOG.md` has the reasoning. This
-file is only what you need before touching anything.
+`ARCHITECTURE.md` has the map. This file is only what you need before touching anything.
 
 ## Running things
 
 ```bash
-pip install -r requirements-build.txt   # first time only
+pip install -r requirements-dev.txt     # first time only
 python3 build.py --clean                # writes site/ from scratch
 python3 -m pytest                       # unit + browser tests
 python3 -m pytest --ignore=tests/e2e -n auto   # unit tests on every core (pytest-xdist)
@@ -37,7 +36,7 @@ It is short; if you read one part, read `#voice`.
 | Working an issue from the report doors | `.claude/skills/triage-report/SKILL.md` |
 | Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md` |
 | Looking for a video to link from a page | `planning/video-library/README.md` |
-| Wondering why something works the way it does | `DECISIONS_LOG.md` |
+| Wondering why something works the way it does | the comment beside the code, then `git blame` for its pull request |
 | Wondering which rules a page must follow and which are advice | `docs/HOW_DEWLAB_THINKS.md` |
 | Anything else | `README.md` |
 

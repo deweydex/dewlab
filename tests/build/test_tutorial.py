@@ -741,7 +741,7 @@ class TestNotesAndDatasets:
 
 class TestFolds:
     """A `<details>` should name a fold class, and the build says so when it
-    does not (DECISIONS_LOG 7.295). A bare one still builds: its markdown is
+    does not. A bare one still builds: its markdown is
     converted and it opens, but it shows as a plain browser triangle with
     none of this project's styling."""
 
@@ -804,8 +804,8 @@ class TestFolds:
 
 class TestFencesMustClose:
     """An unclosed ``` fence turns the rest of the page into one code block
-    with no error to say why, so the build refuses it and names the line
-    (DECISIONS_LOG 7.295). This is the one house habit about fences that
+    with no error to say why, so the build refuses it and names the line.
+This is the one house habit about fences that
     breaks a page for a reader."""
 
     def test_an_unclosed_fence_stops_the_build_and_names_its_line(self, repo):

@@ -1,92 +1,49 @@
 # Manual checklist
 
-What the automated tests can't reach. The unit tests cover the pure logic and
-the e2e test drives one headless Chromium on the build machine; neither says
-anything about how this behaves on a student's actual laptop, on a school
-network, or under a screen reader.
+What the automated tests cannot reach. The unit tests cover the build and the
+Python tools, and the browser tests drive one headless Chromium on the build
+machine. Neither says anything about a student's own laptop, a school
+network, a phone in a hand, or a screen reader.
 
-Every section below is live — the build phases this was originally written
-against have all shipped. Run what applies to what you changed, and run
-"Before a release" in full before publishing one.
+So nothing here repeats a test. Running a cell, a traceback, saved work
+coming back, a version change, a broken link stopping the build: those are
+in `tests/`, and [`docs/tests-explained.md`](../docs/tests-explained.md) says
+where. Run the sections that apply to what you changed, and all of it before
+a release.
 
 ## Setup
 
 ```sh
-pip install -r requirements-build.txt
-python3 dev/fetch_pyodide.py        # once, ~32 MB, for the e2e tests
+pip install -r requirements-dev.txt
 python3 build.py --clean
 python3 -m http.server -d site 8000
 ```
 
 Then open a built tutorial, for example
-`http://localhost:8000/tutorials/computational-methods/first-steps.html`.
+`http://localhost:8000/tutorials/first-steps.html`.
+For the checks that need a real network or a real device, use the live site.
 
-Note that this serves the tutorials as a reader would meet them, which is the
-point of checking by hand: everything below is about what actually happens on a
-machine that is not the one this was built on.
+## Real machines and real networks
 
-## Phase 0 — foundations
-
-### On the development machine
-
-- [ ] The page renders before Python has finished loading — prose is readable,
-      cells are visible, the Run buttons are visibly disabled rather than
-      looking broken.
-- [ ] The status bar says what it is doing (starting Python, loading packages)
-      and disappears when ready.
-- [ ] Every cell runs, and its output lands beneath that cell and no other.
-- [ ] The matplotlib figure is legible at the page's own width, not clipped or
-      pixelated.
-- [ ] A deliberately broken cell shows a traceback pointing at the line you
-      broke.
-- [ ] Ctrl-Enter (Cmd-Enter on a Mac) runs the focused cell.
-- [ ] "reset" restores the author's starter code and clears the output.
-- [ ] Tab indents inside a cell; Escape then Tab moves focus out of it.
-
-### Texture panel
-
-- [ ] All three themes look right, including the syntax colours in a code cell
-      and the tables in an output area.
-- [ ] All three fonts are readable at the smallest and largest text size.
-- [ ] Choices survive a reload, and survive navigating to another tutorial.
-- [ ] With the browser set to dark and the panel set to auto, the page is dark.
-
-### Hardware and environment — the part that needs real machines
-
-- [ ] **A school machine, on the school network.** Does Pyodide load at all?
+- [ ] **A school machine, on the school network.** Does Python load at all?
       Nothing else can answer it. If the CDN is blocked, the fix is
-      `dev/fetch_pyodide.py` plus decision 0.17 in DECISIONS_LOG.md.
-- [ ] Time the first load on a school machine and on a home connection. Roughly
-      how long before the Run buttons enable?
-- [ ] A second page load — the browser cache should make it markedly faster.
-- [ ] **A phone.** Does the layout hold? Can a cell be edited at all? (Not a
-      supported use, but worth knowing what happens.)
-- [ ] Safari and Firefox, not just Chrome.
-- [ ] Keyboard only, no mouse: can you reach every cell, run it, and open the
-      texture panel?
-- [ ] A screen reader on the status bar and on a comparison table.
+      `dev/fetch_pyodide.py`, which fetches a copy the site can serve itself.
+- [ ] Time the first load on a school machine and on a home connection:
+      roughly how long before the Run buttons enable?
+- [ ] A second page load is markedly faster than the first.
+- [ ] Safari and Firefox, not only Chrome: a page loads, a cell runs, Stop
+      stops a `while True: pass`.
+- [ ] On the live site, a page that loads a dataset shows its table, and a
+      tutorial in a course folder finds its styles and scripts.
 
-## Phase 1 — build script
+## Eyes and hands
 
-- [ ] A tutorial with no `exec` cells at all builds and opens, and never loads
-      Pyodide.
-- [ ] A broken cross-tutorial link fails the build loudly rather than shipping.
-
-## Phase 2 — save, load, versioning
-
-- [ ] Bump a tutorial's `version` by hand, reload with saved progress present,
-      and confirm the notice appears and the restore still works.
-- [ ] Delete a cell whose id is in the saved file; confirm it is reported in the
-      restore summary rather than silently dropped.
-- [ ] Close the browser entirely, reopen, confirm autosaved work is still there.
-
-## Phase 4 — hosting
-
-- [ ] Data-file fetches work against the live Pages URL, not just localhost.
-- [ ] Assets resolve from a tutorial nested in a module subfolder, not only from
-      the site root.
-
----
+- [ ] Every theme and every typeface in Settings is readable at the smallest
+      and the largest text size, including the colours inside a code cell and
+      a table in an output.
+- [ ] A chart is legible at the page's own width, not clipped or blurred.
+- [ ] Keyboard only, no mouse: you can reach every cell, run it, leave it
+      again (Escape, then Tab), and open and close each panel.
 
 ## Before a release
 
@@ -112,10 +69,10 @@ Then, on a machine with the network off (or with everything but
 - [ ] the Stop button interrupts a `while True: pass`
 - [ ] a cell running `print("Hi " + input("Name? "))` shows a box after
       `Name? `; typing `Ada` and pressing Enter prints `Name? Ada` and
-      `Hi Ada` (`assets/input-wait.js`, 7.284)
+      `Hi Ada` (`assets/input-wait.js`)
 - [ ] a text cell with `Solve $x^2 = 4$.` renders as real maths, with no
       failed request for `katex.bundle.js`, `katex.min.css`, or a font
-      (DECISIONS_LOG.md 7.107 — the offline copy carries all three so a
+      (the offline copy carries all three so a
       classroom with no network at all can still render maths, not just
       one with a slow one)
 
@@ -128,8 +85,8 @@ checked against a real offline bundle yet.
 
 The one check the sandbox this was built in could not run at all: its
 network policy blocks `ourworldindata.org`, so whether a browser is
-allowed to fetch those CSVs was never observed, only expected
-(`DECISIONS_LOG.md` 7.99). Everything else about the Data catalogue —
+allowed to fetch those CSVs was never observed, only expected.
+Everything else about the Data catalogue —
 the cards, the code it writes, the local datasets — is covered by
 `tests/e2e/test_dewmini_workbench.py`; this is the half that needs a
 real network.
@@ -153,9 +110,10 @@ Last verified: never.
 
 At 375px wide, on a tutorial and a practice page:
 
-- [ ] nothing scrolls sideways (`tests/e2e/test_narrow_screen.py` covers the
-      two known causes; this is for anything new)
-- [ ] the Reference, Series and Settings panels open as bottom sheets
+- [ ] nothing scrolls sideways (`tests/e2e/test_page_smoke.py` covers the
+      known causes; this is for anything new)
+- [ ] the launcher at the foot of the screen opens every panel, and each
+      one closes again
 - [ ] a cell's code is readable and editable without pinching
 
 ### A screen reader

@@ -482,7 +482,7 @@ function armDeleteButton(btn, onConfirm) {
   // second press almost always lands on one of them. Comparing the target
   // to the button itself disarmed it in the capture phase, just before its
   // own click handler ran, so the second press armed it again instead of
-  // deleting (DECISIONS_LOG 7.223).
+  // deleting.
   const disarmOnOutsideClick = (e) => {
     if (!btn.contains(e.target)) disarmDeleteButton(btn);
   };

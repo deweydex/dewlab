@@ -12,7 +12,7 @@ want more.
 learn by doing: by working on real questions rather than memorising answers
 first. Its tagline, "learn by dewing", is his idea with the site's name in
 it. It was called *Plot Twist* while its first units were written; Josh
-renamed it (DECISIONS_LOG 7.226), and the course id moved from `plot-twist`
+renamed it, and the course id moved from `plot-twist`
 to `dewey-track`, with a redirect from the old address.
 
 ---
@@ -32,8 +32,7 @@ most needs to keep:
   The capstone draws on algebra alone.
 - **Nothing carries over.** Every page is its own Python session, so the
   functions a student wrote last week are gone. Two cells in *Solving
-  equations* failed for exactly that reason until the maths pass fixed them
-  (DECISIONS_LOG 7.216).
+  equations* failed for exactly that reason until the maths pass fixed them.
 
 A reader who arrives sure they are "not a maths person" or "not a computer
 person" is the one this hurts most: a topic met once and never needed again
@@ -177,8 +176,8 @@ shape in an image, the best line through data, or the lowest point of a
 cost by walking downhill (gradient descent). Each unit's mixed page offers
 a choice of products in the same way. The page shows a grid of cards, each
 led by a curious question, then a table of the projects side by side; the
-projects start closed and a card opens one (7.288,
-`docs/WRITING_TUTORIALS.md#choose-your-project`). Projects are not worlds:
+projects start closed and a card opens one
+(`docs/WRITING_TUTORIALS.md#choose-your-project`). Projects are not worlds:
 the track uses no worlds yet, and a project changes the job, not the
 setting.
 
@@ -281,7 +280,7 @@ No page uses money. 4.4 starts toolkit.py properly: the reader learns
 `assert` tests, walkthroughs (tracing a function by hand) and the
 debugger's step-through. Outside 4.4, a page never writes tests against
 the reader's functions; each toolkit function comes with a comparison
-against a solution instead (7.269). Unit product (on
+against a solution instead. Unit product (on
 `mixed-making-your-own-tools`): a converter for reading about space,
 km and miles, kg and pounds, °C and °F, with astronomical units and
 a 1 TB drive in GiB on the way, every conversion checked both ways.
@@ -571,12 +570,12 @@ from the pages' own `covers:` frontmatter, so the claim above cannot drift.
 
 Made by Josh on 24 September 2026:
 
-1. **The name:** *Plot Twist*, for now; later renamed *the Dewey Track* (7.226).
+1. **The name:** *Plot Twist*, for now; later renamed *the Dewey Track*.
 2. **The toolkit:** both modes, the reader's own code and the reference (§6).
 3. **Where it sits:** beside the existing integrated course, as a beta track.
 4. **The four ideas** (§2) are the spine of the track.
 
-Made by Josh on 25 September 2026 (7.228):
+Made by Josh on 25 September 2026:
 
 5. **Contexts:** computing first, physics where the maths is physics
    (§4). Unit 1's project is a digit display, in two stages: a

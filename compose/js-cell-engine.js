@@ -1,3 +1,10 @@
+/* How a JavaScript cell in the Notebook runs: one sandboxed iframe the whole
+ * notebook shares, made on first run, and a small postMessage protocol. An
+ * iframe with `sandbox="allow-scripts"` and no same-origin access cannot
+ * reach this page's DOM or storage, so it needs no Worker. The cost is that
+ * it runs on the tab's own thread: there is no Stop for a runaway loop.
+ * Only `var` and `function` declarations last from one cell to the next; a
+ * `let` or `const` is gone when its cell's eval() returns. */
 
 import { applyOutputEvent, clearOutput } from "../assets/pyodide-engine.js";
 
