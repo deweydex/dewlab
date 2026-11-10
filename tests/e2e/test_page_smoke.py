@@ -88,7 +88,7 @@ def site(tmp_path_factory):
     topic_groups_path = tmp_path / "curriculum" / "topic-groups.yaml"
     topic_groups_path.write_text(TOPIC_GROUPS)
 
-    original = {name: getattr(b, name) for name in (
+    original = {name: getattr(b.cfg, name) for name in (
         "ROOT", "TUTORIALS", "COURSES", "OUT", "SETUP", "DATA", "ASSETS",
         "SHELL", "PAGES", "TOPIC_DATA", "TOPIC_GROUPS_DATA", "OUTCOME_DATA",
     )}
