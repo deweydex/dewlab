@@ -34,7 +34,7 @@ def test_stopping_an_infinite_loop_then_running_the_cell_again(page):
     cell = cell_content(page, "plain-python")
     cell.click()
     page.keyboard.press("Control+End")
-    page.keyboard.insert_text("\ncounter = 0\nwhile True:\n    counter += 1")
+    page.keyboard.insert_text('\nprint("looping")\ncounter = 0\nwhile True:\n    counter += 1')
 
     btn = run_button(page, "plain-python")
     btn_selector = js_string(".dl-cell[data-cell-id='plain-python'] .dl-btn-run .dl-btn-label")
@@ -44,7 +44,15 @@ def test_stopping_an_infinite_loop_then_running_the_cell_again(page):
         timeout=10_000,
     )
 
-    page.wait_for_timeout(1_000)
+    # Stop before the loop has started is lost: the interrupt arrives while the
+    # worker is still starting Python or loading the page's packages, is spent
+    # there, and the loop that follows runs for ever. The button says Stop from
+    # the moment Run is pressed, so only the cell's own output shows that it
+    # is running. (A fixed wait is a guess about how slow the machine is.)
+    page.wait_for_function(
+        f"document.querySelector({js_string(output_selector('plain-python'))}).innerText.includes('looping')",
+        timeout=60_000,
+    )
     btn.click()  # the same button, now meaning Stop
 
     page.wait_for_function(
