@@ -51,7 +51,7 @@ If you're not sure which one a new test belongs in, ask "does this call
 | `test_site.py` | Non-tutorial site content: cards, `[[marker]]` sections, wrapped-section markdown |
 | `test_questions.py` | `​```question` fence markup: multiple-choice and fill-in-the-blank generation |
 | `test_app_cell_markup.py` | `app`-fence markup generation (the build-time half; live behavior is `tests/e2e/test_app_cell_live.py`) |
-| `test_reference_index.py` | The cross-tutorial glossary/reference index `build.py` assembles (`write_reference_index()`) — the data a panel shows, not the panel itself |
+| `test_reference_index.py` | The cross-tutorial glossary/reference index the build assembles (`write_reference_index()` in `builder/finding.py`) — the data a panel shows, not the panel itself |
 | `test_curriculum.py` | Series shape and knowledge-map data from course files |
 | `test_courses.py` | Course-file processing: listings, moved-frontmatter migrations |
 | `test_releases.py` | Version/release numbering and manifest fields |

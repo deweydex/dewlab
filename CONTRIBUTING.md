@@ -84,7 +84,7 @@ hints it has, whether a block has a question in it, which optional field is
 filled in, whether there is a practice page, a typo in a setting that has a
 sensible default. The build carries it out and says what it did. Only what a
 reader would find broken stops it. A test that fails a pull request, or a
-`fail()` in `build.py` or a problem in `check.py`, has to name what breaks for
+`fail()` in the build (`builder/`) or a problem in `check.py`, has to name what breaks for
 a reader if it is let through: the page
 does not load, a cell cannot run, a link or file points at nothing, a number
 the page states is wrong, saved work is lost, or the interface errors. Say it

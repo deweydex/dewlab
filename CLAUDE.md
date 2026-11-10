@@ -21,8 +21,8 @@ the result, or CI fails.
 ## Before you write a word a student will read
 
 Student-facing means the contents page, the topic tree, a glossary
-definition, a tutorial or practice page, and any string in `build.py` that
-ends up on a page — not code comments, not planning documents, not this
+definition, a tutorial or practice page, and any string in the build
+(`builder/`) that ends up on a page — not code comments, not planning documents, not this
 file. Read `planning/PEDAGOGICAL_STYLE_GUIDE.md` before writing any of it.
 It is short; if you read one part, read `#voice`.
 
@@ -34,7 +34,7 @@ It is short; if you read one part, read `#voice`.
 | Writing a glossary file | `.claude/skills/tutorial-glossary/SKILL.md` |
 | Reviewing a tutorial's cell code | `.claude/skills/cell-code-review/SKILL.md` |
 | Working an issue from the report doors | `.claude/skills/triage-report/SKILL.md` |
-| Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md` |
+| Changing the build or the runtime | `CONTRIBUTING.md`, then `ARCHITECTURE.md`. `build.py` is only the command; the code is in `builder/` |
 | Looking for a video to link from a page | `planning/video-library/README.md` |
 | Wondering why something works the way it does | the comment beside the code, then `git blame` for its pull request |
 | Wondering which rules a page must follow and which are advice | `docs/HOW_DEWLAB_THINKS.md` |

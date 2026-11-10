@@ -1,6 +1,5 @@
 """What every file in tests/build/ shares: the `repo` fixture (a temporary
-tree build.py is pointed at, since it resolves paths from module-level
-globals) and the helpers that write tutorials and course files into it in
+tree the build is pointed at, through its config, `b.cfg`) and the helpers that write tutorials and course files into it in
 the layout the build reads — `tutorials/<id>/<id>.md`, and one course file
 per course under `courses/`.
 

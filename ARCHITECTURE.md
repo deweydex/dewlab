@@ -28,9 +28,20 @@ None of the three needs the others running.
 
 ## 1. The build: markdown in, static site out
 
-`build.py` is a single script that reads `tutorials/*/*.md` and `courses/*.yaml`
-and writes
-`site/`. It runs locally for a preview and again in
+`python3 build.py` reads `tutorials/*/*.md` and `courses/*.yaml` and writes
+`site/`. The file `build.py` is only the command; the code is the `builder/`
+package beside it:
+
+| File | What it holds |
+|---|---|
+| `builder/main.py` | Nearly all of the build: reading a page, rendering its blocks, courses and navigation, checks, downloads, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
+| `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
+| `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
+
+`import build` gives you `builder.main` itself, so scripts and tests can go on
+saying `build.load(...)`.
+
+The build It runs locally for a preview and again in
 `.github/workflows/deploy.yml` on every push to `main`. `site/` is gitignored
 and rebuilt from scratch each time, so a published page never drifts from the
 markdown that describes it.
@@ -359,7 +370,7 @@ a cell can do starts in `tutorial_tools.py`; changing what it looks like
 starts in `tutorial-runtime.js`.
 
 Two more pieces: `assets/tree.js` draws the topic-tree and knowledge-map
-SVGs from data `build.py` computes (`tree_data()`); `vendor-src/build-vendor.mjs`
+SVGs from data the build computes (`tree_data()` in `builder/finding.py`); `vendor-src/build-vendor.mjs`
 also produces `assets/vendor/standalone.bundle.js`, the entire runtime as one
 classic script rather than an ES module, which is what a **Download to
 keep** file runs, since `file://` can't load a module.
@@ -584,7 +595,7 @@ editor split-screen against a live sandboxed preview, discovering whatever
 `.css`/`.js` of the same base name sit beside it.
 
 Two pieces reach outside `compose/`. `write_reference_index()` in
-`build.py` emits `assets/reference-index.json`, the union of every
+`builder/finding.py` emits `assets/reference-index.json`, the union of every
 tutorial's glossary — deliberately dropping the "never show what hasn't
 been taught" rule the tutorial pages' Reference is built around, since a
 workspace has no position in a series to protect. And
@@ -693,8 +704,8 @@ a local, manual check, run before a PR that touches the runtime.
 | The Python engine (boot, run a cell, hover/autocomplete, Stop) | `assets/pyodide-engine.js` |
 | The Notebook's cells, toolbar, or downloads | `compose/dewmini.js` |
 | The Notebook's offline, downloadable bundle (what's included, the local-server workaround) | `write_dewmini_bundle()` and `SERVE_SCRIPT` in `build.py` |
-| The topic tree or knowledge map's layout | `assets/tree.js` and `build.py`'s `tree_data()`/`render_knowledge_map()` |
-| The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `build.py`'s `map_data()` and `write_map_page()`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
+| The topic tree or knowledge map's layout | `assets/tree.js` and `tree_data()`/`render_knowledge_map()` in `builder/finding.py` |
+| The topic map: what is on it, how it is drawn, where towns stand | `map/graph.json` (a person edits it), `dev/map_layout.py` writes `map/layout.json`, `map_data()` and `write_map_page()` in `builder/finding.py`, and `assets/map.js` and `assets/map.css`. See `map/README.md`. |
 | Any GitHub call from the editor | `assets/github-client.js` |
 | Editing a page where it stands: which blocks can be edited and how, saving, the Settings section | `assets/inpage-edit.js`; the section and its loader in `assets/shell.html`; `.dl-inplace` in `assets/tutorial-style.css` |
 | Which markdown range each block of a page came from | `source_map.py`; `load()` and the manifest's `edit` entry in `build.py` |

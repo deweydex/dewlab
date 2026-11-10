@@ -111,8 +111,8 @@ setup/           setup snippets tutorials pull in with {{include: ...}}
 data/            shared datasets, each with a yaml saying where it came from
 assets/          the page template, styles, runtime, editors, and vendored libraries
 compose/         the Notebook and the Workspace (dewmini and dewmini web in the code)
-build.py         markdown in, site/ out
-builder/         the parts of the build that live outside build.py
+build.py         the command: markdown in, site/ out
+builder/         the build's code (build.py is the command that runs it)
 dev/             maintainer scripts, including the curriculum map generator
 tests/           unit tests, browser tests, and a manual checklist
 docs/            guides for students, authors and contributors

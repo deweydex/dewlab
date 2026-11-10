@@ -25,7 +25,7 @@ import build as b  # noqa: E402
 def pytest_collection_modifyitems(config, items):
     """Run the browser tests after every other test in the session.
 
-    `site_dir` points build.py's module-level paths (ROOT, OUT and the
+    `site_dir` points the build's paths (`b.cfg`: ROOT, OUT and the
     rest) at a temporary folder, and `browser` keeps Playwright, and so an
     asyncio event loop, running until the session ends. A unit test that
     ran after them would build into that folder and fail on asyncio.run().
