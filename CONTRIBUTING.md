@@ -23,12 +23,13 @@ vendored library, which is covered further down.
 git clone https://github.com/deweydex/dewlab
 cd dewlab
 pip install -r requirements-dev.txt
-python3 build.py --clean
-python3 -m http.server -d site 8000
+python3 build.py --serve
 ```
 
-That builds the whole site into `site/` and serves it at
-`http://localhost:8000`. `site/` is never committed — it is regenerated on every
+That builds the site into `site/` and shows it at `http://localhost:8000`,
+from your own machine only, until you press Ctrl-C. It leaves out the
+downloadable copies (below), so a Download link does not work in the preview;
+`python3 build.py --clean` writes everything. `site/` is never committed — it is regenerated on every
 push, which is what keeps a published page from drifting from the markdown it
 came from. `requirements-dev.txt` is the build's three packages plus what
 the tests need; `requirements-build.txt` alone is enough to build and preview.
@@ -73,12 +74,14 @@ The end-to-end tests drive a real browser against a real Python runtime, so
 they need three more things, once:
 
 ```sh
-pip install playwright
+pip install -r requirements-e2e.txt     # pins the Playwright version they pass on
 python -m playwright install chromium
-python3 dev/fetch_pyodide.py           # about 30 MB
+python3 dev/fetch_pyodide.py            # about 30 MB
 ```
 
-Without them they skip with a message rather than failing.
+Without them they skip with a message rather than failing. CI runs six of the
+browser files on every pull request, and the whole suite once a week
+(`.github/workflows/browser-suite.yml`), opening an issue if it fails.
 
 There is also [`tests/MANUAL_CHECKLIST.md`](tests/MANUAL_CHECKLIST.md) for the
 things a browser test does not cover well.
@@ -119,8 +122,9 @@ one goes.
 
 Two workflows run on a push: `tests` and `publish`.
 
-`tests` runs the unit suite, builds the site, runs every page's solutions
-(`python3 check.py --solutions`), and runs `python3
+`tests` runs the unit suite, `ruff check` (the short list of rules in
+`ruff.toml`, each one a bug and not a taste), builds the site, runs every
+page's solutions (`python3 check.py --solutions`), and runs `python3
 dev/generated.py`, which fails if a generated file something depends on is out
 of date (the pair game's topics, the topic editor's graph, the pair reports)
 or cannot be made (a `covers:` code that no outcome has). Its `house-style` job
@@ -249,8 +253,8 @@ use for the people who do.
   first — [`docs/CHECK_YOUR_WORK.md`](docs/CHECK_YOUR_WORK.md) explains what
   it reports, and it can open the pull request for you.
 - Run `python3 -m pytest` (skip `tests/e2e` unless you are testing browser
-  behaviour directly) and `python3 build.py` to confirm the site still
-  builds.
+  behaviour directly), `ruff check` and `python3 build.py --serve` to confirm
+  the Python is sound and the site still builds and looks right.
 - Read back the documentation and comments you touched as if you had never seen
   this codebase. If something needs reading twice to make sense, it needs
   another pass.

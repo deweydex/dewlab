@@ -10,12 +10,11 @@ import json
 
 import pytest
 
-from conftest import _open_panel
 
 SLUG = "two-takes"
 DEFAULT_PAGE = f"tutorials/{SLUG}.html"
 JUNE_PAGE = f"tutorials/{SLUG}/v2026.06.02.1.html"
-ONE_VERSION_PAGE = f"tutorials/rendering-tour.html"
+ONE_VERSION_PAGE = "tutorials/rendering-tour.html"
 
 
 def numbers(text: str) -> list[int]:
@@ -106,7 +105,7 @@ class TestATutorialWithoutATitleHeading:
     """`prose-only` opens straight into a section and has no cells — both
     awkward for a marker that wants to sit under a title and count answers."""
 
-    PAGE = f"tutorials/prose-only.html"
+    PAGE = "tutorials/prose-only.html"
 
     def test_the_marker_sits_at_the_top_and_counts_nothing_without_cells(self, tab, base_url):
         opened(tab, base_url, self.PAGE)

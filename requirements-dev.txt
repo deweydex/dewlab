@@ -5,6 +5,9 @@
 -r requirements-build.txt
 pytest
 pytest-xdist
+# The linter, held to the short list of rules in ruff.toml: `ruff check`.
+# A minor version can add findings, so the range is the minor version.
+ruff~=0.16.9
 # The tutorials' own cells import these. The build runs every page's
 # solutions, and skips (with a note) any that need a package it cannot find.
 numpy
@@ -12,6 +15,5 @@ pandas
 matplotlib
 # The pictures under dev/graphics/.
 svgwrite
-# The browser tests in tests/e2e/ need one more thing, left out here because
-# most changes never touch them: `pip install playwright`, then
-# `python -m playwright install chromium` and `python3 dev/fetch_pyodide.py`.
+# The browser tests in tests/e2e/ need more, left out here because most
+# changes never touch them: see requirements-e2e.txt.

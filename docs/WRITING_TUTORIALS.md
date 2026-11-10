@@ -1,5 +1,9 @@
 # Writing a tutorial
 
+New here? [`YOUR_FIRST_TUTORIAL.md`](YOUR_FIRST_TUTORIAL.md) is the short way in, from
+nothing to a page you can send for review. This page is the reference you come
+back to.
+
 A dewlab tutorial is one markdown file. The build turns it into a web page with
 runnable Python in it. This document covers the format: what goes in the file,
 what the build checks, and what to run before you open a pull request.
@@ -234,9 +238,9 @@ and previous and next.
 The build refuses an id it cannot find, naming the course file and the line,
 and refuses a second folder with an id that already exists, naming the
 tutorial that has it. It notes, without stopping, a course named in
-`courses/index.yaml` that has no file. It warns, without stopping, when two tutorials share a
-title, and when two tutorials cover much the same outcomes — both are worth
-a look, neither is necessarily wrong.
+`courses/index.yaml` that has no file. It notes, without stopping, when two tutorials share a
+title. A whole-site `python3 check.py` also names two tutorials that cover
+much the same outcomes. Both are worth a look, and neither is necessarily wrong.
 
 `courses/index.yaml` lists the courses under `order:` in the order they
 appear on the contents page and, unless `cards:` says otherwise, on the

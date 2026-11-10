@@ -643,7 +643,7 @@ def test_a_web_cells_script_cannot_reach_the_parent_page(dewmini):
     script runs, but in an opaque-origin document that cannot touch this
     page's own window, localStorage, or DOM — including a cell imported
     from a shared file, not only one the reader wrote themselves."""
-    cell = _web_cell(
+    _web_cell(
         dewmini,
         html='<script>try { window.parent.document.title = "hijacked"; } catch (e) {}</script>',
     )

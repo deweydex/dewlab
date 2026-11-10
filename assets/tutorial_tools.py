@@ -31,7 +31,6 @@ import html
 import json
 import io
 import linecache
-import math
 import os
 import re
 import sys

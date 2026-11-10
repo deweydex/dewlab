@@ -19,7 +19,7 @@ import math
 
 import svgwrite
 
-from palette import INK, MUTED, PANEL, RULE, SANS
+from palette import INK, PANEL, RULE, SANS
 
 RADIUS = 44
 SPACING = 210           # centre to centre

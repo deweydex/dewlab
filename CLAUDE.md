@@ -32,7 +32,7 @@ It is short; if you read one part, read `#voice`.
 
 | Doing | Read |
 |---|---|
-| Writing or editing a tutorial | `docs/WRITING_TUTORIALS.md`, then the style guide |
+| Writing or editing a tutorial | `docs/YOUR_FIRST_TUTORIAL.md` if new to this, then `docs/WRITING_TUTORIALS.md` and the style guide |
 | Writing a glossary file | `.claude/skills/tutorial-glossary/SKILL.md` |
 | Reviewing a tutorial's cell code | `.claude/skills/cell-code-review/SKILL.md` |
 | Working an issue from the report doors | `.claude/skills/triage-report/SKILL.md` |

@@ -6759,12 +6759,31 @@ def main() -> int:
     message clean and readable, per `fail()`'s own comment above, instead
     of also showing an unrelated stack trace).
     """
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Turn the markdown in tutorials/ into the site in site/.",
+        epilog="python3 build.py --serve     build, then look at the site in a browser\n"
+               "python3 build.py --clean     start again from nothing\n"
+               "python3 check.py tutorials/<id>   check one tutorial, and run its solutions",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("--clean", action="store_true", help="remove site/ before building")
     parser.add_argument(
         "--no-standalone",
         action="store_true",
         help="skip the downloadable single-file copies, which are the slow part",
+    )
+    parser.add_argument(
+        "--serve",
+        action="store_true",
+        help="after building, show the site at http://localhost:8000/ until Ctrl-C. "
+             "The downloadable copies are skipped, so a Download link on a page "
+             "does not work in the preview",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="the port --serve uses (default 8000)",
     )
     parser.add_argument(
         "--verbose", "-v",
@@ -6776,13 +6795,13 @@ def main() -> int:
         "--no-source-map",
         action="store_true",
         help="leave out the markdown range each block of a page carries (what "
-             "\"Edit this page\" reads); a page is about 0.1% smaller and a build about 14 seconds quicker",
+             "\"Edit this page\" reads); a page is about 0.1%% smaller and a build about 14 seconds quicker",
     )
     args = parser.parse_args()
     cfg.SOURCE_MAP = not args.no_source_map
     cfg.NOTES_AT_END = not args.verbose
     try:
-        written = build(clean=args.clean, standalone=not args.no_standalone)
+        written = build(clean=args.clean, standalone=not (args.no_standalone or args.serve))
     except BuildError as exc:
         print_notes()
         print(f"build failed — {exc}", file=sys.stderr)
@@ -6795,6 +6814,8 @@ def main() -> int:
             print(f"wrote {path.relative_to(cfg.ROOT)}")
     print(f"{len(written)} page{'s' if len(written) != 1 else ''} into {cfg.OUT.relative_to(cfg.ROOT)}/")
     print_notes()
+    if args.serve:
+        return serve.run(cfg.OUT, args.port)
     return 0
 
 
@@ -6817,11 +6838,11 @@ def print_notes() -> None:
 # take their helpers from this one. A name this
 # module no longer has is looked for there, so `build.load_topics()` and the
 # like still work for the scripts and tests that call them.
-from builder import downloads, finding, solutions  # noqa: E402
+from builder import downloads, finding, serve, solutions  # noqa: E402
 
 
 def __getattr__(name: str):
-    for module in (finding, downloads, solutions):
+    for module in (finding, downloads, solutions, serve):
         if hasattr(module, name):
             return getattr(module, name)
     raise AttributeError(f"module 'build' has no attribute {name!r}")

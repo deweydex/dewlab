@@ -1,0 +1,45 @@
+# What `ruff check` holds this repository to. It is short on purpose: every
+# rule here finds something that is wrong, not something that is not the
+# way a style guide would write it, so a contributor is never asked to
+# change working code to please a linter.
+#
+#   F          pyflakes: a name that is not defined, an import nobody uses,
+#              a variable assigned and never read, a function defined twice
+#   E9         a file that does not parse
+#   E711-E714  `== None`, `== True`, `not x in y`: each means something else
+#              from what it reads as
+#   E721       comparing types with ==
+#   E722       a bare `except:`, which also catches Ctrl-C
+#   B006       a mutable default argument, shared between calls
+#   B015       a comparison whose result is thrown away
+#
+# Not here, deliberately: line length, import order, quote style and
+# anything else `ruff format` or a taste would decide. B023 (a function made
+# in a loop that uses the loop's variable) was tried and is out: all 30 of
+# its findings were a function made and used inside one iteration, which is
+# fine. Add a rule when it has caught a bug here, and say which in the pull
+# request.
+
+line-length = 100
+target-version = "py312"
+
+# Not ours to lint, or not Python as Python reads it: the vendored and built
+# files, the dev copy of Pyodide, and setup snippets that tutorials include
+# into their own cells (their names come from the cell that includes them).
+extend-exclude = [
+  "assets/vendor",
+  "dev/pyodide",
+  "setup",
+  "site",
+  "node_modules",
+  ".build-cache",
+  "*.ipynb",
+]
+
+[lint]
+select = ["F", "E9", "E711", "E712", "E713", "E714", "E721", "E722", "B006", "B015"]
+
+[lint.per-file-ignores]
+# The build tests share their fixtures with `from helpers import *`, so a
+# name used in a test comes from there and ruff cannot see it.
+"tests/**" = ["F403", "F405"]

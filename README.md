@@ -22,7 +22,8 @@ only have to read the one that matches what you are here to do.
 |---|---|
 | Use a tutorial | [`docs/FOR_STUDENTS.md`](docs/FOR_STUDENTS.md) |
 | Find an answer about getting started | [`docs/FAQ.md`](docs/FAQ.md) |
-| Write or edit a tutorial | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
+| Write your first tutorial | [`docs/YOUR_FIRST_TUTORIAL.md`](docs/YOUR_FIRST_TUTORIAL.md) |
+| Look up how a block, a field or a page shape works | [`docs/WRITING_TUTORIALS.md`](docs/WRITING_TUTORIALS.md) |
 | Understand why the pages teach the way they do, and which rules bend | [`docs/HOW_DEWLAB_THINKS.md`](docs/HOW_DEWLAB_THINKS.md) |
 | Change the code | [`CONTRIBUTING.md`](CONTRIBUTING.md), then [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Report a mistake or a bug | [`docs/REPORTING_A_PROBLEM.md`](docs/REPORTING_A_PROBLEM.md) |
@@ -136,16 +137,16 @@ Python 3.12 or later.
 git clone https://github.com/deweydex/dewlab
 cd dewlab
 pip install -r requirements-build.txt
-python3 build.py --clean
-python3 -m http.server -d site 8000
+python3 build.py --serve
 ```
 
-Then open `http://localhost:8000`. The built site in `site/` is never
-committed; it is regenerated on every push.
+Then open `http://localhost:8000`. `--serve` builds the site and shows it from
+your own machine only, until you press Ctrl-C. It leaves out the downloadable
+copies, which are the slow part of a build, so a Download link does not work
+in the preview; `python3 build.py` writes them. The built site in `site/` is
+never committed; it is regenerated on every push.
 
-Downloadable copies are the slow part of a build, so
-`python3 build.py --no-standalone` skips them while you are working on
-content. A build does not run the code on a page; `python3 check.py
+A build does not run the code on a page; `python3 check.py
 tutorials/my-tutorial` does, solutions included. To run the tests,
 `pip install -r requirements-dev.txt` and then `python3 -m pytest`.
 

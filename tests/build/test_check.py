@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import importlib
 import io
-import subprocess
 import sys
 from pathlib import Path
 
@@ -424,3 +423,54 @@ def test_one_tutorials_check_runs_only_its_own_solutions(site) -> None:
     course(root, "alpha", {"Start": ["mine", "theirs"]})
     code, out = run_check(check, "tutorials/mine")
     assert code == 0 and "the page is wrong" not in out
+
+
+def test_a_fork_sends_its_pull_request_to_the_project_it_came_from(site, monkeypatch, capsys) -> None:
+    """Somebody who was not invited works in their own copy of the project.
+    Their `upstream` remote names the project, and the pull request goes
+    there from their branch, not to their own copy."""
+    root, check = site
+    remotes = {"origin": "git@github.com:ada/dewlab.git", "upstream": "https://github.com/deweydex/dewlab"}
+    answers = {"rev-parse": "my-change", "status": " M tutorials/first-steps/first-steps.md\n",
+               "ls-files": "tracked", "add": "", "commit": "", "push": "", "log": "",
+               "symbolic-ref": "origin/main", "diff": ""}
+
+    def fake_git(*a):
+        if a[:2] == ("remote", "get-url"):
+            return remotes.get(a[2])
+        if a[0] == "rev-parse" and a[-1] == "@{u}":
+            return "origin/my-change"
+        return answers.get(a[0])
+
+    monkeypatch.setattr(check, "git", fake_git)
+    monkeypatch.setattr(check.webbrowser, "open", lambda url: True)
+    report = check.Report()
+    report.checked = [("tutorial", "first-steps", "First Steps")]
+    check.offer_pull_request(report, "yes")
+    out = capsys.readouterr().out
+    assert "https://github.com/deweydex/dewlab/compare/main...ada:my-change?quick_pull=1&title=" in out
+
+    remotes.pop("upstream")  # no upstream: the clone is the project
+    check.offer_pull_request(report, "yes")
+    assert "https://github.com/ada/dewlab/compare/main...my-change?quick_pull=1" in capsys.readouterr().out
+
+
+def test_a_push_that_is_refused_points_at_the_fork_route(site, monkeypatch, capsys) -> None:
+    root, check = site
+    answers = {"remote": "https://github.com/deweydex/dewlab.git", "rev-parse": "my-change",
+               "status": " M tutorials/first-steps/first-steps.md\n", "ls-files": "tracked",
+               "add": "", "commit": "", "log": "", "symbolic-ref": "origin/main", "diff": ""}
+
+    def fake_git(*a):
+        if a[0] == "push":
+            return None
+        if a[0] == "rev-parse" and a[-1] == "@{u}":
+            return None
+        return answers.get(a[0])
+
+    monkeypatch.setattr(check, "git", fake_git)
+    report = check.Report()
+    report.checked = [("tutorial", "first-steps", "First Steps")]
+    check.offer_pull_request(report, "yes")
+    out = capsys.readouterr().out
+    assert "could not push" in out and "YOUR_FIRST_TUTORIAL.md" in out and "fork" in out

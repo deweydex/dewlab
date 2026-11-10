@@ -9,9 +9,6 @@ from __future__ import annotations
 
 import json
 import re
-import sys
-import urllib.parse
-import zipfile
 from pathlib import Path
 
 import pytest
