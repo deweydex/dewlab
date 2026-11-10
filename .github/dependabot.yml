@@ -1,0 +1,23 @@
+# Keeps what CI and the tests lean on from going stale, one small pull request
+# a month, grouped so it is one to read and not several. CI says whether the
+# tests still pass on the new version, which is what makes it safe to merge.
+#
+# Not npm: vendor-src/ builds the bundles committed under assets/vendor/, and
+# a bumped dependency fails `standalone-bundle-is-current` until somebody
+# rebuilds them, so those are updated by hand (CONTRIBUTING.md).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      python-requirements:
+        patterns: ["*"]

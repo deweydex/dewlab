@@ -129,6 +129,29 @@ jobs:
         run: python3 dev/generated.py
 
 
+  # Python that is wrong, rather than not to taste: a name that is not defined,
+  # an import nobody uses, a bare `except:`. The rules are the short list in
+  # ruff.toml, each added because it found something here, so a failure is a
+  # bug to fix and never a style to comply with. Needs only Python and ruff.
+  lint:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The version is read from requirements-dev.txt, so a contributor's
+      # ruff and CI's are the same one.
+      - name: Install ruff
+        run: python -m pip install "$(grep '^ruff' requirements-dev.txt)"
+
+      - name: Check the Python
+        run: ruff check --output-format=github
+
   # Checks that look after the project rather than any page, reported and
   # never blocking: the tests marked `advisory` (a
   # house preference about tutorial prose, the tidiness of planning files),
@@ -259,8 +282,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest playwright
-          python -m pip install -r requirements-build.txt
+          python -m pip install -r requirements-e2e.txt
           python -m playwright install --with-deps chromium
 
       - name: Cache the self-hosted Pyodide

@@ -1,0 +1,14 @@
+# What the browser tests in tests/e2e/ need. Most changes never touch them,
+# so they are not in requirements-dev.txt. Once:
+#
+#     pip install -r requirements-e2e.txt
+#     python -m playwright install chromium
+#     python3 dev/fetch_pyodide.py            # about 30 MB
+#
+# Playwright is pinned to a version these tests are known to pass on, because
+# a new release can change how a page is measured and fail a test that has
+# done nothing wrong. Dependabot proposes the next version; CI says whether
+# the tests still pass on it.
+-r requirements-build.txt
+pytest
+playwright==1.64.1
