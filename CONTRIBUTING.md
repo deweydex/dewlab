@@ -254,7 +254,8 @@ use for the people who do.
 - Read back the documentation and comments you touched as if you had never seen
   this codebase. If something needs reading twice to make sense, it needs
   another pass.
-- Say why in the pull request description, wherever somebody could reasonably
+- Say why in the pull request description, under the template's "Why, and
+  what you chose against", wherever somebody could reasonably
   have done it differently. If the reason will matter to the next person to
   read the code, it also belongs in a comment beside that code. There is no
   separate log to update. Something still waiting on a decision is a GitHub

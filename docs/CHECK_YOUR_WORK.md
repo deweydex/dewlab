@@ -43,6 +43,17 @@ python3 check.py
 
 ## If you are adding a tutorial
 
+The quick way to start is one command. It makes the folder, the tutorial
+and its practice page for you, copied from the project's templates, with
+today's date as the version:
+
+```bash
+python3 new.py my-tutorial "A title for it"
+```
+
+Then replace the template's content with yours. The checklist below is what
+that command sets up, and what to keep true as you write.
+
 A tutorial is one folder inside `tutorials/`. The folder name is the
 tutorial's **id**. The id is used in the web address, in links from other
 tutorials, and to save each reader's work. Choose it once. Do not change it

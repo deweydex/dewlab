@@ -496,6 +496,18 @@ def check_everything(report: Report) -> None:
         return bool(fields.get("practice_across") or fields.get("context_for"))
     unlisted = [i for i in ids if i not in listed and not i.endswith("-practice")
                 and not follows_another(i)]
+    # Pages that say they teach mostly the same outcomes. Worth a second look
+    # by whoever looks after the whole site, and nothing a build should say.
+    def stands_alone(fields: dict) -> bool:
+        return (fields.get("status", "live") == "live"
+                and not (fields.get("practice_for") or fields.get("practice_across") or fields.get("context_for")))
+    claims = [(f"tutorials/{i}/{i}.md", fields.get("covers") or {})
+              for i in ids for fields in [fields_of(cfg.TUTORIALS / i / f"{i}.md")] if stands_alone(fields)]
+    overlaps = b.shared_outcomes(claims)
+    if overlaps:
+        report.note("— pages that cover the same outcomes —")
+        for line in overlaps:
+            report.note(line)
     report.note("— summary —")
     report.note(f"{len(ids)} tutorials, {len(courses)} courses, {len(unlisted)} tutorial{'s' if len(unlisted) != 1 else ''} on no course.")
 
