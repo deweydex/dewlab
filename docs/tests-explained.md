@@ -95,7 +95,7 @@ substantial on its own.
 (open/close, search, mobile launcher). Its build-time counterpart is
 `tests/build/test_reference_index.py`.
 
-*In-page editing:* `test_inpage_editor.py` — editing a page where it stands, against a fake GitHub (real client code, service workers blocked so the browser's calls to `api.github.com` can be answered by the test). Needs no Pyodide, so it runs in CI.
+*In-page editing:* `test_inpage_editor.py` and `test_inpage_editor_blocks.py` (cells, folds and tables; the second imports the first's fixtures, and the split lets CI run the halves on separate machines) — editing a page where it stands, against a fake GitHub (real client code, service workers blocked so the browser's calls to `api.github.com` can be answered by the test). Needs no Pyodide, so it runs in CI.
 
 *The Notebook and the Workspace (dewmini and dewmini web in the code):* `test_dewminiweb.py`, `test_dewmini_workbench.py`, and `test_old_compose_addresses.py` for the redirects at their old addresses.
 

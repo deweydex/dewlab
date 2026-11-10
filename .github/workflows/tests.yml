@@ -1,8 +1,10 @@
-# Unit tests, plus the handful of browser files the `browser` job at the end
-# names. The rest of the e2e suite needs a 30 MB Pyodide download and a
-# browser for every cell it runs; running all of
-# it here would dominate the workflow for a suite that mostly guards the
-# runtime, so it stays a local and manual step.
+# Lint, the unit tests, the build, every page's solutions, and the browser
+# tests that never run a cell. The rest of the browser suite takes about forty
+# minutes on a runner, so it runs weekly (browser-suite.yml) instead.
+#
+# What runs on a pull request depends on what it changes (dev/ci_scope.py), and
+# the two slow parts are built not to repeat work: the solutions that ran clean
+# are remembered, and the browser files run on three machines at once.
 name: tests
 
 on:
@@ -15,22 +17,26 @@ on:
   # otherwise sit with no checks at all on the commit that would actually land.
   workflow_dispatch:
 
+# A new push to a pull request makes the run for the one before it pointless.
+# A push to main is never cancelled: each one is a commit that was published.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  # Which jobs a pull request needs, from the files it changes. A change only to documents about the project (planning/, docs/,
-  # the top-level .md files, .claude/) runs the house-style reports and
-  # nothing else: no page reads them. A change that also touches tutorials/
-  # adds the unit tests and the glossary check, which build and read the
-  # tutorials, but not the browser tests or the bundle check: the browser
-  # files CI runs build sites of their own and never read a real tutorial,
-  # and the bundle is made from vendor-src/ and the runtime. Two parts of
-  # planning/ are read by the build, curriculum/ and feedback.yaml, and count
-  # as code. A push to main and a manual run run everything. A job skipped
-  # here reports as skipped, which a required check accepts.
+  # Which jobs a pull request needs, from the files it changes. The rules are
+  # in dev/ci_scope.py, where they are tested: a change only to documents about
+  # the project runs the house-style reports and nothing else; a tutorial or a
+  # tool nothing reads at runtime gets lint, the unit tests, the solutions and
+  # the glossary check; and the browser tests and the bundle check run when a
+  # file they read has changed. A push to main and a manual run run everything.
+  # A job skipped here reports as skipped, which a required check accepts.
   changes:
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.sort.outputs.code }}
-      runtime: ${{ steps.sort.outputs.runtime }}
+      browser: ${{ steps.sort.outputs.browser }}
+      bundle: ${{ steps.sort.outputs.bundle }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,21 +46,14 @@ jobs:
         id: sort
         run: |
           if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "runtime=true" >> "$GITHUB_OUTPUT"
+            printf 'code=true\nbrowser=true\nbundle=true\n' >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # A pull request's checkout is its merge into the base, so the
           # first parent is the base as it stands.
           git diff --name-only HEAD^1 HEAD > changed.txt
           cat changed.txt
-          documents='^(planning/|docs/|\.claude/|[^/]+\.md$)'
-          read_by_build='^planning/(curriculum/|feedback\.yaml$)'
-          # grep exits 1 when nothing matches, which is an answer here.
-          code=$(grep -vE "$documents" changed.txt; grep -E "$read_by_build" changed.txt || true)
-          runtime=$(printf '%s\n' "$code" | grep -v -e '^tutorials/' -e '^$' || true)
-          echo "code=$([ -n "$code" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "runtime=$([ -n "$runtime" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          python3 dev/ci_scope.py changed.txt | tee -a "$GITHUB_OUTPUT"
 
   unit:
     needs: changes
@@ -94,13 +93,18 @@ jobs:
           fi
 
       # A build writes pages and does not run them; this does, each page's
-      # cells in order and then every solution with its inputs. It takes a few
-      # minutes for the whole site, and a page whose cells, data, runtime and
-      # packages are unchanged runs clean again, so a clean page's result is
-      # kept under a hash of exactly those things (builder/solutions.py) and
-      # what is restored here can only be used when it is still true. A pull
-      # request restores it; a push to main does not, and passes --no-cache
-      # as well, so a result that was wrong can never reach main unchecked.
+      # cells in order and then every solution with its inputs. It takes a
+      # minute and a half for the whole site, and a page whose cells, data,
+      # runtime and packages are unchanged runs clean again, so a clean page's
+      # result is kept under a hash of exactly those things
+      # (builder/solutions.py): what is restored can only be used when it is
+      # still true.
+      #
+      # A pull request can only read caches made by itself or by main, so main
+      # makes one: every push to main runs every page fresh (--refresh-cache),
+      # so nothing wrong can be remembered unchecked, and saves what was
+      # clean. A pull request then starts with all of it and runs only the
+      # pages its change reaches.
       - name: Restore what earlier runs learned about each page's solutions
         if: github.event_name == 'pull_request'
         uses: actions/cache@v4
@@ -114,8 +118,15 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             python check.py --solutions
           else
-            python check.py --solutions --no-cache
+            python check.py --solutions --refresh-cache
           fi
+
+      - name: Keep what main learned, for pull requests to start from
+        if: github.event_name != 'pull_request'
+        uses: actions/cache/save@v4
+        with:
+          path: .build-cache
+          key: solutions-${{ runner.os }}-${{ github.sha }}
 
       # Files a script writes from other files, and that something depends on:
       # the pair game's topics (one file a phone opens with no build step), the
@@ -230,7 +241,7 @@ jobs:
   # here and failing on any difference turns that into a caught mistake.
   standalone-bundle-is-current:
     needs: changes
-    if: needs.changes.outputs.runtime == 'true'
+    if: needs.changes.outputs.bundle == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -256,22 +267,30 @@ jobs:
             exit 1
           fi
 
-  # A few browser files, not the whole e2e suite (which still stays a local
-  # step, per the note at the top): the ones that prove the page's chrome
-  # and the layout, and never run a cell — the reference panel, the phone
-  # layout, link contrast, the course chooser, the remembered course, the
-  # saved-work key migration and an old address, a panel's edge-resize
-  # drag, and the topic map's names, towns and phone panel. The
-  # phone identity-row regression in #230 reached main with CI
-  # green because none of these ran here — the same
-  # reasoning added the resize-drag file after a live-sync bug
-  # shipped with nothing here to have caught it either. Pyodide is fetched
-  # once and cached: the fixture site serves it, and a page with cells
-  # boots it even when no test presses Run.
-  browser:
+  # A few browser files, not the whole e2e suite (browser-suite.yml runs that
+  # weekly): the ones that prove the page's chrome and the layout, and never
+  # run a cell: the reference panel, the phone layout, link contrast, the
+  # course chooser, the remembered course, the saved-work key migration and an
+  # old address, a panel's edge-resize drag, the topic map, and editing a page
+  # where it stands. The phone identity-row regression in #230 reached main
+  # with CI green because none of these ran here, and the resize-drag file was
+  # added after a live-sync bug shipped with nothing here to catch it either.
+  # Pyodide is fetched once and cached: the fixture site serves it, and a page
+  # with cells boots it even when no test presses Run.
+  #
+  # They run on three machines at once (dev/shard.py deals whole files out,
+  # heaviest first), each machine running its tests one at a time, since a test
+  # that measures a page is the first to fail when the machine is busy. The
+  # job named `browser` is only the sum of the three, so that what a
+  # pull request waits for has one name.
+  browser-shards:
     needs: changes
-    if: needs.changes.outputs.runtime == 'true'
+    if: needs.changes.outputs.browser == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        share: [1, 2, 3]
     steps:
       - uses: actions/checkout@v4
 
@@ -296,12 +315,25 @@ jobs:
         if: steps.pyodide.outputs.cache-hit != 'true'
         run: python3 dev/fetch_pyodide.py
 
-      - name: Run the browser tests that never run a cell
+      - name: Run share ${{ matrix.share }} of 3 of the browser tests that never run a cell
         run: |
-          python -m pytest \
+          files=$(python3 dev/shard.py 3 ${{ matrix.share }} \
             tests/e2e/test_reference_panel.py \
             tests/e2e/test_page_smoke.py \
             tests/e2e/test_multi_course_pages.py \
             tests/e2e/test_panel_resize_drag.py \
             tests/e2e/test_map.py \
-            tests/e2e/test_inpage_editor.py
+            tests/e2e/test_inpage_editor.py \
+            tests/e2e/test_inpage_editor_blocks.py)
+          echo "$files"
+          python -m pytest $files
+
+  browser:
+    needs: [changes, browser-shards]
+    if: always() && needs.changes.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: All three shares passed
+        run: |
+          echo "browser-shards: ${{ needs.browser-shards.result }}"
+          test "${{ needs.browser-shards.result }}" = "success"

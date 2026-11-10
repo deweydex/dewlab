@@ -59,7 +59,9 @@ RUNNER = Path(__file__).with_name("solution_runner.py")
 # a different key and the page runs. Only a clean pass is kept. A failure, or
 # a solution skipped for a package this Python lacks, runs every time, so
 # the cache can hide nothing a fresh run would have said. `check.py --no-cache`
-# turns it off (cfg.SOLUTION_CACHE), and CI does for a push to main.
+# turns it off (cfg.SOLUTION_CACHE), and `--refresh-cache` runs every page and
+# keeps what was clean (cfg.SOLUTION_CACHE_REUSE): a push to main does that,
+# so what it learned is checked fresh and is what pull requests start from.
 
 
 def _cache_dir() -> Path:
@@ -195,7 +197,7 @@ def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], ch
         "cells": cells,
     }
     marker = _cache_dir() / _solution_key(job) if cfg.SOLUTION_CACHE else None
-    if marker is not None and marker.is_file():
+    if marker is not None and cfg.SOLUTION_CACHE_REUSE and marker.is_file():
         return
     try:
         done = subprocess.run(
