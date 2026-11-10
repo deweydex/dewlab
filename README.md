@@ -143,8 +143,8 @@ committed; it is regenerated on every push.
 
 Downloadable copies are the slow part of a build, so
 `python3 build.py --no-standalone` skips them while you are working on
-content, and a page whose solutions ran clean last time is not run again
-(`--no-cache` runs everything). To run the tests,
+content. A build does not run the code on a page; `python3 check.py
+tutorials/my-tutorial` does, solutions included. To run the tests,
 `pip install -r requirements-dev.txt` and then `python3 -m pytest`.
 
 ---

@@ -14,10 +14,20 @@ Every line of output says one thing, in plain words:
 The program ends with 1 when there is at least one Problem, and 0 otherwise.
 It reads each page with the build's own code, so a Problem is exactly what the
 build would refuse, in its own words, and a Note is something it would carry on
-despite. It writes nothing and does not build the site: a tutorial takes a
-second or two, the whole site about half a minute. It needs what the build
-needs (pip install -r requirements-build.txt). docs/CHECK_YOUR_WORK.md
-describes it for contributors.
+despite. It also does the one thing a build does not: it runs each page's
+cells and then every solution, as a reader's browser would, and a solution
+that raises is a Problem.
+
+    python3 check.py --solutions              run solutions and check nothing else
+    python3 check.py --no-cache               run them again even if nothing changed
+
+It writes nothing and does not build the site. A tutorial takes about a
+quarter of a minute, most of it reading the site to know what the page
+inherits; the whole site takes a couple of minutes the first time and much
+less after. It needs what the build needs (pip install -r
+requirements-build.txt), and to run a solution it needs what the solution
+imports: without numpy, say, a page that uses it is noted and skipped.
+docs/CHECK_YOUR_WORK.md describes it for contributors.
 
 When there are no problems it offers to open a pull request: it commits
 and pushes the files it checked (after asking), then opens GitHub's own
@@ -429,6 +439,43 @@ def offer_pull_request(report: Report, mode: str) -> None:
             pass
 
 
+# ---------------------------------------------------------------- solutions
+#
+# A build writes pages and does not run them. This does: each page's cells in
+# order, as a reader's browser would, then every solution with its inputs.
+
+def check_solutions(report: Report, folders: set[str] | None) -> None:
+    report.note("— solutions —")
+    # The whole site is read, since a page's toolkit comes from the pages
+    # before it in its course. What that reading notes about other pages is
+    # not this check's to say, so the build's notes are left as they were.
+    noted = set(b._NOTED)
+    try:
+        site = b.read_site()
+    except b.BuildError as error:
+        if folders is None:
+            report.problem(f"I could not run the solutions, because the site does not read: {error}")
+        else:
+            where = str(error).split(":")[0]
+            report.note(f"I did not run the solutions, because the site does not read while {where} has a problem. `python3 check.py` with nothing after it says what.")
+        return
+    finally:
+        b._NOTE_LINES.clear()
+        b._NOTED.clear()
+        b._NOTED.update(noted)
+        b._COURSES_CACHE = None  # so a build after this says its course notes again
+    ran, problems = b.solutions.problems_in(site, folders)
+    for line in b._NOTE_LINES:
+        report.note(line.removeprefix("note: "))
+    b._NOTE_LINES.clear()
+    for problem in problems:
+        report.problem(problem)
+    if not ran:
+        report.ok("No solutions to run.")
+    elif not problems:
+        report.ok(f"The solutions on {ran} page{'s' if ran != 1 else ''} ran, each after the cells above it.")
+
+
 # -------------------------------------------------------------- everything
 
 def check_everything(report: Report) -> None:
@@ -465,9 +512,14 @@ def run(argv: list[str]) -> int:
         mode = "yes"
     if "--no-pr" in argv:
         mode = "no"
-    argv = [a for a in argv if a not in ("--pr", "--no-pr")]
+    only_solutions = "--solutions" in argv
+    if "--no-cache" in argv:
+        cfg.SOLUTION_CACHE = False
+    argv = [a for a in argv if a not in ("--pr", "--no-pr", "--solutions", "--no-cache")]
     if len(argv) <= 1:
-        check_everything(report)
+        if not only_solutions:
+            check_everything(report)
+        check_solutions(report, None)
         mode = "no"  # a whole-site check is not one change to send
     else:
         courses = read_courses()
@@ -477,16 +529,23 @@ def run(argv: list[str]) -> int:
             title = title_of(cfg.TUTORIALS / ident)
             if title:
                 titles[title].append(ident)
+        folders: set[str] = set()
+        quiet = Report() if only_solutions else report
         for arg in argv[1:]:
             path = (cfg.ROOT / arg).resolve() if not Path(arg).is_absolute() else Path(arg)
             if path.is_dir() and path.parent == cfg.TUTORIALS:
-                check_tutorial(path, courses, report, titles)
+                check_tutorial(path, courses, quiet, titles)
+                folders.add(path.name)
             elif path.is_file() and path.parent == cfg.COURSES and path.suffix == ".yaml":
-                check_course(path, courses, report)
+                check_course(path, courses, quiet)
             elif path.is_file() and path.parent.parent == cfg.TUTORIALS:
-                check_tutorial(path.parent, courses, report, titles)
+                check_tutorial(path.parent, courses, quiet, titles)
+                folders.add(path.parent.name)
             else:
                 report.problem(f"I do not know how to check `{arg}`. Give a tutorial folder (tutorials/name) or a course file (courses/name.yaml).")
+        report.checked = quiet.checked
+        if folders and not quiet.problems:
+            check_solutions(report, folders)
     report.show()
     print()
     if report.problems:

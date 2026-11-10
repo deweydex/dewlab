@@ -185,44 +185,45 @@ class TestMistakes:
             b.build()
 
 
-class TestTheBuildRunsEverySolution:
-    """check_solutions(): the page's cells run first, in a separate Python,
-    then tutorial_tools.compare() runs each solution with its inputs."""
+class TestEverySolutionIsRun:
+    """builder/solutions.py, which check.py and CI run and a build does not:
+    the page's cells run first, in a separate Python, then
+    tutorial_tools.compare() runs each solution with its inputs."""
 
-    def test_a_solution_that_raises_fails_the_build(self, repo):
+    def test_a_solution_that_raises_is_refused(self, repo):
         write(repo, CELL + "```solution\nraise ValueError('the page is wrong')\n```\n")
         with pytest.raises(b.BuildError, match="raised ValueError: the page is wrong"):
-            b.build()
+            b.solutions.check_site()
 
     def test_a_solution_may_use_what_earlier_cells_made(self, repo):
         data = "```python exec\nid: data\nwidths = [4879, 12104]\n```\n"
         write(repo, data + CELL + "```solution\ntotal = sum(widths)\n```\n"
                     "```inputs\ntotal\n```\n")
-        b.build()
+        b.solutions.check_site()
 
     def test_an_earlier_cell_that_fails_on_purpose_is_fine(self, repo):
         broken = "```python exec\nid: broken\n1 / 0\n```\n"
         write(repo, broken + CELL + SOLUTION + INPUTS)
-        b.build()
+        b.solutions.check_site()
 
     def test_a_page_this_python_lacks_a_package_for_is_skipped(self, repo, capsys):
         # The publish job installs only requirements-build.txt, so a setup
         # cell that imports matplotlib stops before it defines anything, and
         # the solution below it meets names that were never made. That says
-        # nothing about the solution, so the build notes it and moves on.
+        # nothing about the solution, so the check notes it and moves on.
         setup = ("```python exec\nid: setup\nimport a_package_this_python_lacks\n"
                  "def helper(values):\n    return sum(values)\n```\n")
         write(repo, setup + CELL + "```solution\ndef total_of(values):\n"
                     "    return helper(values)\n```\n```inputs\ntotal_of([1, 2])\n```\n")
-        b.build()
+        b.solutions.check_site()
         assert "a_package_this_python_lacks" in capsys.readouterr().err
 
     @staticmethod
     def runs_of_python(monkeypatch) -> list:
-        """The times the build started a Python to run a page's solutions."""
+        """The times the check started a Python to run a page's solutions."""
         started = []
-        real = b.subprocess.run
-        monkeypatch.setattr(b.subprocess, "run", lambda *a, **k: (started.append(1), real(*a, **k))[1])
+        real = b.solutions.subprocess.run
+        monkeypatch.setattr(b.solutions.subprocess, "run", lambda *a, **k: (started.append(1), real(*a, **k))[1])
         return started
 
     def test_a_page_that_ran_clean_is_not_run_again_until_something_it_depends_on_changes(self, repo, monkeypatch):
@@ -230,16 +231,16 @@ class TestTheBuildRunsEverySolution:
         # and runtime have not changed will run clean again. An edit to the solution, or to a dataset, is a new run.
         started = self.runs_of_python(monkeypatch)
         write(repo, CELL + SOLUTION + INPUTS)
-        b.build()
-        b.build()
+        b.solutions.check_site()
+        b.solutions.check_site()
         assert len(started) == 1
 
         write(repo, CELL + SOLUTION.replace("sum(values)", "sum(values) + 0") + INPUTS)
-        b.build()
+        b.solutions.check_site()
         assert len(started) == 2
 
         (repo / "data" / "numbers.csv").write_text("a\n1\n")
-        b.build()
+        b.solutions.check_site()
         assert len(started) == 3
 
     def test_a_page_that_failed_is_run_again_and_fails_again(self, repo, monkeypatch):
@@ -247,7 +248,7 @@ class TestTheBuildRunsEverySolution:
         write(repo, CELL + "```solution\nraise ValueError('the page is wrong')\n```\n")
         for _ in range(2):
             with pytest.raises(b.BuildError, match="the page is wrong"):
-                b.build()
+                b.solutions.check_site()
         assert len(started) == 2
 
     def test_a_page_skipped_for_a_missing_package_is_run_again(self, repo, monkeypatch, capsys):
@@ -256,32 +257,32 @@ class TestTheBuildRunsEverySolution:
         started = self.runs_of_python(monkeypatch)
         setup = "```python exec\nid: setup\nimport a_package_this_python_lacks\n```\n"
         write(repo, setup + CELL + SOLUTION + INPUTS)
-        b.build()
-        b.build()
+        b.solutions.check_site()
+        b.solutions.check_site()
         assert len(started) == 2
 
     def test_no_cache_runs_every_page_again(self, repo, monkeypatch):
         started = self.runs_of_python(monkeypatch)
         write(repo, CELL + SOLUTION + INPUTS)
-        b.build()
+        b.solutions.check_site()
         monkeypatch.setattr(b.cfg, "SOLUTION_CACHE", False)
-        b.build()
+        b.solutions.check_site()
         assert len(started) == 2
 
-    def test_an_input_the_solution_cannot_name_fails_the_build(self, repo):
+    def test_an_input_the_solution_cannot_name_is_refused(self, repo):
         write(repo, CELL + SOLUTION + "```inputs\ntotl_of([1])\n```\n")
         with pytest.raises(b.BuildError, match="totl_of"):
-            b.build()
+            b.solutions.check_site()
 
     def test_an_input_that_raises_on_purpose_is_an_outcome(self, repo):
         write(repo, CELL + SOLUTION + "```inputs\ntotal_of(None)   # not a list\n```\n")
-        b.build()
+        b.solutions.check_site()
 
-    def test_an_endless_cell_before_the_solution_does_not_hang_the_build(self, repo, monkeypatch):
-        monkeypatch.setattr(b, "SOLUTION_CELL_SECONDS", 1)
+    def test_an_endless_cell_before_the_solution_does_not_hang_the_check(self, repo, monkeypatch):
+        monkeypatch.setattr(b.solutions, "SOLUTION_CELL_SECONDS", 1)
         endless = "```python exec\nid: endless\nwhile True:\n    pass\n```\n"
         write(repo, endless + CELL + SOLUTION + INPUTS)
-        b.build()
+        b.solutions.check_site()
 
     def test_a_solution_that_asks_reads_the_typed_lines(self, repo):
         solution = ("```solution\ndef ask_shift():\n    while True:\n"
@@ -289,13 +290,13 @@ class TestTheBuildRunsEverySolution:
                     "        if text.isdigit():\n            return int(text)\n"
                     "print(ask_shift())\n```\n")
         write(repo, ASKING + TYPED + solution + "```inputs\nask_shift()\n```\n")
-        b.build()
+        b.solutions.check_site()
 
-    def test_a_solution_that_asks_with_nothing_typed_builds_and_says_it_was_not_checked(self, repo, capsys):
-        # The solution is not wrong; the build cannot type for it. Said, not
+    def test_a_solution_that_asks_with_nothing_typed_passes_and_says_it_was_not_checked(self, repo, capsys):
+        # The solution is not wrong; the check cannot type for it. Said, not
         # refused, and not kept as a clean pass either.
         write(repo, ASKING + "```solution\nname = input('Name: ')\n```\n")
-        b.build()
+        b.solutions.check_site()
         err = capsys.readouterr().err
         assert "calls input()" in err and "```typed block" in err
         assert not (repo / ".build-cache").exists()
@@ -304,5 +305,5 @@ class TestTheBuildRunsEverySolution:
         asks = ("```python exec\nid: asks\nshift = int(input('Shift: '))\n```\n"
                 "```typed\n7\n```\n")
         write(repo, asks + CELL + "```solution\nassert shift == 7\n```\n")
-        b.build()
+        b.solutions.check_site()
 

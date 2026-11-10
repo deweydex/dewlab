@@ -129,7 +129,7 @@ class TestSolutionsPerWorld:
                                        "```solution\nprint(len(giants))\n```\n"))
         page(repo, "# A page\n\n" + body)
         with pytest.raises(b.BuildError, match="raised NameError"):
-            b.build()
+            b.solutions.check_site()
 
     def test_each_worlds_solution_sees_the_shared_cells_and_its_own(self, repo):
         body = SHARED + (
@@ -138,4 +138,4 @@ class TestSolutionsPerWorld:
             + variant("sea-floor", "```python exec\nid: t--sea-floor\ndrops = [2]\n```\n\n"
                                    "```solution\nprint(start + sum(drops))\n```\n"))
         page(repo, "# A page\n\n" + body)
-        b.build()
+        b.solutions.check_site()

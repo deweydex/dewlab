@@ -61,6 +61,9 @@ def install(repo):
 def test_every_template_builds(repo):
     install(repo)
     b.build()
+    # A build does not run a page's code; the templates are what authors copy,
+    # so their solutions are run here too, once per world.
+    b.solutions.check_site()
     for slug in [p.stem for p in pages()]:
         page = repo / "site" / "tutorials" / f"{slug}.html"
         assert page.is_file(), slug

@@ -53,7 +53,7 @@ def test_a_build_with_nothing_to_say_prints_only_its_summary(repo, run):
 
 
 def test_a_failing_build_still_shows_the_notes_before_the_failure(repo, run):
-    write(repo, A_NOTE + "```solution\nraise ValueError('the page is wrong')\n```\n")
+    write(repo, A_NOTE + "\nSee [another page](tutorial:a-page-that-is-not-there).\n")
     code, out, err = run()
     assert code == 1
     assert err.index("has a term I cannot read") < err.index("build failed")

@@ -8,6 +8,7 @@ Markdown in, a static site out. `README.md` has the full picture,
 ```bash
 pip install -r requirements-dev.txt     # first time only
 python3 build.py --clean                # writes site/ from scratch
+python3 check.py tutorials/<id>         # checks one tutorial and runs its solutions
 python3 -m pytest                       # unit + browser tests
 python3 -m pytest --ignore=tests/e2e -n auto   # unit tests on every core (pytest-xdist)
 ```

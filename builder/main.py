@@ -36,7 +36,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import threading
 import tokenize
@@ -4797,310 +4796,6 @@ def check_folds(tutorial: Tutorial) -> None:
                   f"project's look")
 
 
-# The build runs every solution before a reader can see it (#312), in a
-# separate Python so a page's code never runs inside the build itself.
-# Each cell gets SOLUTION_CELL_SECONDS where the platform can enforce it
-# (a deliberate endless loop on a page about the Stop button is a cell
-# that fails, not a build that hangs); the whole page gets the rest.
-# The runtime module the runner imports: always the build's own copy, since
-# it is part of the build rather than of the content being built.
-RUNTIME_TOOLS = REPO / "assets"
-SOLUTION_CELL_SECONDS = 20
-SOLUTION_PAGE_SECONDS = 180
-SOLUTION_RUNNER = r"""
-import asyncio, json, os, signal, sys
-os.environ["MPLBACKEND"] = "Agg"
-job = json.load(sys.stdin)
-sys.path.insert(0, job["assets"])
-import tutorial_tools as tt
-
-tt._page_globals.update({name: getattr(tt, name) for name in tt.__all__})
-tt._page_globals["__name__"] = "__dewlab__"
-
-
-def local(name):
-    if name.startswith(("http://", "https://")):
-        if name not in job["addresses"]:
-            raise ConnectionError(f"the build does not fetch {name}")
-        name = job["addresses"][name]
-    return os.path.join(job["data"], name)
-
-
-async def load_csv(name, **kwargs):
-    import pandas
-    return pandas.read_csv(local(name), **kwargs)
-
-
-async def load_text(name):
-    with open(local(name), encoding="utf-8") as handle:
-        return handle.read()
-
-
-tt._page_globals["load_csv"] = load_csv
-tt._page_globals["load_text"] = load_text
-if job["sqlite"]:
-    import sqlite3
-    tt._page_globals["db"] = sqlite3.connect(":memory:")
-
-
-class Slow(Exception):
-    pass
-
-
-def alarm(signum, frame):
-    raise Slow()
-
-
-timed = hasattr(signal, "SIGALRM")
-if timed:
-    signal.signal(signal.SIGALRM, alarm)
-
-
-missing = None  # the first package a cell asked for and this Python lacks
-
-
-async def run(code, name, typed=None):
-    global missing
-    tt._begin(name, tt._RecordingSink(), code, typed=typed)
-    if timed:
-        signal.alarm(job["seconds"])
-    try:
-        await tt._run_code(code, tt._page_globals, name)
-    except ModuleNotFoundError as exc:
-        # The cell stopped at its import, so whatever it would have made
-        # after that is missing for every solution below it.
-        missing = missing or f"{type(exc).__name__}: {exc}"
-    except BaseException:
-        pass  # a cell that fails as written is the page's own business
-    finally:
-        if timed:
-            signal.alarm(0)
-        tt._end(None)
-
-
-async def main():
-    for code in job["toolkit"]:
-        await run(code, "toolkit")
-    report = []
-    for cell in job["cells"]:
-        await run(cell["code"], cell["id"], cell.get("typed"))
-        if "solution" in cell:
-            if timed:
-                signal.alarm(job["seconds"])
-            typed = json.dumps(cell["typed"]) if cell.get("typed") else None
-            try:
-                result = json.loads(await tt.compare(
-                    cell["solution"], json.dumps(cell["inputs"]), None, typed))
-            except Slow:
-                result = {"solutionError": "the solution did not finish", "rows": []}
-            finally:
-                if timed:
-                    signal.alarm(0)
-            if missing:
-                result["missingModule"] = missing
-            report.append({"cell": cell["id"], "result": result})
-    sys.__stdout__.write(json.dumps(report))
-
-
-asyncio.run(main())
-"""
-
-
-# A page whose solutions all ran clean last time, with the same cells, the
-# same toolkit, the same data, the same runtime and the same packages, will
-# run clean again, and running them is three quarters of a build. The key is
-# a hash of exactly those things, so there is nothing to invalidate by hand:
-# an edit to a cell, a dataset, tutorial_tools.py or an installed package is
-# a different key and the page runs. Only a clean pass is kept. A failure, or
-# a solution skipped for a package this Python lacks, runs every time, so
-# the cache can hide nothing the build would have said. `--no-cache` turns it
-# off (cfg.SOLUTION_CACHE), and CI does for a push to main.
-
-
-def _cache_dir() -> Path:
-    return Path(os.environ.get("DEWLAB_BUILD_CACHE") or cfg.ROOT / ".build-cache") / "solutions"
-
-
-@functools.lru_cache(maxsize=None)
-def _tree_fingerprint(root: Path) -> str:
-    """A hash of every file under `root`, by relative path and content."""
-    digest = hashlib.sha256()
-    for path in sorted(p for p in root.rglob("*") if p.is_file()):
-        digest.update(str(path.relative_to(root)).encode())
-        digest.update(path.read_bytes())
-    return digest.hexdigest()
-
-
-@functools.lru_cache(maxsize=None)
-def _environment_fingerprint() -> str:
-    """The Python and every installed package, by version."""
-    from importlib import metadata
-    installed = sorted({(d.metadata["Name"] or "").lower(): d.version
-                        for d in metadata.distributions()}.items())
-    return f"{sys.version}\n{installed}"
-
-
-def _solution_key(job: dict) -> str:
-    """What a page's solution check depends on, as one hash. The job's two
-    absolute paths are left out so a checkout elsewhere has the same key."""
-    stable = {name: value for name, value in job.items() if name not in ("assets", "data")}
-    digest = hashlib.sha256()
-    for part in (json.dumps(stable, sort_keys=True), SOLUTION_RUNNER,
-                 (RUNTIME_TOOLS / "tutorial_tools.py").read_text(),
-                 _tree_fingerprint(cfg.DATA) if cfg.DATA.is_dir() else "",
-                 _environment_fingerprint()):
-        digest.update(part.encode())
-        digest.update(b"\0")
-    return digest.hexdigest()
-
-
-def check_solutions(tutorial: Tutorial, toolkit: list[dict]) -> None:
-    """Run every solution on the page, with its inputs, before a reader can
-    open it (#312).
-
-    The page's own Python cells run first, in order, as a reader's would
-    (the toolkit before them, as the page loads it), in a separate Python
-    process with the runtime's own `tutorial_tools`. A cell that fails as
-    written is fine: plenty fail on purpose, or wait for the reader. Then
-    `tutorial_tools.compare()`, the function the comparison button calls,
-    runs each solution. A solution that raises fails the build, and so
-    does an input the solution side cannot even name (a NameError or
-    SyntaxError there is a typo in the page, not an outcome worth showing).
-    Any other error an input raises is an outcome, and the table shows it.
-
-    A Python without a package the page imports (a contributor's machine
-    without pandas, say, or the publish job, which installs only
-    requirements-build.txt) is noted and skipped, not failed: that says
-    nothing about the solution. That holds when the import is in a cell
-    above the solution, too: once a cell stops at a missing package,
-    every solution below it is noted and skipped, since the names that
-    cell would have made are missing as well.
-
-    A page with world variants (#315) runs once per world, with the cells
-    a reader in that world would run: every cell outside a variant, and
-    that world's variants. Each world's solutions are checked in its own
-    run, and the solutions outside every variant in the first."""
-    worlds = list(dict.fromkeys(cell.world for cell in tutorial.cells if cell.world))
-    for position, world in enumerate(worlds or [None]):
-        seen = [cell for cell in tutorial.cells if cell.world in (None, world)]
-
-        def checked(cell: Cell) -> bool:
-            return bool(cell.solutions) and (
-                cell.world == world or (cell.world is None and position == 0))
-
-        last = max((i for i, cell in enumerate(seen) if checked(cell)), default=None)
-        if last is not None:
-            _run_solutions(tutorial, toolkit, seen[: last + 1], checked)
-
-
-def check_every_solution(tutorials: list[Tutorial], toolkits: list[list[dict]]) -> None:
-    """check_solutions() for every page, several pages at once.
-
-    Each page's check is a Python process of its own, so the build spends
-    that time waiting rather than working, and on a whole site it was most
-    of the build. Pages run side by side on threads, one per core; each
-    thread only starts a process and waits for it. Every page finishes
-    before anything is reported, and the failure reported is the first in
-    page order, the same one a build checking one page at a time would stop
-    on. Notes about a skipped solution may print in a different order.
-    """
-    workers = min(len(tutorials), os.cpu_count() or 1)
-    if workers <= 1:
-        for tutorial, toolkit in zip(tutorials, toolkits):
-            check_solutions(tutorial, toolkit)
-        return
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-        running = [pool.submit(check_solutions, tutorial, toolkit)
-                   for tutorial, toolkit in zip(tutorials, toolkits)]
-    for page in running:
-        page.result()
-
-
-def _run_solutions(tutorial: Tutorial, toolkit: list[dict], seen: list[Cell], checked) -> None:
-    """One separate Python for check_solutions(): the cells in `seen`, in
-    order, each followed by its solutions where `checked(cell)` says so."""
-    cells = []
-    for cell in seen:
-        if cell.type != "python":
-            continue
-        cells.append({"id": cell.id, "code": cell.code}
-                     | ({"typed": cell.typed} if cell.typed else {}))
-        if not checked(cell):
-            continue
-        cases = [{"expr": case.expr, "label": case.label}
-                 for case in (cell.inputs.cases if cell.inputs else [])]
-        # Every solution, not only the first one the comparison uses. Each
-        # runs in its own copy of the namespace the cell above left.
-        for solution in cell.solutions:
-            cells.append({"id": cell.id, "code": "", "solution": solution.code,
-                          "inputs": cases}
-                         | ({"typed": cell.typed} if cell.typed else {}))
-    job = {
-        "assets": str(RUNTIME_TOOLS), "data": str(cfg.DATA), "sqlite": tutorial.has_sql,
-        # A web address data/ keeps a copy of runs against that copy, as a
-        # page offline would (#324).
-        "addresses": {entry["live"]["url"]: file_name
-                      for file_name, entry in data_index().items() if entry.get("address")},
-        "seconds": SOLUTION_CELL_SECONDS,
-        "toolkit": [entry["reference"] for entry in toolkit],
-        "cells": cells,
-    }
-    marker = _cache_dir() / _solution_key(job) if cfg.SOLUTION_CACHE else None
-    if marker is not None and marker.is_file():
-        return
-    try:
-        done = subprocess.run(
-            [sys.executable, "-c", SOLUTION_RUNNER], input=json.dumps(job),
-            capture_output=True, text=True, timeout=SOLUTION_PAGE_SECONDS, cwd=cfg.ROOT,
-        )
-    except subprocess.TimeoutExpired:
-        fail(tutorial.path, f"the build ran this page's cells to check its solutions, "
-                            f"and they did not finish in {SOLUTION_PAGE_SECONDS} seconds")
-    if done.returncode != 0:
-        fail(tutorial.path, "the build could not run this page's solutions:\n"
-                            + done.stderr.strip()[-2000:])
-    clean = True  # nothing skipped: only then is the result worth keeping
-    for entry in json.loads(done.stdout or "[]"):
-        result, cell = entry["result"], entry["cell"]
-        problem = result.get("solutionError")
-        if problem and problem.startswith("ModuleNotFoundError"):
-            say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(cfg.ROOT)}: {problem}")
-            clean = False
-            continue
-        if result.get("missingModule"):
-            # A cell above it stopped at an import, so the names it would
-            # have made are missing too, and a NameError here would blame
-            # the solution for this Python's missing package.
-            say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(cfg.ROOT)}: an earlier cell raised "
-                  f"{result['missingModule']}")
-            clean = False
-            continue
-        if problem and problem.startswith("EOFError"):
-            # The solution is not wrong; the build cannot type for it. Nothing
-            # was checked, so nothing is kept.
-            say(f"note: could not check the solution for cell {cell!r} in "
-                  f"{tutorial.path.relative_to(cfg.ROOT)}: it calls input() and nobody can type "
-                  "in the build. Give the cell a ```typed block with enough lines to check it")
-            clean = False
-            continue
-        if problem:
-            fail(tutorial.path, f"the solution for cell {cell!r} raised {problem} when the "
-                                "build ran it after the page's earlier cells")
-        for row in result.get("rows", []):
-            error = row.get("solution", {}).get("error", "")
-            if error.startswith(("NameError", "SyntaxError")):
-                fail(tutorial.path, f"the input `{row['input']}` for cell {cell!r} gives "
-                                    f"{error} with the solution — is it spelled as the "
-                                    "page spells it?")
-    if clean and marker is not None:
-        marker.parent.mkdir(parents=True, exist_ok=True)
-        temporary = marker.with_suffix(f".{os.getpid()}.{threading.get_ident()}")
-        temporary.write_text(tutorial.slug)
-        temporary.replace(marker)
-
-
 DATASET_FIELDS = ("source", "url", "license", "snapshot", "trimmed", "description")
 DATASET_EXTENSIONS = (".csv", ".txt")
 # The steps a `recipe:` may give, which tutorial_tools.shape_live() runs in
@@ -6817,16 +6512,22 @@ def load_all() -> list[Tutorial]:
     return everything
 
 
-def build(clean: bool = False, standalone: bool = False) -> list[Path]:
-    """Build the site. `standalone` also writes the downloadable single files,
-    which need the real assets on disk and are the slow part of a build."""
-    if not cfg.SHELL.is_file():
-        raise BuildError(f"no shell template at {cfg.SHELL.relative_to(cfg.ROOT)}")
-    if clean and cfg.OUT.exists():
-        shutil.rmtree(cfg.OUT)
+@dataclass
+class Site:
+    """Every page, read and put in its place: what a build writes from, and
+    what builder/solutions.py runs."""
+    tutorials: list[Tutorial]          # every page that is not a draft, frozen releases included
+    registry: dict[str, Tutorial]      # the current release of each, by id
+    catalog: dict[str, "Course"]
+    context: dict[str, list[Tutorial]]
+    practice: dict[str, list[Tutorial]]
+    mixed: object
+    groups: dict[tuple[str, str], list[Tutorial]]
 
-    _NOTED.clear()  # once per build; a test builds many sites in one process
-    _NOTE_LINES.clear()
+
+def read_site() -> Site:
+    """Read every page and the courses, and work out where each page sits.
+    Refuses what load() and the placing rules refuse; writes nothing."""
     everything = load_all()
     tutorials = versions_of([t for t in everything if t.status != "draft"])
     # Every file in data/ traced to its source, before any page uses one.
@@ -6835,16 +6536,12 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     read_dataset.cache_clear()
     data_index.cache_clear()
     _origin_anchor.cache_clear()
-    _tree_fingerprint.cache_clear()
+    solutions._tree_fingerprint.cache_clear()
     _relative_href.cache_clear()
     _GLOSSARIES.clear()
     data_index()
 
     registry: dict[str, Tutorial] = {t.slug: t for t in tutorials if t.is_default}
-
-    families: dict[str, list[Tutorial]] = {}
-    for tutorial in tutorials:
-        families.setdefault(tutorial.slug, []).append(tutorial)
 
     catalog = courses()
     place_tutorials(tutorials, registry)
@@ -6855,9 +6552,28 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
     for tutorial in tutorials:
         if not tutorial.is_default and tutorial.slug in registry:
             tutorial.placements = list(registry[tutorial.slug].placements)
+    return Site(tutorials, registry, catalog, context, practice, mixed, series_of(tutorials))
+
+
+def build(clean: bool = False, standalone: bool = False) -> list[Path]:
+    """Build the site. `standalone` also writes the downloadable single files,
+    which need the real assets on disk and are the slow part of a build."""
+    if not cfg.SHELL.is_file():
+        raise BuildError(f"no shell template at {cfg.SHELL.relative_to(cfg.ROOT)}")
+    if clean and cfg.OUT.exists():
+        shutil.rmtree(cfg.OUT)
+
+    _NOTED.clear()  # once per build; a test builds many sites in one process
+    _NOTE_LINES.clear()
+    site = read_site()
+    tutorials, registry, catalog = site.tutorials, site.registry, site.catalog
+    context, practice, mixed, groups = site.context, site.practice, site.mixed, site.groups
+
+    families: dict[str, list[Tutorial]] = {}
+    for tutorial in tutorials:
+        families.setdefault(tutorial.slug, []).append(tutorial)
 
     shell = cfg.SHELL.read_text()
-    groups = series_of(tutorials)
     retired = archived_of(tutorials)
     warn_about_titles_and_overlap(tutorials)
     for tutorial in tutorials:
@@ -6870,7 +6586,6 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
         check_alt_text(tutorial)
         check_folds(tutorial)
     toolkits = [toolkit_for(tutorial, registry, groups) for tutorial in tutorials]
-    check_every_solution(tutorials, toolkits)
     written: list[Path] = []
     for tutorial, toolkit in zip(tutorials, toolkits):
         # An archived tutorial belongs to no reading order, so there is no
@@ -7047,12 +6762,6 @@ def main() -> int:
              "(by default there is one summary line, then the notes together)",
     )
     parser.add_argument(
-        "--no-cache",
-        action="store_true",
-        help="run every page's solutions, even one that ran clean last time with "
-             "nothing changed (.build-cache/ holds what was kept)",
-    )
-    parser.add_argument(
         "--no-source-map",
         action="store_true",
         help="leave out the markdown range each block of a page carries (what "
@@ -7060,7 +6769,6 @@ def main() -> int:
     )
     args = parser.parse_args()
     cfg.SOURCE_MAP = not args.no_source_map
-    cfg.SOLUTION_CACHE = not args.no_cache
     cfg.NOTES_AT_END = not args.verbose
     try:
         written = build(clean=args.clean, standalone=not args.no_standalone)
@@ -7092,16 +6800,17 @@ def print_notes() -> None:
         print("  " + line.removeprefix("note: "), file=sys.stderr)
 
 
-# The tree, the map, Browse by topic and the indexes (finding.py), and what a
-# reader can download (downloads.py). Imported last because those modules
+# The tree, the map, Browse by topic and the indexes (finding.py), what a
+# reader can download (downloads.py), and running a page's solutions
+# (solutions.py, which a build does not call). Imported last because those modules
 # take their helpers from this one. A name this
 # module no longer has is looked for there, so `build.load_topics()` and the
 # like still work for the scripts and tests that call them.
-from builder import downloads, finding  # noqa: E402
+from builder import downloads, finding, solutions  # noqa: E402
 
 
 def __getattr__(name: str):
-    for module in (finding, downloads):
+    for module in (finding, downloads, solutions):
         if hasattr(module, name):
             return getattr(module, name)
     raise AttributeError(f"module 'build' has no attribute {name!r}")

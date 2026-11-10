@@ -37,6 +37,7 @@ package beside it:
 | `builder/main.py` | Most of the build: reading a page, rendering its blocks, courses and navigation, checks, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
 | `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
 | `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. |
+| `builder/solutions.py`, `builder/solution_runner.py` | Running every solution on a page, the way a reader's browser would. Not part of a build: `check.py` and CI call it. |
 | `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
 
 `import build` gives you `builder.main` itself, so scripts and tests can go on
@@ -309,11 +310,12 @@ code. `build.py` renders a ```` ```solution ```` fence as a closed
 `tests:` cell in the manifest. A button under the table runs the cell, then
 `tutorial_tools.compare()`, which evaluates each input against copies of the
 page namespace, the solution's copy having run the solution first; the page
-fills the table and marks rows that differ, without a verdict. Before
-writing any page, `check_solutions()` runs each page's cells and every
-solution in a separate Python, through that same `compare()`, and stops the
-build if a solution raises; `check_every_solution()` runs several pages'
-checks at once, one per core, and reports the first failure in page order. Nobody can type in either, so a cell whose code calls
+fills the table and marks rows that differ, without a verdict. A build
+does not run any of this. `python3 check.py` and CI do (`builder/solutions.py`):
+`check_solutions()` runs each page's cells and every solution in a separate
+Python (`builder/solution_runner.py`), through that same `compare()`, and a
+solution that raises is a Problem; `every_problem()` runs several pages'
+checks at once, one per core, and reports every page that failed. Nobody can type in either, so a cell whose code calls
 `input()` can carry a ```` ```typed ```` fence: the lines `input()` reads
 there, in order.
 

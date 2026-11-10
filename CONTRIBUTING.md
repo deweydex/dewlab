@@ -33,17 +33,23 @@ push, which is what keeps a published page from drifting from the markdown it
 came from. `requirements-dev.txt` is the build's three packages plus what
 the tests need; `requirements-build.txt` alone is enough to build and preview.
 
-Two things make a build slow. The downloadable single-file copies: 
+The downloadable single-file copies are the slow part of a build:
 `python3 build.py --no-standalone` skips them while you are iterating, and a
 pull request's CI build leaves them out too, since the code that writes them is
 tested on small sites. A push to `main` and the publish job build them in full,
 so a failure only the download path has shows there, not in your pull request.
-And running every page's solutions, three quarters of a build: a page whose
-cells, toolkit, data, runtime and installed packages are unchanged ran clean
-last time and is not run again. What was kept is in `.build-cache/` (never
-committed), under a hash of exactly those things, so there is nothing to clear
-by hand; a failure, or a solution skipped for a missing package, is never kept.
-`python3 build.py --no-cache` runs everything, and a push to `main` does.
+
+A build writes pages and does not run them. `python3 check.py` does: each
+page's cells in order, then every solution with its inputs, as a reader's
+browser would. `python3 check.py tutorials/my-tutorial` runs one tutorial's;
+`python3 check.py --solutions` runs every page's and nothing else, which is
+what CI does. The whole site takes a couple of minutes the first time. After
+that a page whose cells, toolkit, data, runtime and installed packages are
+unchanged ran clean last time and is not run again. What was kept is in
+`.build-cache/` (never committed), under a hash of exactly those things, so
+there is nothing to clear by hand; a failure, or a solution skipped for a
+missing package, is never kept. `--no-cache` runs everything, and a push to
+`main` does.
 
 A build prints one summary line, then every note it has for you together,
 last, where you will see them. `python3 build.py -v` prints a line for each
@@ -113,7 +119,8 @@ one goes.
 
 Two workflows run on a push: `tests` and `publish`.
 
-`tests` runs the unit suite, builds the site, and runs `python3
+`tests` runs the unit suite, builds the site, runs every page's solutions
+(`python3 check.py --solutions`), and runs `python3
 dev/generated.py`, which fails if a generated file something depends on is out
 of date (the pair game's topics, the topic editor's graph, the pair reports)
 or cannot be made (a `covers:` code that no outcome has). Its `house-style` job

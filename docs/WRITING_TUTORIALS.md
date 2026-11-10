@@ -441,11 +441,13 @@ to read. A cell may have
 more than one solution, shown in order, and the comparison uses the first.
 Only a Python cell can have one.
 
-The build runs every solution before a reader can open it. In a separate
-Python, it runs the page's own cells in order (a cell that fails as
+Every solution is run before a reader can open it: by `python3 check.py`
+when you check your page, and again by the tests on your pull request. (A
+build only writes the page; it does not run it.) In a separate
+Python, the check runs the page's own cells in order (a cell that fails as
 written is fine), then each solution with the cell's inputs, through the
-same function the button calls. A solution that raises an error stops the
-build, and so does an input the solution side cannot even name: a
+same function the button calls. A solution that raises an error is a
+Problem, and so is an input the solution side cannot even name: a
 `NameError` or `SyntaxError` there is a typo in the page. Any other error an
 input raises is an outcome, and the table shows it. A machine without a
 package the page imports (pandas, say) gets a note, not a failure, and so
@@ -453,7 +455,7 @@ does every solution below a cell that stopped at that import: the publish
 job installs only `requirements-build.txt`, so a page that draws with
 matplotlib is checked by the test job, not by the publish job. Each cell
 gets 20 seconds, so a deliberate endless loop earlier on the page is a cell
-that fails, not a build that hangs.
+that fails, not a check that hangs.
 
 ### inputs
 
@@ -477,7 +479,7 @@ running it.
 ### typed
 
 The lines `input()` reads where nobody can type: in the comparison, and
-when the build runs the page's cells and solutions. One line for each time
+when `check.py` runs the page's cells and solutions. One line for each time
 the code calls `input()`, written exactly as a person would type it,
 spaces included. A blank line between two others is an empty line typed.
 
