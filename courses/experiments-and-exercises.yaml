@@ -3,7 +3,8 @@ code: Experimental
 status: beta
 card: >-
   Small questions, little text. You run a cell, change one thing, and see what
-  breaks. Lists, loops and comprehensions come first.
+  breaks. Variables, types, input and decisions come first, then lists,
+  loops and comprehensions.
 description: >-
   This module tries something different from the other courses. Each page is a
   long run of small questions, with very little explanation in between. You
@@ -12,17 +13,30 @@ description: >-
   syntax is for.
 
 
-  The first series is Lists, loops and comprehensions. It uses only what a
-  first programming class has covered: types, variables, if statements,
-  `input` and `print`. It does not use functions that you write yourself.
-  Patterns and puzzles are mixed in with the questions, because some things
-  are easier to learn when you are trying to solve something.
+  The first series is Variables, types, input and decisions. It starts from
+  the first things a program does: it keeps values in variables, does
+  arithmetic, prints, asks for input and chooses a path with `if`. A few
+  short notes appear where an idea is hard to find by experiment alone.
+
+
+  The second series is Lists, loops and comprehensions. It uses only what the
+  first series covers, and it does not use functions that you write yourself.
+  Patterns and puzzles are mixed in with the questions in both series,
+  because some things are easier to learn when you are trying to solve
+  something.
 
 
   This module is experimental. It breaks some of the rules the other pages
   follow on purpose, to see whether less text and smaller steps help. Tell us
   what works for you and what does not.
 contents:
+- title: Variables, types, input and decisions
+  tutorials:
+  - experiments-with-variables
+  - experiments-with-types
+  - experiments-with-arithmetic
+  - experiments-with-print-and-input
+  - experiments-with-if-statements
 - title: Lists, loops and comprehensions
   tutorials:
   - experiments-with-lists
