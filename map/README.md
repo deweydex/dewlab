@@ -21,10 +21,10 @@ so it is written to help a student choose a path. It has three ways in:
   teaches in the order it teaches them. The order comes from the course file, not
   from `graph.json`.
 - **Places to begin.** The topics that are taught and need nothing first, by country.
-- **Browse by country.** Every country, with how many topics it has, what to begin
+- **Browse by country.** Every country, in the colour it has on the map, with how many topics it has, what to begin
   with, which countries it uses topics from and which use its topics.
 
-Each topic then names the pages that teach it, once each and in the order the
+A topic that needs nothing first carries a "Begin here" badge. Each topic then names the pages that teach it, once each and in the order the
 steps are written, with the sections it uses as parts. Steps with another role
 (`closer-look`, `context`, `applies`) follow under their own label. A topic says
 what it needs first, what it leads to (a list of more than four folds), and which

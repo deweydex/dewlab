@@ -97,6 +97,9 @@ class TestThePage:
         begin = re.search(r"<h3>Places to begin</h3>.*?<h3>Browse by country</h3>", page, re.S).group(0)
         assert 'href="#topic-t-asking"' in begin
         assert 'href="#topic-t-predict"' not in begin
+        # a country wears its colour from the map, and a topic that needs nothing says so
+        assert 'class="dl-tmap-swatch"' in page and "var(--map-land-s)" in page
+        assert '<span class="dl-tmap-list-begin">Begin here</span>' in page
         # a country says how big it is, and a long list of onward topics folds
         assert re.search(r'id="country-[a-z-]+"><summary>.*?\d+ topics?', page)
 

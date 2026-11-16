@@ -750,6 +750,14 @@ MAP_LEADS_SHOWN = 4
 MAP_ROLE_LABELS = {"closer-look": "A closer look", "context": "Background", "applies": "Put to work"}
 
 
+def map_swatch(region: dict) -> str:
+    """The country's colour on the map, so the list and the picture match."""
+    if "hue" not in region:
+        return ""
+    return ('<span class="dl-tmap-swatch" aria-hidden="true" style="background:hsl('
+            f'{int(region["hue"])} var(--map-land-s) var(--map-land-l))"></span>')
+
+
 def map_step_groups(steps: list[dict]) -> list[dict]:
     """A topic's steps with one entry for each page and role.
 
@@ -824,7 +832,7 @@ def map_list_html(data: dict) -> str:
             size = f'{len(members)} topic{"" if len(members) == 1 else "s"}'
             size += f", {planned} still to be written" if planned else ""
             out.append(f'<details class="dl-tmap-list-country" id="country-{esc(region["id"])}">'
-                       f'<summary>{esc(rtitle)} <span class="dl-tmap-list-parts">{size}</span></summary>')
+                       f'<summary>{map_swatch(region)}{esc(rtitle)} <span class="dl-tmap-list-parts">{size}</span></summary>')
             if region["blurb"]:
                 out.append(f'<p class="dl-tmap-list-blurb">{esc(region["blurb"])}</p>')
             begin = [t["code"] for t in members if not t["needs"] and t["state"] == "taught"]
@@ -842,7 +850,9 @@ def map_list_html(data: dict) -> str:
                     groups = map_step_groups(town["steps"])
                     pages = [g for g in groups if g["role"] == "teaches"]
                     note = "" if pages else " <em>(page still to be written)</em>"
-                    item = [f'<li id="topic-{esc(town["code"])}"><strong>{esc(town["name"])}</strong>{note}',
+                    badge = ('<span class="dl-tmap-list-begin">Begin here</span>'
+                             if not town["needs"] and pages else "")
+                    item = [f'<li id="topic-{esc(town["code"])}"><strong>{esc(town["name"])}</strong>{badge}{note}',
                             f'<br>{esc(town["plain"])}']
                     if pages:
                         item.append('<ol class="dl-tmap-list-pages">' + "".join(
