@@ -746,33 +746,96 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
     }
 
 
+MAP_ROLE_LABELS = {"closer-look": "A closer look", "context": "Background", "applies": "Put to work"}
+
+
+def map_step_groups(steps: list[dict]) -> list[dict]:
+    """A topic's steps with one entry for each page and role.
+
+    A page may teach a topic in several sections, and a list that links the page
+    once for each section repeats itself. Here the page is linked once, at the top,
+    and its sections come after it as parts. Groups stay in the order the map gives.
+    """
+    groups: dict[tuple[str, str], dict] = {}
+    for step in steps:
+        key = (step["slug"], step["role"])
+        group = groups.setdefault(key, {
+            "title": step["title"], "role": key[1],
+            "href": step["href"].split("#", 1)[0], "parts": [], "courses": []})
+        if step["section"] and all(part[0] != step["section"] for part in group["parts"]):
+            group["parts"].append((step["section"], step["href"]))
+        group["courses"].extend(c for c in step["courses"] if c not in group["courses"])
+    return list(groups.values())
+
+
 def map_list_html(data: dict) -> str:
     """Every topic as a nested list: continents, countries, districts, topics.
-    It is the map for a reader with no script, a screen reader or a keyboard,
-    and it names every page a topic teaches."""
+    It is the map for a reader with no script, a screen reader or a keyboard.
+    Each topic names the pages that teach it, once each and in reading order, the
+    topics to know first, the topics it leads to, and the courses that use it."""
+    esc = html.escape
     by_district: dict[str, list[dict]] = {}
+    leads_to: dict[str, list[dict]] = {}
+    name_of = {town["code"]: town["name"] for town in data["towns"]}
     for town in data["towns"]:
         by_district.setdefault(town["district"], []).append(town)
+        for need in town["needs"]:
+            leads_to.setdefault(need, []).append(town)
+
+    def topic_links(codes: list[str]) -> str:
+        return " · ".join(f'<a href="#topic-{esc(code, quote=True)}">{esc(name_of[code])}</a>' for code in codes)
+
+    def parts_html(group: dict) -> str:
+        if not group["parts"]:
+            return ""
+        label = "Part" if len(group["parts"]) == 1 else "Parts"
+        links = " · ".join(f'<a href="{esc(href, quote=True)}">{esc(name)}</a>' for name, href in group["parts"])
+        return f' <span class="dl-tmap-list-parts">{label}: {links}</span>'
+
     out = []
     for continent in data["continents"]:
         title = continent["fancy"] or continent["name"]
         if continent["fancy"] and continent["name"]:
             title = f"{continent['fancy']} ({continent['name']})"
-        out.append(f'<h3>{html.escape(title)}</h3>')
+        out.append(f'<h3>{esc(title)}</h3>')
         for region in (r for r in data["regions"] if r["continent"] == continent["id"]):
             rtitle = f"{region['fancy']} ({region['name']})" if region["fancy"] else region["name"]
-            out.append(f'<details class="dl-tmap-list-country"><summary>{html.escape(rtitle)}</summary>')
+            out.append(f'<details class="dl-tmap-list-country"><summary>{esc(rtitle)}</summary>')
+            if region["blurb"]:
+                out.append(f'<p class="dl-tmap-list-blurb">{esc(region["blurb"])}</p>')
             for district in (d for d in data["districts"] if d["region"] == region["id"]):
-                out.append(f'<h4>{html.escape(district["name"])}</h4><ul>')
+                out.append(f'<h4>{esc(district["name"])}</h4>')
+                if district["blurb"]:
+                    out.append(f'<p class="dl-tmap-list-blurb">{esc(district["blurb"])}</p>')
+                out.append("<ul>")
                 for town in by_district.get(district["id"], []):
-                    pages = [s for s in town["steps"] if s["role"] == "teaches"]
-                    links = "".join(
-                        f'<li><a href="{html.escape(s["href"], quote=True)}">{html.escape(s["title"])}</a></li>'
-                        for s in pages)
+                    groups = map_step_groups(town["steps"])
+                    pages = [g for g in groups if g["role"] == "teaches"]
                     note = "" if pages else " <em>(page still to be written)</em>"
-                    out.append(f'<li id="topic-{html.escape(town["code"])}"><strong>{html.escape(town["name"])}</strong>{note}'
-                               f'<br>{html.escape(town["plain"])}'
-                               + (f"<ul>{links}</ul>" if links else "") + "</li>")
+                    item = [f'<li id="topic-{esc(town["code"])}"><strong>{esc(town["name"])}</strong>{note}',
+                            f'<br>{esc(town["plain"])}']
+                    if pages:
+                        item.append('<ol class="dl-tmap-list-pages">' + "".join(
+                            f'<li><a href="{esc(g["href"], quote=True)}">{esc(g["title"])}</a>{parts_html(g)}</li>'
+                            for g in pages) + "</ol>")
+                    for role, label in MAP_ROLE_LABELS.items():
+                        side = [g for g in groups if g["role"] == role]
+                        if side:
+                            item.append(f'<p class="dl-tmap-list-path">{label}: ' + " · ".join(
+                                f'<a href="{esc(g["href"], quote=True)}">{esc(g["title"])}</a>{parts_html(g)}'
+                                for g in side) + "</p>")
+                    needs = (f"Needs first: {topic_links(town['needs'])}" if town["needs"]
+                             else "Needs first: nothing, so you can start here.")
+                    item.append(f'<p class="dl-tmap-list-path">{needs}</p>')
+                    kids = leads_to.get(town["code"], [])
+                    if kids:
+                        item.append('<p class="dl-tmap-list-path">Leads to: '
+                                    + topic_links([k["code"] for k in kids]) + "</p>")
+                    courses = [c for g in groups for c in g["courses"]]
+                    courses = [c for i, c in enumerate(courses) if c not in courses[:i]]
+                    if courses:
+                        item.append(f'<p class="dl-tmap-list-path">Used on: {esc(" · ".join(courses))}</p>')
+                    out.append("".join(item) + "</li>")
                 out.append("</ul>")
             out.append("</details>")
     return "".join(out)

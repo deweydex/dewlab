@@ -11,6 +11,16 @@ The build reads both files and the tutorials. A page's title, its section
 headings and the courses it is on come from the tutorial, not from here, so a
 renamed page cannot leave a wrong name on the map.
 
+## The list under the map
+
+`map.html` also writes every topic as a list, for a reader with no script, a
+screen reader or a keyboard. Each topic names the pages that teach it, once
+each and in the order the steps are written, with the sections it uses as
+parts. Steps with another role (`closer-look`, `context`, `applies`) follow
+under their own label. Each topic then says what it needs first, what it leads
+to, and which courses use it. A step that names a page twice is one entry, so
+list a page's sections as separate steps without worrying about repeats.
+
 ## When the build refuses
 
 The build stops, and names the problem, when:

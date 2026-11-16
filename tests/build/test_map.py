@@ -62,6 +62,29 @@ class TestThePage:
         assert '<div class="dl-tmap" id="dl-tmap" hidden></div>' in page
         assert 'src="assets/map.js' in page and 'href="assets/map.css' in page
 
+    def test_the_list_links_a_page_once_and_shows_where_a_topic_sits_on_the_paths(self, repo):
+        def pin(g):
+            asking = next(t for t in g["topics"] if t["id"] == "t-asking")
+            asking["steps"] = [
+                {"tutorial": "asking", "section": None, "role": "teaches"},
+                {"tutorial": "asking", "section": "first-part", "role": "teaches"},
+                {"tutorial": "a-challenge", "section": None, "role": "closer-look"},
+            ]
+        mapped(repo, graph=pin)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        topic = re.search(r'<li id="topic-t-asking">.*?(?=<li id="topic-|</ul>)', page, re.S).group(0)
+        # a page that teaches in two places is linked once, with its parts after it
+        assert topic.count('<a href="tutorials/asking.html">') == 1
+        assert 'Part: <a href="tutorials/asking.html#first-part">First part</a>' in topic
+        # the other kinds of step are in the list too, under their own label
+        assert "A closer look: " in topic and 'href="tutorials/a-challenge.html"' in topic
+        # and the topic says what comes before it and what comes after
+        assert "Needs first: nothing, so you can start here." in topic
+        assert 'Leads to: <a href="#topic-t-predict">' in topic
+        compare = re.search(r'<li id="topic-t-compare">.*?(?=<li id="topic-|</ul>)', page, re.S).group(0)
+        assert 'Needs first: <a href="#topic-t-predict">' in compare
+
     def test_titles_and_courses_come_from_the_tutorials_not_the_map(self, repo):
         mapped(repo)
         b.build()
