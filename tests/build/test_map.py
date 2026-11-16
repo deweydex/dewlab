@@ -85,6 +85,34 @@ class TestThePage:
         compare = re.search(r'<li id="topic-t-compare">.*?(?=<li id="topic-|</ul>)', page, re.S).group(0)
         assert 'Needs first: <a href="#topic-t-predict">' in compare
 
+    def test_the_list_opens_with_course_routes_and_places_to_begin(self, repo):
+        mapped(repo)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        # a course route names its topics in teaching order, each linked to its place in the list
+        route = re.search(r'<details class="dl-tmap-list-course"><summary>Computational Methods.*?</details>', page, re.S).group(0)
+        assert route.index('href="#topic-t-asking"') < route.index('href="#topic-t-predict"')
+        assert 'id="topic-t-asking"' in page
+        # a place to begin is a taught topic that needs nothing first
+        begin = re.search(r"<h3>Places to begin</h3>.*?<h3>Browse by country</h3>", page, re.S).group(0)
+        assert 'href="#topic-t-asking"' in begin
+        assert 'href="#topic-t-predict"' not in begin
+        # a country says how big it is, and a long list of onward topics folds
+        assert re.search(r'id="country-[a-z-]+"><summary>.*?\d+ topics?', page)
+
+    def test_a_topic_that_leads_to_many_folds_its_list(self, repo):
+        def widen(g):
+            for extra in range(5):
+                g["topics"].append({**next(t for t in g["topics"] if t["id"] == "t-predict"),
+                                    "id": f"t-extra-{extra}", "name": f"Extra {extra}", "needs": ["t-asking"]})
+        def place(lay):
+            for extra in range(5):
+                lay["towns"][f"t-extra-{extra}"] = dict(lay["towns"]["t-predict"])
+        mapped(repo, graph=widen, layout=place)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        assert "<summary>Leads to 6 topics</summary>" in page
+
     def test_titles_and_courses_come_from_the_tutorials_not_the_map(self, repo):
         mapped(repo)
         b.build()

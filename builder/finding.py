@@ -746,6 +746,7 @@ def map_data(registry: dict[str, Tutorial], catalog: dict[str, "Course"]) -> dic
     }
 
 
+MAP_LEADS_SHOWN = 4
 MAP_ROLE_LABELS = {"closer-look": "A closer look", "context": "Background", "applies": "Put to work"}
 
 
@@ -782,8 +783,26 @@ def map_list_html(data: dict) -> str:
         for need in town["needs"]:
             leads_to.setdefault(need, []).append(town)
 
+    region_of = {town["code"]: town["region"] for town in data["towns"]}
+    region_name = {r["id"]: r["name"] for r in data["regions"]}
+    comes_after: dict[str, list[str]] = {r["id"]: [] for r in data["regions"]}
+    leads_on: dict[str, list[str]] = {r["id"]: [] for r in data["regions"]}
+    for town in data["towns"]:
+        for need in town["needs"]:
+            here, there = town["region"], region_of[need]
+            if here != there:
+                if there not in comes_after[here]:
+                    comes_after[here].append(there)
+                if here not in leads_on[there]:
+                    leads_on[there].append(here)
+
     def topic_links(codes: list[str]) -> str:
         return " · ".join(f'<a href="#topic-{esc(code, quote=True)}">{esc(name_of[code])}</a>' for code in codes)
+
+    def country_links(ids: list[str]) -> str:
+        order = [r["id"] for r in data["regions"]]
+        return " · ".join(f'<a href="#country-{esc(i, quote=True)}">{esc(region_name[i])}</a>'
+                          for i in sorted(ids, key=order.index))
 
     def parts_html(group: dict) -> str:
         if not group["parts"]:
@@ -800,9 +819,20 @@ def map_list_html(data: dict) -> str:
         out.append(f'<h3>{esc(title)}</h3>')
         for region in (r for r in data["regions"] if r["continent"] == continent["id"]):
             rtitle = f"{region['fancy']} ({region['name']})" if region["fancy"] else region["name"]
-            out.append(f'<details class="dl-tmap-list-country"><summary>{esc(rtitle)}</summary>')
+            members = [t for t in data["towns"] if t["region"] == region["id"]]
+            planned = sum(1 for t in members if t["state"] != "taught")
+            size = f'{len(members)} topic{"" if len(members) == 1 else "s"}'
+            size += f", {planned} still to be written" if planned else ""
+            out.append(f'<details class="dl-tmap-list-country" id="country-{esc(region["id"])}">'
+                       f'<summary>{esc(rtitle)} <span class="dl-tmap-list-parts">{size}</span></summary>')
             if region["blurb"]:
                 out.append(f'<p class="dl-tmap-list-blurb">{esc(region["blurb"])}</p>')
+            begin = [t["code"] for t in members if not t["needs"] and t["state"] == "taught"]
+            for label, line in (("Begin with", topic_links(begin) if begin else ""),
+                                ("Uses topics from", country_links(comes_after[region["id"]])),
+                                ("Used by topics in", country_links(leads_on[region["id"]]))):
+                if line:
+                    out.append(f'<p class="dl-tmap-list-path">{label}: {line}</p>')
             for district in (d for d in data["districts"] if d["region"] == region["id"]):
                 out.append(f'<h4>{esc(district["name"])}</h4>')
                 if district["blurb"]:
@@ -827,10 +857,12 @@ def map_list_html(data: dict) -> str:
                     needs = (f"Needs first: {topic_links(town['needs'])}" if town["needs"]
                              else "Needs first: nothing, so you can start here.")
                     item.append(f'<p class="dl-tmap-list-path">{needs}</p>')
-                    kids = leads_to.get(town["code"], [])
-                    if kids:
-                        item.append('<p class="dl-tmap-list-path">Leads to: '
-                                    + topic_links([k["code"] for k in kids]) + "</p>")
+                    kids = [k["code"] for k in leads_to.get(town["code"], [])]
+                    if len(kids) > MAP_LEADS_SHOWN:
+                        item.append(f'<details class="dl-tmap-list-more"><summary>Leads to {len(kids)} topics</summary>'
+                                    f'<p class="dl-tmap-list-path">{topic_links(kids)}</p></details>')
+                    elif kids:
+                        item.append(f'<p class="dl-tmap-list-path">Leads to: {topic_links(kids)}</p>')
                     courses = [c for g in groups for c in g["courses"]]
                     courses = [c for i, c in enumerate(courses) if c not in courses[:i]]
                     if courses:
@@ -838,6 +870,36 @@ def map_list_html(data: dict) -> str:
                     out.append("".join(item) + "</li>")
                 out.append("</ul>")
             out.append("</details>")
+    return "".join(out)
+
+
+def map_courses_html(data: dict) -> str:
+    """One route for each course: the topics it teaches, in the order it teaches
+    them. This answers "what comes next on my course", which the country list
+    cannot, because a course crosses countries."""
+    name_of = {town["code"]: town["name"] for town in data["towns"]}
+    routes = [c for c in data["courses"] if c["path"]]
+    out = []
+    for course in sorted(routes, key=lambda c: c["title"]):
+        steps = "".join(f'<li><a href="#topic-{html.escape(code, quote=True)}">{html.escape(name_of[code])}</a></li>'
+                        for code in course["path"])
+        out.append(f'<details class="dl-tmap-list-course"><summary>{html.escape(course["title"])} '
+                   f'<span class="dl-tmap-list-parts">{len(course["path"])} topic{"" if len(course["path"]) == 1 else "s"}</span></summary>'
+                   f'<ol>{steps}</ol></details>')
+    return "".join(out)
+
+
+def map_begin_html(data: dict) -> str:
+    """The topics that need nothing first, by country. A reader new to a subject
+    can start at any of them today."""
+    out = []
+    for region in data["regions"]:
+        starts = [t for t in data["towns"]
+                  if t["region"] == region["id"] and not t["needs"] and t["state"] == "taught"]
+        if starts:
+            links = " · ".join(f'<a href="#topic-{html.escape(t["code"], quote=True)}">{html.escape(t["name"])}</a>'
+                               for t in starts)
+            out.append(f'<p><strong>{html.escape(region["name"])}</strong><br>{links}</p>')
     return "".join(out)
 
 
@@ -855,8 +917,17 @@ def write_map_page(shell: str, registry: dict[str, Tutorial], catalog: dict[str,
         "what comes before it and where it is taught.</p>"
         '<div class="dl-tmap" id="dl-tmap" hidden></div>'
         '<noscript><p class="dl-tmap-intro">The picture needs JavaScript. The list below has every topic.</p></noscript>'
-        '<h2 id="dl-tmap-list-title">Every topic, as a list</h2>'
-        '<div class="dl-tmap-list" aria-labelledby="dl-tmap-list-title">' + map_list_html(data) + "</div>"
+        '<div class="dl-tmap-list" aria-labelledby="dl-tmap-list-title">'
+        '<h2 id="dl-tmap-list-title">Find your way</h2>'
+        '<p class="dl-tmap-intro">This list gives you three ways in. Follow a course to see its topics '
+        "in the order it teaches them. Choose a place to begin if you are new to a subject. "
+        "Browse by country to see everything on one subject. Every topic says what to know first, "
+        "what it leads to, and which pages teach it.</p>"
+        "<h3>Follow a course</h3>" + map_courses_html(data) +
+        "<h3>Places to begin</h3>"
+        '<p class="dl-tmap-intro">These topics need nothing first. You can start any of them today.</p>'
+        + map_begin_html(data) +
+        "<h3>Browse by country</h3>" + map_list_html(data) + "</div>"
     )
     manifest = {"slug": "map", "version": 1, "assetBase": "assets/",
                 "dataBase": "data/", "cells": [], "assetVersions": {}}

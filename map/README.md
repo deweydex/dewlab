@@ -14,12 +14,22 @@ renamed page cannot leave a wrong name on the map.
 ## The list under the map
 
 `map.html` also writes every topic as a list, for a reader with no script, a
-screen reader or a keyboard. Each topic names the pages that teach it, once
-each and in the order the steps are written, with the sections it uses as
-parts. Steps with another role (`closer-look`, `context`, `applies`) follow
-under their own label. Each topic then says what it needs first, what it leads
-to, and which courses use it. A step that names a page twice is one entry, so
-list a page's sections as separate steps without worrying about repeats.
+screen reader or a keyboard. It is also the part of the page below the picture,
+so it is written to help a student choose a path. It has three ways in:
+
+- **Follow a course.** One fold for each course, with the topics the course
+  teaches in the order it teaches them. The order comes from the course file, not
+  from `graph.json`.
+- **Places to begin.** The topics that are taught and need nothing first, by country.
+- **Browse by country.** Every country, with how many topics it has, what to begin
+  with, which countries it uses topics from and which use its topics.
+
+Each topic then names the pages that teach it, once each and in the order the
+steps are written, with the sections it uses as parts. Steps with another role
+(`closer-look`, `context`, `applies`) follow under their own label. A topic says
+what it needs first, what it leads to (a list of more than four folds), and which
+courses use it. A step that names a page twice is one entry, so list a page's
+sections as separate steps without worrying about repeats.
 
 ## When the build refuses
 
