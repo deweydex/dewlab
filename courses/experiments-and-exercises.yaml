@@ -3,8 +3,8 @@ code: Experimental
 status: beta
 card: >-
   Small questions, little text. You run a cell, change one thing, and see what
-  breaks. Variables, types, input and decisions come first, then lists,
-  loops and comprehensions.
+  breaks. Names, text, numbers and decisions come first, then lists, loops
+  and comprehensions.
 description: >-
   This module tries something different from the other courses. Each page is a
   long run of small questions, with very little explanation in between. You
@@ -13,10 +13,11 @@ description: >-
   syntax is for.
 
 
-  The first series is Variables, types, input and decisions. It starts from
-  the first things a program does: it keeps values in variables, does
-  arithmetic, prints, asks for input and chooses a path with `if`. A few
-  short notes appear where an idea is hard to find by experiment alone.
+  The first series is Names, text, numbers and decisions. It starts from
+  the first things a program does: it attaches names to values, works with
+  text and numbers, asks for input, and chooses a path with `if`. Each page
+  opens with a short description of its idea. A few short notes appear later
+  where an idea is hard to find by experiment alone.
 
 
   The second series is Lists, loops and comprehensions. It uses only what the
@@ -30,13 +31,15 @@ description: >-
   follow on purpose, to see whether less text and smaller steps help. Tell us
   what works for you and what does not.
 contents:
-- title: Variables, types, input and decisions
+- title: Names, text, numbers and decisions
   tutorials:
-  - experiments-with-variables
-  - experiments-with-types
-  - experiments-with-arithmetic
-  - experiments-with-print-and-input
-  - experiments-with-if-statements
+  - experiments-with-names-and-values
+  - experiments-with-text
+  - experiments-with-numbers
+  - experiments-with-input
+  - experiments-with-true-and-false
+  - experiments-with-one-decision
+  - experiments-with-many-decisions
 - title: Lists, loops and comprehensions
   tutorials:
   - experiments-with-lists
