@@ -26,11 +26,28 @@ id: making-and-reading-lists-2
 # your code here
 ```
 
+```solution
+for: making-and-reading-lists-2
+title: one way to do it
+numbers = [3, 1, 4, 1, 5]
+mixed = ["hello", 42, 3.14, True]
+print(numbers)
+print(mixed)
+```
+
 **1.3** Make an empty list by writing nothing between the brackets. Print it, and print its type.
 
 ```python exec
 id: making-and-reading-lists-3
 # your code here
+```
+
+```solution
+for: making-and-reading-lists-3
+title: one way to do it
+empty = []
+print(empty)
+print(type(empty))
 ```
 
 **1.4** Print `colours[0]`, then `colours[1]`, then `colours[2]`. Which position holds the first item? We call a position an index.
@@ -39,6 +56,15 @@ id: making-and-reading-lists-3
 id: making-and-reading-lists-4
 colours = ["red", "green", "blue"]
 # your code here
+```
+
+```solution
+for: making-and-reading-lists-4
+title: one way to do it
+colours = ["red", "green", "blue"]
+print(colours[0])
+print(colours[1])
+print(colours[2])
 ```
 
 **1.5** Now print `colours[3]`. Read the whole error message from the bottom up. Which line names the kind of error, and which line explains it in words?
@@ -57,12 +83,32 @@ colours = ["red", "green", "blue"]
 # your code here
 ```
 
+```solution
+for: making-and-reading-lists-6
+title: one way to do it
+colours = ["red", "green", "blue"]
+print(colours[-1])
+print(colours[-2])
+print(colours[-3])
+---
+`colours[-4]` is the one that fails, with an `IndexError`, because the list has only three items.
+```
+
 **1.7** Print `len(colours)`. Add a fourth colour to the list, run it again, and compare the new length with the largest index you can use. What relationship do you notice?
 
 ```python exec
 id: making-and-reading-lists-7
 colours = ["red", "green", "blue"]
 # your code here
+```
+
+```solution
+for: making-and-reading-lists-7
+title: one way to do it
+colours = ["red", "green", "blue"]
+colours.append("yellow")
+print(len(colours))
+print(len(colours) - 1)
 ```
 
 **1.8** A list can hold other lists. Run this, and predict `grid[1][0]` before you print it.
@@ -92,6 +138,16 @@ Start each task here from `colours = ["red", "green", "blue"]` unless it says ot
 id: changing-a-list-1
 colours = ["red", "green", "blue"]
 # your code here
+```
+
+```solution
+for: changing-a-list-1
+title: one way to do it
+colours = ["red", "green", "blue"]
+colours[1] = "yellow"
+print(colours)
+colours[-1] = "purple"
+print(colours)
 ```
 
 **2.2** A string looks a little like a list of letters. Try this and read the error.
@@ -124,12 +180,34 @@ colours = ["red", "green", "blue"]
 # your code here
 ```
 
+```solution
+for: changing-a-list-4
+title: one way to do it
+colours = ["red", "green", "blue"]
+colours.insert(0, "black")
+colours.insert(2, "gold")
+colours.insert(100, "silver")
+colours.insert(-1, "bronze")
+print(colours)
+```
+
 **2.5** Remove an item by value with `colours.remove("green")`. Then try to remove a colour that is not in the list. Then build `[1, 2, 1, 3, 1]` and call `remove(1)`. How many ones disappear?
 
 ```python exec
 id: changing-a-list-5
 colours = ["red", "green", "blue"]
 # your code here
+```
+
+```solution
+for: changing-a-list-5
+title: one way to do it
+colours = ["red", "green", "blue"]
+colours.remove("green")
+print(colours)
+numbers = [1, 2, 1, 3, 1]
+numbers.remove(1)
+print(numbers)
 ```
 
 **2.6** The method `pop` removes an item by position and hands it back. Run this and look at both variables after each line.
@@ -153,6 +231,16 @@ colours = ["red", "green", "blue"]
 # your code here
 ```
 
+```solution
+for: changing-a-list-7
+title: one way to do it
+colours = ["red", "green", "blue"]
+del colours[0]
+print(colours)
+---
+`del` is a statement, so it cannot sit inside `print(...)`. It hands nothing back, where `pop` hands back the item.
+```
+
 **2.8** Predict the length of each list before you run this.
 
 ```python exec
@@ -174,11 +262,33 @@ id: changing-a-list-9
 # your code here
 ```
 
+```solution
+for: changing-a-list-9
+title: one way to do it
+print([1, 2] + [3])
+print([0] * 5)
+print([1, 2] * 3)
+---
+The other two, `[1, 2] - [1]` and `[1, 2] + 3`, raise a `TypeError`.
+```
+
 **2.10** Meet three more methods: `reverse()`, `sort()` and `clear()`. Call each one on a small list of numbers. Does any of them print something? Does any of them hand back a new list?
 
 ```python exec
 id: changing-a-list-10
 # your code here
+```
+
+```solution
+for: changing-a-list-10
+title: one way to do it
+numbers = [3, 1, 2]
+numbers.reverse()
+print(numbers)
+numbers.sort()
+print(numbers)
+numbers.clear()
+print(numbers)
 ```
 
 ## 3. Asking questions of a list
@@ -203,11 +313,26 @@ colours = ["red", "green", "blue"]
 # your code here
 ```
 
+```solution
+for: asking-questions-of-a-list-2
+title: one way to do it
+colours = ["red", "green", "blue", "red"]
+print(colours.count("red"))
+print(colours.index("green"))
+```
+
 **3.3** Try `min`, `max` and `sum` on `[4, 9, 2, 7]`. Then try `min` and `max` on `["pear", "apple", "fig"]`. Then try `sum` on the list of words. What does Python compare when it works with words?
 
 ```python exec
 id: asking-questions-of-a-list-3
 # your code here
+```
+
+```solution
+for: asking-questions-of-a-list-3
+title: one way to do it
+print(min([4, 9, 2, 7]), max([4, 9, 2, 7]), sum([4, 9, 2, 7]))
+print(min(["pear", "apple", "fig"]), max(["pear", "apple", "fig"]))
 ```
 
 **3.4** Try `max([3, "a", 5])`. Why can Python not decide? The error names both types, so read it slowly.
@@ -224,6 +349,17 @@ id: asking-questions-of-a-list-5
 # your code here
 ```
 
+```solution
+for: asking-questions-of-a-list-5
+title: one way to do it
+nums = [5, 2, 9, 1]
+print(sorted(nums))
+print(nums)
+nums.sort()
+print(nums)
+print(sorted(nums, reverse=True))
+```
+
 **3.6** Sort `["banana", "Cherry", "apple", "Date"]`. Where do the capital letters go? Now sort `["10", "9", "100", "1"]`. Does Python order these the way you would order the numbers? What does that tell you about how it compares strings?
 
 ```python exec
@@ -232,12 +368,33 @@ letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
 ```
 
+```solution
+for: asking-questions-of-a-list-6
+title: one way to do it
+print(sorted(["banana", "Cherry", "apple", "Date"]))
+print(sorted(["10", "9", "100", "1"]))
+---
+Python compares strings character by character, and capital letters come before lower-case ones. `"10"` comes before `"9"` because `"1"` comes before `"9"`.
+```
+
 **3.7** The method `colours.reverse()` flips the list in place. Call it twice in a row and print after each call. Then compare it with the slice `colours[::-1]`. Which one leaves the original alone?
 
 ```python exec
 id: asking-questions-of-a-list-7
 colours = ["red", "green", "blue"]
 # your code here
+```
+
+```solution
+for: asking-questions-of-a-list-7
+title: one way to do it
+colours = ["red", "green", "blue"]
+colours.reverse()
+print(colours)
+colours.reverse()
+print(colours)
+print(colours[::-1])
+print(colours)
 ```
 
 ## 4. Slices
@@ -257,12 +414,29 @@ letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
 ```
 
+```solution
+for: slices-2
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+print(letters[1:4])
+```
+
 **4.2** Predict, then print: `letters[:3]`, `letters[4:]`, `letters[:]` and `letters[-3:]`. What does it mean to leave out a number?
 
 ```python exec
 id: slices-3
 letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
+```
+
+```solution
+for: slices-3
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+print(letters[:3])
+print(letters[4:])
+print(letters[:])
+print(letters[-3:])
 ```
 
 **4.3** Print `letters[::2]`, `letters[1::2]` and `letters[::-1]`. The third number is a step. What does a negative step do?
@@ -273,6 +447,15 @@ letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
 ```
 
+```solution
+for: slices-4
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+print(letters[::2])
+print(letters[1::2])
+print(letters[::-1])
+```
+
 **4.4** What does `letters[2:100]` give you? What does `letters[5:2]` give you? Does either one raise an error? Compare both with `letters[100]`.
 
 ```python exec
@@ -281,12 +464,31 @@ letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
 ```
 
+```solution
+for: slices-5
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+print(letters[2:100])
+print(letters[5:2])
+---
+A slice never raises an error for going past the end. `letters[100]` does, with an `IndexError`.
+```
+
 **4.5** Does a slice change the original list? Take a slice, print `letters` afterwards, and find out.
 
 ```python exec
 id: slices-6
 letters = ["a", "b", "c", "d", "e", "f", "g"]
 # your code here
+```
+
+```solution
+for: slices-6
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+piece = letters[1:4]
+print(piece)
+print(letters)
 ```
 
 **4.6** A slice can sit on the left of an equals sign. Reset `letters` before each line, try these one at a time, and describe what each one does.
@@ -314,6 +516,14 @@ letters[1:3] = []
 ```python exec
 id: slices-10
 # your code here
+```
+
+```solution
+for: slices-10
+title: one way to do it
+letters = ["a", "b", "c", "d", "e", "f", "g"]
+print(letters[-2:])
+print(letters[1:-1])
 ```
 
 ## 5. Two names, one list
@@ -379,6 +589,16 @@ print(board)
 
 Why did three cells change? Rebuild `board` so that only one cell changes.
 
+```solution
+for: two-names-one-list-5
+title: one way to do it
+board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+board[0][0] = 1
+print(board)
+---
+`[row, row, row]` holds the same list three times. Three separate lists change one cell at a time.
+```
+
 ## 6. Puzzles and patterns
 
 **6.1 The mystery list**
@@ -392,6 +612,19 @@ mystery = [3, 1, 4, 1, 5, 9, 2, 6]
 
 Print the biggest item, the smallest item, the number of ones, the sum of all the items, the list in reverse order, and the list sorted from largest to smallest. Your code must leave `mystery` itself unchanged. Check by printing `mystery` at the end.
 
+```solution
+for: puzzles-and-patterns-1
+title: one way to do it
+mystery = [3, 1, 4, 1, 5, 9, 2, 6]
+print(max(mystery))
+print(min(mystery))
+print(mystery.count(1))
+print(sum(mystery))
+print(mystery[::-1])
+print(sorted(mystery, reverse=True))
+print(mystery)
+```
+
 **6.2 The swap**
 
 Swap the first and last items of a list of numbers. Use a third variable to hold one value while you move the other. Then look for a way to do it with no third variable. Try writing `a, b = b, a` with two ordinary variables first, and see what it does.
@@ -399,6 +632,20 @@ Swap the first and last items of a list of numbers. Use a third variable to hold
 ```python exec
 id: puzzles-and-patterns-2
 # your code here
+```
+
+```solution
+for: puzzles-and-patterns-2
+title: one way to do it
+nums = [10, 20, 30, 40]
+temp = nums[0]
+nums[0] = nums[-1]
+nums[-1] = temp
+print(nums)
+nums[0], nums[-1] = nums[-1], nums[0]
+print(nums)
+---
+The second swap, with two assignments on one line, needs no third variable. It swaps the two back.
 ```
 
 **6.3 The scrambled sentence**
@@ -409,6 +656,17 @@ words = ["fun", "are", "Lists", "so"]
 ```
 
 Use only indexes to print the words in an order that makes a sentence. Then try `print(" ".join(words))`. The string method `join` glues a list of strings together with the text in front of the dot between them. Try a dash, an empty string, and a comma followed by a space in place of the single space.
+
+```solution
+for: puzzles-and-patterns-3
+title: one way to do it
+words = ["fun", "are", "Lists", "so"]
+print(words[2], words[1], words[3], words[0])
+ordered = [words[2], words[1], words[3], words[0]]
+print(" ".join(ordered))
+print("-".join(ordered))
+print("".join(ordered))
+```
 
 **6.4 Your own shopping list**
 
@@ -431,6 +689,14 @@ print(letters == letters[::-1])
 
 Try other lists of letters. Find one palindrome with an odd number of items and one with an even number. Then find a list of numbers that is a palindrome.
 
+```solution
+for: puzzles-and-patterns-5
+title: one way to do it
+print(["a", "b", "a"] == ["a", "b", "a"][::-1])
+print(["a", "b", "b", "a"] == ["a", "b", "b", "a"][::-1])
+print([1, 2, 1] == [1, 2, 1][::-1])
+```
+
 **6.6 Buried treasure**
 
 ```python exec
@@ -440,6 +706,21 @@ board = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
 Hide an `"X"` in the bottom right corner by changing one item. Print the board one row per line, using a separate print for each row. Move the X to the middle. Then make the X appear using only negative indexes.
 
+```solution
+for: puzzles-and-patterns-6
+title: one way to do it
+board = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
+board[2][2] = "X"
+print(board[0])
+print(board[1])
+print(board[2])
+board[2][2] = "."
+board[1][1] = "X"
+board[1][1] = "."
+board[-1][-1] = "X"
+print(board[-1])
+```
+
 **6.7 Build it backwards**
 
 Start from `nums = [1, 2, 3, 4, 5]` and produce each of these lists without typing the answer by hand, and without changing `nums`: `[5, 4, 3, 2, 1]`, `[1, 3, 5]`, `[2, 4]` and `[3, 4, 5, 1, 2]`. The last one needs two slices and a `+`.
@@ -448,6 +729,17 @@ Start from `nums = [1, 2, 3, 4, 5]` and produce each of these lists without typi
 id: puzzles-and-patterns-7
 nums = [1, 2, 3, 4, 5]
 # your code here
+```
+
+```solution
+for: puzzles-and-patterns-7
+title: one way to do it
+nums = [1, 2, 3, 4, 5]
+print(nums[::-1])
+print(nums[::2])
+print(nums[1::2])
+print(nums[2:] + nums[:2])
+print(nums)
 ```
 
 **6.8 The error collection**

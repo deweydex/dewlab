@@ -63,6 +63,16 @@ id: the-loop-and-its-twin-6
 # your code here
 ```
 
+```solution
+for: the-loop-and-its-twin-6
+title: one way to do it
+evens = []
+for n in range(1, 11):
+    evens.append(n * 2)
+print(evens)
+print([n * 2 for n in range(1, 11)])
+```
+
 **1.6** Break it on purpose. Run each of these cells on its own and read what Python says.
 
 ```python exec
@@ -123,6 +133,13 @@ celsius = [0, 20, 37, 100]
 # your code here
 ```
 
+```solution
+for: changing-every-item-3
+title: one way to do it
+celsius = [0, 20, 37, 100]
+print([c * 9 / 5 + 32 for c in celsius])
+```
+
 **2.3** Convert between types. Predict each result, then run it.
 
 ```python exec
@@ -149,12 +166,28 @@ words = ["apple", "banana", "cherry"]
 # your code here
 ```
 
+```solution
+for: changing-every-item-6
+title: one way to do it
+words = ["apple", "banana", "cherry"]
+print([w[0] for w in words])
+print([w.capitalize() for w in words])
+```
+
 **2.6** Every item in the new list comes from one item in the old list. Use that fact to predict the length of `[n * 2 for n in range(7)]` without running it. Then check.
 
 ```python exec
 id: changing-every-item-7
 print(len([n * 2 for n in range(7)]))
 # your code here
+```
+
+```solution
+for: changing-every-item-7
+title: one way to do it
+print(len([n * 2 for n in range(7)]))
+---
+Each item in the source makes one item in the result, so the length is 7.
 ```
 
 ## 3. Filtering and choosing
@@ -185,12 +218,29 @@ nums = [3, 8, 1, 12, 7, 10]
 # your code here
 ```
 
+```solution
+for: filtering-and-choosing-3
+title: one way to do it
+nums = [3, 8, 1, 12, 7, 10]
+print([n for n in nums if n % 2 == 0])
+print([n for n in nums if n % 2 == 1])
+print([n for n in nums if n % 3 == 0])
+```
+
 **3.3** From `["apple", "fig", "banana", "kiwi", "cherry"]`, build a list of the words longer than 4 letters, and then a list of the words that contain the letter `a`.
 
 ```python exec
 id: filtering-and-choosing-4
 words = ["apple", "banana", "cherry"]
 # your code here
+```
+
+```solution
+for: filtering-and-choosing-4
+title: one way to do it
+fruit = ["apple", "fig", "banana", "kiwi", "cherry"]
+print([w for w in fruit if len(w) > 4])
+print([w for w in fruit if "a" in w])
 ```
 
 **3.4** Run `[c for c in "comprehension" if c not in "aeiou"]`. What does the result look like? Wrap it in the string method `"".join(...)`, which glues a list of strings into one string, to get a single word back.
@@ -201,12 +251,25 @@ print([c for c in "comprehension" if c not in "aeiou"])
 # your code here
 ```
 
+```solution
+for: filtering-and-choosing-5
+title: one way to do it
+print("".join([c for c in "comprehension" if c not in "aeiou"]))
+```
+
 **3.5** Filter and change together. Square only the even numbers in `nums`. Which part of the comprehension does the squaring, and which part does the filtering?
 
 ```python exec
 id: filtering-and-choosing-6
 nums = [3, 8, 1, 12, 7, 10]
 # your code here
+```
+
+```solution
+for: filtering-and-choosing-6
+title: one way to do it
+nums = [3, 8, 1, 12, 7, 10]
+print([n * n for n in nums if n % 2 == 0])
 ```
 
 **3.6** Move the `if` to the front, as in `[n for if n > 5 n in nums]`, and read the error. Where does Python expect the test to sit?
@@ -247,6 +310,13 @@ words = ["apple", "banana", "cherry"]
 ```python exec
 id: filtering-and-choosing-11
 # your code here
+```
+
+```solution
+for: filtering-and-choosing-11
+title: one way to do it
+scores = [72, 45, 50, 38, 91]
+print(["pass" if s >= 50 else "retry" for s in scores])
 ```
 
 ## 4. Two loops in one
@@ -292,6 +362,15 @@ print([rank + suit for suit in "SHDC" for rank in "A23456789"])
 # your code here
 ```
 
+```solution
+for: two-loops-in-one-5
+title: one way to do it
+ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+deck = [rank + suit for suit in "SHDC" for rank in ranks]
+print(len(deck))
+print(deck)
+```
+
 **4.4** A comprehension can build a list of lists. Run this and look closely at the brackets.
 
 ```python exec
@@ -301,6 +380,14 @@ print(grid)
 ```
 
 Print `grid` one row per line using an ordinary loop. Which `for` builds the rows and which builds the items inside each row?
+
+```solution
+for: two-loops-in-one-6
+title: one way to do it
+grid = [[row * col for col in range(4)] for row in range(3)]
+for line in grid:
+    print(line)
+```
 
 **4.5** Flatten the grid back into one list with `[x for row in grid for x in row]`. Compare the order of the two `for` parts here with the order in 4.4. What do you notice?
 
@@ -316,6 +403,19 @@ print([x for row in grid for x in row])
 ```python exec
 id: two-loops-in-one-8
 # your code here
+```
+
+```solution
+for: two-loops-in-one-8
+title: one way to do it
+grid = [[0] * 5 for row in range(5)]
+grid[2][2] = 1
+print(grid)
+shared = [[0] * 5] * 5
+shared[2][2] = 1
+print(shared)
+---
+`[[0] * 5] * 5` holds the same row five times, so changing one item changes it in every row.
 ```
 
 ## 5. Puzzles and patterns
@@ -342,6 +442,13 @@ id: puzzles-and-patterns-2
 # your code here
 ```
 
+```solution
+for: puzzles-and-patterns-2
+title: one way to do it
+print("".join([chr(ord(c) - 1) for c in "Ifmmp"]))
+print("".join([chr(ord(c) - 1) if c != " " else " " for c in "Uif dbu tbu"]))
+```
+
 **5.3 Count the vowels**
 
 Use a comprehension with an `if` at the end to collect the vowels from a sentence of your own, and then use `len` to count them. Which vowel appears most often in your sentence?
@@ -349,6 +456,15 @@ Use a comprehension with an `if` at the end to collect the vowels from a sentenc
 ```python exec
 id: puzzles-and-patterns-3
 # your code here
+```
+
+```solution
+for: puzzles-and-patterns-3
+title: one way to do it
+sentence = "comprehensions are neat"
+vowels = [c for c in sentence if c in "aeiou"]
+print(vowels)
+print(len(vowels))
 ```
 
 **5.4 Divisors**
@@ -359,6 +475,12 @@ What does `[d for d in range(1, 13) if 12 % d == 0]` produce? Change the 12 to o
 id: puzzles-and-patterns-4
 print([d for d in range(1, 13) if 12 % d == 0])
 # your code here
+```
+
+```solution
+for: puzzles-and-patterns-4
+title: one way to do it
+print([n for n in range(2, 31) if len([d for d in range(1, n + 1) if n % d == 0]) == 2])
 ```
 
 **5.5 Perfect numbers**
@@ -395,6 +517,12 @@ print(["Fizz" if n % 3 == 0 else n for n in range(1, 16)])
 # your code here
 ```
 
+```solution
+for: puzzles-and-patterns-7
+title: one way to do it
+print(["FizzBuzz" if n % 15 == 0 else "Fizz" if n % 3 == 0 else "Buzz" if n % 5 == 0 else n for n in range(1, 16)])
+```
+
 ## 6. Rewrite, repair and judge
 
 **6.1 Loop to comprehension**
@@ -426,6 +554,27 @@ for n in range(1, 8):
         result.append("odd")
 ```
 
+```solution
+for: rewrite-repair-and-judge-1
+title: one way to do it
+result = [n * 3 for n in range(10)]
+print(result)
+```
+
+```solution
+for: rewrite-repair-and-judge-2
+title: one way to do it
+result = [word.upper() for word in ["sun", "moon", "star"] if len(word) > 3]
+print(result)
+```
+
+```solution
+for: rewrite-repair-and-judge-3
+title: one way to do it
+result = ["even" if n % 2 == 0 else "odd" for n in range(1, 8)]
+print(result)
+```
+
 **6.2 Comprehension to loop**
 
 Rewrite each comprehension as a loop. Which one was harder to turn into a loop?
@@ -438,6 +587,26 @@ id: rewrite-repair-and-judge-4
 ```python exec
 id: rewrite-repair-and-judge-5
 [a + b for a in "xy" for b in "123"]
+```
+
+```solution
+for: rewrite-repair-and-judge-4
+title: one way to do it
+result = []
+for n in range(10):
+    if n % 2 == 1:
+        result.append(n * n)
+print(result)
+```
+
+```solution
+for: rewrite-repair-and-judge-5
+title: one way to do it
+result = []
+for a in "xy":
+    for b in "123":
+        result.append(a + b)
+print(result)
 ```
 
 **6.3 Spot the bug**
@@ -460,6 +629,27 @@ id: rewrite-repair-and-judge-8
 [n * 2 for n in range(5)]]
 ```
 
+```solution
+for: rewrite-repair-and-judge-6
+title: one way to do it
+print([n for n in range(10) if n % 2 == 0])
+---
+An `if` with no `else` goes at the end. To keep every item and change some, put `if ... else ...` at the front.
+```
+
+```solution
+for: rewrite-repair-and-judge-7
+title: one way to do it
+nums = [1, 2, 3]
+print([n * 2 for n in nums])
+```
+
+```solution
+for: rewrite-repair-and-judge-8
+title: one way to do it
+print([n * 2 for n in range(5)])
+```
+
 **6.4 A curious one**
 
 Run this and look at what is printed, and then at what the list holds. Why does the list hold what it holds?
@@ -479,6 +669,22 @@ id: rewrite-repair-and-judge-10
 out = [("FizzBuzz" if n % 15 == 0 else "Fizz" if n % 3 == 0 else "Buzz" if n % 5 == 0 else n) for n in range(1, 31)]
 ```
 
+```solution
+for: rewrite-repair-and-judge-10
+title: one way to do it
+out = []
+for n in range(1, 31):
+    if n % 15 == 0:
+        out.append("FizzBuzz")
+    elif n % 3 == 0:
+        out.append("Fizz")
+    elif n % 5 == 0:
+        out.append("Buzz")
+    else:
+        out.append(n)
+print(out)
+```
+
 **6.6 Your own**
 
 Invent a small puzzle for a neighbour. Give them a list and a goal, such as turning `["3", "x", "7"]` into `[3, 7]`, and see whether they can solve it with a comprehension.
@@ -486,4 +692,10 @@ Invent a small puzzle for a neighbour. Give them a list and a goal, such as turn
 ```python exec
 id: rewrite-repair-and-judge-11
 # your code here
+```
+
+```solution
+for: rewrite-repair-and-judge-11
+title: one way to do it
+print([int(s) for s in ["3", "x", "7"] if s.isdigit()])
 ```
