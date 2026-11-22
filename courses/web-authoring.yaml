@@ -7,6 +7,10 @@ description: >-
   structure and CSS for how they look, make them work for every visitor, and
   publish a small site of your own. You do not need to have made a web page
   before.
+
+  The section called Interactive pages goes further than this module needs.
+  It is also part of the Level 6 module Web Development (6N1277). Each of
+  its pages shows the HTML and CSS way first, then the script way.
 contents:
 - title: Welcome
   tutorials:
@@ -65,6 +69,15 @@ contents:
   - a-ball-that-faces-you
   - drawing-frames-with-javascript
   - a-cube-on-a-canvas
+- title: Interactive pages (also Level 6)
+  tutorials:
+  - how-interaction-got-here
+  - a-panel-that-opens
+  - popovers-and-dialogs
+  - a-form-that-checks-itself
+  - a-carousel
+  - a-gallery-with-a-dialog
+  - styling-from-state-with-has
 - title: Reference shelf
   tutorials:
   - faq
