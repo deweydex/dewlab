@@ -40,6 +40,10 @@ extend-exclude = [
 select = ["F", "E9", "E711", "E712", "E713", "E714", "E721", "E722", "B006", "B015"]
 
 [lint.per-file-ignores]
+# A pytest fixture imported from another file, then named as a test's
+# argument, reads to pyflakes as a redefinition. Only this file does it: it is
+# the second half of test_inpage_editor.py, which owns the fixtures.
+"tests/e2e/test_inpage_editor_blocks.py" = ["F811"]
 # The build tests share their fixtures with `from helpers import *`, so a
 # name used in a test comes from there and ruff cannot see it.
 "tests/**" = ["F403", "F405"]
