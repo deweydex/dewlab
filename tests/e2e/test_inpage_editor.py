@@ -305,6 +305,14 @@ def test_opening_a_paragraph_moves_nothing_on_the_page(editing):
     start(page)
     page.click("#dl-settings-toggle")  # close Settings, so nothing overlaps
     tops = "[...document.querySelectorAll('main#dl-body > [data-md]:not([hidden])')].map(n => Math.round(n.getBoundingClientRect().top + scrollY))"
+    # Closing Settings moves the page while it collapses; the baseline is only
+    # the baseline once the layout has stopped moving.
+    page.wait_for_function("""([measure, quiet]) => {
+        const now = JSON.stringify(eval(measure));
+        const seen = window.__layoutSeen || (window.__layoutSeen = {text: null, since: 0});
+        if (seen.text !== now) { seen.text = now; seen.since = performance.now(); return false; }
+        return performance.now() - seen.since >= quiet;
+    }""", arg=[tops, 400])
     before = page.evaluate(tops)
     page.click("main#dl-body > p:nth-of-type(1)")
     page.wait_for_selector(".dl-inplace .ProseMirror")
