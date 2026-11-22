@@ -20,6 +20,7 @@ that raises is a Problem.
 
     python3 check.py --solutions              run solutions and check nothing else
     python3 check.py --no-cache               run them again even if nothing changed
+    python3 check.py --refresh-cache          the same, and remember what was clean
 
 It writes nothing and does not build the site. A tutorial takes about a
 quarter of a minute, most of it reading the site to know what the page
@@ -542,7 +543,9 @@ def run(argv: list[str]) -> int:
     only_solutions = "--solutions" in argv
     if "--no-cache" in argv:
         cfg.SOLUTION_CACHE = False
-    argv = [a for a in argv if a not in ("--pr", "--no-pr", "--solutions", "--no-cache")]
+    if "--refresh-cache" in argv:
+        cfg.SOLUTION_CACHE_REUSE = False
+    argv = [a for a in argv if a not in ("--pr", "--no-pr", "--solutions", "--no-cache", "--refresh-cache")]
     if len(argv) <= 1:
         if not only_solutions:
             check_everything(report)

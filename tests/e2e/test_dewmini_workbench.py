@@ -2294,6 +2294,13 @@ class TestNameDocsOnRightClick:
         spot = self.right_click(documented)
         documented.wait_for_selector(self.TOOLTIP)
         assert "my own real docstring" in documented.inner_text(self.TOOLTIP)
+        # CodeMirror inserts a tooltip at top: -10000px and moves it into place
+        # on its next measure, so where it is only means something once it has
+        # left that parking spot.
+        documented.wait_for_function(
+            "(selector) => document.querySelector(selector).getBoundingClientRect().top > -1000",
+            arg=self.TOOLTIP,
+        )
         assert (documented.locator(self.TOOLTIP).bounding_box()["y"]
                 > spot["y"]), "below the name, not over the code above it"
 

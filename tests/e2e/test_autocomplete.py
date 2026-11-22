@@ -9,6 +9,30 @@ def cell_content(page, cell_id: str):
     return page.locator(f".dl-cell[data-cell-id='{cell_id}'] .dl-editor .cm-content")
 
 
+def wait_until_the_completions_have_settled(page, selected: str, quiet_ms: int = 250):
+    """Wait for the completion list to stop changing, with `selected` chosen.
+
+    CodeMirror ignores Enter for a short interval after the list changes (its
+    interactionDelay, 75 ms), so that a key typed as the list updates is not
+    taken for a choice from it. And the list does change after it first shows:
+    the names a cell already has come at once, and the Worker's answer, a real
+    round trip, replaces them. A test that presses Enter as soon as the right
+    word is on show therefore inserts a newline whenever the Worker is slow,
+    which is always on a page where nothing has asked it anything yet."""
+    page.wait_for_function(
+        """([selected, quiet]) => {
+            const tip = document.querySelector('.cm-tooltip-autocomplete');
+            if (!tip) return false;
+            const chosen = tip.querySelector('[aria-selected=true] .cm-completionLabel');
+            const now = tip.textContent + '|' + (chosen ? chosen.textContent : '');
+            const seen = window.__completionsSeen || (window.__completionsSeen = {text: null, since: 0});
+            if (seen.text !== now) { seen.text = now; seen.since = performance.now(); return false; }
+            return !!chosen && chosen.textContent === selected && performance.now() - seen.since >= quiet;
+        }""",
+        arg=[selected, quiet_ms],
+    )
+
+
 def completion_labels(page):
     return page.eval_on_selector_all(
         ".cm-tooltip-autocomplete .cm-completionLabel", "els => els.map(e => e.textContent)"
@@ -63,9 +87,7 @@ def test_accepting_a_completion_inserts_it(page):
     page.keyboard.type("\nlen(")
     page.keyboard.type("lis")
     page.wait_for_selector(".cm-tooltip-autocomplete")
-    page.wait_for_function(
-        "[...document.querySelectorAll('.cm-completionLabel')].some(e => e.textContent === 'list')"
-    )
+    wait_until_the_completions_have_settled(page, "list")
     page.keyboard.press("Enter")
     assert "len(list)" in cell.inner_text()
 

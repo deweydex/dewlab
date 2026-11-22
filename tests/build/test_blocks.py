@@ -307,3 +307,23 @@ class TestEverySolutionIsRun:
         write(repo, asks + CELL + "```solution\nassert shift == 7\n```\n")
         b.solutions.check_site()
 
+
+
+class TestRefreshingTheCache:
+    """A push to main runs every page fresh and keeps what was clean, so a
+    pull request, which can only read what main kept, starts warm."""
+
+    def test_refresh_runs_a_remembered_page_again_and_still_remembers_it(self, repo, monkeypatch):
+        started = TestEverySolutionIsRun.runs_of_python(monkeypatch)
+        write(repo, CELL + SOLUTION + INPUTS)
+        b.solutions.check_site()
+        b.solutions.check_site()
+        assert len(started) == 1  # the second was remembered
+
+        monkeypatch.setattr(b.cfg, "SOLUTION_CACHE_REUSE", False)
+        b.solutions.check_site()
+        assert len(started) == 2  # run again, though remembered
+
+        monkeypatch.setattr(b.cfg, "SOLUTION_CACHE_REUSE", True)
+        b.solutions.check_site()
+        assert len(started) == 2  # and what the refresh kept is still good

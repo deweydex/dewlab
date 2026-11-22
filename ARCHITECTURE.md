@@ -675,7 +675,7 @@ python3 -m pytest tests --ignore=tests/e2e   the fast ones, no browser
   reads or writes) and `tutorial_tools.py`'s
   rendering rules under plain CPython (`test_tutorial_tools.py`). This is
   what CI's `tests` job runs on every push and PR.
-- **`tests/e2e/test_inpage_editor.py`** — editing a page where it stands. Builds
+- **`tests/e2e/test_inpage_editor.py`** (and `test_inpage_editor_blocks.py`, its second half) — editing a page where it stands. Builds
   a small site with the source map on and runs a real browser with service
   workers blocked, so the real GitHub client's calls to `api.github.com` are
   answered by a fake in the test file: nothing touches the network and the

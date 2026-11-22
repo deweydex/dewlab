@@ -44,13 +44,14 @@ A build writes pages and does not run them. `python3 check.py` does: each
 page's cells in order, then every solution with its inputs, as a reader's
 browser would. `python3 check.py tutorials/my-tutorial` runs one tutorial's;
 `python3 check.py --solutions` runs every page's and nothing else, which is
-what CI does. The whole site takes a couple of minutes the first time. After
+what CI does. The whole site takes a minute and a half the first time. After
 that a page whose cells, toolkit, data, runtime and installed packages are
-unchanged ran clean last time and is not run again. What was kept is in
+unchanged ran clean last time and is not run again; `--no-cache` runs
+everything and keeps nothing, `--refresh-cache` runs everything and keeps what
+was clean. What was kept is in
 `.build-cache/` (never committed), under a hash of exactly those things, so
 there is nothing to clear by hand; a failure, or a solution skipped for a
-missing package, is never kept. `--no-cache` runs everything, and a push to
-`main` does.
+missing package, is never kept. A push to `main` refreshes it.
 
 A build prints one summary line, then every note it has for you together,
 last, where you will see them. `python3 build.py -v` prints a line for each
@@ -79,9 +80,13 @@ python -m playwright install chromium
 python3 dev/fetch_pyodide.py            # about 30 MB
 ```
 
-Without them they skip with a message rather than failing. CI runs six of the
-browser files on every pull request, and the whole suite once a week
-(`.github/workflows/browser-suite.yml`), opening an issue if it fails.
+Without them they skip with a message rather than failing. CI runs seven of the
+browser files on every pull request that changes something they read, and the
+whole suite once a week on four machines
+(`.github/workflows/browser-suite.yml`), opening an issue if it fails. One file
+is in two parts, `test_inpage_editor.py` and `test_inpage_editor_blocks.py`,
+because each test there loads a page in a fresh browser and the file was most
+of the job.
 
 There is also [`tests/MANUAL_CHECKLIST.md`](tests/MANUAL_CHECKLIST.md) for the
 things a browser test does not cover well.
@@ -138,12 +143,25 @@ To see those checks locally, run
 `python3 dev/check_doc_links.py`. After changing a cell or a `covers:` line,
 `python3 dev/generated.py --fix` regenerates whatever fell behind.
 
-On a pull request, `tests` first sorts the changed files. One that changes only documents about the project (`planning/`,
-`docs/`, the top-level `.md` files, `.claude/`) gets the house-style job and
-nothing else. One that also changes `tutorials/` gets the unit tests and the
-glossary check as well, but not the browser job or the bundle check, since
-neither reads a tutorial. `planning/curriculum/` and `planning/feedback.yaml`
-are read by the build and count as code. A push to `main` runs everything.
+On a pull request, `tests` first sorts the changed files (`dev/ci_scope.py`,
+where the rules are written and tested). A change only to documents about the
+project (`planning/`, `docs/`, the top-level `.md` files, `.claude/`) gets the
+house-style job and nothing else. A tutorial, a course file or a tool no page
+depends on gets lint, the unit tests, the solutions and the glossary check.
+The browser job runs when a file the browser tests read has changed (the
+assets, the build, the real pages, the setup snippets, the datasets, the tests
+themselves), and the bundle check when something the bundle is made from has.
+`planning/curriculum/` and `planning/feedback.yaml` are read by the build and
+count as code. A push to `main` runs everything.
+
+Two things keep the slow parts short. The browser job runs on three machines
+at once: `dev/shard.py` deals whole test files out, heaviest first, and each
+machine runs its tests one at a time. And the solutions that ran clean are
+remembered: every push to `main` runs every page fresh
+(`check.py --solutions --refresh-cache`) and saves what was clean, and a pull
+request starts from that and runs only the pages its change reaches, so a
+tutorial change costs seconds. A new push to a pull request cancels the run
+before it.
 
 `standalone-bundle-is-current` rebuilds the vendored CodeMirror/KaTeX bundle
 from `vendor-src/` and fails on any difference. The bundle is committed on
