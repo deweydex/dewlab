@@ -38,7 +38,7 @@ jobs:
       browser: ${{ steps.sort.outputs.browser }}
       bundle: ${{ steps.sort.outputs.bundle }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 2
 
@@ -60,9 +60,9 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -107,7 +107,7 @@ jobs:
       # pages its change reaches.
       - name: Restore what earlier runs learned about each page's solutions
         if: github.event_name == 'pull_request'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .build-cache
           key: solutions-${{ runner.os }}-${{ github.sha }}
@@ -123,7 +123,7 @@ jobs:
 
       - name: Keep what main learned, for pull requests to start from
         if: github.event_name != 'pull_request'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .build-cache
           key: solutions-${{ runner.os }}-${{ github.sha }}
@@ -149,9 +149,9 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -173,9 +173,9 @@ jobs:
   house-style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -220,9 +220,9 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
@@ -244,9 +244,9 @@ jobs:
     if: needs.changes.outputs.bundle == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
 
@@ -292,9 +292,9 @@ jobs:
       matrix:
         share: [1, 2, 3]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -306,7 +306,7 @@ jobs:
 
       - name: Cache the self-hosted Pyodide
         id: pyodide
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: dev/pyodide
           key: pyodide-${{ hashFiles('dev/fetch_pyodide.py') }}
