@@ -221,7 +221,10 @@ Three other pages organise things differently. The **topic map** shows every
 topic dewlab teaches as a town. Towns that belong together are in one country,
 and a road joins each town to the towns it needs first. You can drag to move
 around it, scroll to zoom, and choose any town to read what it is and where
-it is taught. A town for a topic that no page teaches yet says so. The
+it is taught. Under the map, a list helps you choose a path. It shows the topics
+of each course in the order the course teaches them, the topics you can start
+today, and every country with what to begin with. Each topic says what to know
+first and what it leads to. A town for a topic that no page teaches yet says so. The
 **topic tree** shows the same topics as a list that reads downwards; topics
 that are not taught here yet are drawn with a dashed outline, so you can see
 where it has gaps. **Browse by topic** gathers

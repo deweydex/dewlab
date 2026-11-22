@@ -3787,6 +3787,11 @@
      "tutorial": "a-total-that-starts-again",
      "section": null,
      "role": "closer-look"
+    },
+    {
+     "tutorial": "experiments-with-loops",
+     "section": null,
+     "role": "applies"
     }
    ],
    "outcomes": [
@@ -4024,6 +4029,11 @@
      "tutorial": "a-row-of-numbers",
      "section": null,
      "role": "teaches"
+    },
+    {
+     "tutorial": "experiments-with-lists",
+     "section": null,
+     "role": "applies"
     }
    ],
    "outcomes": [
@@ -4057,6 +4067,11 @@
      "tutorial": "two-names-one-list",
      "section": null,
      "role": "closer-look"
+    },
+    {
+     "tutorial": "experiments-with-comprehensions",
+     "section": null,
+     "role": "applies"
     }
    ],
    "outcomes": [

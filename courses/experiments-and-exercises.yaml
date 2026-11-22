@@ -1,0 +1,47 @@
+title: Experiments and Exercises
+code: Experimental
+status: beta
+card: >-
+  Small questions, little text. You run a cell, change one thing, and see what
+  breaks. Names, text, numbers and decisions come first, then lists, loops
+  and comprehensions.
+description: >-
+  This module tries something different from the other courses. Each page is a
+  long run of small questions, with very little explanation in between. You
+  run a cell, change one thing, and watch what happens. You find out what
+  breaks, what error comes back, what a function does, and what a piece of
+  syntax is for.
+
+
+  The first series is Names, text, numbers and decisions. It starts from
+  the first things a program does: it attaches names to values, works with
+  text and numbers, asks for input, and chooses a path with `if`. Each page
+  opens with a short description of its idea. A few short notes appear later
+  where an idea is hard to find by experiment alone.
+
+
+  The second series is Lists, loops and comprehensions. It uses only what the
+  first series covers, and it does not use functions that you write yourself.
+  Patterns and puzzles are mixed in with the questions in both series,
+  because some things are easier to learn when you are trying to solve
+  something.
+
+
+  This module is experimental. It breaks some of the rules the other pages
+  follow on purpose, to see whether less text and smaller steps help. Tell us
+  what works for you and what does not.
+contents:
+- title: Names, text, numbers and decisions
+  tutorials:
+  - experiments-with-names-and-values
+  - experiments-with-text
+  - experiments-with-numbers
+  - experiments-with-input
+  - experiments-with-true-and-false
+  - experiments-with-one-decision
+  - experiments-with-many-decisions
+- title: Lists, loops and comprehensions
+  tutorials:
+  - experiments-with-lists
+  - experiments-with-loops
+  - experiments-with-comprehensions

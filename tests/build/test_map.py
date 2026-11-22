@@ -62,6 +62,60 @@ class TestThePage:
         assert '<div class="dl-tmap" id="dl-tmap" hidden></div>' in page
         assert 'src="assets/map.js' in page and 'href="assets/map.css' in page
 
+    def test_the_list_links_a_page_once_and_shows_where_a_topic_sits_on_the_paths(self, repo):
+        def pin(g):
+            asking = next(t for t in g["topics"] if t["id"] == "t-asking")
+            asking["steps"] = [
+                {"tutorial": "asking", "section": None, "role": "teaches"},
+                {"tutorial": "asking", "section": "first-part", "role": "teaches"},
+                {"tutorial": "a-challenge", "section": None, "role": "closer-look"},
+            ]
+        mapped(repo, graph=pin)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        topic = re.search(r'<li id="topic-t-asking">.*?(?=<li id="topic-|</ul>)', page, re.S).group(0)
+        # a page that teaches in two places is linked once, with its parts after it
+        assert topic.count('<a href="tutorials/asking.html">') == 1
+        assert 'Part: <a href="tutorials/asking.html#first-part">First part</a>' in topic
+        # the other kinds of step are in the list too, under their own label
+        assert "A closer look: " in topic and 'href="tutorials/a-challenge.html"' in topic
+        # and the topic says what comes before it and what comes after
+        assert "Needs first: nothing, so you can start here." in topic
+        assert 'Leads to: <a href="#topic-t-predict">' in topic
+        compare = re.search(r'<li id="topic-t-compare">.*?(?=<li id="topic-|</ul>)', page, re.S).group(0)
+        assert 'Needs first: <a href="#topic-t-predict">' in compare
+
+    def test_the_list_opens_with_course_routes_and_places_to_begin(self, repo):
+        mapped(repo)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        # a course route names its topics in teaching order, each linked to its place in the list
+        route = re.search(r'<details class="dl-tmap-list-course"><summary>Computational Methods.*?</details>', page, re.S).group(0)
+        assert route.index('href="#topic-t-asking"') < route.index('href="#topic-t-predict"')
+        assert 'id="topic-t-asking"' in page
+        # a place to begin is a taught topic that needs nothing first
+        begin = re.search(r"<h3>Places to begin</h3>.*?<h3>Browse by country</h3>", page, re.S).group(0)
+        assert 'href="#topic-t-asking"' in begin
+        assert 'href="#topic-t-predict"' not in begin
+        # a country wears its colour from the map, and a topic that needs nothing says so
+        assert 'class="dl-tmap-swatch"' in page and "var(--map-land-s)" in page
+        assert '<span class="dl-tmap-list-begin">Begin here</span>' in page
+        # a country says how big it is, and a long list of onward topics folds
+        assert re.search(r'id="country-[a-z-]+"><summary>.*?\d+ topics?', page)
+
+    def test_a_topic_that_leads_to_many_folds_its_list(self, repo):
+        def widen(g):
+            for extra in range(5):
+                g["topics"].append({**next(t for t in g["topics"] if t["id"] == "t-predict"),
+                                    "id": f"t-extra-{extra}", "name": f"Extra {extra}", "needs": ["t-asking"]})
+        def place(lay):
+            for extra in range(5):
+                lay["towns"][f"t-extra-{extra}"] = dict(lay["towns"]["t-predict"])
+        mapped(repo, graph=widen, layout=place)
+        b.build()
+        page = (repo / "site" / "map.html").read_text()
+        assert "<summary>Leads to 6 topics</summary>" in page
+
     def test_titles_and_courses_come_from_the_tutorials_not_the_map(self, repo):
         mapped(repo)
         b.build()
