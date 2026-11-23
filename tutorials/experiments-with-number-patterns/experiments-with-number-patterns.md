@@ -60,6 +60,14 @@ print(triangles)
 
 **2.3** Put the loop inside a function, `triangle_list(k)`, which returns the first `k` triangular numbers.
 
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Copy the three lines from 2.1 into the function, under `def`, and indent them.
+2. Replace `print(triangles)` with `return triangles`.
+3. The loop should stop after the `k`-th triangle. Which number in `range` controls where it stops?
+
+</details>
+
 ```python exec
 id: growing-a-triangle-2
 def triangle_list(k):
@@ -90,13 +98,21 @@ triangle_list(10)
 
 ## 3. Two triangles make a rectangle
 
-![On the left, a triangle of blue dots with rows of 1, 2, 3 and 4 dots, 10 dots in all. On the right, the same blue triangle with a second triangle of red rings turned upside down and fitted against it. Together they make a rectangle 4 rows tall and 5 dots wide, 20 dots in all.](two-triangles-make-a-rectangle.png)
+![Three pictures in a row, joined by arrows. First, a triangle of 10 blue dots with rows of 1, 2, 3 and 4, each row centred. Second, the same 10 dots pushed to the left, so the triangle has a square corner. Third, that blue triangle with a second triangle of red rings turned upside down and fitted against it, making a rectangle 4 rows tall and 5 dots wide.](two-triangles-make-a-rectangle.png)
 
-**3.1** Look at the picture. Two copies of the fourth triangle fill a rectangle. How tall is it, and how wide? How many dots is that?
+**3.1** Two copies of the n-th triangle fit together into a rectangle. Use the picture to find a rule for the number of dots in one triangle, and write it as a function `triangular(n)` with no loop.
 
-**3.2** Picture two copies of the fifth triangle fitted together in the same way. How tall and how wide is the rectangle now? Try the tenth triangle, and then the n-th triangle.
+<details class="dl-hint"><summary>smaller steps</summary>
 
-**3.3** If two triangles fill the rectangle, how many dots are in one triangle? Write your rule as a function `triangular(n)`, with no loop.
+1. Pushing the dots to the left changes the shape but not the count. In the third picture, count the rows of the rectangle and the dots in each row. How many dots is that altogether?
+2. How many of those dots belong to the blue triangle?
+3. Picture two copies of the fifth triangle fitted together. How tall and how wide is the rectangle now? Do the same for the tenth triangle.
+4. For the n-th triangle the rectangle is n rows tall. How wide is it?
+5. Write the rectangle's dots using n, then take the share that belongs to one triangle.
+
+**Try this next:** use your rule to find the 100th triangular number, and check it with `triangle_list(100)[-1]`.
+
+</details>
 
 ```python exec
 id: two-triangles-make-a-rectangle-1
@@ -118,7 +134,7 @@ print(triangular(100))
 The rectangle is n tall and n + 1 wide, and one triangle is half of it. `//` divides and keeps a whole number. n × (n + 1) is always even, so nothing is lost.
 ```
 
-**3.4** Check your rule against the list you grew. Does it agree for the first 50 triangles?
+**3.2** Check your rule against the list you grew. Does it agree for the first 50 triangles?
 
 ```python exec
 id: two-triangles-make-a-rectangle-2
@@ -153,9 +169,16 @@ def square(n):
 print([square(n) for n in range(1, 11)])
 ```
 
-**4.2** Now grow the squares instead. Draw a 4 by 4 square of dots, then add the dots that turn it into a 5 by 5 square. What shape do the new dots make, and how many are there? What do you add to get from 5 by 5 to 6 by 6?
+**4.2** Now grow the squares instead. Write `square_list(k)`, which builds each square from the one before it by adding the new dots, the way `triangle_list` builds triangles. Then check that it agrees with `square`.
 
-**4.3** Write `square_list(k)`, which grows the squares the way `triangle_list` grows the triangles: each new square is the last one plus something. Then check that the two ways agree.
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Draw a 4 by 4 square of dots. Add the dots that turn it into a 5 by 5 square. What shape do the new dots make?
+2. Count the new dots. Do the same going from 5 by 5 to 6 by 6, and from 1 by 1 to 2 by 2.
+3. Put those counts in a list. What kind of numbers are they?
+4. To make the n-th square, how many new dots do you add? Count along one side of the new dots, then along the other, and watch the corner dot.
+
+</details>
 
 ```python exec
 id: squares-two-ways-2
@@ -180,19 +203,22 @@ print(square_list(20) == [n * n for n in range(1, 21)])
 Each new square adds an L-shaped border of 2n − 1 dots: n along one side, n along the other, and one corner dot that both sides share.
 ```
 
-**4.4** You now have two ways to make the same numbers. One works out any square on its own. The other builds each square from the one before it. When might you want each one?
-
 ## 5. A pentagon is three triangles
 
 The pentagonal numbers begin 1, 5, 12, 22, 35. A pentagonal number can be drawn as a house: a square with a roof on top.
 
 ![The fourth pentagonal number drawn as a house of 22 dots. The bottom is a 4 by 4 square. Inside the square, blue dots fill the upper-left triangle, including the diagonal, and red rings fill the lower-right triangle. On top sits a roof of green squares with rows of 3, 2 and 1.](a-pentagon-of-three-triangles.png)
 
-**5.1** Find three triangles in the picture. Which triangular number is each one?
+**5.1** The picture is cut into three triangles. Write `pentagonal(n)` using your `triangular` function. `pentagonal(4)` should give 22.
 
-**5.2** Draw the fifth pentagonal number as a house in the same way, with a 5 by 5 square. Which three triangles are in it now?
+<details class="dl-hint"><summary>smaller steps</summary>
 
-**5.3** Write `pentagonal(n)` using your `triangular` function. `pentagonal(4)` should give 22.
+1. Count the blue dots. Which triangular number is that? How many rows does the blue triangle have?
+2. Do the same for the red rings, and then for the green roof.
+3. Draw the fifth pentagonal number as a house with a 5 by 5 square, and cut it the same way. How many rows does each triangle have now?
+4. For the n-th house, one triangle has n rows. How many rows do the other two have?
+
+</details>
 
 ```python exec
 id: a-pentagon-is-three-triangles-1
@@ -218,7 +244,15 @@ print([pentagonal(n) for n in range(1, 8)])
 The square splits into one triangle of side n and one of side n − 1, and the roof is another triangle of side n − 1.
 ```
 
-**5.4** Can you grow the pentagonal numbers as a list too, each one from the one before? Draw the fourth house, then the fifth, and look at which dots are new.
+**5.2** Grow the pentagonal numbers as a list too, each one from the one before.
+
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Put the pentagonal numbers 1, 5, 12, 22, 35 in a list and find the gaps between neighbours.
+2. What happens to the gaps each time? Compare with the gaps for triangles and for squares.
+3. Draw the fourth house and the fifth house. Which dots are new? Does that match the gap?
+
+</details>
 
 ```python exec
 id: a-pentagon-is-three-triangles-2
@@ -236,6 +270,14 @@ The hexagonal numbers begin 1, 6, 15, 28, 45. This section has no answers to che
 **6.2** How many triangles can you cut your hexagon into? Is there more than one answer?
 
 **6.3** When two triangles share an edge, the dots along that edge can end up counted twice. Where does that happen in your drawing? How would you correct for it?
+
+<details class="dl-hint"><summary>ways in</summary>
+
+1. Start small. Draw the second hexagonal number, 6 dots, and look for triangles in it.
+2. Try drawing lines from one corner of the hexagon to the other corners. How many triangles do you get? Then try lines from the centre instead.
+3. Choose one way of cutting it. Count each triangle's dots on its own and add them up. Is the total bigger than the hexagonal number? Which dots did you count more than once?
+
+</details>
 
 **6.4** Turn your idea into a function and test it on the list. Here is a helper that lists the gaps between neighbours, in case the gaps help you see something.
 
@@ -264,6 +306,14 @@ print([hexagonal(n) for n in range(1, 6)])
 **7.2** If you write `polygonal(sides, n)`, what should it give when `sides` is 3? When it is 4? Does your idea give the right lists for those?
 
 **7.3** What would a shape with 2 sides give? What about 1 side? Does your function give an answer anyway, and does the answer mean anything?
+
+<details class="dl-hint"><summary>ways in</summary>
+
+1. Make a small table: the number of sides, and how many triangles you cut each shape into.
+2. Does the number of triangles go up by the same amount each time a side is added?
+3. In each of your drawings, look at how many rows each triangle had. Which triangles were the same size?
+
+</details>
 
 ```python exec
 id: any-number-of-sides-1
