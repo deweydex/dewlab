@@ -27,6 +27,11 @@ description: >-
   something.
 
 
+  The third series is Functions, patterns and chance. It is the first to
+  write functions with `def` and `return`. It builds number patterns as
+  lists, measures how steep a curve is, and counts coin flips.
+
+
   This module is experimental. It breaks some of the rules the other pages
   follow on purpose, to see whether less text and smaller steps help. Tell us
   what works for you and what does not.
@@ -45,3 +50,8 @@ contents:
   - experiments-with-lists
   - experiments-with-loops
   - experiments-with-comprehensions
+- title: Functions, patterns and chance
+  tutorials:
+  - experiments-with-number-patterns
+  - experiments-with-slopes
+  - experiments-with-coin-flips
