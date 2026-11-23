@@ -1,12 +1,12 @@
 ---
 title: "Experiments with coin flips: chance in a list"
 year: "2026-2027"
-version: 2026.11.23.1
+version: 2026.11.23.2
 ---
 
 # Experiments with coin flips: chance in a list
 
-Python can make random choices with the `random` module. A module is a file of ready-made functions, and `import` brings one in. On this page you flip coins and roll dice inside functions, keep the results in lists, and count what happened.
+Python can make random choices with the `random` module. A module is a file of ready-made functions, and `import` brings one in. On this page you flip coins and roll dice inside functions, keep the results in lists, and count what happened. The patterns come from the counts.
 
 ## 1. Random choices
 
@@ -84,6 +84,14 @@ def flips(n):
 print(flips(20))
 ```
 
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Write a loop that runs `n` times.
+2. Inside it, call `flip()` and add the result to `results` with `.append()`.
+3. Return the list after the loop, not inside it. What happens if the `return` is indented into the loop?
+
+</details>
+
 ```solution
 import random
 
@@ -113,6 +121,14 @@ def count_heads(results):
 print(count_heads(["H", "T", "H", "H", "T"]))
 ```
 
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Loop over the list so that each result has a name, such as `result`.
+2. Inside the loop, check whether `result` is `"H"`.
+3. When it is, add 1 to `heads`.
+
+</details>
+
 ```solution
 def count_heads(results):
     heads = 0
@@ -140,29 +156,15 @@ results = [random.choice(["H", "T"]) for i in range(50)]
 # your code here
 ```
 
-**3.3** Write `fraction_heads(n)`, which flips `n` coins and returns the share that came up heads, as a number between 0 and 1. Run it for 10, 100, 1000 and 100000 flips, a few times each. What happens to the answer as `n` grows? What happens to how much it jumps around?
+**3.3** This cell flips `n` coins and prints the share that came up heads, for four sizes of `n`. Run it five or six times and watch the numbers. What happens to the share as `n` grows? What happens to how much it jumps around from run to run?
 
 ```python exec
 id: counting-what-happened-3
 import random
 
 def fraction_heads(n):
-    # your code here
-    return 0
-
-for n in [10, 100, 1000, 100000]:
-    print(n, fraction_heads(n))
-```
-
-```solution
-import random
-
-def fraction_heads(n):
-    heads = 0
-    for i in range(n):
-        if random.choice(["H", "T"]) == "H":
-            heads = heads + 1
-    return heads / n
+    results = [random.choice(["H", "T"]) for i in range(n)]
+    return results.count("H") / n
 
 for n in [10, 100, 1000, 100000]:
     print(n, fraction_heads(n))
@@ -174,7 +176,7 @@ A streak is a run of the same result in a row, such as H, H, H, H.
 
 **4.1** Before you write any code, guess the length of the longest streak in 100 flips. Write your guess down.
 
-**4.2** Write `longest_streak(results)`. Walk through the list with two counters: the length of the current streak and the longest one so far. `longest_streak(["H", "T", "T", "T", "H"])` should give 3.
+**4.2** Write `longest_streak(results)`. `longest_streak(["H", "T", "T", "T", "H"])` should give 3.
 
 ```python exec
 id: the-longest-streak-1
@@ -186,6 +188,15 @@ def longest_streak(results):
 
 print(longest_streak(["H", "T", "T", "T", "H"]))
 ```
+
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. Walk through the list by position, with `for i in range(len(results))`.
+2. Compare each result with the one before it, `results[i - 1]`. The first result has nothing before it, so treat it on its own.
+3. When a result matches the one before, the current streak grows by 1. When it does not, a new streak starts. How long is a new streak?
+4. After each step, if the current streak is longer than `longest`, update `longest`.
+
+</details>
 
 ```solution
 def longest_streak(results):
@@ -224,44 +235,10 @@ for trial in range(10):
 
 ## 5. Two dice
 
-**5.1** Write `roll_two()`, which returns the total of two dice.
+**5.1** This cell rolls two dice 10000 times and counts each total from 2 to 12. Run it a few times. Which totals turn up most, and which least?
 
 ```python exec
 id: two-dice-1
-import random
-
-def roll_two():
-    # your code here
-    return 0
-
-print(roll_two())
-```
-
-```solution
-import random
-
-def roll_two():
-    return random.randint(1, 6) + random.randint(1, 6)
-
-print(roll_two())
-```
-
-**5.2** Roll 10000 times and count each total from 2 to 12. The list `[0] * 13` gives a slot for every total from 0 to 12, and `counts[total] += 1` adds one to the right slot. Which total turns up most often?
-
-```python exec
-id: two-dice-2
-import random
-
-def roll_two():
-    return random.randint(1, 6) + random.randint(1, 6)
-
-counts = [0] * 13
-# your loop here
-for total in range(2, 13):
-    print(total, counts[total])
-```
-
-```solution
 import random
 
 def roll_two():
@@ -274,32 +251,57 @@ for total in range(2, 13):
     print(total, counts[total])
 ```
 
-**5.3** On paper, list every way two dice can make 7, and every way they can make 2. Does that explain your counts?
-
-## 6. An unfair coin
-
-**6.1** `random.random()` gives a decimal between 0 and 1. Write `unfair_flip(p)`, which returns `"H"` with probability `p`. Check with 10000 flips that `unfair_flip(0.7)` lands heads about 70% of the time.
+**5.2** Explain the counts. Write code that lists every way two dice can land and counts how many ways make each total from 2 to 12. Compare those numbers with the counts above.
 
 ```python exec
-id: an-unfair-coin-1
-import random
-
-def unfair_flip(p):
-    # your code here
-    return "H"
-
-results = [unfair_flip(0.7) for i in range(10000)]
-print(results.count("H") / 10000)
+id: two-dice-2
+ways = [0] * 13
+# your loops here
+for total in range(2, 13):
+    print(total, ways[total])
 ```
 
+<details class="dl-hint"><summary>smaller steps</summary>
+
+1. On paper, list every way to make 2, then every way to make 3, then every way to make 7. Count each list. Does 3 + 4 count as a different way from 4 + 3?
+2. A loop for the first die, `for first in range(1, 7):`, with a second loop for the second die inside it, visits every way the two dice can land. How many ways is that?
+3. Inside both loops, add 1 to `ways[first + second]`.
+4. Multiply each number of ways by 10000 and divide by 36. How close is that to your counts?
+
+</details>
+
 ```solution
+ways = [0] * 13
+for first in range(1, 7):
+    for second in range(1, 7):
+        ways[first + second] += 1
+for total in range(2, 13):
+    print(total, ways[total], round(ways[total] * 10000 / 36))
+```
+
+**5.3** Look at the list of ways, from 2 up to 12. Have you seen a pattern like it on the number patterns page? What do the gaps between neighbours look like?
+
+## 6. Questions to think about
+
+This section has no answers to check. The questions are for testing in code and talking over with someone.
+
+**6.1** Somebody writes down 100 "random" coin flips by hand, and a computer makes another 100. Could you tell which list is which? What would you count?
+
+**6.2** How many flips do you need before the share of heads stops moving much? What would "stops moving much" mean in numbers?
+
+**6.3** What would the counts look like for three dice? Which totals are possible, and which do you expect to be most common?
+
+<details class="dl-hint"><summary>ways in</summary>
+
+1. For 6.1, try writing 100 flips by hand yourself, then run `longest_streak` on your list and on a real one.
+2. For 6.2, run `fraction_heads` many times for one size of `n`, and look at the smallest and largest answers.
+3. For 6.3, add a third loop inside the two from 5.2.
+
+</details>
+
+```python exec
+id: questions-to-think-about-1
 import random
 
-def unfair_flip(p):
-    if random.random() < p:
-        return "H"
-    return "T"
-
-results = [unfair_flip(0.7) for i in range(10000)]
-print(results.count("H") / 10000)
+# your experiments here
 ```
