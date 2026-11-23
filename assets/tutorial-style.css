@@ -214,6 +214,11 @@ body {
   padding: 0 1.25rem 6rem;
 }
 
+/* A picture written in a page's markdown (![...](file.png)) is shown no
+   wider than the text column, so a wide drawing shrinks to fit a phone
+   instead of running off the side. Smaller pictures keep their own size. */
+.dl-page p > img { max-width: 100%; height: auto; }
+
 /* The reading column sits between the docks, not centred on the screen
    regardless of them. Each side reserves what is actually on it — the
    resting dock, or a panel opened over it — and the column takes the

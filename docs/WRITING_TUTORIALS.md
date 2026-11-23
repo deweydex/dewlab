@@ -1262,6 +1262,11 @@ image, `![](file.png)`, is written with `alt=""` when you leave the text out, so
 it builds. Put the words in the brackets when the picture shows something a
 reader who cannot see it would miss.
 
+A markdown image is shown at its own size, but never wider than the text
+column: a wider one shrinks to fit, which keeps it on screen on a phone. Text
+inside a picture shrinks with it, so a drawing meant to be read at full size
+is best kept under about 560 pixels wide.
+
 ---
 
 ## Practice pages

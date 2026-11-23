@@ -1,16 +1,18 @@
 ---
 title: "Experiments with coin flips: chance in a list"
 year: "2026-2027"
-version: 2026.11.23.2
+version: 2026.11.23.3
 ---
 
 # Experiments with coin flips: chance in a list
 
-Python can make random choices with the `random` module. A module is a file of ready-made functions, and `import` brings one in. On this page you flip coins and roll dice inside functions, keep the results in lists, and count what happened. The patterns come from the counts.
+Python can make random choices for us. On this page we flip coins and roll dice inside functions, keep the results in lists, and count what happened. The patterns come from the counts.
+
+There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
 ## 1. Random choices
 
-**1.1** Run this cell three times. What changes, and what stays the same?
+Python's random choices live in a module called `random`. A module is a file of ready-made functions, and the line `import random` brings it in so that we can use them. Two of its functions are useful here: `random.randint(1, 6)` picks a whole number from 1 to 6, like a die, and `random.choice(["H", "T"])` picks one item from a list.
 
 ```python exec
 id: random-choices-1
@@ -20,33 +22,35 @@ print(random.randint(1, 6))
 print(random.choice(["H", "T"]))
 ```
 
-**1.2** Try `random.randint(1, 1)` and `random.randint(6, 1)`. One of them is not random at all. The other one fails. Read its error.
+**1.1** Run the cell three times. What changes from run to run, and what stays the same?
+
+<!-- answer -->
+
+**1.2** What do you expect from `random.randint(1, 1)`? What about `random.randint(6, 1)`? Try both, and read any error.
 
 ```python exec
 id: random-choices-2
-import random
-
 print(random.randint(1, 1))
-# your code here
 ```
 
-**1.3** Put `random.seed(42)` on the line after the import and run the cell twice. What do you notice? Change 42 to another number.
+<!-- answer -->
+
+**1.3** The cell below sets a seed before rolling. Run it twice. What do you notice? Then change 42 to another number and run it twice more.
 
 ```python exec
 id: random-choices-3
-import random
-
+random.seed(42)
 print(random.randint(1, 6), random.randint(1, 6), random.randint(1, 6))
 ```
 
+<!-- answer -->
+
 ## 2. One flip, then many
 
-**2.1** Write `flip()`, which takes no arguments and returns `"H"` or `"T"`. Call it ten times in a loop.
+**2.1** Write a function `flip()` that hands back `"H"` or `"T"` at random. It needs no arguments, so its brackets stay empty.
 
 ```python exec
 id: one-flip-then-many-1
-import random
-
 def flip():
     # your code here
     return "?"
@@ -65,17 +69,18 @@ for i in range(10):
     print(flip())
 ```
 
-**2.2** Change the loop so the ten results print on one line. `print` has an `end` argument that can help.
-
-**2.3** Write `flips(n)`, which returns a list of `n` coin flips.
+**2.2** The cell below prints ten flips. How could you make them print on one line? `print` has an argument called `end` that decides what comes after each print.
 
 ```python exec
 id: one-flip-then-many-2
-import random
+for i in range(10):
+    print(flip())
+```
 
-def flip():
-    return random.choice(["H", "T"])
+**2.3** Write `flips(n)`, which hands back a list of `n` coin flips.
 
+```python exec
+id: one-flip-then-many-3
 def flips(n):
     results = []
     # your loop here
@@ -87,8 +92,8 @@ print(flips(20))
 <details class="dl-hint"><summary>smaller steps</summary>
 
 1. Write a loop that runs `n` times.
-2. Inside it, call `flip()` and add the result to `results` with `.append()`.
-3. Return the list after the loop, not inside it. What happens if the `return` is indented into the loop?
+2. Inside the loop, call `flip()` and add its result to `results` with `.append()`.
+3. Put the `return` after the loop, not inside it. What happens if it is indented into the loop?
 
 </details>
 
@@ -109,7 +114,7 @@ print(flips(20))
 
 ## 3. Counting what happened
 
-**3.1** Write `count_heads(results)`, which counts the heads in a list with a loop and an `if`.
+**3.1** Write `count_heads(results)`, which counts the heads in a list of flips using a loop and an `if`.
 
 ```python exec
 id: counting-what-happened-1
@@ -123,7 +128,7 @@ print(count_heads(["H", "T", "H", "H", "T"]))
 
 <details class="dl-hint"><summary>smaller steps</summary>
 
-1. Loop over the list so that each result has a name, such as `result`.
+1. Loop over the list so that each flip has a name, such as `result`.
 2. Inside the loop, check whether `result` is `"H"`.
 3. When it is, add 1 to `heads`.
 
@@ -140,43 +145,36 @@ def count_heads(results):
 print(count_heads(["H", "T", "H", "H", "T"]))
 ```
 
-```inputs
-count_heads(["H", "T", "H", "H", "T"])
-count_heads(["T", "T"])     # no heads at all
-count_heads([])             # no flips at all
-```
-
-**3.2** A list can count for you: `results.count("H")`. Check that it agrees with your function on a list of 50 flips.
+**3.2** Lists can count for themselves: `results.count("H")` counts the heads in `results`. Does it agree with your function on 50 flips?
 
 ```python exec
 id: counting-what-happened-2
-import random
-
-results = [random.choice(["H", "T"]) for i in range(50)]
-# your code here
+results = flips(50)
+print(count_heads(results), results.count("H"))
 ```
 
-**3.3** This cell flips `n` coins and prints the share that came up heads, for four sizes of `n`. Run it five or six times and watch the numbers. What happens to the share as `n` grows? What happens to how much it jumps around from run to run?
+**3.3** The cell below flips `n` coins and prints the share that came up heads, for four sizes of `n`. Run it five or six times and watch the numbers. What happens to the share as `n` grows? What happens to how much it jumps around from run to run?
 
 ```python exec
 id: counting-what-happened-3
-import random
-
 def fraction_heads(n):
-    results = [random.choice(["H", "T"]) for i in range(n)]
-    return results.count("H") / n
+    return flips(n).count("H") / n
 
 for n in [10, 100, 1000, 100000]:
     print(n, fraction_heads(n))
 ```
 
+<!-- answer -->
+
 ## 4. The longest streak
 
 A streak is a run of the same result in a row, such as H, H, H, H.
 
-**4.1** Before you write any code, guess the length of the longest streak in 100 flips. Write your guess down.
+**4.1** Before writing any code, guess the length of the longest streak in 100 flips.
 
-**4.2** Write `longest_streak(results)`. `longest_streak(["H", "T", "T", "T", "H"])` should give 3.
+<!-- answer -->
+
+**4.2** Write `longest_streak(results)`, which hands back the length of the longest streak in a list. `longest_streak(["H", "T", "T", "T", "H"])` should give 3.
 
 ```python exec
 id: the-longest-streak-1
@@ -187,13 +185,14 @@ def longest_streak(results):
     return longest
 
 print(longest_streak(["H", "T", "T", "T", "H"]))
+print(longest_streak(["H", "H", "H"]))
 ```
 
 <details class="dl-hint"><summary>smaller steps</summary>
 
 1. Walk through the list by position, with `for i in range(len(results))`.
-2. Compare each result with the one before it, `results[i - 1]`. The first result has nothing before it, so treat it on its own.
-3. When a result matches the one before, the current streak grows by 1. When it does not, a new streak starts. How long is a new streak?
+2. Compare each flip with the one before it, `results[i - 1]`. The first flip has nothing before it, so it needs its own case.
+3. When a flip matches the one before, the current streak grows by 1. When it does not, a new streak starts. How long is a new streak?
 4. After each step, if the current streak is longer than `longest`, update `longest`.
 
 </details>
@@ -212,35 +211,25 @@ def longest_streak(results):
     return longest
 
 print(longest_streak(["H", "T", "T", "T", "H"]))
+print(longest_streak(["H", "H", "H"]))
 ```
 
-```inputs
-longest_streak(["H", "T", "T", "T", "H"])
-longest_streak(["H", "H", "H"])      # one long streak
-longest_streak(["H"])                # a single flip
-longest_streak([])                   # no flips
-```
-
-**4.3** Run `longest_streak` on 100 fresh flips ten times. How close was your guess? Was it too high or too low?
+**4.3** The cell below finds the longest streak in 100 fresh flips, ten times over. How close was your guess? Was it too high or too low?
 
 ```python exec
 id: the-longest-streak-2
-import random
-
-# paste your longest_streak function here
 for trial in range(10):
-    results = [random.choice(["H", "T"]) for i in range(100)]
-    # print the longest streak here
+    print(longest_streak(flips(100)))
 ```
+
+<!-- answer -->
 
 ## 5. Two dice
 
-**5.1** This cell rolls two dice 10000 times and counts each total from 2 to 12. Run it a few times. Which totals turn up most, and which least?
+**5.1** The cell below rolls two dice 10000 times and counts each total from 2 to 12. The list `counts` has a slot for each total, and `counts[total] += 1` adds one to the right slot. Run it a few times. Which totals turn up most, and which least?
 
 ```python exec
 id: two-dice-1
-import random
-
 def roll_two():
     return random.randint(1, 6) + random.randint(1, 6)
 
@@ -251,7 +240,13 @@ for total in range(2, 13):
     print(total, counts[total])
 ```
 
-**5.2** Explain the counts. Write code that lists every way two dice can land and counts how many ways make each total from 2 to 12. Compare those numbers with the counts above.
+<!-- answer -->
+
+**5.2** On paper, list every way two dice can make a total of 2, then 3, then 7. Does a 3 on the first die and a 4 on the second count as a different way from a 4 and a 3?
+
+<!-- answer -->
+
+**5.3** Write code that goes through every way two dice can land and counts how many ways make each total from 2 to 12. How do those numbers compare with the counts from 5.1?
 
 ```python exec
 id: two-dice-2
@@ -263,10 +258,9 @@ for total in range(2, 13):
 
 <details class="dl-hint"><summary>smaller steps</summary>
 
-1. On paper, list every way to make 2, then every way to make 3, then every way to make 7. Count each list. Does 3 + 4 count as a different way from 4 + 3?
-2. A loop for the first die, `for first in range(1, 7):`, with a second loop for the second die inside it, visits every way the two dice can land. How many ways is that?
-3. Inside both loops, add 1 to `ways[first + second]`.
-4. Multiply each number of ways by 10000 and divide by 36. How close is that to your counts?
+1. A loop for the first die, `for first in range(1, 7):`, with a second loop inside it for the second die, visits every way the two dice can land. How many ways is that?
+2. Inside both loops, add 1 to `ways[first + second]`.
+3. Multiply each number of ways by 10000 and divide by 36. How close is that to the counts?
 
 </details>
 
@@ -279,7 +273,9 @@ for total in range(2, 13):
     print(total, ways[total], round(ways[total] * 10000 / 36))
 ```
 
-**5.3** Look at the list of ways, from 2 up to 12. Have you seen a pattern like it on the number patterns page? What do the gaps between neighbours look like?
+**5.4** Look at the list of ways, from 2 up to 12. Have you seen a pattern like it on the number patterns page? What do the gaps between neighbours look like?
+
+<!-- answer -->
 
 ## 6. Questions to think about
 
@@ -287,21 +283,25 @@ This section has no answers to check. The questions are for testing in code and 
 
 **6.1** Somebody writes down 100 "random" coin flips by hand, and a computer makes another 100. Could you tell which list is which? What would you count?
 
-**6.2** How many flips do you need before the share of heads stops moving much? What would "stops moving much" mean in numbers?
+<!-- answer -->
 
-**6.3** What would the counts look like for three dice? Which totals are possible, and which do you expect to be most common?
+**6.2** How many flips does it take before the share of heads stops moving much? What would "stops moving much" mean in numbers?
+
+<!-- answer -->
+
+**6.3** What would the counts look like for three dice? Which totals are possible, and which would you expect to be most common?
+
+<!-- answer -->
 
 <details class="dl-hint"><summary>ways in</summary>
 
-1. For 6.1, try writing 100 flips by hand yourself, then run `longest_streak` on your list and on a real one.
+1. For 6.1, write 100 flips by hand yourself as a list, then compare `longest_streak` on your list and on a real one.
 2. For 6.2, run `fraction_heads` many times for one size of `n`, and look at the smallest and largest answers.
-3. For 6.3, add a third loop inside the two from 5.2.
+3. For 6.3, add a third loop inside the two from 5.3.
 
 </details>
 
 ```python exec
 id: questions-to-think-about-1
-import random
-
 # your experiments here
 ```
