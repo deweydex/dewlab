@@ -318,7 +318,7 @@ and when that copy was saved.
 added yourself, as a `.ipynb` file you can open elsewhere.
 
 The contents page also offers **Download all N as single files** for a whole
-series at once, as a zip. That is the one to use if you are filling a USB drive or taking a set of tutorials home.
+series at once, as a zip. That is the one to use if you are filling a USB drive or taking a set of tutorials home. Your browser puts the zip together when you press the button, so a big course takes a few seconds, and a line under the button counts the files as it goes.
 
 ---
 

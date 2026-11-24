@@ -235,7 +235,7 @@ class TestAllTutorialsPage:
         # standalone build inlines the whole stylesheet and runtime, which
         # name the classes in their own selectors — so only the markup
         # outside both is checked.
-        markup = outside_style_and_script((repo / "site" / "download" / "sample.html").read_text())
+        markup = outside_style_and_script(b.read_copy(repo / "site" / "download", "sample"))
         for rung in ("dl-crumb-level-2", "dl-crumb-level-3", "All tutorials</summary>", "dl-crumb-practice"):
             assert rung not in markup
 

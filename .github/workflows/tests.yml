@@ -271,8 +271,8 @@ jobs:
   # weekly): the ones that prove the page's chrome and the layout, and never
   # run a cell: the reference panel, the phone layout, link contrast, the
   # course chooser, the remembered course, the saved-work key migration and an
-  # old address, a panel's edge-resize drag, the topic map, and editing a page
-  # where it stands. The phone identity-row regression in #230 reached main
+  # old address, a panel's edge-resize drag, the topic map, editing a page
+  # where it stands, and a download put together in the browser. The phone identity-row regression in #230 reached main
   # with CI green because none of these ran here, and the resize-drag file was
   # added after a live-sync bug shipped with nothing here to catch it either.
   # Pyodide is fetched once and cached: the fixture site serves it, and a page
@@ -324,7 +324,8 @@ jobs:
             tests/e2e/test_panel_resize_drag.py \
             tests/e2e/test_map.py \
             tests/e2e/test_inpage_editor.py \
-            tests/e2e/test_inpage_editor_blocks.py)
+            tests/e2e/test_inpage_editor_blocks.py \
+            tests/e2e/test_downloads.py)
           echo "$files"
           python -m pytest $files
 

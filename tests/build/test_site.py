@@ -131,7 +131,7 @@ class TestOnePlainTutorial:
             r'<section class="dl-settings-section" id="dl-settings-download">.*?</section>',
             page, re.DOTALL,
         ).group(0)
-        assert 'href="../download/sample.html"' in section
+        assert 'href="../download/parts/sample.html" data-dl-save-as="sample.html"' in section
         # The front page has no tutorial to download.
         assert (
             '<section class="dl-settings-section" id="dl-settings-download"></section>'
@@ -588,13 +588,13 @@ class TestTheDownloadableCopy:
     ):
         write(repo_with_assets, "```python exec\nid: c\n1 + 1\n```\n\n" + sections(3))
         b.build(standalone=True)
-        page = (repo_with_assets / "site" / "download" / "sample.html").read_text()
+        page = b.read_copy(repo_with_assets / "site" / "download", "sample")
         # A downloadable copy does not offer its own download.
         assert (
             '<section class="dl-settings-section" id="dl-settings-download"></section>'
             in page
         )
-        assert "download/sample.html" not in page
+        assert "download/parts/sample.html" not in page
         # It keeps the rest of the panel.
         assert 'id="dl-settings-toggle"' in page
         assert 'id="dl-settings-work"' in page

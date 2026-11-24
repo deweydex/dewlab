@@ -36,7 +36,7 @@ package beside it:
 |---|---|
 | `builder/main.py` | Most of the build: reading a page, rendering its blocks, courses and navigation, checks, and `build()` itself. Where this document says "`build.py`'s `something()`", look here first. |
 | `builder/finding.py` | How a topic is found: the topic tree, Browse by topic, the topic map, the knowledge map, the filters, and the search and reference indexes. |
-| `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. |
+| `builder/downloads.py` | What a reader can take away: a tutorial as one HTML file, a zip of a series or a course, and the Notebook as an offline folder. The site holds each copy as a skeleton plus pieces every copy shares; `assets/downloads.js` joins them in the reader's browser (below). |
 | `builder/solutions.py`, `builder/solution_runner.py` | Running every solution on a page, the way a reader's browser would. Not part of a build: `check.py` and CI call it. |
 | `builder/serve.py` | The preview server behind `python3 build.py --serve`: the built site, on this machine only. |
 | `builder/config.py` | `cfg`: every path the build reads or writes, and its three switches. |
@@ -378,6 +378,29 @@ SVGs from data the build computes (`tree_data()` in `builder/finding.py`); `vend
 also produces `assets/vendor/standalone.bundle.js`, the entire runtime as one
 classic script rather than an ES module, which is what a **Download to
 keep** file runs, since `file://` can't load a module.
+
+**A download is put together in the reader's browser.** Every downloadable
+copy is one self-contained file, and most of each one is the same runtime,
+stylesheets, fonts and Python tools. Written out whole, those bytes were on
+the site once per page and again in every series and course zip, which took
+the published site past the 1 GB GitHub Pages accepts. So
+`write_standalone()` still makes the whole file in memory, then cuts each
+repeated piece out (`shared_pieces()`, `split_into_parts()`): the pieces go
+to `download/shared/` once each, named by a hash of their content, and the
+rest goes to `download/parts/<id>.html` with a `<!--dl-part:NAME-->` marker
+where each piece was. The build joins every skeleton back together and stops
+if the result is not the file it split. A series or course is
+`download/<name>.json`: the zip's filename, each file's name inside it and
+the skeleton it comes from, the start-here page as text, and an estimated
+size for the link to state. A download link carries `data-dl-save-as`;
+`assets/downloads.js` catches the click, fetches the skeleton or the
+manifest and the pieces, joins them, and saves one HTML file or a zip it
+writes itself (deflated with `CompressionStream` where the browser has it,
+stored otherwise). The join makes no decisions, so everything a copy holds
+is still decided in `builder/downloads.py`, and `join_parts()` there is the
+same join in Python for the build's check and the tests (`read_copy()`,
+`read_archive()`). `tests/e2e/test_downloads.py` holds the browser's join to
+it byte for byte.
 
 **Code intelligence** — completion and hover docs — layers onto every
 cell's CodeMirror instance in `vendor-src/codemirror-entry.js`.

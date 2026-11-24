@@ -2325,6 +2325,11 @@ html[data-dl-embedded] .dl-page img { max-width: 100%; height: auto; }
   text-decoration: none;
 }
 .dl-download:hover { border-color: var(--dl-orange); color: var(--dl-orange); }
+.dl-download[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+/* What assets/downloads.js says while it puts a download together, or why
+   it could not. Empty, and so invisible, the rest of the time. */
+.dl-download-status { display: block; margin-top: 0.4rem; font-size: 0.85rem; color: var(--dl-muted, #5f6b7a); }
+.dl-download-status:empty { display: none; }
 
 .dl-download-icon {
   flex: none;

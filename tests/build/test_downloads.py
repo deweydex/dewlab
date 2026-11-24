@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import zipfile
 from pathlib import Path
 
 import pytest
@@ -18,16 +17,21 @@ class TestTheDownloadableCopy:
     The version list does not travel."""
 
     def standalone(self, repo) -> str:
-        return (repo / "site" / "download" / "sample.html").read_text()
+        return b.read_copy(repo / "site" / "download", "sample")
 
     def test_a_tutorial_with_a_cell_gets_a_self_contained_copy_the_page_links_to(self, repo_with_assets):
         write(repo_with_assets, "Some prose, and no maths at all.\n\n```python exec\nid: c\n1 + 1\n```\n")
         b.build(standalone=True)
-        # It is written beside the site.
-        assert (repo_with_assets / "site" / "download" / "sample.html").is_file()
-        # The page links to it.
+        # It is written beside the site, as a skeleton of its own and pieces
+        # every copy shares, which the browser joins (assets/downloads.js).
+        download = repo_with_assets / "site" / "download"
+        skeleton = (download / "parts" / "sample.html").read_text()
+        assert "<!--dl-part:runtime-" in skeleton
+        assert len(skeleton) < 100_000
+        assert any(p.name.startswith("runtime-") for p in (download / "shared").iterdir())
+        # The page links to it, to be saved under the page's own name.
         page = built(repo_with_assets)
-        assert 'href="../download/sample.html"' in page
+        assert 'href="../download/parts/sample.html" data-dl-save-as="sample.html"' in page
         copy = self.standalone(repo_with_assets)
         # The stylesheet travels inside it.
         assert "--dl-navy" in copy
@@ -42,6 +46,8 @@ class TestTheDownloadableCopy:
         # The Python tools travel inside it.
         assert "toolsSource" in copy
         assert "def show(" in copy
+        # Nothing is left to join.
+        assert "<!--dl-part:" not in copy
         # A tutorial without maths does not carry the maths fonts.
         assert ".katex-html" not in copy
         assert "data:font/woff2;base64," in copy  # the accessible fonts still do
@@ -134,24 +140,25 @@ class TestTheSeriesArchive:
         set_order(repo, "computational-methods", "Core skills", ["t1", "t2"])
 
     def archive(self, repo) -> Path:
-        return repo / "site" / "download" / "computational-methods-core-skills.zip"
+        return repo / "site" / "download" / "computational-methods-core-skills.json"
 
     def test_a_series_of_two_becomes_one_archive_with_a_start_here_page_the_contents_page_offers(self, repo_with_assets):
         self.two_tutorials(repo_with_assets)
         b.build(standalone=True)
         # A series is gathered into one archive.
         assert self.archive(repo_with_assets).is_file()
-        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            # It holds every downloadable copy in the series.
-            assert sorted(archive.namelist()) == [
-                "computational-methods-core-skills/0-start-here.html",
-                "computational-methods-core-skills/01-t1.html",
-                "computational-methods-core-skills/02-t2.html",
-            ]
-            page = archive.read("computational-methods-core-skills/01-t1.html").decode()
-            start_here = archive.read(
-                "computational-methods-core-skills/0-start-here.html"
-            ).decode()
+        files = b.read_archive(self.archive(repo_with_assets))
+        # It holds every downloadable copy in the series.
+        assert sorted(files) == [
+            "computational-methods-core-skills/0-start-here.html",
+            "computational-methods-core-skills/01-t1.html",
+            "computational-methods-core-skills/02-t2.html",
+        ]
+        page = files["computational-methods-core-skills/01-t1.html"]
+        start_here = files["computational-methods-core-skills/0-start-here.html"]
+        # The zip the browser builds is named for the series.
+        assert json.loads(self.archive(repo_with_assets).read_text())["zip"] == (
+            "computational-methods-core-skills.zip")
         # What it holds still runs.
         assert "pyodide.js" in page
         assert "--dl-navy" in page
@@ -163,21 +170,22 @@ class TestTheSeriesArchive:
         assert 'href="02-t2.html"' in start_here
         # The contents page offers it.
         index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
-        assert 'href="download/computational-methods-core-skills.zip"' in index
+        assert 'href="download/computational-methods-core-skills.json"' in index
         assert "Download all 2" in index
         # The download link sits above the list, not below it.
-        link = index.index('href="download/computational-methods-core-skills.zip"')
+        link = index.index('href="download/computational-methods-core-skills.json"')
         listing = index.index('<ol class="dl-contents">')
         assert link < listing
         # The download link is a button with a hidden icon.
         assert (
-            '<a class="dl-download" href="download/computational-methods-core-skills.zip" '
-            'download><span class="dl-download-icon" aria-hidden="true"></span>'
+            '<a class="dl-download" href="download/computational-methods-core-skills.json" '
+            'data-dl-save-as="computational-methods-core-skills.zip">'
+            '<span class="dl-download-icon" aria-hidden="true"></span>'
             "Download all 2" in index
         )
         # The copy of a tutorial in a series: navigation is dropped rather
         # than left broken, and the maths fonts travel with a maths tutorial.
-        page = (repo_with_assets / "site" / "download" / "t1.html").read_text()
+        page = b.read_copy(repo_with_assets / "site" / "download", "t1")
         assert "<nav" not in page
         assert "data:font/woff2;base64," in page
 
@@ -191,8 +199,7 @@ class TestTheSeriesArchive:
             '---\n\n**1.** A question.\n'
         )
         b.build(standalone=True)
-        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            names = sorted(archive.namelist())
+        names = sorted(b.read_archive(self.archive(repo_with_assets)))
         # The practice page follows its tutorial.
         assert names == [
             "computational-methods-core-skills/0-start-here.html",
@@ -214,8 +221,8 @@ class TestTheSeriesArchive:
         assert not (repo_with_assets / "site" / "download").exists()
         # Neither the series archive nor the course archive is offered.
         index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
-        assert ".zip" not in index
-        assert "computational-methods-all.zip" not in index
+        assert "dl-download" not in index
+        assert "computational-methods-all" not in index
 
     def test_a_name_and_a_size_are_written_for_people(self, tmp_path):
         # A series name written for people becomes a filename.
@@ -227,6 +234,7 @@ class TestTheSeriesArchive:
         big.write_bytes(b"x" * 2_500_000)
         assert b.readable_size(small) == "4 KB"
         assert b.readable_size(big) == "2 MB"
+        assert b.readable_bytes(2_500_000) == "2 MB"
 
 
 class TestTheCourseArchive:
@@ -250,7 +258,7 @@ class TestTheCourseArchive:
         return path
 
     def archive(self, repo) -> Path:
-        return repo / "site" / "download" / "computational-methods-all.zip"
+        return repo / "site" / "download" / "computational-methods-all.json"
 
     def test_two_series_are_numbered_continuously_with_a_practice_page_following_its_tutorial_and_a_mixed_set_at_the_end(self, repo_with_assets):
         write(repo_with_assets, "One.\n", slug="one")
@@ -261,9 +269,9 @@ class TestTheCourseArchive:
         b.build(standalone=True)
         # It gathers every series in the course.
         assert self.archive(repo_with_assets).is_file()
-        with zipfile.ZipFile(self.archive(repo_with_assets)) as archive:
-            names = sorted(archive.namelist())
-            start_here = archive.read("computational-methods/0-start-here.html").decode()
+        files = b.read_archive(self.archive(repo_with_assets))
+        names = sorted(files)
+        start_here = files["computational-methods/0-start-here.html"]
         # Numbering does not restart between series, a practice page follows
         # its own tutorial rather than being sorted separately, and the
         # mixed set lands at the end, after both series.
@@ -278,12 +286,13 @@ class TestTheCourseArchive:
         assert start_here.index("03-two.html") < start_here.index("04-mixed.html")
         # The contents page offers it.
         index = (repo_with_assets / "site" / "all-tutorials.html").read_text()
-        assert 'href="download/computational-methods-all.zip"' in index
+        assert 'href="download/computational-methods-all.json"' in index
+        assert 'data-dl-save-as="computational-methods-all.zip"' in index
 
 
 class TestDownloadsDoNotCollide:
     """An id is site-wide, so the download folder is flat: one copy per
-    page at download/<id>.html, and a tutorial listed on two courses has
+    page at download/parts/<id>.html, and a tutorial listed on two courses has
     one copy, not one per course, while each course's archive gathers its
     own listing."""
 
@@ -294,20 +303,20 @@ class TestDownloadsDoNotCollide:
         b.build(standalone=True)
         # Every page has one downloadable copy, by its id.
         pages = list((repo_with_assets / "site" / "tutorials").rglob("*.html"))
-        copies = [
-            p for p in (repo_with_assets / "site" / "download").rglob("*.html")
-            if "notebook" not in p.parts
-        ]
+        download = repo_with_assets / "site" / "download"
+        copies = list((download / "parts").glob("*.html"))
         assert len(copies) == len(pages) == 2
-        assert (repo_with_assets / "site" / "download" / "first-steps.html").is_file()
+        assert (download / "parts" / "first-steps.html").is_file()
         page = built(repo_with_assets, "first-steps")
-        assert 'href="../download/first-steps.html"' in page
+        assert 'href="../download/parts/first-steps.html"' in page
         # Each course archive gathers its own listing.
-        with zipfile.ZipFile(repo_with_assets / "site" / "download" / "zz-other-all.zip") as archive:
-            assert archive.namelist() == ["zz-other/01-first-steps.html", "zz-other/0-start-here.html"]
-        with zipfile.ZipFile(repo_with_assets / "site" / "download" / "computational-methods-all.zip") as archive:
-            assert sorted(archive.namelist()) == [
-                "computational-methods/0-start-here.html",
-                "computational-methods/01-first-steps.html",
-                "computational-methods/02-second.html",
-            ]
+        assert list(b.read_archive(download / "zz-other-all.json")) == [
+            "zz-other/01-first-steps.html", "zz-other/0-start-here.html"]
+        assert sorted(b.read_archive(download / "computational-methods-all.json")) == [
+            "computational-methods/0-start-here.html",
+            "computational-methods/01-first-steps.html",
+            "computational-methods/02-second.html",
+        ]
+        # The pieces every copy repeats are on the site once, not once a copy.
+        runtimes = [p for p in (download / "shared").iterdir() if p.name.startswith("runtime-")]
+        assert len(runtimes) == 1

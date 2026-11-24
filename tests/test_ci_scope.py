@@ -22,7 +22,10 @@ import ci_scope  # noqa: E402
     (["tutorials/a/a.glossary.yaml"], True, False, False),
     # Tooling no page depends on.
     (["dev/check_video_links.py", "check.py", "new.py", "ruff.toml", "requirements-dev.txt"], True, False, False),
-    (["builder/solutions.py", "builder/solution_runner.py", "builder/serve.py", "builder/downloads.py"], True, False, False),
+    (["builder/solutions.py", "builder/solution_runner.py", "builder/serve.py"], True, False, False),
+    # A browser test joins the downloads the build writes.
+    (["builder/downloads.py"], True, True, False),
+    (["assets/downloads.js"], True, True, True),
     # What a page is built from, and what a browser runs.
     (["assets/tutorial-style.css"], True, True, False),
     (["assets/shell.html"], True, True, False),

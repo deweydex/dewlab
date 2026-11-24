@@ -11,12 +11,16 @@ from __future__ import annotations
 
 from pathlib import Path
 import base64
+import functools
+import hashlib
 import html
 import json
 import re
 import shutil
 import source_map
 import zipfile
+import zlib
+from typing import Callable
 
 from builder.config import cfg
 from builder.main import (
@@ -93,6 +97,111 @@ def replace_once(page: str, needle: str, replacement: str, what: str) -> str:
     return page.replace(needle, replacement, 1)
 
 
+# --- Downloads are put together in the reader's browser --------------------
+#
+# A downloadable copy is one self-contained file, and most of each one is the
+# same few hundred kilobytes over again: the runtime, the stylesheets, their
+# fonts, the Python tools. Writing every copy out whole put the same bytes on
+# the site hundreds of times, and the series and course archives held them
+# again, until the published site outgrew what GitHub Pages accepts.
+#
+# So the build keeps each repeated piece once, in download/shared/, and writes
+# each page as a skeleton in download/parts/ with a marker where each piece
+# goes. assets/downloads.js fetches a skeleton and its pieces when a reader
+# presses a download link and puts back exactly the file this module would
+# have written whole; for a series or a course it reads the archive's manifest
+# and builds the zip in the browser. join_parts() below is the same join in
+# Python, which the build uses to check every skeleton and the tests use to
+# read a copy. The join makes no decisions, so what a reader saves is decided
+# here, in one place.
+
+PART_MARKER = "<!--dl-part:{name}-->"
+PART_RE = re.compile(r"<!--dl-part:([A-Za-z0-9._-]+)-->")
+
+
+@functools.lru_cache(maxsize=None)
+def _compressed_size(text: str) -> int:
+    """About how many bytes `text` takes once zipped. Deflate looks back only
+    32 KB, so a page's zipped size is close to the sum of its pieces' zipped
+    sizes, and each shared piece is measured once rather than once a page."""
+    return len(zlib.compress(text.encode("utf-8"), 6))
+
+
+def shared_pieces(tutorial: Tutorial) -> list[tuple[str, str, str]]:
+    """The (label, extension, text) of every piece of `tutorial`'s copy that
+    other copies repeat, each exactly as standalone_html() writes it into the
+    page, so that cutting it out and putting it back are exact opposites."""
+    tools = (cfg.ASSETS / "tutorial_tools.py").read_text()
+    pieces = [
+        ("runtime", "js", (cfg.ASSETS / "vendor" / "standalone.bundle.js").read_text()),
+        ("style", "css", (cfg.ASSETS / "tutorial-style.css").read_text()),
+        ("fonts", "css", inline_accessible_fonts_css()),
+        # The tools sit inside the manifest's JSON, so the piece is the JSON
+        # string as standalone_html() encodes it, escapes and quotes included.
+        ("tools", "json", json.dumps(tools).replace("<", "\\u003c")),
+    ]
+    if tutorial.has_math:
+        pieces.append(("maths", "css", inline_katex_css()))
+    if tutorial.datasets:
+        _, files = standalone_data(tutorial)
+        for name, data in sorted(files.items()):
+            label = "data-" + SERIES_SLUG_RE.sub("-", name.lower()).strip("-")
+            pieces.append((label, "json", json.dumps(data).replace("<", "\\u003c")))
+    return pieces
+
+
+def piece_name(label: str, extension: str, text: str) -> str:
+    """A shared piece's filename, with a hash of its content in it, so a new
+    runtime or stylesheet is a new file and a cached old one is never joined
+    into a new page."""
+    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
+    return f"{label}-{digest}.{extension}"
+
+
+def split_into_parts(page: str, pieces: list[tuple[str, str, str]]) -> tuple[str, dict[str, str]]:
+    """Cut every shared piece out of `page`. Returns the skeleton, with a
+    marker where each piece was, and the pieces it needs, by filename."""
+    if PART_RE.search(page):
+        raise BuildError("a downloadable copy already contains a <!--dl-part:...--> "
+                         "marker, so it cannot be split into parts and joined again")
+    needed: dict[str, str] = {}
+    # Longest first, so a piece that happens to contain a shorter one is
+    # cut out whole before the shorter one is looked for.
+    for label, extension, text in sorted(pieces, key=lambda p: -len(p[2])):
+        if text and text in page:
+            name = piece_name(label, extension, text)
+            page = page.replace(text, PART_MARKER.format(name=name))
+            needed[name] = text
+    return page, needed
+
+
+def join_parts(skeleton: str, piece: Callable[[str], str]) -> str:
+    """Put a copy back together: every marker in `skeleton` replaced by the
+    text `piece(name)` gives for it. assets/downloads.js does the same."""
+    return PART_RE.sub(lambda match: piece(match.group(1)), skeleton)
+
+
+def read_copy(download_dir: Path, slug: str) -> str:
+    """The whole downloadable copy of one page, as a reader would save it,
+    joined from what the build wrote into `download_dir`."""
+    skeleton = (download_dir / "parts" / f"{slug}.html").read_text()
+    return join_parts(skeleton, lambda name: (download_dir / "shared" / name).read_text())
+
+
+def read_archive(manifest_path: Path) -> dict[str, str]:
+    """Every file a series or course download holds, by its path inside the
+    zip, joined from the archive's manifest the way the browser joins it."""
+    manifest = json.loads(manifest_path.read_text())
+    files = {}
+    for entry in manifest["files"]:
+        if "text" in entry:
+            files[entry["name"]] = entry["text"]
+        else:
+            slug = Path(entry["part"]).stem
+            files[entry["name"]] = read_copy(manifest_path.parent, slug)
+    return files
+
+
 def standalone_html(tutorial: Tutorial, page: str) -> str:
     """Turn a built page into one file that works from a student's disk."""
     # A copy to keep has nothing to edit, so it carries none of the source map
@@ -141,6 +250,10 @@ def standalone_html(tutorial: Tutorial, page: str) -> str:
     page = replace_once(
         page, f'<script type="module" src="{versioned(up, "search.js")}"></script>\n',
         "", "the search script",
+    )
+    page = replace_once(
+        page, f'<script type="module" src="{versioned(up, "downloads.js")}"></script>\n',
+        "", "the download script",
     )
 
     # The Python tools, which cannot be fetched from a file.
@@ -208,10 +321,28 @@ def write_standalone(tutorial: Tutorial, page: str) -> Path:
                       "data/ keeps no copy of, so its downloaded copy needs the "
                       "network for that cell")
 
-    target = cfg.OUT / "download" / f"{tutorial.slug}.html"
+    whole = standalone_html(tutorial, page)
+    skeleton, needed = split_into_parts(whole, shared_pieces(tutorial))
+    if join_parts(skeleton, needed.__getitem__) != whole:
+        raise BuildError(f"the downloadable copy of {tutorial.slug} does not join back "
+                         "together into the file it was split from")
+    download = cfg.OUT / "download"
+    (download / "shared").mkdir(parents=True, exist_ok=True)
+    for name, text in needed.items():
+        path = download / "shared" / name
+        if not path.exists():
+            path.write_text(text)
+    target = download / "parts" / f"{tutorial.slug}.html"
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(standalone_html(tutorial, page))
+    target.write_text(skeleton)
+    ZIPPED_SIZE[tutorial.slug] = _compressed_size(skeleton) + sum(
+        _compressed_size(text) for text in needed.values())
     return target
+
+
+# A page's estimated zipped size, by slug, from write_standalone(), for the
+# size an archive's download link states. Filled before any archive is listed.
+ZIPPED_SIZE: dict[str, int] = {}
 
 
 SERIES_SLUG_RE = re.compile(r"[^a-z0-9]+")
@@ -310,22 +441,49 @@ right after it. Start with 01.</p>
 </html>"""
 
 
-def write_zip_entries(
-    archive: zipfile.ZipFile, folder: str, sequence: list[Tutorial], width: int, start: int = 1
+def zip_entries(
+    folder: str, sequence: list[Tutorial], width: int, start: int = 1
 ) -> list[tuple[str, Tutorial]]:
-    """Write one section's standalone copies into `archive` under `folder`,
-    numbered from `start`, zero-padded to `width`. `width` is a parameter
-    rather than worked out from this one section, so every section in a
-    multi-series module archive pads to the same width as the archive's own
-    total — the point at which a count would need another digit rarely falls
-    exactly on a section boundary. Returns the (entry name, tutorial) pairs
-    written, for start_here_html() to link to."""
-    entries = []
-    for offset, member in enumerate(sequence):
-        name = zip_entry_name(start + offset, width, member.slug)
-        archive.write(cfg.OUT / "download" / f"{member.slug}.html", f"{folder}/{name}")
-        entries.append((name, member))
-    return entries
+    """One section's files in an archive: each member's (entry name,
+    tutorial), numbered from `start` and zero-padded to `width`. `width` is a
+    parameter rather than worked out from this one section, so every section
+    in a multi-series module archive pads to the same width as the archive's
+    own total — the point at which a count would need another digit rarely
+    falls exactly on a section boundary."""
+    return [
+        (zip_entry_name(start + offset, width, member.slug), member)
+        for offset, member in enumerate(sequence)
+    ]
+
+
+def write_archive_manifest(
+    folder: str, target_name: str, sections: list[tuple[str | None, list[tuple[str, Tutorial]]]],
+    title: str,
+) -> Path:
+    """What one download button's zip holds, written as download/<name>.json
+    for assets/downloads.js to build the zip from in the reader's browser.
+
+    Each page entry names the page's skeleton in download/parts/, the very
+    one the page's own download link joins, so there is no second copy to
+    keep in step. The start-here page is small and written for this archive
+    alone, so it travels in the manifest as text. `approxBytes` is the size
+    the zip will about come to, for the link to state.
+    """
+    entries = [entry for _, section in sections for entry in section]
+    start_here = start_here_html(title, sections)
+    files = [{"name": f"{folder}/{name}", "part": f"parts/{member.slug}.html"}
+             for name, member in entries]
+    files.append({"name": f"{folder}/0-start-here.html", "text": start_here})
+    manifest = {
+        "zip": f"{target_name}.zip",
+        "files": files,
+        "approxBytes": sum(ZIPPED_SIZE.get(member.slug, 0) for _, member in entries)
+        + _compressed_size(start_here),
+    }
+    target = cfg.OUT / "download" / f"{target_name}.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(manifest, indent=1))
+    return target
 
 
 def write_series_zip(
@@ -340,21 +498,14 @@ def write_series_zip(
     0-start-here.html a reader lands on first after unzipping.
 
     A student takes one tutorial. Somebody setting up a room, or filling a
-    memory stick for a class with no reliable connection, wants the set. The
-    archive holds the very files the download links point at, so there is no
-    second copy to keep in step with anything.
+    memory stick for a class with no reliable connection, wants the set.
+    Returns the archive's manifest; the zip itself is built in the browser.
     """
     folder = series_slug(course, series)
-    target = cfg.OUT / "download" / f"{folder}.zip"
-    target.parent.mkdir(parents=True, exist_ok=True)
     sequence = zip_sequence(members, practice)
     width = max(2, len(str(len(sequence))))
-    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
-        entries = write_zip_entries(archive, folder, sequence, width)
-        archive.writestr(
-            f"{folder}/0-start-here.html", start_here_html(series_title, [(None, entries)])
-        )
-    return target
+    entries = zip_entries(folder, sequence, width)
+    return write_archive_manifest(folder, folder, [(None, entries)], series_title)
 
 
 def write_course_zip(
@@ -371,12 +522,9 @@ def write_course_zip(
     the contents page already lists that course's series in. Numbering runs
     once across the whole archive, not restarting per series, so the folder
     reads as one sequence top to bottom rather than several that happen to
-    share a listing.
+    share a listing. Returns the archive's manifest, as write_series_zip().
     """
-    target = cfg.OUT / "download" / f"{course}-all.zip"
-    target.parent.mkdir(parents=True, exist_ok=True)
     show_headings = len(series_in_order) > 1
-
     series_sequences = [
         (series_title, zip_sequence(members, practice))
         for _, series_title, members in series_in_order
@@ -384,20 +532,21 @@ def write_course_zip(
     total = sum(len(seq) for _, seq in series_sequences) + len(mixed_pages)
     width = max(2, len(str(total)))
 
-    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
-        sections: list[tuple[str | None, list[tuple[str, Tutorial]]]] = []
-        next_index = 1
-        for series_title, sequence in series_sequences:
-            entries = write_zip_entries(archive, course, sequence, width, start=next_index)
-            next_index += len(sequence)
-            sections.append((series_title if show_headings else None, entries))
-        if mixed_pages:
-            entries = write_zip_entries(archive, course, mixed_pages, width, start=next_index)
-            sections.append(("Mixed problems", entries))
-        archive.writestr(
-            f"{course}/0-start-here.html", start_here_html(title, sections)
-        )
-    return target
+    sections: list[tuple[str | None, list[tuple[str, Tutorial]]]] = []
+    next_index = 1
+    for series_title, sequence in series_sequences:
+        sections.append((series_title if show_headings else None,
+                         zip_entries(course, sequence, width, start=next_index)))
+        next_index += len(sequence)
+    if mixed_pages:
+        sections.append(("Mixed problems", zip_entries(course, mixed_pages, width, start=next_index)))
+    return write_archive_manifest(course, f"{course}-all", sections, title)
+
+
+def archive_size(manifest_path: Path) -> str:
+    """The size an archive's download link states: about what the zip the
+    browser builds will come to."""
+    return readable_bytes(json.loads(manifest_path.read_text())["approxBytes"])
 
 
 def zip_directory(source_dir: Path, target_zip: Path) -> Path:
@@ -614,7 +763,11 @@ def write_dewmini_bundle() -> Path | None:
 
 def readable_size(path: Path) -> str:
     """A size a person can act on, rather than a byte count."""
-    size = path.stat().st_size
+    return readable_bytes(path.stat().st_size)
+
+
+def readable_bytes(size: int) -> str:
+    """readable_size() for a number of bytes rather than a file."""
     if size >= 1_000_000:
         return f"{size / 1_000_000:.0f} MB"
     return f"{max(size // 1000, 1)} KB"

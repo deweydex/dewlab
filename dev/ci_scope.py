@@ -34,13 +34,14 @@ READ_BY_BUILD = re.compile(r"^planning/(curriculum/|feedback\.yaml$)")
 # The browser tests build sites of their own from tests/e2e/fixture and a few
 # small pages they write, with the real assets, setup snippets and datasets,
 # and the page smoke test also builds the real pages/ and reads the real
-# topics and outcomes. A tutorial is never read; the solutions checker, the
-# preview server and the download writers are not run by a browser test.
+# topics and outcomes. A tutorial is never read; the solutions checker and
+# the preview server are not run by a browser test. The download writers are:
+# tests/e2e/test_downloads.py joins their output in a browser.
 BROWSER = re.compile(
     r"^(assets/|compose/|setup/|data/|pages/|vendor-src/|tests/e2e/"
     r"|planning/curriculum/(topics|outcomes|topic-groups)\.yaml$"
     r"|build\.py$|source_map\.py$|requirements-(build|e2e)\.txt$|pytest\.ini$"
-    r"|builder/(?!solutions|solution_runner|serve|downloads))"
+    r"|builder/(?!solutions|solution_runner|serve))"
 )
 
 # Files that decide what runs, or how: a change to one of them runs every job,

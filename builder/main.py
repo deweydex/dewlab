@@ -4446,17 +4446,21 @@ def load_python_basics() -> list[dict]:
     return _load_basics(cfg.PYTHON_BASICS_DATA, "python-basics")
 
 
-def download_link_html(href: str, label: str) -> str:
+def download_link_html(href: str, label: str, save_as: str) -> str:
     """A `.dl-download` link/button, icon and all — the one shape every
     "take this away" offer uses, whether it's a single tutorial's own copy,
-    a series' archive, or a whole module's. The icon is a plain empty span
+    a series' archive, or a whole module's. `href` is the page's skeleton or
+    the archive's manifest, not the finished file: assets/downloads.js joins
+    the file in the browser and saves it under `save_as` (see the note at the
+    top of builder/downloads.py for why the site does not hold the files whole). The icon is a plain empty span
     (a shape drawn in CSS, the same way .dl-settings-icon and its siblings
     already are — no font, no inline SVG to keep in step with a palette
     change) marked aria-hidden, so a screen reader reads only `label`, not
     an icon or the glyph CSS content: used to put there before it.
     """
     icon = '<span class="dl-download-icon" aria-hidden="true"></span>'
-    return f'<a class="dl-download" href="{href}" download>{icon}{label}</a>'
+    return (f'<a class="dl-download" href="{href}" '
+            f'data-dl-save-as="{html.escape(save_as, quote=True)}">{icon}{label}</a>')
 
 
 def download_section(tutorial: Tutorial) -> str:
@@ -4467,10 +4471,10 @@ def download_section(tutorial: Tutorial) -> str:
     shares the shell — has no single tutorial to offer.
     """
     up = "../" * tutorial.depth
-    href = f"{up}download/{tutorial.slug}.html"
+    href = f"{up}download/parts/{tutorial.slug}.html"
     return (
         "<h3>This tutorial</h3>"
-        f"{download_link_html(href, 'Download to keep')}"
+        f"{download_link_html(href, 'Download to keep', f'{tutorial.slug}.html')}"
         '<p class="dl-panel-note">One file with the reading and the cells inside '
         "it. It needs an internet connection the first time you open it, and "
         "then it is yours.</p>"
@@ -4702,7 +4706,8 @@ def render_course_body(
             '<p class="dl-series">' + download_link_html(
                 f"download/{course_archive.name}",
                 f"Download every tutorial and practice page in this module "
-                f"({total} files, {downloads.readable_size(course_archive)})",
+                f"({total} files, about {downloads.archive_size(course_archive)})",
+                f"{course_archive.stem}.zip",
             ) + "</p>"
         )
     present = [key for key in course.keys if (course.id, key) in groups]
@@ -4722,7 +4727,8 @@ def render_course_body(
             out.append(
                 '<p class="dl-series">' + download_link_html(
                     f"download/{archive.name}",
-                    f"Download {what} ({downloads.readable_size(archive)})",
+                    f"Download {what} (about {downloads.archive_size(archive)})",
+                    f"{archive.stem}.zip",
                 ) + "</p>"
             )
         out.append('<ol class="dl-contents">')
@@ -5921,6 +5927,7 @@ def write(tutorial: Tutorial, shell: str, body_html: str, nav: str = "",
         "{{STYLE_URL}}": versioned(f"{up}assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned(f"{up}assets/", "favicon.svg"),
         "{{SEARCH_JS_URL}}": versioned(f"{up}assets/", "search.js"),
+        "{{DOWNLOADS_JS_URL}}": versioned(f"{up}assets/", "downloads.js"),
         "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned(f"{up}assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned(f"{up}assets/", "vendor/accessible-fonts.css"),
@@ -6060,6 +6067,7 @@ def write_page(shell: str, name: str) -> Path | None:
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{DOWNLOADS_JS_URL}}": versioned("assets/", "downloads.js"),
         "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
@@ -6118,6 +6126,7 @@ def write_all_tutorials_page(
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{DOWNLOADS_JS_URL}}": versioned("assets/", "downloads.js"),
         "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
@@ -6190,6 +6199,7 @@ def write_all_notes_page(shell: str, tutorials: list[Tutorial]) -> Path:
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{DOWNLOADS_JS_URL}}": versioned("assets/", "downloads.js"),
         "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
@@ -6310,6 +6320,7 @@ def write_course_page(
         "{{STYLE_URL}}": versioned("assets/", "tutorial-style.css"),
         "{{FAVICON_URL}}": versioned("assets/", "favicon.svg"),
         "{{SEARCH_JS_URL}}": versioned("assets/", "search.js"),
+        "{{DOWNLOADS_JS_URL}}": versioned("assets/", "downloads.js"),
         "{{NAV_SEARCH}}": nav_search_html(),
         "{{KATEX_CSS_URL}}": versioned("assets/", "vendor/katex.min.css"),
         "{{ACCESSIBLE_FONTS_CSS_URL}}": versioned("assets/", "vendor/accessible-fonts.css"),
@@ -6623,18 +6634,17 @@ def build(clean: bool = False, standalone: bool = False) -> list[Path]:
             members=members,
         )
         written.append(page_path)
-        # 0.7MB against 19KB for the hosted page, so only the version students
-        # are actually being given is worth building forty times over.
+        # Only the version students are being given gets a copy; frozen
+        # releases are not offered for download.
         if standalone and tutorial.is_default:
             written.append(downloads.write_standalone(tutorial, page_path.read_text()))
 
     archives: dict[tuple[str, str], Path] = {}
     course_archives: dict[str, Path] = {}
     if standalone:
-        # Compressing is nearly all of what an archive costs, and zlib lets go
-        # of the interpreter while it compresses, so the archives are written
-        # side by side, one per core. Each is a file of its own, written by one
-        # thread from start to finish, so the bytes are the same either way.
+        # Each archive is a small manifest now (the zip is built in the
+        # reader's browser), written side by side as before; each is a file
+        # of its own, written by one thread, so the bytes are the same either way.
         series_jobs: dict[tuple[str, str], concurrent.futures.Future] = {}
         course_jobs: dict[str, concurrent.futures.Future] = {}
         with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 1) as pool:
