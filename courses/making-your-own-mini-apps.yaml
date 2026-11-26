@@ -1,0 +1,53 @@
+title: Making Your Own Mini-Apps
+code: 5N2927 · QQI Level 5
+status: beta
+card: >-
+  Plan and build small programs that run at a command line: a login, a
+  menu, a calculator, a file system, an IP address tool, a game. You choose
+  what to build, and the design principles come with it.
+description: >-
+  In this module you build small programs that run at a command line, the
+  way routers, switches and servers are often run. There are no windows or
+  buttons. The program prints, the person types, and the program answers.
+
+
+  The first series is Planning and Building a Command Line. The class plans
+  a small system together: a login, a menu and a few apps. Each pair
+  chooses the part it wants to build, and at the end the parts are joined
+  into one program with functions. A part that nobody chooses can wait for
+  another day.
+
+
+  The second series is Three-Week Mini-Apps. Each page is a project of
+  about three weeks for a pair: a pretend file system, an IP address tool,
+  an equipment inventory, tic-tac-toe, a text adventure and a word-guessing
+  game. Each week ends with a program that works. Some pairs will care most
+  about how a program looks, and others about what it does. Both are part
+  of the work.
+
+
+  The pages practise the learning outcomes of Programming and Design
+  Principles (5N2927) on real programs. You plan before you code, with a
+  sample run, a user flow and pseudocode. You use storage, selection and
+  iteration to solve a problem step by step. You split a program into
+  functions and decide where its data lives. You write a test plan, try to
+  break your own program and other people's, and fix what you find. You
+  write code that somebody else can read, with clear names and useful
+  comments. You plan, build, release and review a program with others.
+contents:
+- title: Planning and Building a Command Line
+  tutorials:
+  - experiments-with-a-command-line
+  - experiments-with-a-login
+  - experiments-with-a-calculator
+  - experiments-with-a-notes-app
+  - experiments-with-a-to-do-list
+  - experiments-with-joining-the-parts
+- title: Three-Week Mini-Apps
+  tutorials:
+  - a-pretend-file-system
+  - an-ip-address-tool
+  - an-equipment-inventory
+  - tic-tac-toe
+  - a-text-adventure
+  - a-word-guessing-game

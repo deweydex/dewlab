@@ -1,10 +1,17 @@
 ---
-title: "Experiments with a command line: planning a small system of our own"
+title: "Planning a Command Line: A Small System of Our Own"
 year: "2026-2027"
 version: 2026.11.26.2
+covers:
+  2-a-user-flow:
+    covers: [PDP-LO5, PDP-LO6]
+  3-agreements-between-the-parts:
+    covers: [PDP-LO12]
+  4-a-menu-that-runs:
+    touches: [PDP-LO6]
 ---
 
-# Experiments with a command line: planning a small system of our own
+# Planning a Command Line: A Small System of Our Own
 
 A command line is a program that waits for you to type, does what you asked, and then waits again. Routers, switches and servers are often run this way. In the next few pages we build a small one of our own, inside a notebook. It has four parts:
 
@@ -17,7 +24,7 @@ Each pair chooses the part they want to build, and at the end we join the parts 
 
 There are questions on this page to answer in words. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. A sample run
+## 1. A Sample Run
 
 Here is one possible session with the finished program. The lines after `>` and `:` are what the person typed.
 
@@ -59,7 +66,7 @@ Goodbye, grace.
 
 <!-- answer -->
 
-## 2. A user flow
+## 2. A User Flow
 
 A user flow is a plan of every path a person can take through a program. One way to write it is as numbered steps, with a note at each step that says where the person goes next. Here is a user flow for the menu.
 
@@ -97,7 +104,7 @@ Words in capitals are the names of other parts. A drawing with boxes and arrows 
 
 <!-- answer -->
 
-## 3. Agreements between the parts
+## 3. Agreements Between the Parts
 
 When separate pairs build parts that must join, the pairs need to agree on a few things first. If one app returns to the menu when you type `back` and another when you type `exit`, the finished program is confusing to use.
 
@@ -123,7 +130,7 @@ When separate pairs build parts that must join, the pairs need to agree on a few
 
 <!-- answer -->
 
-## 4. A menu that runs
+## 4. A Menu That Runs
 
 This cell is a first version of the menu. The apps do not exist yet, so each choice only prints a message. Run it and try each choice.
 
@@ -201,7 +208,7 @@ while True:
  Q
 ```
 
-## 5. How the screens look
+## 5. How the Screens Look
 
 A command line has no buttons or colours, but it can still look tidy or messy. Lines of symbols, spaces and capital letters can do most of the design. Run this cell.
 
@@ -237,7 +244,7 @@ id: how-the-screens-look-2
 
 <!-- answer -->
 
-## 6. Before you write code
+## 6. Before You Write Code
 
 Each part has its own page: the login, the calculator, the notes app and the to-do list. A pair working on the menu or on how the screens look can use this page and borrow from the others. Every page starts with the same two questions as this one.
 

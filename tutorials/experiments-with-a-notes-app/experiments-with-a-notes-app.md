@@ -1,16 +1,19 @@
 ---
-title: "Experiments with a notes app: keeping titles and text together"
+title: "A Notes App: Keeping Titles and Text Together"
 year: "2026-2027"
 version: 2026.11.26.2
+covers:
+  3-the-app-one-command-at-a-time:
+    covers: [PDP-LO7]
 ---
 
-# Experiments with a notes app: keeping titles and text together
+# A Notes App: Keeping Titles and Text Together
 
 A note has a title and some text. Our notes app keeps them in two lists, like the usernames and passwords in the login. The first title goes with the first text, the second with the second, and so on. The app can show the list of titles, open a note to read it, and write a new one.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. Plan first
+## 1. Plan First
 
 **1.1** Write a sample run where someone looks at the list of notes, reads one, writes a new one, and then goes back to the menu.
 
@@ -24,7 +27,7 @@ There are questions on this page to answer in words as well as in code. The **+ 
 
 <!-- answer -->
 
-## 2. Two lists that go together
+## 2. Two Lists That Go Together
 
 ```python exec
 id: two-lists-that-go-together-1
@@ -74,7 +77,7 @@ print(texts)
 
 <!-- answer -->
 
-## 3. The app, one command at a time
+## 3. The App, One Command at a Time
 
 **3.1** Write a notes app with a `while` loop that asks for a command. Start with only two commands: one that lists the titles, and the agreed word for going back to the menu.
 
@@ -138,7 +141,7 @@ back
 
 <!-- answer -->
 
-## 4. More to try
+## 4. More to Try
 
 Choose any of these, or invent your own.
 

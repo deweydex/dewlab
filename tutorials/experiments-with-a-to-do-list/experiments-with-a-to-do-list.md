@@ -1,16 +1,19 @@
 ---
-title: "Experiments with a to-do list: showing, adding, changing and removing"
+title: "A To-Do List: Showing, Adding, Changing and Removing"
 year: "2026-2027"
 version: 2026.11.26.2
+covers:
+  4-the-app:
+    covers: [PDP-LO7]
 ---
 
-# Experiments with a to-do list: showing, adding, changing and removing
+# A To-Do List: Showing, Adding, Changing and Removing
 
 A to-do list app does four things. It shows the list, adds an item, changes an item, and removes an item. People count from 1, and Python counts list positions from 0, so this page is mostly about the difference between the two.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. Plan first
+## 1. Plan First
 
 **1.1** Write a sample run where someone shows the list, adds an item, changes the second item, removes the first item, and shows the list again.
 
@@ -74,7 +77,7 @@ number = 4
 print(1 <= number <= len(todos))
 ```
 
-## 3. The four actions
+## 3. The Four Actions
 
 Try each action on its own first, then join them in section 4.
 
@@ -104,7 +107,7 @@ for position in range(len(todos)):
 
 <!-- answer -->
 
-## 4. The app
+## 4. The App
 
 **4.1** Write the to-do app with a `while` loop that asks for a command. Use your user flow from 1.3. Start with showing and adding, test them, and then add changing and removing.
 
@@ -155,7 +158,7 @@ back
 
 <!-- answer -->
 
-## 5. More to try
+## 5. More to Try
 
 Choose any of these, or invent your own.
 
