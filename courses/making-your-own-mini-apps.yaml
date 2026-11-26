@@ -3,7 +3,7 @@ code: 5N2927 · QQI Level 5
 status: beta
 card: >-
   Plan and build small programs that run at a command line: a login, a
-  menu, a calculator, a file system, an IP address tool, a game. You choose
+  menu, a calculator, a file system, an IP address tool, a word processor, a game. You choose
   what to build, and the design principles come with it.
 description: >-
   In this module you build small programs that run at a command line, the
@@ -20,8 +20,8 @@ description: >-
 
   The second series is Three-Week Mini-Apps. Each page is a project of
   about three weeks for a pair: a pretend file system, an IP address tool,
-  an equipment inventory, tic-tac-toe, a text adventure and a word-guessing
-  game. Each week ends with a program that works. Some pairs will care most
+  an equipment inventory, tic-tac-toe, a text adventure, a word-guessing
+  game and a word processor. Each week ends with a program that works. Some pairs will care most
   about how a program looks, and others about what it does. Both are part
   of the work.
 
@@ -51,3 +51,4 @@ contents:
   - tic-tac-toe
   - a-text-adventure
   - a-word-guessing-game
+  - a-command-line-word-processor
