@@ -19,9 +19,11 @@ description: >-
 
 
   The second series is Three-Week Mini-Apps. Each page is a project of
-  about three weeks for a pair: a pretend file system, an IP address tool,
-  an equipment inventory, tic-tac-toe, a text adventure, a word-guessing
-  game and a word processor. Each week ends with a program that works. Some pairs will care most
+  about three weeks for a pair. Some are network tools: a pretend file
+  system, an IP address tool, a ping simulator, a log-file analyser and a
+  password checker. Some are everyday tools: an equipment inventory and a
+  word processor. Some are games: a number-guessing game, hangman, a
+  word-guessing game, tic-tac-toe and a text adventure. Each week ends with a program that works. Some pairs will care most
   about how a program looks, and others about what it does. Both are part
   of the work.
 
@@ -47,8 +49,13 @@ contents:
   tutorials:
   - a-pretend-file-system
   - an-ip-address-tool
+  - a-ping-simulator
+  - a-log-file-analyser
+  - a-password-checker
   - an-equipment-inventory
+  - a-command-line-word-processor
+  - a-number-guessing-game
+  - a-hangman-game
+  - a-word-guessing-game
   - tic-tac-toe
   - a-text-adventure
-  - a-word-guessing-game
-  - a-command-line-word-processor
