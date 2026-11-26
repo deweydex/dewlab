@@ -28,11 +28,8 @@ description: >-
 
 
   The third series is Functions, patterns and chance. It is the first to
-  write functions with `def` and `return`. It opens with a project in
-  pairs: we plan and build a small command line with a login, a menu and a
-  few apps, and then join the parts with functions. After that it builds
-  number patterns as lists, measures how steep a curve is, and counts coin
-  flips.
+  write functions with `def` and `return`. It builds number patterns as
+  lists, measures how steep a curve is, and counts coin flips.
 
 
   This module is experimental. It breaks some of the rules the other pages
@@ -55,12 +52,6 @@ contents:
   - experiments-with-comprehensions
 - title: Functions, patterns and chance
   tutorials:
-  - experiments-with-a-command-line
-  - experiments-with-a-login
-  - experiments-with-a-calculator
-  - experiments-with-a-notes-app
-  - experiments-with-a-to-do-list
-  - experiments-with-joining-the-parts
   - experiments-with-number-patterns
   - experiments-with-slopes
   - experiments-with-coin-flips

@@ -1,16 +1,21 @@
 ---
-title: "Experiments with a calculator: turning typed text into sums"
+title: "A Calculator: Turning Typed Text Into Sums"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
+covers:
+  2-text-that-looks-like-a-number:
+    covers: [PDP-LO4]
+  5-when-the-person-types-a-word:
+    touches: [PDP-LO10]
 ---
 
-# Experiments with a calculator: turning typed text into sums
+# A Calculator: Turning Typed Text Into Sums
 
 A calculator app asks for two numbers and an operation, and prints the answer. It sounds small, but `input` always hands back text, people type surprising things, and some sums have no answer.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. Plan first
+## 1. Plan First
 
 **1.1** There are at least two ways a calculator could ask for a sum. It could ask three questions: first number, operation, second number. It could also ask for the whole sum on one line, like `12 / 4`. Write a short sample run for each. Which would you rather use? Which would be easier to build?
 
@@ -24,7 +29,7 @@ There are questions on this page to answer in words as well as in code. The **+ 
 
 <!-- answer -->
 
-## 2. Text that looks like a number
+## 2. Text That Looks Like a Number
 
 **2.1** Predict what each line prints, then run the cell.
 
@@ -51,7 +56,7 @@ print(int("2.5"))
 
 <!-- answer -->
 
-## 3. One sum
+## 3. One Sum
 
 **3.1** Write a calculator that asks for two numbers and an operation once, and prints the answer. It should handle `+`, `-`, `*` and `/`.
 
@@ -100,7 +105,7 @@ else:
 
 <!-- answer -->
 
-## 4. Many sums
+## 4. Many Sums
 
 **4.1** Put your calculator inside a `while` loop, so it keeps asking for sums until the person types the agreed word for going back. Check for that word before you try to turn the text into a number.
 
@@ -150,7 +155,7 @@ back
 
 <!-- answer -->
 
-## 5. When the person types a word
+## 5. When the Person Types a Word
 
 The program stops with a `ValueError` when someone types `ten` as a number. Python can try a line and catch the error instead of stopping. This short example shows how.
 
@@ -175,7 +180,7 @@ id: when-the-person-types-a-word-2
 # your calculator here
 ```
 
-## 6. More to try
+## 6. More to Try
 
 Choose any of these, or invent your own.
 
@@ -183,6 +188,7 @@ Choose any of these, or invent your own.
 2. Remember the last answer, and let the person type `ans` to use it as a number.
 3. Accept the whole sum on one line, such as `12 / 4`. The text method `split` turns `"12 / 4"` into `["12", "/", "4"]`.
 4. Keep a list of every sum done so far, and print it when the person types `history`.
+5. Design how the calculator looks: a heading, a line between sums, or a box around each answer.
 
 ```python exec
 id: more-to-try-1

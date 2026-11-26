@@ -1,16 +1,22 @@
 ---
-title: "Experiments with a login: checking a username and a password"
+title: "A Login: Checking a Username and a Password"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
+covers:
+  3-one-try:
+    covers: [PDP-LO4]
+    touches: [PDP-LO6]
+  4-three-tries:
+    covers: [PDP-LO6]
 ---
 
-# Experiments with a login: checking a username and a password
+# A Login: Checking a Username and a Password
 
 A login asks two questions. First it asks who you are, and then it asks you to prove it. On this page the users and their passwords live in two lists. The first username goes with the first password, the second with the second, and so on.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. Plan first
+## 1. Plan First
 
 **1.1** Write a sample run for a login where the person gets the password wrong once and right the second time.
 
@@ -24,7 +30,7 @@ There are questions on this page to answer in words as well as in code. The **+ 
 
 <!-- answer -->
 
-## 2. Two lists that go together
+## 2. Two Lists That Go Together
 
 ```python exec
 id: two-lists-that-go-together-1
@@ -69,7 +75,7 @@ print(passwords[position])
 
 <!-- answer -->
 
-## 3. One try
+## 3. One Try
 
 **3.1** Write a login that asks for a username and a password once. It prints `Welcome, ` and the name when both are right. It prints a message of your choice when either one is wrong. Test every path in your user flow.
 
@@ -113,7 +119,7 @@ cobol
 
 <!-- answer -->
 
-## 4. Three tries
+## 4. Three Tries
 
 **4.1** Change your login so the person has three tries. After three wrong tries, the program says so and stops asking.
 
@@ -158,7 +164,7 @@ cobol
 
 <!-- answer -->
 
-## 5. Questions to think about
+## 5. Questions to Think About
 
 These questions have no single right answer. Talk them over with your pair.
 
@@ -171,6 +177,10 @@ These questions have no single right answer. Talk them over with your pair.
 <!-- answer -->
 
 **5.3** Many systems lock an account after too many wrong tries. What would that need that your login does not have yet?
+
+<!-- answer -->
+
+**5.4** Design the screen a person sees when the login starts, and the one they see when it works. What should a welcome screen say?
 
 <!-- answer -->
 

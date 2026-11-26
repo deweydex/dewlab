@@ -1,16 +1,23 @@
 ---
-title: "Experiments with joining the parts: one program from many pieces"
+title: "Joining the Parts: One Program from Many Pieces"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
+covers:
+  1-a-block-of-code-with-a-name:
+    covers: [PDP-LO8]
+  3-where-the-notes-live:
+    covers: [PDP-LO8]
+  5-the-whole-program:
+    covers: [PDP-LO12]
 ---
 
-# Experiments with joining the parts: one program from many pieces
+# Joining the Parts: One Program from Many Pieces
 
-Each pair now has a part that works on its own: a login, a menu, a calculator, a notes app and a to-do list. This page joins them into one program. To do that, we give each part a name, so the menu can start it by name. A block of code with a name is called a function. The next pages say much more about functions. Here we only need the simplest kind.
+Each pair now has a part that works on its own. The class may not have built every part. That is fine, because the menu keeps a "coming soon" line for any part that is missing. This page joins the parts we have into one program. To do that, we give each part a name, so the menu can start it by name. A block of code with a name is called a function. Functions can do much more than this page shows, but here we only need the simplest kind.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
-## 1. A block of code with a name
+## 1. A Block of Code with a Name
 
 ```python exec
 id: a-block-of-code-with-a-name-1
@@ -44,7 +51,7 @@ say_goodbye()
 
 <!-- answer -->
 
-## 2. Each part becomes a function
+## 2. Each Part Becomes a Function
 
 **2.1** Put your pair's part inside a function. Use the name the class agreed on, such as `run_calculator`, `run_notes` or `run_todo`. Indent every line of your code once, under the `def` line. Then call the function to check it still works.
 
@@ -57,14 +64,14 @@ def run_calculator():
 run_calculator()
 ```
 
-**2.2** Now put the menu in a cell of its own, and replace each "coming soon" line with a call to the matching function.
+**2.2** Now put the menu in a cell of its own. For each part that exists, replace its "coming soon" line with a call to the matching function. Leave the other lines as they are.
 
 ```python exec
 id: each-part-becomes-a-function-2
 # the menu, calling the other parts
 ```
 
-## 3. Where the notes live
+## 3. Where the Notes Live
 
 **3.1** Here is a very small notes app as a function. It creates its list inside the function. Run both cells. Add a note, type `back`, and then run the second cell again. Is your note still there?
 
@@ -96,7 +103,7 @@ run_notes()
 
 <!-- answer -->
 
-## 4. The login hands back a name
+## 4. The Login Hands Back a Name
 
 The menu needs to know who logged in. A function can hand a value back to the line that called it, with the word `return`. This function hands back the username after a good login, and `None` after three wrong tries. `None` is Python's value for "nothing".
 
@@ -129,7 +136,7 @@ print(user)
 
 <!-- answer -->
 
-## 5. The whole program
+## 5. The Whole Program
 
 **5.1** Join everything in one cell. The program logs in first. If the login works, it greets the person by name and shows the menu. When the person logs out, it says goodbye by name. If the login fails, the menu never appears.
 
@@ -148,5 +155,9 @@ id: the-whole-program-1
 </details>
 
 **5.2** Test the whole program against the sample run from the planning page. Where does it still differ? Decide as a class which differences to fix.
+
+<!-- answer -->
+
+**5.3** Do all the screens look as if they belong to one program? If your class designed a shared look, use it in every part.
 
 <!-- answer -->
