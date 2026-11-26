@@ -1,7 +1,7 @@
 ---
 title: "Experiments with a to-do list: showing, adding, changing and removing"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with a to-do list: showing, adding, changing and removing
@@ -163,6 +163,7 @@ Choose any of these, or invent your own.
 2. Add a command that removes every item that is done.
 3. Let the person move an item up or down the list.
 4. Ask "Are you sure?" before removing an item.
+5. Design how the list looks, with a heading, a line under it, and done items that stand out.
 
 ```python exec
 id: more-to-try-1

@@ -1,7 +1,7 @@
 ---
 title: "Experiments with a notes app: keeping titles and text together"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with a notes app: keeping titles and text together
@@ -146,6 +146,7 @@ Choose any of these, or invent your own.
 2. Add a command that deletes a note. Remember that it must leave both lists lined up. The list method `pop` removes an item at a position.
 3. Add a command that searches every text for a word and lists the titles of the notes that contain it.
 4. Add a command that adds more text to the end of an existing note.
+5. Design how a note looks when it opens, with its title as a heading and its text underneath.
 
 ```python exec
 id: more-to-try-1

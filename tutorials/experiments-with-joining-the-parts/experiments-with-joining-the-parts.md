@@ -1,12 +1,12 @@
 ---
 title: "Experiments with joining the parts: one program from many pieces"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with joining the parts: one program from many pieces
 
-Each pair now has a part that works on its own: a login, a menu, a calculator, a notes app and a to-do list. This page joins them into one program. To do that, we give each part a name, so the menu can start it by name. A block of code with a name is called a function. The next pages say much more about functions. Here we only need the simplest kind.
+Each pair now has a part that works on its own. The class may not have built every part. That is fine, because the menu keeps a "coming soon" line for any part that is missing. This page joins the parts we have into one program. To do that, we give each part a name, so the menu can start it by name. A block of code with a name is called a function. The next pages say much more about functions. Here we only need the simplest kind.
 
 There are questions on this page to answer in words as well as in code. The **+ Text** button between cells adds a text cell where you can write your answers.
 
@@ -57,7 +57,7 @@ def run_calculator():
 run_calculator()
 ```
 
-**2.2** Now put the menu in a cell of its own, and replace each "coming soon" line with a call to the matching function.
+**2.2** Now put the menu in a cell of its own. For each part that exists, replace its "coming soon" line with a call to the matching function. Leave the other lines as they are.
 
 ```python exec
 id: each-part-becomes-a-function-2
@@ -148,5 +148,9 @@ id: the-whole-program-1
 </details>
 
 **5.2** Test the whole program against the sample run from the planning page. Where does it still differ? Decide as a class which differences to fix.
+
+<!-- answer -->
+
+**5.3** Do all the screens look as if they belong to one program? If your class designed a shared look, use it in every part.
 
 <!-- answer -->

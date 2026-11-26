@@ -1,7 +1,7 @@
 ---
 title: "Experiments with a login: checking a username and a password"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with a login: checking a username and a password
@@ -171,6 +171,10 @@ These questions have no single right answer. Talk them over with your pair.
 <!-- answer -->
 
 **5.3** Many systems lock an account after too many wrong tries. What would that need that your login does not have yet?
+
+<!-- answer -->
+
+**5.4** Design the screen a person sees when the login starts, and the one they see when it works. What should a welcome screen say?
 
 <!-- answer -->
 

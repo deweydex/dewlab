@@ -1,7 +1,7 @@
 ---
 title: "Experiments with a command line: planning a small system of our own"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with a command line: planning a small system of our own
@@ -13,7 +13,7 @@ A command line is a program that waits for you to type, does what you asked, and
 3. a few apps: a to-do list, a notes app and a calculator,
 4. a way to go back to the menu, and a way to log out.
 
-Different pairs build different parts, and at the end we join the parts into one program. This page comes before any of that. Here we decide what the program should look like and what it should do, so that the parts fit together when we join them.
+Each pair chooses the part they want to build, and at the end we join the parts into one program. If nobody chooses a part this time, the menu keeps a "coming soon" line for it, and the part can wait for another day. Some pairs care most about how the program looks, and others care most about what it does. A program needs both, so either is a good place to start. This page comes before any of that. Here we decide what the program should look like and what it should do, so that the parts fit together when we join them.
 
 There are questions on this page to answer in words. The **+ Text** button between cells adds a text cell where you can write your answers.
 
@@ -110,15 +110,16 @@ When separate pairs build parts that must join, the pairs need to agree on a few
 
 <!-- answer -->
 
-**3.2** Which pair is building which part? A table like this one is enough.
+**3.2** Which part does each pair want to build? A table like this one is enough. A part with no pair is fine.
 
-| Part | Pair | What it needs from the others |
-|---|---|---|
-| Login | | |
-| Calculator | | |
-| Notes | | |
-| To-do list | | |
-| Menu | | |
+| Part | Pair |
+|---|---|
+| Login | |
+| Menu | |
+| Calculator | |
+| Notes | |
+| To-do list | |
+| How the screens look | |
 
 <!-- answer -->
 
@@ -200,9 +201,45 @@ while True:
  Q
 ```
 
-## 5. Before you write code
+## 5. How the screens look
 
-Each pair now has its own page: the login, the calculator, the notes app and the to-do list. Every page starts with the same two questions as this one.
+A command line has no buttons or colours, but it can still look tidy or messy. Lines of symbols, spaces and capital letters can do most of the design. Run this cell.
+
+```python exec
+id: how-the-screens-look-1
+width = 30
+print("+" + "-" * width + "+")
+print("|" + "MAIN MENU".center(width) + "|")
+print("+" + "-" * width + "+")
+print("|" + "  1  To-do list".ljust(width) + "|")
+print("|" + "  2  Notes".ljust(width) + "|")
+print("|" + "  3  Calculator".ljust(width) + "|")
+print("|" + "  q  Log out".ljust(width) + "|")
+print("+" + "-" * width + "+")
+```
+
+**5.1** Change `width` to 20, and then to 50. What happens to the box? Which part of each line keeps the right-hand edge straight?
+
+<!-- answer -->
+
+**5.2** Try `"MAIN MENU".center(width, "*")`, then `.ljust` and `.rjust` in place of `.center`. What does each one do?
+
+<!-- answer -->
+
+**5.3** Design a screen of your own: a welcome screen after the login, a heading for an app, or a new look for the whole menu. Write it as a sample first, then make Python print it.
+
+```python exec
+id: how-the-screens-look-2
+# your screen here
+```
+
+**5.4** If every app draws its own boxes in its own way, the joined program looks patchy. What would the class need to agree on so the screens match?
+
+<!-- answer -->
+
+## 6. Before you write code
+
+Each part has its own page: the login, the calculator, the notes app and the to-do list. A pair working on the menu or on how the screens look can use this page and borrow from the others. Every page starts with the same two questions as this one.
 
 1. What should the screen look like? Write a sample run.
 2. What can the person do, and where does each choice lead? Write a user flow.

@@ -1,7 +1,7 @@
 ---
 title: "Experiments with a calculator: turning typed text into sums"
 year: "2026-2027"
-version: 2026.11.26.1
+version: 2026.11.26.2
 ---
 
 # Experiments with a calculator: turning typed text into sums
@@ -183,6 +183,7 @@ Choose any of these, or invent your own.
 2. Remember the last answer, and let the person type `ans` to use it as a number.
 3. Accept the whole sum on one line, such as `12 / 4`. The text method `split` turns `"12 / 4"` into `["12", "/", "4"]`.
 4. Keep a list of every sum done so far, and print it when the person types `history`.
+5. Design how the calculator looks: a heading, a line between sums, or a box around each answer.
 
 ```python exec
 id: more-to-try-1
