@@ -161,8 +161,9 @@ editor and the build-and-publish pipeline are all built and live.
 The curriculum spans six accredited QQI modules — *Mathematics for IT*,
 *Programming and Design Principles*, *Computational Methods and Problem
 Solving*, *Fundamentals of Object-Oriented Programming*, *Database Methods*
-and *Web Authoring* — across 116 tutorials and 60 practice pages, covering
-every learning outcome that doesn't call for a tool outside the project.
+and *Web Authoring* — covering every learning outcome that doesn't call for a
+tool outside the project. Across all eleven courses, the site holds more than
+280 tutorials, 190 practice pages and 28 mixed problem sets.
 
 ---
 
